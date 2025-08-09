@@ -1,0 +1,43 @@
+# Dart/Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+*.dill
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Large model files
+assets/models/*.onnx
+*.dylib
+cmdline-tools.zip
+
+# iOS
+ios/Pods/
+ios/Flutter/
+*.xcworkspace/
+*.xcodeproj/
+*.framework/
+*.xcframework/
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+android/gradle/
+android/local.properties
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Misc
+.DS_Store
+*.log
+coverage/
+*.lock

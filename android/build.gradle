@@ -1,0 +1,59 @@
+buildscript {
+    ext.kotlin_version = '2.0.20'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.6.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.4.1'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+// Force dependencies to resolve to versions compatible with our Kotlin toolchain
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            // http4k 5.47.0.0 is compiled with Kotlin 2.0 metadata. Pin to an older release built with Kotlin 1.8
+            force 'org.http4k:http4k-core:5.20.0.0'
+            // Add more http4k modules if needed in the future
+            force 'androidx.appcompat:appcompat:1.8.0'
+        }
+    }
+}
+
+// Skip compiling Patrol's Android code when assembling the app debug APK
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(':app:assembleDebug')) {
+        try {
+            def patrol = project(':patrol')
+            patrol.tasks.matching { it.name.startsWith('compileDebug') || it.name.startsWith('bundleLibCompileToJarDebug') }.all { t ->
+                t.enabled = false
+            }
+            println('Patrol Android compile tasks disabled for :app:assembleDebug')
+        } catch (Throwable ignored) {
+            // Patrol module may not be present; ignore
+        }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

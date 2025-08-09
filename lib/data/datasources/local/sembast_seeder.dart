@@ -1,0 +1,134 @@
+import 'dart:developer' as developer;
+import 'package:spots/core/models/unified_models.dart';import 'package:sembast/sembast.dart';
+import 'package:spots/core/models/list.dart';
+import 'package:spots/core/models/spot.dart';
+import 'package:spots/core/models/user.dart';
+import 'package:spots/data/datasources/local/sembast_database.dart';
+
+class SembastSeeder {
+  static Future<void> seedDatabase() async {
+    try {
+      // Use batch operations for better performance
+      final db = await SembastDatabase.database;
+      
+      // Batch all operations
+      await db.transaction((txn) async {
+        await _seedUsersBatch(txn);
+        await _seedSpotsBatch(txn);
+        await _seedListsBatch(txn);
+      });
+      
+      developer.log('Database seeded successfully', name: 'SembastSeeder');
+    } catch (e) {
+      developer.log('Error seeding database: $e', name: 'SembastSeeder');
+    }
+  }
+
+  static Future<void> _seedUsersBatch(DatabaseClient db) async {
+    final store = SembastDatabase.usersStore;
+
+    final now = DateTime.now();
+    final demoUser = User(
+      id: 'demo-user-1',
+      email: 'demo@spots.com',
+      name: 'Demo User',
+      displayName: 'Demo User',
+      role: UserRole.user,
+      createdAt: now,
+      updatedAt: now,
+      isOnline: true,
+    );
+
+    await store.record(demoUser.id).put(db, demoUser.toJson());
+  }
+
+  static Future<void> _seedSpotsBatch(DatabaseClient db) async {
+    final store = SembastDatabase.spotsStore;
+
+    final now = DateTime.now();
+    final spots = [
+      Spot(
+        id: 'spot-1',
+        name: 'Central Park',
+        description: 'Iconic urban park in Manhattan',
+        latitude: 40.7829,
+        longitude: -73.9654,
+        category: 'Parks',
+        rating: 4.8,
+        createdBy: 'demo-user-1',
+        createdAt: now,
+        updatedAt: now,
+        address: '123 Central Park West, New York, NY',
+        tags: ['park', 'nature', 'recreation'],
+      ),
+      Spot(
+        id: 'spot-2',
+        name: 'Brooklyn Bridge Park',
+        description: 'Waterfront park with amazing views',
+        latitude: 40.7021,
+        longitude: -73.9969,
+        category: 'Parks',
+        rating: 4.6,
+        createdBy: 'demo-user-1',
+        createdAt: now,
+        updatedAt: now,
+        address: '334 Furman St, Brooklyn, NY',
+        tags: ['park', 'waterfront', 'views'],
+      ),
+      Spot(
+        id: 'spot-3',
+        name: 'Chelsea Market',
+        description: 'Food hall and shopping destination',
+        latitude: 40.7421,
+        longitude: -74.0060,
+        category: 'Food & Dining',
+        rating: 4.4,
+        createdBy: 'demo-user-1',
+        createdAt: now,
+        updatedAt: now,
+        address: '820 Washington St, New York, NY',
+        tags: ['food', 'shopping', 'market'],
+      ),
+    ];
+
+    for (final spot in spots) {
+      await store.record(spot.id).put(db, spot.toJson());
+    }
+  }
+
+  static Future<void> _seedListsBatch(DatabaseClient db) async {
+    final store = SembastDatabase.listsStore;
+
+    final now = DateTime.now();
+    final lists = [
+      SpotList(
+        id: 'list-1',
+        title: 'Best Parks in NYC',
+        description: 'My favorite parks to visit',
+        spots: [],
+        createdAt: now,
+        updatedAt: now,
+        category: 'Parks',
+        isPublic: true,
+        spotIds: ['spot-1', 'spot-2'],
+        respectCount: 5,
+      ),
+      SpotList(
+        id: 'list-2',
+        title: 'Food Adventures',
+        description: 'Amazing places to eat',
+        spots: [],
+        createdAt: now,
+        updatedAt: now,
+        category: 'Food & Dining',
+        isPublic: true,
+        spotIds: ['spot-3'],
+        respectCount: 3,
+      ),
+    ];
+
+    for (final list in lists) {
+      await store.record(list.id).put(db, list.toJson());
+    }
+  }
+}

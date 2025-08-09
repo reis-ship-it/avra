@@ -1,0 +1,4 @@
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>This app needs your location to show nearby spots.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>This app needs your location to show nearby spots even in the background.</string> 

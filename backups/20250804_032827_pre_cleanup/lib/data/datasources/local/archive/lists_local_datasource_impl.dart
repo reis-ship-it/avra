@@ -1,0 +1,2 @@
+// LEGACY SQLITE IMPLEMENTATION MOVED
+// See LEGACY_LISTS_LOCAL_DATASOURCE_IMPL.txt in this folder for the old code.

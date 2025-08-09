@@ -1,0 +1,6 @@
+# melos_managed_dependency_overrides: spots_core,spots_network
+dependency_overrides:
+  spots_core:
+    path: ../spots_core
+  spots_network:
+    path: ../spots_network

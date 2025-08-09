@@ -1,0 +1,21 @@
+name: spots_core
+description: Core models, interfaces, and shared utilities for SPOTS
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+dependencies:
+  # Core dependencies only
+  equatable: ^2.0.5
+  json_annotation: ^4.8.1
+  meta: ^1.9.1
+
+dev_dependencies:
+  test: ^1.24.7
+  json_serializable: ^6.7.1
+  build_runner: ^2.4.7
+  
+flutter:
+  uses-material-design: false

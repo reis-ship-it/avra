@@ -1,0 +1,48 @@
+// LEGACY SQLITE IMPLEMENTATION (NOT USED)
+/*
+import 'package:spots/data/datasources/local/lists_local_datasource.dart';
+import 'package:spots/core/models/list.dart';
+import 'package:spots/data/datasources/local/database_helper.dart';
+
+class ListsLocalDataSourceImpl implements ListsLocalDataSource {
+  final DatabaseHelper _databaseHelper;
+
+  ListsLocalDataSourceImpl(this._databaseHelper);
+
+  @override
+  Future<List<SpotList>> getAllLists() async {
+    final listsData = await _databaseHelper.getAllLists();
+    return listsData.map((data) => SpotList.fromMap(data)).toList();
+  }
+
+  @override
+  Future<SpotList?> getListById(String id) async {
+    final listData = await _databaseHelper.getListById(id);
+    return listData != null ? SpotList.fromMap(listData) : null;
+  }
+
+  @override
+  Future<String> createList(SpotList list) async {
+    final listData = list.toMap();
+    return await _databaseHelper.insertList(listData);
+  }
+
+  @override
+  Future<void> updateList(SpotList list) async {
+    final listData = list.toMap();
+    await _databaseHelper.updateList(listData);
+  }
+
+  @override
+  Future<void> deleteList(String id) async {
+    await _databaseHelper.deleteList(id);
+  }
+
+  @override
+  Future<List<SpotList>> getListsByUser(String userId) async {
+    final listsData = await _databaseHelper.getAllLists();
+    final filteredData = listsData.where((list) => list['createdBy'] == userId).toList();
+    return filteredData.map((data) => SpotList.fromMap(data)).toList();
+  }
+}
+*/ 
