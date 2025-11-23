@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:async';
 import 'dart:convert';
 import 'package:spots_network/spots_network.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
@@ -263,5 +264,58 @@ class AI2AIRealtimeService {
   
   /// Get active channels
   List<String> get activeChannels => _activeChannels.toList();
+
+  /// Measure end-to-end Realtime latency by broadcasting a latency_ping
+  /// and timing until the same client receives it back on the channel.
+  /// Returns latency in ms, or null on timeout/error.
+  Future<int?> measureRealtimeLatency({
+    String channel = _ai2aiChannel,
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
+    try {
+      if (!_activeChannels.contains(channel)) {
+        await _realtimeBackend.joinChannel(channel);
+        _activeChannels.add(channel);
+      }
+
+      final traceId = DateTime.now().microsecondsSinceEpoch.toString();
+      final sendAt = DateTime.now();
+
+      // Start listening before sending to avoid race conditions
+      final stream = _realtimeBackend.subscribeToMessages(channel);
+      final future = stream.firstWhere((m) {
+        try {
+          return m.type == 'latency_ping' && (m.metadata['trace_id'] == traceId);
+        } catch (_) {
+          return false;
+        }
+      }).timeout(timeout);
+
+      await _realtimeBackend.sendMessage(
+        channel,
+        RealtimeMessage(
+          id: traceId,
+          senderId: 'anonymous',
+          content: 'latency_ping',
+          type: 'latency_ping',
+          timestamp: sendAt,
+          metadata: {
+            'trace_id': traceId,
+            'send_ts': sendAt.toIso8601String(),
+          },
+        ),
+      );
+
+      final received = await future;
+      final recvAt = DateTime.now();
+      final stamped = DateTime.tryParse(received.metadata['send_ts'] ?? '') ?? sendAt;
+      final ms = recvAt.difference(stamped).inMilliseconds;
+      _logger.info('Realtime latency_ping RTT: ${ms}ms', tag: _logName);
+      return ms;
+    } catch (e) {
+      _logger.warning('Realtime latency measurement failed', tag: _logName, error: e);
+      return null;
+    }
+  }
 }
 

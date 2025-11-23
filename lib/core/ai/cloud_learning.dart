@@ -2,8 +2,8 @@ import 'dart:developer' as developer;
 import 'dart:math';
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/personality_profile.dart';
-import 'package:spots/core/services/business/ai/personality_learning.dart';
-import 'package:spots/core/services/business/ai/privacy_protection.dart';
+import 'package:spots/core/ai/personality_learning.dart' show PersonalityLearning, AI2AILearningInsight, AI2AIInsightType;
+import 'package:spots/core/ai/privacy_protection.dart' show PrivacyProtection, AnonymizedPersonalityData;
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// OUR_GUTS.md: "Cloud interface for collective pattern learning while maintaining complete privacy and user control"

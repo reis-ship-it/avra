@@ -2,6 +2,7 @@ class ConfigService {
   final String environment; // development | staging | production
   final String supabaseUrl;
   final String supabaseAnonKey;
+  final String googlePlacesApiKey;
   final bool debug;
   
   // Inference configuration
@@ -28,6 +29,7 @@ class ConfigService {
     required this.environment,
     required this.supabaseUrl,
     required this.supabaseAnonKey,
+    this.googlePlacesApiKey = '',
     this.debug = false,
     this.inferenceBackend = 'onnx',
     this.orchestrationStrategy = 'device_first',

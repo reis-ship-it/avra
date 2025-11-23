@@ -70,5 +70,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Google Maps API Key (used by google_maps_flutter on iOS) -->
+	<key>GMSApiKey</key>
+	<string>YOUR_IOS_GOOGLE_MAPS_API_KEY</string>
 </dict>
 </plist>

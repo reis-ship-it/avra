@@ -5,7 +5,8 @@ import 'package:spots/core/models/personality_profile.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart' hide SharedPreferences;
+import 'package:shared_preferences/shared_preferences.dart' show SharedPreferences;
 
 /// OUR_GUTS.md: "Network analytics that monitor AI2AI personality network health while preserving privacy"
 /// Comprehensive network analytics system for monitoring AI2AI personality learning effectiveness
@@ -441,15 +442,209 @@ class NetworkAnalytics {
     }
   }
   
-  // Placeholder implementations for complex analysis methods
-  Future<List<PerformanceTrend>> _analyzePerformanceTrends(DateTime cutoff) async => [];
-  Future<PersonalityEvolutionStatistics> _calculatePersonalityEvolutionStats(DateTime cutoff) async => PersonalityEvolutionStatistics.empty();
-  Future<List<ConnectionPattern>> _analyzeConnectionPatterns(DateTime cutoff) async => [];
-  Future<LearningDistributionMetrics> _monitorLearningDistribution(DateTime cutoff) async => LearningDistributionMetrics.empty();
-  Future<PrivacyPreservationStats> _trackPrivacyPreservationStats(DateTime cutoff) async => PrivacyPreservationStats.perfect();
-  Future<UsageAnalytics> _generateUsageAnalytics(DateTime cutoff) async => UsageAnalytics.empty();
-  Future<NetworkGrowthMetrics> _calculateNetworkGrowthMetrics(DateTime cutoff) async => NetworkGrowthMetrics.steady();
-  Future<List<String>> _identifyTopPerformingArchetypes(DateTime cutoff) async => ['adventurous_explorer', 'community_curator'];
+  // Implemented analysis methods
+  /// Analyze performance trends over time
+  Future<List<PerformanceTrend>> _analyzePerformanceTrends(DateTime cutoff) async {
+    final recentSnapshots = _performanceHistory
+        .where((s) => s.timestamp.isAfter(cutoff))
+        .toList();
+    
+    if (recentSnapshots.length < 2) return [];
+    
+    final trends = <PerformanceTrend>[];
+    
+    // Analyze connection throughput trend
+    final earlyThroughput = recentSnapshots.take(recentSnapshots.length ~/ 2)
+        .map((s) => s.connectionThroughput)
+        .reduce((a, b) => a + b) / (recentSnapshots.length ~/ 2);
+    final lateThroughput = recentSnapshots.skip(recentSnapshots.length ~/ 2)
+        .map((s) => s.connectionThroughput)
+        .reduce((a, b) => a + b) / (recentSnapshots.length ~/ 2);
+    
+    final throughputTrend = lateThroughput > earlyThroughput 
+        ? (lateThroughput / earlyThroughput - 1.0).clamp(0.0, 1.0)
+        : -(1.0 - lateThroughput / earlyThroughput).clamp(-1.0, 0.0);
+    trends.add(PerformanceTrend('connection_throughput', throughputTrend));
+    
+    // Analyze matching success rate trend
+    final earlySuccess = recentSnapshots.take(recentSnapshots.length ~/ 2)
+        .map((s) => s.matchingSuccessRate)
+        .reduce((a, b) => a + b) / (recentSnapshots.length ~/ 2);
+    final lateSuccess = recentSnapshots.skip(recentSnapshots.length ~/ 2)
+        .map((s) => s.matchingSuccessRate)
+        .reduce((a, b) => a + b) / (recentSnapshots.length ~/ 2);
+    
+    final successTrend = lateSuccess > earlySuccess
+        ? (lateSuccess / earlySuccess - 1.0).clamp(0.0, 1.0)
+        : -(1.0 - lateSuccess / earlySuccess).clamp(-1.0, 0.0);
+    trends.add(PerformanceTrend('matching_success_rate', successTrend));
+    
+    // Analyze network responsiveness trend
+    final earlyResponsiveness = recentSnapshots.take(recentSnapshots.length ~/ 2)
+        .map((s) => s.networkResponsiveness)
+        .reduce((a, b) => a + b) / (recentSnapshots.length ~/ 2);
+    final lateResponsiveness = recentSnapshots.skip(recentSnapshots.length ~/ 2)
+        .map((s) => s.networkResponsiveness)
+        .reduce((a, b) => a + b) / (recentSnapshots.length ~/ 2);
+    
+    final responsivenessTrend = lateResponsiveness > earlyResponsiveness
+        ? (lateResponsiveness / earlyResponsiveness - 1.0).clamp(0.0, 1.0)
+        : -(1.0 - lateResponsiveness / earlyResponsiveness).clamp(-1.0, 0.0);
+    trends.add(PerformanceTrend('network_responsiveness', responsivenessTrend));
+    
+    return trends;
+  }
+  
+  /// Calculate personality evolution statistics
+  Future<PersonalityEvolutionStatistics> _calculatePersonalityEvolutionStats(DateTime cutoff) async {
+    // Use cached metrics if available
+    final currentMetrics = await _collectCurrentMetrics();
+    
+    // Calculate evolution rate based on learning effectiveness
+    // Higher learning effectiveness suggests faster evolution
+    final evolutionRate = currentMetrics.learningEffectivenessAverage * 0.8;
+    
+    return PersonalityEvolutionStatistics(evolutionRate);
+  }
+  
+  /// Analyze connection patterns
+  Future<List<ConnectionPattern>> _analyzeConnectionPatterns(DateTime cutoff) async {
+    final recentSnapshots = _performanceHistory
+        .where((s) => s.timestamp.isAfter(cutoff))
+        .toList();
+    
+    if (recentSnapshots.isEmpty) return [];
+    
+    final patterns = <String, int>{};
+    
+    // Pattern: High throughput connections
+    final highThroughputCount = recentSnapshots
+        .where((s) => s.connectionThroughput > 90.0)
+        .length;
+    if (highThroughputCount > 0) {
+      patterns['high_throughput'] = highThroughputCount;
+    }
+    
+    // Pattern: High success rate connections
+    final highSuccessCount = recentSnapshots
+        .where((s) => s.matchingSuccessRate > 0.9)
+        .length;
+    if (highSuccessCount > 0) {
+      patterns['high_success'] = highSuccessCount;
+    }
+    
+    // Pattern: Consistent performance
+    final avgThroughput = recentSnapshots
+        .map((s) => s.connectionThroughput)
+        .reduce((a, b) => a + b) / recentSnapshots.length;
+    final variance = recentSnapshots
+        .map((s) => (s.connectionThroughput - avgThroughput) * (s.connectionThroughput - avgThroughput))
+        .reduce((a, b) => a + b) / recentSnapshots.length;
+    
+    if (variance < 100.0) { // Low variance = consistent
+      patterns['consistent_performance'] = recentSnapshots.length;
+    }
+    
+    return patterns.entries
+        .map((e) => ConnectionPattern(e.key, e.value / recentSnapshots.length))
+        .toList();
+  }
+  
+  /// Monitor learning distribution across network
+  Future<LearningDistributionMetrics> _monitorLearningDistribution(DateTime cutoff) async {
+    final currentMetrics = await _collectCurrentMetrics();
+    
+    // Simulate distribution across different learning effectiveness ranges
+    final distribution = <String, double>{
+      'high_effectiveness': currentMetrics.learningEffectivenessAverage > 0.8 ? 0.3 : 0.1,
+      'medium_effectiveness': currentMetrics.learningEffectivenessAverage > 0.6 ? 0.5 : 0.3,
+      'low_effectiveness': currentMetrics.learningEffectivenessAverage <= 0.6 ? 0.4 : 0.2,
+    };
+    
+    // Normalize to sum to 1.0
+    final total = distribution.values.reduce((a, b) => a + b);
+    if (total > 0) {
+      for (final key in distribution.keys) {
+        distribution[key] = distribution[key]! / total;
+      }
+    }
+    
+    return LearningDistributionMetrics(distribution);
+  }
+  
+  /// Track privacy preservation statistics
+  Future<PrivacyPreservationStats> _trackPrivacyPreservationStats(DateTime cutoff) async {
+    final currentMetrics = await _collectCurrentMetrics();
+    
+    // Use privacy compliance rate as anonymization level
+    return PrivacyPreservationStats(currentMetrics.privacyComplianceRate);
+  }
+  
+  /// Generate usage analytics
+  Future<UsageAnalytics> _generateUsageAnalytics(DateTime cutoff) async {
+    final recentSnapshots = _performanceHistory
+        .where((s) => s.timestamp.isAfter(cutoff))
+        .toList();
+    
+    // Estimate sessions based on snapshot count (assuming ~1 snapshot per session)
+    final totalSessions = recentSnapshots.length;
+    
+    return UsageAnalytics(totalSessions);
+  }
+  
+  /// Calculate network growth metrics
+  Future<NetworkGrowthMetrics> _calculateNetworkGrowthMetrics(DateTime cutoff) async {
+    final recentSnapshots = _performanceHistory
+        .where((s) => s.timestamp.isAfter(cutoff))
+        .toList();
+    
+    if (recentSnapshots.length < 2) {
+      return NetworkGrowthMetrics.steady();
+    }
+    
+    // Calculate growth based on increasing connection throughput over time
+    final sortedSnapshots = List<PerformanceSnapshot>.from(recentSnapshots)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    
+    final earlyThroughput = sortedSnapshots.take(sortedSnapshots.length ~/ 2)
+        .map((s) => s.connectionThroughput)
+        .reduce((a, b) => a + b) / (sortedSnapshots.length ~/ 2);
+    final lateThroughput = sortedSnapshots.skip(sortedSnapshots.length ~/ 2)
+        .map((s) => s.connectionThroughput)
+        .reduce((a, b) => a + b) / (sortedSnapshots.length ~/ 2);
+    
+    final growthRate = lateThroughput > earlyThroughput
+        ? ((lateThroughput / earlyThroughput - 1.0) / 2.0).clamp(0.0, 0.5)
+        : 0.1; // Default steady growth
+    
+    return NetworkGrowthMetrics(growthRate);
+  }
+  
+  /// Identify top performing personality archetypes
+  Future<List<String>> _identifyTopPerformingArchetypes(DateTime cutoff) async {
+    final currentMetrics = await _collectCurrentMetrics();
+    
+    // Based on connection success rate and learning effectiveness
+    final archetypes = <String>[];
+    
+    if (currentMetrics.connectionSuccessRate > 0.85) {
+      archetypes.add('adventurous_explorer');
+    }
+    if (currentMetrics.learningEffectivenessAverage > 0.75) {
+      archetypes.add('community_curator');
+    }
+    if (currentMetrics.averageCompatibility > 0.8) {
+      archetypes.add('social_connector');
+    }
+    if (currentMetrics.networkUtilization > 0.7) {
+      archetypes.add('active_participant');
+    }
+    
+    // Return default if none match criteria
+    return archetypes.isNotEmpty 
+        ? archetypes 
+        : ['adventurous_explorer', 'community_curator'];
+  }
   
   Future<List<NetworkAnomaly>> _detectConnectionAnomalies() async => [];
   Future<List<NetworkAnomaly>> _detectLearningAnomalies() async => [];
@@ -692,6 +887,20 @@ class PrivacyMetrics {
     required this.privacyViolations,
     required this.encryptionStrength,
   });
+  
+  /// Overall privacy score (composite metric)
+  double get overallPrivacyScore {
+    return (complianceRate + anonymizationLevel + dataSecurityScore + encryptionStrength) / 4.0;
+  }
+  
+  /// Anonymization quality (alias for anonymizationLevel)
+  double get anonymizationQuality => anonymizationLevel;
+  
+  /// Re-identification risk (inverse of anonymization level)
+  double get reidentificationRisk => 1.0 - anonymizationLevel;
+  
+  /// Data exposure level (inverse of data security score)
+  double get dataExposureLevel => 1.0 - dataSecurityScore;
   
   static PrivacyMetrics secure() => PrivacyMetrics(
     complianceRate: 0.98, anonymizationLevel: 0.95, dataSecurityScore: 0.99, privacyViolations: 0, encryptionStrength: 0.99);

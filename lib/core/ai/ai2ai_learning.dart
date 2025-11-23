@@ -3,49 +3,9 @@ import 'dart:math';
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/personality_profile.dart';
 import 'package:spots/core/models/connection_metrics.dart';
-// import 'package:spots/core/services/business/ai/personality_learning.dart';
-// import 'package:spots/core/services/business/ai/cloud_learning.dart';
-
-// Stub classes for missing services
+import 'package:spots/core/ai/personality_learning.dart';
+import 'package:spots/core/ai/cloud_learning.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-class PersonalityLearning {
-  Future<dynamic> evolvePersonality(dynamic user, dynamic action) async {
-    return null;
-  }
-  
-  Future<dynamic> evolveFromAI2AILearning(dynamic user, dynamic learning) async {
-    return null;
-  }
-}
-
-class CloudLearning {
-  Future<dynamic> getCloudInsights() async {
-    return null;
-  }
-}
-
-// Stub enums and types
-enum AI2AIInsightType {
-  personalityEvolution,
-  behaviorPattern,
-  learningOpportunity,
-  trustBuilding,
-}
-
-class AI2AILearningInsight {
-  final String id;
-  final AI2AIInsightType type;
-  final String description;
-  final double confidence;
-  
-  AI2AILearningInsight({
-    required this.id,
-    required this.type,
-    required this.description,
-    required this.confidence,
-  });
-}
 
 class ExpectedOutcome {
   final String id;
@@ -587,11 +547,110 @@ class AI2AIChatAnalyzer {
   Future<void> _saveChatHistory(String userId) async => developer.log('Saved chat history for: $userId', name: _logName);
   Future<List<CrossPersonalityInsight>> _getLearningInsights(String userId) async => _learningInsights[userId] ?? [];
   
+  /// Get chat history for admin access
+  /// Returns all chat events for a given user ID
+  Future<List<AI2AIChatEvent>> getChatHistoryForAdmin(String userId) async {
+    return _chatHistory[userId] ?? [];
+  }
+  
+  /// Get all chat history across all users (admin access)
+  /// Returns a map of userId -> chat events
+  Map<String, List<AI2AIChatEvent>> getAllChatHistoryForAdmin() {
+    return Map<String, List<AI2AIChatEvent>>.from(_chatHistory);
+  }
+  
   // Analysis helper methods
   double _analyzeExchangeFrequency(List<AI2AIChatEvent> history) => min(1.0, history.length / 10.0);
-  double _analyzeResponseLatency(List<AI2AIChatEvent> history) => 0.8; // Placeholder
+  
+  /// Analyze response latency from chat history
+  /// Returns a score (0.0-1.0) where higher = faster/more responsive
+  double _analyzeResponseLatency(List<AI2AIChatEvent> history) {
+    if (history.isEmpty) return 0.5; // Default for no history
+    
+    final latencies = <Duration>[];
+    
+    for (final event in history) {
+      if (event.messages.length < 2) continue;
+      
+      // Sort messages by timestamp
+      final sortedMessages = List<ChatMessage>.from(event.messages)
+        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      
+      // Calculate time between consecutive messages
+      for (int i = 1; i < sortedMessages.length; i++) {
+        final latency = sortedMessages[i].timestamp.difference(sortedMessages[i - 1].timestamp);
+        if (latency.inSeconds > 0 && latency.inHours < 24) {
+          // Only count reasonable latencies (not same sender, not too long)
+          if (sortedMessages[i].senderId != sortedMessages[i - 1].senderId) {
+            latencies.add(latency);
+          }
+        }
+      }
+    }
+    
+    if (latencies.isEmpty) return 0.5; // Default if no valid latencies
+    
+    // Calculate average latency in seconds
+    final avgLatencySeconds = latencies
+        .map((d) => d.inSeconds)
+        .reduce((a, b) => a + b) / latencies.length;
+    
+    // Normalize: faster responses = higher score
+    // Target: < 60 seconds = excellent (1.0), > 300 seconds = poor (0.0)
+    final normalizedScore = 1.0 - min(1.0, avgLatencySeconds / 300.0);
+    return normalizedScore.clamp(0.0, 1.0);
+  }
+  
   double _analyzeConversationDepth(AI2AIChatEvent event) => min(1.0, event.messages.length / 5.0);
-  double _analyzeTopicConsistency(List<AI2AIChatEvent> history) => 0.7; // Placeholder
+  
+  /// Analyze topic consistency across conversation history
+  /// Returns a score (0.0-1.0) where higher = more consistent topics
+  double _analyzeTopicConsistency(List<AI2AIChatEvent> history) {
+    if (history.isEmpty) return 0.5; // Default for no history
+    
+    // Extract topics from message content
+    final allTopics = <String>[];
+    for (final event in history) {
+      for (final message in event.messages) {
+        // Simple keyword extraction (in production, could use NLP)
+        final content = message.content.toLowerCase();
+        final words = content.split(RegExp(r'\s+'));
+        
+        // Extract meaningful words (length > 3, not common stop words)
+        final stopWords = {'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'who', 'way', 'use', 'her', 'she', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use'};
+        
+        for (final word in words) {
+          final cleaned = word.replaceAll(RegExp(r'[^\w]'), '');
+          if (cleaned.length > 3 && !stopWords.contains(cleaned)) {
+            allTopics.add(cleaned);
+          }
+        }
+      }
+    }
+    
+    if (allTopics.isEmpty) return 0.5; // Default if no topics extracted
+    
+    // Count topic frequencies
+    final topicFreq = <String, int>{};
+    for (final topic in allTopics) {
+      topicFreq[topic] = (topicFreq[topic] ?? 0) + 1;
+    }
+    
+    // Calculate consistency: higher frequency topics = more consistent
+    final totalTopics = allTopics.length;
+    final uniqueTopics = topicFreq.length;
+    
+    if (uniqueTopics == 0) return 0.5;
+    
+    // Consistency score: fewer unique topics relative to total = more consistent
+    // But also reward repeated topics
+    final repetitionRatio = (totalTopics - uniqueTopics) / totalTopics;
+    final diversityPenalty = min(1.0, uniqueTopics / 20.0); // Penalize too many unique topics
+    
+    final consistencyScore = (repetitionRatio * 0.7 + (1.0 - diversityPenalty) * 0.3).clamp(0.0, 1.0);
+    return consistencyScore;
+  }
+  
   double _calculatePatternStrength(double frequency, double consistency) => (frequency + consistency) / 2.0;
   
   double _calculateNetworkEffect(int participantCount) => min(1.0, participantCount / 5.0);
@@ -600,29 +659,780 @@ class AI2AIChatAnalyzer {
   
   double _calculateKnowledgeDepth(List<SharedInsight> insights) => min(1.0, insights.length / 20.0);
   
-  // Complex analysis methods (placeholder implementations)
-  Future<List<SharedInsight>> _aggregateConversationInsights(List<AI2AIChatEvent> chats) async => [];
-  Future<List<EmergingPattern>> _identifyEmergingPatterns(List<AI2AIChatEvent> chats) async => [];
-  Future<Map<String, dynamic>> _buildConsensusKnowledge(List<SharedInsight> insights) async => {};
-  Future<List<CommunityTrend>> _analyzeCommunityTrends(List<AI2AIChatEvent> chats) async => [];
-  Future<Map<String, double>> _calculateKnowledgeReliability(List<SharedInsight> insights, List<EmergingPattern> patterns) async => {};
+  // Complex analysis methods (implemented)
+  /// Aggregate insights from multiple conversations
+  Future<List<SharedInsight>> _aggregateConversationInsights(List<AI2AIChatEvent> chats) async {
+    if (chats.isEmpty) return [];
+    
+    final aggregated = <String, SharedInsight>{};
+    
+    for (final chat in chats) {
+      // Extract insights from messages
+      for (final message in chat.messages) {
+        // Simple keyword-based insight extraction
+        final content = message.content.toLowerCase();
+        
+        // Look for dimension-related keywords
+        final dimensionKeywords = {
+          'adventure': 'adventure',
+          'social': 'social',
+          'relax': 'relaxation',
+          'explore': 'exploration',
+          'creative': 'creativity',
+          'active': 'activity',
+        };
+        
+        for (final entry in dimensionKeywords.entries) {
+          if (content.contains(entry.key)) {
+            final insightId = '${entry.value}_${chat.eventId}';
+            if (!aggregated.containsKey(insightId)) {
+              aggregated[insightId] = SharedInsight(
+                category: 'dimension_evolution',
+                dimension: entry.value,
+                value: 0.6,
+                description: 'Insight about ${entry.value} from conversation',
+                reliability: 0.7,
+                timestamp: message.timestamp,
+              );
+            }
+          }
+        }
+      }
+    }
+    
+    return aggregated.values.toList();
+  }
   
-  Future<CrossPersonalityLearningPattern?> _analyzeInteractionFrequency(String userId, List<AI2AIChatEvent> chats) async => null;
-  Future<CrossPersonalityLearningPattern?> _analyzeCompatibilityEvolution(String userId, List<AI2AIChatEvent> chats) async => null;
-  Future<CrossPersonalityLearningPattern?> _analyzeKnowledgeSharing(String userId, List<AI2AIChatEvent> chats) async => null;
-  Future<CrossPersonalityLearningPattern?> _analyzeTrustBuilding(String userId, List<AI2AIChatEvent> chats) async => null;
-  Future<CrossPersonalityLearningPattern?> _analyzeLearningAcceleration(String userId, List<AI2AIChatEvent> chats) async => null;
+  /// Identify emerging patterns across conversations
+  Future<List<EmergingPattern>> _identifyEmergingPatterns(List<AI2AIChatEvent> chats) async {
+    if (chats.length < 3) return [];
+    
+    final patterns = <String, int>{};
+    
+    // Count pattern occurrences
+    for (final chat in chats) {
+      // Pattern: frequent short messages
+      if (chat.messages.length >= 5 && chat.duration.inMinutes < 10) {
+        patterns['rapid_exchange'] = (patterns['rapid_exchange'] ?? 0) + 1;
+      }
+      
+      // Pattern: deep conversations
+      if (chat.messages.length >= 10) {
+        patterns['deep_conversation'] = (patterns['deep_conversation'] ?? 0) + 1;
+      }
+      
+      // Pattern: multi-participant
+      if (chat.participants.length >= 3) {
+        patterns['group_interaction'] = (patterns['group_interaction'] ?? 0) + 1;
+      }
+    }
+    
+    // Return patterns that appear in at least 30% of chats
+    final threshold = (chats.length * 0.3).ceil();
+    return patterns.entries
+        .where((e) => e.value >= threshold)
+        .map((e) => EmergingPattern(e.key, e.value / chats.length))
+        .toList();
+  }
   
-  Future<List<SharedInsight>> _extractDimensionInsights(ChatMessage message) async => [];
-  Future<List<SharedInsight>> _extractPreferenceInsights(ChatMessage message) async => [];
-  Future<List<SharedInsight>> _extractExperienceInsights(ChatMessage message) async => [];
-  Future<List<SharedInsight>> _validateInsights(List<SharedInsight> insights, ConnectionMetrics context) async => insights;
+  /// Build consensus knowledge from aggregated insights
+  Future<Map<String, dynamic>> _buildConsensusKnowledge(List<SharedInsight> insights) async {
+    if (insights.isEmpty) return {};
+    
+    final consensus = <String, dynamic>{};
+    
+    // Group insights by dimension
+    final dimensionGroups = <String, List<SharedInsight>>{};
+    for (final insight in insights) {
+      final dim = insight.dimension;
+      dimensionGroups.putIfAbsent(dim, () => []).add(insight);
+    }
+    
+    // Calculate consensus values for each dimension
+    for (final entry in dimensionGroups.entries) {
+      final dimInsights = entry.value;
+      if (dimInsights.length >= 2) {
+        final avgValue = dimInsights.map((i) => i.value).reduce((a, b) => a + b) / dimInsights.length;
+        final avgReliability = dimInsights.map((i) => i.reliability).reduce((a, b) => a + b) / dimInsights.length;
+        
+        consensus[entry.key] = {
+          'value': avgValue,
+          'reliability': avgReliability,
+          'supporting_insights': dimInsights.length,
+        };
+      }
+    }
+    
+    return consensus;
+  }
   
-  Future<List<OptimalPartner>> _identifyOptimalLearningPartners(PersonalityProfile personality, List<CrossPersonalityLearningPattern> patterns) async => [];
-  Future<List<LearningTopic>> _generateLearningTopics(PersonalityProfile personality, List<CrossPersonalityLearningPattern> patterns) async => [];
-  Future<List<DevelopmentArea>> _recommendDevelopmentAreas(PersonalityProfile personality, List<CrossPersonalityLearningPattern> patterns) async => [];
+  /// Analyze community-level trends
+  Future<List<CommunityTrend>> _analyzeCommunityTrends(List<AI2AIChatEvent> chats) async {
+    if (chats.length < 5) return [];
+    
+    final trends = <CommunityTrend>[];
+    
+    // Analyze temporal trends
+    final sortedChats = List<AI2AIChatEvent>.from(chats)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    
+    // Trend: Increasing conversation depth over time
+    if (sortedChats.length >= 3) {
+      final earlyDepth = sortedChats.take(sortedChats.length ~/ 3)
+          .map((c) => c.messages.length)
+          .reduce((a, b) => a + b) / (sortedChats.length ~/ 3);
+      final lateDepth = sortedChats.skip(sortedChats.length * 2 ~/ 3)
+          .map((c) => c.messages.length)
+          .reduce((a, b) => a + b) / (sortedChats.length ~/ 3);
+      
+      if (lateDepth > earlyDepth * 1.2) {
+        trends.add(CommunityTrend('increasing_conversation_depth', 1.0));
+      } else if (lateDepth < earlyDepth * 0.8) {
+        trends.add(CommunityTrend('decreasing_conversation_depth', -1.0));
+      }
+    }
+    
+    // Trend: Growing network size
+    final avgParticipants = chats.map((c) => c.participants.length).reduce((a, b) => a + b) / chats.length;
+    if (avgParticipants >= 2.5) {
+      trends.add(CommunityTrend('growing_network', 1.0));
+    }
+    
+    return trends;
+  }
+  
+  /// Calculate reliability scores for knowledge
+  Future<Map<String, double>> _calculateKnowledgeReliability(
+    List<SharedInsight> insights,
+    List<EmergingPattern> patterns,
+  ) async {
+    final reliability = <String, double>{};
+    
+    // Calculate reliability based on insight count and quality
+    final dimensionGroups = <String, List<SharedInsight>>{};
+    for (final insight in insights) {
+      dimensionGroups.putIfAbsent(insight.dimension, () => []).add(insight);
+    }
+    
+    for (final entry in dimensionGroups.entries) {
+      final dimInsights = entry.value;
+      final avgReliability = dimInsights.map((i) => i.reliability).reduce((a, b) => a + b) / dimInsights.length;
+      final supportFactor = min(1.0, dimInsights.length / 5.0); // More insights = more reliable
+      reliability[entry.key] = (avgReliability * 0.7 + supportFactor * 0.3).clamp(0.0, 1.0);
+    }
+    
+    // Add pattern-based reliability
+    for (final pattern in patterns) {
+      reliability['pattern_${pattern.pattern}'] = pattern.strength;
+    }
+    
+    return reliability;
+  }
+  
+  /// Analyze interaction frequency patterns
+  Future<CrossPersonalityLearningPattern?> _analyzeInteractionFrequency(
+    String userId,
+    List<AI2AIChatEvent> chats,
+  ) async {
+    if (chats.length < 3) return null;
+    
+    // Calculate average time between interactions
+    final sortedChats = List<AI2AIChatEvent>.from(chats)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    
+    final intervals = <Duration>[];
+    for (int i = 1; i < sortedChats.length; i++) {
+      intervals.add(sortedChats[i].timestamp.difference(sortedChats[i - 1].timestamp));
+    }
+    
+    if (intervals.isEmpty) return null;
+    
+    // Calculate average interval: sum all durations, then divide by count
+    final totalDuration = intervals.fold<Duration>(
+      Duration.zero,
+      (sum, duration) => sum + duration,
+    );
+    final avgInterval = Duration(
+      microseconds: totalDuration.inMicroseconds ~/ intervals.length,
+    );
+    final frequencyScore = 1.0 - min(1.0, avgInterval.inHours / 168.0); // Normalize to weekly
+    
+    return CrossPersonalityLearningPattern(
+      patternType: 'interaction_frequency',
+      characteristics: {
+        'avg_interval_hours': avgInterval.inHours,
+        'total_interactions': chats.length,
+        'frequency_score': frequencyScore,
+      },
+      strength: frequencyScore,
+      confidence: min(1.0, chats.length / 10.0),
+      identified: DateTime.now(),
+    );
+  }
+  
+  /// Analyze compatibility evolution patterns
+  Future<CrossPersonalityLearningPattern?> _analyzeCompatibilityEvolution(
+    String userId,
+    List<AI2AIChatEvent> chats,
+  ) async {
+    if (chats.length < 3) return null;
+    
+    // Analyze if conversations are getting longer/deeper over time
+    final sortedChats = List<AI2AIChatEvent>.from(chats)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    
+    final earlyDepth = sortedChats.take(sortedChats.length ~/ 2)
+        .map((c) => c.messages.length)
+        .reduce((a, b) => a + b) / (sortedChats.length ~/ 2);
+    final lateDepth = sortedChats.skip(sortedChats.length ~/ 2)
+        .map((c) => c.messages.length)
+        .reduce((a, b) => a + b) / (sortedChats.length ~/ 2);
+    
+    final evolutionScore = lateDepth > earlyDepth ? (lateDepth / earlyDepth - 1.0).clamp(0.0, 1.0) : 0.0;
+    
+    if (evolutionScore < 0.1) return null; // No significant evolution
+    
+    return CrossPersonalityLearningPattern(
+      patternType: 'compatibility_evolution',
+      characteristics: {
+        'early_depth': earlyDepth,
+        'late_depth': lateDepth,
+        'evolution_rate': evolutionScore,
+      },
+      strength: evolutionScore,
+      confidence: min(1.0, chats.length / 10.0),
+      identified: DateTime.now(),
+    );
+  }
+  
+  /// Analyze knowledge sharing patterns
+  Future<CrossPersonalityLearningPattern?> _analyzeKnowledgeSharing(
+    String userId,
+    List<AI2AIChatEvent> chats,
+  ) async {
+    if (chats.isEmpty) return null;
+    
+    // Count insights and learning opportunities
+    int totalInsights = 0;
+    for (final chat in chats) {
+      // Estimate insights from message count and depth
+      totalInsights += (chat.messages.length / 2).round();
+    }
+    
+    final sharingScore = min(1.0, totalInsights / (chats.length * 3.0));
+    
+    if (sharingScore < 0.2) return null;
+    
+    return CrossPersonalityLearningPattern(
+      patternType: 'knowledge_sharing',
+      characteristics: {
+        'total_insights': totalInsights,
+        'avg_insights_per_chat': totalInsights / chats.length,
+        'sharing_score': sharingScore,
+      },
+      strength: sharingScore,
+      confidence: min(1.0, chats.length / 5.0),
+      identified: DateTime.now(),
+    );
+  }
+  
+  /// Analyze trust building patterns
+  Future<CrossPersonalityLearningPattern?> _analyzeTrustBuilding(
+    String userId,
+    List<AI2AIChatEvent> chats,
+  ) async {
+    if (chats.length < 3) return null;
+    
+    // Trust building indicators: repeated interactions with same participants
+    final participantCounts = <String, int>{};
+    for (final chat in chats) {
+      for (final participant in chat.participants) {
+        if (participant != userId) {
+          participantCounts[participant] = (participantCounts[participant] ?? 0) + 1;
+        }
+      }
+    }
+    
+    final repeatedConnections = participantCounts.values.where((c) => c >= 2).length;
+    final trustScore = min(1.0, repeatedConnections / max(1, participantCounts.length));
+    
+    if (trustScore < 0.3) return null;
+    
+    return CrossPersonalityLearningPattern(
+      patternType: 'trust_building',
+      characteristics: {
+        'unique_participants': participantCounts.length,
+        'repeated_connections': repeatedConnections,
+        'trust_score': trustScore,
+      },
+      strength: trustScore,
+      confidence: min(1.0, chats.length / 5.0),
+      identified: DateTime.now(),
+    );
+  }
+  
+  /// Analyze learning acceleration patterns
+  Future<CrossPersonalityLearningPattern?> _analyzeLearningAcceleration(
+    String userId,
+    List<AI2AIChatEvent> chats,
+  ) async {
+    if (chats.length < 5) return null;
+    
+    // Check if learning rate is increasing over time
+    final sortedChats = List<AI2AIChatEvent>.from(chats)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    
+    // Calculate learning indicators per time period
+    final earlyPeriod = sortedChats.take(sortedChats.length ~/ 2);
+    final latePeriod = sortedChats.skip(sortedChats.length ~/ 2);
+    
+    final earlyLearning = earlyPeriod.map((c) => c.messages.length * c.participants.length).reduce((a, b) => a + b);
+    final lateLearning = latePeriod.map((c) => c.messages.length * c.participants.length).reduce((a, b) => a + b);
+    
+    final earlyTime = earlyPeriod.last.timestamp.difference(earlyPeriod.first.timestamp).inDays;
+    final lateTime = latePeriod.last.timestamp.difference(latePeriod.first.timestamp).inDays;
+    
+    if (earlyTime == 0 || lateTime == 0) return null;
+    
+    final earlyRate = earlyLearning / earlyTime;
+    final lateRate = lateLearning / lateTime;
+    
+    final acceleration = lateRate > earlyRate ? ((lateRate / earlyRate - 1.0) / 2.0).clamp(0.0, 1.0) : 0.0;
+    
+    if (acceleration < 0.1) return null;
+    
+    return CrossPersonalityLearningPattern(
+      patternType: 'learning_acceleration',
+      characteristics: {
+        'early_rate': earlyRate,
+        'late_rate': lateRate,
+        'acceleration_factor': acceleration,
+      },
+      strength: acceleration,
+      confidence: min(1.0, chats.length / 10.0),
+      identified: DateTime.now(),
+    );
+  }
+  
+  /// Extract dimension-related insights from chat message
+  /// Analyzes message content for personality dimension indicators
+  Future<List<SharedInsight>> _extractDimensionInsights(ChatMessage message) async {
+    final insights = <SharedInsight>[];
+    final content = message.content.toLowerCase();
+    
+    // Map keywords to dimensions
+    final dimensionKeywords = {
+      'exploration_eagerness': ['explore', 'adventure', 'new', 'discover', 'try', 'visit', 'check out'],
+      'community_orientation': ['together', 'group', 'friends', 'community', 'share', 'we', 'us'],
+      'authenticity_preference': ['authentic', 'local', 'hidden', 'gem', 'secret', 'real', 'genuine'],
+      'social_discovery_style': ['social', 'meet', 'hangout', 'connect', 'network'],
+      'temporal_flexibility': ['spontaneous', 'spur', 'moment', 'now', 'flexible', 'anytime'],
+      'location_adventurousness': ['far', 'travel', 'distant', 'road trip', 'journey', 'explore'],
+      'curation_tendency': ['curate', 'list', 'recommend', 'suggest', 'favorite', 'best'],
+      'trust_network_reliance': ['trust', 'friend', 'recommended', 'suggested', 'heard'],
+    };
+    
+    // Check for dimension keywords in message
+    for (final entry in dimensionKeywords.entries) {
+      final dimension = entry.key;
+      final keywords = entry.value;
+      
+      int matches = 0;
+      for (final keyword in keywords) {
+        if (content.contains(keyword)) {
+          matches++;
+        }
+      }
+      
+      if (matches > 0) {
+        // Calculate value based on keyword frequency
+        final value = min(1.0, matches / keywords.length * 0.8 + 0.2);
+        final reliability = min(1.0, matches / 3.0); // More matches = more reliable
+        
+        insights.add(SharedInsight(
+          category: 'dimension_evolution',
+          dimension: dimension,
+          value: value,
+          description: 'Dimension insight from message: ${message.content.substring(0, min(50, message.content.length))}...',
+          reliability: reliability,
+          timestamp: message.timestamp,
+        ));
+      }
+    }
+    
+    return insights;
+  }
+  
+  /// Extract preference-related insights from chat message
+  /// Identifies user preferences mentioned in conversation
+  Future<List<SharedInsight>> _extractPreferenceInsights(ChatMessage message) async {
+    final insights = <SharedInsight>[];
+    final content = message.content.toLowerCase();
+    
+    // Look for preference indicators
+    final preferencePatterns = {
+      'like': ['like', 'love', 'enjoy', 'prefer', 'favorite'],
+      'dislike': ['dislike', 'hate', 'avoid', 'not my thing', "don't like"],
+      'want': ['want', 'wish', 'hope', 'looking for', 'seeking'],
+      'need': ['need', 'require', 'must have', 'essential'],
+    };
+    
+    for (final entry in preferencePatterns.entries) {
+      final preferenceType = entry.key;
+      final keywords = entry.value;
+      
+      bool found = false;
+      for (final keyword in keywords) {
+        if (content.contains(keyword)) {
+          found = true;
+          break;
+        }
+      }
+      
+      if (found) {
+        // Extract what they're referring to (simplified - in production would use NLP)
+        final value = preferenceType == 'like' || preferenceType == 'want' ? 0.8 : 0.2;
+        
+        insights.add(SharedInsight(
+          category: 'preference_discovery',
+          dimension: preferenceType,
+          value: value,
+          description: 'Preference insight: ${preferenceType} mentioned in conversation',
+          reliability: 0.6,
+          timestamp: message.timestamp,
+        ));
+      }
+    }
+    
+    return insights;
+  }
+  
+  /// Extract experience-related insights from chat message
+  /// Identifies shared experiences and learnings
+  Future<List<SharedInsight>> _extractExperienceInsights(ChatMessage message) async {
+    final insights = <SharedInsight>[];
+    final content = message.content.toLowerCase();
+    
+    // Look for experience indicators
+    final experienceKeywords = [
+      'went', 'visited', 'tried', 'experienced', 'saw', 'did',
+      'learned', 'discovered', 'found', 'realized', 'noticed',
+    ];
+    
+    bool hasExperience = false;
+    for (final keyword in experienceKeywords) {
+      if (content.contains(keyword)) {
+        hasExperience = true;
+        break;
+      }
+    }
+    
+    if (hasExperience) {
+      // Extract experience type (simplified)
+      String experienceType = 'general';
+      if (content.contains('spot') || content.contains('place') || content.contains('location')) {
+        experienceType = 'location_experience';
+      } else if (content.contains('food') || content.contains('eat') || content.contains('drink')) {
+        experienceType = 'food_experience';
+      } else if (content.contains('activity') || content.contains('event')) {
+        experienceType = 'activity_experience';
+      }
+      
+      insights.add(SharedInsight(
+        category: 'experience_sharing',
+        dimension: experienceType,
+        value: 0.7,
+        description: 'Experience shared: ${message.content.substring(0, min(60, message.content.length))}...',
+        reliability: 0.7,
+        timestamp: message.timestamp,
+      ));
+    }
+    
+    return insights;
+  }
+  
+  Future<List<SharedInsight>> _validateInsights(List<SharedInsight> insights, ConnectionMetrics context) async {
+    // Filter insights based on connection context
+    final validated = <SharedInsight>[];
+    
+    for (final insight in insights) {
+      // Only include insights with sufficient reliability
+      if (insight.reliability >= 0.5) {
+        // Boost reliability if connection context supports it
+        double adjustedReliability = insight.reliability;
+        
+        // If connection has high compatibility, insights are more reliable
+        if (context.currentCompatibility >= 0.7) {
+          adjustedReliability = min(1.0, adjustedReliability + 0.1);
+        }
+        
+        // If learning effectiveness is high, insights are more reliable
+        if (context.learningEffectiveness >= 0.7) {
+          adjustedReliability = min(1.0, adjustedReliability + 0.1);
+        }
+        
+        validated.add(SharedInsight(
+          category: insight.category,
+          dimension: insight.dimension,
+          value: insight.value,
+          description: insight.description,
+          reliability: adjustedReliability,
+          timestamp: insight.timestamp,
+        ));
+      }
+    }
+    
+    return validated;
+  }
+  
+  /// Identify optimal learning partners based on personality and patterns
+  /// Finds personalities that would provide the best learning opportunities
+  Future<List<OptimalPartner>> _identifyOptimalLearningPartners(
+    PersonalityProfile personality,
+    List<CrossPersonalityLearningPattern> patterns,
+  ) async {
+    final partners = <OptimalPartner>[];
+    
+    // Analyze patterns to identify partner characteristics
+    final trustPattern = patterns.firstWhere(
+      (p) => p.patternType == 'trust_building',
+      orElse: () => CrossPersonalityLearningPattern(
+        patternType: 'none',
+        characteristics: {},
+        strength: 0.0,
+        confidence: 0.0,
+        identified: DateTime.now(),
+      ),
+    );
+    
+    final compatibilityPattern = patterns.firstWhere(
+      (p) => p.patternType == 'compatibility_evolution',
+      orElse: () => CrossPersonalityLearningPattern(
+        patternType: 'none',
+        characteristics: {},
+        strength: 0.0,
+        confidence: 0.0,
+        identified: DateTime.now(),
+      ),
+    );
+    
+    // Identify complementary archetypes for learning
+    // Partners with different but compatible dimensions provide learning opportunities
+    final currentArchetype = personality.archetype;
+    
+    // Map of archetypes and their learning compatibility
+    final archetypeCompatibility = {
+      'adventurous_explorer': ['community_curator', 'social_connector', 'balanced'],
+      'community_curator': ['adventurous_explorer', 'authentic_seeker', 'balanced'],
+      'authentic_seeker': ['community_curator', 'social_connector', 'balanced'],
+      'social_connector': ['adventurous_explorer', 'community_curator', 'balanced'],
+      'balanced': ['adventurous_explorer', 'community_curator', 'authentic_seeker'],
+    };
+    
+    final compatibleArchetypes = archetypeCompatibility[currentArchetype] ?? 
+        ['balanced', 'adventurous_explorer', 'community_curator'];
+    
+    // Calculate compatibility scores based on patterns
+    for (final archetype in compatibleArchetypes) {
+      double compatibility = 0.6; // Base compatibility
+      
+      // Boost if trust pattern exists
+      if (trustPattern.patternType == 'trust_building' && trustPattern.strength > 0.5) {
+        compatibility += 0.2;
+      }
+      
+      // Boost if compatibility evolution is positive
+      if (compatibilityPattern.patternType == 'compatibility_evolution' && 
+          compatibilityPattern.strength > 0.5) {
+        compatibility += 0.2;
+      }
+      
+      partners.add(OptimalPartner(
+        archetype,
+        compatibility.clamp(0.0, 1.0),
+      ));
+    }
+    
+    // Sort by compatibility (highest first)
+    partners.sort((a, b) => b.compatibility.compareTo(a.compatibility));
+    
+    // Return top 3 partners
+    return partners.take(3).toList();
+  }
+  
+  /// Generate learning topics based on personality and patterns
+  /// Creates topics that would maximize learning potential
+  Future<List<LearningTopic>> _generateLearningTopics(
+    PersonalityProfile personality,
+    List<CrossPersonalityLearningPattern> patterns,
+  ) async {
+    final topics = <LearningTopic>[];
+    
+    // Identify weak dimensions (low confidence or extreme values)
+    final weakDimensions = <String>[];
+    for (final entry in personality.dimensions.entries) {
+      final confidence = personality.dimensionConfidence[entry.key] ?? 0.0;
+      final value = entry.value;
+      
+      // Weak if low confidence or extreme value (needs balancing)
+      if (confidence < 0.5 || value < 0.2 || value > 0.8) {
+        weakDimensions.add(entry.key);
+      }
+    }
+    
+    // Generate topics based on weak dimensions
+    final topicMap = {
+      'exploration_eagerness': 'Exploring new places and experiences',
+      'community_orientation': 'Building community connections',
+      'authenticity_preference': 'Discovering authentic local spots',
+      'social_discovery_style': 'Social discovery patterns',
+      'temporal_flexibility': 'Spontaneous vs planned activities',
+      'location_adventurousness': 'Travel and location exploration',
+      'curation_tendency': 'Curating and sharing recommendations',
+      'trust_network_reliance': 'Building trust networks',
+    };
+    
+    for (final dimension in weakDimensions) {
+      final topicName = topicMap[dimension] ?? 'General learning about $dimension';
+      final potential = 0.8; // High potential for weak dimensions
+      
+      topics.add(LearningTopic(
+        topicName,
+        potential,
+      ));
+    }
+    
+    // Add topics based on patterns
+    for (final pattern in patterns) {
+      if (pattern.patternType == 'knowledge_sharing' && pattern.strength > 0.6) {
+        topics.add(LearningTopic(
+          'Knowledge sharing and collective learning',
+          pattern.strength,
+        ));
+      }
+      
+      if (pattern.patternType == 'learning_acceleration' && pattern.strength > 0.5) {
+        topics.add(LearningTopic(
+          'Accelerated learning techniques',
+          pattern.strength,
+        ));
+      }
+    }
+    
+    // If no specific topics, add general ones
+    if (topics.isEmpty) {
+      topics.addAll([
+        LearningTopic('Cross-personality learning', 0.7),
+        LearningTopic('Personality evolution', 0.6),
+        LearningTopic('Trust building', 0.6),
+      ]);
+    }
+    
+    // Sort by potential (highest first) and return top 5
+    topics.sort((a, b) => b.potential.compareTo(a.potential));
+    return topics.take(5).toList();
+  }
+  
+  /// Recommend development areas based on personality and patterns
+  /// Identifies areas where personality could grow
+  Future<List<DevelopmentArea>> _recommendDevelopmentAreas(
+    PersonalityProfile personality,
+    List<CrossPersonalityLearningPattern> patterns,
+  ) async {
+    final areas = <DevelopmentArea>[];
+    
+    // Identify dimensions that need development
+    for (final entry in personality.dimensions.entries) {
+      final dimension = entry.key;
+      final value = entry.value;
+      final confidence = personality.dimensionConfidence[dimension] ?? 0.0;
+      
+      // Low priority if already well-developed (high confidence and balanced value)
+      if (confidence >= 0.7 && value >= 0.3 && value <= 0.7) {
+        continue;
+      }
+      
+      // High priority if extreme value or low confidence
+      double priority = 0.5;
+      if (confidence < 0.5) {
+        priority = 0.9; // High priority for low confidence
+      } else if (value < 0.2 || value > 0.8) {
+        priority = 0.8; // High priority for extreme values
+      }
+      
+      areas.add(DevelopmentArea(
+        dimension,
+        priority,
+      ));
+    }
+    
+    // Add areas based on patterns
+    for (final pattern in patterns) {
+      if (pattern.patternType == 'compatibility_evolution') {
+        areas.add(DevelopmentArea(
+          'compatibility_improvement',
+          pattern.strength,
+        ));
+      }
+      
+      if (pattern.patternType == 'trust_building') {
+        areas.add(DevelopmentArea(
+          'trust_development',
+          pattern.strength,
+        ));
+      }
+    }
+    
+    // Sort by priority (highest first) and return top 5
+    areas.sort((a, b) => b.priority.compareTo(a.priority));
+    return areas.take(5).toList();
+  }
+  
   Future<InteractionStrategy> _suggestInteractionStrategy(String userId, List<CrossPersonalityLearningPattern> patterns) async => InteractionStrategy.balanced();
-  Future<List<ExpectedOutcome>> _calculateExpectedOutcomes(PersonalityProfile personality, List<OptimalPartner> partners, List<LearningTopic> topics) async => [];
+  
+  /// Calculate expected outcomes from learning recommendations
+  Future<List<ExpectedOutcome>> _calculateExpectedOutcomes(
+    PersonalityProfile personality,
+    List<OptimalPartner> partners,
+    List<LearningTopic> topics,
+  ) async {
+    final outcomes = <ExpectedOutcome>[];
+    
+    // Calculate expected outcomes based on partners and topics
+    if (partners.isNotEmpty && topics.isNotEmpty) {
+      final avgCompatibility = partners
+          .map((p) => p.compatibility)
+          .reduce((a, b) => a + b) / partners.length;
+      
+      final avgTopicPotential = topics
+          .map((t) => t.potential)
+          .reduce((a, b) => a + b) / topics.length;
+      
+      // Expected personality evolution
+      final evolutionProbability = (avgCompatibility * 0.6 + avgTopicPotential * 0.4).clamp(0.0, 1.0);
+      outcomes.add(ExpectedOutcome(
+        id: 'personality_evolution',
+        description: 'Personality evolution through AI2AI learning',
+        probability: evolutionProbability,
+      ));
+      
+      // Expected dimension development
+      outcomes.add(ExpectedOutcome(
+        id: 'dimension_development',
+        description: 'Development of personality dimensions',
+        probability: avgTopicPotential,
+      ));
+      
+      // Expected trust building
+      outcomes.add(ExpectedOutcome(
+        id: 'trust_building',
+        description: 'Building trust with AI2AI partners',
+        probability: avgCompatibility * 0.8,
+      ));
+    }
+    
+    return outcomes;
+  }
   
   double _calculateRecommendationConfidence(List<CrossPersonalityLearningPattern> patterns) => min(1.0, patterns.length / 5.0);
   
@@ -631,9 +1441,132 @@ class AI2AIChatAnalyzer {
     return allChats.where((chat) => chat.timestamp.isAfter(cutoff)).toList();
   }
   
-  Future<double> _calculatePersonalityEvolutionRate(String userId, DateTime cutoff) async => 0.1; // Placeholder
-  Future<double> _measureKnowledgeAcquisition(String userId, List<AI2AIChatEvent> chats, List<CrossPersonalityInsight> insights) async => 0.7;
-  Future<double> _assessInsightQuality(List<CrossPersonalityInsight> insights) async => 0.8;
+  /// Calculate personality evolution rate based on chat activity and learning insights
+  /// Returns a score (0.0-1.0) representing how fast personality is evolving
+  Future<double> _calculatePersonalityEvolutionRate(String userId, DateTime cutoff) async {
+    try {
+      // Get recent chats since cutoff
+      final recentChats = await _getRecentChats(userId, cutoff);
+      final learningInsights = await _getLearningInsights(userId);
+      
+      if (recentChats.isEmpty && learningInsights.isEmpty) {
+        return 0.0; // No activity = no evolution
+      }
+      
+      // Calculate time window in days
+      final timeWindow = DateTime.now().difference(cutoff).inDays;
+      if (timeWindow <= 0) return 0.0;
+      
+      // Count evolution indicators
+      int evolutionIndicators = 0;
+      
+      // 1. Chat frequency (more chats = more learning opportunities)
+      evolutionIndicators += min(10, recentChats.length);
+      
+      // 2. Learning insights count
+      evolutionIndicators += min(10, learningInsights.length);
+      
+      // 3. Conversation depth (deeper conversations = more learning)
+      final avgDepth = recentChats.isEmpty 
+          ? 0.0 
+          : recentChats.map((c) => c.messages.length).reduce((a, b) => a + b) / recentChats.length;
+      evolutionIndicators += (avgDepth / 5.0 * 5).round(); // Normalize to 0-5
+      
+      // 4. Insight quality (higher quality insights = better evolution)
+      final avgInsightQuality = learningInsights.isEmpty
+          ? 0.0
+          : learningInsights.map((i) => i.reliability).reduce((a, b) => a + b) / learningInsights.length;
+      evolutionIndicators += (avgInsightQuality * 5).round(); // Normalize to 0-5
+      
+      // Normalize to 0.0-1.0 based on time window
+      // Target: 20+ indicators in 7 days = high evolution rate (1.0)
+      final maxExpectedIndicators = timeWindow * 3; // ~3 indicators per day for high activity
+      final normalizedRate = min(1.0, evolutionIndicators / maxExpectedIndicators);
+      
+      return normalizedRate.clamp(0.0, 1.0);
+    } catch (e) {
+      developer.log('Error calculating evolution rate: $e', name: _logName);
+      return 0.0;
+    }
+  }
+  
+  /// Measure knowledge acquisition from chats and insights
+  /// Returns a score (0.0-1.0) representing how much knowledge is being acquired
+  Future<double> _measureKnowledgeAcquisition(
+    String userId,
+    List<AI2AIChatEvent> chats,
+    List<CrossPersonalityInsight> insights,
+  ) async {
+    if (chats.isEmpty && insights.isEmpty) return 0.0;
+    
+    double knowledgeScore = 0.0;
+    int factors = 0;
+    
+    // Factor 1: Number of insights (more insights = more knowledge)
+    if (insights.isNotEmpty) {
+      final insightCountScore = min(1.0, insights.length / 10.0);
+      knowledgeScore += insightCountScore * 0.3;
+      factors++;
+    }
+    
+    // Factor 2: Quality of insights (higher reliability = better knowledge)
+    if (insights.isNotEmpty) {
+      final avgReliability = insights
+          .map((i) => i.reliability)
+          .reduce((a, b) => a + b) / insights.length;
+      knowledgeScore += avgReliability * 0.3;
+      factors++;
+    }
+    
+    // Factor 3: Conversation depth (deeper = more knowledge exchange)
+    if (chats.isNotEmpty) {
+      final avgMessagesPerChat = chats
+          .map((c) => c.messages.length)
+          .reduce((a, b) => a + b) / chats.length;
+      final depthScore = min(1.0, avgMessagesPerChat / 10.0);
+      knowledgeScore += depthScore * 0.2;
+      factors++;
+    }
+    
+    // Factor 4: Diversity of insights (more diverse = broader knowledge)
+    if (insights.isNotEmpty) {
+      final uniqueTypes = insights.map((i) => i.type).toSet().length;
+      final diversityScore = min(1.0, uniqueTypes / 5.0);
+      knowledgeScore += diversityScore * 0.2;
+      factors++;
+    }
+    
+    // Normalize by number of factors considered
+    return factors > 0 ? (knowledgeScore / factors).clamp(0.0, 1.0) : 0.0;
+  }
+  
+  /// Assess the quality of learning insights
+  /// Returns a score (0.0-1.0) representing overall insight quality
+  Future<double> _assessInsightQuality(List<CrossPersonalityInsight> insights) async {
+    if (insights.isEmpty) return 0.0;
+    
+    // Calculate average reliability
+    final avgReliability = insights
+        .map((i) => i.reliability)
+        .reduce((a, b) => a + b) / insights.length;
+    
+    // Factor in consistency (how many insights have high reliability)
+    final highQualityCount = insights.where((i) => i.reliability >= 0.7).length;
+    final consistencyScore = highQualityCount / insights.length;
+    
+    // Factor in diversity (variety of insight types)
+    final uniqueTypes = insights.map((i) => i.type).toSet().length;
+    final diversityScore = min(1.0, uniqueTypes / insights.length);
+    
+    // Weighted combination: reliability (50%), consistency (30%), diversity (20%)
+    final qualityScore = (
+      avgReliability * 0.5 +
+      consistencyScore * 0.3 +
+      diversityScore * 0.2
+    ).clamp(0.0, 1.0);
+    
+    return qualityScore;
+  }
   Future<double> _calculateTrustNetworkGrowth(String userId, List<AI2AIChatEvent> chats) async => 0.6;
   Future<double> _measureCollectiveContribution(String userId, List<AI2AIChatEvent> chats) async => 0.5;
   
@@ -979,7 +1912,17 @@ class CommunityTrend {
 class CrossPersonalityInsight {
   final String insight;
   final double value;
-  CrossPersonalityInsight(this.insight, this.value);
+  final double reliability;
+  final String type;
+  final DateTime timestamp;
+  
+  CrossPersonalityInsight({
+    required this.insight,
+    required this.value,
+    required this.reliability,
+    required this.type,
+    required this.timestamp,
+  });
 }
 
 class OptimalPartner {

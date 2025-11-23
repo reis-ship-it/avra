@@ -8,20 +8,17 @@ import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/models/list.dart';
 import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
-
-// Stub class for missing service
-class AIListGeneratorService {
-  static Future<List<dynamic>> generatePersonalizedLists(
-    String userId,
-    List<String> homebases,
-    Map<String, dynamic> preferences,
-  ) async {
-    return [];
-  }
-}
+import 'package:go_router/go_router.dart';
+import 'package:spots/presentation/pages/home/home_page.dart';
+import 'package:spots/core/ai/list_generator_service.dart';
+import 'package:spots/injection_container.dart' as di;
+import 'package:spots/domain/usecases/lists/create_list_usecase.dart';
+import 'dart:async';
 
 class AILoadingPage extends StatefulWidget {
   final String userName;
+  final DateTime? birthday;
+  final int? age;
   final String? homebase;
   final List<String> favoritePlaces;
   final Map<String, List<String>> preferences;
@@ -30,6 +27,8 @@ class AILoadingPage extends StatefulWidget {
   const AILoadingPage({
     super.key,
     required this.userName,
+    this.birthday,
+    this.age,
     this.homebase,
     this.favoritePlaces = const [],
     this.preferences = const {},
@@ -70,6 +69,8 @@ class _AILoadingPageState extends State<AILoadingPage>
     _loadingController.repeat();
 
     try {
+      _logger.info('🚀 Starting AI loading process...', tag: 'AILoadingPage');
+      
       // Use actual onboarding data passed to this widget
       String userName = widget.userName;
       String? homebase = widget.homebase;
@@ -106,46 +107,92 @@ class _AILoadingPageState extends State<AILoadingPage>
         _logger.warn('⚠️ Using fallback preferences: $preferences', tag: 'AILoadingPage');
       }
 
-      // Generate personalized lists using AI
+      // Generate personalized lists using AI with age consideration
       _logger.info('🔄 Generating AI lists...', tag: 'AILoadingPage');
+      _logger.debug('  Age: ${widget.age ?? 'not provided'}', tag: 'AILoadingPage');
       final generatedLists = await AIListGeneratorService.generatePersonalizedLists(
-        userName,
-        [homebase ?? "New York"],
-        preferences,
+        userName: userName,
+        age: widget.age,
+        homebase: homebase,
+        favoritePlaces: favoritePlaces,
+        preferences: preferences,
       );
 
       _logger.info('✅ Generated ${generatedLists.length} lists: $generatedLists', tag: 'AILoadingPage');
 
-      // Create the lists in the app
+      // Create the lists in the app - use use case directly to wait for completion
       if (mounted && generatedLists.isNotEmpty) {
-        final listsBloc = context.read<ListsBloc>();
-        
-        for (final listName in generatedLists) {
-          final newList = SpotList(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            title: listName,
-            description: 'AI-generated list based on your preferences',
-            spots: [],
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-            category: 'AI Generated',
-            isPublic: true,
-            spotIds: [],
-            respectCount: 0,
-          );
-          _logger.debug('📝 Creating list: ${newList.title}', tag: 'AILoadingPage');
-          listsBloc.add(CreateList(newList));
+        try {
+          _logger.info('📝 Getting CreateListUseCase from DI...', tag: 'AILoadingPage');
+          final createListUseCase = di.sl<CreateListUseCase>();
+          final listsBloc = context.read<ListsBloc>();
+          
+          _logger.info('📝 Creating ${generatedLists.length} lists...', tag: 'AILoadingPage');
+          
+          int successCount = 0;
+          // Create lists sequentially and wait for each to complete
+          for (int i = 0; i < generatedLists.length; i++) {
+            if (!mounted) break;
+            
+            final listName = generatedLists[i];
+            final newList = SpotList(
+              id: '${DateTime.now().millisecondsSinceEpoch}_$i',
+              title: listName,
+              description: 'AI-generated list based on your preferences',
+              spots: [],
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+              category: 'AI Generated',
+              isPublic: true,
+              spotIds: [],
+              respectCount: 0,
+            );
+            
+            try {
+              _logger.debug('📝 Creating list ${i + 1}/${generatedLists.length}: ${newList.title}', tag: 'AILoadingPage');
+              
+              // Add timeout to prevent hanging
+              await createListUseCase(newList)
+                  .timeout(const Duration(seconds: 5), onTimeout: () {
+                _logger.warn('⏱️ Timeout creating list ${newList.title}', tag: 'AILoadingPage');
+                throw TimeoutException('List creation timeout', const Duration(seconds: 5));
+              });
+              
+              successCount++;
+              _logger.debug('✅ Created list: ${newList.title}', tag: 'AILoadingPage');
+            } catch (e) {
+              _logger.error('❌ Error creating list ${newList.title}', error: e, tag: 'AILoadingPage');
+              // Continue with other lists even if one fails
+            }
+          }
+          
+          _logger.info('✅ Successfully created $successCount/${generatedLists.length} lists', tag: 'AILoadingPage');
+          
+          // Reload lists once after all are created
+          if (mounted) {
+            listsBloc.add(LoadLists());
+            // Small delay to ensure UI updates
+            await Future.delayed(const Duration(milliseconds: 500));
+          }
+        } catch (e) {
+          _logger.error('❌ Error in list creation process', error: e, tag: 'AILoadingPage');
+          // Continue anyway - don't block onboarding completion
         }
+      } else {
+        _logger.warn('⚠️ No lists generated or widget not mounted', tag: 'AILoadingPage');
+        // Still show loading animation even if no lists generated
+        await Future.delayed(const Duration(seconds: 1));
       }
 
-      // Add a small delay to show the loading animation
-      await Future.delayed(const Duration(seconds: 2));
-
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Handle error - still complete onboarding
-      _logger.error('Error generating lists', error: e, tag: 'AILoadingPage');
+      _logger.error('❌ Error in AI loading process', error: e, tag: 'AILoadingPage');
+      _logger.debug('Stack trace: $stackTrace', tag: 'AILoadingPage');
     }
 
+    // Always complete onboarding, even if there were errors
+    _logger.info('🏁 Completing onboarding process...', tag: 'AILoadingPage');
+    
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -154,10 +201,36 @@ class _AILoadingPageState extends State<AILoadingPage>
 
       // Call the completion callback only if still mounted
       if (mounted) {
-        // Mark onboarding as completed
-        await _markOnboardingCompleted();
-        widget.onLoadingComplete();
+        try {
+          // Mark onboarding as completed for current user
+          _logger.info('📝 Marking onboarding as completed...', tag: 'AILoadingPage');
+          await _markOnboardingCompleted();
+          _logger.info('✅ Onboarding marked as completed', tag: 'AILoadingPage');
+          
+          // Longer delay to ensure database write completes (especially on web IndexedDB)
+          await Future.delayed(const Duration(milliseconds: 1000));
+          
+          // Navigate to home using go_router
+          if (mounted) {
+            _logger.info('🏠 Navigating to home...', tag: 'AILoadingPage');
+            context.go('/home');
+            _logger.info('✅ Onboarding completed, navigated to home', tag: 'AILoadingPage');
+          }
+        } catch (e, stackTrace) {
+          _logger.error('❌ Error completing onboarding', error: e, tag: 'AILoadingPage');
+          _logger.debug('Stack trace: $stackTrace', tag: 'AILoadingPage');
+          // Fallback: use the callback
+          if (mounted) {
+            try {
+              widget.onLoadingComplete();
+            } catch (callbackError) {
+              _logger.error('❌ Callback also failed', error: callbackError, tag: 'AILoadingPage');
+            }
+          }
+        }
       }
+    } else {
+      _logger.warn('⚠️ Widget not mounted, cannot complete onboarding', tag: 'AILoadingPage');
     }
   }
 
@@ -307,10 +380,62 @@ class _AILoadingPageState extends State<AILoadingPage>
 
   Future<void> _markOnboardingCompleted() async {
     try {
-      await OnboardingCompletionService.markOnboardingCompleted();
-      _logger.info('✅ Onboarding marked as completed', tag: 'AILoadingPage');
-    } catch (e) {
-      _logger.error('Error marking onboarding completed', error: e, tag: 'AILoadingPage');
+      // Get current user ID from AuthBloc - try multiple times if needed
+      AuthBloc? authBloc;
+      Authenticated? authState;
+      
+      // Try to get auth state with retries
+      for (int i = 0; i < 5; i++) {
+        try {
+          authBloc = context.read<AuthBloc>();
+          final state = authBloc.state;
+          if (state is Authenticated) {
+            authState = state;
+            break;
+          }
+        } catch (e) {
+          _logger.debug('Attempt ${i + 1}/5 to get auth state failed: $e', tag: 'AILoadingPage');
+        }
+        if (i < 4) {
+          await Future.delayed(const Duration(milliseconds: 200));
+        }
+      }
+      
+      if (authState != null && authState.user.id.isNotEmpty) {
+        final userId = authState.user.id;
+        _logger.info('📝 Marking onboarding completed for user: $userId', tag: 'AILoadingPage');
+        
+        try {
+          await OnboardingCompletionService.markOnboardingCompleted(userId);
+          
+          // Verify it was saved - try multiple times with delays for web IndexedDB
+          bool isCompleted = false;
+          for (int i = 0; i < 5; i++) {
+            await Future.delayed(const Duration(milliseconds: 200));
+            isCompleted = await OnboardingCompletionService.isOnboardingCompleted(userId);
+            if (isCompleted) {
+              break;
+            }
+          }
+          
+          if (isCompleted) {
+            _logger.info('✅ Onboarding successfully marked as completed for user $userId', tag: 'AILoadingPage');
+          } else {
+            _logger.error('❌ Onboarding completion was NOT saved! Verification failed for user $userId after 5 attempts', tag: 'AILoadingPage');
+            // Still continue - the write might have succeeded but verification is failing
+          }
+        } catch (e, stackTrace) {
+          _logger.error('❌ Error during onboarding completion process', error: e, tag: 'AILoadingPage');
+          _logger.debug('Stack trace: $stackTrace', tag: 'AILoadingPage');
+          // Continue anyway - don't block navigation
+        }
+      } else {
+        _logger.error('❌ Cannot mark onboarding completed: user not authenticated or user ID is empty', tag: 'AILoadingPage');
+        _logger.debug('Auth state: ${authBloc?.state}', tag: 'AILoadingPage');
+      }
+    } catch (e, stackTrace) {
+      _logger.error('❌ Error marking onboarding completed', error: e, tag: 'AILoadingPage');
+      _logger.debug('Stack trace: $stackTrace', tag: 'AILoadingPage');
     }
   }
 

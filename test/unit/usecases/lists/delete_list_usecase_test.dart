@@ -61,10 +61,9 @@ void main() {
             .thenAnswer((_) async {});
 
         // Act
-        final result = await usecase.call(listId);
+        await usecase.call(listId);
 
         // Assert
-        expect(result, isNull);
         verify(mockRepository.deleteList(listId)).called(1);
       });
     });

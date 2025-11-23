@@ -27,9 +27,8 @@ void main() {
       final userJourney = await predictiveSystem.predictUserJourney(testUser);
 
       expect(userJourney, isNotNull);
-      expect(userJourney.userId, equals(testUser.id));
-      expect(userJourney.currentStage, isA<String>());
-      expect(userJourney.predictedActions, isA<List>());
+      expect(userJourney.currentStage, isNotNull);
+      expect(userJourney.predictedNextActions, isA<List>());
       
       // OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"
       // Predictions should not store personal data
@@ -40,9 +39,8 @@ void main() {
       final locationPredictions = await predictiveSystem.predictLocationPreferences(testUser);
 
       expect(locationPredictions, isNotNull);
-      expect(locationPredictions.userId, equals(testUser.id));
-      expect(locationPredictions.preferredCategories, isA<List<String>>());
-      expect(locationPredictions.confidenceScore, isA<double>());
+      expect(locationPredictions.preferredAreas, isA<List>());
+      expect(locationPredictions.explorationRadius, isA<double>());
       
       // Should provide actionable location insights
     });
@@ -54,11 +52,11 @@ void main() {
 
       // OUR_GUTS.md: "Authenticity Over Algorithms"
       // Predictions should be based on real user patterns, not algorithmic bias
-      expect(journey.confidenceLevel, greaterThan(0.0));
-      expect(journey.confidenceLevel, lessThanOrEqualTo(1.0));
+      expect(journey.confidence, greaterThan(0.0));
+      expect(journey.confidence, lessThanOrEqualTo(1.0));
       
-      expect(locationPrefs.confidenceScore, greaterThan(0.0));
-      expect(locationPrefs.confidenceScore, lessThanOrEqualTo(1.0));
+      expect(locationPrefs.authenticity, greaterThan(0.0));
+      expect(locationPrefs.authenticity, lessThanOrEqualTo(1.0));
     });
 
     test('should provide comprehensive predictive capabilities', () async {
@@ -67,15 +65,15 @@ void main() {
       final locationPredictions = await predictiveSystem.predictLocationPreferences(testUser);
 
       // User Journey Predictions
-      expect(userJourney.currentStage, isA<String>());
-      expect(userJourney.predictedActions, isA<List>());
-      expect(userJourney.journeyPath, isA<List<String>>());
+      expect(userJourney.currentStage, isNotNull);
+      expect(userJourney.predictedNextActions, isA<List>());
+      expect(userJourney.journeyPath, isA<List>());
       expect(userJourney.timeframe, isA<Duration>());
       
       // Location Preference Predictions  
-      expect(locationPredictions.preferredCategories, isA<List<String>>());
-      expect(locationPredictions.predictedLocations, isA<List>());
-      expect(locationPredictions.seasonalFactors, isA<Map<String, double>>());
+      expect(locationPredictions.preferredAreas, isA<List>());
+      expect(locationPredictions.explorationRadius, isA<double>());
+      expect(locationPredictions.categoryLocationMapping, isA<Map>());
       
       // System should provide comprehensive predictive modeling
     });
@@ -86,22 +84,23 @@ void main() {
 
       // "Privacy and Control Are Non-Negotiable"
       // Predictions should preserve user privacy
-      expect(journey.userId, equals(testUser.id));
-      expect(locationPrefs.userId, equals(testUser.id));
+      expect(journey.privacyPreserving, isTrue);
+      expect(locationPrefs.privacyLevel, isNotNull);
       
       // "Authenticity Over Algorithms"
       // Predictions should be based on authentic user behavior
-      expect(journey.confidenceLevel, isA<double>());
-      expect(locationPrefs.confidenceScore, isA<double>());
+      expect(journey.confidence, isA<double>());
+      expect(locationPrefs.authenticity, isA<double>());
       
       // "Community, Not Just Places"
       // Should consider community engagement in predictions
-      expect(journey.journeyPath, isA<List<String>>());
+      expect(journey.journeyPath, isA<List>());
+      expect(journey.communityInfluence, isA<double>());
       
       // "Effortless, Seamless Discovery"
       // Predictions should enhance user experience
-      expect(journey.predictedActions, isA<List>());
-      expect(locationPrefs.preferredCategories, isA<List<String>>());
+      expect(journey.predictedNextActions, isA<List>());
+      expect(locationPrefs.preferredAreas, isA<List>());
     });
 
     test('should handle predictive analytics errors gracefully', () async {

@@ -6,6 +6,8 @@ import 'package:spots/presentation/pages/settings/notifications_settings_page.da
 import 'package:spots/presentation/pages/settings/privacy_settings_page.dart';
 import 'package:spots/presentation/pages/settings/help_support_page.dart';
 import 'package:spots/presentation/pages/settings/about_page.dart';
+// Phase 1 Integration: Device Discovery & AI2AI
+import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -143,6 +145,44 @@ class ProfilePage extends StatelessWidget {
                           builder: (context) => const PrivacySettingsPage(),
                         ),
                       );
+                    },
+                  ),
+                  // Phase 1 Integration: New settings links
+                  _buildSettingsItem(
+                    context,
+                    icon: Icons.radar,
+                    title: 'Device Discovery',
+                    subtitle: 'View nearby SPOTS-enabled devices',
+                    onTap: () {
+                      context.go('/device-discovery');
+                    },
+                  ),
+                  _buildSettingsItem(
+                    context,
+                    icon: Icons.psychology,
+                    title: 'AI2AI Connections',
+                    subtitle: 'Manage AI personality connections',
+                    onTap: () {
+                      context.go('/ai2ai-connections');
+                    },
+                  ),
+                  _buildSettingsItem(
+                    context,
+                    icon: Icons.settings_input_antenna,
+                    title: 'Discovery Settings',
+                    subtitle: 'Configure discovery preferences',
+                    onTap: () {
+                      context.go('/discovery-settings');
+                    },
+                  ),
+                  // Phase 2.1: Federated Learning
+                  _buildSettingsItem(
+                    context,
+                    icon: Icons.school,
+                    title: 'Federated Learning',
+                    subtitle: 'Privacy-preserving AI training',
+                    onTap: () {
+                      context.go('/federated-learning');
                     },
                   ),
                   _buildSettingsItem(

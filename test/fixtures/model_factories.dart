@@ -1,8 +1,8 @@
-import 'package:spots/core/models/unified_user.dart';
+import 'package:spots/core/models/unified_user.dart' show UnifiedUser, UserRole;
 import 'package:spots/core/models/unified_list.dart';
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/core/models/personality_profile.dart';
-import 'package:spots/core/models/unified_models.dart';
+import 'package:spots/core/models/unified_models.dart' hide UnifiedUser;
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/models/community_validation.dart';
 import 'package:spots/core/models/connection_metrics.dart';
@@ -25,6 +25,7 @@ class ModelFactories {
     List<String>? curatedLists,
     List<String>? collaboratedLists,
     List<String>? followedLists,
+    List<String>? tags,
     DateTime? ageVerificationDate,
   }) {
     return UnifiedUser(
@@ -38,6 +39,7 @@ class ModelFactories {
       curatedLists: curatedLists ?? [],
       collaboratedLists: collaboratedLists ?? [],
       followedLists: followedLists ?? [],
+      tags: tags ?? [],
       ageVerificationDate: ageVerificationDate,
     );
   }
@@ -285,48 +287,6 @@ class ModelFactories {
     ));
   }
 
-  // ======= Edge Cases =======
-
-  /// Creates test data for edge cases
-  static class EdgeCases {
-    /// User with minimal data
-    static UnifiedUser minimalUser() {
-      return UnifiedUser(
-        id: 'minimal-user',
-        email: 'minimal@test.com',
-        displayName: 'M',
-        createdAt: TestConstants.testDate,
-        updatedAt: TestConstants.testDate,
-      );
-    }
-
-    /// Spot with extreme coordinates
-    static Spot extremeCoordinateSpot() {
-      return createTestSpot(
-        id: 'extreme-spot',
-        latitude: 89.9999, // Near north pole
-        longitude: 179.9999, // Near international date line
-      );
-    }
-
-    /// Empty list
-    static UnifiedList emptyList() {
-      return createTestList(
-        id: 'empty-list',
-        title: '',
-        spotIds: [],
-      );
-    }
-
-    /// List with many spots
-    static UnifiedList largeList() {
-      return createTestList(
-        id: 'large-list',
-        title: 'Large Test List',
-        spotIds: List.generate(100, (index) => 'spot-$index'),
-      );
-    }
-  }
 
   // ======= Private Helper Methods =======
 
@@ -356,48 +316,53 @@ class ModelFactories {
   }
 
   static UnifiedSocialContext _createTestSocialContext() {
-    // This would be implemented based on the actual UnifiedSocialContext structure
-    // For now, returning a placeholder implementation
     return UnifiedSocialContext(
-      communityContext: 'test_community',
-      socialSignals: {'engagement': 0.8},
+      nearbyUsers: [],
+      friends: [],
+      communityMembers: ['test_community'],
+      socialMetrics: {'engagement': 0.8},
+      timestamp: TestHelpers.createTestDateTime(),
     );
   }
 }
 
-// Placeholder for UnifiedSocialContext - would match actual implementation
-class UnifiedSocialContext {
-  final String communityContext;
-  final Map<String, double> socialSignals;
-
-  UnifiedSocialContext({
-    required this.communityContext,
-    required this.socialSignals,
-  });
-
-  factory UnifiedSocialContext.fromJson(Map<String, dynamic> json) {
-    return UnifiedSocialContext(
-      communityContext: json['communityContext'] as String,
-      socialSignals: Map<String, double>.from(json['socialSignals'] ?? {}),
+/// Edge case test data factories
+class ModelFactoriesEdgeCases {
+  /// User with minimal data
+  static UnifiedUser minimalUser() {
+    return UnifiedUser(
+      id: 'minimal-user',
+      email: 'minimal@test.com',
+      displayName: 'M',
+      createdAt: TestConstants.testDate,
+      updatedAt: TestConstants.testDate,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'communityContext': communityContext,
-      'socialSignals': socialSignals,
-    };
+  /// Spot with extreme coordinates
+  static Spot extremeCoordinateSpot() {
+    return ModelFactories.createTestSpot(
+      id: 'extreme-spot',
+      latitude: 89.9999, // Near north pole
+      longitude: 179.9999, // Near international date line
+    );
   }
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        other is UnifiedSocialContext &&
-            runtimeType == other.runtimeType &&
-            communityContext == other.communityContext &&
-            socialSignals.toString() == other.socialSignals.toString();
+  /// Empty list
+  static UnifiedList emptyList() {
+    return ModelFactories.createTestList(
+      id: 'empty-list',
+      title: '',
+      spotIds: [],
+    );
   }
 
-  @override
-  int get hashCode => communityContext.hashCode ^ socialSignals.hashCode;
+  /// List with many spots
+  static UnifiedList largeList() {
+    return ModelFactories.createTestList(
+      id: 'large-list',
+      title: 'Large Test List',
+      spotIds: List.generate(100, (index) => 'spot-$index'),
+    );
+  }
 }

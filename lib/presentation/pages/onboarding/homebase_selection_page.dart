@@ -8,7 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' if (dart.library.html) 'package:spots/presentation/pages/onboarding/web_geocoding_nominatim.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:spots/core/theme/app_theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/injection_container.dart' as di;
 
 class HomebaseSelectionPage extends StatefulWidget {

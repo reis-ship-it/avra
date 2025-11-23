@@ -131,7 +131,7 @@ void main() {
           'password with spaces',
           'пароль123',
           'パスワード456',
-          '!@#$%^&*()_+-=[]{}|;:,.<>?',
+          r'!@#$%^&*()_+-=[]{}|;:,.<>?',
         ];
 
         for (final password in passwords) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:spots/core/models/unified_models.dart';
 import 'package:spots/core/services/logger.dart';
@@ -22,6 +23,12 @@ class _PermissionsPageState extends State<PermissionsPage> {
   }
 
   Future<void> _refreshStatuses() async {
+    // Skip permission checks on web - they're not supported
+    if (kIsWeb) {
+      setState(() => _statuses = {});
+      return;
+    }
+    
     final permissions = <Permission>[
       Permission.locationWhenInUse,
       Permission.locationAlways,
@@ -33,12 +40,23 @@ class _PermissionsPageState extends State<PermissionsPage> {
     ];
     final statuses = <Permission, PermissionStatus>{};
     for (final p in permissions) {
-      statuses[p] = await p.status;
+      try {
+        statuses[p] = await p.status;
+      } catch (e) {
+        // Skip permissions that aren't supported on this platform
+        continue;
+      }
     }
     setState(() => _statuses = statuses);
   }
 
   Future<void> _requestAll() async {
+    // Skip permission requests on web - they're not supported
+    if (kIsWeb) {
+      _logger.info('Skipping permission requests on web', tag: 'PermissionsPage');
+      return;
+    }
+    
     setState(() => _loading = true);
     try {
       await [

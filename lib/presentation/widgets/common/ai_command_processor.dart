@@ -1,7 +1,464 @@
 import 'package:flutter/material.dart';
 import 'package:spots/core/models/unified_models.dart';
+import 'package:spots/core/services/llm_service.dart';
+import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots/core/models/user_vibe.dart';
+import 'package:spots/core/models/connection_metrics.dart';
+import 'package:spots/core/ai/personality_learning.dart' as pl;
+import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:spots/core/ai2ai/connection_orchestrator.dart';
+import 'package:spots/core/ai/action_parser.dart';
+import 'package:spots/core/ai/action_executor.dart';
+import 'package:spots/core/ai/action_models.dart';
+import 'package:spots/core/services/action_history_service.dart';
+import 'package:spots/presentation/widgets/common/action_confirmation_dialog.dart';
+import 'package:spots/presentation/widgets/common/action_error_dialog.dart';
+import 'package:spots/presentation/widgets/common/action_success_widget.dart';
+import 'package:spots/presentation/widgets/common/ai_thinking_indicator.dart';
+import 'package:spots/presentation/widgets/common/streaming_response_widget.dart';
+import 'package:get_it/get_it.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:developer' as developer;
+
 class AICommandProcessor {
-  static String processCommand(String command, BuildContext context) {
+  static const String _logName = 'AICommandProcessor';
+  
+  final LLMService? _llmService;
+  
+  AICommandProcessor({LLMService? llmService}) 
+      : _llmService = llmService;
+  
+  /// Process a command using LLM if available, fallback to rule-based
+  /// Automatically handles offline scenarios by checking connectivity first
+  /// Fully integrated with AI/ML systems (personality, vibe, AI2AI)
+  /// Phase 5: Now supports action execution
+  /// Phase 1.3: Enhanced with AI thinking states, streaming responses, and rich success feedback
+  static Future<String> processCommand(
+    String command, 
+    BuildContext context, {
+    LLMContext? userContext,
+    LLMService? llmService,
+    String? userId,
+    Position? currentLocation,
+    bool useStreaming = true,
+    bool showThinkingIndicator = true,
+  }) async {
+    // Phase 5: Try to parse and execute actions first
+    if (userId != null) {
+      try {
+        final actionParser = ActionParser(llmService: llmService ?? _tryGetLLMService());
+        final intent = await actionParser.parseAction(
+          command,
+          userId: userId,
+          currentLocation: currentLocation,
+        );
+        
+        if (intent != null) {
+          developer.log('Action intent detected: ${intent.type}', name: _logName);
+          
+          // Check if action can be executed
+          final canExecute = await actionParser.canExecute(intent);
+          if (canExecute) {
+            // Show confirmation dialog before executing
+            if (!context.mounted) return 'Context lost';
+            
+            final confirmed = await _showConfirmationDialog(context, intent);
+            if (!confirmed) {
+              return 'Action cancelled';
+            }
+            
+            // Execute the action with retry support
+            return await _executeActionWithUI(
+              context,
+              intent,
+              llmService ?? service,
+              userContext,
+              command,
+            );
+          }
+        }
+      } catch (e) {
+        developer.log('Error in action execution: $e', name: _logName);
+        // Continue to normal processing if action execution fails
+      }
+    }
+    
+    // Check connectivity first to avoid unnecessary attempts
+    final connectivity = Connectivity();
+    final connectivityResult = await connectivity.checkConnectivity();
+    final isOnline = connectivityResult is List
+        ? !connectivityResult.contains(ConnectivityResult.none)
+        : connectivityResult != ConnectivityResult.none;
+    
+    // Try to get LLM service from GetIt if not provided
+    final service = llmService ?? _tryGetLLMService();
+    
+    // Use LLM if available and online
+    if (service != null && isOnline) {
+      try {
+        developer.log('Processing command with LLM: $command', name: _logName);
+        
+        // Phase 1 Integration: Show thinking indicator if requested
+        OverlayEntry? thinkingOverlay;
+        if (showThinkingIndicator && context != null && context.mounted) {
+          thinkingOverlay = _showThinkingIndicator(context);
+        }
+        
+        try {
+          // Enhance context with AI/ML system data if userId provided
+          LLMContext? enhancedContext = userContext;
+          if (userId != null) {
+            enhancedContext = await _buildEnhancedContext(
+              userId: userId,
+              baseContext: userContext,
+              currentLocation: currentLocation,
+            );
+          }
+          
+          String response;
+          // Phase 1 Integration: Use streaming if requested
+          if (useStreaming) {
+            final stream = service.chatStream(
+              messages: [ChatMessage(role: ChatRole.user, content: command)],
+              context: enhancedContext,
+            );
+            
+            // Collect the final response
+            await for (final chunk in stream) {
+              response = chunk;
+            }
+          } else {
+            response = await service.generateRecommendation(
+              userQuery: command,
+              userContext: enhancedContext,
+            );
+          }
+          
+          return response;
+        } finally {
+          // Remove thinking indicator
+          thinkingOverlay?.remove();
+        }
+      } catch (e) {
+        // If it's an offline exception, log and fall through to rule-based
+        if (e is OfflineException) {
+          developer.log('Device is offline, using rule-based processing', name: _logName);
+        } else {
+          developer.log('LLM processing failed, falling back to rules: $e', name: _logName);
+        }
+        // Fall through to rule-based processing
+      }
+    } else if (!isOnline) {
+      developer.log('Device is offline, using rule-based processing', name: _logName);
+    }
+    
+    // Fallback to rule-based processing (works offline)
+    return _processRuleBased(command);
+  }
+  
+  /// Build enhanced LLM context with AI/ML system data
+  static Future<LLMContext> _buildEnhancedContext({
+    required String userId,
+    LLMContext? baseContext,
+    Position? currentLocation,
+  }) async {
+    try {
+      developer.log('Building enhanced LLM context with AI/ML data for: $userId', name: _logName);
+      
+      // Get AI/ML services from DI
+      PersonalityProfile? personality;
+      UserVibe? vibe;
+      List<pl.AI2AILearningInsight>? ai2aiInsights;
+      ConnectionMetrics? connectionMetrics;
+      
+      try {
+        // Get personality learning service
+        final personalityLearning = _tryGetPersonalityLearning();
+        if (personalityLearning != null) {
+          personality = await personalityLearning.initializePersonality(userId);
+          developer.log('Loaded personality: ${personality.archetype}, generation ${personality.evolutionGeneration}', name: _logName);
+        }
+        
+        // Get vibe analyzer
+        final vibeAnalyzer = _tryGetVibeAnalyzer();
+        if (vibeAnalyzer != null && personality != null) {
+          vibe = await vibeAnalyzer.compileUserVibe(userId, personality);
+          developer.log('Compiled vibe: ${vibe.getVibeArchetype()}', name: _logName);
+        }
+        
+        // Get AI2AI insights (recent learning)
+        try {
+          final ai2aiLearning = _tryGetAI2AILearning();
+          if (ai2aiLearning != null && personality != null) {
+            // Get recent insights from personality learning
+            // Note: This would fetch insights from AI2AI interactions
+            // For now, we'll get insights from PersonalityLearning if available
+            final recentInsights = await _getRecentAI2AIInsights(userId, personality);
+            if (recentInsights.isNotEmpty) {
+              ai2aiInsights = recentInsights;
+              developer.log('Loaded ${recentInsights.length} AI2AI insights', name: _logName);
+            }
+          }
+        } catch (e) {
+          developer.log('Error fetching AI2AI insights: $e', name: _logName);
+          // Continue without insights
+        }
+        
+        // Get connection metrics from orchestrator
+        final orchestrator = _tryGetConnectionOrchestrator();
+        if (orchestrator != null && personality != null) {
+          try {
+            // Get active connections for this user
+            final activeConnections = await orchestrator.discoverNearbyAIPersonalities(userId, personality);
+            if (activeConnections.isNotEmpty) {
+              developer.log('Found ${activeConnections.length} active AI2AI connections', name: _logName);
+              // Note: ConnectionMetrics would come from active connections
+              // For now, we'll leave it null - can be enhanced to fetch actual metrics
+            }
+          } catch (e) {
+            developer.log('Error fetching connection metrics: $e', name: _logName);
+          }
+        }
+        
+      } catch (e) {
+        developer.log('Error fetching AI/ML data, using base context: $e', name: _logName);
+      }
+      
+      // Build enhanced context
+      return LLMContext(
+        userId: baseContext?.userId ?? userId,
+        location: baseContext?.location ?? currentLocation,
+        preferences: baseContext?.preferences,
+        recentSpots: baseContext?.recentSpots,
+        // AI/ML Integration
+        personality: personality ?? baseContext?.personality,
+        vibe: vibe ?? baseContext?.vibe,
+        ai2aiInsights: ai2aiInsights ?? baseContext?.ai2aiInsights,
+        connectionMetrics: connectionMetrics ?? baseContext?.connectionMetrics,
+      );
+    } catch (e) {
+      developer.log('Error building enhanced context: $e', name: _logName);
+      return baseContext ?? LLMContext(userId: userId, location: currentLocation);
+    }
+  }
+  
+  /// Try to get PersonalityLearning from DI
+  static pl.PersonalityLearning? _tryGetPersonalityLearning() {
+    try {
+      // PersonalityLearning is not registered in DI, create instance
+      // Using in-memory version for now (no SharedPreferences dependency)
+      return pl.PersonalityLearning();
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  /// Try to get AI2AI Learning service from DI
+  static dynamic _tryGetAI2AILearning() {
+    try {
+      // AI2AIChatAnalyzer requires SharedPreferences, so we'll use PersonalityLearning
+      // which can provide insights through its learning history
+      return _tryGetPersonalityLearning();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Get recent AI2AI insights from personality learning
+  static Future<List<pl.AI2AILearningInsight>> _getRecentAI2AIInsights(
+    String userId,
+    PersonalityProfile personality,
+  ) async {
+    try {
+      final insights = <pl.AI2AILearningInsight>[];
+      
+      // Extract insights from personality learning history
+      final learningHistory = personality.learningHistory;
+      if (learningHistory.containsKey('recent_insights')) {
+        final recentInsightsData = learningHistory['recent_insights'] as List?;
+        if (recentInsightsData != null) {
+          for (final insightData in recentInsightsData) {
+            if (insightData is Map) {
+              try {
+                final insight = pl.AI2AILearningInsight(
+                  type: pl.AI2AIInsightType.values.firstWhere(
+                    (t) => t.toString().split('.').last == (insightData['type'] as String? ?? 'unknown'),
+                    orElse: () => pl.AI2AIInsightType.compatibilityLearning,
+                  ),
+                  dimensionInsights: Map<String, double>.from(insightData['dimensionInsights'] as Map? ?? {}),
+                  learningQuality: (insightData['learningQuality'] as num?)?.toDouble() ?? 0.5,
+                  timestamp: insightData['timestamp'] != null
+                      ? DateTime.parse(insightData['timestamp'] as String)
+                      : DateTime.now(),
+                );
+                insights.add(insight);
+              } catch (e) {
+                developer.log('Error parsing insight: $e', name: _logName);
+              }
+            }
+          }
+        }
+      }
+      
+      return insights;
+    } catch (e) {
+      developer.log('Error getting AI2AI insights: $e', name: _logName);
+      return [];
+    }
+  }
+
+  /// Try to get UserVibeAnalyzer from DI
+  static UserVibeAnalyzer? _tryGetVibeAnalyzer() {
+    try {
+      return GetIt.instance<UserVibeAnalyzer>();
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  /// Try to get VibeConnectionOrchestrator from DI
+  static VibeConnectionOrchestrator? _tryGetConnectionOrchestrator() {
+    try {
+      return GetIt.instance<VibeConnectionOrchestrator>();
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  /// Show confirmation dialog for action execution
+  static Future<bool> _showConfirmationDialog(BuildContext context, ActionIntent intent) async {
+    bool confirmed = false;
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ActionConfirmationDialog(
+        intent: intent,
+        onConfirm: () {
+          confirmed = true;
+        },
+        onCancel: () {
+          confirmed = false;
+        },
+      ),
+    );
+    return confirmed;
+  }
+
+  /// Execute action with UI dialogs and history storage
+  static Future<String> _executeActionWithUI(
+    BuildContext context,
+    ActionIntent intent,
+    LLMService? llmService,
+    LLMContext? userContext,
+    String command,
+  ) async {
+    final executor = ActionExecutor.fromDI();
+    final result = await executor.execute(intent);
+    
+    if (result.success) {
+      // Store in action history
+      try {
+        final historyService = ActionHistoryService();
+        await historyService.addAction(intent: intent, result: result);
+      } catch (e) {
+        developer.log('Failed to save action history: $e', name: _logName);
+      }
+
+      // Return success message with optional LLM response
+      final successMsg = result.successMessage ?? 'Action completed successfully';
+      
+      // Try to get LLM response for more natural language
+      final connectivity = Connectivity();
+      final connectivityResult = await connectivity.checkConnectivity();
+      final isOnline = connectivityResult is List
+          ? !connectivityResult.contains(ConnectivityResult.none)
+          : connectivityResult != ConnectivityResult.none;
+      
+      final service = llmService ?? _tryGetLLMService();
+      if (service != null && isOnline) {
+        try {
+          // Get a natural language response about the action
+          final llmResponse = await service.generateRecommendation(
+            userQuery: command,
+            userContext: userContext,
+          );
+          // Combine action result with LLM response
+          return '$successMsg\n\n$llmResponse';
+        } catch (e) {
+          // If LLM fails, just return success message
+          return successMsg;
+        }
+      }
+      
+      return successMsg;
+    } else {
+      // Action failed, show error dialog with retry option
+      if (!context.mounted) {
+        return result.errorMessage ?? 'Failed to execute action';
+      }
+      
+      return await _showErrorDialogWithRetry(
+        context,
+        intent,
+        result,
+        llmService,
+        userContext,
+        command,
+      );
+    }
+  }
+
+  /// Show error dialog with retry option
+  static Future<String> _showErrorDialogWithRetry(
+    BuildContext context,
+    ActionIntent intent,
+    ActionResult result,
+    LLMService? llmService,
+    LLMContext? userContext,
+    String command,
+  ) async {
+    bool retry = false;
+    
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ActionErrorDialog(
+        error: result.errorMessage ?? 'Unknown error occurred',
+        intent: intent,
+        onDismiss: () {},
+        onRetry: () {
+          retry = true;
+        },
+      ),
+    );
+    
+    if (retry) {
+      // Retry the action
+      return await _executeActionWithUI(
+        context,
+        intent,
+        llmService,
+        userContext,
+        command,
+      );
+    }
+    
+    // User dismissed, return error message
+    return result.errorMessage ?? 'Failed to execute action';
+  }
+
+  /// Try to get LLM service from GetIt (may not be registered)
+  static LLMService? _tryGetLLMService() {
+    try {
+      return GetIt.instance<LLMService>();
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  /// Rule-based command processing (fallback)
+  static String _processRuleBased(String command) {
     final lowerCommand = command.toLowerCase();
 
     // Create list commands
@@ -171,5 +628,67 @@ class AICommandProcessor {
 
   static String _handleDefaultCommand(String command) {
     return "I can help you with many things! Try asking me to:\n• Create lists (\"Create a coffee shop list\")\n• Add spots (\"Add Central Park to my list\")\n• Find places (\"Find restaurants near me\")\n• Discover events (\"Show me weekend events\")\n• Find users (\"Find hikers in my area\")\n• Plan trips (\"Help me plan a weekend trip\")";
+  }
+  
+  /// Phase 1 Integration: Show thinking indicator overlay
+  static OverlayEntry _showThinkingIndicator(BuildContext context) {
+    final overlayEntry = OverlayEntry(
+      builder: (context) => Container(
+        color: Colors.black54,
+        child: const Center(
+          child: AIThinkingIndicator(
+            stage: AIThinkingStage.generatingResponse,
+            showDetails: true,
+          ),
+        ),
+      ),
+    );
+    
+    Overlay.of(context).insert(overlayEntry);
+    return overlayEntry;
+  }
+  
+  /// Phase 1 Integration: Show streaming response in bottom sheet
+  static Future<void> showStreamingResponse(
+    BuildContext context,
+    Stream<String> textStream, {
+    VoidCallback? onComplete,
+  }) async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'AI Response',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+            const Divider(),
+            Expanded(
+              child: StreamingResponseWidget(
+                textStream: textStream,
+                onComplete: onComplete,
+                onStop: () {
+                  // User stopped streaming
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

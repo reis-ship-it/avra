@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/unified_models.dart';import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
 import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
@@ -12,6 +13,12 @@ import 'package:spots/presentation/widgets/common/search_bar.dart';
 import 'package:spots/presentation/widgets/common/chat_message.dart';
 import 'package:spots/presentation/widgets/common/universal_ai_search.dart';
 import 'package:spots/presentation/widgets/common/ai_command_processor.dart';
+import 'package:spots/domain/repositories/lists_repository.dart';
+import 'package:spots/core/models/list.dart';
+import 'package:geolocator/geolocator.dart';
+// Phase 1 Integration: Offline indicator
+import 'package:spots/presentation/widgets/common/offline_indicator_widget.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class HomePage extends StatefulWidget {
   final int initialTabIndex;
@@ -77,9 +84,39 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildAuthenticatedContent(BuildContext context, Authenticated state) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
+      body: Column(
+        children: [
+          // Phase 1 Integration: Offline banner
+          StreamBuilder<List<ConnectivityResult>>(
+            stream: Connectivity().onConnectivityChanged,
+            initialData: const [ConnectivityResult.none],
+            builder: (context, snapshot) {
+              final isOffline = snapshot.data?.contains(ConnectivityResult.none) ?? true;
+              if (!isOffline) return const SizedBox.shrink();
+              
+              return OfflineBanner(
+                isOffline: isOffline,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      content: OfflineIndicatorWidget(
+                        isOffline: isOffline,
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+          // Main content
+          Expanded(
+            child: IndexedStack(
+              index: _currentIndex,
+              children: _pages,
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -589,33 +626,189 @@ class _ExploreTabState extends State<ExploreTab>
   }
 }
 
-class UsersSubTab extends StatelessWidget {
+class UsersSubTab extends StatefulWidget {
   const UsersSubTab({super.key});
 
   @override
+  State<UsersSubTab> createState() => _UsersSubTabState();
+}
+
+class _UsersSubTabState extends State<UsersSubTab> {
+  List<SpotList> _publicLists = [];
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPublicLists();
+  }
+
+  Future<void> _loadPublicLists() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final repository = GetIt.instance<ListsRepository>();
+      final publicLists = await repository.getPublicLists();
+      setState(() {
+        _publicLists = publicLists;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.people, size: 64, color: AppColors.textSecondary),
-          SizedBox(height: 16),
-          Text(
-            'Discover Users',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Find and follow other SPOTS users',
-            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 16),
-          Text(
-            'Coming Soon',
-            style: TextStyle(fontSize: 14, color: AppTheme.warningColor),
-          ),
-        ],
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: AppTheme.errorColor,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Error loading public lists',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _error!,
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _loadPublicLists,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_publicLists.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.explore,
+              size: 64,
+              color: AppColors.textSecondary,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Discover Public Lists',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'No public lists available yet.\nBe the first to create one!',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _loadPublicLists,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: _publicLists.length,
+        itemBuilder: (context, index) {
+          final list = _publicLists[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                child: Icon(
+                  Icons.list,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              title: Text(
+                list.title,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (list.description.isNotEmpty)
+                    Text(
+                      list.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.favorite,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${list.respectCount} respects',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Icon(
+                        Icons.location_on,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${list.spots.length} spots',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: AppColors.textSecondary,
+              ),
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  '/list-details',
+                  arguments: list,
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }
@@ -644,7 +837,7 @@ class _AISubTabState extends State<AISubTab> {
     });
   }
 
-  void _handleAICommand(String command) {
+  void _handleAICommand(String command) async {
     if (command.trim().isEmpty) return;
 
     // Add user command
@@ -657,22 +850,43 @@ class _AISubTabState extends State<AISubTab> {
       _isProcessingCommand = true;
     });
 
-    // Process command and get response
-    final response = AICommandProcessor.processCommand(command, context);
+    // Get userId from AuthBloc
+    String? userId;
+    final authState = context.read<AuthBloc>().state;
+    if (authState is Authenticated) {
+      userId = authState.user.id;
+    }
 
-    // Simulate processing time
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        setState(() {
-          _isProcessingCommand = false;
-          _messages.add({
-            'message': response,
-            'isUser': false,
-            'timestamp': DateTime.now(),
-          });
-        });
+    // Get current location (optional, for spot creation)
+    Position? currentLocation;
+    try {
+      final hasPermission = await Geolocator.checkPermission();
+      if (hasPermission == LocationPermission.always || 
+          hasPermission == LocationPermission.whileInUse) {
+        currentLocation = await Geolocator.getCurrentPosition();
       }
-    });
+    } catch (e) {
+      // Location not available, continue without it
+    }
+
+    // Process command and get response
+    final response = await AICommandProcessor.processCommand(
+      command, 
+      context,
+      userId: userId,
+      currentLocation: currentLocation,
+    );
+
+    if (mounted) {
+      setState(() {
+        _isProcessingCommand = false;
+        _messages.add({
+          'message': response,
+          'isUser': false,
+          'timestamp': DateTime.now(),
+        });
+      });
+    }
   }
 
   @override

@@ -48,7 +48,6 @@ import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
 
 // Hybrid Search (Phase 2: External Data Integration)
 import 'package:spots/data/datasources/remote/google_places_datasource.dart';
-import 'package:spots/data/datasources/remote/google_places_datasource_impl.dart';
 import 'package:spots/data/datasources/remote/openstreetmap_datasource.dart';
 import 'package:spots/data/datasources/remote/openstreetmap_datasource_impl.dart';
 import 'package:spots/data/repositories/hybrid_search_repository.dart';
@@ -59,27 +58,61 @@ import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
 import 'package:spots/core/services/search_cache_service.dart';
 import 'package:spots/core/services/ai_search_suggestions_service.dart';
 
+// Phase 2: Missing Services
+import 'package:spots/core/services/role_management_service.dart';
+import 'package:spots/core/models/user_role.dart';
+import 'package:spots/core/services/community_validation_service.dart';
+import 'package:spots/core/services/performance_monitor.dart';
+import 'package:spots/core/services/security_validator.dart';
+import 'package:spots/core/services/deployment_validator.dart';
+import 'package:shared_preferences/shared_preferences.dart' show SharedPreferences;
+
 // Supabase Backend Integration
 import 'package:spots/core/services/supabase_service.dart';
 import 'package:spots/core/services/ai2ai_realtime_service.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:spots/core/ai/personality_learning.dart';
+import 'package:spots/core/services/usage_pattern_tracker.dart';
+import 'package:spots/core/ai2ai/connection_log_queue.dart';
+import 'package:spots/core/ai2ai/cloud_intelligence_sync.dart';
+import 'package:spots/core/network/ai2ai_protocol.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart' hide SharedPreferences;
 import 'package:http/http.dart' as http;
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/config_service.dart';
+// Device Discovery & Advertising
+import 'package:spots/core/network/device_discovery.dart';
+import 'package:spots/core/network/device_discovery_factory.dart';
+import 'package:spots/core/network/personality_advertising_service.dart';
 // Single integration boundary
 import 'package:spots_network/spots_network.dart';
 import 'package:spots/supabase_config.dart';
-// ML (universal inference)
-import 'package:spots/core/ml/inference_backend.dart';
-import 'package:spots/core/ml/onnx_backend.dart';
-import 'package:spots/core/ml/inference_orchestrator.dart';
-import 'package:spots/core/ml/tokenization/wordpiece_tokenizer.dart';
-import 'package:spots/core/ml/embedding_service.dart';
-import 'package:spots/core/services/model_bootstrapper.dart';
+// ML (cloud-only, simplified)
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:spots/core/ml/embedding_cloud_client.dart';
+import 'package:spots/core/services/llm_service.dart';
+// Google Places integration
+import 'package:spots/core/services/google_places_cache_service.dart';
+import 'package:spots/core/services/google_place_id_finder_service.dart';
+import 'package:spots/core/services/google_place_id_finder_service_new.dart';
+import 'package:spots/core/services/google_places_sync_service.dart';
+import 'package:spots/data/datasources/remote/google_places_datasource_new_impl.dart';
+import 'package:spots/google_places_config.dart';
+
+// Admin Services (God-Mode Admin System)
+import 'package:spots/core/services/admin_auth_service.dart';
+import 'package:spots/core/services/admin_god_mode_service.dart';
+import 'package:spots/core/services/admin_communication_service.dart';
+import 'package:spots/core/services/business_account_service.dart';
+import 'package:spots/core/ml/predictive_analytics.dart';
+import 'package:spots/core/monitoring/connection_monitor.dart';
+import 'package:spots/core/services/expertise_service.dart';
+import 'package:spots/core/services/event_template_service.dart';
+// Payment Processing - Agent 1: Payment Processing & Revenue
+import 'package:spots/core/services/stripe_service.dart';
+import 'package:spots/core/services/payment_service.dart';
+import 'package:spots/core/config/stripe_config.dart';
 
 final sl = GetIt.instance;
 
@@ -106,13 +139,38 @@ Future<void> init() async {
   sl.registerLazySingleton<SpotsRemoteDataSource>(() => SpotsRemoteDataSourceImpl());
   sl.registerLazySingleton<ListsRemoteDataSource>(() => ListsRemoteDataSourceImpl());
 
-  // External Data Sources (Optional) with DI-provided HTTP client
-  sl.registerLazySingleton<GooglePlacesDataSource>(() => GooglePlacesDataSourceImpl(
-        apiKey: 'demo_key',
+  // Google Places Cache Service (for offline caching)
+  sl.registerLazySingleton<GooglePlacesCacheService>(() => GooglePlacesCacheService());
+  
+  // Get Google Places API key from config
+  final googlePlacesApiKey = GooglePlacesConfig.getApiKey();
+  
+  // Google Place ID Finder Service (New API)
+  sl.registerLazySingleton<GooglePlaceIdFinderServiceNew>(() => GooglePlaceIdFinderServiceNew(
+        apiKey: googlePlacesApiKey.isNotEmpty 
+            ? googlePlacesApiKey 
+            : 'demo_key', // Fallback for development
+      ));
+  
+  // External Data Sources - Using New Places API (New)
+  sl.registerLazySingleton<GooglePlacesDataSource>(() => GooglePlacesDataSourceNewImpl(
+        apiKey: googlePlacesApiKey.isNotEmpty 
+            ? googlePlacesApiKey 
+            : 'demo_key', // Fallback for development
         httpClient: sl<http.Client>(),
+        cacheService: sl<GooglePlacesCacheService>(),
       ));
   sl.registerLazySingleton<OpenStreetMapDataSource>(() => OpenStreetMapDataSourceImpl(
         httpClient: sl<http.Client>(),
+      ));
+  
+  // Google Places Sync Service (using New API)
+  sl.registerLazySingleton<GooglePlacesSyncService>(() => GooglePlacesSyncService(
+        placeIdFinderNew: sl<GooglePlaceIdFinderServiceNew>(),
+        cacheService: sl<GooglePlacesCacheService>(),
+        googlePlacesDataSource: sl<GooglePlacesDataSource>(),
+        spotsLocalDataSource: sl<SpotsLocalDataSource>(),
+        connectivity: sl<Connectivity>(),
       ));
 
   // Repositories (Register first)
@@ -146,6 +204,8 @@ Future<void> init() async {
         remoteDataSource: sl<SpotsRemoteDataSource>(),
         googlePlacesDataSource: sl<GooglePlacesDataSource>(),
         osmDataSource: sl<OpenStreetMapDataSource>(),
+        googlePlacesCache: sl<GooglePlacesCacheService>(),
+        connectivity: sl<Connectivity>(),
       ));
 
   // Auth Use cases (Register after repositories)
@@ -173,22 +233,125 @@ Future<void> init() async {
   // Services
   sl.registerLazySingleton(() => SearchCacheService());
   sl.registerLazySingleton(() => AISearchSuggestionsService());
-  // SharedPreferences for UserVibeAnalyzer
-  final sharedPrefs = await SharedPreferences.getInstance();
+  // Storage service for UserVibeAnalyzer
+  final sharedPrefs = await StorageService.getInstance();
   // Expose SharedPreferences so UI/services can use via DI
-  sl.registerLazySingleton<SharedPreferences>(() => sharedPrefs);
+  // Cast to SharedPreferences for compatibility (typedef makes them equivalent)
+  sl.registerLazySingleton<SharedPreferences>(() => sharedPrefs as SharedPreferences);
   sl.registerLazySingleton(() => UserVibeAnalyzer(prefs: sharedPrefs));
+  
+  // Storage Service (needed by Phase 2 services)
+  // Initialize StorageService instance
+  final storageService = StorageService.instance;
+  await storageService.init();
+  sl.registerLazySingleton<StorageService>(() => storageService);
+  
+  // Phase 2: Missing Services
+  // Register Phase 2 services (dependencies first)
+  sl.registerLazySingleton<RoleManagementService>(() => RoleManagementServiceImpl(
+        storageService: sl<StorageService>(),
+        prefs: sl<SharedPreferences>(),
+      ));
+  
+  sl.registerLazySingleton(() => CommunityValidationService(
+        storageService: sl<StorageService>(),
+        prefs: sl<SharedPreferences>(),
+      ));
+  
+  sl.registerLazySingleton(() => PerformanceMonitor(
+        storageService: sl<StorageService>(),
+        prefs: sl<SharedPreferences>(),
+      ));
+  
+  sl.registerLazySingleton(() => SecurityValidator());
+  
+  sl.registerLazySingleton(() => DeploymentValidator(
+        performanceMonitor: sl<PerformanceMonitor>(),
+        securityValidator: sl<SecurityValidator>(),
+      ));
   
   // Supabase Service (kept for internal tooling/debug; app uses spots_network boundary)
   sl.registerLazySingleton(() => SupabaseService());
+  
+  // Admin Services (God-Mode Admin System)
+  sl.registerLazySingleton(() => ConnectionMonitor(prefs: sl<SharedPreferences>()));
+  sl.registerLazySingleton(() => PredictiveAnalytics());
+  sl.registerLazySingleton(() => BusinessAccountService());
+  sl.registerLazySingleton(() => AdminAuthService(sl<SharedPreferences>()));
+  sl.registerLazySingleton(() => AdminCommunicationService(
+        connectionMonitor: sl<ConnectionMonitor>(),
+        chatAnalyzer: null, // Optional - can be registered later if needed
+      ));
+  sl.registerLazySingleton(() => AdminGodModeService(
+        authService: sl<AdminAuthService>(),
+        communicationService: sl<AdminCommunicationService>(),
+        businessService: sl<BusinessAccountService>(),
+        predictiveAnalytics: sl<PredictiveAnalytics>(),
+        connectionMonitor: sl<ConnectionMonitor>(),
+        chatAnalyzer: null, // Optional - can be registered later if needed
+        supabaseService: sl<SupabaseService>(),
+        expertiseService: ExpertiseService(),
+      ));
 
+  // Device Discovery Service
+  sl.registerLazySingleton<DeviceDiscoveryService>(() {
+    final platform = DeviceDiscoveryFactory.createPlatformDiscovery();
+    return DeviceDiscoveryService(platform: platform);
+  });
+  
+  // Personality Advertising Service
+  sl.registerLazySingleton<PersonalityAdvertisingService>(() {
+    // PersonalityAdvertisingService handles platform-specific discovery internally
+    // No need to pass platform discovery objects - service will use factory when needed
+    return PersonalityAdvertisingService();
+  });
+  
+  // PersonalityLearning (Philosophy: "Always Learning With You")
+  // On-device AI learning that works offline
+  sl.registerLazySingleton(() {
+    final prefs = sl<SharedPreferences>();
+    return PersonalityLearning.withPrefs(prefs);
+  });
+  
+  // UsagePatternTracker (Philosophy: "The key adapts to YOUR usage")
+  // Tracks how users engage with SPOTS (community vs recommendations)
+  sl.registerLazySingleton(() {
+    final prefs = sl<SharedPreferences>();
+    return UsagePatternTracker(prefs);
+  });
+  
+  // AI2AI Protocol (Philosophy: "The Key Works Everywhere")
+  // Handles peer-to-peer AI2AI communication
+  sl.registerLazySingleton(() => AI2AIProtocol());
+  
+  // Connection Log Queue (Philosophy: "Cloud is optional enhancement")
+  // Queues AI2AI logs for cloud sync when online
+  sl.registerLazySingleton(() => ConnectionLogQueue(sl<SharedPreferences>()));
+  
+  // Cloud Intelligence Sync (Philosophy: "Cloud adds network wisdom")
+  // Syncs offline connections to cloud for collective learning
+  sl.registerLazySingleton(() => CloudIntelligenceSync(
+    queue: sl<ConnectionLogQueue>(),
+    connectivity: sl<Connectivity>(),
+  ));
+  
   // VibeConnectionOrchestrator + AI2AIRealtimeService wiring
+  // Philosophy: "The Key Works Everywhere" - offline AI2AI via PersonalityLearning
   sl.registerLazySingleton<VibeConnectionOrchestrator>(() {
     final connectivity = sl<Connectivity>();
     final vibeAnalyzer = sl<UserVibeAnalyzer>();
+    final deviceDiscovery = sl<DeviceDiscoveryService>();
+    final advertisingService = sl<PersonalityAdvertisingService>();
+    final personalityLearning = sl<PersonalityLearning>();
+    final ai2aiProtocol = sl<AI2AIProtocol>();
+    
     final orchestrator = VibeConnectionOrchestrator(
       vibeAnalyzer: vibeAnalyzer,
       connectivity: connectivity,
+      deviceDiscovery: deviceDiscovery,
+      advertisingService: advertisingService,
+      personalityLearning: personalityLearning,  // NEW: For offline AI learning
+      protocol: ai2aiProtocol, // Now passed to ConnectionManager
     );
     // Build realtime with orchestrator and register it for app-wide access
     final realtimeBackend = sl<RealtimeBackend>();
@@ -212,15 +375,11 @@ Future<void> init() async {
         environment: 'development',
         supabaseUrl: SupabaseConfig.url,
         supabaseAnonKey: SupabaseConfig.anonKey,
+        googlePlacesApiKey: GooglePlacesConfig.getApiKey(),
         debug: SupabaseConfig.debug,
-        // Defaults can be overridden by remote config later
-        inferenceBackend: 'onnx',
+        // ONNX removed - using cloud-only (Gemini/cloud embeddings)
+        inferenceBackend: 'cloud',
         orchestrationStrategy: 'device_first',
-        // Sample MLP model generated via scripts/ml/export_sample_onnx.py
-        modelAssetPath: 'assets/models/default.onnx',
-        modelInputName: 'input',
-        modelOutputName: 'output',
-        modelInputShape: [1, 4],
       ));
 
   // Backend (Single Integration Boundary): initialize and expose spots_network
@@ -239,69 +398,36 @@ Future<void> init() async {
     sl.registerLazySingleton<AuthBackend>(() => backend.auth);
     sl.registerLazySingleton<DataBackend>(() => backend.data);
     sl.registerLazySingleton<RealtimeBackend>(() => backend.realtime);
+    
+    // Register Supabase Client for LLM service
+    try {
+      final supabaseClient = Supabase.instance.client;
+      sl.registerLazySingleton<SupabaseClient>(() => supabaseClient);
+      
+      // Register LLM Service (Google Gemini) with connectivity check
+      sl.registerLazySingleton<LLMService>(() => LLMService(
+        supabaseClient,
+        connectivity: sl<Connectivity>(),
+      ));
+    } catch (e) {
+      // LLM service optional - app can work without it
+    }
   } catch (e) {
     // Continue without backend on web if initialization fails
   }
 
   // ===========================
-  // ML Inference & Orchestration
+  // Cloud Embeddings (Simplified - No ONNX)
   // ===========================
-  final config = sl<ConfigService>();
-
-  // Inference backend selection (default: ONNX stub)
-  sl.registerLazySingleton<InferenceBackend>(() {
-    switch (config.inferenceBackend.toLowerCase()) {
-      case 'onnx':
-      default:
-        return OnnxRuntimeBackend();
-    }
-  });
-
-  // Orchestration strategy selection with cloud fallback stub
-  sl.registerLazySingleton<InferenceOrchestrator>(() {
-    final backend = sl<InferenceBackend>();
-    final strategy = config.orchestrationStrategy.toLowerCase() == 'edge_prefetch'
-        ? OrchestrationStrategy.edgePrefetch
-        : OrchestrationStrategy.deviceFirst;
-    return InferenceOrchestrator(
-      backend: backend,
-      strategy: strategy,
-      cloudFallback: (inputs) async {
-        // Web fallback placeholder: echo request keys
-        return {'fallback': true, 'keys': inputs.keys.toList()};
-      },
-    );
-  });
-
-  // Try initializing the orchestrator with a default model from assets.
-  // This is optional and will not crash the app if the model is missing.
+  // Note: Embeddings are now cloud-only via Supabase Edge Function
+  // ONNX infrastructure removed - use Gemini/cloud embeddings instead
   try {
-    final orchestrator = sl<InferenceOrchestrator>();
-    // Use a bootstrapper to load from asset or optional remote URL
-    final bootstrapper = ModelBootstrapper(httpClient: sl<http.Client>());
-    await bootstrapper.ensureModelInitialized(orchestrator: orchestrator, config: config);
+    final supabaseClient = Supabase.instance.client;
+    sl.registerLazySingleton<EmbeddingCloudClient>(() => EmbeddingCloudClient(client: supabaseClient));
   } catch (_) {
-    // Safe to ignore; model can be provided/updated later via remote config.
+    // Embeddings optional - app works without them
   }
 
-  // Tokenizer + Embedding service (multilingual BERT)
-  sl.registerLazySingletonAsync<WordPieceTokenizer>(() async {
-    // Expect vocab at assets/tokenizers/vocab.txt
-    return WordPieceTokenizer.fromAsset('assets/tokenizers/vocab.txt', doLowerCase: config.nlpDoLowerCase);
-  });
-  sl.registerLazySingletonAsync<EmbeddingService>(() async {
-    final tok = await sl.getAsync<WordPieceTokenizer>();
-    EmbeddingCloudClient? cloud;
-    try {
-      cloud = EmbeddingCloudClient(client: Supabase.instance.client);
-    } catch (_) {}
-    return EmbeddingService(orchestrator: sl<InferenceOrchestrator>(), tokenizer: tok, config: config, cloudClient: cloud);
-  });
-
-  // ML Inference Backend & Orchestrator
-  // Keep behind a simple config switch for wiggle room on orchestration.
-  // Uses ONNX stub by default; can be replaced with real implementation later.
-  // Late import block was invalid Dart. Removing no-op block.
 
   // Blocs (Register last, after all dependencies)
   sl.registerFactory(() => AuthBloc(

@@ -38,10 +38,9 @@ void main() {
             .thenAnswer((_) async {});
 
         // Act
-        final result = await usecase.call();
+        await usecase.call();
 
         // Assert
-        expect(result, isNull);
         verify(mockRepository.signOut()).called(1);
       });
 

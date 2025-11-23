@@ -41,8 +41,11 @@ class VibeConstants {
   static const double minAnonymizationLevel = 0.98;
   
   // ======= CORE PERSONALITY DIMENSIONS =======
-  /// The 8 foundational personality dimensions from VIBE_CODING
+  /// The 12 foundational personality dimensions from VIBE_CODING
+  /// Philosophy: "Understanding which doors resonate with you"
+  /// Expanded from 8 to 12 for more precise spot and community matching
   static const List<String> coreDimensions = [
+    // Original 8 dimensions
     'exploration_eagerness',      // How eager for new discovery
     'community_orientation',      // Preference for social vs solo experiences
     'authenticity_preference',    // Preference for authentic vs curated experiences
@@ -51,6 +54,12 @@ class VibeConstants {
     'location_adventurousness',   // How far they're willing to travel
     'curation_tendency',         // How much they curate for others
     'trust_network_reliance',    // How much they rely on trusted connections
+    
+    // NEW: 4 additional dimensions (Phase 2: Philosophy Implementation)
+    'energy_preference',         // Chill/relaxed (0.0) ↔ High-energy/active (1.0)
+    'novelty_seeking',          // Familiar/routine (0.0) ↔ Always new (1.0)
+    'value_orientation',        // Budget-conscious (0.0) ↔ Premium/luxury (1.0)
+    'crowd_tolerance',          // Quiet/intimate (0.0) ↔ Bustling/popular (1.0)
   ];
   
   // ======= DIMENSION VALUE RANGES =======
@@ -84,6 +93,23 @@ class VibeConstants {
   
   /// Confidence threshold for personality dimension certainty
   static const double personalityConfidenceThreshold = 0.6;
+  
+  // ======= DIMENSION DESCRIPTIONS =======
+  /// Human-readable descriptions for each dimension (for UI/admin tools)
+  static const Map<String, String> dimensionDescriptions = {
+    'exploration_eagerness': 'How eager for discovering new places and experiences',
+    'community_orientation': 'Preference for social vs solo experiences',
+    'authenticity_preference': 'Preference for authentic vs curated experiences',
+    'social_discovery_style': 'How they prefer to discover through others',
+    'temporal_flexibility': 'Spontaneous vs planned approach to activities',
+    'location_adventurousness': 'How far willing to travel for experiences',
+    'curation_tendency': 'How much they curate and share for others',
+    'trust_network_reliance': 'How much they rely on trusted connections',
+    'energy_preference': 'Preference for chill/relaxed vs high-energy/active experiences',
+    'novelty_seeking': 'Preference for new places vs returning to favorites',
+    'value_orientation': 'Budget-conscious vs premium/luxury preferences',
+    'crowd_tolerance': 'Preference for quiet/intimate vs bustling/popular places',
+  };
   
   // ======= NETWORK TOPOLOGY LIMITS =======
   /// Maximum depth for AI2AI learning propagation

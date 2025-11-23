@@ -41,3 +41,8 @@ android/local.properties
 *.log
 coverage/
 *.lock
+
+# Config files with API keys (use environment variables or .env files instead)
+lib/google_places_config.dart
+lib/supabase_config.dart
+lib/weather_config.dart

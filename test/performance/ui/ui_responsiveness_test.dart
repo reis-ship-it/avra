@@ -13,6 +13,12 @@ import 'package:spots/presentation/pages/map/map_page.dart';
 import 'package:flutter/widgets.dart' as fw;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
+import 'package:spots/domain/repositories/spots_repository.dart';
+import 'package:spots/domain/usecases/spots/get_spots_usecase.dart';
+import 'package:spots/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
+import 'package:spots/domain/usecases/spots/create_spot_usecase.dart';
+import 'package:spots/domain/usecases/spots/update_spot_usecase.dart';
+import 'package:spots/domain/usecases/spots/delete_spot_usecase.dart';
 import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
 import 'dart:math' as math;
 
@@ -40,17 +46,42 @@ class ListCardWidget extends fw.StatelessWidget {
   fw.Widget build(fw.BuildContext context) => Card(child: ListTile(title: Text(list.title), subtitle: Text(list.description)));
 }
 
-// Minimal fake SpotsBloc for performance tests
-class _FakeSpotsBloc extends Bloc<SpotsEvent, SpotsState> {
-  _FakeSpotsBloc() : super(SpotsInitial()) {
-    on<LoadSpots>((event, emit) {
-      final spots = _generateLargeSpotList(50);
-      emit(SpotsLoaded(spots));
-    });
-    on<CreateSpot>((event, emit) {
-      final current = state is SpotsLoaded ? (state as SpotsLoaded).spots : <Spot>[];
-      emit(SpotsLoaded([...current, event.spot]));
-    });
+// In-memory repository and use cases for SpotsBloc in tests
+class _InMemorySpotsRepository implements SpotsRepository {
+  final List<Spot> _spots;
+  _InMemorySpotsRepository({List<Spot>? initial}) : _spots = List.of(initial ?? _generateLargeSpotList(50));
+
+  @override
+  Future<Spot> createSpot(Spot spot) async {
+    _spots.add(spot);
+    return spot;
+  }
+
+  @override
+  Future<void> deleteSpot(String spotId) async {
+    _spots.removeWhere((s) => s.id == spotId);
+  }
+
+  @override
+  Future<List<Spot>> getSpots() async {
+    return List.of(_spots);
+  }
+
+  @override
+  Future<List<Spot>> getSpotsFromRespectedLists() async {
+    // Return a small subset to simulate "respected" lists
+    return _spots.where((s) => s.rating >= 4.0).take(10).toList();
+  }
+
+  @override
+  Future<Spot> updateSpot(Spot spot) async {
+    final idx = _spots.indexWhere((s) => s.id == spot.id);
+    if (idx >= 0) {
+      _spots[idx] = spot;
+    } else {
+      _spots.add(spot);
+    }
+    return spot;
   }
 }
 
@@ -391,13 +422,15 @@ void main() {
           BlocProvider<SpotsBloc>.value(
             value: mockSpotsBloc,
             child: MaterialApp(
-              home: BlocBuilder<SpotsBloc, SpotsState>(
-                builder: (context, state) {
-                  if (state is SpotsLoaded) {
-                    return SpotListWidget(spots: state.spots);
-                  }
-                  return const CircularProgressIndicator();
-                },
+              home: Scaffold(
+                body: BlocBuilder<SpotsBloc, SpotsState>(
+                  builder: (context, state) {
+                    if (state is SpotsLoaded) {
+                      return SpotListWidget(spots: state.spots);
+                    }
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                ),
               ),
             ),
           ),
@@ -625,11 +658,20 @@ String _getCategoryForQuery(String query) {
   }
 }
 
-SpotsBloc _createMockSpotsBloc() => _FakeSpotsBloc() as SpotsBloc;
+SpotsBloc _createMockSpotsBloc() {
+  final repo = _InMemorySpotsRepository();
+  return SpotsBloc(
+    getSpotsUseCase: GetSpotsUseCase(repo),
+    getSpotsFromRespectedListsUseCase: GetSpotsFromRespectedListsUseCase(repo),
+    createSpotUseCase: CreateSpotUseCase(repo),
+    updateSpotUseCase: UpdateSpotUseCase(repo),
+    deleteSpotUseCase: DeleteSpotUseCase(repo),
+  );
+}
 
-// Mock use cases (implement based on actual interfaces)
-dynamic _mockGetSpotsUseCase() => null;
-dynamic _mockCreateSpotUseCase() => null;
-dynamic _mockUpdateSpotUseCase() => null;
-dynamic _mockDeleteSpotUseCase() => null;
-dynamic _mockGetSpotsFromRespectedListsUseCase() => null;
+// Deprecated mocks kept for reference; real in-memory fakes are used above.
+dynamic _mockGetSpotsUseCase() => GetSpotsUseCase(_InMemorySpotsRepository());
+dynamic _mockCreateSpotUseCase() => CreateSpotUseCase(_InMemorySpotsRepository());
+dynamic _mockUpdateSpotUseCase() => UpdateSpotUseCase(_InMemorySpotsRepository());
+dynamic _mockDeleteSpotUseCase() => DeleteSpotUseCase(_InMemorySpotsRepository());
+dynamic _mockGetSpotsFromRespectedListsUseCase() => GetSpotsFromRespectedListsUseCase(_InMemorySpotsRepository());

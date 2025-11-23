@@ -22,6 +22,11 @@ class AnonymousCommunicationProtocol {
     try {
       developer.log('Sending anonymous message type: ${messageType.name}', name: _logName);
       
+      // Validate target agent ID
+      if (targetAgentId.isEmpty) {
+        throw AnonymousCommunicationException('Target agent ID cannot be empty');
+      }
+      
       // Validate payload contains no user data
       await _validateAnonymousPayload(anonymousPayload);
       

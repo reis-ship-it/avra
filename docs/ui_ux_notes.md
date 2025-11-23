@@ -66,4 +66,10 @@
 - **Sync**: Cross-device data synchronization
 - **Backup**: Secure data backup and recovery
 - **Sharing**: Controlled sharing of lists and experiences
-- **Analytics**: Privacy-respecting usage insights 
+- **Analytics**: Privacy-respecting usage insights
+
+### Admin MCP Server (Exploration)
+- **MCP Integration**: Admin interface via AI assistants (ChatGPT/Claude)
+- **Natural Language**: Query admin data conversationally
+- **Rich Visualizations**: Interactive dashboards in AI assistant UI
+- **See**: `docs/plans/mcp_integration/MCP_SERVER_EXPLORATION.md` for full analysis 

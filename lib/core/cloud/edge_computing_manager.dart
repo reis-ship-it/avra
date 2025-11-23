@@ -636,11 +636,17 @@ class EdgeComputingManager {
         case BottleneckType.highCPU:
           recommendations.add('Scale up CPU resources for ${bottleneck.nodeId}');
           break;
+        case BottleneckType.highMemory:
+          recommendations.add('Scale up memory resources for ${bottleneck.nodeId}');
+          break;
         case BottleneckType.highLatency:
           recommendations.add('Optimize network routing for ${bottleneck.nodeId}');
           break;
         case BottleneckType.lowCacheHitRate:
           recommendations.add('Improve cache algorithms for ${bottleneck.nodeId}');
+          break;
+        case BottleneckType.bandwidthLimited:
+          recommendations.add('Increase bandwidth allocation for ${bottleneck.nodeId}');
           break;
       }
     }

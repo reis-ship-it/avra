@@ -1,8 +1,9 @@
 // Moved to examples/supabase/main_supabase_example.dart
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Example of how to use Supabase in your actual app
 class SupabaseUsageExample {
-  static final _supabase = SupabaseInitializer.client;
+  static SupabaseClient get _supabase => Supabase.instance.client;
   
   /// Sign in a user
   static Future<void> signInUser(String email, String password) async {

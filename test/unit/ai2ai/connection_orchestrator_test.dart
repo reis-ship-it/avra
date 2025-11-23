@@ -6,7 +6,8 @@ import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:spots/core/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/services/business/ai/vibe_analysis_engine.dart';
+import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:spots/core/ai2ai/aipersonality_node.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 
 /// Tests for AI2AI Connection Orchestrator
@@ -14,6 +15,7 @@ import 'package:spots/core/constants/vibe_constants.dart';
 /// 
 /// These tests ensure optimal AI2AI connection management for development and deployment
 @GenerateMocks([UserVibeAnalyzer, Connectivity])
+import 'connection_orchestrator_test.mocks.dart';
 void main() {
   group('VibeConnectionOrchestrator', () {
     late VibeConnectionOrchestrator orchestrator;
@@ -194,7 +196,7 @@ void main() {
         );
 
         expect(connectionMetrics, isNotNull);
-        expect(connectionMetrics!.compatibility, greaterThan(VibeConstants.mediumCompatibilityThreshold));
+        expect(connectionMetrics!.currentCompatibility, greaterThan(VibeConstants.mediumCompatibilityThreshold));
         
         verify(mockVibeAnalyzer.compileUserVibe(testUserId, testPersonality)).called(1);
         verify(mockVibeAnalyzer.analyzeVibeCompatibility(any, any)).called(1);
@@ -334,10 +336,10 @@ void main() {
         
         // Test health monitoring
         expect(connection.connectionId, isNotEmpty);
-        expect(connection.establishedAt, isNotNull);
+        expect(connection.startTime, isNotNull);
         
         // Health monitoring should track connection vitals
-        expect(connection.compatibility, isA<double>());
+        expect(connection.currentCompatibility, isA<double>());
       });
 
       test('should terminate unhealthy connections', () async {
@@ -348,7 +350,7 @@ void main() {
         );
 
         // Low compatibility connections should be identified for termination
-        expect(unhealthyConnection.compatibility, lessThan(VibeConstants.minLearningEffectiveness));
+        expect(unhealthyConnection.currentCompatibility, lessThan(VibeConstants.minLearningEffectiveness));
       });
     });
 
@@ -554,15 +556,12 @@ void main() {
 
 // Helper methods for creating test data
 UserVibe _createTestUserVibe() {
-  return UserVibe(
-    userId: 'test-user',
-    vibeSignature: 'test-signature',
-    dimensions: {
+  return UserVibe.fromPersonalityProfile(
+    'test-user',
+    {
       'exploration_eagerness': 0.8,
       'community_orientation': 0.7,
     },
-    lastUpdated: DateTime.now(),
-    confidenceLevel: 0.8,
   );
 }
 
@@ -579,15 +578,12 @@ AIPersonalityNode _createCompatibleAINode() {
 AIPersonalityNode _createIncompatibleAINode() {
   return AIPersonalityNode(
     nodeId: 'incompatible-node-${DateTime.now().millisecondsSinceEpoch}',
-    vibe: UserVibe(
-      userId: 'incompatible-user',
-      vibeSignature: 'incompatible-signature',
-      dimensions: {
+    vibe: UserVibe.fromPersonalityProfile(
+      'incompatible-user',
+      {
         'exploration_eagerness': 0.1, // Very different
         'community_orientation': 0.1,
       },
-      lastUpdated: DateTime.now(),
-      confidenceLevel: 0.5,
     ),
     lastSeen: DateTime.now(),
     trustScore: 0.3,

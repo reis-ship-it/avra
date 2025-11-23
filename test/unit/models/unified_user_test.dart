@@ -8,13 +8,11 @@ import '../../helpers/test_helpers.dart';
 /// Validates role system, age verification, and JSON serialization
 void main() {
   group('UnifiedUser Model Tests', () {
-    late UnifiedUser testUser;
     late DateTime testDate;
 
     setUp(() {
       TestHelpers.setupTestEnvironment();
       testDate = TestHelpers.createTestDateTime();
-      testUser = ModelFactories.createTestUser();
     });
 
     tearDown(() {

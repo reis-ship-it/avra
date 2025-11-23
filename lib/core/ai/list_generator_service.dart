@@ -76,9 +76,10 @@ class AIListGeneratorService {
     ],
   };
 
-  /// Generates personalized list suggestions based on user preferences
+  /// Generates personalized list suggestions based on user preferences and age
   static Future<List<String>> generatePersonalizedLists({
     required String userName,
+    int? age,
     required String? homebase,
     required List<String> favoritePlaces,
     required Map<String, List<String>> preferences,
@@ -107,11 +108,57 @@ class AIListGeneratorService {
         suggestions.addAll(_generateFavoritePlacesSuggestions(favoritePlaces, homebase));
       }
       
-      // Remove duplicates and limit to top suggestions
-      final uniqueSuggestions = suggestions.toSet().toList();
-      final finalSuggestions = uniqueSuggestions.take(8).toList();
+      // Generate age-appropriate suggestions
+      if (age != null) {
+        suggestions.addAll(_generateAgeAppropriateSuggestions(age, homebase, preferences));
+      }
       
-      developer.log('Generated ${finalSuggestions.length} personalized lists', name: _logName);
+      // Generate professional networking suggestions (for college students and professionals)
+      if (age != null && age >= 18) {
+        suggestions.addAll(_generateProfessionalNetworkingSuggestions(age, homebase, preferences));
+      }
+      
+      // Filter out age-inappropriate suggestions
+      final ageFilteredSuggestions = age != null 
+          ? _filterAgeInappropriateSuggestions(suggestions, age)
+          : suggestions;
+      
+      // Remove duplicates and prioritize based on age
+      final uniqueSuggestions = ageFilteredSuggestions.toSet().toList();
+      
+      // For adults (26-64), prioritize professional networking but include some nightlife
+      List<String> prioritizedSuggestions;
+      if (age != null && age >= 26 && age < 65) {
+        // Separate professional and social suggestions
+        final professional = uniqueSuggestions.where((s) => 
+          s.toLowerCase().contains('professional') ||
+          s.toLowerCase().contains('career') ||
+          s.toLowerCase().contains('networking') ||
+          s.toLowerCase().contains('business') ||
+          s.toLowerCase().contains('industry')
+        ).toList();
+        final social = uniqueSuggestions.where((s) => 
+          s.toLowerCase().contains('nightlife') ||
+          s.toLowerCase().contains('social') ||
+          s.toLowerCase().contains('scene')
+        ).toList();
+        final other = uniqueSuggestions.where((s) => 
+          !professional.contains(s) && !social.contains(s)
+        ).toList();
+        
+        // Prioritize: 60% professional, 20% social, 20% other
+        prioritizedSuggestions = [
+          ...professional.take(5),
+          ...social.take(1),
+          ...other.take(2),
+        ];
+      } else {
+        prioritizedSuggestions = uniqueSuggestions;
+      }
+      
+      final finalSuggestions = prioritizedSuggestions.take(8).toList();
+      
+      developer.log('Generated ${finalSuggestions.length} personalized lists (age: ${age ?? 'not provided'})', name: _logName);
       return finalSuggestions;
     } catch (e) {
       developer.log('Error generating personalized lists: $e', name: _logName);
@@ -370,6 +417,138 @@ class AIListGeneratorService {
       suggestions.add('Urban Nature Oases');
     }
     
+    return suggestions;
+  }
+
+  /// Generates age-appropriate suggestions based on age group
+  static List<String> _generateAgeAppropriateSuggestions(
+    int age,
+    String? homebase,
+    Map<String, List<String>> preferences,
+  ) {
+    final suggestions = <String>[];
+    final location = homebase ?? 'your area';
+    
+    // Age group categorization
+    if (age < 13) {
+      // Under 13: Family-friendly, educational, safe activities
+      suggestions.add('Family Fun in $location');
+      suggestions.add('Kid-Friendly Adventures');
+      suggestions.add('Safe Play Spaces');
+      suggestions.add('Educational Spots');
+    } else if (age < 18) {
+      // Teen (13-17): Social, fun, age-appropriate
+      suggestions.add('Teen Hangout Spots in $location');
+      suggestions.add('After School Adventures');
+      suggestions.add('Teen-Friendly Activities');
+      suggestions.add('Social Gathering Places');
+    } else if (age < 26) {
+      // Young Adult (18-25): Nightlife, social, exploration, professional networking
+      suggestions.add('Nightlife in $location');
+      suggestions.add('Young Adult Hotspots');
+      suggestions.add('Social Scene');
+      suggestions.add('College Hangouts');
+      // Professional networking for college students
+      suggestions.add('Professional Networking Spots');
+      suggestions.add('Career Connection Places');
+      suggestions.add('Industry Meetup Locations');
+    } else if (age < 65) {
+      // Adult (26-64): Professional networking primary, but also nightlife/social (less frequent)
+      suggestions.add('Professional Networking Spots');
+      suggestions.add('Career Development Venues');
+      suggestions.add('Industry Networking Locations');
+      suggestions.add('Business Casual Hangouts');
+      suggestions.add('Refined Experiences in $location');
+      suggestions.add('Adult Social Scene');
+      suggestions.add('Quality Time Spots');
+      // Include nightlife/social but less frequently than young adults
+      suggestions.add('Upscale Nightlife in $location');
+      suggestions.add('Professional Social Scene');
+    } else {
+      // Senior (65+): Accessible, comfortable, community-focused
+      suggestions.add('Senior-Friendly Spots in $location');
+      suggestions.add('Accessible Adventures');
+      suggestions.add('Community Gathering Places');
+      suggestions.add('Comfortable Hangouts');
+    }
+    
+    return suggestions;
+  }
+
+  /// Generates professional networking suggestions for career-focused users
+  static List<String> _generateProfessionalNetworkingSuggestions(
+    int age,
+    String? homebase,
+    Map<String, List<String>> preferences,
+  ) {
+    final suggestions = <String>[];
+    final location = homebase ?? 'your area';
+    
+    // Professional networking spots for career development
+    suggestions.add('Professional Networking Spots in $location');
+    suggestions.add('Career Connection Venues');
+    suggestions.add('Industry Meetup Locations');
+    suggestions.add('Business Casual Hangouts');
+    
+    // School/business integration for college students (18-25)
+    if (age >= 18 && age < 26) {
+      suggestions.add('College Career Networking Spots');
+      suggestions.add('Student-Professional Mixers');
+      suggestions.add('Campus-Industry Connection Places');
+      suggestions.add('Find Your Professional Home');
+      suggestions.add('School-Business Networking Venues');
+    }
+    
+    // Industry-specific networking (if preferences indicate career interests)
+    final hasProfessionalPrefs = preferences.values.any((prefs) => 
+      prefs.any((pref) => pref.toLowerCase().contains('professional') ||
+                        pref.toLowerCase().contains('networking') ||
+                        pref.toLowerCase().contains('business')));
+    
+    if (hasProfessionalPrefs) {
+      suggestions.add('Industry-Specific Networking Spots');
+      suggestions.add('Professional Development Venues');
+      suggestions.add('Career Growth Locations');
+    }
+    
+    // Business integration suggestions
+    suggestions.add('Business-Friendly Spots');
+    suggestions.add('Professional Lunch Spots');
+    suggestions.add('After-Work Networking Venues');
+    suggestions.add('Industry Event Locations');
+    
+    return suggestions;
+  }
+
+  /// Filters out age-inappropriate suggestions
+  static List<String> _filterAgeInappropriateSuggestions(
+    List<String> suggestions,
+    int age,
+  ) {
+    // Keywords that indicate 18+ content
+    const adultKeywords = [
+      'bar',
+      'pub',
+      'nightclub',
+      'lounge',
+      'wine',
+      'cocktail',
+      'brewery',
+      'alcohol',
+      'drinking',
+      'nightlife',
+      'adult',
+    ];
+    
+    // Filter out 18+ content for users under 18
+    if (age < 18) {
+      return suggestions.where((suggestion) {
+        final lower = suggestion.toLowerCase();
+        return !adultKeywords.any((keyword) => lower.contains(keyword));
+      }).toList();
+    }
+    
+    // For 18+, return all suggestions
     return suggestions;
   }
 

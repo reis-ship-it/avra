@@ -8,6 +8,9 @@ import 'package:spots/data/datasources/local/sembast_seeder.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:spots/data/datasources/local/auth_sembast_datasource.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'firebase_options.dart';
 import 'package:spots/core/services/storage_health_checker.dart';
 import 'package:spots/core/services/logger.dart';
 
@@ -15,8 +18,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const logger = AppLogger(defaultTag: 'MAIN', minimumLevel: LogLevel.debug);
 
-  // Temporarily disable Firebase for web compatibility
-  logger.info('Firebase temporarily disabled for web compatibility');
+  // Initialize Firebase (mobile and desktop; web via options)
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    logger.info('Firebase initialized');
+  } catch (e) {
+    logger.warn('Firebase init skipped or failed: $e');
+  }
   
   // Helper function to check if data already exists
   Future<bool> _checkIfDataExists() async {

@@ -7,6 +7,7 @@ import 'package:spots/data/datasources/local/lists_local_datasource.dart';
 import 'package:spots/data/datasources/remote/lists_remote_datasource.dart';
 import 'package:spots/data/datasources/local/auth_local_datasource.dart';
 import 'package:spots/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:spots/core/services/storage_service.dart';
 
 // Generate mocks for all repository dependencies
 @GenerateMocks([
@@ -24,6 +25,9 @@ import 'package:spots/data/datasources/remote/auth_remote_datasource.dart';
   // Auth data sources
   AuthLocalDataSource,
   AuthRemoteDataSource,
+  
+  // Services
+  StorageService,
 ])
 void main() {}
 

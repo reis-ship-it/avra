@@ -32,6 +32,7 @@ dependencies:
   geocoding: ^4.0.0
   get_it: ^8.0.3
   injectable: ^2.3.2
+  intl: ^0.19.0
   
   # Network
   dio: ^5.4.0
@@ -54,19 +55,23 @@ dependencies:
   geoxml: ^2.0.0  # For geospatial XML processing
   
   # Storage
-  shared_preferences: ^2.2.2
+  get_storage: ^2.1.1
   flutter_secure_storage: ^10.0.0-beta.4
   sembast: ^3.5.0
   path_provider: ^2.1.1
   
-  # Firebase - Temporarily commented out for dependency resolution
-  # firebase_core: ^3.1.1
-  # firebase_auth: ^5.1.1
-  # firebase_firestore: ^4.15.5
-  # firebase_storage: ^12.1.0
+  # Firebase
+  firebase_core: ^3.5.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+  firebase_storage: ^12.3.1
+  firebase_analytics: ^11.6.0
   
   # Supabase Backend
   supabase_flutter: ^2.3.4
+  
+  # Payment Processing - Agent 1: Payment Processing & Revenue
+  flutter_stripe: ^11.1.0
   
   # Development & Code Generation
   json_annotation: ^4.8.1
@@ -83,7 +88,11 @@ dependencies:
   
   # Runtime permissions
   permission_handler: ^11.3.1
-  onnxruntime: ^1.4.1
+  
+  # Device Discovery - Platform Plugins
+  flutter_blue_plus: ^1.30.7  # Bluetooth Low Energy (Android, iOS, macOS, Linux, Web, Windows)
+  flutter_nsd: ^1.6.0  # Network Service Discovery / mDNS (Android, iOS, macOS, Windows)
+  wifi_iot: ^0.3.19  # WiFi Direct and WiFi management (Android)
 
 dev_dependencies:
   flutter_test:
@@ -112,7 +121,7 @@ dev_dependencies:
   
   # Test Infrastructure
   build_runner: ^2.4.7
-  patrol: ^3.16.0
+  # patrol: ^3.16.0
 
 flutter:
   uses-material-design: true

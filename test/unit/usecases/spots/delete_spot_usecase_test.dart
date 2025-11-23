@@ -79,10 +79,9 @@ void main() {
             .thenAnswer((_) async {});
 
         // Act
-        final result = await usecase.call(spotId);
+        await usecase.call(spotId);
 
         // Assert
-        expect(result, isNull);
         verify(mockRepository.deleteSpot(spotId)).called(1);
       });
     });

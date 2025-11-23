@@ -7,13 +7,11 @@ import '../../helpers/test_helpers.dart';
 /// Tests independent node architecture, role-based permissions, and moderation
 void main() {
   group('UnifiedList Model Tests', () {
-    late UnifiedList testList;
     late DateTime testDate;
 
     setUp(() {
       TestHelpers.setupTestEnvironment();
       testDate = TestHelpers.createTestDateTime();
-      testList = ModelFactories.createTestList();
     });
 
     tearDown(() {
@@ -206,7 +204,12 @@ void main() {
 
     group('Moderation and Reporting System', () {
       test('should validate suspension criteria logic', () {
-        final list = ModelFactories.createTestList(
+        final list = UnifiedList(
+          id: 'test-list',
+          title: 'Test List',
+          category: 'General',
+          createdAt: testDate,
+          curatorId: 'curator-123',
           reportCount: 5,
           respectCount: 3,
         );
@@ -215,7 +218,12 @@ void main() {
       });
 
       test('should not meet suspension criteria with insufficient reports', () {
-        final list = ModelFactories.createTestList(
+        final list = UnifiedList(
+          id: 'test-list',
+          title: 'Test List',
+          category: 'General',
+          createdAt: testDate,
+          curatorId: 'curator-123',
           reportCount: 3,
           respectCount: 3,
         );
@@ -224,7 +232,12 @@ void main() {
       });
 
       test('should not meet suspension criteria with insufficient respects', () {
-        final list = ModelFactories.createTestList(
+        final list = UnifiedList(
+          id: 'test-list',
+          title: 'Test List',
+          category: 'General',
+          createdAt: testDate,
+          curatorId: 'curator-123',
           reportCount: 5,
           respectCount: 2,
         );
@@ -241,8 +254,10 @@ void main() {
       });
 
       test('should validate current suspension status - temporary suspension active', () {
+        // Create suspension end date in the future (1 day from now)
+        final suspensionEndDate = DateTime.now().add(const Duration(days: 1));
         final list = ModelFactories.createSuspendedList(
-          suspensionEndDate: TestHelpers.createTimestampWithOffset(const Duration(days: 1)),
+          suspensionEndDate: suspensionEndDate,
         );
 
         expect(list.isCurrentlySuspended, isTrue);
@@ -279,9 +294,13 @@ void main() {
 
     group('JSON Serialization Testing', () {
       test('should serialize to JSON correctly', () {
-        final list = ModelFactories.createTestList(
+        final list = UnifiedList(
+          id: 'test-list',
           title: 'Test List',
           description: 'Test Description',
+          category: 'General',
+          createdAt: testDate,
+          curatorId: 'curator-123',
           collaboratorIds: ['collab-1'],
           followerIds: ['follower-1'],
           spotIds: ['spot-1', 'spot-2'],

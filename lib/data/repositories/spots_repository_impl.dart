@@ -21,9 +21,9 @@ class SpotsRepositoryImpl implements SpotsRepository {
       // Always try to get from local first
       final localSpots = await localDataSource.getAllSpots();
 
-      // Check connectivity
-      final connectivityResult = await connectivity.checkConnectivity();
-      if (connectivityResult.contains(ConnectivityResult.none)) {
+      // Check connectivity (robust to plugin return types)
+      final offline = await _isOffline();
+      if (offline) {
         return localSpots;
       }
 
@@ -52,6 +52,15 @@ class SpotsRepositoryImpl implements SpotsRepository {
     }
   }
 
+  /// Convenience method used in performance tests
+  Future<Spot?> getSpotById(String id) async {
+    try {
+      return await localDataSource.getSpotById(id);
+    } catch (e) {
+      throw Exception('Failed to get spot by id: $e');
+    }
+  }
+
   @override
   Future<Spot> createSpot(Spot spot) async {
     try {
@@ -63,9 +72,9 @@ class SpotsRepositoryImpl implements SpotsRepository {
         throw Exception('Failed to create spot locally');
       }
 
-      // Check connectivity
-      final connectivityResult = await connectivity.checkConnectivity();
-      if (connectivityResult.contains(ConnectivityResult.none)) {
+      // Check connectivity (robust to plugin return types)
+      final offline = await _isOffline();
+      if (offline) {
         return createdSpot;
       }
 
@@ -95,9 +104,9 @@ class SpotsRepositoryImpl implements SpotsRepository {
         throw Exception('Failed to update spot locally');
       }
 
-      // Check connectivity
-      final connectivityResult = await connectivity.checkConnectivity();
-      if (connectivityResult.contains(ConnectivityResult.none)) {
+      // Check connectivity (robust to plugin return types)
+      final offline = await _isOffline();
+      if (offline) {
         return updatedSpot;
       }
 
@@ -122,9 +131,9 @@ class SpotsRepositoryImpl implements SpotsRepository {
       // Always delete locally first
       await localDataSource.deleteSpot(spotId);
 
-      // Check connectivity
-      final connectivityResult = await connectivity.checkConnectivity();
-      if (connectivityResult.contains(ConnectivityResult.none)) {
+      // Check connectivity (robust to plugin return types)
+      final offline = await _isOffline();
+      if (offline) {
         return;
       }
 
@@ -136,6 +145,23 @@ class SpotsRepositoryImpl implements SpotsRepository {
       }
     } catch (e) {
       throw Exception('Failed to delete spot: $e');
+    }
+  }
+
+  Future<bool> _isOffline() async {
+    try {
+      final result = await connectivity.checkConnectivity();
+      // Handle both ConnectivityResult and List<ConnectivityResult>
+      if (result is ConnectivityResult) {
+        return result == ConnectivityResult.none;
+      }
+      if (result is List) {
+        return result.contains(ConnectivityResult.none);
+      }
+      return false;
+    } catch (_) {
+      // On failure, assume offline to be safe
+      return true;
     }
   }
 }

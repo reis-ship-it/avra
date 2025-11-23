@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:spots/core/ai/personality_learning.dart';
+import 'package:spots/core/network/ai2ai_protocol.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/models/personality_profile.dart';
@@ -72,10 +74,17 @@ class DiscoveryManager {
 }
 
 /// Manages connection establishment and maintenance
+/// Philosophy: "Always Learning With You" - AI learns alongside you, online and offline
 class ConnectionManager {
   final UserVibeAnalyzer vibeAnalyzer;
+  final PersonalityLearning? personalityLearning; // NEW: For offline AI learning
+  final AI2AIProtocol? ai2aiProtocol; // NEW: For offline peer exchange
 
-  ConnectionManager({required this.vibeAnalyzer});
+  ConnectionManager({
+    required this.vibeAnalyzer,
+    this.personalityLearning, // Optional for backward compatibility
+    this.ai2aiProtocol, // Optional for backward compatibility
+  });
 
   Future<ConnectionMetrics?> establish(
     String localUserId,
@@ -109,6 +118,96 @@ class ConnectionManager {
     return c.basicCompatibility >= VibeConstants.minimumCompatibilityThreshold &&
         c.aiPleasurePotential >= VibeConstants.minAIPleasureScore &&
         c.learningOpportunities.isNotEmpty;
+  }
+  
+  // ========================================================================
+  // OFFLINE PEER CONNECTION (Philosophy Implementation - Phase 1)
+  // OUR_GUTS.md: "Always Learning With You"
+  // Philosophy: The key works everywhere - offline AI2AI connections via Bluetooth
+  // ========================================================================
+  
+  /// Establish offline peer-to-peer connection (no internet required)
+  /// 
+  /// Philosophy: "Doors appear everywhere (subway, park, street). 
+  /// The key should work anywhere, not just when online."
+  /// 
+  /// Flow:
+  /// 1. Exchange personality profiles via Bluetooth/NSD
+  /// 2. Calculate compatibility locally
+  /// 3. Generate learning insights locally
+  /// 4. Update both AIs immediately (on-device)
+  /// 5. Queue connection log for cloud sync (optional, when online)
+  Future<ConnectionMetrics?> establishOfflinePeerConnection(
+    String localUserId,
+    PersonalityProfile localPersonality,
+    String remoteDeviceId,
+  ) async {
+    // Verify we have the required dependencies
+    if (personalityLearning == null || ai2aiProtocol == null) {
+      throw Exception(
+        'Offline AI2AI requires PersonalityLearning and AI2AIProtocol dependencies'
+      );
+    }
+    
+    try {
+      // Step 1: Exchange personality profiles peer-to-peer
+      final remoteProfile = await ai2aiProtocol!.exchangePersonalityProfile(
+        remoteDeviceId,
+        localPersonality,
+      );
+      
+      if (remoteProfile == null) {
+        // Exchange failed (timeout, connection lost, etc.)
+        return null;
+      }
+      
+      // Step 2: Calculate compatibility locally (no cloud needed)
+      final compatibility = await ai2aiProtocol!.calculateLocalCompatibility(
+        localPersonality,
+        remoteProfile,
+        vibeAnalyzer,
+      );
+      
+      // Check if connection is worthy
+      if (!_isWorthy(compatibility)) {
+        return null;
+      }
+      
+      // Step 3: Generate learning insights locally
+      final learningInsight = await ai2aiProtocol!.generateLocalLearningInsights(
+        localPersonality,
+        remoteProfile,
+        compatibility,
+      );
+      
+      // Step 4: Apply learning to local AI immediately (offline learning)
+      await personalityLearning!.evolveFromAI2AILearning(
+        localUserId,
+        learningInsight,
+      );
+      
+      // Step 5: Create connection metrics
+      final localVibe = await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
+      final remoteVibe = await vibeAnalyzer.compileUserVibe(remoteProfile.userId, remoteProfile);
+      
+      final anonLocal = await PrivacyProtection.anonymizeUserVibe(localVibe);
+      final anonRemote = await PrivacyProtection.anonymizeUserVibe(remoteVibe);
+      
+      final metrics = ConnectionMetrics.initial(
+        localAISignature: anonLocal.vibeSignature,
+        remoteAISignature: anonRemote.vibeSignature,
+        compatibility: compatibility.basicCompatibility,
+      );
+      
+      // TODO: Queue connection log for cloud sync when online
+      // This is optional - the AI has already learned offline
+      
+      return metrics;
+      
+    } catch (e) {
+      // Log error but don't throw - offline connections can fail gracefully
+      return null;
+    }
   }
 }
 

@@ -6,7 +6,7 @@ import 'package:spots/core/models/user.dart';
 
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
-import '../../mocks/mock_dependencies.dart.mocks.dart';
+import '../../mocks/mock_dependencies.mocks.dart';
 
 /// Comprehensive test suite for AuthRepositoryImpl
 /// Tests the current implementation behavior with nullable dependencies
@@ -41,7 +41,14 @@ void main() {
         connectivity: mockConnectivity,
       );
       
-      testUser = ModelFactories.createTestUser();
+      testUser = User(
+        id: TestConstants.testUserId,
+        email: TestConstants.testEmail,
+        name: TestConstants.testUserName,
+        role: UserRole.user,
+        createdAt: TestHelpers.createTestDateTime(),
+        updatedAt: TestHelpers.createTestDateTime(),
+      );
       testEmail = TestConstants.testEmail;
       testPassword = TestConstants.testPassword;
       testName = TestConstants.testUserName;
@@ -453,9 +460,13 @@ void main() {
     group('updateCurrentUser', () {
       test('updates remote user and saves locally when successful', () async {
         // Arrange
-        final updatedUser = ModelFactories.createTestUser(
+        final updatedUser = User(
           id: testUser.id,
+          email: testUser.email,
           name: 'Updated Name',
+          role: testUser.role,
+          createdAt: testUser.createdAt,
+          updatedAt: DateTime.now(),
         );
         when(mockRemoteDataSource!.updateUser(testUser))
             .thenAnswer((_) async => updatedUser);
@@ -567,7 +578,14 @@ void main() {
     group('Role-based Operations and Security', () {
       test('handles different user roles correctly in sign up', () async {
         // Arrange: Test with different user roles
-        final adminUser = ModelFactories.createUserWithRole(UserRole.admin);
+        final adminUser = User(
+          id: TestConstants.testUserId,
+          email: TestConstants.testEmail,
+          name: TestConstants.testUserName,
+          role: UserRole.admin,
+          createdAt: TestHelpers.createTestDateTime(),
+          updatedAt: TestHelpers.createTestDateTime(),
+        );
         when(mockConnectivity!.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(mockRemoteDataSource!.signUp(testEmail, testPassword, testName))
@@ -584,7 +602,14 @@ void main() {
 
       test('preserves user role information during updates', () async {
         // Arrange: User with specific role
-        final curatorUser = ModelFactories.createUserWithRole(UserRole.user);
+        final curatorUser = User(
+          id: TestConstants.testUserId,
+          email: TestConstants.testEmail,
+          name: TestConstants.testUserName,
+          role: UserRole.user,
+          createdAt: TestHelpers.createTestDateTime(),
+          updatedAt: TestHelpers.createTestDateTime(),
+        );
         when(mockRemoteDataSource!.updateUser(curatorUser))
             .thenAnswer((_) async => curatorUser);
         when(mockLocalDataSource!.saveUser(curatorUser))

@@ -11,6 +11,11 @@ class AppLogger {
   void debug(String message, {String? tag}) => _log(LogLevel.debug, message, tag: tag);
   void info(String message, {String? tag}) => _log(LogLevel.info, message, tag: tag);
   void warn(String message, {String? tag}) => _log(LogLevel.warn, message, tag: tag);
+  // Backwards-compatible alias used by some call sites
+  void warning(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
+    final composed = error != null ? '$message | error: $error' : message;
+    _log(LogLevel.warn, composed, tag: tag, stackTrace: stackTrace);
+  }
   void error(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
     final composed = error != null ? '$message | error: $error' : message;
     _log(LogLevel.error, composed, tag: tag, stackTrace: stackTrace);

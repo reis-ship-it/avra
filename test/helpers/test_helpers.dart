@@ -68,19 +68,19 @@ class TestHelpers {
   // Repository Testing Utilities
 
   /// Sets up connectivity mock to return online status
-  static void mockOnlineConnectivity(Mock connectivityMock) {
+  static void mockOnlineConnectivity(Connectivity connectivityMock) {
     when(connectivityMock.checkConnectivity())
         .thenAnswer((_) async => [ConnectivityResult.wifi]);
   }
 
   /// Sets up connectivity mock to return offline status
-  static void mockOfflineConnectivity(Mock connectivityMock) {
+  static void mockOfflineConnectivity(Connectivity connectivityMock) {
     when(connectivityMock.checkConnectivity())
         .thenAnswer((_) async => [ConnectivityResult.none]);
   }
 
   /// Sets up connectivity mock to throw an error
-  static void mockConnectivityError(Mock connectivityMock, Exception error) {
+  static void mockConnectivityError(Connectivity connectivityMock, Exception error) {
     when(connectivityMock.checkConnectivity()).thenThrow(error);
   }
 

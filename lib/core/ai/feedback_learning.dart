@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math';
 import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/services/business/ai/personality_learning.dart';
+import 'package:spots/core/ai/personality_learning.dart' show PersonalityLearning, AI2AILearningInsight, AI2AIInsightType;
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// OUR_GUTS.md: "Dynamic dimension discovery through user feedback analysis that evolves personality understanding"
@@ -533,23 +533,377 @@ class UserFeedbackAnalyzer {
     return pattern != null ? [pattern] : <FeedbackPattern>[];
   }
   
-  // Placeholder implementations for complex analysis methods
-  Future<BehavioralPattern?> _analyzeSatisfactionPattern(List<FeedbackEvent> history) async => null;
-  Future<BehavioralPattern?> _analyzeTemporalPattern(List<FeedbackEvent> history) async => null;
-  Future<BehavioralPattern?> _analyzeCategoryPattern(List<FeedbackEvent> history) async => null;
-  Future<BehavioralPattern?> _analyzeSocialContextPattern(List<FeedbackEvent> history) async => null;
-  Future<BehavioralPattern?> _analyzeExpectationPattern(List<FeedbackEvent> history) async => null;
+  // Implemented analysis methods
+  /// Analyze satisfaction patterns from feedback history
+  Future<BehavioralPattern?> _analyzeSatisfactionPattern(List<FeedbackEvent> history) async {
+    if (history.length < 5) return null;
+    
+    // Calculate average satisfaction
+    final avgSatisfaction = history
+        .map((e) => e.satisfaction)
+        .reduce((a, b) => a + b) / history.length;
+    
+    // Check for trend (increasing/decreasing satisfaction)
+    final sortedHistory = List<FeedbackEvent>.from(history)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    
+    final earlySatisfaction = sortedHistory.take(sortedHistory.length ~/ 2)
+        .map((e) => e.satisfaction)
+        .reduce((a, b) => a + b) / (sortedHistory.length ~/ 2);
+    final lateSatisfaction = sortedHistory.skip(sortedHistory.length ~/ 2)
+        .map((e) => e.satisfaction)
+        .reduce((a, b) => a + b) / (sortedHistory.length ~/ 2);
+    
+    final trend = lateSatisfaction > earlySatisfaction ? 1.0 : -1.0;
+    final strength = (lateSatisfaction - earlySatisfaction).abs().clamp(0.0, 1.0);
+    
+    if (strength < 0.1) return null; // No significant pattern
+    
+    return BehavioralPattern(
+      patternType: 'satisfaction_trend',
+      characteristics: {
+        'average_satisfaction': avgSatisfaction,
+        'early_satisfaction': earlySatisfaction,
+        'late_satisfaction': lateSatisfaction,
+        'trend_direction': trend,
+      },
+      strength: strength,
+      confidence: min(1.0, history.length / 10.0),
+    );
+  }
   
-  Future<Map<String, double>> _extractSentimentDimensions(List<FeedbackEvent> feedback) async => {};
-  Future<Map<String, double>> _extractIntensityDimensions(List<FeedbackEvent> feedback) async => {};
-  Future<Map<String, double>> _extractDecisionDimensions(List<FeedbackEvent> feedback) async => {};
-  Future<Map<String, double>> _extractAdaptationDimensions(List<FeedbackEvent> feedback) async => {};
+  /// Analyze temporal patterns (time-based preferences)
+  Future<BehavioralPattern?> _analyzeTemporalPattern(List<FeedbackEvent> history) async {
+    if (history.length < 7) return null;
+    
+    // Group feedback by hour of day
+    final hourGroups = <int, List<FeedbackEvent>>{};
+    for (final event in history) {
+      final hour = event.timestamp.hour;
+      hourGroups.putIfAbsent(hour, () => []).add(event);
+    }
+    
+    // Find peak satisfaction hours
+    double maxAvgSatisfaction = 0.0;
+    int peakHour = -1;
+    
+    for (final entry in hourGroups.entries) {
+      final avgSatisfaction = entry.value
+          .map((e) => e.satisfaction)
+          .reduce((a, b) => a + b) / entry.value.length;
+      
+      if (avgSatisfaction > maxAvgSatisfaction) {
+        maxAvgSatisfaction = avgSatisfaction;
+        peakHour = entry.key;
+      }
+    }
+    
+    if (peakHour == -1) return null;
+    
+    return BehavioralPattern(
+      patternType: 'temporal_preference',
+      characteristics: {
+        'peak_hour': peakHour,
+        'peak_satisfaction': maxAvgSatisfaction,
+        'hour_distribution': hourGroups.length,
+      },
+      strength: maxAvgSatisfaction,
+      confidence: min(1.0, history.length / 15.0),
+    );
+  }
+  
+  /// Analyze category-based patterns
+  Future<BehavioralPattern?> _analyzeCategoryPattern(List<FeedbackEvent> history) async {
+    if (history.length < 5) return null;
+    
+    // Group by feedback type
+    final typeGroups = <FeedbackType, List<FeedbackEvent>>{};
+    for (final event in history) {
+      typeGroups.putIfAbsent(event.type, () => []).add(event);
+    }
+    
+    // Find preferred category
+    double maxAvgSatisfaction = 0.0;
+    FeedbackType? preferredType;
+    
+    for (final entry in typeGroups.entries) {
+      final avgSatisfaction = entry.value
+          .map((e) => e.satisfaction)
+          .reduce((a, b) => a + b) / entry.value.length;
+      
+      if (avgSatisfaction > maxAvgSatisfaction) {
+        maxAvgSatisfaction = avgSatisfaction;
+        preferredType = entry.key;
+      }
+    }
+    
+    if (preferredType == null) return null;
+    
+    return BehavioralPattern(
+      patternType: 'category_preference',
+      characteristics: {
+        'preferred_type': preferredType.toString(),
+        'preferred_satisfaction': maxAvgSatisfaction,
+        'type_diversity': typeGroups.length,
+      },
+      strength: maxAvgSatisfaction,
+      confidence: min(1.0, history.length / 8.0),
+    );
+  }
+  
+  /// Analyze social context patterns
+  Future<BehavioralPattern?> _analyzeSocialContextPattern(List<FeedbackEvent> history) async {
+    if (history.length < 5) return null;
+    
+    // Check metadata for social context indicators
+    int socialCount = 0;
+    double socialSatisfaction = 0.0;
+    
+    for (final event in history) {
+      final isSocial = event.metadata['is_social'] == true ||
+          event.metadata['has_companions'] == true ||
+          event.type == FeedbackType.socialInteraction;
+      
+      if (isSocial) {
+        socialCount++;
+        socialSatisfaction += event.satisfaction;
+      }
+    }
+    
+    if (socialCount < 2) return null;
+    
+    final avgSocialSatisfaction = socialSatisfaction / socialCount;
+    final socialRatio = socialCount / history.length;
+    
+    return BehavioralPattern(
+      patternType: 'social_context_preference',
+      characteristics: {
+        'social_feedback_count': socialCount,
+        'social_satisfaction': avgSocialSatisfaction,
+        'social_ratio': socialRatio,
+      },
+      strength: avgSocialSatisfaction * socialRatio,
+      confidence: min(1.0, socialCount / 5.0),
+    );
+  }
+  
+  /// Analyze expectation vs reality patterns
+  Future<BehavioralPattern?> _analyzeExpectationPattern(List<FeedbackEvent> history) async {
+    if (history.length < 5) return null;
+    
+    // Check for expectation metadata
+    int expectationCount = 0;
+    double expectationGap = 0.0;
+    
+    for (final event in history) {
+      final expectedSatisfaction = event.metadata['expected_satisfaction'] as double?;
+      if (expectedSatisfaction != null) {
+        expectationCount++;
+        expectationGap += (event.satisfaction - expectedSatisfaction).abs();
+      }
+    }
+    
+    if (expectationCount < 2) return null;
+    
+    final avgGap = expectationGap / expectationCount;
+    final patternStrength = 1.0 - min(1.0, avgGap); // Lower gap = higher strength
+    
+    return BehavioralPattern(
+      patternType: 'expectation_alignment',
+      characteristics: {
+        'expectation_count': expectationCount,
+        'average_gap': avgGap,
+        'alignment_score': patternStrength,
+      },
+      strength: patternStrength,
+      confidence: min(1.0, expectationCount / 5.0),
+    );
+  }
+  
+  /// Extract sentiment dimensions from feedback
+  Future<Map<String, double>> _extractSentimentDimensions(List<FeedbackEvent> feedback) async {
+    if (feedback.isEmpty) return {};
+    
+    final dimensions = <String, double>{};
+    
+    // Calculate positive sentiment ratio
+    final positiveCount = feedback.where((e) => e.satisfaction > 0.7).length;
+    dimensions['positive_sentiment'] = positiveCount / feedback.length;
+    
+    // Calculate neutral sentiment ratio
+    final neutralCount = feedback.where((e) => e.satisfaction >= 0.4 && e.satisfaction <= 0.6).length;
+    dimensions['neutral_sentiment'] = neutralCount / feedback.length;
+    
+    // Calculate negative sentiment ratio
+    final negativeCount = feedback.where((e) => e.satisfaction < 0.4).length;
+    dimensions['negative_sentiment'] = negativeCount / feedback.length;
+    
+    // Calculate average sentiment intensity
+    dimensions['sentiment_intensity'] = feedback
+        .map((e) => (e.satisfaction - 0.5).abs() * 2.0)
+        .reduce((a, b) => a + b) / feedback.length;
+    
+    return dimensions;
+  }
+  
+  /// Extract intensity dimensions from feedback
+  Future<Map<String, double>> _extractIntensityDimensions(List<FeedbackEvent> feedback) async {
+    if (feedback.isEmpty) return {};
+    
+    final dimensions = <String, double>{};
+    
+    // Calculate average satisfaction intensity
+    dimensions['satisfaction_intensity'] = feedback
+        .map((e) => e.satisfaction)
+        .reduce((a, b) => a + b) / feedback.length;
+    
+    // Calculate feedback frequency intensity
+    if (feedback.length > 1) {
+      final sortedFeedback = List<FeedbackEvent>.from(feedback)
+        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      
+      final timeSpan = sortedFeedback.last.timestamp
+          .difference(sortedFeedback.first.timestamp)
+          .inDays;
+      
+      dimensions['feedback_frequency'] = timeSpan > 0 
+          ? min(1.0, feedback.length / timeSpan)
+          : 1.0;
+    } else {
+      dimensions['feedback_frequency'] = 0.0;
+    }
+    
+    // Calculate engagement intensity (based on comments)
+    final commentedCount = feedback.where((e) => e.comment != null && e.comment!.isNotEmpty).length;
+    dimensions['engagement_intensity'] = commentedCount / feedback.length;
+    
+    return dimensions;
+  }
+  
+  /// Extract decision-making dimensions from feedback
+  Future<Map<String, double>> _extractDecisionDimensions(List<FeedbackEvent> feedback) async {
+    if (feedback.isEmpty) return {};
+    
+    final dimensions = <String, double>{};
+    
+    // Analyze decision consistency (similar satisfaction for same types)
+    final typeGroups = <FeedbackType, List<double>>{};
+    for (final event in feedback) {
+      typeGroups.putIfAbsent(event.type, () => []).add(event.satisfaction);
+    }
+    
+    double consistencySum = 0.0;
+    int consistencyCount = 0;
+    
+    for (final satisfactions in typeGroups.values) {
+      if (satisfactions.length >= 2) {
+        final variance = _calculateVariance(satisfactions);
+        consistencySum += 1.0 - min(1.0, variance);
+        consistencyCount++;
+      }
+    }
+    
+    dimensions['decision_consistency'] = consistencyCount > 0 
+        ? consistencySum / consistencyCount 
+        : 0.5;
+    
+    // Analyze preference strength (how strong are preferences)
+    final avgSatisfaction = feedback.map((e) => e.satisfaction).reduce((a, b) => a + b) / feedback.length;
+    dimensions['preference_strength'] = (avgSatisfaction - 0.5).abs() * 2.0;
+    
+    return dimensions;
+  }
+  
+  /// Extract adaptation dimensions from feedback
+  Future<Map<String, double>> _extractAdaptationDimensions(List<FeedbackEvent> feedback) async {
+    if (feedback.length < 3) return {};
+    
+    final dimensions = <String, double>{};
+    
+    // Analyze satisfaction improvement over time (adaptation)
+    final sortedFeedback = List<FeedbackEvent>.from(feedback)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    
+    final earlySatisfaction = sortedFeedback.take(sortedFeedback.length ~/ 2)
+        .map((e) => e.satisfaction)
+        .reduce((a, b) => a + b) / (sortedFeedback.length ~/ 2);
+    final lateSatisfaction = sortedFeedback.skip(sortedFeedback.length ~/ 2)
+        .map((e) => e.satisfaction)
+        .reduce((a, b) => a + b) / (sortedFeedback.length ~/ 2);
+    
+    dimensions['adaptation_rate'] = lateSatisfaction > earlySatisfaction
+        ? ((lateSatisfaction / earlySatisfaction - 1.0) / 2.0).clamp(0.0, 1.0)
+        : 0.0;
+    
+    // Analyze feedback diversity (exploration vs exploitation)
+    final uniqueTypes = feedback.map((e) => e.type).toSet().length;
+    dimensions['exploration_tendency'] = min(1.0, uniqueTypes / FeedbackType.values.length);
+    
+    return dimensions;
+  }
+  
+  /// Calculate variance of a list of values
+  double _calculateVariance(List<double> values) {
+    if (values.isEmpty) return 0.0;
+    final mean = values.reduce((a, b) => a + b) / values.length;
+    final variance = values
+        .map((v) => (v - mean) * (v - mean))
+        .reduce((a, b) => a + b) / values.length;
+    return variance;
+  }
   
   Future<Map<String, double>> _validateNewDimensions(String userId, Map<String, double> dimensions) async => dimensions;
   
-  Future<double> _calculateContextMatch(Map<String, dynamic> scenario, List<FeedbackPattern> patterns) async => 0.7;
-  Future<double> _calculatePreferenceAlignment(Map<String, dynamic> scenario, List<FeedbackEvent> history) async => 0.8;
-  Future<double> _calculateNoveltyScore(Map<String, dynamic> scenario, List<FeedbackEvent> history) async => 0.6;
+  /// Calculate context match score
+  Future<double> _calculateContextMatch(Map<String, dynamic> scenario, List<FeedbackPattern> patterns) async {
+    if (patterns.isEmpty) return 0.5;
+    
+    // Use pattern confidence as context match indicator
+    final avgConfidence = patterns
+        .map((p) => p.patternConfidence)
+        .reduce((a, b) => a + b) / patterns.length;
+    
+    return avgConfidence;
+  }
+  
+  /// Calculate preference alignment score
+  Future<double> _calculatePreferenceAlignment(Map<String, dynamic> scenario, List<FeedbackEvent> history) async {
+    if (history.isEmpty) return 0.5;
+    
+    // Calculate alignment based on recent satisfaction
+    final recentHistory = history.length > 10 
+        ? history.sublist(history.length - 10)
+        : history;
+    
+    final avgSatisfaction = recentHistory
+        .map((e) => e.satisfaction)
+        .reduce((a, b) => a + b) / recentHistory.length;
+    
+    return avgSatisfaction;
+  }
+  
+  /// Calculate novelty score
+  Future<double> _calculateNoveltyScore(Map<String, dynamic> scenario, List<FeedbackEvent> history) async {
+    if (history.isEmpty) return 0.8; // High novelty for new users
+    
+    // Check if scenario type is new
+    final scenarioType = scenario['type'] as String?;
+    if (scenarioType != null) {
+      final hasType = history.any((e) => e.type.toString().contains(scenarioType));
+      if (!hasType) return 0.9; // New type = high novelty
+    }
+    
+    // Calculate novelty based on time since last similar feedback
+    final sortedHistory = List<FeedbackEvent>.from(history)
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    
+    if (sortedHistory.isNotEmpty) {
+      final daysSinceLast = DateTime.now().difference(sortedHistory.first.timestamp).inDays;
+      return min(1.0, daysSinceLast / 30.0); // Normalize to 30 days
+    }
+    
+    return 0.6; // Default moderate novelty
+  }
   
   double _calculatePredictionConfidence(List<FeedbackPattern> patterns, int historyLength) => min(1.0, historyLength / 20.0);
   
@@ -797,21 +1151,4 @@ class LearningOpportunity {
     required this.potential,
   });
 }
-/// Feedback event for learning
-class FeedbackEvent {
-  final String eventId;
-  final FeedbackType type;
-  final DateTime timestamp;
-  final Map<String, dynamic> data;
-  
-  FeedbackEvent({
-    required this.eventId,
-    required this.type,
-    required this.timestamp,
-    required this.data,
-  });
-}
-
-/// Feedback types
-enum FeedbackType { positive, negative, neutral, learning }
 

@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/personality_profile.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart';
 
 // Lightweight preferences abstraction to allow in-memory prefs during tests
 abstract class PreferencesLike {
@@ -32,7 +32,8 @@ class _InMemoryPreferences implements PreferencesLike {
 }
 
 /// OUR_GUTS.md: "AI personality that evolves and learns from user behavior while preserving privacy"
-/// Core personality learning engine that manages the 8-dimensional personality evolution
+/// Core personality learning engine that manages the 12-dimensional personality evolution
+/// Phase 2: Expanded from 8 to 12 dimensions for more precise learning
 class PersonalityLearning {
   static const String _logName = 'PersonalityLearning';
   
@@ -45,10 +46,18 @@ class PersonalityLearning {
   PersonalityProfile? _currentProfile;
   bool _isLearning = false;
   
+  // Callback for personality evolution events
+  Function(String userId, PersonalityProfile evolvedProfile)? onPersonalityEvolved;
+  
   // Zero-arg constructor for tests (in-memory prefs)
   PersonalityLearning() : _prefs = _InMemoryPreferences();
   // App constructor using real SharedPreferences
   PersonalityLearning.withPrefs(SharedPreferences prefs) : _prefs = _SharedPreferencesAdapter(prefs);
+  
+  /// Set callback for personality evolution events
+  void setEvolutionCallback(Function(String userId, PersonalityProfile evolvedProfile) callback) {
+    onPersonalityEvolved = callback;
+  }
   
   /// Initialize personality learning system for a user
   Future<PersonalityProfile> initializePersonality(String userId) async {
@@ -135,6 +144,15 @@ class PersonalityLearning {
       developer.log('Personality evolved to generation ${evolvedProfile.evolutionGeneration}', name: _logName);
       developer.log('Dominant traits: ${evolvedProfile.getDominantTraits()}', name: _logName);
       
+      // Notify listeners of personality evolution
+      if (onPersonalityEvolved != null) {
+        try {
+          onPersonalityEvolved!(userId, evolvedProfile);
+        } catch (e) {
+          developer.log('Error in personality evolution callback: $e', name: _logName);
+        }
+      }
+      
       return evolvedProfile;
     } catch (e) {
       developer.log('Error evolving personality: $e', name: _logName);
@@ -189,6 +207,15 @@ class PersonalityLearning {
       _currentProfile = evolvedProfile;
       
       developer.log('Personality evolved from AI2AI learning to generation ${evolvedProfile.evolutionGeneration}', name: _logName);
+      
+      // Notify listeners of personality evolution
+      if (onPersonalityEvolved != null) {
+        try {
+          onPersonalityEvolved!(userId, evolvedProfile);
+        } catch (e) {
+          developer.log('Error in personality evolution callback: $e', name: _logName);
+        }
+      }
       
       return evolvedProfile;
     } catch (e) {
@@ -337,6 +364,22 @@ class PersonalityLearning {
         if (distanceTraveled > 10.0) {
           dimensionUpdates['location_adventurousness'] = 0.08;
         }
+        
+        // NEW: Energy preference (Phase 2)
+        final spotEnergyLevel = action.metadata['spot_energy_level'] as double? ?? 0.5;
+        dimensionUpdates['energy_preference'] = (spotEnergyLevel - 0.5) * 0.15;
+        
+        // NEW: Novelty seeking (Phase 2)
+        final isRepeatVisit = action.metadata['is_repeat_visit'] as bool? ?? false;
+        dimensionUpdates['novelty_seeking'] = isRepeatVisit ? -0.08 : 0.08;
+        
+        // NEW: Value orientation (Phase 2)
+        final priceLevel = action.metadata['price_level'] as double? ?? 0.5;
+        dimensionUpdates['value_orientation'] = (priceLevel - 0.5) * 0.12;
+        
+        // NEW: Crowd tolerance (Phase 2)
+        final crowdLevel = action.metadata['crowd_level'] as double? ?? 0.5;
+        dimensionUpdates['crowd_tolerance'] = (crowdLevel - 0.5) * 0.10;
         break;
         
       case UserActionType.socialInteraction:
@@ -378,6 +421,20 @@ class PersonalityLearning {
         confidenceUpdates['exploration_eagerness'] = baseConfidenceIncrease;
         if (action.metadata['social_visit'] == true) {
           confidenceUpdates['community_orientation'] = baseConfidenceIncrease;
+        }
+        
+        // NEW: Confidence for new dimensions (Phase 2)
+        if (action.metadata.containsKey('spot_energy_level')) {
+          confidenceUpdates['energy_preference'] = baseConfidenceIncrease;
+        }
+        if (action.metadata.containsKey('is_repeat_visit')) {
+          confidenceUpdates['novelty_seeking'] = baseConfidenceIncrease;
+        }
+        if (action.metadata.containsKey('price_level')) {
+          confidenceUpdates['value_orientation'] = baseConfidenceIncrease;
+        }
+        if (action.metadata.containsKey('crowd_level')) {
+          confidenceUpdates['crowd_tolerance'] = baseConfidenceIncrease;
         }
         break;
         

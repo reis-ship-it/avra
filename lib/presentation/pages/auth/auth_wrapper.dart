@@ -24,27 +24,57 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   Future<void> _checkOnboardingStatus() async {
-    try {
-      final isCompleted = await _checkOnboardingCompletion();
-      if (mounted) {
-        setState(() {
-          _isOnboardingCompleted = isCompleted;
-          _isCheckingOnboarding = false;
-        });
+    // Wait for auth state to be available - check multiple times if needed
+    for (int i = 0; i < 5; i++) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      try {
+        final authBloc = context.read<AuthBloc>();
+        final authState = authBloc.state;
+        
+        // If authenticated, check onboarding with user ID
+        if (authState is Authenticated) {
+          final isCompleted = await OnboardingCompletionService.isOnboardingCompleted(authState.user.id);
+          if (mounted) {
+            setState(() {
+              _isOnboardingCompleted = isCompleted;
+              _isCheckingOnboarding = false;
+            });
+          }
+          return; // Exit once we have a result
+        }
+        
+        // If not authenticated yet, continue waiting
+        if (authState is AuthInitial || authState is AuthLoading) {
+          continue; // Keep waiting
+        }
+      } catch (e) {
+        // Continue trying
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isOnboardingCompleted = false;
-          _isCheckingOnboarding = false;
-        });
-      }
+    }
+    
+    // If we get here, auth state wasn't ready - default to false
+    if (mounted) {
+      setState(() {
+        _isOnboardingCompleted = false;
+        _isCheckingOnboarding = false;
+      });
     }
   }
 
   Future<bool> _checkOnboardingCompletion() async {
     try {
-      return await OnboardingCompletionService.isOnboardingCompleted();
+      // Try to get user ID from AuthBloc if available
+      try {
+        final authBloc = context.read<AuthBloc>();
+        final authState = authBloc.state;
+        if (authState is Authenticated) {
+          return await OnboardingCompletionService.isOnboardingCompleted(authState.user.id);
+        }
+      } catch (e) {
+        // AuthBloc not available yet, return false (needs onboarding)
+      }
+      // No user ID available, assume onboarding not completed
+      return false;
     } catch (e) {
       return false;
     }
@@ -68,12 +98,37 @@ class _AuthWrapperState extends State<AuthWrapper> {
           }
 
           if (state is Authenticated) {
-            // Check if onboarding is completed
-            if (!_isOnboardingCompleted) {
-              return const OnboardingPage();
-            } else {
-              return const HomePage();
-            }
+            // Re-check onboarding status with user ID when authenticated
+            // Use FutureBuilder to handle async check properly
+            return FutureBuilder<bool>(
+              future: OnboardingCompletionService.isOnboardingCompleted(state.user.id),
+              builder: (context, snapshot) {
+                final isCompleted = snapshot.data ?? false;
+                
+                // Update state if different
+                if (isCompleted != _isOnboardingCompleted && mounted) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _isOnboardingCompleted = isCompleted;
+                      });
+                    }
+                  });
+                }
+                
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                
+                if (!isCompleted) {
+                  return const OnboardingPage();
+                } else {
+                  return const HomePage();
+                }
+              },
+            );
           }
 
           // User is not authenticated, show login page

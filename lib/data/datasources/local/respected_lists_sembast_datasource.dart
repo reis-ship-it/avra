@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/unified_models.dart';import 'package:sembast/sembast.dart';
-import 'package:spots/data/datasources/local/sembast/sembast/sembast_database.dart';
+import 'package:spots/core/models/unified_models.dart';
+import 'package:sembast/sembast.dart';
+import 'package:spots/data/datasources/local/sembast_database.dart';
 
 class RespectedListsSembastDataSource {
   final Database _database;

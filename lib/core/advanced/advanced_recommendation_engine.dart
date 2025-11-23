@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-// import 'package:spots/core/services/business/ml/real_time_recommendations.dart';
+// import 'package:spots/core/ml/real_time_recommendations.dart';
 import 'package:spots/core/ai2ai/anonymous_communication.dart';
 import 'package:spots/core/p2p/federated_learning.dart';
 

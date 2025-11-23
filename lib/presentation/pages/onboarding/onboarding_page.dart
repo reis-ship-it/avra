@@ -11,9 +11,13 @@ import 'package:spots/presentation/pages/onboarding/friends_respect_page.dart';
 import 'package:spots/presentation/pages/onboarding/homebase_selection_page.dart';
 import 'package:spots/presentation/pages/onboarding/preference_survey_page.dart';
 import 'package:spots/presentation/pages/onboarding/onboarding_step.dart';
+import 'package:spots/presentation/pages/onboarding/age_collection_page.dart';
+import 'package:spots/presentation/pages/onboarding/welcome_page.dart';
 
 enum OnboardingStepType {
+  welcome,
   permissions,
+  age,
   homebase,
   favoritePlaces,
   preferences,
@@ -44,6 +48,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  DateTime? _selectedBirthday;
   String? _selectedHomebase;
   List<String> _favoritePlaces = [];
   Map<String, List<String>> _preferences = {};
@@ -52,9 +57,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   final List<OnboardingStep> _steps = [
     OnboardingStep(
+      page: OnboardingStepType.welcome,
+      title: 'Welcome',
+      description: 'Get started with SPOTS',
+    ),
+    OnboardingStep(
       page: OnboardingStepType.permissions,
       title: 'Enable Connectivity',
       description: 'Allow permissions for ai2ai and location',
+    ),
+    OnboardingStep(
+      page: OnboardingStepType.age,
+      title: 'Age Verification',
+      description: 'Required for age-appropriate content',
     ),
     OnboardingStep(
       page: OnboardingStepType.homebase,
@@ -134,8 +149,40 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   Widget _buildStepContent(OnboardingStep step) {
     switch (step.page) {
+      case OnboardingStepType.welcome:
+        return WelcomePage(
+          onContinue: () {
+            if (_currentPage < _steps.length - 1) {
+              setState(() {
+                _currentPage++;
+              });
+              _pageController.nextPage(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            }
+          },
+          onSkip: () {
+            // Skip to last step (or could skip entirely)
+            if (_currentPage < _steps.length - 1) {
+              setState(() {
+                _currentPage = _steps.length - 1;
+              });
+              _pageController.jumpToPage(_steps.length - 1);
+            }
+          },
+        );
       case OnboardingStepType.permissions:
         return const PermissionsPage();
+      case OnboardingStepType.age:
+        return AgeCollectionPage(
+          selectedBirthday: _selectedBirthday,
+          onBirthdayChanged: (birthday) {
+            setState(() {
+              _selectedBirthday = birthday;
+            });
+          },
+        );
       case OnboardingStepType.homebase:
         return HomebaseSelectionPage(
           onHomebaseChanged: (homebase) {
@@ -217,9 +264,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
       return false;
     }
     
+    // Always allow proceeding from the last step (friends is optional)
+    if (_currentPage == _steps.length - 1) {
+      return true;
+    }
+    
     switch (_steps[_currentPage].page) {
+      case OnboardingStepType.welcome:
+        return true; // Welcome page is always ready to proceed
       case OnboardingStepType.permissions:
         return _areCriticalPermissionsGrantedSync();
+      case OnboardingStepType.age:
+        return _selectedBirthday != null;
       case OnboardingStepType.homebase:
         return _selectedHomebase != null && _selectedHomebase!.isNotEmpty;
       case OnboardingStepType.favoritePlaces:
@@ -255,29 +311,39 @@ class _OnboardingPageState extends State<OnboardingPage> {
       _logger.debug('  Favorite Places: $_favoritePlaces', tag: 'Onboarding');
       _logger.debug('  Preferences: $_preferences', tag: 'Onboarding');
       
-      // Navigate directly to AI loading page
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AILoadingPage(
-            userName: "User",
-            homebase: _selectedHomebase,
-            favoritePlaces: _favoritePlaces,
-            preferences: _preferences,
-            onLoadingComplete: () async {
-              try {
-                // Navigate directly to home page, bypassing AuthWrapper
-                context.go('/home');
-                _logger.info('✅ Onboarding completed, navigating to home', tag: 'Onboarding');
-              } catch (e) {
-                _logger.error('Error in onboarding completion', error: e, tag: 'Onboarding');
-              }
-            },
-          ),
-        ),
-      );
+      // Calculate age from birthday
+      int? age;
+      if (_selectedBirthday != null) {
+        final now = DateTime.now();
+        age = now.year - _selectedBirthday!.year;
+        if (now.month < _selectedBirthday!.month ||
+            (now.month == _selectedBirthday!.month && now.day < _selectedBirthday!.day)) {
+          age--;
+        }
+      }
+
+      // Navigate to AI loading page using go_router - use GoRouter.of() to ensure context
+      final router = GoRouter.of(context);
+      router.go('/ai-loading', extra: {
+        'userName': "User",
+        'birthday': _selectedBirthday?.toIso8601String(),
+        'age': age,
+        'homebase': _selectedHomebase,
+        'favoritePlaces': _favoritePlaces,
+        'preferences': _preferences,
+      });
     } catch (e) {
       _logger.error('Error completing onboarding', error: e, tag: 'Onboarding');
+      // Fallback: try direct navigation to home
+      try {
+        GoRouter.of(context).go('/home');
+      } catch (fallbackError) {
+        _logger.error('Fallback navigation also failed', error: fallbackError, tag: 'Onboarding');
+        // Last resort: use Navigator
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
+      }
     }
   }
 

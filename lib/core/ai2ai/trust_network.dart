@@ -12,6 +12,9 @@ class TrustNetworkManager {
   static const double _minTrustScore = 0.0;
   static const int _trustDecayDays = 30;
   
+  // Trust relationship storage
+  final Map<String, TrustRelationship> _trustRelationships = {};
+  
   /// Establish trust relationship with anonymous agent
   /// OUR_GUTS.md: "Building trust without exposing user identity"
   Future<TrustRelationship> establishTrust(
@@ -134,6 +137,26 @@ class TrustNetworkManager {
     }
   }
   
+  /// Calculate overall network health based on trust relationships
+  /// Returns average trust score across all relationships (0.0 to 1.0)
+  Future<double> calculateNetworkHealth() async {
+    try {
+      final allRelationships = await _getAllTrustRelationships();
+      if (allRelationships.isEmpty) {
+        return 0.5; // Default neutral health for empty network
+      }
+      
+      final totalTrust = allRelationships
+          .map((r) => r.trustScore)
+          .reduce((a, b) => a + b);
+      
+      return (totalTrust / allRelationships.length).clamp(_minTrustScore, _maxTrustScore);
+    } catch (e) {
+      developer.log('Error calculating network health: $e', name: _logName);
+      return 0.5; // Return neutral health on error
+    }
+  }
+
   /// Verify agent reputation in trust network
   /// OUR_GUTS.md: "Reputation system without identity exposure"
   Future<ReputationScore> verifyAgentReputation(String agentId) async {
@@ -157,10 +180,13 @@ class TrustNetworkManager {
       final verifiedInteractions = relationship.interactionCount;
       final trustNetworkSize = await _getNetworkSize(agentId);
       
+      // Use relationship trust score if network consensus is initial (no network data yet)
+      final finalScore = networkScore > _initialTrustScore ? networkScore : relationship.trustScore;
+      
       final reputation = ReputationScore(
         agentId: agentId,
-        overallScore: networkScore,
-        reputationLevel: _determineReputationLevel(networkScore, verifiedInteractions),
+        overallScore: finalScore,
+        reputationLevel: _determineReputationLevel(finalScore, verifiedInteractions),
         verifiedInteractions: verifiedInteractions,
         trustNetworkSize: trustNetworkSize,
       );
@@ -209,15 +235,15 @@ class TrustNetworkManager {
     };
   }
   
-  Future<void> _storeTrustRelationship(TrustRelationship relationship) async {
-    // Store trust relationship in secure, anonymous storage
-    developer.log('Storing trust relationship for agent: ${relationship.agentId}', name: _logName);
-  }
-  
   Future<TrustRelationship?> _getTrustRelationship(String agentId) async {
     // Retrieve trust relationship from storage
-    // This is a placeholder - would implement actual storage retrieval
-    return null;
+    return _trustRelationships[agentId];
+  }
+  
+  Future<void> _storeTrustRelationship(TrustRelationship relationship) async {
+    // Store trust relationship
+    _trustRelationships[relationship.agentId] = relationship;
+    developer.log('Stored trust relationship for agent: ${relationship.agentId}', name: _logName);
   }
   
   Future<double> _calculateTrustAdjustment(TrustInteraction interaction) async {
@@ -252,6 +278,11 @@ class TrustNetworkManager {
   
   Future<double> _calculateNetworkConsensus(String agentId) async {
     // Calculate consensus score from trust network
+    // For now, use the agent's own trust score as base
+    final relationship = await _getTrustRelationship(agentId);
+    if (relationship != null) {
+      return relationship.trustScore;
+    }
     return _initialTrustScore;
   }
   

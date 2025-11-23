@@ -6,7 +6,7 @@ import 'package:spots/core/models/spot.dart';
 
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
-import '../../mocks/mock_dependencies.dart.mocks.dart';
+import '../../mocks/mock_dependencies.mocks.dart';
 
 /// Comprehensive test suite for SpotsRepositoryImpl
 /// Tests the current implementation behavior without modifying production code
@@ -187,7 +187,7 @@ void main() {
         when(mockRemoteDataSource.createSpot(testSpot))
             .thenAnswer((_) async => remoteSpot);
         when(mockLocalDataSource.updateSpot(remoteSpot))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async => remoteSpot);
 
         // Act
         final result = await repository.createSpot(testSpot);
@@ -267,7 +267,7 @@ void main() {
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
         when(mockLocalDataSource.updateSpot(testSpot))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async => testSpot);
         when(mockLocalDataSource.getSpotById(testSpot.id))
             .thenAnswer((_) async => testSpot);
 
@@ -291,13 +291,13 @@ void main() {
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(mockLocalDataSource.updateSpot(testSpot))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async => testSpot);
         when(mockLocalDataSource.getSpotById(testSpot.id))
             .thenAnswer((_) async => testSpot);
         when(mockRemoteDataSource.updateSpot(testSpot))
             .thenAnswer((_) async => remoteSpot);
         when(mockLocalDataSource.updateSpot(remoteSpot))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async => remoteSpot);
 
         // Act
         final result = await repository.updateSpot(testSpot);
@@ -316,7 +316,7 @@ void main() {
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(mockLocalDataSource.updateSpot(testSpot))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async => testSpot);
         when(mockLocalDataSource.getSpotById(testSpot.id))
             .thenAnswer((_) async => testSpot);
         when(mockRemoteDataSource.updateSpot(testSpot))
@@ -337,7 +337,7 @@ void main() {
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
         when(mockLocalDataSource.updateSpot(testSpot))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async => testSpot);
         when(mockLocalDataSource.getSpotById(testSpot.id))
             .thenAnswer((_) async => null);
 
@@ -432,11 +432,12 @@ void main() {
         when(mockLocalDataSource.getAllSpots())
             .thenAnswer((_) async => testSpots);
 
-        // Act & Assert: Should still function with local data
-        expect(
-          () => repository.getSpots(),
-          throwsA(isA<Exception>()),
-        );
+        // Act: Should still function with local data when connectivity check fails
+        final result = await repository.getSpots();
+
+        // Assert: Should return local spots
+        expect(result, equals(testSpots));
+        verify(mockLocalDataSource.getAllSpots()).called(1);
       });
 
       test('handles multiple rapid requests correctly', () async {

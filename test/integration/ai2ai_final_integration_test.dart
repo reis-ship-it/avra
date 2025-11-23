@@ -1,23 +1,23 @@
-import "package:shared_preferences/shared_preferences.dart";
+import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 // Core AI2AI System Components
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:spots/core/monitoring/network_analytics.dart';
 import 'package:spots/core/monitoring/connection_monitor.dart';
+import 'package:spots/core/services/storage_service.dart';
 
 /// AI2AI Personality Learning Network - Final Integration Test
 /// OUR_GUTS.md: "Production-ready validation of the complete AI2AI personality learning ecosystem"
 void main() {
   group('AI2AI Personality Learning Network - Final Integration', () {
-    late SharedPreferences mockPrefs;
+    late real_prefs.SharedPreferences mockPrefs;
     late PersonalityLearning personalityLearning;
     late UserVibeAnalyzer vibeAnalyzer;
     late VibeConnectionOrchestrator connectionOrchestrator;
@@ -25,12 +25,18 @@ void main() {
     late ConnectionMonitor connectionMonitor;
     
     setUpAll(() async {
-      SharedPreferences.setMockInitialValues({});
-      mockPrefs = await SharedPreferences.getInstance();
+      real_prefs.SharedPreferences.setMockInitialValues({});
+      mockPrefs = await real_prefs.SharedPreferences.getInstance();
       
-      personalityLearning = PersonalityLearning(prefs: SharedPreferences.getInstance(), prefs: mockPrefs);
-      vibeAnalyzer = UserVibeAnalyzer(prefs: mockPrefs);
-      connectionOrchestrator = VibeConnectionOrchestrator(vibeAnalyzer: vibeAnalyzer, connectivity: Connectivity(), vibeAnalyzer: vibeAnalyzer);
+      // PersonalityLearning and UserVibeAnalyzer use SharedPreferencesCompat
+      final compatPrefs = await SharedPreferencesCompat.getInstance();
+      personalityLearning = PersonalityLearning.withPrefs(compatPrefs);
+      vibeAnalyzer = UserVibeAnalyzer(prefs: compatPrefs);
+      connectionOrchestrator = VibeConnectionOrchestrator(
+        vibeAnalyzer: vibeAnalyzer,
+        connectivity: Connectivity(),
+      );
+      // NetworkAnalytics and ConnectionMonitor use real SharedPreferences
       networkAnalytics = NetworkAnalytics(prefs: mockPrefs);
       connectionMonitor = ConnectionMonitor(prefs: mockPrefs);
     });
@@ -70,13 +76,13 @@ void main() {
         expect(profile.authenticity, greaterThan(0.0));
         
         // Evolve personality through user action
-        final userAction = UserActionData(type: UserActionType.spotVisit, 
+        final userAction = UserAction(
           type: UserActionType.spotVisit,
           metadata: {'spot_type': 'cafe', 'social': true},
           timestamp: DateTime.now(),
         );
         
-        final evolvedProfile = await personalityLearning.evolveFromUserActionData(type: UserActionType.spotVisit, userId, userAction);
+        final evolvedProfile = await personalityLearning.evolveFromUserAction(userId, userAction);
         expect(evolvedProfile.userId, equals(userId));
         expect(evolvedProfile.dimensions, hasLength(8));
         
@@ -111,7 +117,7 @@ void main() {
           vibe,
           privacyLevel: 'STANDARD',
         );
-        expect(anonymizedVibe.anonymizedDimensions, hasLength(8));
+        expect(anonymizedVibe.noisyDimensions, hasLength(8));
         expect(anonymizedVibe.privacyLevel, greaterThan(0.8));
         
         // Test secure hashing
@@ -211,12 +217,12 @@ void main() {
         expect(profile.authenticity, greaterThan(0.8));
         
         // Learning preserves authenticity
-        final userAction = UserActionData(type: UserActionType.spotVisit, 
+        final userAction = UserAction(
           type: UserActionType.spotVisit,
           metadata: {'authentic': true},
           timestamp: DateTime.now(),
         );
-        final evolved = await personalityLearning.evolveFromUserActionData(type: UserActionType.spotVisit, userId, userAction);
+        final evolved = await personalityLearning.evolveFromUserAction(userId, userAction);
         expect(evolved.authenticity, greaterThanOrEqualTo(profile.authenticity));
         
         print('🎯 "Authenticity Over Algorithms" compliance validated');

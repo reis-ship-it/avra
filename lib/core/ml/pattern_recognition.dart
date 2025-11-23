@@ -175,10 +175,48 @@ class PatternRecognitionSystem {
     return locationCounts.map((key, value) => MapEntry(key, value / total));
   }
   Future<Map<String, double>> analyzeLocationPatterns(List<dynamic> locs) async {
-    return {};
+    // Accepts test-provided map structures: {'location': {'lat': .., 'lng': ..}}
+    if (locs.isEmpty) return {};
+    final counts = <String, int>{};
+    for (final item in locs) {
+      double? lat;
+      double? lng;
+      if (item is UserActionData && item.location != null) {
+        lat = item.location!.latitude;
+        lng = item.location!.longitude;
+      } else if (item is Map<String, dynamic>) {
+        final loc = (item['location'] ?? {}) as Map<String, dynamic>;
+        lat = (loc['lat'] as num?)?.toDouble();
+        lng = (loc['lng'] as num?)?.toDouble();
+      }
+      if (lat != null && lng != null) {
+        final cluster = '${(lat * 100).round() / 100}_${(lng * 100).round() / 100}';
+        counts[cluster] = (counts[cluster] ?? 0) + 1;
+      }
+    }
+    final total = counts.values.fold(0, (sum, v) => sum + v);
+    if (total == 0) return {};
+    return counts.map((k, v) => MapEntry(k, v / total));
   }
   Future<List<String>> analyzeBehavioralPatterns(List<dynamic> data) async {
-    return [];
+    // Accepts map structures with 'interaction_type' from tests
+    if (data.isEmpty) return [];
+    final freq = <String, int>{};
+    for (final item in data) {
+      String? type;
+      if (item is UserActionData) {
+        type = item.type;
+      } else if (item is Map<String, dynamic>) {
+        type = (item['interaction_type'] ?? item['type'])?.toString();
+      }
+      if (type != null && type.isNotEmpty) {
+        freq[type] = (freq[type] ?? 0) + 1;
+      }
+    }
+    // Return patterns sorted by frequency desc
+    final entries = freq.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return entries.map((e) => e.key).toList();
   }
   
   Map<String, double> _analyzeSocialPatterns(List<UserActionData> actions) {

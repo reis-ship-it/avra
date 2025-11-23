@@ -6,8 +6,10 @@ import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
 import 'package:spots/presentation/pages/spots/spot_details_page.dart';
 import 'package:spots/presentation/pages/lists/edit_list_page.dart';
+import 'package:spots/presentation/widgets/lists/spot_picker_dialog.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:spots/core/theme/app_theme.dart';
 
 class ListDetailsPage extends StatelessWidget {
   final SpotList list;
@@ -186,12 +188,7 @@ class ListDetailsPage extends StatelessWidget {
                           const SizedBox(height: 24),
                           ElevatedButton.icon(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      'Navigate to Spots tab to add spots to this list'),
-                                ),
-                              );
+                              _showAddSpotsDialog(context);
                             },
                             icon: const Icon(Icons.add_location),
                             label: const Text('Add Spots'),
@@ -329,11 +326,7 @@ class ListDetailsPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Navigate to Spots tab to add spots to this list'),
-            ),
-          );
+          _showAddSpotsDialog(context);
         },
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -492,6 +485,38 @@ SPOTS - know you belong.''';
         ],
       ),
     );
+  }
+
+  void _showAddSpotsDialog(BuildContext context) async {
+    final selectedSpotIds = await showDialog<List<String>>(
+      context: context,
+      builder: (context) => SpotPickerDialog(
+        list: list,
+        excludedSpotIds: list.spotIds,
+      ),
+    );
+
+    if (selectedSpotIds != null && selectedSpotIds.isNotEmpty) {
+      // Add selected spots to the list
+      final updatedSpotIds = List<String>.from(list.spotIds);
+      updatedSpotIds.addAll(selectedSpotIds);
+
+      final updatedList = list.copyWith(
+        spotIds: updatedSpotIds,
+        updatedAt: DateTime.now(),
+      );
+
+      context.read<ListsBloc>().add(UpdateList(updatedList));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Added ${selectedSpotIds.length} spot${selectedSpotIds.length > 1 ? 's' : ''} to ${list.title}',
+          ),
+          backgroundColor: AppTheme.successColor,
+        ),
+      );
+    }
   }
 
   void _showRemoveSpotConfirmation(BuildContext context, Spot spot) {

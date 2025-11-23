@@ -1,4 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:spots/core/models/expertise_pin.dart';
+import 'package:spots/core/models/expertise_level.dart';
+import 'package:spots/core/services/expertise_service.dart';
 
 /// Unified User model that combines core and domain features
 /// Includes role system for curator/collaborator/follower architecture
@@ -263,6 +266,59 @@ class UnifiedUser extends Equatable {
   /// Get total number of lists user is involved with
   int get totalListInvolvement =>
       curatedLists.length + collaboratedLists.length + followedLists.length;
+
+  /// Get expertise pins for this user
+  /// Uses ExpertiseService to convert expertiseMap to pins
+  List<ExpertisePin> getExpertisePins() {
+    final service = ExpertiseService();
+    return service.getUserPins(this);
+  }
+
+  /// Check if user has expertise in a category
+  bool hasExpertiseIn(String category) {
+    return expertiseMap.containsKey(category);
+  }
+
+  /// Get expertise level for a category
+  ExpertiseLevel? getExpertiseLevel(String category) {
+    final levelString = expertiseMap[category];
+    if (levelString == null) return null;
+    return ExpertiseLevel.fromString(levelString);
+  }
+
+  /// Get all expertise categories
+  List<String> getExpertiseCategories() {
+    return expertiseMap.keys.toList();
+  }
+
+  /// Check if user can host events (requires City level or higher)
+  bool canHostEvents() {
+    return expertiseMap.values.any((levelString) {
+      final level = ExpertiseLevel.fromString(levelString);
+      return level != null && level.index >= ExpertiseLevel.city.index;
+    });
+  }
+
+  /// Check if user can perform expert validation (requires Regional level or higher)
+  bool canPerformExpertValidation() {
+    return expertiseMap.values.any((levelString) {
+      final level = ExpertiseLevel.fromString(levelString);
+      return level != null && level.index >= ExpertiseLevel.regional.index;
+    });
+  }
+
+  /// Get primary expertise (highest level)
+  ExpertisePin? getPrimaryExpertise() {
+    final pins = getExpertisePins();
+    if (pins.isEmpty) return null;
+    
+    // Sort by level (highest first)
+    pins.sort((a, b) => b.level.index.compareTo(a.level.index));
+    return pins.first;
+  }
+
+  /// Get expertise count
+  int get expertiseCount => expertiseMap.length;
 
   @override
   List<Object?> get props => [

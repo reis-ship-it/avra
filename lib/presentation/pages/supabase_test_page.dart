@@ -5,8 +5,6 @@ import 'package:get_it/get_it.dart';
 import 'package:spots_network/spots_network.dart';
 import 'package:spots_core/spots_core.dart';
 import 'package:spots/core/services/ai2ai_realtime_service.dart';
-import 'package:spots/core/ml/inference_orchestrator.dart';
-import 'package:spots/core/ml/embedding_service.dart';
 import 'dart:typed_data';
 
 /// Test page to verify Supabase integration
@@ -20,10 +18,11 @@ class SupabaseTestPage extends StatefulWidget {
 
 class _SupabaseTestPageState extends State<SupabaseTestPage> {
   final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
-  final DataBackend _data = GetIt.instance<DataBackend>();
-  final RealtimeBackend _realtimeBackend = GetIt.instance<RealtimeBackend>();
-  final AuthBackend _auth = GetIt.instance<AuthBackend>();
-  final AI2AIRealtimeService _realtime = GetIt.instance<AI2AIRealtimeService>();
+  late final DataBackend _data;
+  late final RealtimeBackend _realtimeBackend;
+  late final AuthBackend _auth;
+  AI2AIRealtimeService? _realtime;
+  bool _diReady = false;
   bool _isLoading = false;
   String _status = 'Ready to test';
   List<Spot> _spots = [];
@@ -35,25 +34,165 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
   StreamSubscription? _sub3;
   StreamSubscription<List<Map<String, dynamic>>>? _dmSub;
   Map<String, dynamic>? _lastProfileSummary;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  User? _currentUser;
+  final TextEditingController _displayNameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    try {
+      _data = GetIt.instance<DataBackend>();
+      _realtimeBackend = GetIt.instance<RealtimeBackend>();
+      _auth = GetIt.instance<AuthBackend>();
+      _diReady = true;
+    } catch (e) {
+      _status = '❌ Backend DI not ready: $e';
+    }
+    // Try to resolve realtime service (optional)
+    try {
+      _realtime = GetIt.instance<AI2AIRealtimeService>();
+    } catch (_) {}
+
     _testConnection();
-    _wireRealtime();
-    _wirePrivateMessages();
+    _ensureAuth();
+    if (_diReady) {
+      _wireRealtime();
+      _wirePrivateMessages();
+    }
     // Ensure AI2AI service subscribes/join channels
-    _realtime.initialize();
+    _realtime?.initialize();
     if (widget.auto) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         try {
-          await _createTestSpot();
-          await _createTestList();
-          await _loadSpots();
-          await _loadLists();
-          await _realtime.sendAnonymousMessage('auto_test', {'note': 'auto-driven'});
+          if (_diReady) {
+            await _refreshCurrentUser();
+            await _createTestSpot();
+            await _createTestList();
+            await _loadSpots();
+            await _loadLists();
+            await _realtime?.sendAnonymousMessage('auto_test', {'note': 'auto-driven'});
+          }
         } catch (_) {}
       });
+    }
+  }
+
+  Future<void> _ensureAuth() async {
+    if (!_diReady) return;
+    try {
+      final signedIn = await _auth.isSignedIn();
+      if (!signedIn) {
+        final u = await _auth.signInAnonymously();
+        if (mounted) {
+          setState(() {
+            _status = u != null ? '✅ Signed in anonymously' : '⚠️ Anonymous sign-in failed';
+          });
+        }
+      }
+      await _refreshCurrentUser();
+    } catch (_) {}
+  }
+
+  Future<void> _refreshCurrentUser() async {
+    try {
+      final u = await _auth.getCurrentUser();
+      if (mounted) setState(() => _currentUser = u);
+    } catch (_) {}
+  }
+
+  Future<void> _signUp() async {
+    if (!_diReady) return;
+    setState(() => _isLoading = true);
+    try {
+      final email = _emailController.text.trim();
+      final pass = _passwordController.text;
+      final u = await _auth.registerWithEmailPassword(email, pass, email.split('@').first);
+      await _refreshCurrentUser();
+      setState(() {
+        _status = u != null ? '✅ Signed up' : '⚠️ Sign up may require email confirmation';
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() { _status = '❌ Sign up failed: $e'; _isLoading = false; });
+    }
+  }
+
+  Future<void> _signIn() async {
+    if (!_diReady) return;
+    setState(() => _isLoading = true);
+    try {
+      final email = _emailController.text.trim();
+      final pass = _passwordController.text;
+      final u = await _auth.signInWithEmailPassword(email, pass);
+      await _refreshCurrentUser();
+      setState(() {
+        _status = u != null ? '✅ Signed in' : '❌ Invalid credentials';
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() { _status = '❌ Sign in failed: $e'; _isLoading = false; });
+    }
+  }
+
+  Future<void> _signOut() async {
+    if (!_diReady) return;
+    setState(() => _isLoading = true);
+    try {
+      await _auth.signOut();
+      await _refreshCurrentUser();
+      setState(() { _status = '✅ Signed out'; _isLoading = false; });
+    } catch (e) {
+      setState(() { _status = '❌ Sign out failed: $e'; _isLoading = false; });
+    }
+  }
+
+  Future<void> _createSpotsAccount() async {
+    if (!_diReady) return;
+    final u = _currentUser;
+    if (u == null) {
+      setState(() { _status = '❌ Sign in first to create SPOTS account'; });
+      return;
+    }
+    setState(() => _isLoading = true);
+    try {
+      final profile = User(
+        id: u.id,
+        email: u.email,
+        name: u.name.isNotEmpty ? u.name : (_displayNameController.text.trim().isNotEmpty ? _displayNameController.text.trim() : u.email.split('@').first),
+        displayName: _displayNameController.text.trim().isNotEmpty ? _displayNameController.text.trim() : u.displayName,
+        role: UserRole.follower,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        isOnline: true,
+      );
+      final res = await _data.createUser(profile);
+      setState(() {
+        _status = res.success ? '✅ SPOTS account created' : '❌ Create failed: ${res.error ?? 'unknown'}';
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() { _status = '❌ Create SPOTS account error: $e'; _isLoading = false; });
+    }
+  }
+
+  Future<void> _loadMySpotsAccount() async {
+    if (!_diReady) return;
+    final u = _currentUser;
+    if (u == null) {
+      setState(() { _status = '❌ Sign in first to load SPOTS account'; });
+      return;
+    }
+    setState(() => _isLoading = true);
+    try {
+      final res = await _data.getUser(u.id);
+      setState(() {
+        _status = res.success && res.data != null ? '✅ Loaded SPOTS account for ${res.data!.email}' : '⚠️ No SPOTS account found';
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() { _status = '❌ Load SPOTS account error: $e'; _isLoading = false; });
     }
   }
 
@@ -79,21 +218,22 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
   }
 
   void _wireRealtime() {
-    _sub1 = _realtime.listenToPersonalityDiscovery().listen((m) {
+    if (_realtime == null) return;
+    _sub1 = _realtime!.listenToPersonalityDiscovery().listen((m) {
       setState(() => _messages.insert(0, {
               'type': m.type,
               'content': m.content,
               'metadata': m.metadata,
           }));
     });
-    _sub2 = _realtime.listenToVibeLearning().listen((m) {
+    _sub2 = _realtime!.listenToVibeLearning().listen((m) {
       setState(() => _messages.insert(0, {
               'type': m.type,
               'content': m.content,
               'metadata': m.metadata,
           }));
     });
-    _sub3 = _realtime.listenToAnonymousCommunication().listen((m) {
+    _sub3 = _realtime!.listenToAnonymousCommunication().listen((m) {
       setState(() => _messages.insert(0, {
               'type': m.type,
               'content': m.content,
@@ -124,7 +264,8 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
   }
 
   Future<void> _refreshPresence() async {
-    final presenceStream = _realtime.watchAINetworkPresence();
+    if (_realtime == null) return;
+    final presenceStream = _realtime!.watchAINetworkPresence();
     presenceStream.listen((p) {
       setState(() => _presence = p
           .map((e) => {
@@ -262,11 +403,86 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
         title: const Text('Supabase Test (Realtime + DB)'),
         // Use global ButtonTheme; keep default colors
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Auth controls
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Auth', style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 8),
+                    if (_currentUser != null)
+                      Text('Current: ${_currentUser!.email} (${_currentUser!.id.substring(0,6)}…)')
+                    else
+                      const Text('Current: anonymous or not signed in'),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 260,
+                          child: TextField(
+                            controller: _emailController,
+                            decoration: const InputDecoration(labelText: 'Email'),
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 200,
+                          child: TextField(
+                            controller: _passwordController,
+                            decoration: const InputDecoration(labelText: 'Password'),
+                            obscureText: true,
+                          ),
+                        ),
+                        ElevatedButton(onPressed: _isLoading ? null : _signUp, child: const Text('Sign Up')),
+                        ElevatedButton(onPressed: _isLoading ? null : _signIn, child: const Text('Sign In')),
+                        ElevatedButton(onPressed: _isLoading ? null : _signOut, child: const Text('Sign Out')),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // SPOTS Account controls
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('SPOTS Account', style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 260,
+                          child: TextField(
+                            controller: _displayNameController,
+                            decoration: const InputDecoration(labelText: 'Display name (optional)'),
+                          ),
+                        ),
+                        ElevatedButton(onPressed: _isLoading ? null : _createSpotsAccount, child: const Text('Create SPOTS Account')),
+                        ElevatedButton(onPressed: _isLoading ? null : _loadMySpotsAccount, child: const Text('Load My Account')),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
             // Realtime Controls
             Card(
               child: Padding(
@@ -274,9 +490,11 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                 child: Row(
                   children: [
                     ElevatedButton(
-                      onPressed: () async {
-                        await _realtime.sendAnonymousMessage('test_message', {'content': 'Hello AI2AI'});
-                      },
+                      onPressed: _realtime == null
+                          ? null
+                          : () async {
+                              await _realtime?.sendAnonymousMessage('test_message', {'content': 'Hello AI2AI'});
+                            },
                       child: const Text('Send Test Message'),
                     ),
                     const SizedBox(width: 8),
@@ -306,43 +524,21 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                       const LinearProgressIndicator(),
                     ],
                     const SizedBox(height: 16),
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
                         ElevatedButton(
                           onPressed: _isLoading ? null : _testConnection,
                           child: const Text('Test Connection'),
                         ),
-                        const SizedBox(width: 8),
                         ElevatedButton(
                           onPressed: _isLoading ? null : _createTestSpot,
                           child: const Text('Create Test Spot'),
                         ),
-                        const SizedBox(width: 8),
                         ElevatedButton(
                           onPressed: _isLoading ? null : _createTestList,
                           child: const Text('Create Test List'),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton(
-                          onPressed: () async {
-                            try {
-                              final embedService = await GetIt.instance.getAsync<EmbeddingService>();
-                              final vec = await embedService.embed('Hola mundo, bonjour le monde, hello world');
-                              if (!context.mounted) return;
-                              final preview = vec.length >= 6
-                                  ? '[${vec[0].toStringAsFixed(3)}, ${vec[1].toStringAsFixed(3)}, ${vec[2].toStringAsFixed(3)}, …, ${vec[vec.length-3].toStringAsFixed(3)}, ${vec[vec.length-2].toStringAsFixed(3)}, ${vec[vec.length-1].toStringAsFixed(3)}]'
-                                  : vec.toString();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Embedding ok (dim=${vec.length}): $preview')),
-                              );
-                            } catch (e) {
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Embedding failed: $e')),
-                              );
-                            }
-                          },
-                          child: const Text('Run Embedding Test (Multilingual BERT)'),
                         ),
                       ],
                     ),
@@ -387,10 +583,13 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                           itemCount: _messages.length,
                           itemBuilder: (context, index) {
                             final item = _messages[index];
+                            final title = item['event'] ?? item['type'] ?? 'event';
+                            final channel = item['channel'] ?? 'realtime';
+                            final subtitle = item['payload'] ?? item['content'] ?? item['metadata'];
                             return ListTile(
                               dense: true,
-                              title: Text('[${item['channel']}] ${item['event']}'),
-                              subtitle: Text(item['payload'].toString()),
+                              title: Text('[$channel] $title'),
+                              subtitle: Text(subtitle.toString()),
                             );
                           },
                         ),

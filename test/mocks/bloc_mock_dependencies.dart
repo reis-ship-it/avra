@@ -22,6 +22,7 @@ import 'package:spots/core/services/search_cache_service.dart';
 import 'package:spots/core/services/ai_search_suggestions_service.dart';
 import 'package:spots/data/repositories/hybrid_search_repository.dart';
 import 'package:geolocator/geolocator.dart';
+import '../helpers/bloc_test_helpers.dart';
 
 // Auth Use Case Mocks
 class MockSignInUseCase extends Mock implements SignInUseCase {}
@@ -308,5 +309,3 @@ class MockBehaviorSetup {
   }
 }
 
-// Import the test data factory from helpers
-import '../helpers/bloc_test_helpers.dart';

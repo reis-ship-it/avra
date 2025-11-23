@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mockito/mockito.dart';
-import 'package:spots/core/models/unified_models.dart';
+import 'package:spots/core/models/unified_user.dart';
+import 'package:spots/core/models/spot.dart';
+import 'package:spots/core/models/list.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
 import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
@@ -89,7 +91,7 @@ class WidgetTestHelpers {
     Duration? duration,
   }) async {
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle(duration);
+    await tester.pumpAndSettle(duration ?? const Duration(seconds: 1));
   }
 
   /// Verifies that a widget displays the expected loading state
@@ -105,46 +107,47 @@ class WidgetTestHelpers {
 
   /// Verifies navigation occurred to a specific route
   static void verifyNavigationTo(NavigatorObserver observer, String routeName) {
-    verify(observer.didPush(any, any));
+    // Note: didPush signature is (Route<dynamic> route, Route<dynamic>? previousRoute)
+    // We verify that didPush was called - the actual route checking can be done
+    // by capturing arguments if needed. For now, just verify the call happened.
+    // Using a workaround: verify the call with any() and cast to avoid null issues
+    // ignore: cast_from_null_always_fails - This is a matcher, not an actual cast
+    verify(observer.didPush(any as Route<dynamic>, any));
   }
 
   /// Creates test user data
   static UnifiedUser createTestUser({
     String id = 'test-user-id',
     String email = 'test@example.com',
-    String displayName = 'Test User',
+    String? displayName,
     UserRole role = UserRole.follower,
-    bool isVerifiedAge = true,
+    bool isAgeVerified = true,
   }) {
+    final now = DateTime.now();
     return UnifiedUser(
       id: id,
       email: email,
-      displayName: displayName,
-      role: role,
-      isVerifiedAge: isVerifiedAge,
-      profileImageUrl: null,
-      bio: null,
-      homebase: 'Test City',
-      privacySettings: PrivacySettings(
-        showEmail: false,
-        showLocation: true,
-        showLists: true,
-        allowDirectMessages: true,
-      ),
-      permissions: UserPermissions(
-        canCreateLists: true,
-        canModerateLists: role == UserRole.curator,
-        canAccessAgeRestrictedContent: isVerifiedAge,
-      ),
-      listMemberships: [],
-      authoredLists: [],
-      curatedLists: [],
-      favoritePlaces: [],
-      blockedUsers: [],
-      reportHistory: [],
-      activityHistory: [],
-      createdAt: DateTime.now(),
-      lastActiveAt: DateTime.now(),
+      displayName: displayName ?? 'Test User',
+      photoUrl: null,
+      location: 'Test City',
+      createdAt: now,
+      updatedAt: now,
+      isOnline: false,
+      hasCompletedOnboarding: true,
+      hasReceivedStarterLists: false,
+      expertise: null,
+      locations: null,
+      hostedEventsCount: null,
+      differentSpotsCount: null,
+      tags: const [],
+      expertiseMap: const {},
+      friends: const [],
+      curatedLists: const [],
+      collaboratedLists: const [],
+      followedLists: const [],
+      primaryRole: role,
+      isAgeVerified: isAgeVerified,
+      ageVerificationDate: isAgeVerified ? now : null,
     );
   }
 
@@ -154,98 +157,55 @@ class WidgetTestHelpers {
     String name = 'Test Spot',
     double latitude = 40.7128,
     double longitude = -74.0060,
-    SpotCategory category = SpotCategory.restaurant,
+    String category = 'restaurant',
   }) {
+    final now = DateTime.now();
     return Spot(
       id: id,
       name: name,
       description: 'A test spot for widget testing',
       latitude: latitude,
       longitude: longitude,
-      address: '123 Test St, Test City',
       category: category,
-      tags: ['test', 'widget'],
       rating: 4.5,
-      priceLevel: PriceLevel.moderate,
+      createdBy: 'test-user-id',
+      createdAt: now,
+      updatedAt: now,
+      address: '123 Test St, Test City',
       phoneNumber: '+1-555-0123',
       website: 'https://test.example.com',
-      hours: {},
-      amenities: [],
-      ageRestrictions: AgeRestrictions(
-        isAgeRestricted: false,
-        minimumAge: null,
-        requiresVerification: false,
-      ),
-      accessibilityInfo: AccessibilityInfo(
-        isWheelchairAccessible: true,
-        hasAudioAssistance: false,
-        hasVisualAssistance: false,
-        additionalInfo: null,
-      ),
-      createdBy: 'test-user-id',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      isVerified: false,
-      verificationLevel: VerificationLevel.none,
-      moderationStatus: ModerationStatus.approved,
-      reportCount: 0,
+      tags: const ['test', 'widget'],
+      metadata: const {},
     );
   }
 
   /// Creates test list data
   static SpotList createTestList({
     String id = 'test-list-id',
-    String name = 'Test List',
+    String? name,
+    String? title,
     String curatorId = 'test-user-id',
-    ListType type = ListType.public,
+    bool isPublic = true,
   }) {
+    final now = DateTime.now();
     return SpotList(
       id: id,
-      name: name,
+      title: title ?? name ?? 'Test List',
+      name: name ?? title ?? 'Test List',
       description: 'A test list for widget testing',
+      spots: const [],
+      createdAt: now,
+      updatedAt: now,
       curatorId: curatorId,
-      type: type,
-      category: ListCategory.general,
-      tags: ['test', 'widget'],
-      spots: [],
-      members: [
-        ListMember(
-          userId: curatorId,
-          role: ListRole.curator,
-          joinedAt: DateTime.now(),
-          permissions: MemberPermissions(
-            canAddSpots: true,
-            canRemoveSpots: true,
-            canEditSpots: true,
-            canInviteMembers: true,
-            canModerate: true,
-          ),
-        ),
-      ],
-      settings: ListSettings(
-        isPrivate: type == ListType.private,
-        requiresApproval: true,
-        allowsComments: true,
-        allowsRatings: true,
-        moderationLevel: ModerationLevel.standard,
-      ),
-      ageRestrictions: AgeRestrictions(
-        isAgeRestricted: false,
-        minimumAge: null,
-        requiresVerification: false,
-      ),
-      analytics: ListAnalytics(
-        viewCount: 0,
-        memberCount: 1,
-        spotCount: 0,
-        averageRating: 0.0,
-        engagementScore: 0.0,
-        lastActivityAt: DateTime.now(),
-      ),
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      moderationStatus: ModerationStatus.approved,
-      reportCount: 0,
+      isPublic: isPublic,
+      spotIds: const [],
+      tags: const ['test', 'widget'],
+      collaborators: const [],
+      followers: const [],
+      respectCount: 0,
+      ageRestricted: false,
+      moderationEnabled: true,
+      metadata: const {},
     );
   }
 

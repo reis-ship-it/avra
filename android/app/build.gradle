@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'dev.flutter.flutter-gradle-plugin'
+    id 'com.google.gms.google-services'
 }
 
 def localProperties = new Properties()
@@ -58,6 +59,22 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    // Exclude problematic ABC resources that are missing
+    androidResources {
+        ignoreAssetsPattern '!**/abc_*'
+        ignoreAssetsPattern '!**/select_dialog_*'
+    }
+    
+    // Additional resource exclusions
+    packagingOptions {
+        exclude '**/abc_*'
+        exclude '**/select_dialog_*'
+    }
 }
 
 flutter {
@@ -66,7 +83,14 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:1.7.0"
+    
+    // Exclude the problematic androidx.preference library
+    configurations.all {
+        exclude group: 'androidx.preference', module: 'preference'
+    }
+    
+    // Add missing notification resources
+    implementation 'androidx.core:core:1.12.0'
 }
 
-// apply plugin: 'com.google.gms.google-services'  // Temporarily disabled for development
+// Google services plugin applied via plugins block above

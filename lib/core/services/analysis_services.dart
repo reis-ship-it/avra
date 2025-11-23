@@ -1,9 +1,9 @@
 import 'dart:math' as math;
-import 'package:spots/core/services/business/ml/nlp_processor.dart';
-import 'package:spots/core/services/business/ml/predictive_analytics.dart';
-import 'package:spots/core/services/business/ai/personality_learning.dart';
-import 'package:spots/core/services/business/ai/collaboration_networks.dart';
-import 'package:spots/core/services/business/ml/pattern_recognition.dart';
+import 'package:spots/core/ml/nlp_processor.dart';
+import 'package:spots/core/ml/predictive_analytics.dart';
+import 'package:spots/core/ai/personality_learning.dart';
+import 'package:spots/core/ai/collaboration_networks.dart';
+import 'package:spots/core/ml/pattern_recognition.dart';
 
 // Behavior Analysis Service
 class BehaviorAnalysisService {

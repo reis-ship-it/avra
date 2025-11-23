@@ -5,6 +5,7 @@ import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/models/personality_profile.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/core/services/ai2ai_realtime_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -12,6 +13,9 @@ import 'package:spots/core/models/realtime_discovered_node.dart';
 import 'package:spots/core/ai2ai/aipersonality_node.dart';
 import 'package:spots/core/ai2ai/orchestrator_components.dart';
 import 'package:spots/core/services/logger.dart';
+import 'package:spots/core/network/device_discovery.dart';
+import 'package:spots/core/network/ai2ai_protocol.dart';
+import 'package:spots/core/network/personality_advertising_service.dart';
 import 'package:spots_network/spots_network.dart';
 
 /// OUR_GUTS.md: "AI2AI vibe-based connections that enable cross-personality learning while preserving privacy"
@@ -26,6 +30,9 @@ class VibeConnectionOrchestrator {
   final DiscoveryManager _discoveryManager;
   final ConnectionManager _connectionManager;
   final RealtimeCoordinator? _realtimeCoordinator;
+  final DeviceDiscoveryService? _deviceDiscovery;
+  final AI2AIProtocol? _protocol;
+  final PersonalityAdvertisingService? _advertisingService;
   final AppLogger _logger = const AppLogger(defaultTag: 'AI2AI', minimumLevel: LogLevel.debug);
   
   // Connection state management
@@ -52,16 +59,64 @@ class VibeConnectionOrchestrator {
     required UserVibeAnalyzer vibeAnalyzer,
     required Connectivity connectivity,
     AI2AIRealtimeService? realtimeService,
+    DeviceDiscoveryService? deviceDiscovery,
+    AI2AIProtocol? protocol,
+    PersonalityAdvertisingService? advertisingService,
+    PersonalityLearning? personalityLearning, // NEW: For offline AI2AI learning
   })  : _vibeAnalyzer = vibeAnalyzer,
         _connectivity = connectivity,
         _realtimeService = realtimeService,
+        _deviceDiscovery = deviceDiscovery,
+        _protocol = protocol,
+        _advertisingService = advertisingService,
         _discoveryManager = DiscoveryManager(connectivity: connectivity, vibeAnalyzer: vibeAnalyzer),
-        _connectionManager = ConnectionManager(vibeAnalyzer: vibeAnalyzer),
+        _connectionManager = ConnectionManager(
+          vibeAnalyzer: vibeAnalyzer,
+          personalityLearning: personalityLearning, // NEW: Pass to ConnectionManager
+          ai2aiProtocol: protocol, // NEW: Pass to ConnectionManager
+        ),
         _realtimeCoordinator = realtimeService != null ? RealtimeCoordinator(realtimeService) : null;
 
   /// Inject or update the realtime service after construction to avoid DI cycles
   void setRealtimeService(AI2AIRealtimeService service) {
     _realtimeService = service;
+  }
+  
+  /// Update personality advertising when personality evolves
+  /// Call this after personality profile is updated
+  /// This method is automatically called via PersonalityLearning callback
+  Future<void> updatePersonalityAdvertising(
+    String userId,
+    PersonalityProfile updatedPersonality,
+  ) async {
+    if (_advertisingService == null) {
+      return;
+    }
+    
+    try {
+      _logger.info('Updating personality advertising after evolution (generation ${updatedPersonality.evolutionGeneration})', tag: _logName);
+      
+      final success = await _advertisingService!.updatePersonalityData(
+        userId,
+        updatedPersonality,
+        _vibeAnalyzer,
+      );
+      
+      if (success) {
+        _logger.info('Personality advertising updated successfully', tag: _logName);
+      } else {
+        _logger.warn('Failed to update personality advertising', tag: _logName);
+      }
+    } catch (e) {
+      _logger.error('Error updating personality advertising', error: e, tag: _logName);
+    }
+  }
+  
+  /// Set up automatic personality advertising updates
+  /// Call this to enable automatic updates when personality evolves
+  void setupAutomaticAdvertisingUpdates() {
+    // This will be called from injection container after PersonalityLearning is created
+    // The callback will be set up there to avoid circular dependencies
   }
   
   /// Initialize the AI2AI connection orchestration system
@@ -78,6 +133,26 @@ class VibeConnectionOrchestrator {
         } else {
           _logger.warn('Realtime Service failed to initialize', tag: _logName);
         }
+      }
+      
+      // Start personality advertising (make this device discoverable)
+      if (_advertisingService != null) {
+        final advertisingStarted = await _advertisingService!.startAdvertising(
+          userId,
+          personality,
+          _vibeAnalyzer,
+        );
+        if (advertisingStarted) {
+          _logger.info('Personality advertising started', tag: _logName);
+        } else {
+          _logger.warn('Personality advertising failed to start', tag: _logName);
+        }
+      }
+      
+      // Start device discovery (find other devices)
+      if (_deviceDiscovery != null) {
+        await _deviceDiscovery!.startDiscovery();
+        _logger.info('Device discovery started', tag: _logName);
       }
       
       // Start AI2AI discovery process
@@ -217,6 +292,11 @@ class VibeConnectionOrchestrator {
     _logger.debug('Connection management completed. Active: ${_activeConnections.length}', tag: _logName);
   }
   
+  /// Get count of active connections
+  int getActiveConnectionCount() {
+    return _activeConnections.length;
+  }
+  
   /// Calculate AI pleasure score for connection quality
   Future<double> calculateAIPleasureScore(ConnectionMetrics connection) async {
     try {
@@ -264,6 +344,12 @@ class VibeConnectionOrchestrator {
         dimensionsEvolved: connection.dimensionEvolution.keys.length,
       );
     }).toList();
+  }
+
+  /// Get active connections for UI display
+  /// Returns list of ConnectionMetrics for active connections
+  List<ConnectionMetrics> getActiveConnections() {
+    return _activeConnections.values.toList();
   }
   
   /// Cleanup and shutdown orchestration
@@ -328,46 +414,84 @@ class VibeConnectionOrchestrator {
   }
   
   Future<List<AIPersonalityNode>> _performAI2AIDiscovery(AnonymizedVibeData localVibe) async {
-    // Simulate AI2AI discovery process
-    // In real implementation, this would involve network protocols
+    // Phase 6: Use physical layer device discovery if available
+    if (_deviceDiscovery != null) {
+      try {
+        _logger.info('Using physical layer device discovery', tag: _logName);
+        
+        // Get discovered devices from physical layer
+        final devices = _deviceDiscovery!.getDiscoveredDevices();
+        
+        // Convert discovered devices to AI personality nodes
+        final nodes = <AIPersonalityNode>[];
+        for (final device in devices) {
+          // Extract personality data from device
+          final personalityData = await _deviceDiscovery!.extractPersonalityData(device);
+          if (personalityData == null) continue;
+          
+          // Create vibe from anonymized data
+          final vibe = _createVibeFromAnonymizedData(personalityData);
+          
+          // Calculate trust score based on proximity and signal strength
+          final proximityScore = _deviceDiscovery!.calculateProximity(device);
+          final trustScore = proximityScore * 0.7 + 0.3; // Base trust + proximity
+          
+          final node = AIPersonalityNode(
+            nodeId: device.deviceId,
+            vibe: vibe,
+            lastSeen: device.discoveredAt,
+            trustScore: trustScore,
+            learningHistory: {},
+          );
+          
+          nodes.add(node);
+        }
+        
+        if (nodes.isNotEmpty) {
+          _logger.info('Discovered ${nodes.length} AI personalities via physical layer', tag: _logName);
+          return nodes;
+        }
+      } catch (e) {
+        _logger.error('Error in physical layer discovery: $e', tag: _logName);
+        // Fall through to realtime discovery
+      }
+    }
     
-    await Future.delayed(Duration(milliseconds: 100)); // Simulate network delay
+    // Fallback to realtime discovery (Supabase Realtime)
+    // This is the existing implementation
+    if (_realtimeService != null) {
+      try {
+        _logger.info('Using realtime discovery', tag: _logName);
+        // Realtime discovery would happen here
+        // For now, return empty list if physical layer fails
+        return [];
+      } catch (e) {
+        _logger.error('Error in realtime discovery: $e', tag: _logName);
+      }
+    }
     
-    // Return simulated discovered nodes
-    return [
-      AIPersonalityNode(
-        nodeId: 'ai_node_1',
-        vibe: UserVibe.fromPersonalityProfile('simulated_user_1', {
-          'exploration_eagerness': 0.8,
-          'community_orientation': 0.6,
-          'authenticity_preference': 0.9,
-          'social_discovery_style': 0.7,
-          'temporal_flexibility': 0.5,
-          'location_adventurousness': 0.8,
-          'curation_tendency': 0.4,
-          'trust_network_reliance': 0.6,
-        }),
-        lastSeen: DateTime.now(),
-        trustScore: 0.8,
-        learningHistory: {},
-      ),
-      AIPersonalityNode(
-        nodeId: 'ai_node_2',
-        vibe: UserVibe.fromPersonalityProfile('simulated_user_2', {
-          'exploration_eagerness': 0.5,
-          'community_orientation': 0.9,
-          'authenticity_preference': 0.7,
-          'social_discovery_style': 0.8,
-          'temporal_flexibility': 0.6,
-          'location_adventurousness': 0.4,
-          'curation_tendency': 0.9,
-          'trust_network_reliance': 0.8,
-        }),
-        lastSeen: DateTime.now(),
-        trustScore: 0.9,
-        learningHistory: {},
-      ),
-    ];
+    // Final fallback: return empty list
+    _logger.warn('No discovery method available, returning empty list', tag: _logName);
+    return [];
+  }
+  
+  /// Create UserVibe from AnonymizedVibeData
+  UserVibe _createVibeFromAnonymizedData(AnonymizedVibeData anonymizedData) {
+    // Extract metrics from anonymized data
+    final metrics = anonymizedData.anonymizedMetrics;
+    
+    // Create UserVibe using anonymized dimensions and metrics
+    return UserVibe(
+      hashedSignature: anonymizedData.vibeSignature,
+      anonymizedDimensions: anonymizedData.noisyDimensions,
+      overallEnergy: metrics.energy,
+      socialPreference: metrics.social,
+      explorationTendency: metrics.exploration,
+      createdAt: anonymizedData.createdAt,
+      expiresAt: anonymizedData.expiresAt,
+      privacyLevel: anonymizedData.anonymizationQuality,
+      temporalContext: anonymizedData.temporalContextHash,
+    );
   }
   
   void _updateDiscoveredNodes(List<AIPersonalityNode> nodes) {

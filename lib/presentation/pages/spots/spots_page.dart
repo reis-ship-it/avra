@@ -7,6 +7,7 @@ import 'package:spots/presentation/pages/spots/spot_details_page.dart';
 import 'package:spots/presentation/widgets/spots/spot_card.dart';
 import 'package:spots/presentation/widgets/common/offline_indicator.dart';
 import 'package:spots/core/theme/app_theme.dart';
+import 'package:spots/core/theme/colors.dart';
 
 class SpotsPage extends StatefulWidget {
   const SpotsPage({super.key});
@@ -16,11 +17,25 @@ class SpotsPage extends StatefulWidget {
 }
 
 class _SpotsPageState extends State<SpotsPage> {
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     // Load spots including respected lists
     context.read<SpotsBloc>().add(LoadSpotsWithRespected());
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    final query = _searchController.text;
+    context.read<SpotsBloc>().add(SearchSpots(query: query));
   }
 
   @override
@@ -33,62 +48,35 @@ class _SpotsPageState extends State<SpotsPage> {
           SizedBox(width: 16),
         ],
       ),
-      body: BlocBuilder<SpotsBloc, SpotsState>(
-        builder: (context, state) {
-          if (state is SpotsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state is SpotsLoaded) {
-            final allSpots = [...state.spots, ...state.respectedSpots];
-
-            if (allSpots.isEmpty) {
-              return const Center(
-                child: Text('No spots yet. Create your first spot!'),
-              );
-            }
-
-            return ListView.builder(
-              itemCount: allSpots.length,
-              itemBuilder: (context, index) {
-                final spot = allSpots[index];
-                return SpotCard(
-                  spot: spot,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SpotDetailsPage(spot: spot),
-                      ),
-                    );
-                  },
-                );
-              },
-            );
-          }
-
-          if (state is SpotsError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error, size: 64, color: AppTheme.errorColor),
-                  const SizedBox(height: 16),
-                  Text('Error: ${state.message}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<SpotsBloc>().add(LoadSpotsWithRespected());
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
+      body: Column(
+        children: [
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search spots...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                        },
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-            );
-          }
-
-          return const Center(child: Text('No spots loaded'));
-        },
+            ),
+          ),
+          // Spots List
+          Expanded(
+            child: _buildSpotsList(context),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -100,6 +88,96 @@ class _SpotsPageState extends State<SpotsPage> {
         heroTag: 'spots_page_fab',
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  Widget _buildSpotsList(BuildContext context) {
+    return BlocBuilder<SpotsBloc, SpotsState>(
+      builder: (context, state) {
+        if (state is SpotsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is SpotsLoaded) {
+          // Use filtered spots if search query exists, otherwise use all spots
+          final spotsToShow = state.searchQuery != null && state.searchQuery!.isNotEmpty
+              ? state.filteredSpots
+              : [...state.spots, ...state.respectedSpots];
+
+          if (spotsToShow.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    state.searchQuery != null && state.searchQuery!.isNotEmpty
+                        ? Icons.search_off
+                        : Icons.location_off,
+                    size: 64,
+                    color: AppColors.grey400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    state.searchQuery != null && state.searchQuery!.isNotEmpty
+                        ? 'No spots found matching "${state.searchQuery}"'
+                        : 'No spots yet. Create your first spot!',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  if (state.searchQuery != null && state.searchQuery!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () {
+                        _searchController.clear();
+                      },
+                      child: const Text('Clear search'),
+                    ),
+                  ],
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: spotsToShow.length,
+            itemBuilder: (context, index) {
+              final spot = spotsToShow[index];
+              return SpotCard(
+                spot: spot,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SpotDetailsPage(spot: spot),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        }
+
+        if (state is SpotsError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error, size: 64, color: AppTheme.errorColor),
+                const SizedBox(height: 16),
+                Text('Error: ${state.message}'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<SpotsBloc>().add(LoadSpotsWithRespected());
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return const Center(child: Text('No spots loaded'));
+      },
     );
   }
 

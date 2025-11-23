@@ -482,8 +482,9 @@ void main() {
         -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, double.infinity, double.negativeInfinity
       ];
       
+      final testProfile = PersonalityProfile.initial('test-user-bounds');
       for (final value in testCases) {
-        final evolved = profile.evolve(
+        final evolved = testProfile.evolve(
           newDimensions: {'exploration_eagerness': value},
         );
         

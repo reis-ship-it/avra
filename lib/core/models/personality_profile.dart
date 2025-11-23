@@ -1,10 +1,13 @@
 import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:spots/core/models/contextual_personality.dart';
 
 /// OUR_GUTS.md: "AI personality that evolves and learns while preserving privacy"
-/// Represents a complete AI personality profile with 8 core dimensions and evolution tracking
+/// Represents a complete AI personality profile with 12 core dimensions and evolution tracking
+/// Phase 2: Expanded from 8 to 12 dimensions for more precise matching
+/// Phase 3: Added contextual personality system (core + contexts + timeline)
 class PersonalityProfile {
   final String userId;
-  final Map<String, double> dimensions;
+  final Map<String, double> dimensions; // Current active dimensions
   final Map<String, double> dimensionConfidence;
   final String archetype;
   final double authenticity;
@@ -12,6 +15,14 @@ class PersonalityProfile {
   final DateTime lastUpdated;
   final int evolutionGeneration;
   final Map<String, dynamic> learningHistory;
+  
+  // NEW: Phase 3 - Contextual Personality System
+  final Map<String, double> corePersonality; // Stable baseline (resists drift)
+  final Map<String, ContextualPersonality> contexts; // Context-specific adaptations
+  final List<LifePhase> evolutionTimeline; // Preserved life phases
+  final String? currentPhaseId; // Current life phase
+  final bool isInTransition; // Currently transitioning phases?
+  final TransitionMetrics? activeTransition; // Active transition metrics
   
   PersonalityProfile({
     required this.userId,
@@ -23,9 +34,17 @@ class PersonalityProfile {
     required this.lastUpdated,
     required this.evolutionGeneration,
     required this.learningHistory,
-  });
+    // Phase 3: Contextual personality (backward compatible)
+    Map<String, double>? corePersonality,
+    this.contexts = const {},
+    this.evolutionTimeline = const [],
+    this.currentPhaseId,
+    this.isInTransition = false,
+    this.activeTransition,
+  }) : corePersonality = corePersonality ?? dimensions; // Default to dimensions for backward compat
   
   /// Create initial personality profile with default values
+  /// Phase 3: Now includes core personality and initial life phase
   factory PersonalityProfile.initial(String userId) {
     final initialDimensions = <String, double>{};
     final initialConfidence = <String, double>{};
@@ -34,6 +53,12 @@ class PersonalityProfile {
       initialDimensions[dimension] = VibeConstants.defaultDimensionValue;
       initialConfidence[dimension] = 0.0; // No confidence initially
     }
+    
+    // Create initial life phase
+    final initialPhase = LifePhase.initial(
+      userId: userId,
+      initialPersonality: Map<String, double>.from(initialDimensions),
+    );
     
     return PersonalityProfile(
       userId: userId,
@@ -50,6 +75,13 @@ class PersonalityProfile {
         'learning_sources': <String>[],
         'evolution_milestones': <DateTime>[],
       },
+      // Phase 3: Contextual personality
+      corePersonality: Map<String, double>.from(initialDimensions),
+      contexts: {},
+      evolutionTimeline: [initialPhase],
+      currentPhaseId: initialPhase.phaseId,
+      isInTransition: false,
+      activeTransition: null,
     );
   }
   
@@ -107,6 +139,117 @@ class PersonalityProfile {
       lastUpdated: DateTime.now(),
       evolutionGeneration: evolutionGeneration + 1,
       learningHistory: updatedLearning,
+      // Phase 3: Preserve contextual personality state
+      corePersonality: corePersonality,
+      contexts: contexts,
+      evolutionTimeline: evolutionTimeline,
+      currentPhaseId: currentPhaseId,
+      isInTransition: isInTransition,
+      activeTransition: activeTransition,
+    );
+  }
+  
+  // ========================================================================
+  // PHASE 3: CONTEXTUAL PERSONALITY METHODS
+  // Philosophy: "Your doors stay yours" while allowing contextual adaptation
+  // ========================================================================
+  
+  /// Get effective personality for a given context
+  /// Blends core personality with contextual adaptations
+  Map<String, double> getEffectivePersonality([String? contextId]) {
+    if (contextId == null || !contexts.containsKey(contextId)) {
+      return Map<String, double>.from(corePersonality);
+    }
+    
+    final context = contexts[contextId]!;
+    return _blendPersonalities(
+      corePersonality,
+      context.adaptedDimensions,
+      context.adaptationWeight,
+    );
+  }
+  
+  /// Blend core personality with contextual adaptations
+  Map<String, double> _blendPersonalities(
+    Map<String, double> core,
+    Map<String, double> adaptation,
+    double weight,
+  ) {
+    final blended = Map<String, double>.from(core);
+    
+    adaptation.forEach((dimension, adaptedValue) {
+      final coreValue = core[dimension] ?? 0.5;
+      // Blend: core * (1-weight) + adapted * weight
+      blended[dimension] = (coreValue * (1 - weight) + adaptedValue * weight)
+          .clamp(0.0, 1.0);
+    });
+    
+    return blended;
+  }
+  
+  /// Get historical personality from a specific life phase
+  Map<String, double>? getHistoricalPersonality(String phaseId) {
+    try {
+      final phase = evolutionTimeline.firstWhere((p) => p.phaseId == phaseId);
+      return Map<String, double>.from(phase.corePersonality);
+    } catch (e) {
+      return null; // Phase not found
+    }
+  }
+  
+  /// Get current life phase
+  LifePhase? getCurrentPhase() {
+    if (currentPhaseId == null) return null;
+    try {
+      return evolutionTimeline.firstWhere((p) => p.phaseId == currentPhaseId);
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  /// Update context-specific personality
+  PersonalityProfile updateContext({
+    required String contextId,
+    required PersonalityContextType contextType,
+    required Map<String, double> adaptations,
+    double? adaptationWeight,
+  }) {
+    final updatedContexts = Map<String, ContextualPersonality>.from(contexts);
+    
+    if (updatedContexts.containsKey(contextId)) {
+      // Update existing context
+      updatedContexts[contextId] = updatedContexts[contextId]!.adapt(
+        newAdaptations: adaptations,
+        newWeight: adaptationWeight,
+      );
+    } else {
+      // Create new context
+      updatedContexts[contextId] = ContextualPersonality(
+        contextId: contextId,
+        contextType: contextType,
+        adaptedDimensions: adaptations,
+        adaptationWeight: adaptationWeight ?? 0.3,
+        lastUpdated: DateTime.now(),
+        updateCount: 1,
+      );
+    }
+    
+    return PersonalityProfile(
+      userId: userId,
+      dimensions: dimensions,
+      dimensionConfidence: dimensionConfidence,
+      archetype: archetype,
+      authenticity: authenticity,
+      createdAt: createdAt,
+      lastUpdated: DateTime.now(),
+      evolutionGeneration: evolutionGeneration,
+      learningHistory: learningHistory,
+      corePersonality: corePersonality,
+      contexts: updatedContexts,
+      evolutionTimeline: evolutionTimeline,
+      currentPhaseId: currentPhaseId,
+      isInTransition: isInTransition,
+      activeTransition: activeTransition,
     );
   }
   

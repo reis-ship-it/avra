@@ -61,15 +61,18 @@ void main() {
           timestamp: testDate,
           metadata: {'key': 'value'},
           socialContext: UnifiedSocialContext(
-            communityContext: 'test_community',
-            socialSignals: {'engagement': 0.8},
+            nearbyUsers: [],
+            friends: [],
+            communityMembers: ['test_community'],
+            socialMetrics: {'engagement': 0.8},
+            timestamp: testDate,
           ),
         );
 
         expect(action.type, equals('test_action'));
         expect(action.timestamp, equals(testDate));
         expect(action.metadata['key'], equals('value'));
-        expect(action.socialContext.communityContext, equals('test_community'));
+        expect(action.socialContext.communityMembers, contains('test_community'));
         expect(action.location, isNull);
       });
 
@@ -86,8 +89,11 @@ void main() {
           metadata: {'spot_id': 'spot-123', 'duration': 30},
           location: location,
           socialContext: UnifiedSocialContext(
-            communityContext: 'local_community',
-            socialSignals: {'influence': 0.9, 'trust': 0.8},
+            nearbyUsers: [],
+            friends: [],
+            communityMembers: ['local_community'],
+            socialMetrics: {'influence': 0.9, 'trust': 0.8},
+            timestamp: testDate,
           ),
         );
 
@@ -98,7 +104,7 @@ void main() {
         expect(action.location, isNotNull);
         expect(action.location!.latitude, equals(40.7128));
         expect(action.location!.longitude, equals(-74.0060));
-        expect(action.socialContext.socialSignals['influence'], equals(0.9));
+        expect(action.socialContext.socialMetrics['influence'], equals(0.9));
       });
 
       test('should serialize to JSON correctly', () {
@@ -123,8 +129,11 @@ void main() {
           'timestamp': testDate.toIso8601String(),
           'metadata': {'field': 'display_name', 'old_value': 'Old Name', 'new_value': 'New Name'},
           'socialContext': {
-            'communityContext': 'global',
-            'socialSignals': {'activity': 0.7}
+            'nearbyUsers': [],
+            'friends': [],
+            'communityMembers': ['global'],
+            'socialMetrics': {'activity': 0.7},
+            'timestamp': testDate.toIso8601String(),
           },
         };
 
@@ -135,8 +144,8 @@ void main() {
         expect(action.metadata['field'], equals('display_name'));
         expect(action.metadata['old_value'], equals('Old Name'));
         expect(action.metadata['new_value'], equals('New Name'));
-        expect(action.socialContext.communityContext, equals('global'));
-        expect(action.socialContext.socialSignals['activity'], equals(0.7));
+        expect(action.socialContext.communityMembers, contains('global'));
+        expect(action.socialContext.socialMetrics['activity'], equals(0.7));
       });
 
       test('should handle JSON roundtrip correctly', () {
@@ -145,11 +154,13 @@ void main() {
           metadata: {'query': 'italian restaurants', 'filters': ['rating>4', 'price<3']},
         );
         
-        TestHelpers.validateJsonRoundtrip(
-          originalAction,
-          (action) => action.toJson(),
-          (json) => UnifiedUserAction.fromJson(json),
-        );
+        final json = originalAction.toJson();
+        final reconstructed = UnifiedUserAction.fromJson(json);
+        
+        // Compare properties individually since UnifiedUserAction doesn't implement Equatable
+        expect(reconstructed.type, equals(originalAction.type));
+        expect(reconstructed.timestamp, equals(originalAction.timestamp));
+        expect(reconstructed.metadata, equals(originalAction.metadata));
       });
 
       test('should handle missing optional fields in JSON', () {
@@ -157,8 +168,11 @@ void main() {
           'type': 'map_interaction',
           'timestamp': testDate.toIso8601String(),
           'socialContext': {
-            'communityContext': 'local',
-            'socialSignals': {}
+            'nearbyUsers': [],
+            'friends': [],
+            'communityMembers': ['local'],
+            'socialMetrics': {},
+            'timestamp': testDate.toIso8601String(),
           },
         };
 
@@ -168,7 +182,7 @@ void main() {
         expect(action.timestamp, equals(testDate));
         expect(action.metadata, isEmpty);
         expect(action.location, isNull);
-        expect(action.socialContext.communityContext, equals('local'));
+        expect(action.socialContext.communityMembers, contains('local'));
       });
     });
 
@@ -310,11 +324,14 @@ void main() {
           status: 'testing',
         );
         
-        TestHelpers.validateJsonRoundtrip(
-          originalModel,
-          (model) => model.toJson(),
-          (json) => UnifiedAIModel.fromJson(json),
-        );
+        final json = originalModel.toJson();
+        final reconstructed = UnifiedAIModel.fromJson(json);
+        
+        // Compare properties individually since UnifiedAIModel doesn't implement Equatable
+        expect(reconstructed.id, equals(originalModel.id));
+        expect(reconstructed.name, equals(originalModel.name));
+        expect(reconstructed.version, equals(originalModel.version));
+        expect(reconstructed.parameters, equals(originalModel.parameters));
       });
     });
 
@@ -406,11 +423,13 @@ void main() {
           timestamp: testDate,
         );
         
-        TestHelpers.validateJsonRoundtrip(
-          originalEvent,
-          (event) => event.toJson(),
-          (json) => OrchestrationEvent.fromJson(json),
-        );
+        final json = originalEvent.toJson();
+        final reconstructed = OrchestrationEvent.fromJson(json);
+        
+        // Compare properties individually since OrchestrationEvent doesn't implement Equatable
+        expect(reconstructed.eventType, equals(originalEvent.eventType));
+        expect(reconstructed.value, equals(originalEvent.value));
+        expect(reconstructed.timestamp, equals(originalEvent.timestamp));
       });
 
       test('should handle edge case timestamps', () {
@@ -451,18 +470,21 @@ void main() {
             'events_processed': 1500,
           },
           socialContext: UnifiedSocialContext(
-            communityContext: 'ai2ai_network',
-            socialSignals: {
+            nearbyUsers: [],
+            friends: [],
+            communityMembers: ['ai2ai_network'],
+            socialMetrics: {
               'learning_effectiveness': 0.92,
               'network_impact': 0.85,
             },
+            timestamp: testDate,
           ),
         );
 
         expect(aiModelUpdate.type, equals('ai_model_retrained'));
         expect(aiModelUpdate.metadata['model_id'], equals('personality-learner-v3'));
         expect(aiModelUpdate.metadata['new_accuracy'], equals(0.93));
-        expect(aiModelUpdate.socialContext.socialSignals['learning_effectiveness'], equals(0.92));
+        expect(aiModelUpdate.socialContext.socialMetrics['learning_effectiveness'], equals(0.92));
       });
 
       test('should create orchestration event sequence', () {
@@ -529,13 +551,16 @@ void main() {
           timestamp: testDate,
           metadata: {},
           socialContext: UnifiedSocialContext(
-            communityContext: 'test',
-            socialSignals: {},
+            nearbyUsers: [],
+            friends: [],
+            communityMembers: ['test'],
+            socialMetrics: {},
+            timestamp: testDate,
           ),
         );
 
         expect(action.metadata, isEmpty);
-        expect(action.socialContext.socialSignals, isEmpty);
+        expect(action.socialContext.socialMetrics, isEmpty);
       });
 
       test('should handle empty parameters in AI model', () {
@@ -569,60 +594,23 @@ void main() {
           timestamp: testDate,
           metadata: {
             'unicode_text': 'Hello 世界 🌍',
-            'special_chars': '@#$%^&*()_+-=[]{}|;:,.<>?',
+            'special_chars': r'@#$%^&*()_+-=[]{}|;:,.<>?',
           },
           socialContext: UnifiedSocialContext(
-            communityContext: 'unicode_test_ñáéíóú',
-            socialSignals: {'test': 0.5},
+            nearbyUsers: [],
+            friends: [],
+            communityMembers: ['unicode_test_ñáéíóú'],
+            socialMetrics: {'test': 0.5},
+            timestamp: testDate,
           ),
         );
 
         expect(action.type, contains('🚀'));
         expect(action.metadata['unicode_text'], contains('世界'));
-        expect(action.socialContext.communityContext, contains('ñáéíóú'));
+        expect(action.socialContext.communityMembers.first, contains('ñáéíóú'));
       });
     });
   });
 }
 
-// Helper classes for testing
-class UnifiedLocation {
-  final double latitude;
-  final double longitude;
-  final String? address;
-
-  UnifiedLocation({
-    required this.latitude,
-    required this.longitude,
-    this.address,
-  });
-
-  factory UnifiedLocation.fromJson(Map<String, dynamic> json) {
-    return UnifiedLocation(
-      latitude: json['latitude'] as double,
-      longitude: json['longitude'] as double,
-      address: json['address'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'latitude': latitude,
-      'longitude': longitude,
-      'address': address,
-    };
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        other is UnifiedLocation &&
-            runtimeType == other.runtimeType &&
-            latitude == other.latitude &&
-            longitude == other.longitude &&
-            address == other.address;
-  }
-
-  @override
-  int get hashCode => latitude.hashCode ^ longitude.hashCode ^ address.hashCode;
-}
+// Note: Using UnifiedLocation from unified_models.dart

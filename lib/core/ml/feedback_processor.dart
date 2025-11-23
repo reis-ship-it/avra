@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 import 'package:spots/core/models/user.dart';
 import 'package:spots/core/models/spot.dart';
 
-/// OUR_GUTS.md: "Always Learning, Always Listening"
+/// OUR_GUTS.md: "Always Learning With You"
 /// Processes user feedback to continuously improve recommendations
 class FeedbackProcessor {
   static const String _logName = 'FeedbackProcessor';

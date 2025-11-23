@@ -1,0 +1,82 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'sync_status.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+SyncStatus _$SyncStatusFromJson(Map<String, dynamic> json) => SyncStatus(
+  entityId: json['entityId'] as String,
+  entityType: json['entityType'] as String,
+  state: $enumDecode(_$SyncStateEnumMap, json['state']),
+  lastSyncAttempt: DateTime.parse(json['lastSyncAttempt'] as String),
+  lastSuccessfulSync: json['lastSuccessfulSync'] == null
+      ? null
+      : DateTime.parse(json['lastSuccessfulSync'] as String),
+  error: json['error'] as String?,
+  retryCount: (json['retryCount'] as num?)?.toInt() ?? 0,
+  pendingChanges: json['pendingChanges'] as Map<String, dynamic>? ?? const {},
+);
+
+Map<String, dynamic> _$SyncStatusToJson(SyncStatus instance) =>
+    <String, dynamic>{
+      'entityId': instance.entityId,
+      'entityType': instance.entityType,
+      'state': _$SyncStateEnumMap[instance.state]!,
+      'lastSyncAttempt': instance.lastSyncAttempt.toIso8601String(),
+      'lastSuccessfulSync': instance.lastSuccessfulSync?.toIso8601String(),
+      'error': instance.error,
+      'retryCount': instance.retryCount,
+      'pendingChanges': instance.pendingChanges,
+    };
+
+const _$SyncStateEnumMap = {
+  SyncState.pending: 'pending',
+  SyncState.syncing: 'syncing',
+  SyncState.synced: 'synced',
+  SyncState.failed: 'failed',
+  SyncState.conflict: 'conflict',
+};
+
+SyncQueue _$SyncQueueFromJson(Map<String, dynamic> json) => SyncQueue(
+  operations: (json['operations'] as List<dynamic>)
+      .map((e) => SyncOperation.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  updatedAt: DateTime.parse(json['updatedAt'] as String),
+);
+
+Map<String, dynamic> _$SyncQueueToJson(SyncQueue instance) => <String, dynamic>{
+  'operations': instance.operations,
+  'createdAt': instance.createdAt.toIso8601String(),
+  'updatedAt': instance.updatedAt.toIso8601String(),
+};
+
+SyncOperation _$SyncOperationFromJson(Map<String, dynamic> json) =>
+    SyncOperation(
+      id: json['id'] as String,
+      entityId: json['entityId'] as String,
+      entityType: json['entityType'] as String,
+      type: $enumDecode(_$SyncOperationTypeEnumMap, json['type']),
+      data: json['data'] as Map<String, dynamic>,
+      status: SyncStatus.fromJson(json['status'] as Map<String, dynamic>),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    );
+
+Map<String, dynamic> _$SyncOperationToJson(SyncOperation instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'entityId': instance.entityId,
+      'entityType': instance.entityType,
+      'type': _$SyncOperationTypeEnumMap[instance.type]!,
+      'data': instance.data,
+      'status': instance.status,
+      'createdAt': instance.createdAt.toIso8601String(),
+    };
+
+const _$SyncOperationTypeEnumMap = {
+  SyncOperationType.create: 'create',
+  SyncOperationType.update: 'update',
+  SyncOperationType.delete: 'delete',
+};

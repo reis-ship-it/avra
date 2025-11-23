@@ -1,0 +1,284 @@
+# Cursor Rule: Master Plan System
+
+## 🎯 MANDATORY RULE: Master Plan Integration
+
+**Trigger:** When user says "I want to add [feature]" or "I want to implement [feature]"
+
+**Action Required:** Follow automated workflow to integrate into Master Plan
+
+---
+
+## 📋 Rule Details
+
+### **When This Rule Applies:**
+
+Anytime user requests:
+- "I want to add [feature]"
+- "I want to implement [feature]"
+- "Let's build [feature]"
+- "Create [feature]"
+- Any new feature/implementation request
+
+### **⚠️ CRITICAL: Master Plan is THE Execution Plan**
+
+**All other plans are reference guides. Master Plan is the single source of truth for execution order.**
+
+---
+
+## 🤖 Automated Workflow
+
+### **Step 1: Create Comprehensive Plan Document**
+
+**⚠️ MANDATORY: Before creating plan, read:**
+- `docs/plans/philosophy_implementation/DOORS.md` - The conversation that revealed the truth
+- `OUR_GUTS.md` - Core values (leads with doors philosophy)
+- `docs/plans/philosophy_implementation/SPOTS_PHILOSOPHY_AND_ARCHITECTURE.md` - Complete philosophy guide
+- `docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md` - Complete methodology guide
+
+1. **Create full implementation plan** with:
+   - Complete implementation details
+   - Phases, timelines, requirements
+   - Technical specifications
+   - Dependencies identified
+   - **Doors questions answered** (What doors? When ready? Good key? Learning?)
+   - **Methodology compliance** (Context gathering, quality standards, architecture alignment)
+
+2. **Create plan folder structure:**
+   - Create `docs/plans/[feature_name]/` folder
+   - Move plan document to folder
+   - Create supporting docs:
+     - `progress.md` (detailed progress tracking)
+     - `status.md` (current status)
+     - `blockers.md` (blockers/dependencies)
+     - `working_status.md` (what's being worked on now)
+
+3. **Initialize supporting docs** with default content
+
+4. **Verify philosophy alignment:**
+   - Answer doors questions: What doors? When ready? Good key? Learning?
+   - Verify architecture: ai2ai only, offline-first, self-improving
+   - Ensure authentic value: Not gamification, real user benefit
+
+### **Step 2: Add to Master Plan Tracker**
+
+1. **Update `docs/MASTER_PLAN_TRACKER.md`:**
+   - Add entry to appropriate section
+   - Include ALL required fields:
+     - Plan Name
+     - Date (today's date)
+     - Status (🟢 Active for new plans)
+     - Priority (CRITICAL / HIGH / MEDIUM / LOW)
+     - Timeline (estimated duration)
+     - File Path (relative link to plan folder)
+   - Update Feature Cross-Reference Matrix if needed
+
+### **Step 3: Analyze for Master Plan Integration**
+
+1. **Determine dependencies:**
+   - What does this feature need?
+   - What features depend on this?
+   - Check Master Plan for dependency conflicts
+
+2. **Determine priority:**
+   - How critical is this feature?
+   - Does it block other work?
+   - Is it foundational or enhancement?
+
+3. **Determine feature area:**
+   - Where does it fit logically?
+   - What other features are similar?
+   - Can phases be batched?
+
+4. **Determine timeline:**
+   - How long will it take?
+   - What are the phases?
+   - Can phases align with other features?
+
+5. **Check for catch-up opportunities:**
+   - Are there active features in Master Plan?
+   - What phase are they in?
+   - Can new feature catch up to enable parallel work?
+
+### **Step 4: Insert into Master Plan**
+
+1. **Read `docs/MASTER_PLAN.md`** to understand current execution sequence
+
+2. **Determine optimal position:**
+   - If catch-up opportunity exists → use catch-up logic
+   - If no catch-up → insert based on dependencies/priority/timeline
+   - Consider batching common phases
+
+3. **Update Master Plan execution sequence:**
+   - Add feature to appropriate phase/week
+   - Note parallel work opportunities
+   - Update progress tracking section
+   - Update current phase indicator
+
+4. **Apply catch-up logic if applicable:**
+   - Pause active features at current phase
+   - Schedule new feature's catch-up phases
+   - Schedule parallel work once caught up
+   - Note finish-together timeline
+
+### **Step 5: Update References**
+
+1. **Update Master Plan Tracker** (already done in Step 2)
+
+2. **Update any cross-references** in related plans
+
+3. **Notify user** of integration and position in Master Plan
+
+---
+
+## 📐 Master Plan Structure
+
+### **Master Plan Organization:**
+
+The Master Plan (`docs/MASTER_PLAN.md`) organizes features by:
+1. **Phases** (sequential phases within a feature)
+2. **Priorities** (P0, P1, P2...)
+3. **Dependencies** (A before B)
+4. **Feature Areas** (monetization, expertise, events...)
+5. **Timeline** (estimated duration)
+
+**Result:** One optimized execution sequence considering all factors.
+
+### **Catch-Up Prioritization Logic:**
+
+**When new feature arrives:**
+1. **Pause** active features at current phase
+2. **Prioritize** new feature to catch up
+3. **Resume** in parallel once caught up
+4. **Finish** together
+
+**Example:**
+- Feature A at Service phase (100%)
+- Feature B arrives (needs Models → Service → UI)
+- Feature B catches up (Models, Service)
+- Both work UI together in parallel
+- Both finish together
+
+---
+
+## 📁 Folder Organization
+
+### **Plan Folder Structure:**
+
+```
+docs/plans/
+  [feature_name]/
+    [FEATURE_NAME]_PLAN.md  (main plan document)
+    progress.md              (detailed progress tracking)
+    status.md                (current status)
+    blockers.md               (blockers/dependencies)
+    working_status.md         (what's being worked on now)
+```
+
+### **Master Plan References:**
+
+- **Master Plan:** `docs/MASTER_PLAN.md` (execution sequence)
+- **Master Plan Tracker:** `docs/MASTER_PLAN_TRACKER.md` (registry)
+- **Master Plan Requirements:** `docs/MASTER_PLAN_REQUIREMENTS.md` (specifications)
+
+---
+
+## 📚 Key Documentation References
+
+### **MANDATORY References (Must Read Before Any Work):**
+
+1. **Doors Philosophy (MANDATORY):**
+   - `docs/plans/philosophy_implementation/DOORS.md` - The conversation that revealed the truth
+   - `OUR_GUTS.md` - Core values (leads with doors philosophy)
+   - **CRITICAL:** All work must answer doors questions
+
+2. **SPOTS Philosophy & Architecture (MANDATORY):**
+   - `docs/plans/philosophy_implementation/SPOTS_PHILOSOPHY_AND_ARCHITECTURE.md`
+   - **CRITICAL:** All work must align with philosophy
+   - Core principle: "Doors, not badges"
+
+3. **Development Methodology (MANDATORY):**
+   - `docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md`
+   - `docs/plans/methodology/SESSION_START_CHECKLIST.md`
+   - `docs/plans/methodology/START_HERE_NEW_TASK.md`
+   - **CRITICAL:** All work must follow methodology
+
+4. **Master Plan System:**
+   - `docs/MASTER_PLAN.md` (execution plan)
+   - `docs/MASTER_PLAN_TRACKER.md` (registry)
+   - `docs/MASTER_PLAN_REQUIREMENTS.md` (specifications)
+
+---
+
+## ✅ Checklist for New Feature Integration
+
+**BEFORE creating plan:**
+- [ ] Read DOORS.md (docs/plans/philosophy_implementation/DOORS.md) - MANDATORY
+- [ ] Read OUR_GUTS.md - MANDATORY
+- [ ] Read SPOTS Philosophy (docs/plans/philosophy_implementation/SPOTS_PHILOSOPHY_AND_ARCHITECTURE.md) - MANDATORY
+- [ ] Read Development Methodology (docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md) - MANDATORY
+- [ ] Checked Master Plan Tracker for existing plans
+- [ ] Checked Feature Cross-Reference Matrix
+- [ ] Verified idea doesn't belong in existing plan
+- [ ] Confirmed idea is substantial enough (3+ days)
+
+**IF creating new plan:**
+- [ ] Plan document created in `docs/plans/[feature_name]/` folder
+- [ ] Supporting docs created (progress.md, status.md, blockers.md, working_status.md)
+- [ ] Plan document is complete and comprehensive
+- [ ] Includes cross-references to related plans
+- [ ] **Doors questions answered** (What doors? When ready? Good key? Learning?) - MANDATORY
+- [ ] **References DOORS.md** (docs/plans/philosophy_implementation/DOORS.md) - MANDATORY
+- [ ] **References OUR_GUTS.md** - MANDATORY
+- [ ] **References SPOTS Philosophy & Architecture** - MANDATORY
+- [ ] **References Development Methodology** - MANDATORY
+- [ ] `MASTER_PLAN_TRACKER.md` updated with new entry
+- [ ] Feature Cross-Reference Matrix updated (if needed)
+- [ ] All required fields included in tracker
+- [ ] Entry in correct section
+- [ ] Statistics updated in tracker
+- [ ] "Last Updated" timestamp current
+
+**FOR Master Plan integration:**
+- [ ] Dependencies analyzed
+- [ ] Priority determined
+- [ ] Feature area identified
+- [ ] Timeline estimated
+- [ ] Catch-up opportunities checked
+- [ ] Optimal position determined
+- [ ] Master Plan execution sequence updated
+- [ ] Catch-up logic applied (if applicable)
+- [ ] Parallel work opportunities noted
+- [ ] Progress tracking section updated
+- [ ] User notified of integration
+
+---
+
+## 🎯 Enforcement
+
+**This rule is MANDATORY.**
+
+Every AI assistant working on SPOTS must:
+- ✅ Know Master Plan system exists
+- ✅ Follow automated workflow every time
+- ✅ Update Master Plan when adding features
+- ✅ Verify integration was done correctly
+- ✅ Reference SPOTS Philosophy & Architecture
+- ✅ Reference Development Methodology
+
+**No exceptions.**
+
+---
+
+## 📊 Status Meanings
+
+- 🟢 **Active** - In Master Plan, ready to implement
+- 🟡 **In Progress** - Currently being implemented
+- ✅ **Complete** - Finished, kept for reference
+- ⏸️ **Paused** - Temporarily halted (not in execution sequence)
+- 📋 **Reference** - Guide only, not in Master Plan
+- ❌ **Deprecated** - No longer relevant
+
+---
+
+**Remember: Master Plan is THE execution plan. All other plans are reference guides. Keep Master Plan current. Reference it always.**
+

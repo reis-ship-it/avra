@@ -241,8 +241,8 @@ void main() {
       test('should handle user with special characters in names', () async {
         // Arrange
         final specialUser = testUser.copyWith(
-          name: 'User @#$%^&*()_+ Name',
-          displayName: 'Display !@#$%^&*()_+ Name',
+          name: r'User @#$%^&*()_+ Name',
+          displayName: r'Display !@#$%^&*()_+ Name',
           email: 'special+user@example-domain.co.uk',
         );
 
@@ -254,8 +254,8 @@ void main() {
 
         // Assert
         expect(result, equals(specialUser));
-        expect(result!.name, contains('@#$%^&*()_+'));
-        expect(result.displayName, contains('!@#$%^&*()_+'));
+        expect(result!.name, contains(r'@#$%^&*()_+'));
+        expect(result.displayName, contains(r'!@#$%^&*()_+'));
         expect(result.email, contains('+'));
         verify(mockRepository.getCurrentUser()).called(1);
       });
@@ -482,17 +482,21 @@ void main() {
         // Arrange
         final user1 = testUser.copyWith(id: 'user1');
         final user2 = testUser.copyWith(id: 'user2');
+        var callCount = 0;
 
-        when(mockRepository.getCurrentUser())
-            .thenAnswer((_) async => user1)
-            .thenAnswer((_) async => user2);
+        when(mockRepository.getCurrentUser()).thenAnswer((_) async {
+          callCount++;
+          return callCount == 1 ? user1 : user2;
+        });
 
         // Act
         final result1 = await usecase.call();
         final result2 = await usecase.call();
 
         // Assert
+        expect(result1, isNotNull);
         expect(result1!.id, equals('user1'));
+        expect(result2, isNotNull);
         expect(result2!.id, equals('user2'));
         verify(mockRepository.getCurrentUser()).called(2);
       });

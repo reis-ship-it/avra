@@ -5,7 +5,8 @@ import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart' hide SharedPreferences;
+import 'package:shared_preferences/shared_preferences.dart' show SharedPreferences;
 
 /// OUR_GUTS.md: "Connection monitoring that tracks AI2AI personality interactions while preserving privacy"
 /// Comprehensive connection monitoring system for individual AI2AI personality learning interactions
@@ -24,6 +25,10 @@ class ConnectionMonitor {
   final Map<String, ConnectionMonitoringSession> _monitoringSessions = {};
   final List<ConnectionAlert> _alerts = [];
   Timer? _monitoringTimer;
+  
+  // Reverse index: AI signature -> Set of connection IDs
+  // This enables O(1) lookup of all connections for a given AI signature
+  final Map<String, Set<String>> _aiSignatureIndex = {};
   
   ConnectionMonitor({required SharedPreferences prefs}) : _prefs = prefs;
   
@@ -52,6 +57,10 @@ class ConnectionMonitor {
       // Store active connection
       _activeConnections[connectionId] = ActiveConnection.fromSession(session);
       _monitoringSessions[connectionId] = session;
+      
+      // Update reverse index for efficient AI signature queries
+      _updateAISignatureIndex(session.localAISignature, connectionId, add: true);
+      _updateAISignatureIndex(session.remoteAISignature, connectionId, add: true);
       
       // Start periodic monitoring if not already running
       _ensureMonitoringTimerRunning();
@@ -129,7 +138,13 @@ class ConnectionMonitor {
       
       // Cleanup active monitoring
       _activeConnections.remove(connectionId);
-      _monitoringSessions.remove(connectionId);
+      final removedSession = _monitoringSessions.remove(connectionId);
+      
+      // Update reverse index
+      if (removedSession != null) {
+        _updateAISignatureIndex(removedSession.localAISignature, connectionId, add: false);
+        _updateAISignatureIndex(removedSession.remoteAISignature, connectionId, add: false);
+      }
       
       // Stop monitoring timer if no active connections
       if (_activeConnections.isEmpty) {
@@ -179,6 +194,44 @@ class ConnectionMonitor {
     } catch (e) {
       developer.log('Error getting connection status: $e', name: _logName);
       return ConnectionMonitoringStatus.error(connectionId, e.toString());
+    }
+  }
+  
+  /// Get monitoring session for admin access
+  /// Returns the full session with all metrics and interaction history
+  ConnectionMonitoringSession? getMonitoringSession(String connectionId) {
+    return _monitoringSessions[connectionId];
+  }
+  
+  /// Get all connection IDs for a specific AI signature
+  /// Efficient O(1) lookup using reverse index
+  /// Returns both connections where AI is local and remote
+  Set<String> getConnectionsByAISignature(String aiSignature) {
+    return Set<String>.from(_aiSignatureIndex[aiSignature] ?? {});
+  }
+  
+  /// Get all monitoring sessions for a specific AI signature
+  /// Returns sessions where the AI signature is either local or remote
+  List<ConnectionMonitoringSession> getSessionsByAISignature(String aiSignature) {
+    final connectionIds = getConnectionsByAISignature(aiSignature);
+    return connectionIds
+        .map((id) => _monitoringSessions[id])
+        .whereType<ConnectionMonitoringSession>()
+        .toList();
+  }
+  
+  /// Update reverse index for AI signature lookups
+  void _updateAISignatureIndex(String aiSignature, String connectionId, {required bool add}) {
+    if (aiSignature.isEmpty) return;
+    
+    if (add) {
+      _aiSignatureIndex.putIfAbsent(aiSignature, () => <String>{}).add(connectionId);
+    } else {
+      _aiSignatureIndex[aiSignature]?.remove(connectionId);
+      // Clean up empty sets to prevent memory leaks
+      if (_aiSignatureIndex[aiSignature]?.isEmpty ?? false) {
+        _aiSignatureIndex.remove(aiSignature);
+      }
     }
   }
   
@@ -649,6 +702,9 @@ class ConnectionMonitoringSession {
       lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
+  
+  /// Get interaction history from connection metrics
+  List<InteractionEvent> get interactionHistory => currentMetrics.interactionHistory;
 }
 
 class ActiveConnection {

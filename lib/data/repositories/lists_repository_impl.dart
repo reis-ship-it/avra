@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/unified_models.dart';import 'package:spots/core/models/list.dart';
+import 'package:spots/core/models/list.dart';
 import 'package:spots/data/datasources/local/lists_local_datasource.dart';
 import 'package:spots/data/datasources/remote/lists_remote_datasource.dart';
 import 'package:spots/domain/repositories/lists_repository.dart';
@@ -158,8 +158,16 @@ class ListsRepositoryImpl implements ListsRepository {
         ),
       ];
 
+      final dataSource = localDataSource;
+      if (dataSource == null) return;
+      
       for (final list in starterLists) {
-        await localDataSource?.saveList(list);
+        try {
+          await dataSource.saveList(list);
+        } catch (e) {
+          developer.log('Error saving starter list ${list.title}: $e', name: 'ListsRepository');
+          // Continue with next list even if one fails
+        }
       }
     } catch (e) {
       developer.log('Error creating starter lists: $e', name: 'ListsRepository');
@@ -179,19 +187,61 @@ class ListsRepositoryImpl implements ListsRepository {
         {'name': 'Museums', 'description': 'Cultural experiences'},
       ];
 
-      for (final suggestion in suggestions) {
-        final list = SpotList(
-          id: 'personalized-${DateTime.now().millisecondsSinceEpoch}',
-          title: suggestion['name'] ?? 'Unknown',
-          description: suggestion['description'] ?? 'No description',
-          spots: [],
-          createdAt: now,
-          updatedAt: now,
-        );
-        await localDataSource?.saveList(list);
+      final dataSource = localDataSource;
+      if (dataSource == null) return;
+      
+      for (var i = 0; i < suggestions.length; i++) {
+        try {
+          final suggestion = suggestions[i];
+          // Use index to ensure unique IDs even if called in same millisecond
+          final list = SpotList(
+            id: 'personalized-${now.millisecondsSinceEpoch}-$i',
+            title: suggestion['name'] ?? 'Unknown',
+            description: suggestion['description'] ?? 'No description',
+            spots: [],
+            createdAt: now,
+            updatedAt: now,
+          );
+          await dataSource.saveList(list);
+        } catch (e) {
+          developer.log('Error saving personalized list ${suggestions[i]['name']}: $e', name: 'ListsRepository');
+          // Continue with next list even if one fails
+        }
       }
     } catch (e) {
       developer.log('Error creating personalized lists: $e', name: 'ListsRepository');
+    }
+  }
+
+  @override
+  Future<List<SpotList>> getPublicLists() async {
+    try {
+      // Check connectivity first - offline-first approach
+      final connectivityResult = await connectivity?.checkConnectivity() ?? [ConnectivityResult.none];
+      final isOnline = !connectivityResult.contains(ConnectivityResult.none);
+      
+      if (isOnline && remoteDataSource != null) {
+        try {
+          final publicLists = await remoteDataSource!.getPublicLists(limit: 50);
+          // Cache locally
+          for (final list in publicLists) {
+            await localDataSource?.saveList(list);
+          }
+          return publicLists;
+        } catch (e) {
+          developer.log('Error getting remote public lists: $e', name: 'ListsRepository');
+          // Fallback to local
+        }
+      }
+      
+      // Use local data (either offline or remote failed)
+      final allLists = await localDataSource?.getLists() ?? [];
+      return allLists.where((list) => list.isPublic).toList();
+    } catch (e) {
+      developer.log('Error getting public lists: $e', name: 'ListsRepository');
+      // Fallback to local
+      final allLists = await localDataSource?.getLists() ?? [];
+      return allLists.where((list) => list.isPublic).toList();
     }
   }
 }

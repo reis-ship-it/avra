@@ -163,13 +163,16 @@ void main() {
 
       test('should return spots with high community engagement', () async {
         // Arrange
-        final highEngagementSpots = respectedSpots.map((spot) => spot.copyWith(
-          metadata: Map.from(spot.metadata)..addAll({
-            'respect_count': spot.metadata['respect_count'] as int + 50,
-            'community_comments': (spot.metadata['respect_count'] as int * 0.3).round(),
-            'local_recommendations': (spot.metadata['respect_count'] as int * 0.5).round(),
-          }),
-        )).toList();
+        final highEngagementSpots = respectedSpots.map((spot) {
+          final currentRespectCount = spot.metadata['respect_count'] as int;
+          final updatedMetadata = Map<String, dynamic>.from(spot.metadata);
+          updatedMetadata.addAll({
+            'respect_count': currentRespectCount + 50,
+            'community_comments': (currentRespectCount * 0.3).round(),
+            'local_recommendations': (currentRespectCount * 0.5).round(),
+          });
+          return spot.copyWith(metadata: updatedMetadata);
+        }).toList();
 
         when(mockRepository.getSpotsFromRespectedLists())
             .thenAnswer((_) async => highEngagementSpots);

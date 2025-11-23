@@ -14,7 +14,7 @@ dependencies:
   
   # Data dependencies
   sembast: ^3.5.0
-  shared_preferences: ^2.2.2
+  get_storage: ^2.1.1
   path_provider: ^2.1.1
   connectivity_plus: ^6.1.4
   

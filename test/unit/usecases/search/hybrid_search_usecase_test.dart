@@ -347,9 +347,14 @@ void main() {
       test('should prioritize community results over external', () async {
         // Arrange
         const query = 'coffee';
-        final communityFirstResult = testResult.copyWith(
+        final communityFirstResult = HybridSearchResult(
+          spots: testResult.spots,
           communityCount: 8,
           externalCount: 2,
+          totalCount: 10,
+          searchDuration: testResult.searchDuration,
+          sources: testResult.sources,
+          metadata: testResult.metadata,
         );
 
         when(mockRepository.searchSpots(
@@ -419,8 +424,14 @@ void main() {
       test('should track search duration', () async {
         // Arrange
         const query = 'performance_test';
-        final performanceResult = testResult.copyWith(
+        final performanceResult = HybridSearchResult(
+          spots: testResult.spots,
+          communityCount: testResult.communityCount,
+          externalCount: testResult.externalCount,
+          totalCount: testResult.totalCount,
           searchDuration: Duration(milliseconds: 50),
+          sources: testResult.sources,
+          metadata: testResult.metadata,
         );
 
         when(mockRepository.searchSpots(
@@ -448,12 +459,18 @@ void main() {
       test('should provide source breakdown', () async {
         // Arrange
         const query = 'source_test';
-        final sourceResult = testResult.copyWith(
+        final sourceResult = HybridSearchResult(
+          spots: testResult.spots,
+          communityCount: testResult.communityCount,
+          externalCount: testResult.externalCount,
+          totalCount: testResult.totalCount,
+          searchDuration: testResult.searchDuration,
           sources: {
             'community': 3,
             'google_places': 2,
             'openstreetmap': 1,
           },
+          metadata: testResult.metadata,
         );
 
         when(mockRepository.searchSpots(

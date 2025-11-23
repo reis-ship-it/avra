@@ -1,0 +1,459 @@
+import 'package:flutter/material.dart';
+import 'package:spots/core/services/admin_auth_service.dart';
+import 'package:spots/core/services/admin_god_mode_service.dart';
+import 'package:spots/core/services/admin_communication_service.dart';
+import 'package:spots/core/services/business_account_service.dart';
+import 'package:spots/core/ml/predictive_analytics.dart';
+import 'package:spots/core/monitoring/connection_monitor.dart';
+import 'package:spots/core/ai/ai2ai_learning.dart';
+import 'package:spots/core/theme/app_theme.dart';
+import 'package:spots/core/theme/colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_it/get_it.dart';
+import 'package:spots/presentation/pages/admin/god_mode_login_page.dart';
+import 'package:spots/presentation/pages/admin/user_data_viewer_page.dart';
+import 'package:spots/presentation/pages/admin/user_progress_viewer_page.dart';
+import 'package:spots/presentation/pages/admin/user_predictions_viewer_page.dart';
+import 'package:spots/presentation/pages/admin/business_accounts_viewer_page.dart';
+import 'package:spots/presentation/pages/admin/communications_viewer_page.dart';
+import 'package:spots/presentation/widgets/admin/admin_federated_rounds_widget.dart';
+
+/// God-Mode Admin Dashboard
+/// Comprehensive real-time monitoring and data access
+class GodModeDashboardPage extends StatefulWidget {
+  const GodModeDashboardPage({super.key});
+
+  @override
+  State<GodModeDashboardPage> createState() => _GodModeDashboardPageState();
+}
+
+class _GodModeDashboardPageState extends State<GodModeDashboardPage> with SingleTickerProviderStateMixin {
+  AdminAuthService? _authService;
+  AdminGodModeService? _godModeService;
+  GodModeDashboardData? _dashboardData;
+  bool _isLoading = true;
+  int _selectedTab = 0;
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 7, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _selectedTab = _tabController.index;
+      });
+    });
+    _initializeServices();
+    _loadDashboardData();
+  }
+
+  Future<void> _initializeServices() async {
+    try {
+      // Get services from dependency injection
+      _authService = GetIt.instance<AdminAuthService>();
+      
+      // Check authentication
+      if (!_authService!.isAuthenticated()) {
+        _navigateToLogin();
+        return;
+      }
+      
+      // Get god-mode service from DI
+      _godModeService = GetIt.instance<AdminGodModeService>();
+    } catch (e) {
+      debugPrint('Error initializing services: $e');
+      _navigateToLogin();
+    }
+  }
+
+  Future<void> _loadDashboardData() async {
+    if (_godModeService == null) {
+      await _initializeServices();
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final data = await _godModeService!.getDashboardData();
+      setState(() {
+        _dashboardData = data;
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('Error loading dashboard data: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _navigateToLogin() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const GodModeLoginPage(),
+      ),
+    );
+  }
+
+  Future<void> _handleLogout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await _authService?.logout();
+      _navigateToLogin();
+    }
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _godModeService?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading && _dashboardData == null) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(
+                'Loading God-Mode Dashboard...',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            const Icon(Icons.admin_panel_settings),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('God-Mode Admin'),
+                Text(
+                  'Privacy: IDs Only',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.white.withOpacity(0.7),
+                        fontSize: 10,
+                      ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            if (_dashboardData != null)
+              Text(
+                'Updated: ${_formatTime(_dashboardData!.lastUpdated)}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.white.withOpacity(0.8),
+                    ),
+              ),
+          ],
+        ),
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: AppColors.white,
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          indicatorColor: AppColors.white,
+          labelColor: AppColors.white,
+          unselectedLabelColor: AppColors.white.withOpacity(0.7),
+          tabs: const [
+            Tab(icon: Icon(Icons.dashboard), text: 'Dashboard'),
+            Tab(icon: Icon(Icons.school), text: 'FL Rounds'),
+            Tab(icon: Icon(Icons.people), text: 'Users'),
+            Tab(icon: Icon(Icons.trending_up), text: 'Progress'),
+            Tab(icon: Icon(Icons.psychology), text: 'Predictions'),
+            Tab(icon: Icon(Icons.business), text: 'Businesses'),
+            Tab(icon: Icon(Icons.chat), text: 'Communications'),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadDashboardData,
+            tooltip: 'Refresh',
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _handleLogout,
+            tooltip: 'Logout',
+          ),
+        ],
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildDashboardTab(),
+          _buildFederatedLearningTab(),
+          UserDataViewerPage(godModeService: _godModeService),
+          UserProgressViewerPage(godModeService: _godModeService),
+          UserPredictionsViewerPage(godModeService: _godModeService),
+          BusinessAccountsViewerPage(godModeService: _godModeService),
+          CommunicationsViewerPage(godModeService: _godModeService),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDashboardTab() {
+    if (_dashboardData == null) {
+      return const Center(child: Text('No data available'));
+    }
+
+    return RefreshIndicator(
+      onRefresh: _loadDashboardData,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // System Health Card
+            Card(
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.health_and_safety, color: AppTheme.primaryColor),
+                        const SizedBox(width: 8),
+                        Text(
+                          'System Health',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    LinearProgressIndicator(
+                      value: _dashboardData!.systemHealth,
+                      backgroundColor: AppColors.grey200,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        _dashboardData!.systemHealth >= 0.8
+                            ? AppColors.success
+                            : _dashboardData!.systemHealth >= 0.6
+                                ? AppColors.warning
+                                : AppColors.error,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${(_dashboardData!.systemHealth * 100).toStringAsFixed(1)}%',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Metrics Grid
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              children: [
+                _buildMetricCard(
+                  'Total Users',
+                  '${_dashboardData!.totalUsers}',
+                  Icons.people,
+                  AppTheme.primaryColor,
+                ),
+                _buildMetricCard(
+                  'Active Users',
+                  '${_dashboardData!.activeUsers}',
+                  Icons.person,
+                  AppColors.success,
+                ),
+                _buildMetricCard(
+                  'Business Accounts',
+                  '${_dashboardData!.totalBusinessAccounts}',
+                  Icons.business,
+                  AppColors.info,
+                ),
+                _buildMetricCard(
+                  'Active Connections',
+                  '${_dashboardData!.activeConnections}',
+                  Icons.link,
+                  AppColors.warning,
+                ),
+                _buildMetricCard(
+                  'Total Communications',
+                  '${_dashboardData!.totalCommunications}',
+                  Icons.chat,
+                  AppTheme.primaryColor,
+                ),
+                _buildMetricCard(
+                  'Last Updated',
+                  _formatTime(_dashboardData!.lastUpdated),
+                  Icons.update,
+                  AppColors.textSecondary,
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            
+            // Aggregate Privacy Metrics Card
+            if (_dashboardData!.aggregatePrivacyMetrics != null) ...[
+              Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
+                          const SizedBox(width: 8),
+                          Text(
+                            'System-Wide Privacy Metrics',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Mean Privacy Score: ${(_dashboardData!.aggregatePrivacyMetrics.meanOverallPrivacyScore * 100).toStringAsFixed(1)}%',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: _dashboardData!.aggregatePrivacyMetrics.meanOverallPrivacyScore,
+                        backgroundColor: AppColors.grey200,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          _dashboardData!.aggregatePrivacyMetrics.meanOverallPrivacyScore >= 0.9
+                              ? AppColors.success
+                              : AppColors.warning,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _dashboardData!.aggregatePrivacyMetrics.scoreLabel,
+                        style: TextStyle(
+                          color: _dashboardData!.aggregatePrivacyMetrics.meanOverallPrivacyScore >= 0.9
+                              ? AppColors.success
+                              : AppColors.warning,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        '${_dashboardData!.aggregatePrivacyMetrics.userCount} users included',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildFederatedLearningTab() {
+    if (_godModeService == null) {
+      return const Center(child: Text('Service not initialized'));
+    }
+    
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: AdminFederatedRoundsWidget(
+        godModeService: _godModeService!,
+      ),
+    );
+  }
+
+  Widget _buildMetricCard(String label, String value, IconData icon, Color color) {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatTime(DateTime time) {
+    final now = DateTime.now();
+    final difference = now.difference(time);
+    
+    if (difference.inSeconds < 60) {
+      return '${difference.inSeconds}s ago';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h ago';
+    } else {
+      return '${difference.inDays}d ago';
+    }
+  }
+}
+

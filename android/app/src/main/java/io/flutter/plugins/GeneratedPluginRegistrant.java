@@ -21,9 +21,44 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin app_links, com.llfbandit.app_links.AppLinksPlugin", e);
     }
     try {
+      flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestorePlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin cloud_firestore, io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestorePlugin", e);
+    }
+    try {
       flutterEngine.getPlugins().add(new dev.fluttercommunity.plus.connectivity.ConnectivityPlugin());
     } catch (Exception e) {
       Log.e(TAG, "Error registering plugin connectivity_plus, dev.fluttercommunity.plus.connectivity.ConnectivityPlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.analytics.FlutterFirebaseAnalyticsPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin firebase_analytics, io.flutter.plugins.firebase.analytics.FlutterFirebaseAnalyticsPlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.auth.FlutterFirebaseAuthPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin firebase_auth, io.flutter.plugins.firebase.auth.FlutterFirebaseAuthPlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.core.FlutterFirebaseCorePlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin firebase_core, io.flutter.plugins.firebase.core.FlutterFirebaseCorePlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.storage.FlutterFirebaseStoragePlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin firebase_storage, io.flutter.plugins.firebase.storage.FlutterFirebaseStoragePlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new com.lib.flutter_blue_plus.FlutterBluePlusPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin flutter_blue_plus_android, com.lib.flutter_blue_plus.FlutterBluePlusPlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new com.nimroddayan.flutternsd.FlutterNsdPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin flutter_nsd, com.nimroddayan.flutternsd.FlutterNsdPlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin());
@@ -66,11 +101,6 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin path_provider_android, io.flutter.plugins.pathprovider.PathProviderPlugin", e);
     }
     try {
-      flutterEngine.getPlugins().add(new pl.leancode.patrol.PatrolPlugin());
-    } catch (Exception e) {
-      Log.e(TAG, "Error registering plugin patrol, pl.leancode.patrol.PatrolPlugin", e);
-    }
-    try {
       flutterEngine.getPlugins().add(new com.baseflow.permissionhandler.PermissionHandlerPlugin());
     } catch (Exception e) {
       Log.e(TAG, "Error registering plugin permission_handler_android, com.baseflow.permissionhandler.PermissionHandlerPlugin", e);
@@ -89,6 +119,11 @@ public final class GeneratedPluginRegistrant {
       flutterEngine.getPlugins().add(new io.flutter.plugins.urllauncher.UrlLauncherPlugin());
     } catch (Exception e) {
       Log.e(TAG, "Error registering plugin url_launcher_android, io.flutter.plugins.urllauncher.UrlLauncherPlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new com.alternadom.wifiiot.WifiIotPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin wifi_iot, com.alternadom.wifiiot.WifiIotPlugin", e);
     }
   }
 }

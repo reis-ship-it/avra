@@ -6,7 +6,7 @@ import 'package:spots/core/models/list.dart';
 
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
-import '../../mocks/mock_dependencies.dart.mocks.dart';
+import '../../mocks/mock_dependencies.mocks.dart';
 
 /// Comprehensive test suite for ListsRepositoryImpl
 /// Tests the current implementation behavior with nullable dependencies
@@ -38,8 +38,45 @@ void main() {
         connectivity: mockConnectivity,
       );
       
-      testList = ModelFactories.createTestSpotList();
-      testLists = ModelFactories.createTestSpotLists(3);
+      // Create test SpotList from UnifiedList
+      final unifiedList = ModelFactories.createTestList();
+      testList = SpotList(
+        id: unifiedList.id,
+        title: unifiedList.title,
+        description: unifiedList.description ?? '',
+        spots: [],
+        createdAt: unifiedList.createdAt,
+        updatedAt: unifiedList.updatedAt ?? unifiedList.createdAt,
+        category: unifiedList.category,
+        isPublic: unifiedList.isPublic,
+        spotIds: unifiedList.spotIds ?? [],
+        respectCount: unifiedList.respectCount ?? 0,
+        collaborators: unifiedList.collaboratorIds ?? [],
+        followers: unifiedList.followerIds ?? [],
+        curatorId: unifiedList.curatorId,
+        tags: const [],
+        ageRestricted: unifiedList.isAgeRestricted ?? false,
+      );
+      testLists = List.generate(3, (i) {
+        final list = ModelFactories.createTestList(id: 'list-$i');
+        return SpotList(
+          id: list.id,
+          title: list.title,
+          description: list.description ?? '',
+          spots: [],
+          createdAt: list.createdAt,
+          updatedAt: list.updatedAt ?? list.createdAt,
+          category: list.category,
+          isPublic: list.isPublic,
+          spotIds: list.spotIds ?? [],
+          respectCount: list.respectCount ?? 0,
+          collaborators: list.collaboratorIds ?? [],
+          followers: list.followerIds ?? [],
+          curatorId: list.curatorId,
+          tags: const [],
+          ageRestricted: list.isAgeRestricted ?? false,
+        );
+      });
     });
 
     tearDown(() {
@@ -219,18 +256,26 @@ void main() {
 
       test('falls back to local save when initial save fails', () async {
         // Arrange
+        var callCount = 0;
         when(mockConnectivity!.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(mockLocalDataSource!.saveList(testList))
-            .thenThrow(Exception('Initial save failed'))
-            .thenAnswer((_) async => testList); // Second call succeeds
+            .thenAnswer((_) {
+              callCount++;
+              if (callCount == 1) {
+                throw Exception('Save failed');
+              }
+              return Future.value(testList);
+            });
+        when(mockRemoteDataSource!.createList(any))
+            .thenThrow(Exception('Remote failed'));
 
         // Act
         final result = await repository.createList(testList);
 
         // Assert
         expect(result, equals(testList));
-        // Should be called twice due to fallback logic
+        // Should be called twice: once fails, once succeeds in catch block
         verify(mockLocalDataSource!.saveList(testList)).called(2);
       });
 
@@ -258,7 +303,24 @@ void main() {
     group('updateList', () {
       test('tries remote first then saves locally when successful', () async {
         // Arrange
-        final updatedList = ModelFactories.createTestSpotList(
+        final unifiedList = ModelFactories.createTestList();
+        final updatedList = SpotList(
+          id: unifiedList.id,
+          title: unifiedList.title,
+          description: unifiedList.description ?? '',
+          spots: [],
+          createdAt: unifiedList.createdAt,
+          updatedAt: unifiedList.updatedAt ?? unifiedList.createdAt,
+          category: unifiedList.category,
+          isPublic: unifiedList.isPublic,
+          spotIds: unifiedList.spotIds ?? [],
+          respectCount: unifiedList.respectCount ?? 0,
+          collaborators: unifiedList.collaboratorIds ?? [],
+          followers: unifiedList.followerIds ?? [],
+          curatorId: unifiedList.curatorId,
+          tags: [],
+          ageRestricted: unifiedList.isAgeRestricted ?? false,
+        ).copyWith(
           id: testList.id,
           title: 'Updated Title',
         );
@@ -386,11 +448,9 @@ void main() {
         await repository.createStarterListsForUser(userId: userId);
 
         // Assert: Should create 3 starter lists as per implementation
-        verify(mockLocalDataSource!.saveList(any)).called(3);
-        
         // Verify the specific lists created match implementation
         final captured = verify(mockLocalDataSource!.saveList(captureAny)).captured;
-        expect(captured.length, equals(3));
+        expect(captured.length, equals(3), reason: 'Should create exactly 3 starter lists');
         
         final createdLists = captured.cast<SpotList>();
         expect(createdLists.any((list) => list.title == 'Fun Places'), isTrue);
@@ -447,10 +507,8 @@ void main() {
         );
 
         // Assert: Should create 3 personalized lists as per implementation
-        verify(mockLocalDataSource!.saveList(any)).called(3);
-        
         final captured = verify(mockLocalDataSource!.saveList(captureAny)).captured;
-        expect(captured.length, equals(3));
+        expect(captured.length, equals(3), reason: 'Should create exactly 3 personalized lists');
         
         final createdLists = captured.cast<SpotList>();
         expect(createdLists.any((list) => list.title == 'Coffee Shops'), isTrue);
@@ -484,9 +542,12 @@ void main() {
         final captured = verify(mockLocalDataSource!.saveList(captureAny)).captured;
         final createdLists = captured.cast<SpotList>();
         
+        // Should create 3 lists
+        expect(createdLists.length, equals(3));
+        
         // All IDs should be unique and start with 'personalized-'
         final ids = createdLists.map((list) => list.id).toList();
-        expect(ids.toSet().length, equals(ids.length)); // All unique
+        expect(ids.toSet().length, equals(ids.length), reason: 'All IDs should be unique'); // All unique
         for (final id in ids) {
           expect(id, startsWith('personalized-'));
         }
@@ -499,12 +560,13 @@ void main() {
         when(mockLocalDataSource!.saveList(any))
             .thenThrow(Exception('Storage error'));
 
-        // Act & Assert: Should not throw exception
+        // Act & Assert: Should not throw exception, continues through all lists
         await repository.createPersonalizedListsForUser(
           userId: userId,
           userPreferences: userPreferences,
         );
         
+        // Each list save attempt will throw, but loop continues - all 3 attempts made
         verify(mockLocalDataSource!.saveList(any)).called(3);
       });
     });
@@ -542,9 +604,27 @@ void main() {
         // Act: Create multiple lists concurrently
         final futures = List.generate(
           5,
-          (index) => repository.createList(
-            ModelFactories.createTestSpotList(id: 'concurrent-$index'),
-          ),
+          (index) {
+            final list = ModelFactories.createTestList(id: 'concurrent-$index');
+            final spotList = SpotList(
+              id: list.id,
+              title: list.title,
+              description: list.description ?? '',
+              spots: [],
+              createdAt: list.createdAt,
+              updatedAt: list.updatedAt ?? list.createdAt,
+              category: list.category,
+              isPublic: list.isPublic,
+              spotIds: list.spotIds ?? [],
+              respectCount: list.respectCount ?? 0,
+              collaborators: list.collaboratorIds ?? [],
+              followers: list.followerIds ?? [],
+              curatorId: list.curatorId,
+              tags: const [],
+              ageRestricted: list.isAgeRestricted ?? false,
+            );
+            return repository.createList(spotList);
+          },
         );
         final results = await Future.wait(futures);
 

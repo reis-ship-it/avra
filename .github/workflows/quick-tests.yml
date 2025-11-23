@@ -44,6 +44,14 @@ jobs:
       
     - name: Check formatting
       run: dart format --set-exit-if-changed .
+      
+    - name: Generate test coverage (quick)
+      run: |
+        flutter test --coverage --exclude-tags=performance || true
+        # Upload coverage if available
+        if [ -f coverage/lcov.info ]; then
+          echo "Coverage file generated"
+        fi
 
   connectivity-fix:
     name: Fix Connectivity Test

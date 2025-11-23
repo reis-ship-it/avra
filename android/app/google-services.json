@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "790357806819",
+    "project_id": "spots-app-adea5",
+    "storage_bucket": "spots-app-adea5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790357806819:android:c660dc01837241d253ffd6",
+        "android_client_info": {
+          "package_name": "com.spots.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyVtejIzdA94AwHSgyo2o18g-2wB5-qrs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

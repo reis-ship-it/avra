@@ -21,11 +21,12 @@ void main() {
         NetworkType.university,
         'test_university_123',
         NodeCapabilities(
-          canHostData: true,
+          canShareData: true,
+          canReceiveData: true,
           canProcessML: true,
-          canRelay: true,
-          maxStorageGB: 10,
-          maxBandwidthMbps: 100,
+          canStoreData: true,
+          maxConnections: 10,
+          supportedProtocols: ['p2p', 'federated'],
         ),
       );
 
@@ -42,15 +43,23 @@ void main() {
 
     test('should discover and connect to network peers securely', () async {
       // Test secure peer discovery and connection establishment
-      final compatiblePeers = await nodeManager.discoverNetworkPeers(
+      // First initialize a node
+      final localNode = await nodeManager.initializeNode(
+        NetworkType.university,
         'test_university_123',
         NodeCapabilities(
-          canHostData: true,
+          canShareData: true,
+          canReceiveData: true,
           canProcessML: true,
-          canRelay: true,
-          maxStorageGB: 10,
-          maxBandwidthMbps: 100,
+          canStoreData: true,
+          maxConnections: 10,
+          supportedProtocols: ['p2p', 'federated'],
         ),
+      );
+      
+      // Then discover peers
+      final compatiblePeers = await nodeManager.discoverNetworkPeers(
+        localNode,
       );
 
       expect(compatiblePeers, isA<List>());
@@ -62,20 +71,35 @@ void main() {
 
     test('should create encrypted data silos for organization privacy', () async {
       // Test encrypted data silo creation for privacy-preserving data sharing
-      final dataSilo = await nodeManager.createEncryptedSilo(encryptionLevel: EncryptionLevel.standard, accessPolicy: AccessPolicy.private, 
+      // First initialize a node
+      final node = await nodeManager.initializeNode(
+        NetworkType.university,
         'test_university_123',
-        SiloConfiguration(
-          maxStorageGB: 5,
-          encryptionLevel: EncryptionLevel.maximum,
-          accessPolicy: AccessPolicy.verifiedMembersOnly,
-          dataRetentionDays: 30,
+        NodeCapabilities(
+          canShareData: true,
+          canReceiveData: true,
+          canProcessML: true,
+          canStoreData: true,
+          maxConnections: 10,
+          supportedProtocols: ['p2p', 'federated'],
+        ),
+      );
+      
+      // Then create silo
+      final dataSilo = await nodeManager.createEncryptedSilo(
+        node,
+        'test_silo',
+        DataSiloPolicy(
+          requireAuthentication: true,
+          allowedRoles: ['verified_member'],
+          logAccess: true,
+          dataRetention: Duration(days: 30),
         ),
       );
 
       expect(dataSilo, isNotNull);
       expect(dataSilo.organizationId, equals('test_university_123'));
-      expect(dataSilo.encryptionLevel, equals(EncryptionLevel.maximum));
-      expect(dataSilo.accessPolicy, equals(AccessPolicy.verifiedMembersOnly));
+      expect(dataSilo.policy.requireAuthentication, isTrue);
       
       // OUR_GUTS.md: "Encrypted data silos with verified member authentication"
       // Data should be fully encrypted and access-controlled
@@ -182,22 +206,24 @@ void main() {
         NetworkType.company,
         'test_company_456',
         NodeCapabilities(
-          canHostData: true,
+          canShareData: true,
+          canReceiveData: true,
           canProcessML: true,
-          canRelay: true,
-          maxStorageGB: 20,
-          maxBandwidthMbps: 200,
+          canStoreData: true,
+          maxConnections: 20,
+          supportedProtocols: ['p2p', 'federated'],
         ),
       );
 
       // Test homomorphic encryption support
-      final dataSilo = await nodeManager.createEncryptedSilo(encryptionLevel: EncryptionLevel.standard, accessPolicy: AccessPolicy.private, 
+      final dataSilo = await nodeManager.createEncryptedSilo(
+        node,
         'test_company_456',
-        SiloConfiguration(
-          maxStorageGB: 10,
-          encryptionLevel: EncryptionLevel.maximum,
-          accessPolicy: AccessPolicy.verifiedMembersOnly,
-          dataRetentionDays: 60,
+        DataSiloPolicy(
+          requireAuthentication: true,
+          allowedRoles: ['admin', 'verified'],
+          logAccess: true,
+          dataRetention: Duration(days: 60),
         ),
       );
 
@@ -220,27 +246,30 @@ void main() {
         NetworkType.university,
         'guts_compliance_test',
         NodeCapabilities(
-          canHostData: true,
+          canShareData: true,
+          canReceiveData: true,
           canProcessML: true,
-          canRelay: true,
-          maxStorageGB: 5,
-          maxBandwidthMbps: 50,
+          canStoreData: true,
+          maxConnections: 5,
+          supportedProtocols: ['p2p', 'federated'],
         ),
       );
 
-      final dataSilo = await nodeManager.createEncryptedSilo(encryptionLevel: EncryptionLevel.standard, accessPolicy: AccessPolicy.private, 
+      final dataSilo = await nodeManager.createEncryptedSilo(
+        node,
         'guts_compliance_test',
-        SiloConfiguration(
-          maxStorageGB: 2,
-          encryptionLevel: EncryptionLevel.maximum,
-          accessPolicy: AccessPolicy.verifiedMembersOnly,
-          dataRetentionDays: 14,
+        DataSiloPolicy(
+          requireAuthentication: true,
+          allowedRoles: ['admin', 'verified'],
+          logAccess: true,
+          dataRetention: Duration(days: 14),
         ),
       );
 
       // "Privacy and Control Are Non-Negotiable"
       expect(node.dataPolicy, isNotNull);
-      expect(dataSilo.encryptionLevel, equals(EncryptionLevel.maximum));
+      expect(dataSilo.policy.requireAuthentication, isTrue);
+      expect(dataSilo.policy.logAccess, isTrue);
       
       // "Community, Not Just Places"
       expect(node.organizationId, isA<String>());

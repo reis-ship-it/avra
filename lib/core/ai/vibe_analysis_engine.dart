@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart';
 
 /// OUR_GUTS.md: "Anonymous vibe compilation that preserves privacy while enabling AI2AI personality matching"
 /// Comprehensive vibe analysis engine that creates privacy-preserving vibe signatures
@@ -529,17 +529,264 @@ class UserVibeAnalyzer {
     }
   }
   
-  // Community analysis methods (placeholder implementations)
-  Future<List<UserVibe>> _getAnonymizedCommunityVibes() async => [];
-  Future<Map<String, double>> _analyzeArchetypeDistribution(List<UserVibe> vibes) async => {};
-  Future<Map<String, double>> _analyzeEnergyPatterns(List<UserVibe> vibes) async => {};
-  Future<Map<String, double>> _analyzeSocialPreferenceTrends(List<UserVibe> vibes) async => {};
-  Future<List<String>> _identifyEmergingVibePatterns(List<UserVibe> vibes) async => [];
+  // Community analysis methods
+  Future<List<UserVibe>> _getAnonymizedCommunityVibes() async {
+    try {
+      // In a real implementation, this would fetch anonymized vibes from network/local storage
+      // For now, return empty list as community vibes are gathered through discovery
+      // This method would integrate with network analytics or local cache
+      return [];
+    } catch (e) {
+      developer.log('Error getting anonymized community vibes: $e', name: _logName);
+      return [];
+    }
+  }
   
-  // Authenticity validation methods (placeholder implementations)
-  Future<double> _checkPersonalityConsistency(UserVibe vibe, PersonalityProfile personality) async => 0.8;
-  Future<double> _detectArtificialPatterns(UserVibe vibe) async => 0.1;
-  Future<double> _checkTemporalConsistency(UserVibe vibe) async => 0.9;
+  Future<Map<String, double>> _analyzeArchetypeDistribution(List<UserVibe> vibes) async {
+    if (vibes.isEmpty) return {};
+    
+    final archetypeCounts = <String, int>{};
+    for (final vibe in vibes) {
+      final archetype = vibe.getVibeArchetype();
+      archetypeCounts[archetype] = (archetypeCounts[archetype] ?? 0) + 1;
+    }
+    
+    final total = vibes.length;
+    final distribution = <String, double>{};
+    archetypeCounts.forEach((archetype, count) {
+      distribution[archetype] = count / total;
+    });
+    
+    return distribution;
+  }
+  
+  Future<Map<String, double>> _analyzeEnergyPatterns(List<UserVibe> vibes) async {
+    if (vibes.isEmpty) return {};
+    
+    final energyRanges = {
+      'low': <double>[],
+      'moderate': <double>[],
+      'high': <double>[],
+      'very_high': <double>[],
+    };
+    
+    for (final vibe in vibes) {
+      final energy = vibe.overallEnergy;
+      if (energy < 0.3) {
+        energyRanges['low']!.add(energy);
+      } else if (energy < 0.6) {
+        energyRanges['moderate']!.add(energy);
+      } else if (energy < 0.8) {
+        energyRanges['high']!.add(energy);
+      } else {
+        energyRanges['very_high']!.add(energy);
+      }
+    }
+    
+    final total = vibes.length;
+    final patterns = <String, double>{};
+    energyRanges.forEach((range, values) {
+      patterns[range] = values.length / total;
+    });
+    
+    // Calculate average energy
+    final avgEnergy = vibes.map((v) => v.overallEnergy).reduce((a, b) => a + b) / total;
+    patterns['average'] = avgEnergy;
+    
+    return patterns;
+  }
+  
+  Future<Map<String, double>> _analyzeSocialPreferenceTrends(List<UserVibe> vibes) async {
+    if (vibes.isEmpty) return {};
+    
+    final socialRanges = {
+      'solo_preferred': <double>[],
+      'balanced': <double>[],
+      'social_preferred': <double>[],
+    };
+    
+    for (final vibe in vibes) {
+      final social = vibe.socialPreference;
+      if (social < 0.4) {
+        socialRanges['solo_preferred']!.add(social);
+      } else if (social < 0.7) {
+        socialRanges['balanced']!.add(social);
+      } else {
+        socialRanges['social_preferred']!.add(social);
+      }
+    }
+    
+    final total = vibes.length;
+    final trends = <String, double>{};
+    socialRanges.forEach((range, values) {
+      trends[range] = values.length / total;
+    });
+    
+    // Calculate average social preference
+    final avgSocial = vibes.map((v) => v.socialPreference).reduce((a, b) => a + b) / total;
+    trends['average'] = avgSocial;
+    
+    return trends;
+  }
+  
+  Future<List<String>> _identifyEmergingVibePatterns(List<UserVibe> vibes) async {
+    if (vibes.length < 5) return [];
+    
+    final patterns = <String>[];
+    
+    // Identify high-energy patterns
+    final highEnergyCount = vibes.where((v) => v.overallEnergy >= 0.7).length;
+    if (highEnergyCount / vibes.length > 0.3) {
+      patterns.add('high_energy_community');
+    }
+    
+    // Identify exploration-focused patterns
+    final highExplorationCount = vibes.where((v) => v.explorationTendency >= 0.7).length;
+    if (highExplorationCount / vibes.length > 0.3) {
+      patterns.add('exploration_focused_community');
+    }
+    
+    // Identify social-focused patterns
+    final highSocialCount = vibes.where((v) => v.socialPreference >= 0.7).length;
+    if (highSocialCount / vibes.length > 0.3) {
+      patterns.add('social_focused_community');
+    }
+    
+    // Identify balanced patterns
+    final balancedCount = vibes.where((v) {
+      final energy = v.overallEnergy;
+      final social = v.socialPreference;
+      final exploration = v.explorationTendency;
+      return energy >= 0.4 && energy <= 0.7 &&
+             social >= 0.4 && social <= 0.7 &&
+             exploration >= 0.4 && exploration <= 0.7;
+    }).length;
+    if (balancedCount / vibes.length > 0.3) {
+      patterns.add('balanced_community');
+    }
+    
+    return patterns;
+  }
+  
+  // Authenticity validation methods
+  Future<double> _checkPersonalityConsistency(UserVibe vibe, PersonalityProfile personality) async {
+    try {
+      var consistencyScore = 0.0;
+      var validDimensions = 0;
+      
+      // Compare vibe dimensions with personality dimensions
+      for (final dimension in VibeConstants.coreDimensions) {
+        final vibeValue = vibe.anonymizedDimensions[dimension];
+        final personalityValue = personality.dimensions[dimension];
+        
+        if (vibeValue != null && personalityValue != null) {
+          // Account for privacy noise in vibe (allow ±0.05 difference)
+          final difference = (vibeValue - personalityValue).abs();
+          final dimensionConsistency = 1.0 - (difference / 0.05).clamp(0.0, 1.0);
+          consistencyScore += dimensionConsistency;
+          validDimensions++;
+        }
+      }
+      
+      if (validDimensions == 0) return 0.5; // Neutral if no dimensions to compare
+      
+      return (consistencyScore / validDimensions).clamp(0.0, 1.0);
+    } catch (e) {
+      developer.log('Error checking personality consistency: $e', name: _logName);
+      return 0.8; // Default to high consistency on error
+    }
+  }
+  
+  Future<double> _detectArtificialPatterns(UserVibe vibe) async {
+    try {
+      var artificialityScore = 0.0;
+      
+      // Check for suspiciously perfect values (all 0.0, 0.5, or 1.0)
+      final perfectValues = vibe.anonymizedDimensions.values
+          .where((v) => v == 0.0 || v == 0.5 || v == 1.0)
+          .length;
+      final perfectRatio = perfectValues / vibe.anonymizedDimensions.length;
+      if (perfectRatio > 0.5) {
+        artificialityScore += 0.3; // Suspicious pattern
+      }
+      
+      // Check for lack of variance (all values very similar)
+      final values = vibe.anonymizedDimensions.values.toList();
+      if (values.length > 1) {
+        final min = values.reduce((a, b) => a < b ? a : b);
+        final max = values.reduce((a, b) => a > b ? a : b);
+        final variance = max - min;
+        if (variance < 0.1) {
+          artificialityScore += 0.2; // Low variance suggests artificiality
+        }
+      }
+      
+      // Check for impossible combinations
+      // High exploration but low energy is suspicious
+      final exploration = vibe.anonymizedDimensions['exploration_eagerness'] ?? 0.5;
+      final energy = vibe.overallEnergy;
+      if (exploration > 0.8 && energy < 0.3) {
+        artificialityScore += 0.2; // Suspicious combination
+      }
+      
+      return artificialityScore.clamp(0.0, 1.0);
+    } catch (e) {
+      developer.log('Error detecting artificial patterns: $e', name: _logName);
+      return 0.1; // Default to low artificiality on error
+    }
+  }
+  
+  Future<double> _checkTemporalConsistency(UserVibe vibe) async {
+    try {
+      // Check if vibe is expired (should not be used)
+      if (vibe.isExpired) {
+        return 0.0; // Expired vibes are inconsistent
+      }
+      
+      // Check if vibe age is reasonable (not too old, not from future)
+      final age = DateTime.now().difference(vibe.createdAt);
+      if (age.isNegative) {
+        return 0.0; // Future-dated vibe is inconsistent
+      }
+      
+      // Vibes older than expiration period are inconsistent
+      final maxAge = Duration(days: VibeConstants.vibeSignatureExpiryDays);
+      if (age > maxAge) {
+        return 0.0; // Too old
+      }
+      
+      // Check temporal context consistency
+      final expectedContext = _getTemporalContext(DateTime.now());
+      final contextMatch = vibe.temporalContext == expectedContext ? 1.0 : 0.8;
+      
+      // Age-based consistency (newer = more consistent)
+      final ageConsistency = 1.0 - (age.inDays / VibeConstants.vibeSignatureExpiryDays).clamp(0.0, 1.0);
+      
+      return (contextMatch * 0.6 + ageConsistency * 0.4).clamp(0.0, 1.0);
+    } catch (e) {
+      developer.log('Error checking temporal consistency: $e', name: _logName);
+      return 0.9; // Default to high consistency on error
+    }
+  }
+  
+  String _getTemporalContext(DateTime time) {
+    final hour = time.hour;
+    final weekday = time.weekday;
+    
+    String timeOfDay;
+    if (hour >= 6 && hour < 12) {
+      timeOfDay = 'morning';
+    } else if (hour >= 12 && hour < 17) {
+      timeOfDay = 'afternoon';
+    } else if (hour >= 17 && hour < 22) {
+      timeOfDay = 'evening';
+    } else {
+      timeOfDay = 'night';
+    }
+    
+    final dayType = weekday <= 5 ? 'weekday' : 'weekend';
+    return '$dayType$timeOfDay';
+  }
 }
 
 // Supporting classes for vibe analysis

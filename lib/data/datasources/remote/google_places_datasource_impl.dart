@@ -3,15 +3,25 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/data/datasources/remote/google_places_datasource.dart';
+import 'package:spots/core/services/google_places_cache_service.dart';
 
-/// Google Places API Implementation
+/// Google Places API Implementation (LEGACY - DEPRECATED)
+/// 
+/// ⚠️ DEPRECATED: This implementation uses the legacy Google Places API.
+/// Use [GooglePlacesDataSourceNewImpl] instead, which uses the new Places API (New).
+/// 
+/// This file is kept for reference but is no longer used in production.
+/// Migration completed: See [GOOGLE_PLACES_API_NEW_MIGRATION_COMPLETE.md]
+/// 
 /// OUR_GUTS.md: "Authenticity Over Algorithms" - External data enriches community knowledge
+@Deprecated('Use GooglePlacesDataSourceNewImpl instead. This uses the legacy Places API.')
 class GooglePlacesDataSourceImpl implements GooglePlacesDataSource {
   static const String _logName = 'GooglePlacesDataSource';
   static const String _baseUrl = 'https://maps.googleapis.com/maps/api/place';
   
   final http.Client _httpClient;
   final String _apiKey;
+  final GooglePlacesCacheService? _cacheService;
   
   // Rate limiting and caching
   final Map<String, dynamic> _cache = {};
@@ -22,8 +32,10 @@ class GooglePlacesDataSourceImpl implements GooglePlacesDataSource {
   GooglePlacesDataSourceImpl({
     required String apiKey,
     http.Client? httpClient,
+    GooglePlacesCacheService? cacheService,
   }) : _apiKey = apiKey,
-       _httpClient = httpClient ?? http.Client();
+       _httpClient = httpClient ?? http.Client(),
+       _cacheService = cacheService;
 
   @override
   Future<List<Spot>> searchPlaces({
@@ -61,9 +73,14 @@ class GooglePlacesDataSourceImpl implements GooglePlacesDataSource {
         final data = json.decode(response.body);
         final spots = _parseSearchResults(data);
         
-        // Cache results
+        // Cache results in memory
         _cache[cacheKey] = spots;
         _lastRequest[cacheKey] = DateTime.now();
+        
+        // Cache in local database for offline use
+        if (_cacheService != null) {
+          await _cacheService!.cachePlaces(spots);
+        }
         
         developer.log('Found ${spots.length} places for: $query', name: _logName);
         return spots;
@@ -99,9 +116,14 @@ class GooglePlacesDataSourceImpl implements GooglePlacesDataSource {
         final data = json.decode(response.body);
         final spot = _parsePlaceDetails(data['result']);
         
-        // Cache result
+        // Cache result in memory
         _cache[cacheKey] = spot;
         _lastRequest[cacheKey] = DateTime.now();
+        
+        // Cache in local database for offline use
+        if (_cacheService != null && spot != null) {
+          await _cacheService!.cachePlace(spot);
+        }
         
         return spot;
       } else {
@@ -145,9 +167,14 @@ class GooglePlacesDataSourceImpl implements GooglePlacesDataSource {
         final data = json.decode(response.body);
         final spots = _parseSearchResults(data);
         
-        // Cache results
+        // Cache results in memory
         _cache[cacheKey] = spots;
         _lastRequest[cacheKey] = DateTime.now();
+        
+        // Cache in local database for offline use
+        if (_cacheService != null) {
+          await _cacheService!.cachePlaces(spots);
+        }
         
         developer.log('Found ${spots.length} nearby places', name: _logName);
         return spots;

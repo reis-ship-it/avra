@@ -1,17 +1,19 @@
 import 'package:mockito/mockito.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
 import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
 import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
+import 'package:spots/core/models/spot.dart';
+import 'package:spots/core/models/list.dart';
+import 'package:spots/core/models/user.dart';
 
 /// Mock AuthBloc for widget testing
 class MockAuthBloc extends Mock implements AuthBloc {
   @override
-  Stream<AuthState> get stream => Stream.value(const AuthInitial());
+  Stream<AuthState> get stream => Stream.value(AuthInitial());
 
   @override
-  AuthState get state => const AuthInitial();
+  AuthState get state => AuthInitial();
 
   @override
   void add(AuthEvent event) {}
@@ -26,10 +28,10 @@ class MockAuthBloc extends Mock implements AuthBloc {
 /// Mock ListsBloc for widget testing
 class MockListsBloc extends Mock implements ListsBloc {
   @override
-  Stream<ListsState> get stream => Stream.value(const ListsInitial());
+  Stream<ListsState> get stream => Stream.value(ListsInitial());
 
   @override
-  ListsState get state => const ListsInitial();
+  ListsState get state => ListsInitial();
 
   @override
   void add(ListsEvent event) {}
@@ -44,10 +46,10 @@ class MockListsBloc extends Mock implements ListsBloc {
 /// Mock SpotsBloc for widget testing
 class MockSpotsBloc extends Mock implements SpotsBloc {
   @override
-  Stream<SpotsState> get stream => Stream.value(const SpotsInitial());
+  Stream<SpotsState> get stream => Stream.value(SpotsInitial());
 
   @override
-  SpotsState get state => const SpotsInitial();
+  SpotsState get state => SpotsInitial();
 
   @override
   void add(SpotsEvent event) {}
@@ -62,10 +64,10 @@ class MockSpotsBloc extends Mock implements SpotsBloc {
 /// Mock HybridSearchBloc for widget testing
 class MockHybridSearchBloc extends Mock implements HybridSearchBloc {
   @override
-  Stream<HybridSearchState> get stream => Stream.value(const HybridSearchInitial());
+  Stream<HybridSearchState> get stream => Stream.value(HybridSearchInitial());
 
   @override
-  HybridSearchState get state => const HybridSearchInitial();
+  HybridSearchState get state => HybridSearchInitial();
 
   @override
   void add(HybridSearchEvent event) {}
@@ -94,16 +96,16 @@ class MockBlocFactory {
   /// Creates an unauthenticated mock auth bloc
   static MockAuthBloc createUnauthenticatedAuthBloc() {
     final mockBloc = MockAuthBloc();
-    when(mockBloc.state).thenReturn(const Unauthenticated());
-    when(mockBloc.stream).thenAnswer((_) => Stream.value(const Unauthenticated()));
+    when(mockBloc.state).thenReturn(Unauthenticated());
+    when(mockBloc.stream).thenAnswer((_) => Stream.value(Unauthenticated()));
     return mockBloc;
   }
 
   /// Creates a loading mock auth bloc
   static MockAuthBloc createLoadingAuthBloc() {
     final mockBloc = MockAuthBloc();
-    when(mockBloc.state).thenReturn(const AuthLoading());
-    when(mockBloc.stream).thenAnswer((_) => Stream.value(const AuthLoading()));
+    when(mockBloc.state).thenReturn(AuthLoading());
+    when(mockBloc.stream).thenAnswer((_) => Stream.value(AuthLoading()));
     return mockBloc;
   }
 
@@ -116,18 +118,18 @@ class MockBlocFactory {
   }
 
   /// Creates a mock lists bloc with loaded state
-  static MockListsBloc createLoadedListsBloc(List<dynamic> lists) {
+  static MockListsBloc createLoadedListsBloc(List<SpotList> lists) {
     final mockBloc = MockListsBloc();
-    when(mockBloc.state).thenReturn(ListsLoaded(lists));
-    when(mockBloc.stream).thenAnswer((_) => Stream.value(ListsLoaded(lists)));
+    when(mockBloc.state).thenReturn(ListsLoaded(lists, lists));
+    when(mockBloc.stream).thenAnswer((_) => Stream.value(ListsLoaded(lists, lists)));
     return mockBloc;
   }
 
   /// Creates a mock lists bloc with loading state
   static MockListsBloc createLoadingListsBloc() {
     final mockBloc = MockListsBloc();
-    when(mockBloc.state).thenReturn(const ListsLoading());
-    when(mockBloc.stream).thenAnswer((_) => Stream.value(const ListsLoading()));
+    when(mockBloc.state).thenReturn(ListsLoading());
+    when(mockBloc.stream).thenAnswer((_) => Stream.value(ListsLoading()));
     return mockBloc;
   }
 
@@ -140,7 +142,7 @@ class MockBlocFactory {
   }
 
   /// Creates a mock spots bloc with loaded state
-  static MockSpotsBloc createLoadedSpotsBloc(List<dynamic> spots) {
+  static MockSpotsBloc createLoadedSpotsBloc(List<Spot> spots) {
     final mockBloc = MockSpotsBloc();
     when(mockBloc.state).thenReturn(SpotsLoaded(spots));
     when(mockBloc.stream).thenAnswer((_) => Stream.value(SpotsLoaded(spots)));
@@ -150,29 +152,43 @@ class MockBlocFactory {
   /// Creates a mock spots bloc with loading state
   static MockSpotsBloc createLoadingSpotsBloc() {
     final mockBloc = MockSpotsBloc();
-    when(mockBloc.state).thenReturn(const SpotsLoading());
-    when(mockBloc.stream).thenAnswer((_) => Stream.value(const SpotsLoading()));
+    when(mockBloc.state).thenReturn(SpotsLoading());
+    when(mockBloc.stream).thenAnswer((_) => Stream.value(SpotsLoading()));
     return mockBloc;
   }
 
   /// Creates a mock search bloc with results
-  static MockHybridSearchBloc createSearchResultsBloc(List<dynamic> results) {
+  static MockHybridSearchBloc createSearchResultsBloc(List<Spot> results) {
     final mockBloc = MockHybridSearchBloc();
-    when(mockBloc.state).thenReturn(HybridSearchLoaded(results));
-    when(mockBloc.stream).thenAnswer((_) => Stream.value(HybridSearchLoaded(results)));
+    when(mockBloc.state).thenReturn(HybridSearchLoaded(
+      spots: results,
+      communityCount: results.length,
+      externalCount: 0,
+      totalCount: results.length,
+      searchDuration: const Duration(milliseconds: 100),
+      sources: const {},
+    ));
+    when(mockBloc.stream).thenAnswer((_) => Stream.value(HybridSearchLoaded(
+      spots: results,
+      communityCount: results.length,
+      externalCount: 0,
+      totalCount: results.length,
+      searchDuration: const Duration(milliseconds: 100),
+      sources: const {},
+    )));
     return mockBloc;
   }
 
   /// Creates a test user for mocking purposes
-  static dynamic _createTestUser() {
-    // This would return a properly constructed UnifiedUser
-    // For now, return a simple map structure that tests can use
-    return {
-      'id': 'test-user-id',
-      'email': 'test@example.com',
-      'displayName': 'Test User',
-      'role': 'follower',
-      'isVerifiedAge': true,
-    };
+  static User _createTestUser() {
+    final now = DateTime.now();
+    return User(
+      id: 'test-user-id',
+      email: 'test@example.com',
+      name: 'Test User',
+      role: UserRole.user,
+      createdAt: now,
+      updatedAt: now,
+    );
   }
 }

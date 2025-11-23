@@ -7,6 +7,7 @@ import 'package:spots/core/ai/ai_self_improvement_system.dart';
 import 'package:spots/core/ai/advanced_communication.dart';
 import 'package:spots/core/ai/personality_learning.dart' as pl;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/ai/personality_learning.dart' as personality_pkg;
 import 'package:spots/core/ai/collaboration_networks.dart' as collab;
 import 'package:spots/core/ai/list_generator_service.dart';
 import 'package:spots/core/ml/pattern_recognition.dart' as pattern_recognition;
@@ -44,8 +45,8 @@ class AIMasterOrchestrator {
       _dataCollector = ComprehensiveDataCollector();
       _selfImprovementSystem = AISelfImprovementSystem();
       _aiCommunication = AdvancedAICommunication();
-      final prefs = await SharedPreferences.getInstance();
-      _personalityLearning = pl.PersonalityLearning.withPrefs(prefs);
+      // Use in-memory preferences to avoid SharedPreferencesCompat mismatch in tests
+      _personalityLearning = pl.PersonalityLearning();
       _collaborationNetworks = collab.CollaborationNetworks();
       _listGeneratorService = AIListGeneratorService();
       

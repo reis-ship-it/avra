@@ -11,17 +11,28 @@ import 'package:spots/presentation/pages/spots/spots_page.dart';
 import 'package:spots/presentation/pages/lists/lists_page.dart';
 import 'package:spots/presentation/pages/map/map_page.dart';
 import 'package:spots/presentation/pages/profile/profile_page.dart';
+import 'package:spots/presentation/pages/profile/ai_personality_status_page.dart';
 import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:spots/presentation/pages/onboarding/ai_loading_page.dart';
 import 'package:spots/presentation/pages/supabase_test_page.dart';
 import 'package:spots/presentation/pages/search/hybrid_search_page.dart';
+import 'package:spots/presentation/pages/admin/ai2ai_admin_dashboard.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
 import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
 import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+import 'package:flutter/foundation.dart';
+// Phase 1 Integration: Device Discovery & AI2AI Connections
+import 'package:spots/presentation/pages/network/device_discovery_page.dart';
+import 'package:spots/presentation/pages/network/ai2ai_connections_page.dart';
+import 'package:spots/presentation/pages/settings/discovery_settings_page.dart';
+// Phase 2.1: Federated Learning
+import 'package:spots/presentation/pages/settings/federated_learning_page.dart';
 
 class AppRouter {
   // Route path helpers for legacy Navigator.pushNamed usages
@@ -31,6 +42,7 @@ class AppRouter {
   static GoRouter build({required AuthBloc authBloc}) {
     const bool goToSupabaseTest = bool.fromEnvironment('GO_TO_SUPABASE_TEST');
     const bool autoDriveSupabase = bool.fromEnvironment('AUTO_DRIVE_SUPABASE_TEST');
+    final analytics = FirebaseAnalytics.instance;
     return GoRouter(
       initialLocation: goToSupabaseTest
           ? (autoDriveSupabase ? '/supabase-test?auto=1' : '/supabase-test')
@@ -40,17 +52,34 @@ class AppRouter {
         final isLoggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/signup';
         final isOnboarding = state.matchedLocation == '/onboarding';
         final isRoot = state.matchedLocation == '/';
+        final isSupabaseTest = state.matchedLocation.startsWith('/supabase-test');
+
+        // When test flag is enabled, always allow and prefer the Supabase test page
+        if (goToSupabaseTest) {
+          if (!isSupabaseTest) {
+            return autoDriveSupabase ? '/supabase-test?auto=1' : '/supabase-test';
+          }
+          return null;
+        }
 
         final authState = authBloc.state;
 
         if (authState is Authenticated) {
-          // If authenticated, ensure onboarding completed
-          final onboardingDone = await OnboardingCompletionService.isOnboardingCompleted();
-          if (!onboardingDone && !isOnboarding) {
+          // Allow ai-loading page to proceed without redirect
+          if (state.matchedLocation == '/ai-loading') {
+            return null;
+          }
+          // If authenticated, ensure onboarding completed for this specific user
+          // Add a small delay on web to allow IndexedDB writes to complete
+          if (kIsWeb) {
+            await Future.delayed(const Duration(milliseconds: 100));
+          }
+          final onboardingDone = await OnboardingCompletionService.isOnboardingCompleted(authState.user.id);
+          if (!onboardingDone && !isOnboarding && state.matchedLocation != '/ai-loading') {
             return '/onboarding';
           }
           // After onboarding, ensure critical permissions present
-          if (!await _hasCriticalPermissions() && state.matchedLocation != '/onboarding') {
+          if (!await _hasCriticalPermissions() && state.matchedLocation != '/onboarding' && state.matchedLocation != '/ai-loading') {
             return '/onboarding?reason=permissions_required';
           }
           // Prevent going back to auth pages
@@ -60,12 +89,15 @@ class AppRouter {
           return null;
         }
 
-        // Unauthenticated: allow only login/signup/onboarding; send others to login
-        if (!(isLoggingIn || isOnboarding || isRoot)) {
+        // Unauthenticated: allow login/signup/onboarding/root; also allow supabase-test when running in test mode
+        if (!(isLoggingIn || isOnboarding || isRoot || isSupabaseTest)) {
           return '/login';
         }
         return null;
       },
+      observers: [
+        FirebaseAnalyticsObserver(analytics: analytics),
+      ],
       routes: [
         GoRoute(
           path: '/',
@@ -79,9 +111,17 @@ class AppRouter {
             GoRoute(
               path: 'map',
               redirect: (context, state) async {
-                final locWhenInUse = await Permission.locationWhenInUse.status;
-                if (!locWhenInUse.isGranted && !locWhenInUse.isLimited) {
-                  return '/onboarding?reason=location_required';
+                // Skip permission check on web
+                if (kIsWeb) {
+                  return null;
+                }
+                try {
+                  final locWhenInUse = await Permission.locationWhenInUse.status;
+                  if (!locWhenInUse.isGranted && !locWhenInUse.isLimited) {
+                    return '/onboarding?reason=location_required';
+                  }
+                } catch (e) {
+                  // If permission check fails, allow access
                 }
                 return null;
               },
@@ -94,6 +134,32 @@ class AppRouter {
               ),
             ),
             GoRoute(path: 'profile', builder: (c, s) => const ProfilePage()),
+            GoRoute(
+              path: 'profile/ai-status',
+              builder: (c, s) => const AIPersonalityStatusPage(),
+            ),
+            GoRoute(
+              path: 'admin/ai2ai',
+              builder: (c, s) => const AI2AIAdminDashboard(),
+            ),
+            // Phase 1 Integration: Device Discovery & AI2AI Routes
+            GoRoute(
+              path: 'device-discovery',
+              builder: (c, s) => const DeviceDiscoveryPage(),
+            ),
+            GoRoute(
+              path: 'ai2ai-connections',
+              builder: (c, s) => const AI2AIConnectionsPage(),
+            ),
+            GoRoute(
+              path: 'discovery-settings',
+              builder: (c, s) => const DiscoverySettingsPage(),
+            ),
+            // Phase 2.1: Federated Learning
+            GoRoute(
+              path: 'federated-learning',
+              builder: (c, s) => const FederatedLearningPage(),
+            ),
             GoRoute(
               path: 'supabase-test',
               builder: (c, s) {
@@ -122,10 +188,33 @@ class AppRouter {
             ),
             GoRoute(
               path: 'ai-loading',
-              builder: (c, s) => AILoadingPage(
-                userName: 'User',
-                onLoadingComplete: () => c.go('/lists'),
-              ),
+              builder: (c, s) {
+                // Extract onboarding data from query parameters or state
+                final extra = s.extra as Map<String, dynamic>?;
+                // Parse birthday if provided
+                DateTime? birthday;
+                if (extra?['birthday'] != null) {
+                  try {
+                    birthday = DateTime.parse(extra!['birthday'] as String);
+                  } catch (e) {
+                    // Invalid date, ignore
+                  }
+                }
+                final age = extra?['age'] as int?;
+
+                return AILoadingPage(
+                  userName: extra?['userName'] as String? ?? 'User',
+                  birthday: birthday,
+                  age: age,
+                  homebase: extra?['homebase'] as String?,
+                  favoritePlaces: (extra?['favoritePlaces'] as List<dynamic>?)?.cast<String>() ?? const [],
+                  preferences: (extra?['preferences'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, (v as List<dynamic>).cast<String>())) ?? const {},
+                  onLoadingComplete: () {
+                    // Mark onboarding as completed and navigate to home
+                    c.go('/home');
+                  },
+                );
+              },
             ),
             GoRoute(
               path: 'hybrid-search',
@@ -159,17 +248,28 @@ class _GoRouterRefreshStream extends ChangeNotifier {
 }
 
 Future<bool> _hasCriticalPermissions() async {
-  final statuses = await [
-    Permission.locationWhenInUse,
-    Permission.locationAlways,
-    Permission.bluetooth,
-    Permission.bluetoothScan,
-    Permission.bluetoothConnect,
-    Permission.bluetoothAdvertise,
-    Permission.nearbyWifiDevices,
-  ].request();
+  // On web, many permissions are not supported, so we skip the check
+  // Web browsers handle permissions differently (e.g., geolocation API)
+  if (kIsWeb) {
+    return true; // Allow web to proceed without mobile-specific permissions
+  }
 
-  bool ok(PermissionStatus s) => s.isGranted || s.isLimited || s.isProvisional;
+  try {
+    final statuses = await [
+      Permission.locationWhenInUse,
+      Permission.locationAlways,
+      Permission.bluetooth,
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.bluetoothAdvertise,
+      Permission.nearbyWifiDevices,
+    ].request();
 
-  return statuses.values.where((s) => !ok(s)).isEmpty;
+    bool ok(PermissionStatus s) => s.isGranted || s.isLimited || s.isProvisional;
+
+    return statuses.values.where((s) => !ok(s)).isEmpty;
+  } catch (e) {
+    // If permission check fails, allow to proceed (don't block navigation)
+    return true;
+  }
 }

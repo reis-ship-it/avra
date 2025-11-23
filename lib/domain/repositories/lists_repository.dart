@@ -2,6 +2,7 @@ import 'package:spots/core/models/list.dart';
 
 abstract class ListsRepository {
   Future<List<SpotList>> getLists();
+  Future<List<SpotList>> getPublicLists();
   Future<SpotList> createList(SpotList list);
   Future<SpotList> updateList(SpotList list);
   Future<void> deleteList(String id);

@@ -31,6 +31,10 @@ class Spot extends Equatable {
   final bool isAgeRestricted;
   final String? listId; // Associated list if any
   
+  // Google Places integration
+  final String? googlePlaceId; // Google Place ID for syncing with Google Maps
+  final DateTime? googlePlaceIdSyncedAt; // When Google Place ID was last synced
+  
   // Engagement metrics
   final int viewCount;
   final int respectCount;
@@ -63,6 +67,8 @@ class Spot extends Equatable {
     this.respectCount = 0,
     this.shareCount = 0,
     this.respectedBy = const [],
+    this.googlePlaceId,
+    this.googlePlaceIdSyncedAt,
   });
   
   /// Check if spot is publicly visible
@@ -127,6 +133,8 @@ class Spot extends Equatable {
     int? respectCount,
     int? shareCount,
     List<String>? respectedBy,
+    String? googlePlaceId,
+    DateTime? googlePlaceIdSyncedAt,
   }) {
     return Spot(
       id: id ?? this.id,
@@ -154,6 +162,8 @@ class Spot extends Equatable {
       respectCount: respectCount ?? this.respectCount,
       shareCount: shareCount ?? this.shareCount,
       respectedBy: respectedBy ?? this.respectedBy,
+      googlePlaceId: googlePlaceId ?? this.googlePlaceId,
+      googlePlaceIdSyncedAt: googlePlaceIdSyncedAt ?? this.googlePlaceIdSyncedAt,
     );
   }
   
@@ -163,6 +173,15 @@ class Spot extends Equatable {
     createdBy, createdAt, updatedAt, address, phoneNumber, website,
     imageUrl, tags, metadata, priceLevel, verificationLevel,
     moderationStatus, isAgeRestricted, listId, viewCount,
-    respectCount, shareCount, respectedBy,
+    respectCount, shareCount, respectedBy, googlePlaceId, googlePlaceIdSyncedAt,
   ];
+  
+  /// Check if spot has Google Place ID mapping
+  bool get hasGooglePlaceId => googlePlaceId != null && googlePlaceId!.isNotEmpty;
+  
+  /// Check if Google Place ID sync is stale (older than 30 days)
+  bool get isGooglePlaceIdStale {
+    if (googlePlaceIdSyncedAt == null) return true;
+    return DateTime.now().difference(googlePlaceIdSyncedAt!) > const Duration(days: 30);
+  }
 }

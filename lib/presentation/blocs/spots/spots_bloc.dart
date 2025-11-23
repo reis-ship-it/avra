@@ -139,16 +139,19 @@ class SpotsBloc extends Bloc<SpotsEvent, SpotsState> {
       final query = event.query.toLowerCase();
 
       if (query.isEmpty) {
-        emit(SpotsLoaded(currentState.spots));
+        emit(SpotsLoaded(currentState.spots, respectedSpots: currentState.respectedSpots));
       } else {
-        final filteredSpots = currentState.spots.where((spot) {
+        // Search in both user spots and respected spots
+        final allSpots = [...currentState.spots, ...currentState.respectedSpots];
+        final filteredSpots = allSpots.where((spot) {
           return spot.name.toLowerCase().contains(query) ||
-              spot.description.toLowerCase().contains(query) ||
-              spot.category.toLowerCase().contains(query);
+              (spot.description?.toLowerCase().contains(query) ?? false) ||
+              spot.category.toLowerCase().contains(query) ||
+              (spot.address?.toLowerCase().contains(query) ?? false);
         }).toList();
 
         emit(SpotsLoaded(currentState.spots,
-            filteredSpots: filteredSpots, searchQuery: query));
+            filteredSpots: filteredSpots, searchQuery: query, respectedSpots: currentState.respectedSpots));
       }
     }
   }

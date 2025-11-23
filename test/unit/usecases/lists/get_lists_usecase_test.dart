@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:spots/core/models/list.dart';
-import 'package:spots/core/models/spot.dart';
 import 'package:spots/domain/repositories/lists_repository.dart';
 import 'package:spots/domain/usecases/lists/get_lists_usecase.dart';
 

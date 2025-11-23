@@ -1,4 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/core/theme/map_themes.dart';
 

@@ -216,7 +216,7 @@ class SpotValidationSummary {
     List<CommunityValidation> validations,
   ) {
     if (validations.isEmpty) {
-      return SpotValidationSummary._unvalidated(spotId);
+      return SpotValidationSummary.unvalidated(spotId);
     }
 
     // Sort by validation date (newest first)
@@ -253,7 +253,7 @@ class SpotValidationSummary {
   }
 
   /// Create summary for unvalidated spot
-  factory SpotValidationSummary._unvalidated(String spotId) {
+  factory SpotValidationSummary.unvalidated(String spotId) {
     return SpotValidationSummary(
       spotId: spotId,
       validations: [],

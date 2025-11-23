@@ -1,0 +1,240 @@
+# SPOTS Development Protocol - Cursor AI Rules
+
+## 🚨 MANDATORY: Session Start Protocol
+
+**At the start of EVERY new chat/task, you MUST:**
+
+1. **Read the entry point document:**
+   ```
+   read_file('docs/START_HERE_NEW_TASK.md')
+   ```
+
+2. **Determine task type:**
+   - **Implementation task** (implement, create, build, add, start, proceed)
+     → Follow 40-minute context gathering protocol
+   - **Status/progress query** (where are we, what's the status, how far along)
+     → Find and read ALL related documents (plan + complete + progress + status)
+
+3. **Follow the protocol before any code:**
+   - Do NOT skip to implementation
+   - Do NOT skip context gathering
+   - The 40-minute investment saves hours to days
+
+---
+
+## 🎯 Implementation Task Triggers
+
+When user says any of these, read `START_HERE_NEW_TASK.md` first:
+
+- "implement [feature]"
+- "create [component]"
+- "build [feature]"
+- "add [functionality]"
+- "start [task]"
+- "proceed with [phase]"
+- "continue with [feature]"
+- "let's do [task]"
+- "work on [feature]"
+
+**Protocol:**
+```
+1. Read START_HERE_NEW_TASK.md (docs/plans/methodology/START_HERE_NEW_TASK.md)
+2. Read DOORS.md (docs/plans/philosophy_implementation/DOORS.md) - MANDATORY
+3. Read OUR_GUTS.md - MANDATORY
+4. Read SPOTS Philosophy (docs/plans/philosophy_implementation/SPOTS_PHILOSOPHY_AND_ARCHITECTURE.md) - MANDATORY
+5. Read Development Methodology (docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md) - MANDATORY
+6. Check Master Plan (docs/MASTER_PLAN.md) for current execution sequence
+7. Check Master Plan Tracker (docs/MASTER_PLAN_TRACKER.md) for all plans
+8. Discover ALL plans (glob_file_search in docs/plans/)
+9. Filter by recency + relevance
+10. Read high-priority plans
+11. Search existing implementations
+12. Answer doors questions (What doors? When ready? Good key? Learning?)
+13. Create TODO list
+14. Communicate plan
+15. Get user approval
+16. Begin implementation (following methodology and philosophy)
+```
+
+---
+
+## 🔍 Status Query Triggers
+
+When user says any of these, read ALL related documents:
+
+- "where are we with [topic]"
+- "what's the status of [topic]"
+- "how far along is [topic]"
+- "what's complete in [topic]"
+- "show me progress on [topic]"
+- "update me on [topic]"
+
+**Protocol:**
+```bash
+# ⚠️ CRITICAL: Never read just one document for status queries
+
+# Find ALL related documents:
+glob_file_search('**/*[topic]*.md')
+glob_file_search('**/*[topic]*plan*.md')
+glob_file_search('**/*[topic]*complete*.md')
+glob_file_search('**/*[topic]*progress*.md')
+glob_file_search('**/*[topic]*status*.md')
+glob_file_search('**/*[topic]*summary*.md')
+
+# Read ALL found documents, then synthesize comprehensive answer
+```
+
+**Example:**
+```
+User: "Where are we with week 1 of plan X?"
+
+❌ WRONG: Read week_1_plan.md only
+✅ RIGHT: Find and read ALL:
+  - week_1_plan.md
+  - week_1_complete.md
+  - week_1_progress.md
+  - week_1_status.md
+  
+Then synthesize comprehensive answer.
+```
+
+---
+
+## 📚 Key Documentation
+
+- **Entry Point:** `docs/plans/methodology/START_HERE_NEW_TASK.md` (read at start of EVERY task)
+- **Quick Reference:** `docs/plans/methodology/SESSION_START_CHECKLIST.md`
+- **Full Methodology:** `docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md`
+- **Master Plan:** `docs/MASTER_PLAN.md` (THE execution plan - single source of truth)
+- **Master Plan Tracker:** `docs/MASTER_PLAN_TRACKER.md` (registry of all plans)
+- **Master Plan System:** `.cursorrules_master_plan` (automated workflow for new features)
+- **SPOTS Philosophy:** `docs/plans/philosophy_implementation/SPOTS_PHILOSOPHY_AND_ARCHITECTURE.md` (CRITICAL - all work must align)
+- **Development Guide:** `README_DEVELOPMENT.md`
+
+---
+
+## 🤖 Master Plan System Integration
+
+**When user says "I want to add [feature]" or "I want to implement [feature]":**
+
+**Follow the automated workflow in:** `.cursorrules_master_plan`
+
+**Key Steps:**
+1. Create comprehensive plan document
+2. Create plan folder with supporting docs
+3. Add to Master Plan Tracker
+4. Analyze for Master Plan integration (dependencies, priority, catch-up opportunities)
+5. Insert into Master Plan at optimal position
+6. Update execution sequence
+
+**See:** `.cursorrules_master_plan` for complete automated workflow
+
+---
+
+## ⚡ Context Gathering is Mandatory
+
+**Time Investment:** 40 minutes  
+**Time Saved:** 50-90% (hours to days)  
+**Proven ROI:** Multiple 99% time savings in actual implementations
+
+**DO NOT skip context gathering to "save time" - it costs more later.**
+
+---
+
+## 🎨 Project-Specific Rules
+
+### Design Tokens (100% Adherence Required)
+- ✅ ALWAYS use `AppColors` or `AppTheme` for colors
+- ❌ NEVER use direct `Colors.*` (will be flagged)
+- This is non-negotiable per user memory
+
+### Architecture
+- System is **ai2ai only** (never p2p)
+- All device interactions through personality learning AI
+- AIs must always be self-improving (individual, network, ecosystem)
+
+### Code Standards
+- Zero linter errors before completion
+- Full integration (users can access features)
+- Tests written
+- Documentation complete
+
+### Philosophy
+- **CRITICAL:** Reference `docs/plans/philosophy_implementation/SPOTS_PHILOSOPHY_AND_ARCHITECTURE.md` for core philosophy
+- **Core Principle:** "Doors, not badges" - Authentic contributions, not gamification
+- Never delete unused code (may be setup for future)
+- Auto-generated docs are NOT deletable
+- All work must align with SPOTS philosophy
+
+---
+
+## 🚨 Critical Warnings
+
+**STOP and clarify if:**
+- [ ] Can't find main plan document
+- [ ] Task conflicts with existing plan
+- [ ] Multiple plans with contradictory specs
+- [ ] Unclear where code should be placed
+- [ ] Can't determine dependencies
+- [ ] Found existing implementation but specs differ
+
+**DO NOT proceed until clarified.**
+
+---
+
+## ✅ Before Starting ANY Implementation
+
+**Confirm ALL of these (MANDATORY):**
+- [ ] I have read START_HERE_NEW_TASK.md (docs/plans/methodology/START_HERE_NEW_TASK.md)
+- [ ] I have read DOORS.md (docs/plans/philosophy_implementation/DOORS.md) - MANDATORY
+- [ ] I have read OUR_GUTS.md - MANDATORY
+- [ ] I have read SPOTS Philosophy (docs/plans/philosophy_implementation/SPOTS_PHILOSOPHY_AND_ARCHITECTURE.md) - MANDATORY
+- [ ] I have read Development Methodology (docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md) - MANDATORY
+- [ ] I have checked Master Plan (docs/MASTER_PLAN.md) for execution sequence
+- [ ] I have checked Master Plan Tracker (docs/MASTER_PLAN_TRACKER.md) for all plans
+- [ ] I have discovered ALL relevant plans (in docs/plans/ folders)
+- [ ] I have filtered plans by recency + relevance
+- [ ] I have read high-priority related plans
+- [ ] I have answered doors questions (What doors? When ready? Good key? Learning?)
+- [ ] I have checked for conflicts
+- [ ] I have searched for existing implementations
+- [ ] I understand the architecture (ai2ai only, offline-first, self-improving)
+- [ ] I have created a TODO list
+- [ ] I have communicated my plan to user
+- [ ] User has approved the approach
+
+**If ANY checkbox is unchecked, DO NOT START CODING.**
+
+**If ANY checkbox is unchecked, DO NOT START CODING.**
+
+---
+
+## 📊 Success Metrics (Proven)
+
+Following this protocol:
+- Phase 1 Integration: 40 min → Saved 5 days (99%)
+- Optional Enhancements: 30 min → Saved 3 days (85%)
+- Phase 2.1: 20 min → Saved 11 days (99.5%)
+
+**NOT following this protocol:**
+- Risk duplicating existing work
+- Risk wrong architecture/placement
+- 2-10x longer implementation time
+
+---
+
+## 🎯 The Golden Rule
+
+```
+40 minutes of context gathering
+saves
+40 hours of implementation
+
+ALWAYS invest the 40 minutes.
+```
+
+---
+
+**Last Updated:** November 21, 2025  
+**Status:** Active - Mandatory for all AI assistants working on SPOTS
+

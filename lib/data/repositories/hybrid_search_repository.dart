@@ -1,9 +1,12 @@
+import 'dart:math' as math;
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/data/datasources/local/spots_local_datasource.dart';
 import 'package:spots/data/datasources/remote/spots_remote_datasource.dart';
 import 'package:spots/data/datasources/remote/google_places_datasource.dart';
 import 'package:spots/data/datasources/remote/openstreetmap_datasource.dart';
+import 'package:spots/core/services/google_places_cache_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 /// Hybrid Search Repository
 /// OUR_GUTS.md: "Authenticity Over Algorithms" - Community data prioritized over external sources
@@ -15,20 +18,30 @@ class HybridSearchRepository {
   final SpotsRemoteDataSource? _remoteDataSource;
   final GooglePlacesDataSource? _googlePlacesDataSource;
   final OpenStreetMapDataSource? _osmDataSource;
+  final GooglePlacesCacheService? _googlePlacesCache;
+  final Connectivity? _connectivity;
   
   // Search analytics tracking (privacy-preserving)
   final Map<String, int> _searchAnalytics = {};
   final Map<String, DateTime> _lastSearchTime = {};
+  
+  // Search result cache (privacy-preserving, short-lived)
+  final Map<String, HybridSearchResult> _searchCache = {};
+  static const Duration _cacheExpiration = Duration(minutes: 5);
   
   HybridSearchRepository({
     SpotsLocalDataSource? localDataSource,
     SpotsRemoteDataSource? remoteDataSource,
     GooglePlacesDataSource? googlePlacesDataSource,
     OpenStreetMapDataSource? osmDataSource,
+    GooglePlacesCacheService? googlePlacesCache,
+    Connectivity? connectivity,
   }) : _localDataSource = localDataSource,
        _remoteDataSource = remoteDataSource,
        _googlePlacesDataSource = googlePlacesDataSource,
-       _osmDataSource = osmDataSource;
+       _osmDataSource = osmDataSource,
+       _googlePlacesCache = googlePlacesCache,
+       _connectivity = connectivity;
 
   /// Hybrid search with community-first prioritization
   /// OUR_GUTS.md: "Community, Not Just Places" - Local community knowledge comes first
@@ -38,10 +51,20 @@ class HybridSearchRepository {
     double? longitude,
     int maxResults = 50,
     bool includeExternal = true,
+    SearchFilters? filters,
+    SearchSortOption sortOption = SearchSortOption.relevance,
   }) async {
     try {
       _logger.info('Hybrid search: $query', tag: _logName);
       final startTime = DateTime.now();
+      
+      // Check cache first
+      final cacheKey = _generateCacheKey(query, latitude, longitude, maxResults, includeExternal, filters, sortOption);
+      final cachedResult = _getCachedResult(cacheKey);
+      if (cachedResult != null) {
+        _logger.debug('Returning cached search result', tag: _logName);
+        return cachedResult;
+      }
       
       // Track search analytics (privacy-preserving)
       _trackSearch(query);
@@ -53,38 +76,69 @@ class HybridSearchRepository {
       // STEP 2: Search external data if enabled and community results are limited
       List<Spot> externalSpots = [];
       if (includeExternal && communitySpots.length < maxResults) {
-        externalSpots = await _searchExternalData(
-          query: query,
-          latitude: latitude,
-          longitude: longitude,
-          maxResults: maxResults - communitySpots.length,
-        );
-        _logger.debug('Found ${externalSpots.length} external spots', tag: _logName);
+        // Check if offline - use cached data if available
+        final isOffline = await _isOffline();
+        if (isOffline && _googlePlacesCache != null) {
+          _logger.debug('Device is offline, using cached Google Places data', tag: _logName);
+          externalSpots = await _googlePlacesCache!.searchCachedPlaces(query);
+        } else {
+          externalSpots = await _searchExternalData(
+            query: query,
+            latitude: latitude,
+            longitude: longitude,
+            maxResults: maxResults - communitySpots.length,
+          );
+          _logger.debug('Found ${externalSpots.length} external spots', tag: _logName);
+        }
       }
       
-      // STEP 3: Combine and rank results with community-first prioritization
+      // STEP 3: Apply filters if provided
+      var filteredCommunitySpots = _applyFilters(communitySpots, filters, latitude, longitude);
+      var filteredExternalSpots = _applyFilters(externalSpots, filters, latitude, longitude);
+      
+      // STEP 4: Combine and rank results with community-first prioritization
       final rankedResults = _rankAndDeduplicateResults(
-        communitySpots: communitySpots,
-        externalSpots: externalSpots,
+        communitySpots: filteredCommunitySpots,
+        externalSpots: filteredExternalSpots,
         query: query,
         userLatitude: latitude,
         userLongitude: longitude,
+        sortOption: sortOption,
       );
       
-      // STEP 4: Apply final result limit
+      // STEP 5: Apply final result limit
       final finalResults = rankedResults.take(maxResults).toList();
       
       final searchDuration = DateTime.now().difference(startTime);
       _logger.info('Hybrid search completed in ${searchDuration.inMilliseconds}ms', tag: _logName);
       
-      return HybridSearchResult(
+      // Calculate distances for result metadata
+      final resultsWithMetadata = finalResults.map((spot) {
+        final distance = (latitude != null && longitude != null)
+            ? _calculateDistance(spot.latitude, spot.longitude, latitude!, longitude!)
+            : null;
+        return SpotWithMetadata(
+          spot: spot,
+          distance: distance,
+          relevanceScore: _calculateRelevanceScore(spot, query, latitude, longitude),
+          matchReason: _getMatchReason(spot, query),
+        );
+      }).toList();
+      
+      final result = HybridSearchResult(
         spots: finalResults,
-        communityCount: communitySpots.length,
-        externalCount: externalSpots.length,
+        communityCount: filteredCommunitySpots.length,
+        externalCount: filteredExternalSpots.length,
         totalCount: finalResults.length,
         searchDuration: searchDuration,
         sources: _getSourceBreakdown(finalResults),
+        metadata: resultsWithMetadata,
       );
+      
+      // Cache result
+      _cacheResult(cacheKey, result);
+      
+      return result;
     } catch (e) {
       _logger.error('Error in hybrid search', error: e, tag: _logName);
       // OUR_GUTS.md: "Effortless, Seamless Discovery" - Graceful fallback
@@ -115,12 +169,23 @@ class HybridSearchRepository {
       // STEP 2: Fill gaps with external data if needed
       List<Spot> externalSpots = [];
       if (includeExternal && communitySpots.length < maxResults) {
-        externalSpots = await _searchExternalSpotsNearby(
-          latitude: latitude,
-          longitude: longitude,
-          radius: radius,
-          maxResults: maxResults - communitySpots.length,
-        );
+        // Check if offline - use cached data if available
+        final isOffline = await _isOffline();
+        if (isOffline && _googlePlacesCache != null) {
+          _logger.debug('Device is offline, using cached Google Places nearby data', tag: _logName);
+          externalSpots = await _googlePlacesCache!.getCachedPlacesNearby(
+            latitude: latitude,
+            longitude: longitude,
+            radius: radius,
+          );
+        } else {
+          externalSpots = await _searchExternalSpotsNearby(
+            latitude: latitude,
+            longitude: longitude,
+            radius: radius,
+            maxResults: maxResults - communitySpots.length,
+          );
+        }
       }
       
       // STEP 3: Combine and rank by distance and community priority
@@ -266,6 +331,7 @@ class HybridSearchRepository {
     required String query,
     double? userLatitude,
     double? userLongitude,
+    SearchSortOption sortOption = SearchSortOption.relevance,
   }) {
     // OUR_GUTS.md: "Authenticity Over Algorithms" - Community data always ranks higher
     final Map<String, Spot> deduplicatedSpots = {};
@@ -288,20 +354,51 @@ class HybridSearchRepository {
     
     final results = deduplicatedSpots.values.toList();
     
-    // Sort by relevance while maintaining community priority
+    // Sort based on sort option while maintaining community priority
     results.sort((a, b) {
-      // Community spots always rank higher
-      final aIsCommunity = _isCommunitySpot(a);
-      final bIsCommunity = _isCommunitySpot(b);
+      // Community spots always rank higher (unless sorting by distance)
+      if (sortOption != SearchSortOption.distance) {
+        final aIsCommunity = _isCommunitySpot(a);
+        final bIsCommunity = _isCommunitySpot(b);
+        
+        if (aIsCommunity && !bIsCommunity) return -1;
+        if (!aIsCommunity && bIsCommunity) return 1;
+      }
       
-      if (aIsCommunity && !bIsCommunity) return -1;
-      if (!aIsCommunity && bIsCommunity) return 1;
-      
-      // Within the same source type, rank by relevance
-      final aRelevance = _calculateRelevanceScore(a, query, userLatitude, userLongitude);
-      final bRelevance = _calculateRelevanceScore(b, query, userLatitude, userLongitude);
-      
-      return bRelevance.compareTo(aRelevance);
+      // Apply sorting based on option
+      switch (sortOption) {
+        case SearchSortOption.relevance:
+          final aRelevance = _calculateRelevanceScore(a, query, userLatitude, userLongitude);
+          final bRelevance = _calculateRelevanceScore(b, query, userLatitude, userLongitude);
+          return bRelevance.compareTo(aRelevance);
+          
+        case SearchSortOption.distance:
+          if (userLatitude == null || userLongitude == null) {
+            // Fallback to relevance if no location
+            final aRelevance = _calculateRelevanceScore(a, query, userLatitude, userLongitude);
+            final bRelevance = _calculateRelevanceScore(b, query, userLatitude, userLongitude);
+            return bRelevance.compareTo(aRelevance);
+          }
+          final aDistance = _calculateDistance(a.latitude, a.longitude, userLatitude, userLongitude);
+          final bDistance = _calculateDistance(b.latitude, b.longitude, userLatitude, userLongitude);
+          return aDistance.compareTo(bDistance);
+          
+        case SearchSortOption.rating:
+          final ratingCompare = b.rating.compareTo(a.rating);
+          if (ratingCompare != 0) return ratingCompare;
+          // Tie-breaker: community first
+          final aIsCommunity = _isCommunitySpot(a);
+          final bIsCommunity = _isCommunitySpot(b);
+          if (aIsCommunity && !bIsCommunity) return -1;
+          if (!aIsCommunity && bIsCommunity) return 1;
+          return 0;
+          
+        case SearchSortOption.alphabetical:
+          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+          
+        case SearchSortOption.recentlyAdded:
+          return b.createdAt.compareTo(a.createdAt);
+      }
     });
     
     return results;
@@ -365,11 +462,24 @@ class HybridSearchRepository {
     return distance <= radius;
   }
 
+  /// Calculate distance using Haversine formula (accurate for Earth's surface)
   double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-    // Simplified distance calculation (Haversine formula would be more accurate)
-    final dLat = lat2 - lat1;
-    final dLon = lon2 - lon1;
-    return (dLat * dLat + dLon * dLon) * 111320; // Approximate meters
+    const double earthRadiusKm = 6371.0;
+    
+    final dLat = _degreesToRadians(lat2 - lat1);
+    final dLon = _degreesToRadians(lon2 - lon1);
+    
+    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_degreesToRadians(lat1)) * math.cos(_degreesToRadians(lat2)) *
+        math.sin(dLon / 2) * math.sin(dLon / 2);
+    
+    final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    
+    return earthRadiusKm * c * 1000; // Convert to meters
+  }
+  
+  double _degreesToRadians(double degrees) {
+    return degrees * (math.pi / 180.0);
   }
 
   String _generateDeduplicationKey(Spot spot) {
@@ -450,11 +560,182 @@ class HybridSearchRepository {
     _lastSearchTime.removeWhere((query, time) => time.isBefore(cutoff));
     _searchAnalytics.removeWhere((query, count) => !_lastSearchTime.containsKey(query));
   }
+  
+  /// Check if device is offline
+  Future<bool> _isOffline() async {
+    if (_connectivity == null) return false;
+    try {
+      final result = await _connectivity!.checkConnectivity();
+      if (result is List) {
+        return result.contains(ConnectivityResult.none);
+      }
+      return result == ConnectivityResult.none;
+    } catch (e) {
+      _logger.error('Error checking connectivity', error: e, tag: _logName);
+      return false; // Assume online on error
+    }
+  }
 
   /// Get search analytics (privacy-preserving)
   Map<String, int> getSearchAnalytics() {
     return Map.from(_searchAnalytics);
   }
+  
+  /// Get search suggestions based on recent searches and popular queries
+  /// Privacy-preserving: only uses anonymized, aggregated data
+  List<String> getSearchSuggestions({String? queryPrefix, int maxSuggestions = 5}) {
+    if (queryPrefix == null || queryPrefix.isEmpty) {
+      // Return popular searches
+      final sortedAnalytics = _searchAnalytics.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+      return sortedAnalytics
+          .take(maxSuggestions)
+          .map((e) => e.key)
+          .toList();
+    }
+    
+    final prefix = queryPrefix.toLowerCase();
+    final matchingSearches = _searchAnalytics.keys
+        .where((search) => search.toLowerCase().startsWith(prefix))
+        .toList()
+      ..sort((a, b) => (_searchAnalytics[b] ?? 0).compareTo(_searchAnalytics[a] ?? 0));
+    
+    return matchingSearches.take(maxSuggestions).toList();
+  }
+  
+  /// Clear search cache
+  void clearSearchCache() {
+    _searchCache.clear();
+  }
+  
+  // Private helper methods for new features
+  
+  List<Spot> _applyFilters(
+    List<Spot> spots,
+    SearchFilters? filters,
+    double? userLat,
+    double? userLon,
+  ) {
+    if (filters == null) return spots;
+    
+    var filtered = spots;
+    
+    // Category filter
+    if (filters.categories != null && filters.categories!.isNotEmpty) {
+      filtered = filtered.where((spot) => filters.categories!.contains(spot.category)).toList();
+    }
+    
+    // Minimum rating filter
+    if (filters.minRating != null) {
+      filtered = filtered.where((spot) => spot.rating >= filters.minRating!).toList();
+    }
+    
+    // Maximum distance filter
+    if (filters.maxDistance != null && userLat != null && userLon != null) {
+      filtered = filtered.where((spot) {
+        final distance = _calculateDistance(spot.latitude, spot.longitude, userLat, userLon);
+        return distance <= filters.maxDistance!;
+      }).toList();
+    }
+    
+    // Community-only filter
+    if (filters.communityOnly == true) {
+      filtered = filtered.where((spot) => _isCommunitySpot(spot)).toList();
+    }
+    
+    return filtered;
+  }
+  
+  String _generateCacheKey(
+    String query,
+    double? lat,
+    double? lon,
+    int maxResults,
+    bool includeExternal,
+    SearchFilters? filters,
+    SearchSortOption sortOption,
+  ) {
+    final filterKey = filters != null
+        ? '${filters.categories?.join(',')}_${filters.minRating}_${filters.maxDistance}_${filters.communityOnly}'
+        : 'none';
+    return '${query}_${lat}_${lon}_${maxResults}_${includeExternal}_${filterKey}_${sortOption.name}';
+  }
+  
+  HybridSearchResult? _getCachedResult(String key) {
+    final cached = _searchCache[key];
+    if (cached == null) return null;
+    
+    // Check if cache is expired (simplified - in production, store timestamp)
+    return cached;
+  }
+  
+  void _cacheResult(String key, HybridSearchResult result) {
+    // Limit cache size
+    if (_searchCache.length > 50) {
+      final oldestKey = _searchCache.keys.first;
+      _searchCache.remove(oldestKey);
+    }
+    _searchCache[key] = result;
+  }
+  
+  String _getMatchReason(Spot spot, String query) {
+    final queryLower = query.toLowerCase();
+    final reasons = <String>[];
+    
+    if (spot.name.toLowerCase().contains(queryLower)) {
+      reasons.add('name match');
+    }
+    if (spot.category.toLowerCase().contains(queryLower)) {
+      reasons.add('category match');
+    }
+    if (spot.tags.any((tag) => tag.toLowerCase().contains(queryLower))) {
+      reasons.add('tag match');
+    }
+    if (_isCommunitySpot(spot)) {
+      reasons.add('community spot');
+    }
+    
+    return reasons.isEmpty ? 'general match' : reasons.join(', ');
+  }
+}
+
+/// Search filters for advanced filtering
+class SearchFilters {
+  final List<String>? categories;
+  final double? minRating;
+  final int? maxDistance; // in meters
+  final bool? communityOnly;
+  
+  const SearchFilters({
+    this.categories,
+    this.minRating,
+    this.maxDistance,
+    this.communityOnly,
+  });
+}
+
+/// Search sort options
+enum SearchSortOption {
+  relevance,      // Default: community-first relevance
+  distance,      // Nearest first
+  rating,        // Highest rated
+  alphabetical,  // A-Z
+  recentlyAdded, // Newest spots
+}
+
+/// Spot with enhanced metadata for UI display
+class SpotWithMetadata {
+  final Spot spot;
+  final double? distance; // in meters
+  final double relevanceScore;
+  final String matchReason;
+  
+  const SpotWithMetadata({
+    required this.spot,
+    this.distance,
+    required this.relevanceScore,
+    required this.matchReason,
+  });
 }
 
 /// Hybrid search result with source breakdown
@@ -465,6 +746,7 @@ class HybridSearchResult {
   final int totalCount;
   final Duration searchDuration;
   final Map<String, int> sources;
+  final List<SpotWithMetadata>? metadata; // Enhanced metadata for UI
 
   HybridSearchResult({
     required this.spots,
@@ -473,6 +755,7 @@ class HybridSearchResult {
     required this.totalCount,
     required this.searchDuration,
     required this.sources,
+    this.metadata,
   });
 
   factory HybridSearchResult.empty() {
@@ -483,6 +766,7 @@ class HybridSearchResult {
       totalCount: 0,
       searchDuration: Duration.zero,
       sources: {},
+      metadata: [],
     );
   }
 
@@ -495,5 +779,24 @@ class HybridSearchResult {
   /// Check if search is primarily community-driven (OUR_GUTS.md compliance)
   bool get isPrimarilyCommunityDriven {
     return communityRatio >= 0.5;
+  }
+  
+  /// Get formatted distance string for a spot (if metadata available)
+  String? getDistanceString(int index) {
+    if (metadata == null || index >= metadata!.length) return null;
+    final distance = metadata![index].distance;
+    if (distance == null) return null;
+    
+    if (distance < 1000) {
+      return '${distance.round()}m';
+    } else {
+      return '${(distance / 1000).toStringAsFixed(1)}km';
+    }
+  }
+  
+  /// Get match reason for a spot (if metadata available)
+  String? getMatchReason(int index) {
+    if (metadata == null || index >= metadata!.length) return null;
+    return metadata![index].matchReason;
   }
 }

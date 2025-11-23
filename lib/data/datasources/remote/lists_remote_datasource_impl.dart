@@ -21,6 +21,21 @@ class ListsRemoteDataSourceImpl implements ListsRemoteDataSource {
   }
 
   @override
+  Future<List<SpotList>> getPublicLists({int? limit}) async {
+    final res = await _data.getSpotLists(
+      limit: limit ?? 50,
+      filters: {'is_public': true},
+    );
+    if (res.hasData && res.data != null) {
+      return res.data!
+          .map((coreList) => SpotList.fromJson(coreList.toJson()))
+          .where((list) => list.isPublic) // Double-check filter
+          .toList();
+    }
+    return [];
+  }
+
+  @override
   Future<SpotList> createList(SpotList list) async {
     final res = await _data.createSpotList(
       spots_core.SpotList.fromJson(list.toJson()),

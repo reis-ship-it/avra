@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:spots/core/models/unified_models.dart';import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter/foundation.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
 import 'package:spots/core/theme/map_themes.dart';
 import 'package:spots/core/theme/map_theme_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,6 +41,7 @@ class _MapViewState extends State<MapView> {
   final MapController _mapController = MapController();
   LatLng? _center;
   final double _currentZoom = 13.0;
+  gmap.GoogleMapController? _gController;
   bool _isLoadingLocation = false;
   String? _locationError;
   MapTheme _currentTheme = MapThemes.spotsBlue;
@@ -515,70 +518,41 @@ class _MapViewState extends State<MapView> {
 
                         if (_selectedList != null) {
                           spots = spots
-                              .where(
-                                  (s) => _selectedList!.spotIds.contains(s.id))
+                              .where((s) => _selectedList!.spotIds.contains(s.id))
                               .toList();
                         }
 
-                        return FlutterMap(
-                          mapController: _mapController,
-                          options: MapOptions(
-                            initialCenter: _center ??
-                                (spots.isNotEmpty
-                                    ? LatLng(spots.first.latitude,
-                                        spots.first.longitude)
-                                    : LatLng(37.7749, -122.4194)),
-                            initialZoom: _currentZoom,
-                            minZoom: 3.0,
-                            maxZoom: 18.0,
-                            onMapReady: () {
-                              developer.log('Map is ready', name: 'MapView');
-                            },
-                          ),
-                          children: [
-                            TileLayer(
-                              urlTemplate: _getTileUrlTemplate(),
-                              userAgentPackageName: 'com.example.spots',
-                              subdomains: _currentTheme.getSubdomains() ?? [],
-                              maxZoom: 18,
-                              tileProvider: NetworkTileProvider(),
+                        final gmap.LatLng center = _center != null
+                            ? gmap.LatLng(_center!.latitude, _center!.longitude)
+                            : (spots.isNotEmpty
+                                ? gmap.LatLng(spots.first.latitude, spots.first.longitude)
+                                : const gmap.LatLng(37.7749, -122.4194));
+
+                        final markers = <gmap.Marker>{
+                          if (_locationError == null && _center != null)
+                            gmap.Marker(
+                              markerId: const gmap.MarkerId('me'),
+                              position: gmap.LatLng(_center!.latitude, _center!.longitude),
                             ),
-                            // User location marker
-                            if (_locationError == null && _center != null)
-                              MarkerLayer(
-                                markers: [
-                                  Marker(
-                                    point: _center!,
-                                    width: 40,
-                                    height: 40,
-                                    child: Icon(
-                                      Icons.my_location,
-                                      color: _currentTheme.primaryColor,
-                                      size: 40,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            // Spot markers
-                            if (spots.isNotEmpty)
-                              MarkerLayer(
-                                markers: spots
-                                    .map((spot) => Marker(
-                                          point: LatLng(
-                                              spot.latitude, spot.longitude),
-                                          width: 30,
-                                          height: 30,
-                                          child: SpotMarker(
-                                            spot: spot,
-                                            color: _currentTheme.primaryColor,
-                                            onTap: () {
-                                              _showSpotInfo(context, spot);
-                                            },
-                                          ),
-                                        ))
-                                    .toList(),
-                              ),
-                          ],
+                          ...spots.map((spot) => gmap.Marker(
+                                markerId: gmap.MarkerId('spot-${spot.id}'),
+                                position: gmap.LatLng(spot.latitude, spot.longitude),
+                                onTap: () => _showSpotInfo(context, spot),
+                              )),
+                        };
+
+                        return gmap.GoogleMap(
+                          initialCameraPosition: gmap.CameraPosition(
+                            target: center,
+                            zoom: _currentZoom,
+                          ),
+                          myLocationEnabled: true,
+                          myLocationButtonEnabled: false,
+                          markers: markers,
+                          onMapCreated: (controller) {
+                            _gController = controller;
+                            developer.log('GoogleMap ready', name: 'MapView');
+                          },
                         );
                       }
                       return const Center(child: Text('No spots loaded'));

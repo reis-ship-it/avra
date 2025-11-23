@@ -1,8 +1,7 @@
-import "package:shared_preferences/shared_preferences.dart";
+import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
@@ -10,35 +9,36 @@ import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:spots/core/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/models/connection_metrics.dart';
+import 'package:spots/core/ai2ai/aipersonality_node.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:spots/core/services/storage_service.dart';
 
 // Create mock classes
 class MockConnectivity extends Mock implements Connectivity {}
-class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 /// AI2AI Personality Learning System Test
 /// OUR_GUTS.md: "Testing AI2AI personality network that learns while preserving privacy"
 void main() {
   group('AI2AI Personality Learning System Tests', () {
     late MockConnectivity mockConnectivity;
-    late MockSharedPreferences mockPrefs;
     late PersonalityLearning personalityLearning;
     late UserVibeAnalyzer vibeAnalyzer;
     late VibeConnectionOrchestrator connectionOrchestrator;
     
     setUpAll(() {
       // Initialize shared preferences mapping for tests
-      SharedPreferences.setMockInitialValues({});
+      real_prefs.SharedPreferences.setMockInitialValues({});
     });
     
-    setUp(() {
+    setUp(() async {
       mockConnectivity = MockConnectivity();
-      mockPrefs = MockSharedPreferences();
+      real_prefs.SharedPreferences.setMockInitialValues({});
       
-      // Initialize system components
-      personalityLearning = PersonalityLearning(prefs: SharedPreferences.getInstance(), prefs: mockPrefs);
-      vibeAnalyzer = UserVibeAnalyzer(prefs: mockPrefs);
-      connectionOrchestrator = VibeConnectionOrchestrator(vibeAnalyzer: vibeAnalyzer, connectivity: Connectivity(), 
+      // Initialize system components - use SharedPreferencesCompat
+      final compatPrefs = await SharedPreferencesCompat.getInstance();
+      personalityLearning = PersonalityLearning.withPrefs(compatPrefs);
+      vibeAnalyzer = UserVibeAnalyzer(prefs: compatPrefs);
+      connectionOrchestrator = VibeConnectionOrchestrator(
         vibeAnalyzer: vibeAnalyzer,
         connectivity: mockConnectivity,
       );
@@ -70,7 +70,7 @@ void main() {
         final initialProfile = await personalityLearning.initializePersonality('test_user_1');
         
         // Create user action for spot visit
-        final spotVisitAction = UserActionData(type: UserActionType.spotVisit, 
+        final spotVisitAction = UserAction(
           type: UserActionType.spotVisit,
           timestamp: DateTime.now(),
           metadata: {
@@ -81,7 +81,7 @@ void main() {
         );
         
         // Evolve personality
-        final evolvedProfile = await personalityLearning.evolveFromUserActionData(type: UserActionType.spotVisit, 
+        final evolvedProfile = await personalityLearning.evolveFromUserAction(
           'test_user_1',
           spotVisitAction,
         );
@@ -391,13 +391,13 @@ void main() {
     group('OUR_GUTS.md Compliance', () {
       test('should preserve "Authenticity Over Algorithms" principle', () async {
         // Create authentic vs algorithmic preferences
-        final authenticAction = UserActionData(type: UserActionType.spotVisit, 
+        final authenticAction = UserAction(
           type: UserActionType.authenticPreference,
           timestamp: DateTime.now(),
           metadata: {'preference_type': 'authentic_local_spot'},
         );
         
-        final algorithmicAction = UserActionData(type: UserActionType.spotVisit, 
+        final algorithmicAction = UserAction(
           type: UserActionType.curationActivity,
           timestamp: DateTime.now(),
           metadata: {'curation_type': 'algorithmic_based'},
@@ -405,7 +405,7 @@ void main() {
         
         // Test authentic preference increases authenticity
         final personality = await personalityLearning.initializePersonality('test_user_authentic');
-        final authenticPersonality = await personalityLearning.evolveFromUserActionData(type: UserActionType.spotVisit, 
+        final authenticPersonality = await personalityLearning.evolveFromUserAction(
           'test_user_authentic',
           authenticAction,
         );
