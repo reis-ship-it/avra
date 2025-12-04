@@ -73,9 +73,8 @@ class AccessibilityTestHelpers {
   /// Verifies a widget has semantic labels for screen readers
   static bool hasSemanticLabel(WidgetTester tester, Finder finder) {
     final semantics = tester.getSemantics(finder);
-    if (semantics == null) return false;
     final label = semantics.label;
-    return label != null && label.isNotEmpty;
+    return label.isNotEmpty;
   }
 
   /// Verifies a widget is keyboard accessible

@@ -182,7 +182,7 @@ class SupabaseRealtimeBackend implements RealtimeBackend {
         value: documentId,
       ),
       callback: (payload) {
-        controller.add(fromJson(payload.newRecord!));
+        controller.add(fromJson(payload.newRecord));
             },
     ).subscribe();
     

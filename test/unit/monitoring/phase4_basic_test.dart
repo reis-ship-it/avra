@@ -2,7 +2,6 @@ import "package:shared_preferences/shared_preferences.dart";
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/monitoring/network_analytics.dart';
 import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// Phase 4: Basic Network Monitoring Test
 /// OUR_GUTS.md: "Basic validation of AI2AI personality network monitoring components"

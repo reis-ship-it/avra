@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../mocks/mock_dependencies.mocks.dart';
-import '../../fixtures/model_factories.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {

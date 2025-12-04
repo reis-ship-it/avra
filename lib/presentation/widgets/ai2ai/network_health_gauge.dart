@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:spots/core/monitoring/network_analytics.dart';
 import 'package:spots/core/theme/colors.dart';

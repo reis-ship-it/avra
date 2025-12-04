@@ -86,6 +86,8 @@ dependencies:
   # Internal packages
   spots_network:
     path: packages/spots_network
+  spots_core:
+    path: packages/spots_core
   
   # Proposed routing (ADR-0003)
   go_router: ^14.2.0
@@ -100,7 +102,6 @@ dependencies:
 
   shared_preferences: any
   path: any
-  spots_core: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -132,7 +133,6 @@ dev_dependencies:
 
   connectivity_plus_platform_interface: any
   shared_preferences: any
-  spots_core: any
   supabase: any
   storage_client: any
   logging: any

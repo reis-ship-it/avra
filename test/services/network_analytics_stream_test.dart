@@ -134,7 +134,7 @@ void main() {
         await Future.delayed(const Duration(seconds: 12));
 
         // Cancel if still listening
-        await subscription!.cancel();
+        await subscription.cancel();
 
         expect(timestamps.length, greaterThanOrEqualTo(1));
       });

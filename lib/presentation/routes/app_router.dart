@@ -26,7 +26,6 @@ import 'package:spots/injection_container.dart' as di;
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 // Phase 1 Integration: Device Discovery & AI2AI Connections
 import 'package:spots/presentation/pages/network/device_discovery_page.dart';
 import 'package:spots/presentation/pages/network/ai2ai_connections_page.dart';

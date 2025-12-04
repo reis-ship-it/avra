@@ -190,9 +190,6 @@ Future<bool> _checkPolicies(String url, String anonKey) async {
   }
 }
 
-import 'dart:io';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 /// Verification script to check Supabase setup
 void main() async {

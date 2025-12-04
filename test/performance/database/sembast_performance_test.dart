@@ -2,7 +2,6 @@
 /// Ensures optimal database operations for development and deployment
 /// OUR_GUTS.md: "Effortless, Seamless Discovery" - Fast, reliable data access
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_memory.dart';
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/core/models/list.dart';

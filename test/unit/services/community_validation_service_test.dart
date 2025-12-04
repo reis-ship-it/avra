@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:spots/core/services/community_validation_service.dart';
-import 'package:spots/core/models/unified_models.dart';
 import 'package:spots/core/models/community_validation.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
 import 'package:shared_preferences/shared_preferences.dart';

@@ -19,7 +19,6 @@ import 'package:spots/presentation/widgets/events/safety_checklist_widget.dart';
 import 'package:spots/core/services/partnership_service.dart';
 import 'package:spots/core/services/fraud_detection_service.dart';
 import 'package:spots/presentation/widgets/common/page_transitions.dart';
-import 'package:get_it/get_it.dart';
 
 /// Event Details Page
 /// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
