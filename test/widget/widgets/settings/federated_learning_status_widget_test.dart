@@ -1,13 +1,13 @@
 /// SPOTS FederatedLearningStatusWidget Widget Tests
 /// Date: November 20, 2025
 /// Purpose: Test FederatedLearningStatusWidget functionality and UI behavior
-/// 
+///
 /// Test Coverage:
 /// - Rendering: Active learning rounds display
 /// - Participation Status: User participation in rounds
 /// - Round Progress: Progress indicators and status
 /// - Edge Cases: No active rounds, error states
-/// 
+///
 /// Dependencies:
 /// - FederatedLearningSystem: For round data
 /// - RoundStatus: For round status display
@@ -23,23 +23,21 @@ import '../../helpers/widget_test_helpers.dart';
 void main() {
   group('FederatedLearningStatusWidget Widget Tests', () {
     group('Rendering', () {
-      testWidgets('displays widget with title', (WidgetTester tester) async {
-        // Arrange
-        final widget = WidgetTestHelpers.createTestableWidget(
+      // Removed: Property assignment tests
+      // Rendering tests focus on business logic (widget display, active rounds, empty state, multiple rounds), not property assignment
+
+      testWidgets(
+          'should display widget with title, display active rounds when available, display no active rounds message when empty, or display multiple active rounds',
+          (WidgetTester tester) async {
+        // Test business logic: Federated learning status widget rendering
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: const FederatedLearningStatusWidget(),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
         expect(find.byType(FederatedLearningStatusWidget), findsOneWidget);
         expect(find.textContaining('Learning Round'), findsWidgets);
-      });
 
-      testWidgets('displays active rounds when available', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+        final activeRounds1 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
@@ -47,40 +45,25 @@ void main() {
             participantNodeIds: List.generate(5, (i) => 'node_$i'),
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds1,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         expect(find.textContaining('Round 1'), findsOneWidget);
         expect(find.textContaining('Training'), findsOneWidget);
         expect(find.textContaining('Learning: Recommendation'), findsOneWidget);
-      });
 
-      testWidgets('displays no active rounds message when empty', (WidgetTester tester) async {
-        // Arrange
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget3 = WidgetTestHelpers.createTestableWidget(
           child: const FederatedLearningStatusWidget(
             activeRounds: [],
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget3);
         expect(find.textContaining('No active'), findsOneWidget);
-      });
 
-      testWidgets('displays multiple active rounds', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+        final activeRounds2 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
@@ -92,76 +75,68 @@ void main() {
             roundNumber: 2,
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget4 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds2,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget4);
         expect(find.textContaining('Round 1'), findsOneWidget);
         expect(find.textContaining('Round 2'), findsOneWidget);
       });
     });
 
     group('Participation Status', () {
-      testWidgets('displays participation status when user is participating', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+      // Removed: Property assignment tests
+      // Participation status tests focus on business logic (participation status display), not property assignment
+
+      testWidgets(
+          'should display participation status when user is participating or display not participating when user is not in round',
+          (WidgetTester tester) async {
+        // Test business logic: Federated learning status widget participation status
+        final activeRounds1 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
             participantNodeIds: ['node_1', 'node_2', 'current_user_node'],
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds1,
             currentNodeId: 'current_user_node',
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
         expect(find.textContaining('Participating'), findsOneWidget);
-      });
 
-      testWidgets('displays not participating when user is not in round', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+        final activeRounds2 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
             participantNodeIds: ['node_1', 'node_2'],
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds2,
             currentNodeId: 'current_user_node',
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         expect(find.textContaining('Not participating'), findsOneWidget);
       });
     });
 
     group('Round Progress', () {
-      testWidgets('displays round progress indicator', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+      // Removed: Property assignment tests
+      // Round progress tests focus on business logic (progress indicator, round number, participant count, model accuracy), not property assignment
+
+      testWidgets(
+          'should display round progress indicator, display round number correctly, display participant count, or display model accuracy when available',
+          (WidgetTester tester) async {
+        // Test business logic: Federated learning status widget round progress
+        final activeRounds1 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
@@ -170,164 +145,124 @@ void main() {
             participantNodeIds: ['node_1', 'node_2', 'node_3'],
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds1,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
         expect(find.byType(LinearProgressIndicator), findsWidgets);
-      });
 
-      testWidgets('displays round number correctly', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+        final activeRounds2 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
             roundNumber: 5,
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds2,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         expect(find.textContaining('Round 5'), findsOneWidget);
-      });
 
-      testWidgets('displays participant count', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+        final activeRounds3 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
             participantNodeIds: List.generate(8, (i) => 'node_$i'),
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget3 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds3,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget3);
         expect(find.textContaining('8'), findsOneWidget);
         expect(find.textContaining('participant'), findsOneWidget);
-      });
 
-      testWidgets('displays model accuracy when available', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+        final activeRounds4 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
             modelAccuracy: 0.85,
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget4 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds4,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget4);
         expect(find.textContaining('85'), findsOneWidget);
         expect(find.textContaining('%'), findsOneWidget);
       });
     });
 
     group('Status Display', () {
-      testWidgets('displays training status correctly', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+      // Removed: Property assignment tests
+      // Status display tests focus on business logic (training/aggregating/initializing status display), not property assignment
+
+      testWidgets(
+          'should display training status correctly, display aggregating status correctly, or display initializing status correctly',
+          (WidgetTester tester) async {
+        // Test business logic: Federated learning status widget status display
+        final activeRounds1 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds1,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
         expect(find.textContaining('Training'), findsOneWidget);
-      });
 
-      testWidgets('displays aggregating status correctly', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+        final activeRounds2 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.aggregating,
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds2,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         expect(find.textContaining('Aggregating'), findsOneWidget);
-      });
 
-      testWidgets('displays initializing status correctly', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+        final activeRounds3 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.initializing,
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget3 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds3,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget3);
         expect(find.textContaining('Initializing'), findsOneWidget);
       });
     });
 
     group('Learning Objective Display', () {
-      testWidgets('displays learning objective name', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+      // Removed: Property assignment tests
+      // Learning objective display tests focus on business logic (learning objective name, learning types with icons), not property assignment
+
+      testWidgets(
+          'should display learning objective name or display different learning types with appropriate icons',
+          (WidgetTester tester) async {
+        // Test business logic: Federated learning status widget learning objective display
+        final activeRounds1 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
@@ -335,81 +270,63 @@ void main() {
             objectiveDescription: 'Improving recommendation accuracy',
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds1,
           ),
         );
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
+        expect(find.textContaining('Learning: Spot Recommendations'),
+            findsOneWidget);
+        expect(find.textContaining('Improving recommendation accuracy'),
+            findsOneWidget);
 
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        expect(find.textContaining('Learning: Spot Recommendations'), findsOneWidget);
-        expect(find.textContaining('Improving recommendation accuracy'), findsOneWidget);
-      });
-
-      testWidgets('displays different learning types with appropriate icons', (WidgetTester tester) async {
-        // Arrange
-        final activeRounds = [
+        final activeRounds2 = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
             learningType: LearningType.recommendation,
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
-            activeRounds: activeRounds,
+            activeRounds: activeRounds2,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         expect(find.byIcon(Icons.recommend), findsOneWidget);
       });
     });
 
     group('Edge Cases', () {
-      testWidgets('handles null currentNodeId gracefully', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Edge cases tests focus on business logic (null currentNodeId handling, info icon display), not property assignment
+
+      testWidgets(
+          'should handle null currentNodeId gracefully or display info icon for learning round explanation',
+          (WidgetTester tester) async {
+        // Test business logic: Federated learning status widget edge cases
         final activeRounds = [
           _createMockRound(
             roundId: 'round_1',
             status: RoundStatus.training,
           ),
         ];
-
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: FederatedLearningStatusWidget(
             activeRounds: activeRounds,
             currentNodeId: null,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
         expect(find.byType(FederatedLearningStatusWidget), findsOneWidget);
-      });
 
-      testWidgets('displays info icon for learning round explanation', (WidgetTester tester) async {
-        // Arrange
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: const FederatedLearningStatusWidget(),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         final infoButtons = find.byIcon(Icons.info_outline);
-        expect(infoButtons, findsWidgets); // At least one info icon should be present
+        expect(infoButtons, findsWidgets);
         expect(find.textContaining('Learning Round Status'), findsOneWidget);
       });
     });
@@ -479,4 +396,3 @@ LocalModelUpdate _createMockUpdate() {
     privacyCompliant: true,
   );
 }
-

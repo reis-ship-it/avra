@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/models/brand_discovery.dart';
 import 'package:spots/core/models/brand_account.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/services/brand_discovery_service.dart';
 import 'package:spots/core/services/sponsorship_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import '../helpers/integration_test_helpers.dart';
+import '../helpers/test_helpers.dart';
 import '../fixtures/model_factories.dart';
 
 // Mock dependencies
@@ -52,12 +52,13 @@ void main() {
         sponsorshipService: mockSponsorshipService,
       );
       
-      testEvent = IntegrationTestHelpers.createPaidEvent(
+      testEvent = IntegrationTestHelpers.createTestEvent(
         host: ModelFactories.createTestUser(id: 'user-123'),
         id: 'event-456',
         title: 'Gourmet Dinner',
         category: 'Food & Beverage',
         price: 75.00,
+        isPaid: true,
       );
       
       testBrand = BrandAccount(

@@ -112,4 +112,6 @@ class SembastDatabase {
       stringMapStoreFactory.store('tax_profiles');
   static final StoreRef<String, Map<String, dynamic>> taxDocumentsStore = 
       stringMapStoreFactory.store('tax_documents');
+  static final StoreRef<String, Map<String, dynamic>> decoherencePatternStore = 
+      stringMapStoreFactory.store('decoherence_patterns');
 }

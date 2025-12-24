@@ -43,7 +43,12 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
   @override
   void initState() {
     super.initState();
-    _loadSuggestions();
+    // Defer loading suggestions until after the widget tree is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadSuggestions();
+      }
+    });
   }
 
   @override

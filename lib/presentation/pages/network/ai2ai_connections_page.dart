@@ -195,7 +195,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
               ? LinearGradient(
                   colors: [
                     AppColors.electricGreen.withValues(alpha: 0.1),
-                    AppColors.neonPink.withValues(alpha: 0.1),
+                    AppColors.primary.withValues(alpha: 0.1),
                   ],
                 )
               : null,
@@ -314,7 +314,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
                   Icons.psychology,
                   '${_discoveredDevices.where((d) => d.personalityData != null).length}',
                   'AI Enabled',
-                  AppColors.neonPink,
+                  AppColors.primary,
                 ),
               ],
             ),

@@ -22,68 +22,35 @@ void main() {
       );
     });
 
-    testWidgets('displays spot name in app bar', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+    // Removed: Property assignment tests
+    // Spot details page tests focus on business logic (spot name display, action buttons, category display, spot details), not property assignment
+
+    testWidgets(
+        'should display spot name in app bar, display edit and share buttons, display spot category, or display spot details',
+        (WidgetTester tester) async {
+      // Test business logic: Spot details page display
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: SpotDetailsPage(spot: testSpot),
         listsBloc: mockListsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show spot name
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Test Coffee Shop'), findsOneWidget);
-    });
-
-    testWidgets('displays edit and share buttons', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: SpotDetailsPage(spot: testSpot),
-        listsBloc: mockListsBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show action buttons
       expect(find.byIcon(Icons.edit), findsOneWidget);
       expect(find.byIcon(Icons.share), findsOneWidget);
-    });
-
-    testWidgets('displays spot category', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: SpotDetailsPage(spot: testSpot),
-        listsBloc: mockListsBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show category
       expect(find.text('Cafe'), findsOneWidget);
-    });
 
-    testWidgets('displays spot details', (WidgetTester tester) async {
-      // Arrange
       final detailedSpot = ModelFactories.createTestSpot(
         id: 'spot-456',
         name: 'Detailed Spot',
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: SpotDetailsPage(spot: detailedSpot),
         listsBloc: mockListsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show spot details
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Detailed Spot'), findsOneWidget);
       expect(find.text('A great place'), findsOneWidget);
       expect(find.text('123 Main St'), findsOneWidget);
     });
   });
 }
-

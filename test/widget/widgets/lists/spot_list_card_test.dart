@@ -9,9 +9,14 @@ import '../../../helpers/test_helpers.dart';
 /// Tests list card display and interactions
 void main() {
   group('SpotListCard Widget Tests', () {
-    testWidgets('displays list information correctly', (WidgetTester tester) async {
-      // Arrange
-      final testList = SpotList(
+    // Removed: Property assignment tests
+    // Spot list card tests focus on business logic (list card display, user interactions), not property assignment
+
+    testWidgets(
+        'should display list information correctly (title, description, spot count), display category when available, call onTap callback when tapped, or display custom trailing widget',
+        (WidgetTester tester) async {
+      // Test business logic: list card display and interactions
+      final testList1 = SpotList(
         id: 'list-123',
         title: 'Test List',
         description: 'Test description',
@@ -20,94 +25,68 @@ void main() {
         updatedAt: TestHelpers.createTestDateTime(),
         spotIds: const ['spot-1', 'spot-2'],
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: SpotListCard(list: testList),
+      final widget1 = WidgetTestHelpers.createTestableWidget(
+        child: SpotListCard(list: testList1),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show list information
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Test List'), findsOneWidget);
       expect(find.text('Test description'), findsOneWidget);
       expect(find.text('2 spots'), findsOneWidget);
-    });
 
-    testWidgets('displays category when available', (WidgetTester tester) async {
-      // Arrange
-      final testList = SpotList(
-        id: 'list-123',
-        title: 'Test List',
-        description: 'Test description',
+      final testList2 = SpotList(
+        id: 'list-124',
+        title: 'Test List 2',
+        description: 'Test description 2',
         category: 'Food & Dining',
         spots: const [],
         createdAt: TestHelpers.createTestDateTime(),
         updatedAt: TestHelpers.createTestDateTime(),
         spotIds: const [],
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: SpotListCard(list: testList),
+      final widget2 = WidgetTestHelpers.createTestableWidget(
+        child: SpotListCard(list: testList2),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show category
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Food & Dining'), findsOneWidget);
-    });
 
-    testWidgets('calls onTap callback when tapped', (WidgetTester tester) async {
-      // Arrange
       bool wasTapped = false;
-      final testList = SpotList(
-        id: 'list-123',
-        title: 'Test List',
-        description: 'Test description',
+      final testList3 = SpotList(
+        id: 'list-125',
+        title: 'Test List 3',
+        description: 'Test description 3',
         spots: const [],
         createdAt: TestHelpers.createTestDateTime(),
         updatedAt: TestHelpers.createTestDateTime(),
         spotIds: const [],
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: SpotListCard(
-          list: testList,
+          list: testList3,
           onTap: () => wasTapped = true,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       await tester.tap(find.byType(SpotListCard));
       await tester.pump();
-
-      // Assert - Callback should be called
       expect(wasTapped, isTrue);
-    });
 
-    testWidgets('displays custom trailing widget', (WidgetTester tester) async {
-      // Arrange
-      final testList = SpotList(
-        id: 'list-123',
-        title: 'Test List',
-        description: 'Test description',
+      final testList4 = SpotList(
+        id: 'list-126',
+        title: 'Test List 4',
+        description: 'Test description 4',
         spots: const [],
         createdAt: TestHelpers.createTestDateTime(),
         updatedAt: TestHelpers.createTestDateTime(),
         spotIds: const [],
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: SpotListCard(
-          list: testList,
+          list: testList4,
           trailing: const Icon(Icons.more_vert),
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show custom trailing widget
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.byIcon(Icons.more_vert), findsOneWidget);
     });
   });
 }
-

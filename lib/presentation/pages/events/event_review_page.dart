@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/sales_tax_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
@@ -50,14 +52,21 @@ class EventReviewPage extends StatefulWidget {
 
 class _EventReviewPageState extends State<EventReviewPage> {
   final _eventService = ExpertiseEventService();
+  final _salesTaxService = GetIt.instance<SalesTaxService>();
   bool _isLoading = false;
   String? _error;
   UnifiedUser? _currentUser;
+  bool _isLoadingTax = false;
+  double _salesTax = 0.0;
+  double _taxRate = 0.0;
+  bool _isTaxExempt = false;
+  String? _exemptionReason;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _calculateSalesTax();
   }
 
   Future<void> _loadUserData() async {
@@ -73,6 +82,45 @@ class _EventReviewPageState extends State<EventReviewPage> {
       updatedAt: user.updatedAt,
       isOnline: user.isOnline ?? false,
     );
+  }
+
+  Future<void> _calculateSalesTax() async {
+    if (widget.price == null || widget.price == 0.0) {
+      setState(() {
+        _salesTax = 0.0;
+        _taxRate = 0.0;
+        _isTaxExempt = false;
+        _exemptionReason = null;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoadingTax = true;
+    });
+
+    try {
+      final calculation = await _salesTaxService.calculateSalesTaxFromDetails(
+        ticketPrice: widget.price!,
+        eventType: widget.eventType,
+        location: widget.location,
+      );
+
+      setState(() {
+        _salesTax = calculation.taxAmount;
+        _taxRate = calculation.taxRate;
+        _isTaxExempt = calculation.isTaxExempt;
+        _exemptionReason = calculation.exemptionReason;
+        _isLoadingTax = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingTax = false;
+        // Don't show error, just proceed without tax
+        _salesTax = 0.0;
+        _taxRate = 0.0;
+      });
+    }
   }
 
   Future<void> _publishEvent() async {
@@ -303,6 +351,56 @@ class _EventReviewPageState extends State<EventReviewPage> {
                         : 'Free',
                   ),
                   const SizedBox(height: 16),
+
+                  // Sales Tax (if price is set)
+                  if (widget.price != null && widget.price! > 0) ...[
+                    if (_isLoadingTax)
+                      _buildReviewRow('Sales Tax', 'Calculating...')
+                    else if (_isTaxExempt)
+                      _buildReviewRow(
+                        'Sales Tax',
+                        'Tax-Exempt\n${_exemptionReason ?? "Event type is tax-exempt"}',
+                      )
+                    else
+                      _buildReviewRow(
+                        'Sales Tax',
+                        '${_taxRate.toStringAsFixed(2)}% (\$${_salesTax.toStringAsFixed(2)})',
+                      ),
+                    const SizedBox(height: 16),
+                    // Total with Tax
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Total Price',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            '\$${((widget.price ?? 0.0) + _salesTax).toStringAsFixed(2)}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
 
                   // Public/Private
                   _buildReviewRow('Visibility', widget.isPublic ? 'Public' : 'Private'),

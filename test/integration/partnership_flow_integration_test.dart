@@ -7,7 +7,7 @@ import 'package:spots/core/models/event_partnership.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/business_account.dart';
 import 'package:spots/core/models/unified_user.dart';
-import '../../fixtures/model_factories.dart';
+import '../fixtures/model_factories.dart';
 
 /// Integration tests for end-to-end partnership flow
 /// 
@@ -39,11 +39,12 @@ void main() {
         id: 'user-123',
         displayName: 'Test User',
       );
-      // Add Local-level expertise to enable event hosting
+      // Add city-level expertise and location to enable event hosting
       testUser = testUser.copyWith(
         expertiseMap: {
           'Coffee': 'city',
         },
+        location: 'San Francisco', // Set location to match event location
       );
 
       testEvent = ExpertiseEvent(
@@ -62,6 +63,18 @@ void main() {
     });
 
     test('complete partnership flow: proposal → acceptance → locking', () async {
+      // Step 0: Create event in service so it can be found
+      final createdEvent = await eventService.createEvent(
+        host: testUser,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+      );
+      
       // Step 1: Create business account
       testBusiness = await businessService.createBusinessAccount(
         name: 'Test Coffee Shop',
@@ -79,13 +92,17 @@ void main() {
         businessAddress: '123 Main St, San Francisco, CA',
       );
 
-      // Update business to verified status (in production, this would be done by admin)
-      // For testing, we'll assume verification succeeded
-      testBusiness = testBusiness.copyWith(isVerified: true);
+      // Update business to verified and active status in the service
+      final verifiedBusiness = await businessAccountService.updateBusinessAccount(
+        testBusiness,
+        name: testBusiness.name,
+        isVerified: true,
+        isActive: true,
+      );
 
       // Step 3: Create partnership proposal
       final partnership = await partnershipService.createPartnership(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         userId: testUser.id,
         businessId: testBusiness.id,
         vibeCompatibilityScore: 0.75, // 75% compatibility (above 70% threshold)
@@ -109,7 +126,7 @@ void main() {
       // Step 5: Business approves partnership
       final bothApproved = await partnershipService.approvePartnership(
         partnershipId: partnership.id,
-        approvedBy: testBusiness.id,
+        approvedBy: verifiedBusiness.id,
       );
 
       expect(bothApproved.userApproved, isTrue);
@@ -123,6 +140,18 @@ void main() {
     });
 
     test('partnership rejection flow', () async {
+      // Step 0: Create event in service so it can be found
+      final createdEvent = await eventService.createEvent(
+        host: testUser,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+      );
+      
       // Step 1: Create business and partnership
       testBusiness = await businessService.createBusinessAccount(
         name: 'Test Business',
@@ -130,12 +159,18 @@ void main() {
         businessType: 'Restaurant',
         createdBy: 'user-123',
       );
-      testBusiness = testBusiness.copyWith(isVerified: true);
+      // Update business to verified and active status in the service
+      final verifiedBusiness = await businessAccountService.updateBusinessAccount(
+        testBusiness,
+        name: testBusiness.name,
+        isVerified: true,
+        isActive: true,
+      );
 
       final partnership = await partnershipService.createPartnership(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         userId: testUser.id,
-        businessId: testBusiness.id,
+        businessId: verifiedBusiness.id,
         vibeCompatibilityScore: 0.75,
       );
 
@@ -150,12 +185,31 @@ void main() {
     });
 
     test('multi-party partnership flow', () async {
+      // Step 0: Create event in service so it can be found
+      final createdEvent = await eventService.createEvent(
+        host: testUser,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+      );
+      
       // Step 1: Create multiple businesses
       final business1 = await businessService.createBusinessAccount(
         name: 'Business 1',
         email: 'b1@test.com',
         businessType: 'Restaurant',
         createdBy: 'user-123',
+      );
+      // Update business to verified and active status
+      final verifiedBusiness1 = await businessAccountService.updateBusinessAccount(
+        business1,
+        name: business1.name,
+        isVerified: true,
+        isActive: true,
       );
       final business2 = await businessService.createBusinessAccount(
         name: 'Business 2',
@@ -166,20 +220,32 @@ void main() {
 
       // Step 2: Create partnerships for same event
       final partnership1 = await partnershipService.createPartnership(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         userId: testUser.id,
-        businessId: business1.id,
+        businessId: verifiedBusiness1.id,
         vibeCompatibilityScore: 0.80,
       );
 
       // Note: In production, multiple partnerships for same event might be restricted
       // This test verifies the system can handle multiple partnerships if allowed
 
-      expect(partnership1.eventId, equals(testEvent.id));
+      expect(partnership1.eventId, equals(createdEvent.id));
       expect(partnership1.businessId, equals(business1.id));
     });
 
     test('partnership eligibility checks', () async {
+      // Step 0: Create event in service so it can be found
+      final createdEvent = await eventService.createEvent(
+        host: testUser,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+      );
+      
       // Step 1: Create unverified business
       final unverifiedBusiness = await businessService.createBusinessAccount(
         name: 'Unverified Business',
@@ -192,7 +258,7 @@ void main() {
       final isEligible = await partnershipService.checkPartnershipEligibility(
         userId: testUser.id,
         businessId: unverifiedBusiness.id,
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
       );
 
       expect(isEligible, isFalse); // Business not verified
@@ -207,7 +273,7 @@ void main() {
       final isEligibleAfterVerification = await partnershipService.checkPartnershipEligibility(
         userId: testUser.id,
         businessId: verifiedBusiness.id,
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
       );
 
       // Should still be false if event has already started or other conditions not met
@@ -215,6 +281,18 @@ void main() {
     });
 
     test('partnership status transitions', () async {
+      // Step 0: Create event in service so it can be found
+      final createdEvent = await eventService.createEvent(
+        host: testUser,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+      );
+      
       // Step 1: Create partnership
       testBusiness = await businessService.createBusinessAccount(
         name: 'Test Business',
@@ -222,12 +300,18 @@ void main() {
         businessType: 'Restaurant',
         createdBy: 'user-123',
       );
-      testBusiness = testBusiness.copyWith(isVerified: true);
+      // Update business to verified and active status in the service
+      final verifiedBusiness = await businessAccountService.updateBusinessAccount(
+        testBusiness,
+        name: testBusiness.name,
+        isVerified: true,
+        isActive: true,
+      );
 
       final partnership = await partnershipService.createPartnership(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         userId: testUser.id,
-        businessId: testBusiness.id,
+        businessId: verifiedBusiness.id,
         vibeCompatibilityScore: 0.75,
       );
 

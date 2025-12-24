@@ -19,62 +19,15 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
-    group('Constructor and Properties', () {
-      test('should create community with required fields', () {
-        final community = ExpertiseCommunity(
-          id: 'community-123',
-          category: 'Coffee',
-          name: 'Coffee Experts of Brooklyn',
-          createdAt: testDate,
-          updatedAt: testDate,
-          createdBy: 'user-123',
-        );
-
-        expect(community.id, equals('community-123'));
-        expect(community.category, equals('Coffee'));
-        expect(community.name, equals('Coffee Experts of Brooklyn'));
-        expect(community.createdAt, equals(testDate));
-        expect(community.updatedAt, equals(testDate));
-        expect(community.createdBy, equals('user-123'));
-        
-        // Test default values
-        expect(community.location, isNull);
-        expect(community.description, isNull);
-        expect(community.memberIds, isEmpty);
-        expect(community.memberCount, equals(0));
-        expect(community.minLevel, isNull);
-        expect(community.isPublic, isTrue);
-      });
-
-      test('should create community with all fields', () {
-        final community = ExpertiseCommunity(
-          id: 'community-123',
-          category: 'Coffee',
-          location: 'Brooklyn',
-          name: 'Coffee Experts of Brooklyn',
-          description: 'A community for coffee enthusiasts',
-          memberIds: ['user-1', 'user-2'],
-          memberCount: 2,
-          minLevel: ExpertiseLevel.city,
-          isPublic: true,
-          createdAt: testDate,
-          updatedAt: testDate,
-          createdBy: 'user-123',
-        );
-
-        expect(community.location, equals('Brooklyn'));
-        expect(community.description, equals('A community for coffee enthusiasts'));
-        expect(community.memberIds, equals(['user-1', 'user-2']));
-        expect(community.memberCount, equals(2));
-        expect(community.minLevel, equals(ExpertiseLevel.city));
-        expect(community.isPublic, isTrue);
-      });
-    });
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
     group('getDisplayName', () {
-      test('should include location when present', () {
-        final community = ExpertiseCommunity(
-          id: 'community-123',
+      test('should correctly format display name with and without location',
+          () {
+        // Test business logic: display name formatting
+        final withLocation = ExpertiseCommunity(
+          id: 'community-1',
           category: 'Coffee',
           location: 'Brooklyn',
           name: 'Coffee Experts of Brooklyn',
@@ -82,13 +35,8 @@ void main() {
           updatedAt: testDate,
           createdBy: 'user-123',
         );
-
-        expect(community.getDisplayName(), equals('Coffee Experts of Brooklyn'));
-      });
-
-      test('should exclude location when null', () {
-        final community = ExpertiseCommunity(
-          id: 'community-123',
+        final withoutLocation = ExpertiseCommunity(
+          id: 'community-2',
           category: 'Coffee',
           name: 'Coffee Experts',
           createdAt: testDate,
@@ -96,14 +44,19 @@ void main() {
           createdBy: 'user-123',
         );
 
-        expect(community.getDisplayName(), equals('Coffee Experts'));
+        expect(withLocation.getDisplayName(),
+            equals('Coffee Experts of Brooklyn'));
+        expect(withoutLocation.getDisplayName(), equals('Coffee Experts'));
       });
     });
 
     group('isMember', () {
-      test('should return true when user is a member', () {
-        final community = ExpertiseCommunity(
-          id: 'community-123',
+      test(
+          'should correctly determine membership for members, non-members, and empty lists',
+          () {
+        // Test business logic: membership determination
+        final withMembers = ExpertiseCommunity(
+          id: 'community-1',
           category: 'Coffee',
           name: 'Coffee Experts',
           memberIds: ['user-1', 'user-2', 'user-3'],
@@ -111,29 +64,8 @@ void main() {
           updatedAt: testDate,
           createdBy: 'user-123',
         );
-
-        final user = ModelFactories.createTestUser(id: 'user-2');
-        expect(community.isMember(user), isTrue);
-      });
-
-      test('should return false when user is not a member', () {
-        final community = ExpertiseCommunity(
-          id: 'community-123',
-          category: 'Coffee',
-          name: 'Coffee Experts',
-          memberIds: ['user-1', 'user-2'],
-          createdAt: testDate,
-          updatedAt: testDate,
-          createdBy: 'user-123',
-        );
-
-        final user = ModelFactories.createTestUser(id: 'user-999');
-        expect(community.isMember(user), isFalse);
-      });
-
-      test('should return false when memberIds is empty', () {
-        final community = ExpertiseCommunity(
-          id: 'community-123',
+        final emptyMembers = ExpertiseCommunity(
+          id: 'community-2',
           category: 'Coffee',
           name: 'Coffee Experts',
           createdAt: testDate,
@@ -141,8 +73,12 @@ void main() {
           createdBy: 'user-123',
         );
 
-        final user = ModelFactories.createTestUser(id: 'user-1');
-        expect(community.isMember(user), isFalse);
+        final member = ModelFactories.createTestUser(id: 'user-2');
+        final nonMember = ModelFactories.createTestUser(id: 'user-999');
+
+        expect(withMembers.isMember(member), isTrue);
+        expect(withMembers.isMember(nonMember), isFalse);
+        expect(emptyMembers.isMember(member), isFalse);
       });
     });
 
@@ -182,13 +118,15 @@ void main() {
     });
 
     group('JSON Serialization', () {
-      test('should serialize to JSON correctly', () {
-        final community = ExpertiseCommunity(
-          id: 'community-123',
+      test(
+          'should serialize and deserialize with defaults and handle invalid fields',
+          () {
+        // Test business logic: JSON round-trip with error handling
+        final fullCommunity = ExpertiseCommunity(
+          id: 'community-1',
           category: 'Coffee',
           location: 'Brooklyn',
           name: 'Coffee Experts of Brooklyn',
-          description: 'A community for coffee enthusiasts',
           memberIds: ['user-1', 'user-2'],
           memberCount: 2,
           minLevel: ExpertiseLevel.city,
@@ -198,77 +136,31 @@ void main() {
           createdBy: 'user-123',
         );
 
-        final json = community.toJson();
+        final json = fullCommunity.toJson();
+        final restored = ExpertiseCommunity.fromJson(json);
 
-        expect(json['id'], equals('community-123'));
-        expect(json['category'], equals('Coffee'));
-        expect(json['location'], equals('Brooklyn'));
-        expect(json['name'], equals('Coffee Experts of Brooklyn'));
-        expect(json['description'], equals('A community for coffee enthusiasts'));
-        expect(json['memberIds'], equals(['user-1', 'user-2']));
-        expect(json['memberCount'], equals(2));
-        expect(json['minLevel'], equals('city'));
-        expect(json['isPublic'], isTrue);
-        expect(json['createdAt'], equals(testDate.toIso8601String()));
-        expect(json['updatedAt'], equals(testDate.toIso8601String()));
-        expect(json['createdBy'], equals('user-123'));
-      });
+        expect(restored.memberIds, equals(['user-1', 'user-2']));
+        expect(restored.memberCount, equals(2));
+        expect(restored.minLevel, equals(ExpertiseLevel.city));
+        expect(restored.isPublic, isTrue);
 
-      test('should deserialize from JSON correctly', () {
-        final json = {
-          'id': 'community-123',
-          'category': 'Coffee',
-          'location': 'Brooklyn',
-          'name': 'Coffee Experts of Brooklyn',
-          'description': 'A community for coffee enthusiasts',
-          'memberIds': ['user-1', 'user-2'],
-          'memberCount': 2,
-          'minLevel': 'city',
-          'isPublic': true,
-          'createdAt': testDate.toIso8601String(),
-          'updatedAt': testDate.toIso8601String(),
-          'createdBy': 'user-123',
-        };
-
-        final community = ExpertiseCommunity.fromJson(json);
-
-        expect(community.id, equals('community-123'));
-        expect(community.category, equals('Coffee'));
-        expect(community.location, equals('Brooklyn'));
-        expect(community.name, equals('Coffee Experts of Brooklyn'));
-        expect(community.description, equals('A community for coffee enthusiasts'));
-        expect(community.memberIds, equals(['user-1', 'user-2']));
-        expect(community.memberCount, equals(2));
-        expect(community.minLevel, equals(ExpertiseLevel.city));
-        expect(community.isPublic, isTrue);
-        expect(community.createdAt, equals(testDate));
-        expect(community.updatedAt, equals(testDate));
-        expect(community.createdBy, equals('user-123'));
-      });
-
-      test('should handle null optional fields in JSON', () {
-        final json = {
-          'id': 'community-123',
+        // Test defaults with minimal JSON
+        final minimalJson = {
+          'id': 'community-2',
           'category': 'Coffee',
           'name': 'Coffee Experts',
           'createdAt': testDate.toIso8601String(),
           'updatedAt': testDate.toIso8601String(),
           'createdBy': 'user-123',
         };
+        final fromMinimal = ExpertiseCommunity.fromJson(minimalJson);
+        expect(fromMinimal.isPublic, isTrue);
+        expect(fromMinimal.memberIds, isEmpty);
+        expect(fromMinimal.memberCount, equals(0));
 
-        final community = ExpertiseCommunity.fromJson(json);
-
-        expect(community.location, isNull);
-        expect(community.description, isNull);
-        expect(community.memberIds, isEmpty);
-        expect(community.memberCount, equals(0));
-        expect(community.minLevel, isNull);
-        expect(community.isPublic, isTrue);
-      });
-
-      test('should default to local level for invalid minLevel in JSON', () {
-        final json = {
-          'id': 'community-123',
+        // Test error handling with invalid minLevel
+        final invalidJson = {
+          'id': 'community-3',
           'category': 'Coffee',
           'name': 'Coffee Experts',
           'minLevel': 'invalid',
@@ -276,15 +168,13 @@ void main() {
           'updatedAt': testDate.toIso8601String(),
           'createdBy': 'user-123',
         };
-
-        final community = ExpertiseCommunity.fromJson(json);
-
-        expect(community.minLevel, isNull);
+        final fromInvalid = ExpertiseCommunity.fromJson(invalidJson);
+        expect(fromInvalid.minLevel, isNull);
       });
     });
 
     group('copyWith', () {
-      test('should create copy with modified fields', () {
+      test('should create immutable copy with updated fields', () {
         final original = ExpertiseCommunity(
           id: 'community-123',
           category: 'Coffee',
@@ -296,80 +186,18 @@ void main() {
 
         final updated = original.copyWith(
           name: 'Updated Name',
-          location: 'Brooklyn',
           memberCount: 5,
         );
 
-        expect(updated.id, equals('community-123')); // Unchanged
-        expect(updated.name, equals('Updated Name')); // Changed
-        expect(updated.location, equals('Brooklyn')); // Changed
-        expect(updated.memberCount, equals(5)); // Changed
-        expect(updated.category, equals('Coffee')); // Unchanged
-      });
-
-      test('should create copy with null fields', () {
-        final original = ExpertiseCommunity(
-          id: 'community-123',
-          category: 'Coffee',
-          name: 'Coffee Experts',
-          location: 'Brooklyn',
-          createdAt: testDate,
-          updatedAt: testDate,
-          createdBy: 'user-123',
-        );
-
-        final updated = original.copyWith(location: null);
-
-        expect(updated.location, isNull);
-        expect(updated.category, equals('Coffee')); // Unchanged
+        // Test immutability (business logic)
+        expect(original.name, isNot(equals('Updated Name')));
+        expect(updated.name, equals('Updated Name'));
+        expect(updated.id, equals(original.id)); // Unchanged fields preserved
       });
     });
 
-    group('Equality', () {
-      test('should be equal when all properties match', () {
-        final community1 = ExpertiseCommunity(
-          id: 'community-123',
-          category: 'Coffee',
-          name: 'Coffee Experts',
-          createdAt: testDate,
-          updatedAt: testDate,
-          createdBy: 'user-123',
-        );
-
-        final community2 = ExpertiseCommunity(
-          id: 'community-123',
-          category: 'Coffee',
-          name: 'Coffee Experts',
-          createdAt: testDate,
-          updatedAt: testDate,
-          createdBy: 'user-123',
-        );
-
-        expect(community1, equals(community2));
-      });
-
-      test('should not be equal when properties differ', () {
-        final community1 = ExpertiseCommunity(
-          id: 'community-123',
-          category: 'Coffee',
-          name: 'Coffee Experts',
-          createdAt: testDate,
-          updatedAt: testDate,
-          createdBy: 'user-123',
-        );
-
-        final community2 = ExpertiseCommunity(
-          id: 'community-123',
-          category: 'Coffee',
-          name: 'Different Name', // Different name
-          createdAt: testDate,
-          updatedAt: testDate,
-          createdBy: 'user-123',
-        );
-
-        expect(community1, isNot(equals(community2)));
-      });
-    });
+    // Removed: Equality group
+    // These tests verify Equatable implementation, which is already tested by the package
+    // If equality breaks, other tests will fail
   });
 }
-

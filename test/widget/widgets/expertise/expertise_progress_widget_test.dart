@@ -9,9 +9,14 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests expertise progress display
 void main() {
   group('ExpertiseProgressWidget Widget Tests', () {
-    testWidgets('displays current level and category', (WidgetTester tester) async {
-      // Arrange
-      final progress = ExpertiseProgress(
+    // Removed: Property assignment tests
+    // Expertise progress widget tests focus on business logic (progress display, level progression, user interactions), not property assignment
+
+    testWidgets(
+        'should display current level and category, display progress bar when next level exists, display highest level message when at max level, display/hide contribution summary based on showDetails, call onTap callback when tapped, or display compact version correctly',
+        (WidgetTester tester) async {
+      // Test business logic: expertise progress widget display and interactions
+      final progress1 = ExpertiseProgress(
         category: 'Coffee',
         currentLevel: ExpertiseLevel.local,
         progressPercentage: 50.0,
@@ -27,24 +32,16 @@ void main() {
         nextSteps: ['Create 3 more spots', 'Write 5 more reviews'],
         lastUpdated: DateTime.now(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ExpertiseProgressWidget(progress: progress),
+      final widget1 = WidgetTestHelpers.createTestableWidget(
+        child: ExpertiseProgressWidget(progress: progress1),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(ExpertiseProgressWidget), findsOneWidget);
       expect(find.text('Coffee'), findsOneWidget);
       expect(find.text('Local Level'), findsOneWidget);
       expect(find.text('• Brooklyn'), findsOneWidget);
-    });
 
-    testWidgets('displays progress bar when next level exists', (WidgetTester tester) async {
-      // Arrange
-      final progress = ExpertiseProgress(
+      final progress2 = ExpertiseProgress(
         category: 'Restaurants',
         currentLevel: ExpertiseLevel.local,
         progressPercentage: 75.0,
@@ -56,22 +53,14 @@ void main() {
         nextSteps: [],
         lastUpdated: DateTime.now(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ExpertiseProgressWidget(progress: progress),
+      final widget2 = WidgetTestHelpers.createTestableWidget(
+        child: ExpertiseProgressWidget(progress: progress2),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
       expect(find.textContaining('75'), findsOneWidget);
-    });
 
-    testWidgets('displays highest level message when at max level', (WidgetTester tester) async {
-      // Arrange
-      final progress = ExpertiseProgress(
+      final progress3 = ExpertiseProgress(
         category: 'Coffee',
         currentLevel: ExpertiseLevel.global,
         progressPercentage: 100.0,
@@ -87,23 +76,15 @@ void main() {
         nextSteps: [],
         lastUpdated: DateTime.now(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ExpertiseProgressWidget(progress: progress),
+      final widget3 = WidgetTestHelpers.createTestableWidget(
+        child: ExpertiseProgressWidget(progress: progress3),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Highest level achieved!'), findsOneWidget);
       expect(find.byIcon(Icons.star), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsNothing);
-    });
 
-    testWidgets('displays contribution summary when showDetails is true', (WidgetTester tester) async {
-      // Arrange
-      final progress = ExpertiseProgress(
+      final progress4 = ExpertiseProgress(
         category: 'Coffee',
         currentLevel: ExpertiseLevel.local,
         progressPercentage: 50.0,
@@ -119,23 +100,15 @@ void main() {
         nextSteps: ['Create 3 more spots'],
         lastUpdated: DateTime.now(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ExpertiseProgressWidget(progress: progress, showDetails: true),
+      final widget4 = WidgetTestHelpers.createTestableWidget(
+        child: ExpertiseProgressWidget(progress: progress4, showDetails: true),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.text('Your Contributions'), findsOneWidget);
       expect(find.text('Next Steps'), findsOneWidget);
       expect(find.text('Create 3 more spots'), findsOneWidget);
-    });
 
-    testWidgets('hides details when showDetails is false', (WidgetTester tester) async {
-      // Arrange
-      final progress = ExpertiseProgress(
+      final progress5 = ExpertiseProgress(
         category: 'Coffee',
         currentLevel: ExpertiseLevel.local,
         progressPercentage: 50.0,
@@ -149,23 +122,15 @@ void main() {
         nextSteps: ['Create 3 more spots'],
         lastUpdated: DateTime.now(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ExpertiseProgressWidget(progress: progress, showDetails: false),
+      final widget5 = WidgetTestHelpers.createTestableWidget(
+        child: ExpertiseProgressWidget(progress: progress5, showDetails: false),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
       expect(find.text('Your Contributions'), findsNothing);
       expect(find.text('Next Steps'), findsNothing);
-    });
 
-    testWidgets('calls onTap callback when tapped', (WidgetTester tester) async {
-      // Arrange
       bool tapped = false;
-      final progress = ExpertiseProgress(
+      final progress6 = ExpertiseProgress(
         category: 'Coffee',
         currentLevel: ExpertiseLevel.local,
         progressPercentage: 50.0,
@@ -177,28 +142,20 @@ void main() {
         nextSteps: [],
         lastUpdated: DateTime.now(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget6 = WidgetTestHelpers.createTestableWidget(
         child: ExpertiseProgressWidget(
-          progress: progress,
+          progress: progress6,
           onTap: () {
             tapped = true;
           },
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await WidgetTestHelpers.pumpAndSettle(tester, widget6);
       await tester.tap(find.byType(ExpertiseProgressWidget));
       await tester.pumpAndSettle();
-
-      // Assert
       expect(tapped, isTrue);
-    });
 
-    testWidgets('displays compact version correctly', (WidgetTester tester) async {
-      // Arrange
-      final progress = ExpertiseProgress(
+      final progress7 = ExpertiseProgress(
         category: 'Coffee',
         currentLevel: ExpertiseLevel.local,
         progressPercentage: 50.0,
@@ -210,19 +167,13 @@ void main() {
         nextSteps: [],
         lastUpdated: DateTime.now(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: CompactExpertiseProgressWidget(progress: progress),
+      final widget7 = WidgetTestHelpers.createTestableWidget(
+        child: CompactExpertiseProgressWidget(progress: progress7),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget7);
       expect(find.byType(CompactExpertiseProgressWidget), findsOneWidget);
       expect(find.text('Local'), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
     });
   });
 }
-

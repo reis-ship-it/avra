@@ -5,7 +5,13 @@ import 'package:spots/core/theme/colors.dart';
 
 void main() {
   group('FloatingTextWidget', () {
-    testWidgets('builds successfully with text', (WidgetTester tester) async {
+    // Removed: Property assignment tests
+    // Floating text widget tests focus on business logic (text display, animations, styling), not property assignment
+
+    testWidgets(
+        'should build successfully with text, display all letters individually, handle multi-line text, apply custom text style, initialize entrance animation, loop float animation continuously, handle empty text gracefully, or respect reduced motion preference',
+        (WidgetTester tester) async {
+      // Test business logic: floating text widget display and animations
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -15,14 +21,11 @@ void main() {
           ),
         ),
       );
-
       expect(find.text('H'), findsOneWidget);
       expect(find.text('e'), findsOneWidget);
       expect(find.text('l'), findsNWidgets(3));
       expect(find.text('o'), findsNWidgets(2));
-    });
 
-    testWidgets('displays all letters individually', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -32,12 +35,9 @@ void main() {
           ),
         ),
       );
-
       expect(find.text('H'), findsOneWidget);
       expect(find.text('i'), findsOneWidget);
-    });
 
-    testWidgets('handles multi-line text', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -47,21 +47,17 @@ void main() {
           ),
         ),
       );
-
       expect(find.text('H'), findsOneWidget);
       expect(find.text('i'), findsOneWidget);
       expect(find.text('t'), findsOneWidget);
       expect(find.text('h'), findsOneWidget);
       expect(find.text('e'), findsNWidgets(2));
       expect(find.text('r'), findsOneWidget);
-    });
 
-    testWidgets('applies custom text style', (WidgetTester tester) async {
       const customStyle = TextStyle(
         fontSize: 24,
         color: AppColors.electricGreen,
       );
-
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -72,19 +68,15 @@ void main() {
           ),
         ),
       );
-
       final textWidgets = tester.widgetList<Text>(find.byType(Text));
       expect(textWidgets.length, greaterThan(0));
-      
       for (final textWidget in textWidgets) {
         if (textWidget.data != null && textWidget.data!.isNotEmpty) {
           expect(textWidget.style?.fontSize, 24);
           expect(textWidget.style?.color, AppColors.electricGreen);
         }
       }
-    });
 
-    testWidgets('entrance animation initializes', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -95,22 +87,13 @@ void main() {
           ),
         ),
       );
-
-      // Initial frame - letters may not be fully visible
       await tester.pump();
-      
-      // Let entrance animation complete (pump manually instead of pumpAndSettle)
-      // pumpAndSettle can't be used because float animation repeats forever
       await tester.pump(const Duration(milliseconds: 50));
       await tester.pump(const Duration(milliseconds: 100));
       await tester.pump(const Duration(milliseconds: 100));
-      
-      // Letters should be visible after animation
       expect(find.text('H'), findsOneWidget);
       expect(find.text('i'), findsOneWidget);
-    });
 
-    testWidgets('float animation loops continuously', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -122,25 +105,16 @@ void main() {
           ),
         ),
       );
-
-      // Wait for entrance (manual pump, not pumpAndSettle)
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 50));
       await tester.pump(const Duration(milliseconds: 100));
-      
-      // Pump through float cycle
       await tester.pump(const Duration(milliseconds: 50));
       expect(find.text('A'), findsOneWidget);
-      
       await tester.pump(const Duration(milliseconds: 100));
       expect(find.text('A'), findsOneWidget);
-      
-      // Float should continue looping
       await tester.pump(const Duration(milliseconds: 200));
       expect(find.text('A'), findsOneWidget);
-    });
 
-    testWidgets('handles empty text gracefully', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -150,12 +124,9 @@ void main() {
           ),
         ),
       );
-
       await tester.pumpAndSettle();
       expect(find.byType(FloatingTextWidget), findsOneWidget);
-    });
 
-    testWidgets('respects reduced motion preference', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MediaQuery(
           data: MediaQueryData(disableAnimations: true),
@@ -168,8 +139,6 @@ void main() {
           ),
         ),
       );
-
-      // With reduced motion, text should appear immediately
       await tester.pump();
       expect(find.text('H'), findsOneWidget);
       expect(find.text('i'), findsOneWidget);
@@ -177,7 +146,13 @@ void main() {
   });
 
   group('PulsingHintWidget', () {
-    testWidgets('builds successfully', (WidgetTester tester) async {
+    // Removed: Property assignment tests
+    // Pulsing hint widget tests focus on business logic (hint display, styling, animations), not property assignment
+
+    testWidgets(
+        'should build successfully, display text with default style, apply custom text style, or run pulsing animation',
+        (WidgetTester tester) async {
+      // Test business logic: pulsing hint widget display and animations
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -187,11 +162,8 @@ void main() {
           ),
         ),
       );
-
       expect(find.text('Tap to continue'), findsOneWidget);
-    });
 
-    testWidgets('displays text with default style', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -201,18 +173,14 @@ void main() {
           ),
         ),
       );
+      final textWidget1 = tester.widget<Text>(find.byType(Text));
+      expect(textWidget1.data, 'Hint');
+      expect(textWidget1.style?.color, AppColors.textSecondary);
 
-      final textWidget = tester.widget<Text>(find.byType(Text));
-      expect(textWidget.data, 'Hint');
-      expect(textWidget.style?.color, AppColors.textSecondary);
-    });
-
-    testWidgets('applies custom text style', (WidgetTester tester) async {
       const customStyle = TextStyle(
         fontSize: 20,
         color: AppColors.electricGreen,
       );
-
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -223,13 +191,10 @@ void main() {
           ),
         ),
       );
+      final textWidget2 = tester.widget<Text>(find.byType(Text));
+      expect(textWidget2.style?.fontSize, 20);
+      expect(textWidget2.style?.color, AppColors.electricGreen);
 
-      final textWidget = tester.widget<Text>(find.byType(Text));
-      expect(textWidget.style?.fontSize, 20);
-      expect(textWidget.style?.color, AppColors.electricGreen);
-    });
-
-    testWidgets('pulsing animation runs', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -239,17 +204,12 @@ void main() {
           ),
         ),
       );
-
-      // Pump through animation cycle
       await tester.pump();
       expect(find.text('Hint'), findsOneWidget);
-      
       await tester.pump(const Duration(milliseconds: 500));
       expect(find.text('Hint'), findsOneWidget);
-      
       await tester.pump(const Duration(milliseconds: 1000));
       expect(find.text('Hint'), findsOneWidget);
     });
   });
 }
-

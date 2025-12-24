@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:spots/core/services/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -46,9 +47,14 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
   void initState() {
     super.initState();
     _logger.debug('HomebaseSelectionPage: initState called');
-    _loadCachedLocation();
-    _initializeMap();
-    _preloadCommonLocations();
+    // Use addPostFrameCallback to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadCachedLocation();
+        _initializeMap();
+        _preloadCommonLocations();
+      }
+    });
   }
 
   Future<void> _preloadCommonLocations() async {
@@ -77,6 +83,25 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
   Future<void> _loadCachedLocation() async {
     try {
       final prefs = di.sl<SharedPreferences>();
+      // Restore persisted geocoding cache (best-effort)
+      try {
+        final cacheJson = prefs.getString(_cacheKey);
+        if (cacheJson != null && cacheJson.isNotEmpty) {
+          final decoded = jsonDecode(cacheJson);
+          if (decoded is Map) {
+            for (final entry in decoded.entries) {
+              final k = entry.key?.toString();
+              final v = entry.value?.toString();
+              if (k != null && v != null) {
+                _geocodingCache[k] = v;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        _logger.debug('HomebaseSelectionPage: Failed to restore cache: $e');
+      }
+
       final cachedLat = prefs.getDouble('cached_lat');
       final cachedLng = prefs.getDouble('cached_lng');
       final cachedNeighborhood = prefs.getString('cached_neighborhood');
@@ -85,7 +110,12 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
         _currentLocation = LatLng(cachedLat, cachedLng);
         if (cachedNeighborhood != null) {
           _selectedNeighborhood = cachedNeighborhood;
-          widget.onHomebaseChanged(cachedNeighborhood);
+          // Use addPostFrameCallback to avoid calling parent setState during build
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              widget.onHomebaseChanged(cachedNeighborhood);
+            }
+          });
         }
         _logger.debug(
             'HomebaseSelectionPage: Loaded cached location: $_currentLocation, neighborhood: $_selectedNeighborhood');
@@ -102,6 +132,12 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
       await prefs.setDouble('cached_lat', location.latitude);
       await prefs.setDouble('cached_lng', location.longitude);
       await prefs.setString('cached_neighborhood', neighborhood);
+      // Persist geocoding cache (best-effort) to speed up future onboarding.
+      try {
+        await prefs.setString(_cacheKey, jsonEncode(_geocodingCache));
+      } catch (_) {
+        // ignore cache persistence failures
+      }
       _logger.debug('HomebaseSelectionPage: Saved location to cache');
     } catch (e) {
       _logger.error('HomebaseSelectionPage: Error saving cached location',
@@ -121,8 +157,13 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
       _mapLoaded = true;
     });
 
-    // Then try to get current location
-    await _getCurrentLocation();
+    // Then try to get current location AFTER the map has rendered at least once.
+    // flutter_map's MapController throws if move() is called before first render.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _getCurrentLocation();
+      }
+    });
   }
 
   Future<void> _getCurrentLocation() async {
@@ -135,6 +176,31 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
     });
 
     try {
+      // Integration test mode: avoid OS permission dialogs and slow geocoding.
+      // This keeps onboarding deterministic on iOS simulators.
+    const bool isIntegrationTest = bool.fromEnvironment('FLUTTER_TEST');
+      if (isIntegrationTest) {
+        _logger.info(
+          'HomebaseSelectionPage: FLUTTER_TEST enabled - using default homebase without permission prompts',
+          tag: 'HomebaseSelectionPage',
+        );
+        _hasLocationPermission = false;
+        _currentLocation = const LatLng(40.7128, -74.0060); // NYC default
+        // IMPORTANT: Do not call _mapController.move() here; flutter_map throws if
+        // the FlutterMap widget hasn't rendered yet (common in widget/integration tests).
+
+        // Set a deterministic, human-readable homebase.
+        const neighborhood = 'New York, NY';
+        if (mounted) {
+          setState(() {
+            _selectedNeighborhood = neighborhood;
+          });
+        }
+        widget.onHomebaseChanged(neighborhood);
+        await _saveCachedLocation(_currentLocation!, neighborhood);
+        return;
+      }
+
       // Check location permission
       LocationPermission permission = await Geolocator.checkPermission();
       _logger.debug(
@@ -169,7 +235,11 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
         _currentLocation = LatLng(position.latitude, position.longitude);
 
         // Center map on user's location
+        try {
         _mapController.move(_currentLocation!, 15);
+        } catch (e) {
+          _logger.debug('HomebaseSelectionPage: Map not ready for move(): $e');
+        }
 
         // Get neighborhood name for the centered location (in parallel)
         _getNeighborhoodName(_currentLocation!);
@@ -177,13 +247,22 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
         _logger.warn(
             'HomebaseSelectionPage: Location permission denied, using default location');
         // Default to a central location if no permission
+        try {
         _mapController.move(const LatLng(40.7128, -74.0060), 15); // NYC
+        } catch (e) {
+          _logger.debug('HomebaseSelectionPage: Map not ready for move(): $e');
+        }
         _getNeighborhoodName(const LatLng(40.7128, -74.0060));
       }
     } catch (e) {
       _logger.error('HomebaseSelectionPage: Error getting location', error: e);
       // Default to a central location on error
+      try {
       _mapController.move(const LatLng(40.7128, -74.0060), 15); // NYC
+      } catch (moveError) {
+        _logger.debug(
+            'HomebaseSelectionPage: Map not ready for move() after error: $moveError');
+      }
       _getNeighborhoodName(const LatLng(40.7128, -74.0060));
     } finally {
       if (mounted) {

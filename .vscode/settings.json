@@ -1,0 +1,20 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.gradle.enabled": true,
+  "java.import.gradle.wrapper.enabled": true,
+  "java.import.gradle.arguments": "--no-daemon",
+  "java.configuration.runtimes": [],
+  "files.exclude": {
+    "**/backups/**": true,
+    "**/.metadata/**": true
+  },
+  "java.project.sourcePaths": [
+    "android/app/src/main/java",
+    "android/app/src/main/kotlin"
+  ],
+  "java.project.referencedLibraries": [
+    "android/app/libs/**/*.jar"
+  ],
+  "gradle.nestedProjects": false,
+  "dart.showTodos": false
+}

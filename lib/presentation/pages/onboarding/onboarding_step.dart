@@ -357,33 +357,97 @@ class _PermissionsPageState extends State<PermissionsPage> {
     }
   }
 
+  /// Get user-friendly permission name
+  String _getPermissionName(Permission permission) {
+    switch (permission) {
+      case Permission.locationWhenInUse:
+        return 'Location Access';
+      case Permission.locationAlways:
+        return 'Background Location';
+      case Permission.bluetooth:
+        return 'Bluetooth';
+      case Permission.bluetoothScan:
+        return 'Bluetooth Scan';
+      case Permission.bluetoothConnect:
+        return 'Bluetooth Connect';
+      case Permission.bluetoothAdvertise:
+        return 'Bluetooth Advertise';
+      case Permission.nearbyWifiDevices:
+        return 'WiFi Devices';
+      default:
+        return permission.toString().split('.').last;
+    }
+  }
+
+  /// Get user-friendly permission description
+  String _getPermissionDescription(Permission permission) {
+    switch (permission) {
+      case Permission.locationWhenInUse:
+        return 'Show nearby spots and personalize discovery';
+      case Permission.locationAlways:
+        return 'Enable background spot detection';
+      case Permission.bluetooth:
+      case Permission.bluetoothScan:
+      case Permission.bluetoothConnect:
+      case Permission.bluetoothAdvertise:
+        return 'Enable secure device discovery';
+      case Permission.nearbyWifiDevices:
+        return 'Improve device discovery quality';
+      default:
+        return '';
+    }
+  }
+
+  /// Group permissions by category
+  Map<String, List<MapEntry<Permission, PermissionStatus>>>
+      _groupPermissions() {
+    final groups = <String, List<MapEntry<Permission, PermissionStatus>>>{};
+
+    for (final entry in _statuses.entries) {
+      String category;
+      if (entry.key == Permission.locationWhenInUse ||
+          entry.key == Permission.locationAlways) {
+        category = 'Location';
+      } else if (entry.key == Permission.bluetooth ||
+          entry.key == Permission.bluetoothScan ||
+          entry.key == Permission.bluetoothConnect ||
+          entry.key == Permission.bluetoothAdvertise) {
+        category = 'Bluetooth';
+      } else if (entry.key == Permission.nearbyWifiDevices) {
+        category = 'WiFi';
+      } else {
+        category = 'Other';
+      }
+
+      groups.putIfAbsent(category, () => []).add(entry);
+    }
+
+    return groups;
+  }
+
   @override
   Widget build(BuildContext context) {
     final allGranted = _statuses.isNotEmpty && _grantedCount == _totalCount;
+    final groups = _groupPermissions();
 
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Enable Connectivity & Location',
-              style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 8),
-          const Text(
-              'To enable ai2ai connectivity, presence, and location-based experiences, please allow these permissions. We ask only what we need and you remain in control.'),
-          const SizedBox(height: 16),
-          // Summary banner showing permission status
+          // Summary banner
           if (_statuses.isNotEmpty)
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: allGranted
                     ? Colors.green.withValues(alpha: 0.1)
                     : Colors.orange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: allGranted ? Colors.green : Colors.orange,
-                  width: 1,
+                  width: 1.5,
                 ),
               ),
               child: Row(
@@ -391,15 +455,17 @@ class _PermissionsPageState extends State<PermissionsPage> {
                   Icon(
                     allGranted ? Icons.check_circle : Icons.info_outline,
                     color: allGranted ? Colors.green : Colors.orange,
+                    size: 24,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       allGranted
-                          ? 'All permissions granted! ✓'
+                          ? 'All permissions granted'
                           : '$_grantedCount of $_totalCount permissions granted',
                       style: TextStyle(
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
                         color: allGranted
                             ? Colors.green.shade700
                             : Colors.orange.shade700,
@@ -410,145 +476,225 @@ class _PermissionsPageState extends State<PermissionsPage> {
               ),
             ),
           const SizedBox(height: 16),
-          _loading
-              ? const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 16),
-                      Text('Requesting permissions...'),
-                    ],
+
+          // Simulator info note (shown when permissions are not granted)
+          if (!allGranted && _statuses.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: Colors.blue.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: Colors.blue.shade700,
+                    size: 20,
                   ),
-                )
-              : _statuses.isEmpty
-                  ? const Center(
-                      child: Text('Checking permissions...'),
-                    )
-                  : SizedBox(
-                      height: 300, // Fixed height for embedded use
-                      child: ListView(
-                        shrinkWrap: true,
-                        children: _statuses.entries.map((e) {
-                          final name = e.key.toString().split('.').last;
-                          final status = e.value.toString().split('.').last;
-                          final isGranted = e.value.isGranted;
-                          final isPermanentlyDenied =
-                              e.value.isPermanentlyDenied;
-                          String rationale;
-                          switch (e.key) {
-                            case Permission.locationWhenInUse:
-                              rationale =
-                                  'Needed to show nearby spots and personalize discovery.';
-                              break;
-                            case Permission.locationAlways:
-                              rationale =
-                                  'Enables background spot detection and presence for ai2ai.';
-                              break;
-                            case Permission.bluetooth:
-                            case Permission.bluetoothScan:
-                            case Permission.bluetoothConnect:
-                            case Permission.bluetoothAdvertise:
-                              rationale =
-                                  'Enables secure ai2ai presence and proximity awareness.';
-                              break;
-                            case Permission.nearbyWifiDevices:
-                              rationale =
-                                  'Improves device discovery and connectivity quality.';
-                              break;
-                            default:
-                              rationale = '';
-                          }
-                          return ListTile(
-                            title: Text(name),
-                            subtitle: Text('$status • $rationale'),
-                            leading: Icon(
-                              isGranted
-                                  ? Icons.check_circle
-                                  : isPermanentlyDenied
-                                      ? Icons.block
-                                      : Icons.pending_outlined,
-                              color: isGranted
-                                  ? Colors.green
-                                  : isPermanentlyDenied
-                                      ? Colors.red
-                                      : Colors.orange,
-                            ),
-                            trailing: Switch(
-                              value: isGranted,
-                              onChanged: isPermanentlyDenied || _loading
-                                  ? null // Disable toggle if permanently denied or loading
-                                  : (value) async {
-                                      // If permanently denied, show dialog to go to settings
-                                      if (isPermanentlyDenied) {
-                                        await _showPermanentlyDeniedDialog(
-                                            e.key);
-                                        return;
-                                      }
-
-                                      // Update UI immediately for better UX
-                                      setState(() {
-                                        _statuses[e.key] = value
-                                            ? PermissionStatus.granted
-                                            : PermissionStatus.denied;
-                                      });
-
-                                      // Request permission if toggling on
-                                      if (value && !isGranted) {
-                                        await _requestPermission(e.key);
-
-                                        // Refresh statuses and update UI
-                                        await _refreshStatuses();
-                                        if (mounted) {
-                                          setState(() {
-                                            // Trigger UI update with latest statuses
-                                          });
-                                        }
-
-                                        // Check if permanently denied after request
-                                        final newStatus = _statuses[e.key];
-                                        if (newStatus != null &&
-                                            newStatus.isPermanentlyDenied &&
-                                            mounted) {
-                                          await _showPermanentlyDeniedDialog(
-                                              e.key);
-                                        }
-                                      } else if (!value && isGranted) {
-                                        // If toggling off, we can't revoke permissions programmatically
-                                        // Show a message or refresh status
-                                        await _refreshStatuses();
-                                        if (mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                'To revoke permissions, please use your device settings.',
-                                              ),
-                                              duration: Duration(seconds: 2),
-                                            ),
-                                          );
-                                        }
-                                      }
-                                    },
-                            ),
-                          );
-                        }).toList(),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Note: Some permissions (especially Bluetooth and WiFi) may not be fully supported on iOS Simulator. Test on a real device for complete functionality.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.blue.shade900,
                       ),
                     ),
-          const SizedBox(height: 12),
+                  ),
+                ],
+              ),
+            ),
+
+          // Loading state
+          if (_loading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Requesting permissions...'),
+                  ],
+                ),
+              ),
+            )
+          else if (_statuses.isEmpty)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Text('Checking permissions...'),
+              ),
+            )
+          else
+            // Grouped permissions
+            ...groups.entries.map((group) {
+              final categoryName = group.key;
+              final permissions = group.value;
+              final categoryGranted =
+                  permissions.every((e) => e.value.isGranted);
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Category header
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            categoryName == 'Location'
+                                ? Icons.location_on
+                                : categoryName == 'Bluetooth'
+                                    ? Icons.bluetooth
+                                    : Icons.wifi,
+                            size: 20,
+                            color: categoryGranted
+                                ? Colors.green
+                                : Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            categoryName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Permission items
+                    ...permissions.map((entry) {
+                      final permission = entry.key;
+                      final status = entry.value;
+                      final isGranted = status.isGranted;
+
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(
+                            color: isGranted
+                                ? Colors.green.withValues(alpha: 0.3)
+                                : Colors.grey.withValues(alpha: 0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          title: Text(
+                            _getPermissionName(permission),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              _getPermissionDescription(permission),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                          trailing: Switch(
+                            value: isGranted,
+                            onChanged: _loading
+                                ? null
+                                : (value) async {
+                                    // Always allow toggling - let the request handle the actual permission state
+                                    setState(() {
+                                      _statuses[permission] = value
+                                          ? PermissionStatus.granted
+                                          : PermissionStatus.denied;
+                                    });
+
+                                    if (value && !isGranted) {
+                                      // Request permission
+                                      await _requestPermission(permission);
+                                      await _refreshStatuses();
+                                      if (mounted) setState(() {});
+
+                                      // Check if permanently denied after request
+                                      final newStatus = _statuses[permission];
+                                      if (newStatus != null &&
+                                          newStatus.isPermanentlyDenied &&
+                                          mounted) {
+                                        await _showPermanentlyDeniedDialog(
+                                            permission);
+                                      } else if (newStatus != null &&
+                                          !newStatus.isGranted &&
+                                          mounted) {
+                                        // Show helpful message for simulator limitations
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Some permissions may not be fully supported on iOS Simulator. Test on a real device for complete functionality.',
+                                            ),
+                                            duration:
+                                                const Duration(seconds: 3),
+                                          ),
+                                        );
+                                      }
+                                    } else if (!value && isGranted) {
+                                      // Refresh to show actual state
+                                      await _refreshStatuses();
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'To revoke permissions, please use your device settings.',
+                                            ),
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  },
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              );
+            }),
+
+          const SizedBox(height: 8),
+
+          // Action buttons
           if (!allGranted) ...[
-            TextButton.icon(
-              onPressed: () async {
-                await openAppSettings();
-                // Refresh statuses after returning from settings
-                Future.delayed(const Duration(seconds: 1), () {
-                  if (mounted) {
-                    _refreshStatuses();
-                  }
-                });
-              },
-              icon: const Icon(Icons.settings),
-              label: const Text('Open Settings to Grant Permissions'),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  await openAppSettings();
+                  Future.delayed(const Duration(seconds: 1), () {
+                    if (mounted) _refreshStatuses();
+                  });
+                },
+                icon: const Icon(Icons.settings),
+                label: const Text('Open Settings'),
+              ),
             ),
             const SizedBox(height: 8),
           ],
@@ -559,7 +705,6 @@ class _PermissionsPageState extends State<PermissionsPage> {
                   ? null
                   : () async {
                       await _requestAll();
-                      // Show dialog again if permissions are still denied
                       await _refreshStatuses();
                       if (mounted) {
                         final stillDenied = _statuses.values.any(
@@ -568,18 +713,16 @@ class _PermissionsPageState extends State<PermissionsPage> {
                         );
                         if (stillDenied) {
                           Future.delayed(const Duration(milliseconds: 500), () {
-                            if (mounted) {
-                              _showPermissionDialog();
-                            }
+                            if (mounted) _showPermissionDialog();
                           });
                         }
                       }
                     },
               icon: Icon(_loading ? Icons.hourglass_empty : Icons.security),
               label: Text(_loading
-                  ? 'Requesting permissions...'
+                  ? 'Requesting...'
                   : allGranted
-                      ? 'All Permissions Granted ✓'
+                      ? 'All Granted ✓'
                       : 'Request All Permissions'),
             ),
           ),

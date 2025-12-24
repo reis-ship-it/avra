@@ -6,101 +6,54 @@ import "../../helpers/widget_test_helpers.dart';
 /// Tests expert search functionality
 void main() {
   group('ExpertSearchWidget Widget Tests', () {
-    testWidgets('displays search fields', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+    // Removed: Property assignment tests
+    // Expert search widget tests focus on business logic (search display, user interactions, filtering), not property assignment
+
+    testWidgets(
+        'should display search fields, display initial category and location, display level filter chips, display empty state when no results, call onExpertSelected when expert is tapped, or perform search when search button is tapped',
+        (WidgetTester tester) async {
+      // Test business logic: expert search widget display and interactions
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const ExpertSearchWidget(),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(ExpertSearchWidget), findsOneWidget);
       expect(find.text('Category (e.g., Coffee)'), findsOneWidget);
       expect(find.text('Location (optional)'), findsOneWidget);
       expect(find.byIcon(Icons.search), findsOneWidget);
-    });
+      expect(find.text('Min Level:'), findsOneWidget);
+      expect(find.byType(FilterChip), findsWidgets);
 
-    testWidgets('displays initial category and location', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: const ExpertSearchWidget(
           initialCategory: 'Coffee',
           initialLocation: 'Brooklyn',
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Coffee'), findsOneWidget);
       expect(find.text('Brooklyn'), findsOneWidget);
-    });
 
-    testWidgets('displays level filter chips', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const ExpertSearchWidget(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
-      expect(find.text('Min Level:'), findsOneWidget);
-      expect(find.byType(FilterChip), findsWidgets);
-    });
-
-    testWidgets('displays empty state when no results', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const ExpertSearchWidget(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show empty state or loading
-      expect(find.byType(ExpertSearchWidget), findsOneWidget);
-    });
-
-    testWidgets('calls onExpertSelected when expert is tapped', (WidgetTester tester) async {
-      // Arrange
       UnifiedUser? selectedExpert;
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: ExpertSearchWidget(
           onExpertSelected: (expert) {
             selectedExpert = expert;
           },
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should be present
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.byType(ExpertSearchWidget), findsOneWidget);
-    });
 
-    testWidgets('performs search when search button is tapped', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: const ExpertSearchWidget(),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      
-      // Find search button and tap
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       final searchButton = find.byIcon(Icons.search).last;
       if (searchButton.evaluate().isNotEmpty) {
         await tester.tap(searchButton);
         await tester.pumpAndSettle();
       }
-
-      // Assert - Search should be triggered
       expect(find.byType(ExpertSearchWidget), findsOneWidget);
     });
   });

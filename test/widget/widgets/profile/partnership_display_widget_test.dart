@@ -7,27 +7,25 @@ import '../../mocks/mock_blocs.dart';
 
 void main() {
   group('PartnershipDisplayWidget', () {
-    testWidgets('displays empty state when no partnerships', (WidgetTester tester) async {
-      // Arrange
-      const widget = PartnershipDisplayWidget(
+    // Removed: Property assignment tests
+    // Partnership display widget tests focus on business logic (partnership display, filtering, user interactions), not property assignment
+
+    testWidgets(
+        'should display empty state when no partnerships, display partnerships list, show view all link when partnerships exceed max count, or filter partnerships by type',
+        (WidgetTester tester) async {
+      // Test business logic: partnership display widget display and interactions
+      const widget1 = PartnershipDisplayWidget(
         partnerships: [],
       );
-
-      // Act
-      final testableWidget = WidgetTestHelpers.createTestableWidget(
-        child: widget,
+      final testableWidget1 = WidgetTestHelpers.createTestableWidget(
+        child: widget1,
         authBloc: MockAuthBloc(),
       );
-      await tester.pumpWidget(testableWidget);
+      await tester.pumpWidget(testableWidget1);
       await tester.pumpAndSettle();
-
-      // Assert
       expect(find.text('No partnerships yet'), findsOneWidget);
-    });
 
-    testWidgets('displays partnerships list', (WidgetTester tester) async {
-      // Arrange
-      final partnerships = [
+      final partnerships1 = [
         UserPartnership(
           id: '1',
           type: ProfilePartnershipType.business,
@@ -37,55 +35,41 @@ void main() {
           eventCount: 5,
         ),
       ];
-
-      final widget = PartnershipDisplayWidget(
-        partnerships: partnerships,
+      final widget2 = PartnershipDisplayWidget(
+        partnerships: partnerships1,
       );
-
-      // Act
-      final testableWidget = WidgetTestHelpers.createTestableWidget(
-        child: widget,
+      final testableWidget2 = WidgetTestHelpers.createTestableWidget(
+        child: widget2,
         authBloc: MockAuthBloc(),
       );
-      await tester.pumpWidget(testableWidget);
+      await tester.pumpWidget(testableWidget2);
       await tester.pumpAndSettle();
-
-      // Assert
       expect(find.text('Partnerships'), findsOneWidget);
       expect(find.text('Test Business'), findsOneWidget);
-    });
 
-    testWidgets('shows view all link when partnerships exceed max count', (WidgetTester tester) async {
-      // Arrange
-      final partnerships = List.generate(5, (i) => UserPartnership(
-        id: '$i',
-        type: ProfilePartnershipType.business,
-        partnerId: 'b$i',
-        partnerName: 'Business $i',
-        status: PartnershipStatus.active,
-      ));
-
-      final widget = PartnershipDisplayWidget(
-        partnerships: partnerships,
+      final partnerships2 = List.generate(
+          5,
+          (i) => UserPartnership(
+                id: '$i',
+                type: ProfilePartnershipType.business,
+                partnerId: 'b$i',
+                partnerName: 'Business $i',
+                status: PartnershipStatus.active,
+              ));
+      final widget3 = PartnershipDisplayWidget(
+        partnerships: partnerships2,
         maxDisplayCount: 3,
         onViewAllTap: (_) {},
       );
-
-      // Act
-      final testableWidget = WidgetTestHelpers.createTestableWidget(
-        child: widget,
+      final testableWidget3 = WidgetTestHelpers.createTestableWidget(
+        child: widget3,
         authBloc: MockAuthBloc(),
       );
-      await tester.pumpWidget(testableWidget);
+      await tester.pumpWidget(testableWidget3);
       await tester.pumpAndSettle();
-
-      // Assert
       expect(find.textContaining('View All'), findsOneWidget);
-    });
 
-    testWidgets('filters partnerships by type', (WidgetTester tester) async {
-      // Arrange
-      final partnerships = [
+      final partnerships3 = [
         UserPartnership(
           id: '1',
           type: ProfilePartnershipType.business,
@@ -101,24 +85,18 @@ void main() {
           status: PartnershipStatus.active,
         ),
       ];
-
-      final widget = PartnershipDisplayWidget(
-        partnerships: partnerships,
+      final widget4 = PartnershipDisplayWidget(
+        partnerships: partnerships3,
         showFilters: true,
       );
-
-      // Act
-      final testableWidget = WidgetTestHelpers.createTestableWidget(
-        child: widget,
+      final testableWidget4 = WidgetTestHelpers.createTestableWidget(
+        child: widget4,
         authBloc: MockAuthBloc(),
       );
-      await tester.pumpWidget(testableWidget);
+      await tester.pumpWidget(testableWidget4);
       await tester.pumpAndSettle();
-
-      // Assert
       expect(find.text('Type'), findsOneWidget);
       expect(find.text('Status'), findsOneWidget);
     });
   });
 }
-

@@ -73,7 +73,8 @@ void main() {
 
         // Step 2: Verify expansion tracked
         expect(expansion, isNotNull);
-        expect(expansion.expandedLocalities, contains(newLocality));
+        // _extractLocality takes first comma-separated part, so "Williamsburg, Brooklyn" → "Williamsburg"
+        expect(expansion.expandedLocalities, contains('Williamsburg'));
 
         // Step 3: Grant expertise from expansion
         final updatedUser = await expertiseGainService.grantExpertiseFromExpansion(

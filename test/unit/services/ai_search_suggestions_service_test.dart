@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:spots/core/services/ai_search_suggestions_service.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// AI Search Suggestions Service Tests
 /// Tests AI-powered search suggestion functionality
@@ -14,33 +15,27 @@ void main() {
       service.clearLearningData();
     });
 
+    // Removed: Property assignment tests
+    // AI search suggestions tests focus on business logic (suggestion generation, learning, patterns), not property assignment
+
     group('generateSuggestions', () {
-      test('should generate suggestions for empty query', () async {
-        final suggestions = await service.generateSuggestions(
-          query: '',
-          userLocation: null,
-        );
+      test(
+          'should generate suggestions for empty query, query completion, contextual with location, personalized after learning, community trends, limit to 8, deduplicate, and handle errors gracefully',
+          () async {
+        // Test business logic: suggestion generation with various inputs and constraints
+        final emptySuggestions =
+            await service.generateSuggestions(query: '', userLocation: null);
+        expect(emptySuggestions, isA<List<SearchSuggestion>>());
+        expect(emptySuggestions.length, lessThanOrEqualTo(8));
 
-        expect(suggestions, isA<List<SearchSuggestion>>());
-        expect(suggestions.length, lessThanOrEqualTo(8));
-      });
-
-      test('should generate query completion suggestions', () async {
-        final suggestions = await service.generateSuggestions(
-          query: 'coff',
-          userLocation: null,
-        );
-
-        expect(suggestions, isA<List<SearchSuggestion>>());
-        // Should include coffee-related completions
-        final hasCoffee = suggestions.any((s) => 
-          s.text.toLowerCase().contains('coffee') ||
-          s.text.toLowerCase().contains('cafe')
-        );
+        final completionSuggestions = await service.generateSuggestions(
+            query: 'coff', userLocation: null);
+        expect(completionSuggestions, isA<List<SearchSuggestion>>());
+        final hasCoffee = completionSuggestions.any((s) =>
+            s.text.toLowerCase().contains('coffee') ||
+            s.text.toLowerCase().contains('cafe'));
         expect(hasCoffee, isTrue);
-      });
 
-      test('should generate contextual suggestions with location', () async {
         final location = Position(
           latitude: 37.7749,
           longitude: -122.4194,
@@ -53,175 +48,91 @@ void main() {
           speed: 0.0,
           speedAccuracy: 0.0,
         );
+        final contextualSuggestions = await service.generateSuggestions(
+            query: '', userLocation: location);
+        expect(contextualSuggestions, isA<List<SearchSuggestion>>());
+        expect(contextualSuggestions.length, greaterThan(0));
 
-        final suggestions = await service.generateSuggestions(
-          query: '',
-          userLocation: location,
-        );
-
-        expect(suggestions, isA<List<SearchSuggestion>>());
-        // Should include contextual suggestions based on time
-        expect(suggestions.length, greaterThan(0));
-      });
-
-      test('should generate personalized suggestions after learning', () async {
         final spot = ModelFactories.createTestSpot(
-          name: 'Test Restaurant',
-          category: 'restaurant',
-        );
+            name: 'Test Restaurant', category: 'restaurant');
+        service.learnFromSearch(query: 'restaurant', results: [spot]);
+        final personalizedSuggestions = await service.generateSuggestions(
+            query: 'rest', userLocation: null);
+        expect(personalizedSuggestions, isA<List<SearchSuggestion>>());
+        expect(personalizedSuggestions.length, greaterThanOrEqualTo(0));
 
-        service.learnFromSearch(
-          query: 'restaurant',
-          results: [spot],
-        );
+        final communityTrends = {'coffee': 10, 'restaurant': 8, 'park': 5};
+        final trendSuggestions = await service.generateSuggestions(
+            query: '', userLocation: null, communityTrends: communityTrends);
+        expect(trendSuggestions, isA<List<SearchSuggestion>>());
+        expect(trendSuggestions.length, lessThanOrEqualTo(8));
 
-        final suggestions = await service.generateSuggestions(
-          query: 'rest',
-          userLocation: null,
-        );
+        final dedupeSuggestions = await service.generateSuggestions(
+            query: 'coffee', userLocation: null);
+        final uniqueTexts =
+            dedupeSuggestions.map((s) => s.text.toLowerCase()).toSet();
+        expect(uniqueTexts.length, equals(dedupeSuggestions.length));
 
-        expect(suggestions, isA<List<SearchSuggestion>>());
-        // May include personalized suggestions
-        expect(suggestions.length, greaterThanOrEqualTo(0));
-      });
-
-      test('should generate community trend suggestions', () async {
-        final communityTrends = {
-          'coffee': 10,
-          'restaurant': 8,
-          'park': 5,
-        };
-
-        final suggestions = await service.generateSuggestions(
-          query: '',
-          userLocation: null,
-          communityTrends: communityTrends,
-        );
-
-        expect(suggestions, isA<List<SearchSuggestion>>());
-        expect(suggestions.length, lessThanOrEqualTo(8));
-      });
-
-      test('should limit suggestions to 8', () async {
-        final suggestions = await service.generateSuggestions(
-          query: '',
-          userLocation: null,
-        );
-
-        expect(suggestions.length, lessThanOrEqualTo(8));
-      });
-
-      test('should deduplicate suggestions', () async {
-        final suggestions = await service.generateSuggestions(
-          query: 'coffee',
-          userLocation: null,
-        );
-
-        final uniqueTexts = suggestions.map((s) => s.text.toLowerCase()).toSet();
-        expect(uniqueTexts.length, equals(suggestions.length));
-      });
-
-      test('should handle errors gracefully', () async {
-        final suggestions = await service.generateSuggestions(
-          query: 'test',
-          userLocation: null,
-        );
-
-        expect(suggestions, isA<List<SearchSuggestion>>());
+        final errorSuggestions = await service.generateSuggestions(
+            query: 'test', userLocation: null);
+        expect(errorSuggestions, isA<List<SearchSuggestion>>());
       });
     });
 
     group('learnFromSearch', () {
-      test('should track recent searches', () {
+      test(
+          'should track recent searches, learn category preferences, limit recent searches to 20, and track search timestamps',
+          () {
+        // Test business logic: learning from search behavior
         final spot = ModelFactories.createTestSpot();
-        
+        service.learnFromSearch(query: 'coffee shop', results: [spot]);
+        final patterns1 = service.getSearchPatterns();
+        expect(patterns1['recent_searches'], isA<List>());
+        expect((patterns1['recent_searches'] as List).length, greaterThan(0));
+        expect(patterns1['total_searches'], greaterThan(0));
+
+        final restaurantSpot =
+            ModelFactories.createTestSpot(category: 'restaurant');
+        final coffeeSpot = ModelFactories.createTestSpot(category: 'cafe');
         service.learnFromSearch(
-          query: 'coffee shop',
-          results: [spot],
-        );
+            query: 'food', results: [restaurantSpot, coffeeSpot]);
+        final patterns2 = service.getSearchPatterns();
+        expect(patterns2['top_categories'], isA<List>());
 
-        final patterns = service.getSearchPatterns();
-        expect(patterns['recent_searches'], isA<List>());
-        expect((patterns['recent_searches'] as List).length, greaterThan(0));
-      });
-
-      test('should learn category preferences', () {
-        final restaurantSpot = ModelFactories.createTestSpot(
-          category: 'restaurant',
-        );
-        final coffeeSpot = ModelFactories.createTestSpot(
-          category: 'cafe',
-        );
-
-        service.learnFromSearch(
-          query: 'food',
-          results: [restaurantSpot, coffeeSpot],
-        );
-
-        final patterns = service.getSearchPatterns();
-        expect(patterns['top_categories'], isA<List>());
-      });
-
-      test('should limit recent searches to 20', () {
         for (var i = 0; i < 25; i++) {
-          service.learnFromSearch(
-            query: 'search $i',
-            results: [],
-          );
+          service.learnFromSearch(query: 'search $i', results: []);
         }
-
-        final patterns = service.getSearchPatterns();
-        final recentSearches = patterns['recent_searches'] as List;
+        final patterns3 = service.getSearchPatterns();
+        final recentSearches = patterns3['recent_searches'] as List;
         expect(recentSearches.length, lessThanOrEqualTo(20));
-      });
-
-      test('should track search timestamps', () {
-        final spot = ModelFactories.createTestSpot();
-        
-        service.learnFromSearch(
-          query: 'test search',
-          results: [spot],
-        );
-
-        final patterns = service.getSearchPatterns();
-        expect(patterns['total_searches'], greaterThan(0));
       });
     });
 
     group('getSearchPatterns', () {
-      test('should return search patterns', () {
-        final patterns = service.getSearchPatterns();
-        
-        expect(patterns, isA<Map<String, dynamic>>());
-        expect(patterns['recent_searches'], isA<List>());
-        expect(patterns['top_categories'], isA<List>());
-        expect(patterns['search_frequency'], isA<Map>());
-        expect(patterns['total_searches'], isA<int>());
-      });
+      test(
+          'should return search patterns with correct structure, return empty patterns when no learning data, and return top categories sorted by count',
+          () {
+        // Test business logic: pattern retrieval and structure
+        final patterns1 = service.getSearchPatterns();
+        expect(patterns1, isA<Map<String, dynamic>>());
+        expect(patterns1['recent_searches'], isA<List>());
+        expect(patterns1['top_categories'], isA<List>());
+        expect(patterns1['search_frequency'], isA<Map>());
+        expect(patterns1['total_searches'], isA<int>());
 
-      test('should return empty patterns when no learning data', () {
         service.clearLearningData();
-        final patterns = service.getSearchPatterns();
-        
-        expect(patterns['recent_searches'], isEmpty);
-        expect(patterns['total_searches'], equals(0));
-      });
+        final patterns2 = service.getSearchPatterns();
+        expect(patterns2['recent_searches'], isEmpty);
+        expect(patterns2['total_searches'], equals(0));
 
-      test('should return top categories sorted by count', () {
-        final restaurantSpot = ModelFactories.createTestSpot(
-          category: 'restaurant',
-        );
-
-        // Search for restaurant multiple times
+        final restaurantSpot =
+            ModelFactories.createTestSpot(category: 'restaurant');
         for (var i = 0; i < 5; i++) {
-          service.learnFromSearch(
-            query: 'restaurant',
-            results: [restaurantSpot],
-          );
+          service
+              .learnFromSearch(query: 'restaurant', results: [restaurantSpot]);
         }
-
-        final patterns = service.getSearchPatterns();
-        final topCategories = patterns['top_categories'] as List;
+        final patterns3 = service.getSearchPatterns();
+        final topCategories = patterns3['top_categories'] as List;
         expect(topCategories.length, greaterThanOrEqualTo(0));
       });
     });
@@ -229,7 +140,7 @@ void main() {
     group('clearLearningData', () {
       test('should clear all learning data', () {
         final spot = ModelFactories.createTestSpot();
-        
+
         service.learnFromSearch(
           query: 'test',
           results: [spot],
@@ -245,19 +156,16 @@ void main() {
     });
 
     group('Suggestion Types', () {
-      test('should include completion suggestions', () async {
-        final suggestions = await service.generateSuggestions(
-          query: 'food',
-          userLocation: null,
-        );
-
-        final hasCompletion = suggestions.any((s) => 
-          s.type == SuggestionType.completion
-        );
+      test(
+          'should include completion, contextual, and discovery suggestions based on query and location',
+          () async {
+        // Test business logic: different suggestion types
+        final completionSuggestions = await service.generateSuggestions(
+            query: 'food', userLocation: null);
+        final hasCompletion = completionSuggestions
+            .any((s) => s.type == SuggestionType.completion);
         expect(hasCompletion, isTrue);
-      });
 
-      test('should include contextual suggestions with location', () async {
         final location = Position(
           latitude: 37.7749,
           longitude: -122.4194,
@@ -270,30 +178,22 @@ void main() {
           speed: 0.0,
           speedAccuracy: 0.0,
         );
-
-        final suggestions = await service.generateSuggestions(
-          query: '',
-          userLocation: location,
-        );
-
-        final hasContextual = suggestions.any((s) => 
-          s.type == SuggestionType.contextual
-        );
+        final contextualSuggestions = await service.generateSuggestions(
+            query: '', userLocation: location);
+        final hasContextual = contextualSuggestions
+            .any((s) => s.type == SuggestionType.contextual);
         expect(hasContextual, isTrue);
-      });
 
-      test('should include discovery suggestions for empty query', () async {
-        final suggestions = await service.generateSuggestions(
-          query: '',
-          userLocation: null,
-        );
-
-        final hasDiscovery = suggestions.any((s) => 
-          s.type == SuggestionType.discovery
-        );
+        final discoverySuggestions =
+            await service.generateSuggestions(query: '', userLocation: null);
+        final hasDiscovery =
+            discoverySuggestions.any((s) => s.type == SuggestionType.discovery);
         expect(hasDiscovery, isTrue);
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

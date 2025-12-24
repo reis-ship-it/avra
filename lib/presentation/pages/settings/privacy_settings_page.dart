@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:spots/injection_container.dart' as di;
 
 class PrivacySettingsPage extends StatefulWidget {
   const PrivacySettingsPage({super.key});
@@ -18,15 +22,120 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   bool _publicLists = false;
   bool _analyticsOptIn = false;
   bool _personalizedAds = false;
+  bool _cloudSyncEnabled = false;
   // Removed unused _dataExportEnabled field
-  
+
+  late PersonalitySyncService _syncService;
+  String? _currentUserId;
+
   String _profileVisibility = 'Friends Only';
   String _locationSharing = 'Precise';
   String _dataRetention = '1 Year';
 
   final List<String> _profileOptions = ['Private', 'Friends Only', 'Public'];
-  final List<String> _locationOptions = ['Precise', 'Approximate', 'City Only', 'Disabled'];
-  final List<String> _retentionOptions = ['3 Months', '6 Months', '1 Year', '2 Years', 'Forever'];
+  final List<String> _locationOptions = [
+    'Precise',
+    'Approximate',
+    'City Only',
+    'Disabled'
+  ];
+  final List<String> _retentionOptions = [
+    '3 Months',
+    '6 Months',
+    '1 Year',
+    '2 Years',
+    'Forever'
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _syncService = di.sl<PersonalitySyncService>();
+    _loadCloudSyncSetting();
+  }
+
+  Future<void> _loadCloudSyncSetting() async {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is Authenticated) {
+      _currentUserId = authState.user.id;
+      final enabled = await _syncService.isCloudSyncEnabled(_currentUserId!);
+      if (mounted) {
+        setState(() {
+          _cloudSyncEnabled = enabled;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleCloudSyncToggle(bool value) async {
+    if (_currentUserId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please sign in to enable cloud sync'),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+      return;
+    }
+
+    if (value) {
+      // Show confirmation dialog when enabling
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Enable Cloud Sync'),
+          content: const Text(
+            'This will encrypt and sync your AI personality profile to the cloud, '
+            'allowing you to access it on any device. Your data is encrypted with your password '
+            'and only you can decrypt it.\n\n'
+            'Do you want to enable cloud sync?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Enable'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) {
+        return; // User cancelled
+      }
+    }
+
+    try {
+      await _syncService.setCloudSyncEnabled(_currentUserId!, value);
+      if (mounted) {
+        setState(() {
+          _cloudSyncEnabled = value;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              value
+                  ? 'Cloud sync enabled. Your AI agent will sync across devices.'
+                  : 'Cloud sync disabled.',
+            ),
+            backgroundColor: value ? AppTheme.successColor : AppColors.grey600,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error updating cloud sync: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +186,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
             Text(
               'Core Privacy Controls',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
 
@@ -114,15 +223,15 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
             Text(
               'AI & Learning Controls',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
               'Control how AI learns from your behavior and preferences',
-                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                 color: AppColors.textSecondary,
-               ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             const SizedBox(height: 16),
 
@@ -142,14 +251,22 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               Icons.group,
             ),
 
+            _buildSwitchTile(
+              'Sync AI Agent Across Devices',
+              'Encrypt and sync your AI personality profile to access it on any device. Your data is encrypted with your password.',
+              _cloudSyncEnabled,
+              _handleCloudSyncToggle,
+              Icons.cloud_sync,
+            ),
+
             const SizedBox(height: 24),
 
             // Public Sharing
             Text(
               'Public Sharing',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
 
@@ -175,8 +292,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
             Text(
               'Data & Analytics',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
 
@@ -211,8 +328,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
             Text(
               'Your Data Rights',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
 
@@ -220,7 +337,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.download, color: AppTheme.primaryColor),
+                    leading: const Icon(Icons.download,
+                        color: AppTheme.primaryColor),
                     title: const Text('Export My Data'),
                     subtitle: const Text('Download all your SPOTS data'),
                     trailing: const Icon(Icons.arrow_forward_ios),
@@ -228,15 +346,18 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: Icon(Icons.delete_forever, color: AppTheme.errorColor),
+                    leading:
+                        Icon(Icons.delete_forever, color: AppTheme.errorColor),
                     title: const Text('Delete My Account'),
-                    subtitle: const Text('Permanently delete your account and data'),
+                    subtitle:
+                        const Text('Permanently delete your account and data'),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: _showDeleteAccountDialog,
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(Icons.policy, color: AppTheme.primaryColor),
+                    leading:
+                        const Icon(Icons.policy, color: AppTheme.primaryColor),
                     title: const Text('Privacy Policy'),
                     subtitle: const Text('Read our full privacy policy'),
                     trailing: const Icon(Icons.arrow_forward_ios),
@@ -270,7 +391,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                     const Text(
+                    const Text(
                       'Reset all privacy settings to their default values',
                     ),
                     const SizedBox(height: 16),
@@ -339,7 +460,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   void _exportData() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Data export initiated. You will receive an email with download instructions.'),
+        content: Text(
+            'Data export initiated. You will receive an email with download instructions.'),
         backgroundColor: AppTheme.successColor,
       ),
     );
@@ -363,7 +485,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Account deletion requires additional verification. Check your email.'),
+                  content: Text(
+                      'Account deletion requires additional verification. Check your email.'),
                   backgroundColor: AppTheme.errorColor,
                 ),
               );
@@ -389,7 +512,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Reset Privacy Settings'),
-        content: const Text('This will reset all privacy settings to their default values. Continue?'),
+        content: const Text(
+            'This will reset all privacy settings to their default values. Continue?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

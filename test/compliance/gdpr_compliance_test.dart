@@ -3,6 +3,7 @@ import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/user_anonymization_service.dart';
 import 'package:spots/core/services/field_encryption_service.dart';
 import 'package:spots/core/services/location_obfuscation_service.dart';
+import 'helpers/platform_channel_helper.dart';
 
 /// GDPR Compliance Tests
 /// 
@@ -15,6 +16,10 @@ import 'package:spots/core/services/location_obfuscation_service.dart';
 /// - User consent mechanisms
 /// - Data portability (if applicable)
 void main() {
+
+  setUpAll(() async {
+    await setupTestStorage();
+  });
   group('GDPR Compliance Tests', () {
     late FieldEncryptionService encryptionService;
     late UserAnonymizationService anonymizationService;

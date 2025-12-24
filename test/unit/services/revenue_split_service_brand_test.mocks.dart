@@ -304,6 +304,17 @@ class MockSponsorshipService extends _i1.Mock
       ) as _i7.Future<List<_i3.Sponsorship>>);
 
   @override
+  _i7.Future<List<_i3.Sponsorship>> getSponsorshipsForBrand(String? brandId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getSponsorshipsForBrand,
+          [brandId],
+        ),
+        returnValue:
+            _i7.Future<List<_i3.Sponsorship>>.value(<_i3.Sponsorship>[]),
+      ) as _i7.Future<List<_i3.Sponsorship>>);
+
+  @override
   _i7.Future<_i3.Sponsorship?> getSponsorshipById(String? sponsorshipId) =>
       (super.noSuchMethod(
         Invocation.method(

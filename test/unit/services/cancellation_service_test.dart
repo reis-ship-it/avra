@@ -4,60 +4,69 @@ import 'package:mockito/annotations.dart';
 import 'package:spots/core/services/cancellation_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
+import 'package:spots/core/services/refund_service.dart';
+import 'package:spots/core/services/stripe_service.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/payment.dart';
 import 'package:spots/core/models/cancellation.dart';
 import 'package:spots/core/models/cancellation_initiator.dart';
 import 'package:spots/core/models/refund_status.dart';
 import 'package:spots/core/models/payment_status.dart';
+import 'package:spots/core/models/refund_distribution.dart';
+import '../../fixtures/model_factories.dart';
+import '../../helpers/test_helpers.dart';
 
 import 'cancellation_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([
   ExpertiseEventService,
   PaymentService,
-  RevenueSplitService,
+  RefundService,
+  StripeService,
 ])
 void main() {
   group('CancellationService', () {
     late CancellationService service;
     late MockExpertiseEventService mockEventService;
     late MockPaymentService mockPaymentService;
-    late MockRevenueSplitService mockRevenueSplitService;
-    
+    late MockRefundService mockRefundService;
+
     late ExpertiseEvent testEvent;
     late Payment testPayment;
 
     setUp(() {
       mockEventService = MockExpertiseEventService();
       mockPaymentService = MockPaymentService();
-      mockRevenueSplitService = MockRevenueSplitService();
-      
+      mockRefundService = MockRefundService();
+
       service = CancellationService(
         eventService: mockEventService,
         paymentService: mockPaymentService,
-        revenueSplitService: mockRevenueSplitService,
+        refundService: mockRefundService,
+      );
+
+      final host = ModelFactories.createTestUser(
+        id: 'host-123',
+        displayName: 'Test Host',
       );
 
       testEvent = ExpertiseEvent(
         id: 'event-123',
-        host: UnifiedUser(
-          id: 'host-123',
-          name: 'Test Host',
-        ),
+        host: host,
         title: 'Test Event',
         description: 'Test Description',
+        category: 'Workshops',
+        eventType: ExpertiseEventType.workshop,
         startTime: DateTime.now().add(const Duration(days: 5)),
         endTime: DateTime.now().add(const Duration(days: 5, hours: 2)),
         maxAttendees: 50,
         attendeeCount: 10,
-        eventType: ExpertiseEventType.workshop,
         isPaid: true,
         price: 25.00,
         location: 'Test Location',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: TestHelpers.createTestDateTime(),
+        updatedAt: TestHelpers.createTestDateTime(),
       );
 
       testPayment = Payment(
@@ -72,121 +81,166 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Cancellation creation tests focus on business logic (initiator type, refund status), not property assignment
+
     group('attendeeCancelTicket', () {
-      test('should create cancellation and process refund for valid cancellation', () async {
+      test(
+          'should create cancellation and process refund for valid cancellation, and throw exception if event not found',
+          () async {
+        // Test business logic: attendee cancellation with refund processing and error handling
         // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-        when(mockPaymentService.getPaymentForEventAndUser('event-123', 'user-456'))
+        when(mockPaymentService.getPaymentForEventAndUser(
+                'event-123', 'user-456'))
             .thenAnswer((_) => testPayment);
+
+        // Stub refund service to return a refund distribution
+        when(mockRefundService.processRefund(
+          paymentId: anyNamed('paymentId'),
+          amount: anyNamed('amount'),
+          cancellationId: anyNamed('cancellationId'),
+        )).thenAnswer((invocation) async {
+          return [
+            RefundDistribution(
+              userId: testPayment.userId,
+              role: 'attendee',
+              amount: invocation.namedArguments[#amount] as double,
+              stripeRefundId: 're_test123',
+              completedAt: DateTime.now(),
+              statusMessage: 'Refund processed successfully',
+            ),
+          ];
+        });
 
         // Act
         final cancellation = await service.attendeeCancelTicket(
           eventId: 'event-123',
           attendeeId: 'user-456',
-          paymentId: 'payment-123',
         );
 
         // Assert
         expect(cancellation, isA<Cancellation>());
         expect(cancellation.eventId, equals('event-123'));
         expect(cancellation.initiator, equals(CancellationInitiator.attendee));
-        expect(cancellation.refundStatus, equals(RefundStatus.pending));
+        expect(cancellation.refundStatus, equals(RefundStatus.completed));
         verify(mockEventService.getEventById('event-123')).called(1);
-      });
 
-      test('should throw exception if event not found', () async {
-        // Arrange
+        // Test error handling
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => null);
-
-        // Act & Assert
         expect(
           () => service.attendeeCancelTicket(
             eventId: 'event-123',
             attendeeId: 'user-456',
-            paymentId: 'payment-123',
           ),
           throwsException,
         );
       });
     });
 
-    group('hostCancelEvent', () {
-      test('should create cancellation and process batch refunds', () async {
+    group('hostCancelEvent and emergencyCancelEvent', () {
+      test('should create host and emergency cancellations with batch refunds',
+          () async {
+        // Test business logic: host and emergency cancellation with batch refund processing
         // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockPaymentService.getPaymentsForEvent('event-123'))
             .thenAnswer((_) => [testPayment]);
 
-        // Act
-        final cancellation = await service.hostCancelEvent(
+        // Stub batch refund processing
+        when(mockRefundService.processBatchRefunds(
+          payments: anyNamed('payments'),
+          cancellationId: anyNamed('cancellationId'),
+          fullRefund: anyNamed('fullRefund'),
+        )).thenAnswer((invocation) async {
+          final payments =
+              invocation.namedArguments[#payments] as List<Payment>;
+          return payments
+              .map((payment) => RefundDistribution(
+                    userId: payment.userId,
+                    role: 'attendee',
+                    amount: payment.amount,
+                    stripeRefundId: 're_${payment.id}',
+                    completedAt: DateTime.now(),
+                    statusMessage: 'Refund processed successfully',
+                  ))
+              .toList();
+        });
+
+        // Test host cancellation
+        final hostCancellation = await service.hostCancelEvent(
           eventId: 'event-123',
           hostId: 'host-123',
           reason: 'Host cancellation',
         );
 
-        // Assert
-        expect(cancellation, isA<Cancellation>());
-        expect(cancellation.eventId, equals('event-123'));
-        expect(cancellation.initiator, equals(CancellationInitiator.host));
-        expect(cancellation.reason, equals('Host cancellation'));
-        verify(mockEventService.getEventById('event-123')).called(1);
-      });
-    });
+        expect(hostCancellation, isA<Cancellation>());
+        expect(hostCancellation.eventId, equals('event-123'));
+        expect(hostCancellation.initiator, equals(CancellationInitiator.host));
+        expect(hostCancellation.reason, equals('Host cancellation'));
 
-    group('emergencyCancelEvent', () {
-      test('should create emergency cancellation with full refund', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockPaymentService.getPaymentsForEvent('event-123'))
-            .thenAnswer((_) => [testPayment]);
-
-        // Act
-        final cancellation = await service.emergencyCancelEvent(
+        // Test emergency cancellation
+        final emergencyCancellation = await service.emergencyCancelEvent(
           eventId: 'event-123',
           reason: 'Weather emergency',
           weatherRelated: true,
         );
 
-        // Assert
-        expect(cancellation, isA<Cancellation>());
-        expect(cancellation.eventId, equals('event-123'));
-        expect(cancellation.initiator, equals(CancellationInitiator.weather));
-        expect(cancellation.reason, equals('Weather emergency'));
-        verify(mockEventService.getEventById('event-123')).called(1);
+        expect(emergencyCancellation, isA<Cancellation>());
+        expect(emergencyCancellation.eventId, equals('event-123'));
+        expect(emergencyCancellation.initiator,
+            equals(CancellationInitiator.weather));
+        expect(emergencyCancellation.reason, equals('Weather emergency'));
+        verify(mockEventService.getEventById('event-123')).called(2);
       });
     });
 
-    group('getCancellationById', () {
-      test('should return cancellation if exists', () async {
+    group('getCancellation', () {
+      test('should return cancellation if exists, or null if not found',
+          () async {
+        // Test business logic: cancellation retrieval with existence checking
         // Arrange
+        when(mockEventService.getEventById('event-123'))
+            .thenAnswer((_) async => testEvent);
+        when(mockPaymentService.getPaymentForEventAndUser(
+                'event-123', 'user-456'))
+            .thenReturn(testPayment);
+
+        // Stub refund service
+        when(mockRefundService.processRefund(
+          paymentId: anyNamed('paymentId'),
+          amount: anyNamed('amount'),
+          cancellationId: anyNamed('cancellationId'),
+        )).thenAnswer((invocation) async {
+          return [
+            RefundDistribution(
+              userId: testPayment.userId,
+              role: 'attendee',
+              amount: invocation.namedArguments[#amount] as double,
+              stripeRefundId: 're_test123',
+              completedAt: DateTime.now(),
+            ),
+          ];
+        });
+
         final testCancellation = await service.attendeeCancelTicket(
           eventId: 'event-123',
           attendeeId: 'user-456',
-          paymentId: 'payment-123',
         );
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockPaymentService.getPaymentForEventAndUser('event-123', 'user-456'))
-            .thenAnswer((_) => testPayment);
 
-        // Act
-        final cancellation = await service.getCancellationById(testCancellation.id);
+        // Act - test existing cancellation
+        final cancellation = await service.getCancellation(testCancellation.id);
 
         // Assert
         expect(cancellation, isNotNull);
         expect(cancellation?.id, equals(testCancellation.id));
-      });
 
-      test('should return null if cancellation not found', () async {
-        // Act
-        final cancellation = await service.getCancellationById('non-existent');
-
-        // Assert
-        expect(cancellation, isNull);
+        // Test non-existent cancellation
+        final notFound = await service.getCancellation('non-existent');
+        expect(notFound, isNull);
       });
     });
 
@@ -195,15 +249,51 @@ void main() {
         // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-        when(mockPaymentService.getPaymentForEventAndUser('event-123', 'user-456'))
+        when(mockPaymentService.getPaymentForEventAndUser(
+                'event-123', 'user-456'))
             .thenAnswer((_) => testPayment);
         when(mockPaymentService.getPaymentsForEvent('event-123'))
             .thenAnswer((_) => [testPayment]);
 
+        // Stub refund service for attendee cancellation
+        when(mockRefundService.processRefund(
+          paymentId: anyNamed('paymentId'),
+          amount: anyNamed('amount'),
+          cancellationId: anyNamed('cancellationId'),
+        )).thenAnswer((invocation) async {
+          return [
+            RefundDistribution(
+              userId: testPayment.userId,
+              role: 'attendee',
+              amount: invocation.namedArguments[#amount] as double,
+              stripeRefundId: 're_test123',
+              completedAt: DateTime.now(),
+            ),
+          ];
+        });
+
+        // Stub batch refund processing for host cancellation
+        when(mockRefundService.processBatchRefunds(
+          payments: anyNamed('payments'),
+          cancellationId: anyNamed('cancellationId'),
+          fullRefund: anyNamed('fullRefund'),
+        )).thenAnswer((invocation) async {
+          final payments =
+              invocation.namedArguments[#payments] as List<Payment>;
+          return payments
+              .map((payment) => RefundDistribution(
+                    userId: payment.userId,
+                    role: 'attendee',
+                    amount: payment.amount,
+                    stripeRefundId: 're_${payment.id}',
+                    completedAt: DateTime.now(),
+                  ))
+              .toList();
+        });
+
         await service.attendeeCancelTicket(
           eventId: 'event-123',
           attendeeId: 'user-456',
-          paymentId: 'payment-123',
         );
         await service.hostCancelEvent(
           eventId: 'event-123',
@@ -212,7 +302,8 @@ void main() {
         );
 
         // Act
-        final cancellations = await service.getCancellationsForEvent('event-123');
+        final cancellations =
+            await service.getCancellationsForEvent('event-123');
 
         // Assert
         expect(cancellations, isNotEmpty);
@@ -220,6 +311,9 @@ void main() {
         expect(cancellations.every((c) => c.eventId == 'event-123'), isTrue);
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

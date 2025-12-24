@@ -4,23 +4,25 @@ import 'package:mocktail/mocktail.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:spots/core/services/enhanced_connectivity_service.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// SPOTS EnhancedConnectivityService Unit Tests
 /// Date: December 1, 2025
 /// Purpose: Test EnhancedConnectivityService functionality
-/// 
+///
 /// Test Coverage:
 /// - Basic Connectivity: WiFi/mobile connectivity checks
 /// - Internet Access: HTTP ping verification
 /// - Caching: Ping result caching
 /// - Connectivity Stream: Real-time connectivity changes
 /// - Error Handling: Network failures, timeouts
-/// 
+///
 /// Dependencies:
 /// - Connectivity: Platform connectivity checking
 /// - http.Client: HTTP client for ping
 
 class MockConnectivity extends Mock implements Connectivity {}
+
 class MockHttpClient extends Mock implements http.Client {}
 
 void main() {
@@ -28,6 +30,11 @@ void main() {
     late EnhancedConnectivityService service;
     late MockConnectivity mockConnectivity;
     late MockHttpClient mockHttpClient;
+
+    setUpAll(() {
+      // Register fallback values for mocktail
+      registerFallbackValue(Uri.parse('https://example.com'));
+    });
 
     setUp(() {
       mockConnectivity = MockConnectivity();
@@ -38,177 +45,140 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Connectivity tests focus on business logic (connectivity checking, internet access, caching, streams), not property assignment
+
     group('Basic Connectivity', () {
-      test('should return true when WiFi is available', () async {
+      test(
+          'should return true when WiFi or mobile data is available, return false when no connectivity, and handle connectivity check errors',
+          () async {
+        // Test business logic: basic connectivity checking
         when(() => mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
-
-        final result = await service.hasBasicConnectivity();
-
-        expect(result, true);
+        final result1 = await service.hasBasicConnectivity();
+        expect(result1, true);
         verify(() => mockConnectivity.checkConnectivity()).called(1);
-      });
 
-      test('should return true when mobile data is available', () async {
         when(() => mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.mobile]);
+        final result2 = await service.hasBasicConnectivity();
+        expect(result2, true);
 
-        final result = await service.hasBasicConnectivity();
-
-        expect(result, true);
-      });
-
-      test('should return false when no connectivity', () async {
         when(() => mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
+        final result3 = await service.hasBasicConnectivity();
+        expect(result3, false);
 
-        final result = await service.hasBasicConnectivity();
-
-        expect(result, false);
-      });
-
-      test('should handle connectivity check errors', () async {
         when(() => mockConnectivity.checkConnectivity())
             .thenThrow(Exception('Connectivity check failed'));
-
-        final result = await service.hasBasicConnectivity();
-
-        expect(result, false);
+        final result4 = await service.hasBasicConnectivity();
+        expect(result4, false);
       });
     });
 
     group('Internet Access', () {
-      test('should return false when no basic connectivity', () async {
+      test(
+          'should return false when no basic connectivity, return true when ping succeeds, return false when ping fails, use cached result when available, and force refresh when requested',
+          () async {
+        // Test business logic: internet access checking with caching
         when(() => mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
-
-        final result = await service.hasInternetAccess();
-
-        expect(result, false);
-        verifyNever(() => mockHttpClient.head(any()));
-      });
-
-      test('should return true when ping succeeds', () async {
-        when(() => mockConnectivity.checkConnectivity())
-            .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(() => mockHttpClient.head(any()))
-            .thenAnswer((_) async => http.Response('', 200));
-
-        final result = await service.hasInternetAccess();
-
-        expect(result, true);
-        verify(() => mockHttpClient.head(any())).called(1);
-      });
-
-      test('should return false when ping fails', () async {
-        when(() => mockConnectivity.checkConnectivity())
-            .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(() => mockHttpClient.head(any()))
-            .thenThrow(Exception('Network error'));
-
-        final result = await service.hasInternetAccess();
-
-        expect(result, false);
-      });
-
-      test('should use cached result when available', () async {
-        when(() => mockConnectivity.checkConnectivity())
-            .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(() => mockHttpClient.head(any()))
-            .thenAnswer((_) async => http.Response('', 200));
-
-        // First call - should ping
         final result1 = await service.hasInternetAccess();
-        expect(result1, true);
-        verify(() => mockHttpClient.head(any())).called(1);
+        expect(result1, false);
+        verifyNever(() => mockHttpClient.head(any()));
 
-        // Second call - should use cache
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockHttpClient.head(any()))
+            .thenAnswer((_) async => http.Response('', 200));
         final result2 = await service.hasInternetAccess();
         expect(result2, true);
-        // Should not ping again (cached)
         verify(() => mockHttpClient.head(any())).called(1);
-      });
 
-      test('should force refresh when requested', () async {
-        when(() => mockConnectivity.checkConnectivity())
-            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        // Clear cache by forcing refresh
+        when(() => mockHttpClient.head(any()))
+            .thenThrow(Exception('Network error'));
+        final result3 = await service.hasInternetAccess(forceRefresh: true);
+        expect(result3, false);
+
+        clearInteractions(mockHttpClient);
         when(() => mockHttpClient.head(any()))
             .thenAnswer((_) async => http.Response('', 200));
+        final result4 = await service.hasInternetAccess(forceRefresh: true);
+        expect(result4, true);
+        verify(() => mockHttpClient.head(any())).called(1);
+        clearInteractions(mockHttpClient);
+        final result5 = await service.hasInternetAccess();
+        expect(result5, true);
+        verifyNever(() => mockHttpClient.head(any()));
 
-        // First call
-        await service.hasInternetAccess();
-        
-        // Force refresh
         await service.hasInternetAccess(forceRefresh: true);
-        
-        // Should ping twice (once initial, once forced)
-        verify(() => mockHttpClient.head(any())).called(2);
+        verify(() => mockHttpClient.head(any())).called(1);
       });
     });
 
     group('Connectivity Stream', () {
-      test('should emit true when connectivity available', () async {
-        final streamController = StreamController<List<ConnectivityResult>>();
+      test(
+          'should emit true when connectivity available and emit false when connectivity lost',
+          () async {
+        // Test business logic: connectivity stream monitoring
+        final streamController1 = StreamController<List<ConnectivityResult>>();
         when(() => mockConnectivity.onConnectivityChanged)
-            .thenAnswer((_) => streamController.stream);
+            .thenAnswer((_) => streamController1.stream);
+        final stream1 = service.connectivityStream;
+        expect(stream1, isNotNull);
+        final values1 = <bool>[];
+        final subscription1 = stream1.listen((value) {
+          values1.add(value);
+        });
+        streamController1.add([ConnectivityResult.wifi]);
+        await Future.delayed(const Duration(milliseconds: 100));
+        expect(values1, contains(true));
+        await subscription1.cancel();
+        await streamController1.close();
 
-        final stream = service.connectivityStream;
-        expect(stream, isNotNull);
-
-        streamController.add([ConnectivityResult.wifi]);
-        await streamController.close();
-        // Note: Stream testing requires more complex setup
-        // This verifies the stream is created
-      });
-
-      test('should emit false when connectivity lost', () async {
-        final streamController = StreamController<List<ConnectivityResult>>();
+        final streamController2 = StreamController<List<ConnectivityResult>>();
         when(() => mockConnectivity.onConnectivityChanged)
-            .thenAnswer((_) => streamController.stream);
-
-        final stream = service.connectivityStream;
-        expect(stream, isNotNull);
-
-        streamController.add([ConnectivityResult.none]);
-        await streamController.close();
+            .thenAnswer((_) => streamController2.stream);
+        final stream2 = service.connectivityStream;
+        expect(stream2, isNotNull);
+        final values2 = <bool>[];
+        final subscription2 = stream2.listen((value) {
+          values2.add(value);
+        });
+        streamController2.add([ConnectivityResult.none]);
+        await Future.delayed(const Duration(milliseconds: 100));
+        expect(values2, contains(false));
+        await subscription2.cancel();
+        await streamController2.close();
       });
     });
 
     group('Error Handling', () {
-      test('should handle HTTP errors gracefully', () async {
+      test(
+          'should handle HTTP errors, timeout errors, and network exceptions gracefully',
+          () async {
+        // Test business logic: error handling for internet access
         when(() => mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(() => mockHttpClient.head(any()))
             .thenAnswer((_) async => http.Response('', 500));
+        final result1 = await service.hasInternetAccess();
+        expect(result1, false);
 
-        final result = await service.hasInternetAccess();
+        when(() => mockHttpClient.head(any())).thenThrow(Exception('Timeout'));
+        final result2 = await service.hasInternetAccess();
+        expect(result2, false);
 
-        // 500 status should still be considered "success" (server responded)
-        expect(result, true);
-      });
-
-      test('should handle timeout errors', () async {
-        when(() => mockConnectivity.checkConnectivity())
-            .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(() => mockHttpClient.head(any()))
-            .thenThrow(Exception('Timeout'));
-
-        final result = await service.hasInternetAccess();
-
-        expect(result, false);
-      });
-
-      test('should handle network exceptions', () async {
-        when(() => mockConnectivity.checkConnectivity())
-            .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(() => mockHttpClient.head(any()))
             .thenThrow(Exception('Network unreachable'));
-
-        final result = await service.hasInternetAccess();
-
-        expect(result, false);
+        final result3 = await service.hasInternetAccess();
+        expect(result3, false);
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

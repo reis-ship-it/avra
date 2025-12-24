@@ -27,6 +27,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
   List<String> _allPlaces = [];
   String? _currentRegion;
   String? _currentCity;
+  int _vibeSuggestionsShown = 0; // Track how many times we've shown suggestions
 
   // State for auto-expanding categories during search
   Set<String> _expandedRegions = {};
@@ -301,7 +302,8 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                       ),
                       deleteIcon: const Icon(Icons.close, size: 14),
                       onDeleted: () => _removePlace(place),
-                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                      backgroundColor:
+                          AppTheme.primaryColor.withValues(alpha: 0.1),
                       deleteIconColor: AppTheme.primaryColor,
                       labelStyle: TextStyle(
                         color: AppTheme.primaryColor,
@@ -321,26 +323,29 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
           Expanded(
             child: Column(
               children: [
-                // Show search results if there's a search query
+                // Show search results if there's a search query.
+                // Use Flexible instead of a fixed-height container to avoid RenderFlex overflow
+                // on smaller screens / tighter viewports.
                 if (_searchController.text.isNotEmpty) ...[
-                  Text(
-                    'Search Results',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Search Results',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  Container(
-                    constraints: const BoxConstraints(maxHeight: 120),
+                  Flexible(
+                    fit: FlexFit.loose,
                     child: _buildSearchResults(),
                   ),
                   const SizedBox(height: 16),
                 ],
 
                 // Always show vibe categories
-                Expanded(
-                  child: _buildVibeCategories(),
-                ),
+                Expanded(child: _buildVibeCategories()),
               ],
             ),
           ),
@@ -361,6 +366,16 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
           margin: const EdgeInsets.only(bottom: 16),
           child: ExpansionTile(
             initiallyExpanded: isRegionExpanded,
+            onExpansionChanged: (expanded) {
+              if (!mounted) return;
+              setState(() {
+                if (expanded) {
+                  _currentRegion = region;
+                } else if (_currentRegion == region) {
+                  _currentRegion = null;
+                }
+              });
+            },
             title: Row(
               children: [
                 Icon(
@@ -402,6 +417,16 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
 
               return ExpansionTile(
                 initiallyExpanded: isCityExpanded,
+                onExpansionChanged: (expanded) {
+                  if (!mounted) return;
+                  setState(() {
+                    if (expanded) {
+                      _currentCity = city;
+                    } else if (_currentCity == city) {
+                      _currentCity = null;
+                    }
+                  });
+                },
                 title: Text(city),
                 children: neighborhoods.map((neighborhood) {
                   final fullName = '$neighborhood, $city';
@@ -413,8 +438,9 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                       isSelected
                           ? Icons.check_circle
                           : Icons.location_on_outlined,
-                      color:
-                          isSelected ? AppTheme.primaryColor : AppColors.grey600,
+                      color: isSelected
+                          ? AppTheme.primaryColor
+                          : AppColors.grey600,
                       size: 20,
                     ),
                     onTap: () {
@@ -463,7 +489,8 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
               _addPlace(place);
             }
           },
-          tileColor: isSelected ? AppTheme.primaryColor.withValues(alpha: 0.1) : null,
+          tileColor:
+              isSelected ? AppTheme.primaryColor.withValues(alpha: 0.1) : null,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -591,42 +618,70 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
   }
 
   void _showVibeSuggestions(String selectedPlace) {
+    // Only show suggestions for the first 2 selections to avoid being intrusive
+    if (_vibeSuggestionsShown >= 2) {
+      return;
+    }
+
     // Get vibe-similar places based on the selected location
     List<String> vibeSuggestions = _getVibeSuggestions(selectedPlace);
 
     if (vibeSuggestions.isNotEmpty) {
-      // Show a snackbar with vibe suggestions
+      _vibeSuggestionsShown++;
+
+      // Show a snackbar with vibe suggestions - shorter duration and easier to dismiss
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Similar vibe places:',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Similar vibe places:',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 18),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    },
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: vibeSuggestions.map((suggestion) => 
-                  ActionChip(
-                    label: Text(suggestion),
-                    onPressed: () {
-                      _addPlace(suggestion);
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    },
-                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
-                    labelStyle: TextStyle(color: AppTheme.primaryColor),
-                  )
-                ).toList(),
+                children: vibeSuggestions
+                    .map((suggestion) => ActionChip(
+                          label: Text(suggestion),
+                          onPressed: () {
+                            _addPlace(suggestion);
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          },
+                          backgroundColor:
+                              AppTheme.primaryColor.withValues(alpha: 0.1),
+                          labelStyle: TextStyle(color: AppTheme.primaryColor),
+                        ))
+                    .toList(),
               ),
             ],
           ),
-          duration: const Duration(seconds: 4),
+          duration: const Duration(seconds: 3), // Shorter duration
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           dismissDirection: DismissDirection.horizontal,
+          action: SnackBarAction(
+            label: 'Dismiss',
+            textColor: AppTheme.primaryColor,
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
         ),
       );
     }

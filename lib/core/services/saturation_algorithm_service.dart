@@ -1,6 +1,4 @@
-import 'dart:developer' as developer;
-import 'package:spots/core/models/saturation_metrics.dart';
-import 'package:spots/core/models/platform_phase.dart';
+import 'package:spots/core/models/saturation_metrics.dart' show SaturationFactors, SaturationMetrics, SaturationRecommendation;
 import 'package:spots/core/services/logger.dart';
 
 /// Saturation Algorithm Service

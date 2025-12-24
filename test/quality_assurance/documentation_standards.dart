@@ -4,7 +4,6 @@
 /// Focus: Ensure clear, consistent, and valuable test documentation for optimal development
 
 import 'dart:io';
-import 'dart:convert';
 
 /// Documentation standards framework for SPOTS test suite
 /// Ensures comprehensive, maintainable, and valuable test documentation
@@ -1617,7 +1616,7 @@ dart run test/quality_assurance/coverage_analyzer.dart
 ```bash
 # Run tests multiple times to detect flakiness
 for i in {1..10}; do 
-  flutter test test/integration/ || echo "Failure on run $i"
+  flutter test test/integration/ || echo "Failure on run \${i}"
 done
 
 # Use automated flakiness detection
@@ -1748,7 +1747,7 @@ Manual Reviews (Weekly):
   - name: Test Quality Check
     run: |
       dart run test/quality_assurance/automated_quality_checker.dart
-      if [ $? -ne 0 ]; then
+      if [ \${?} -ne 0 ]; then
         echo "Quality check failed - blocking deployment"
         exit 1
       fi
@@ -1783,11 +1782,6 @@ Manual Reviews (Weekly):
 ---
 
 **Consistent maintenance ensures the SPOTS test suite continues to enable rapid, confident development and deployment while maintaining the highest quality standards.** 🎯
-''';
-    
-    await File('$DOCS_PATH/guides/maintenance_guide.md').writeAsString(content);
-  }
-}
 ''';
     
     await File('$DOCS_PATH/guides/maintenance_guide.md').writeAsString(content);

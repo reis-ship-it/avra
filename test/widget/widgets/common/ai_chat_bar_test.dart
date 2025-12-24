@@ -7,191 +7,116 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests AI chat input bar functionality
 void main() {
   group('AIChatBar Widget Tests', () {
-    testWidgets('displays chat bar with default hint text', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+    // Removed: Property assignment tests
+    // AI chat bar tests focus on business logic (chat bar display, user interactions, state management), not property assignment
+
+    testWidgets(
+        'should display chat bar with default hint text, display custom hint text, display initial value, call onSendMessage when send button is tapped or enter is pressed, disable/enable send button based on text input, show loading indicator when isLoading is true, disable input when enabled is false, call onTap when text field is tapped, or clear text after sending message',
+        (WidgetTester tester) async {
+      // Test business logic: AI chat bar display and interactions
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const AIChatBar(),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(AIChatBar), findsOneWidget);
-      expect(find.text('Ask AI about spots, recommendations...'), findsOneWidget);
+      expect(
+          find.text('Ask AI about spots, recommendations...'), findsOneWidget);
       expect(find.byIcon(Icons.smart_toy), findsOneWidget);
-    });
 
-    testWidgets('displays custom hint text', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: const AIChatBar(hintText: 'Custom hint text'),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Custom hint text'), findsOneWidget);
-    });
 
-    testWidgets('displays initial value', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const AIChatBar(initialValue: 'Initial message'),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Initial message'), findsOneWidget);
-    });
 
-    testWidgets('calls onSendMessage when send button is tapped', (WidgetTester tester) async {
-      // Arrange
-      String? sentMessage;
-      final widget = WidgetTestHelpers.createTestableWidget(
+      String? sentMessage1;
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: AIChatBar(
           onSendMessage: (message) {
-            sentMessage = message;
+            sentMessage1 = message;
           },
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      
-      // Enter text
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       await tester.enterText(find.byType(TextField), 'Test message');
       await tester.pumpAndSettle();
-      
-      // Tap send button
       await tester.tap(find.byIcon(Icons.send));
       await tester.pumpAndSettle();
+      expect(sentMessage1, equals('Test message'));
 
-      // Assert
-      expect(sentMessage, equals('Test message'));
-    });
-
-    testWidgets('calls onSendMessage when enter is pressed', (WidgetTester tester) async {
-      // Arrange
-      String? sentMessage;
-      final widget = WidgetTestHelpers.createTestableWidget(
+      String? sentMessage2;
+      final widget5 = WidgetTestHelpers.createTestableWidget(
         child: AIChatBar(
           onSendMessage: (message) {
-            sentMessage = message;
+            sentMessage2 = message;
           },
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      
-      // Enter text and submit
+      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
       await tester.enterText(find.byType(TextField), 'Test message');
       await tester.testTextInput.receiveAction(TextInputAction.send);
       await tester.pumpAndSettle();
+      expect(sentMessage2, equals('Test message'));
 
-      // Assert
-      expect(sentMessage, equals('Test message'));
-    });
-
-    testWidgets('disables send button when text is empty', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget6 = WidgetTestHelpers.createTestableWidget(
         child: const AIChatBar(),
       );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget6);
+      final sendButton1 = tester.widget<IconButton>(find.byIcon(Icons.send));
+      expect(sendButton1.onPressed, isNull);
 
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Send button should be disabled (null onPressed)
-      final sendButton = tester.widget<IconButton>(find.byIcon(Icons.send));
-      expect(sendButton.onPressed, isNull);
-    });
-
-    testWidgets('enables send button when text is entered', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget7 = WidgetTestHelpers.createTestableWidget(
         child: const AIChatBar(),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await WidgetTestHelpers.pumpAndSettle(tester, widget7);
       await tester.enterText(find.byType(TextField), 'Test');
       await tester.pumpAndSettle();
+      final sendButton2 = tester.widget<IconButton>(find.byIcon(Icons.send));
+      expect(sendButton2.onPressed, isNotNull);
 
-      // Assert - Send button should be enabled
-      final sendButton = tester.widget<IconButton>(find.byIcon(Icons.send));
-      expect(sendButton.onPressed, isNotNull);
-    });
-
-    testWidgets('shows loading indicator when isLoading is true', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget8 = WidgetTestHelpers.createTestableWidget(
         child: const AIChatBar(isLoading: true),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget8);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.byIcon(Icons.send), findsNothing);
-    });
 
-    testWidgets('disables input when enabled is false', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget9 = WidgetTestHelpers.createTestableWidget(
         child: const AIChatBar(enabled: false),
       );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget9);
+      final textField1 = tester.widget<TextField>(find.byType(TextField));
+      expect(textField1.enabled, isFalse);
 
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
-      final textField = tester.widget<TextField>(find.byType(TextField));
-      expect(textField.enabled, isFalse);
-    });
-
-    testWidgets('calls onTap when text field is tapped', (WidgetTester tester) async {
-      // Arrange
       bool tapped = false;
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget10 = WidgetTestHelpers.createTestableWidget(
         child: AIChatBar(
           onTap: () {
             tapped = true;
           },
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await WidgetTestHelpers.pumpAndSettle(tester, widget10);
       await tester.tap(find.byType(TextField));
       await tester.pumpAndSettle();
-
-      // Assert
       expect(tapped, isTrue);
-    });
 
-    testWidgets('clears text after sending message', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget11 = WidgetTestHelpers.createTestableWidget(
         child: const AIChatBar(),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await WidgetTestHelpers.pumpAndSettle(tester, widget11);
       await tester.enterText(find.byType(TextField), 'Test message');
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.send));
       await tester.pumpAndSettle();
-
-      // Assert - Text field should be cleared
-      final textField = tester.widget<TextField>(find.byType(TextField));
-      expect(textField.controller?.text, isEmpty);
+      final textField2 = tester.widget<TextField>(find.byType(TextField));
+      expect(textField2.controller?.text, isEmpty);
     });
   });
 }
-

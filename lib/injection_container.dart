@@ -66,6 +66,28 @@ import 'package:spots/core/services/performance_monitor.dart';
 import 'package:spots/core/services/security_validator.dart';
 import 'package:spots/core/services/deployment_validator.dart';
 
+// Patent #30: Quantum Atomic Clock System
+import 'package:spots/core/services/atomic_clock_service.dart';
+
+// Quantum Enhancement Implementation Plan - Phase 2.1: Decoherence Tracking
+import 'package:spots/data/datasources/local/decoherence_pattern_local_datasource.dart';
+import 'package:spots/data/datasources/local/decoherence_pattern_sembast_datasource.dart';
+import 'package:spots/data/repositories/decoherence_pattern_repository_impl.dart';
+import 'package:spots/domain/repositories/decoherence_pattern_repository.dart';
+import 'package:spots/core/services/decoherence_tracking_service.dart';
+
+// Quantum Enhancement Implementation Plan - Phase 3.1: Quantum Prediction Features
+import 'package:spots/core/ai/quantum/quantum_feature_extractor.dart';
+import 'package:spots/core/services/quantum_prediction_enhancer.dart';
+import 'package:spots/core/ml/training/quantum_prediction_training_pipeline.dart';
+
+// Quantum Enhancement Implementation Plan - Phase 4.1: Quantum Satisfaction Enhancement
+import 'package:spots/core/ai/quantum/quantum_satisfaction_feature_extractor.dart';
+import 'package:spots/core/services/quantum_satisfaction_enhancer.dart';
+
+// Feature Flag System
+import 'package:spots/core/services/feature_flag_service.dart';
+
 // Supabase Backend Integration
 import 'package:spots/core/services/supabase_service.dart';
 import 'package:spots/core/services/ai2ai_realtime_service.dart';
@@ -95,6 +117,14 @@ import 'package:spots/core/services/business_expert_chat_service_ai2ai.dart';
 import 'package:spots/core/services/business_business_chat_service_ai2ai.dart';
 import 'package:spots/core/services/business_expert_outreach_service.dart';
 import 'package:spots/core/services/business_business_outreach_service.dart';
+import 'package:spots/core/services/business_member_service.dart';
+import 'package:spots/core/services/business_shared_agent_service.dart';
+// Onboarding & Agent Creation Services (Phase 1: Foundation)
+import 'package:spots/core/services/onboarding_data_service.dart';
+import 'package:spots/core/services/social_media_vibe_analyzer.dart';
+import 'package:spots/core/services/onboarding_place_list_generator.dart';
+import 'package:spots/core/services/onboarding_recommendation_service.dart';
+import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
 import 'package:http/http.dart' as http;
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/config_service.dart';
@@ -145,8 +175,16 @@ import 'package:spots/core/services/field_encryption_service.dart';
 import 'package:spots/core/services/audit_log_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/legal_document_service.dart';
+import 'package:spots/core/services/sales_tax_service.dart';
 import 'package:spots/core/services/permissions_persistence_service.dart';
 import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots/core/services/user_name_resolution_service.dart';
+import 'package:spots/core/services/personality_agent_chat_service.dart';
+import 'package:spots/core/services/friend_chat_service.dart';
+import 'package:spots/core/services/community_chat_service.dart';
+import 'package:spots/core/services/community_service.dart';
+import 'package:spots/core/services/geographic_expansion_service.dart';
+import 'package:spots/core/ai/continuous_learning_system.dart';
 
 final sl = GetIt.instance;
 
@@ -309,6 +347,13 @@ Future<void> init() async {
   await storageService.init();
   sl.registerLazySingleton<StorageService>(() => storageService);
 
+  // Feature Flag Service (for gradual rollout and A/B testing)
+  sl.registerLazySingleton<FeatureFlagService>(
+    () => FeatureFlagService(
+      storage: sl<StorageService>(),
+    ),
+  );
+
   // Geographic Services (Phase 6: Local Expert System Redesign)
   sl.registerLazySingleton<LargeCityDetectionService>(
       () => LargeCityDetectionService());
@@ -330,6 +375,29 @@ Future<void> init() async {
         storageService: sl<StorageService>(),
         prefs: sl<SharedPreferencesCompat>(),
       ));
+
+  // Patent #30: Quantum Atomic Clock System
+  // Register AtomicClockService (foundation for all quantum temporal calculations)
+  sl.registerLazySingleton<AtomicClockService>(() => AtomicClockService());
+
+  // Quantum Enhancement Implementation Plan - Phase 2.1: Decoherence Tracking
+  // Register Decoherence Pattern Repository
+  sl.registerLazySingleton<DecoherencePatternLocalDataSource>(
+    () => DecoherencePatternSembastDataSource(),
+  );
+  sl.registerLazySingleton<DecoherencePatternRepository>(
+    () => DecoherencePatternRepositoryImpl(
+      localDataSource: sl<DecoherencePatternLocalDataSource>(),
+    ),
+  );
+  
+  // Register Decoherence Tracking Service
+  sl.registerLazySingleton<DecoherenceTrackingService>(
+    () => DecoherenceTrackingService(
+      repository: sl<DecoherencePatternRepository>(),
+      atomicClock: sl<AtomicClockService>(),
+    ),
+  );
 
   sl.registerLazySingleton(() => PerformanceMonitor(
         storageService: sl<StorageService>(),
@@ -361,9 +429,85 @@ Future<void> init() async {
         businessService: sl<BusinessAccountService>(),
       ));
 
+  // Onboarding & Agent Creation Services (Phase 1: Foundation)
+  sl.registerLazySingleton(() => OnboardingDataService(
+        agentIdService: sl<AgentIdService>(),
+      ));
+  sl.registerLazySingleton(() => SocialMediaVibeAnalyzer());
+  sl.registerLazySingleton(() => OnboardingPlaceListGenerator());
+  sl.registerLazySingleton(() => OnboardingRecommendationService(
+        agentIdService: sl<AgentIdService>(),
+      ));
+
+  // Quantum Vibe Engine (Phase 4: Quantum Analysis)
+  // Enhanced with Decoherence Tracking (Phase 2.1)
+  sl.registerLazySingleton(() => QuantumVibeEngine(
+        decoherenceTracking: sl<DecoherenceTrackingService>(),
+        featureFlags: sl<FeatureFlagService>(),
+      ));
+
+  // Quantum Enhancement Implementation Plan - Phase 3.1: Quantum Prediction Features
+  // Register Quantum Feature Extractor
+  sl.registerLazySingleton<QuantumFeatureExtractor>(
+    () => QuantumFeatureExtractor(
+      decoherenceTracking: sl<DecoherenceTrackingService>(),
+    ),
+  );
+  
+  // Register Quantum Prediction Training Pipeline
+  sl.registerLazySingleton<QuantumPredictionTrainingPipeline>(
+    () => QuantumPredictionTrainingPipeline(),
+  );
+  
+  // Register Quantum Prediction Enhancer
+  sl.registerLazySingleton<QuantumPredictionEnhancer>(
+    () => QuantumPredictionEnhancer(
+      featureExtractor: sl<QuantumFeatureExtractor>(),
+      trainingPipeline: sl<QuantumPredictionTrainingPipeline>(),
+      featureFlags: sl<FeatureFlagService>(),
+    ),
+  );
+
+  // Quantum Enhancement Implementation Plan - Phase 4.1: Quantum Satisfaction Enhancement
+  // Register Quantum Satisfaction Feature Extractor
+  sl.registerLazySingleton<QuantumSatisfactionFeatureExtractor>(
+    () => QuantumSatisfactionFeatureExtractor(
+      decoherenceTracking: sl<DecoherenceTrackingService>(),
+    ),
+  );
+
+  // Register Quantum Satisfaction Enhancer
+  sl.registerLazySingleton<QuantumSatisfactionEnhancer>(
+    () => QuantumSatisfactionEnhancer(
+      featureExtractor: sl<QuantumSatisfactionFeatureExtractor>(),
+      featureFlags: sl<FeatureFlagService>(),
+    ),
+  );
+
   // Message Encryption Service (Signal Protocol ready)
   sl.registerLazySingleton<MessageEncryptionService>(
       () => AES256GCMEncryptionService());
+
+  // Phase 3: Unified Chat Services
+  sl.registerLazySingleton(() => UserNameResolutionService());
+  sl.registerLazySingleton(() => PersonalityAgentChatService(
+        llmService: sl<LLMService>(),
+        encryptionService: sl<MessageEncryptionService>(),
+        agentIdService: sl<AgentIdService>(),
+        personalityLearning: sl<PersonalityLearning>(),
+        searchRepository: sl<HybridSearchRepository>(),
+      ));
+  sl.registerLazySingleton(() => FriendChatService(
+        encryptionService: sl<MessageEncryptionService>(),
+      ));
+  sl.registerLazySingleton(() => CommunityChatService(
+        encryptionService: sl<MessageEncryptionService>(),
+      ));
+  
+  // Community Service (for community chat member lists)
+  sl.registerLazySingleton(() => CommunityService(
+        expansionService: GeographicExpansionService(),
+      ));
 
   // Business-Expert Chat Service (AI2AI routing)
   sl.registerLazySingleton(() => BusinessExpertChatServiceAI2AI(
@@ -390,6 +534,18 @@ Future<void> init() async {
         partnershipService: sl<PartnershipService>(),
         businessService: sl<BusinessAccountService>(),
         chatService: sl<BusinessBusinessChatServiceAI2AI>(),
+      ));
+  
+  // Business Member Service (multi-user support)
+  sl.registerLazySingleton(() => BusinessMemberService(
+        businessAccountService: sl<BusinessAccountService>(),
+      ));
+  
+  // Business Shared Agent Service (neural network of agents)
+  sl.registerLazySingleton(() => BusinessSharedAgentService(
+        businessAccountService: sl<BusinessAccountService>(),
+        memberService: sl<BusinessMemberService>(),
+        personalityLearning: sl<PersonalityLearning>(),
       ));
   sl.registerLazySingleton(() => AdminCommunicationService(
         connectionMonitor: sl<ConnectionMonitor>(),
@@ -430,6 +586,12 @@ Future<void> init() async {
   sl.registerLazySingleton<PaymentEventService>(() => PaymentEventService(
         sl<PaymentService>(),
         sl<ExpertiseEventService>(),
+      ));
+
+  // Register SalesTaxService (for tax calculation on events)
+  sl.registerLazySingleton<SalesTaxService>(() => SalesTaxService(
+        eventService: sl<ExpertiseEventService>(),
+        paymentService: sl<PaymentService>(),
       ));
 
   // Register BusinessService (required by PartnershipService)
@@ -542,13 +704,18 @@ Future<void> init() async {
 
   // UserFeedbackAnalyzer (Philosophy: "Dynamic dimension discovery through user feedback analysis")
   // Advanced feedback learning system that extracts implicit personality dimensions
+  // Enhanced with Quantum Satisfaction Enhancement (Phase 4.1)
   sl.registerLazySingleton(() {
     final prefs = sl<SharedPreferencesCompat>();
     final personalityLearning = sl<PersonalityLearning>();
+    final quantumSatisfactionEnhancer = sl<QuantumSatisfactionEnhancer>();
+    final atomicClock = sl<AtomicClockService>();
     // SharedPreferencesCompat implements SharedPreferences interface
     return UserFeedbackAnalyzer(
       prefs: prefs,
       personalityLearning: personalityLearning,
+      quantumSatisfactionEnhancer: quantumSatisfactionEnhancer,
+      atomicClock: atomicClock,
     );
   });
 
@@ -650,6 +817,13 @@ Future<void> init() async {
     final storageService = sl<StorageService>();
     return FederatedLearningSystem(storage: storageService.defaultStorage);
   });
+
+  // Continuous Learning System
+  // Phase 7, Section 39 (7.4.1): Continuous Learning UI
+  // Singleton instance shared across app - pages should use this, not create their own
+  sl.registerLazySingleton<ContinuousLearningSystem>(
+    () => ContinuousLearningSystem(),
+  );
 
   // P2P Node Manager
   // OUR_GUTS.md: "Decentralized community networks with privacy protection"

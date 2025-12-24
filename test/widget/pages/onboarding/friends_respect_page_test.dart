@@ -6,90 +6,38 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests UI rendering, list selection, and callbacks
 void main() {
   group('FriendsRespectPage Widget Tests', () {
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+    // Removed: Property assignment tests
+    // Friends respect page tests focus on business logic (UI display, public lists, list metadata, initialization, user profile information), not property assignment
+
+    testWidgets(
+        'should display all required UI elements, display public lists, display list metadata, initialize with provided respected lists, or display user profile information',
+        (WidgetTester tester) async {
+      // Test business logic: Friends respect page display and functionality
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: FriendsRespectPage(
           respectedLists: [],
           onRespectedListsChanged: (_) {},
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify main UI elements are present
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Friends & Respect'), findsOneWidget);
       expect(find.textContaining('Respect lists from'), findsOneWidget);
-    });
-
-    testWidgets('displays public lists', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: FriendsRespectPage(
-          respectedLists: [],
-          onRespectedListsChanged: (_) {},
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show list cards
       expect(find.text('Brooklyn Coffee Crawl'), findsOneWidget);
       expect(find.text('Hidden Gems in Williamsburg'), findsOneWidget);
-    });
-
-    testWidgets('displays list metadata', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: FriendsRespectPage(
-          respectedLists: [],
-          onRespectedListsChanged: (_) {},
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show list details
       expect(find.textContaining('spots'), findsWidgets);
       expect(find.textContaining('respects'), findsWidgets);
-    });
+      expect(find.text('Sarah M.'), findsOneWidget);
+      expect(find.text('Mike T.'), findsOneWidget);
 
-    testWidgets('initializes with provided respected lists', (WidgetTester tester) async {
-      // Arrange
       final initialLists = ['list-1', 'list-2'];
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: FriendsRespectPage(
           respectedLists: initialLists,
           onRespectedListsChanged: (_) {},
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should display selected lists
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(FriendsRespectPage), findsOneWidget);
-    });
-
-    testWidgets('displays user profile information', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: FriendsRespectPage(
-          respectedLists: [],
-          onRespectedListsChanged: (_) {},
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show creator information
-      expect(find.text('Sarah M.'), findsOneWidget);
-      expect(find.text('Mike T.'), findsOneWidget);
     });
   });
 }
-

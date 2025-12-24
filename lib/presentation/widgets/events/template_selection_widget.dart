@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/models/event_template.dart';
 import 'package:spots/core/services/event_template_service.dart';
-import 'package:spots/core/theme/app_colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 
 /// Template Selection Widget
@@ -121,7 +120,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
                 borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
-            style: TextStyle(color: AppTheme.textColor),
+            style: TextStyle(color: AppColors.textPrimary),
             onChanged: (value) {
               setState(() {
                 _searchQuery = value.isEmpty ? null : value;
@@ -189,7 +188,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.template_outlined,
+              Icons.description_outlined,
               size: 64,
               color: AppColors.textSecondary,
             ),
@@ -199,7 +198,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textColor,
+                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -259,12 +258,12 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          template.name,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.textColor,
-                          ),
+                        template.name,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                         ),
                         const SizedBox(height: 4),
                         Text(

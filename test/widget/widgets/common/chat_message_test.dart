@@ -7,157 +7,101 @@ import '../../../helpers/test_helpers.dart';
 /// Tests chat message display for user and AI messages
 void main() {
   group('ChatMessage Widget Tests', () {
-    testWidgets('displays user message correctly', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Chat message tests focus on business logic (message display, alignment, timestamp formatting), not property assignment
+
+    testWidgets('should display user message correctly, display AI message correctly, display timestamp for user/AI messages, display "Just now" for recent messages, align user message to the right, align AI message to the left, or handle long messages correctly', (WidgetTester tester) async {
+      // Test business logic: chat message display and formatting
       final timestamp = TestHelpers.createTestDateTime();
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: ChatMessage(
           message: 'Hello, AI!',
           isUser: true,
           timestamp: timestamp,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(ChatMessage), findsOneWidget);
       expect(find.text('Hello, AI!'), findsOneWidget);
       expect(find.byIcon(Icons.person), findsOneWidget);
       expect(find.byIcon(Icons.smart_toy), findsNothing);
-    });
 
-    testWidgets('displays AI message correctly', (WidgetTester tester) async {
-      // Arrange
-      final timestamp = TestHelpers.createTestDateTime();
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: ChatMessage(
           message: 'Hello! How can I help you?',
           isUser: false,
           timestamp: timestamp,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(ChatMessage), findsOneWidget);
       expect(find.text('Hello! How can I help you?'), findsOneWidget);
       expect(find.byIcon(Icons.smart_toy), findsOneWidget);
       expect(find.byIcon(Icons.person), findsNothing);
-    });
 
-    testWidgets('displays timestamp for user message', (WidgetTester tester) async {
-      // Arrange
-      final timestamp = TestHelpers.createTestDateTime();
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: ChatMessage(
           message: 'Test message',
           isUser: true,
           timestamp: timestamp,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Timestamp should be displayed
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.textContaining('ago'), findsOneWidget);
-    });
 
-    testWidgets('displays timestamp for AI message', (WidgetTester tester) async {
-      // Arrange
-      final timestamp = TestHelpers.createTestDateTime();
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: ChatMessage(
           message: 'AI response',
           isUser: false,
           timestamp: timestamp,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Timestamp should be displayed
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.textContaining('ago'), findsOneWidget);
-    });
 
-    testWidgets('displays "Just now" for recent messages', (WidgetTester tester) async {
-      // Arrange
       final recentTimestamp = DateTime.now();
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget5 = WidgetTestHelpers.createTestableWidget(
         child: ChatMessage(
           message: 'Recent message',
           isUser: true,
           timestamp: recentTimestamp,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
       expect(find.text('Just now'), findsOneWidget);
-    });
 
-    testWidgets('aligns user message to the right', (WidgetTester tester) async {
-      // Arrange
-      final timestamp = TestHelpers.createTestDateTime();
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget6 = WidgetTestHelpers.createTestableWidget(
         child: ChatMessage(
           message: 'User message',
           isUser: true,
           timestamp: timestamp,
         ),
       );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget6);
+      final row1 = tester.widget<Row>(find.byType(Row));
+      expect(row1.mainAxisAlignment, equals(MainAxisAlignment.end));
 
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - User messages should be right-aligned
-      final row = tester.widget<Row>(find.byType(Row));
-      expect(row.mainAxisAlignment, equals(MainAxisAlignment.end));
-    });
-
-    testWidgets('aligns AI message to the left', (WidgetTester tester) async {
-      // Arrange
-      final timestamp = TestHelpers.createTestDateTime();
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget7 = WidgetTestHelpers.createTestableWidget(
         child: ChatMessage(
           message: 'AI message',
           isUser: false,
           timestamp: timestamp,
         ),
       );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget7);
+      final row2 = tester.widget<Row>(find.byType(Row));
+      expect(row2.mainAxisAlignment, equals(MainAxisAlignment.start));
 
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - AI messages should be left-aligned
-      final row = tester.widget<Row>(find.byType(Row));
-      expect(row.mainAxisAlignment, equals(MainAxisAlignment.start));
-    });
-
-    testWidgets('handles long messages correctly', (WidgetTester tester) async {
-      // Arrange
       final longMessage = 'This is a very long message that should wrap correctly '
           'and display properly in the chat interface without breaking the layout.';
-      final timestamp = TestHelpers.createTestDateTime();
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget8 = WidgetTestHelpers.createTestableWidget(
         child: ChatMessage(
           message: longMessage,
           isUser: true,
           timestamp: timestamp,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget8);
       expect(find.text(longMessage), findsOneWidget);
     });
   });

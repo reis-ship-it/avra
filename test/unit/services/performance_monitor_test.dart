@@ -2,16 +2,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:spots/core/services/performance_monitor.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart';
 
 import '../../mocks/mock_dependencies.mocks.dart';
+import '../../mocks/mock_storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {
   group('PerformanceMonitor Tests', () {
     late PerformanceMonitor monitor;
     late MockStorageService mockStorageService;
-    late SharedPreferences prefs;
+    late SharedPreferencesCompat prefs;
 
     setUpAll(() async {
       await setupTestStorage();
@@ -20,7 +21,9 @@ void main() {
 
     setUp(() async {
       mockStorageService = MockStorageService();
-      prefs = await real_prefs.SharedPreferences.getInstance();
+      final mockStorage = MockGetStorage.getInstance();
+      MockGetStorage.reset();
+      prefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
       
       monitor = PerformanceMonitor(
         storageService: mockStorageService,
@@ -30,7 +33,7 @@ void main() {
 
     tearDown(() async {
       await monitor.stopMonitoring();
-      await prefs.clear();
+      MockGetStorage.reset();
     });
 
     tearDownAll(() async {
@@ -46,10 +49,12 @@ void main() {
           box: anyNamed('box'),
         )).thenAnswer((_) async => true);
 
-        // Act
-        await monitor.trackMetric('test_metric', 42.0);
+        // Act - track 10 metrics to trigger persistence (trackMetric persists every 10 metrics)
+        for (int i = 0; i < 10; i++) {
+          await monitor.trackMetric('test_metric_$i', 42.0 + i);
+        }
 
-        // Assert
+        // Assert - should have persisted after 10 metrics
         verify(mockStorageService.setObject(
           any,
           any,
@@ -65,12 +70,12 @@ void main() {
           box: anyNamed('box'),
         )).thenAnswer((_) async => true);
 
-        // Act
-        await monitor.trackMetric('metric1', 10.0);
-        await monitor.trackMetric('metric2', 20.0);
-        await monitor.trackMetric('metric3', 30.0);
+        // Act - track 10 metrics to trigger persistence
+        for (int i = 0; i < 10; i++) {
+          await monitor.trackMetric('metric_$i', 10.0 + i);
+        }
 
-        // Assert - metrics should be tracked
+        // Assert - metrics should be tracked and persisted
         verify(mockStorageService.setObject(
           any,
           any,

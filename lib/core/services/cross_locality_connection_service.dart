@@ -1,4 +1,5 @@
 import 'package:spots/core/models/unified_user.dart';
+import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 
@@ -31,11 +32,11 @@ class CrossLocalityConnectionService {
     minimumLevel: LogLevel.debug,
   );
 
-  final ExpertiseEventService _eventService;
+  final ExpertiseEventService? _eventService;
 
   CrossLocalityConnectionService({
     ExpertiseEventService? eventService,
-  }) : _eventService = eventService ?? ExpertiseEventService();
+  }) : _eventService = eventService;
 
   /// Get connected localities for a user and locality
   /// 
@@ -125,7 +126,8 @@ class CrossLocalityConnectionService {
   }) async {
     try {
       // Get events user has attended (proxy for movement)
-      final attendedEvents = await _eventService.getEventsByAttendee(user);
+      final attendedEvents =
+          _eventService == null ? <ExpertiseEvent>[] : await _eventService!.getEventsByAttendee(user);
 
       // Extract localities from events
       final localities = <String>{};

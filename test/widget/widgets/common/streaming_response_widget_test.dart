@@ -1,5 +1,5 @@
 /// Tests for Streaming Response Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1.3: LLM Full Integration
 
 import 'package:flutter/material.dart';
@@ -14,65 +14,53 @@ void main() {
   });
 
   group('StreamingResponseWidget', () {
-    testWidgets('displays text as it streams', (tester) async {
-      final controller = StreamController<String>();
-      
+    // Removed: Property assignment tests
+    // Streaming response widget tests focus on business logic (text streaming, user interactions, callbacks), not property assignment
+
+    testWidgets(
+        'should display text as it streams, show cursor when enabled, call onComplete when stream finishes, show stop button when streaming, or call onStop when stop button tapped',
+        (tester) async {
+      // Test business logic: streaming response widget display and interactions
+      final controller1 = StreamController<String>();
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: StreamingResponseWidget(
-              textStream: controller.stream,
-              typingSpeed: const Duration(milliseconds: 1), // Fast for testing
+              textStream: controller1.stream,
+              typingSpeed: const Duration(milliseconds: 1),
             ),
           ),
         ),
       );
-
-      // Initially empty
       expect(find.text('Hello'), findsNothing);
-
-      // Add text to stream
-      controller.add('Hello');
+      controller1.add('Hello');
       await tester.pump(const Duration(milliseconds: 50));
-
-      // Text should appear
       expect(find.textContaining('Hello'), findsOneWidget);
+      controller1.close();
 
-      controller.close();
-    });
-
-    testWidgets('shows cursor when enabled', (tester) async {
-      final controller = StreamController<String>();
-      
+      final controller2 = StreamController<String>();
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: StreamingResponseWidget(
-              textStream: controller.stream,
+              textStream: controller2.stream,
               showCursor: true,
             ),
           ),
         ),
       );
-
-      controller.add('Hi');
+      controller2.add('Hi');
       await tester.pump();
-
-      // Cursor should be visible (as SelectableText.rich)
       expect(find.byType(SelectableText), findsOneWidget);
+      controller2.close();
 
-      controller.close();
-    });
-
-    testWidgets('calls onComplete when stream finishes', (tester) async {
       bool completed = false;
-      final controller = StreamController<String>();
-      
+      final controller3 = StreamController<String>();
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: StreamingResponseWidget(
-              textStream: controller.stream,
+              textStream: controller3.stream,
               typingSpeed: const Duration(milliseconds: 1),
               onComplete: () {
                 completed = true;
@@ -81,48 +69,35 @@ void main() {
           ),
         ),
       );
-
-      controller.add('Done');
-      controller.close();
-      
+      controller3.add('Done');
+      controller3.close();
       await tester.pumpAndSettle();
-
       expect(completed, isTrue);
-    });
 
-    testWidgets('shows stop button when streaming', (tester) async {
-      final controller = StreamController<String>();
-      
+      final controller4 = StreamController<String>();
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: StreamingResponseWidget(
-              textStream: controller.stream,
+              textStream: controller4.stream,
               onStop: () {},
             ),
           ),
         ),
       );
-
-      controller.add('Streaming...');
+      controller4.add('Streaming...');
       await tester.pump();
-
-      // Should show stop button
       expect(find.text('Stop Generating'), findsOneWidget);
       expect(find.byIcon(Icons.stop_circle_outlined), findsOneWidget);
+      controller4.close();
 
-      controller.close();
-    });
-
-    testWidgets('calls onStop when stop button tapped', (tester) async {
       bool stopped = false;
-      final controller = StreamController<String>();
-      
+      final controller5 = StreamController<String>();
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: StreamingResponseWidget(
-              textStream: controller.stream,
+              textStream: controller5.stream,
               onStop: () {
                 stopped = true;
               },
@@ -130,22 +105,20 @@ void main() {
           ),
         ),
       );
-
-      controller.add('Streaming...');
+      controller5.add('Streaming...');
       await tester.pump();
-
-      // Tap stop button
       await tester.tap(find.text('Stop Generating'));
       await tester.pumpAndSettle();
-
       expect(stopped, isTrue);
-
-      controller.close();
+      controller5.close();
     });
   });
 
   group('TypingTextWidget', () {
-    testWidgets('types out text character by character', (tester) async {
+    testWidgets(
+        'should type out text character by character or call onComplete when typing finishes',
+        (tester) async {
+      // Test business logic: typing text widget animation
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -156,23 +129,12 @@ void main() {
           ),
         ),
       );
-
-      // Initially empty or partial
       await tester.pump();
-
-      // Wait for some typing
       await tester.pump(const Duration(milliseconds: 50));
-
-      // Should have some text
       expect(find.byType(Text), findsOneWidget);
-
-      // Wait for completion
       await tester.pump(const Duration(milliseconds: 200));
-    });
 
-    testWidgets('calls onComplete when typing finishes', (tester) async {
       bool completed = false;
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -186,16 +148,14 @@ void main() {
           ),
         ),
       );
-
-      // Wait for typing to complete
       await tester.pumpAndSettle();
-
       expect(completed, isTrue);
     });
   });
 
   group('TypingIndicator', () {
-    testWidgets('renders animated dots', (tester) async {
+    testWidgets('should render animated dots', (tester) async {
+      // Test business logic: typing indicator animation
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -203,17 +163,11 @@ void main() {
           ),
         ),
       );
-
       expect(find.byType(TypingIndicator), findsOneWidget);
-
-      // Pump a few animation frames
       for (int i = 0; i < 5; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }
-
-      // Should still be present
       expect(find.byType(TypingIndicator), findsOneWidget);
     });
   });
 }
-

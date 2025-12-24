@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/security_validator.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 void main() {
   group('SecurityValidator Tests', () {
@@ -55,6 +56,10 @@ void main() {
         expect(report.auditTimestamp, isNotNull);
       });
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }
 

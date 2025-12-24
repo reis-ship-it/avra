@@ -8,28 +8,28 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests display of active AI2AI connections
 void main() {
   group('UserConnectionsDisplay Widget Tests', () {
-    testWidgets('displays empty state when no connections', (WidgetTester tester) async {
-      // Arrange
-      final overview = ActiveConnectionsOverview.empty();
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: UserConnectionsDisplay(overview: overview),
+    // Removed: Property assignment tests
+    // User connections display tests focus on business logic (connections display, statistics, user interactions), not property assignment
+
+    testWidgets(
+        'should display empty state when no connections, display connection statistics when connections exist, display top performing connections, or handle zero average duration correctly',
+        (WidgetTester tester) async {
+      // Test business logic: user connections display widget display and interactions
+      final overview1 = ActiveConnectionsOverview.empty();
+      final widget1 = WidgetTestHelpers.createTestableWidget(
+        child: UserConnectionsDisplay(overview: overview1),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(UserConnectionsDisplay), findsOneWidget);
       expect(find.text('Active Connections'), findsOneWidget);
       expect(find.text('0'), findsOneWidget);
       expect(find.text('No active connections'), findsOneWidget);
-      expect(find.text('Your AI will discover nearby personalities automatically'), findsOneWidget);
+      expect(
+          find.text('Your AI will discover nearby personalities automatically'),
+          findsOneWidget);
       expect(find.byIcon(Icons.link_off), findsOneWidget);
-    });
 
-    testWidgets('displays connection statistics when connections exist', (WidgetTester tester) async {
-      // Arrange
-      final overview = ActiveConnectionsOverview(
+      final overview2 = ActiveConnectionsOverview(
         totalActiveConnections: 3,
         aggregateMetrics: AggregateConnectionMetrics(0.75),
         topPerformingConnections: ['conn-1', 'conn-2', 'conn-3'],
@@ -40,15 +40,10 @@ void main() {
         totalAlertsGenerated: 0,
         generatedAt: DateTime.now(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: UserConnectionsDisplay(overview: overview),
+      final widget2 = WidgetTestHelpers.createTestableWidget(
+        child: UserConnectionsDisplay(overview: overview2),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(UserConnectionsDisplay), findsOneWidget);
       expect(find.text('Active Connections'), findsOneWidget);
       expect(find.text('3'), findsOneWidget);
@@ -57,11 +52,8 @@ void main() {
       expect(find.text('Avg Duration'), findsOneWidget);
       expect(find.text('15min'), findsOneWidget);
       expect(find.text('Top Connections'), findsOneWidget);
-    });
 
-    testWidgets('displays top performing connections', (WidgetTester tester) async {
-      // Arrange
-      final overview = ActiveConnectionsOverview(
+      final overview3 = ActiveConnectionsOverview(
         totalActiveConnections: 2,
         aggregateMetrics: AggregateConnectionMetrics(0.8),
         topPerformingConnections: ['connection-12345', 'connection-67890'],
@@ -72,23 +64,15 @@ void main() {
         totalAlertsGenerated: 0,
         generatedAt: DateTime.now(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: UserConnectionsDisplay(overview: overview),
+      final widget3 = WidgetTestHelpers.createTestableWidget(
+        child: UserConnectionsDisplay(overview: overview3),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Top Connections'), findsOneWidget);
       expect(find.text('High performance'), findsWidgets);
       expect(find.byIcon(Icons.link), findsWidgets);
-    });
 
-    testWidgets('handles zero average duration correctly', (WidgetTester tester) async {
-      // Arrange
-      final overview = ActiveConnectionsOverview(
+      final overview4 = ActiveConnectionsOverview(
         totalActiveConnections: 1,
         aggregateMetrics: AggregateConnectionMetrics(0.5),
         topPerformingConnections: ['conn-1'],
@@ -99,17 +83,11 @@ void main() {
         totalAlertsGenerated: 0,
         generatedAt: DateTime.now(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: UserConnectionsDisplay(overview: overview),
+      final widget4 = WidgetTestHelpers.createTestableWidget(
+        child: UserConnectionsDisplay(overview: overview4),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.text('0min'), findsOneWidget);
     });
   });
 }
-

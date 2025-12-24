@@ -589,10 +589,10 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
               ),
             ],
           ),
-          if (!isAchieved && coverageThreshold > 0) ...[
+          if (!isAchieved && ExpertiseCoverageWidget.coverageThreshold > 0) ...[
             const SizedBox(height: 8),
             Text(
-              '${((coverageThreshold - coverage) * 100).toStringAsFixed(0)}% to reach ${(coverageThreshold * 100).toStringAsFixed(0)}% threshold',
+              '${((ExpertiseCoverageWidget.coverageThreshold - coverage) * 100).toStringAsFixed(0)}% to reach ${(ExpertiseCoverageWidget.coverageThreshold * 100).toStringAsFixed(0)}% threshold',
               style: TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,

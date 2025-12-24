@@ -192,8 +192,14 @@ void main() {
       
       test('Geographic scope service should handle missing location gracefully', () {
         // Arrange
-        final userWithoutLocation = testUser.copyWith(
-          location: null,
+        // Create a new user without location (copyWith doesn't support null assignment)
+        final userWithoutLocation = UnifiedUser(
+          id: 'user-123',
+          email: testUser.email,
+          displayName: testUser.displayName,
+          location: null, // Explicitly null
+          createdAt: testUser.createdAt,
+          updatedAt: testUser.updatedAt,
           expertiseMap: {'Coffee': 'city'},
         );
         

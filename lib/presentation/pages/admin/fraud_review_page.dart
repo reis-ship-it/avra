@@ -415,7 +415,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
         break;
       case FraudRecommendation.review:
         recColor = AppTheme.warningColor;
-        recIcon = Icons.review;
+        recIcon = Icons.rate_review;
         recText = 'Review';
         break;
       case FraudRecommendation.requireVerification:

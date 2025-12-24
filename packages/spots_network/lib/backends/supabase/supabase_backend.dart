@@ -112,7 +112,7 @@ class SupabaseBackend implements BackendInterface {
       final user = _client!.auth.currentUser;
       
       // Additional check - try a simple query
-      await _client!.from('health_check').select('count').limit(1).execute();
+      await _client!.from('health_check').select('count').limit(1);
       
       return true;
       

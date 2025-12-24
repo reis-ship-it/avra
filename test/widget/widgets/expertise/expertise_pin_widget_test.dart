@@ -9,9 +9,14 @@ import '../../../helpers/test_helpers.dart';
 /// Tests expertise pin display
 void main() {
   group('ExpertisePinWidget Widget Tests', () {
-    testWidgets('displays pin information correctly', (WidgetTester tester) async {
-      // Arrange
-      final testPin = ExpertisePin(
+    // Removed: Property assignment tests
+    // Expertise pin widget tests focus on business logic (pin display, level details, user interactions), not property assignment
+
+    testWidgets(
+        'should display pin information correctly, display level details when showDetails is true, or call onTap callback when tapped',
+        (WidgetTester tester) async {
+      // Test business logic: expertise pin display and interactions
+      final testPin1 = ExpertisePin(
         id: 'pin-123',
         userId: 'user-123',
         category: 'Coffee',
@@ -19,20 +24,13 @@ void main() {
         earnedAt: TestHelpers.createTestDateTime(),
         earnedReason: 'Test',
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ExpertisePinWidget(pin: testPin),
+      final widget1 = WidgetTestHelpers.createTestableWidget(
+        child: ExpertisePinWidget(pin: testPin1),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show pin information
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Coffee'), findsOneWidget);
-    });
 
-    testWidgets('displays level details when showDetails is true', (WidgetTester tester) async {
-      // Arrange
-      final testPin = ExpertisePin(
+      final testPin2 = ExpertisePin(
         id: 'pin-123',
         userId: 'user-123',
         category: 'Coffee',
@@ -40,24 +38,17 @@ void main() {
         earnedAt: TestHelpers.createTestDateTime(),
         earnedReason: 'Test',
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: ExpertisePinWidget(
-          pin: testPin,
+          pin: testPin2,
           showDetails: true,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show level details
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('City Level'), findsOneWidget);
-    });
 
-    testWidgets('calls onTap callback when tapped', (WidgetTester tester) async {
-      // Arrange
       bool wasTapped = false;
-      final testPin = ExpertisePin(
+      final testPin3 = ExpertisePin(
         id: 'pin-123',
         userId: 'user-123',
         category: 'Coffee',
@@ -65,21 +56,16 @@ void main() {
         earnedAt: TestHelpers.createTestDateTime(),
         earnedReason: 'Test',
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: ExpertisePinWidget(
-          pin: testPin,
+          pin: testPin3,
           onTap: () => wasTapped = true,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       await tester.tap(find.byType(ExpertisePinWidget));
       await tester.pump();
-
-      // Assert - Callback should be called
       expect(wasTapped, isTrue);
     });
   });
 }
-

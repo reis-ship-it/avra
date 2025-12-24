@@ -7,56 +7,70 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests UI rendering, date selection, age calculation, and callbacks
 void main() {
   group('AgeCollectionPage Widget Tests', () {
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+    // Removed: Property assignment tests
+    // Age collection page tests focus on business logic (UI display, birthday selection, age group display, privacy notice, initialization), not property assignment
+
+    testWidgets(
+        'should display all required UI elements, display selected birthday when provided, display age group correctly for different ages, show privacy notice, display age information container when birthday is selected, not display age information when no birthday selected, have tappable birthday selection card, or initialize with provided selectedBirthday',
+        (WidgetTester tester) async {
+      // Test business logic: Age collection page display and functionality
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: AgeCollectionPage(
           selectedBirthday: null,
           onBirthdayChanged: (_) {},
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify all UI elements are present
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Age Verification'), findsOneWidget);
-      expect(find.text('We need your age to provide age-appropriate content and ensure legal compliance.'), findsOneWidget);
+      expect(
+          find.text(
+              'We need your age to provide age-appropriate content and ensure legal compliance.'),
+          findsOneWidget);
       expect(find.text('Birthday'), findsOneWidget);
       expect(find.text('Tap to select your birthday'), findsOneWidget);
       expect(find.byIcon(Icons.calendar_today), findsOneWidget);
-    });
+      expect(find.byIcon(Icons.lock_outline), findsOneWidget);
+      expect(
+          find.textContaining('Your age is stored securely'), findsOneWidget);
+      expect(find.textContaining('OUR_GUTS.md'), findsOneWidget);
+      expect(find.byIcon(Icons.info_outline), findsNothing);
+      expect(find.textContaining('Age:'), findsNothing);
+      final cardFinder = find.byType(Card);
+      expect(cardFinder, findsOneWidget);
 
-    testWidgets('displays selected birthday when provided', (WidgetTester tester) async {
-      // Arrange
-      final testBirthday = DateTime(2000, 1, 15);
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final testBirthday1 = DateTime(2000, 1, 15);
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: AgeCollectionPage(
-          selectedBirthday: testBirthday,
+          selectedBirthday: testBirthday1,
           onBirthdayChanged: (_) {},
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show formatted birthday and age
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.textContaining('January 15, 2000'), findsOneWidget);
       expect(find.textContaining('Age:'), findsOneWidget);
       expect(find.textContaining('years old'), findsOneWidget);
       expect(find.textContaining('Age Group:'), findsOneWidget);
-    });
+      expect(find.byIcon(Icons.info_outline), findsOneWidget);
 
-    testWidgets('displays age group correctly for different ages', (WidgetTester tester) async {
-      // Arrange & Act & Assert for different age groups
+      final testBirthday2 = DateTime(1995, 6, 15);
+      final widget3 = WidgetTestHelpers.createTestableWidget(
+        child: AgeCollectionPage(
+          selectedBirthday: testBirthday2,
+          onBirthdayChanged: (_) {},
+        ),
+      );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
+      expect(find.byIcon(Icons.info_outline), findsOneWidget);
+      expect(find.textContaining('Age:'), findsOneWidget);
+      expect(find.textContaining('Age Group:'), findsOneWidget);
+
       final testCases = [
-        (DateTime(2015, 1, 1), 'Under 13'), // Under 13
-        (DateTime(2010, 1, 1), 'Teen (13-17)'), // Teen
-        (DateTime(2005, 1, 1), 'Young Adult (18-25)'), // Young Adult
-        (DateTime(1980, 1, 1), 'Adult (26-64)'), // Adult
-        (DateTime(1950, 1, 1), 'Senior (65+)'), // Senior
+        (DateTime(2015, 1, 1), 'Under 13'),
+        (DateTime(2010, 1, 1), 'Teen (13-17)'),
+        (DateTime(2005, 1, 1), 'Young Adult (18-25)'),
+        (DateTime(1980, 1, 1), 'Adult (26-64)'),
+        (DateTime(1950, 1, 1), 'Senior (65+)'),
       ];
-
       for (final testCase in testCases) {
         final widget = WidgetTestHelpers.createTestableWidget(
           child: AgeCollectionPage(
@@ -64,103 +78,20 @@ void main() {
             onBirthdayChanged: (_) {},
           ),
         );
-
         await WidgetTestHelpers.pumpAndSettle(tester, widget);
         expect(find.textContaining(testCase.$2), findsOneWidget);
         await tester.pumpAndSettle();
       }
-    });
 
-    testWidgets('shows privacy notice', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final testBirthday3 = DateTime(1990, 3, 20);
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: AgeCollectionPage(
-          selectedBirthday: null,
+          selectedBirthday: testBirthday3,
           onBirthdayChanged: (_) {},
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Privacy notice should be visible
-      expect(find.byIcon(Icons.lock_outline), findsOneWidget);
-      expect(find.textContaining('Your age is stored securely'), findsOneWidget);
-      expect(find.textContaining('OUR_GUTS.md'), findsOneWidget);
-    });
-
-    testWidgets('displays age information container when birthday is selected', (WidgetTester tester) async {
-      // Arrange
-      final testBirthday = DateTime(1995, 6, 15);
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: AgeCollectionPage(
-          selectedBirthday: testBirthday,
-          onBirthdayChanged: (_) {},
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Age info container should be visible
-      expect(find.byIcon(Icons.info_outline), findsOneWidget);
-      expect(find.textContaining('Age:'), findsOneWidget);
-      expect(find.textContaining('Age Group:'), findsOneWidget);
-    });
-
-    testWidgets('does not display age information when no birthday selected', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: AgeCollectionPage(
-          selectedBirthday: null,
-          onBirthdayChanged: (_) {},
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Age info container should not be visible
-      expect(find.byIcon(Icons.info_outline), findsNothing);
-      expect(find.textContaining('Age:'), findsNothing);
-    });
-
-    testWidgets('has tappable birthday selection card', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: AgeCollectionPage(
-          selectedBirthday: null,
-          onBirthdayChanged: (_) {},
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Birthday card should be tappable
-      final cardFinder = find.byType(Card);
-      expect(cardFinder, findsOneWidget);
-      
-      // Note: Actual date picker interaction would require mocking showDatePicker
-      // This test verifies the UI structure is correct
-    });
-
-    testWidgets('initializes with provided selectedBirthday', (WidgetTester tester) async {
-      // Arrange
-      final testBirthday = DateTime(1990, 3, 20);
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: AgeCollectionPage(
-          selectedBirthday: testBirthday,
-          onBirthdayChanged: (_) {},
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should display the provided birthday
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.textContaining('March 20, 1990'), findsOneWidget);
     });
   });
 }
-

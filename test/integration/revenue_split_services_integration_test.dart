@@ -41,8 +41,7 @@ void main() {
     late DateTime testDate;
     
     setUp(() {
-      TestHelpers.setupTestEnvironment();
-      testDate = TestHelpers.createTestDateTime();
+      testDate = DateTime(2025, 1, 1);
       
       mockPartnershipService = MockPartnershipService();
       mockSponsorshipService = MockSponsorshipService();
@@ -59,7 +58,7 @@ void main() {
       reset(mockPartnershipService);
       reset(mockSponsorshipService);
       reset(mockProductTrackingService);
-      TestHelpers.teardownTestEnvironment();
+      // No teardown needed
     });
     
     group('Scenario 1: N-Way Brand Revenue Split', () {

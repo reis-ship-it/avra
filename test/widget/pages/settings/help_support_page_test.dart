@@ -6,32 +6,20 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests help and support content
 void main() {
   group('HelpSupportPage Widget Tests', () {
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Help support page tests focus on business logic (UI display, help content), not property assignment
+
+    testWidgets(
+        'should display all required UI elements or display help content',
+        (WidgetTester tester) async {
+      // Test business logic: Help support page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const HelpSupportPage(),
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify all UI elements are present
       expect(find.text('Help & Support'), findsOneWidget);
       expect(find.text('We\'re Here to Help'), findsOneWidget);
-    });
-
-    testWidgets('displays help content', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const HelpSupportPage(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show help content
       expect(find.byType(HelpSupportPage), findsOneWidget);
     });
   });
 }
-

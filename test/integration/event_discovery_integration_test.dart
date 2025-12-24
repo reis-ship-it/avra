@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/expertise_event.dart';
+import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import '../helpers/integration_test_helpers.dart';
 import '../fixtures/integration_test_fixtures.dart';
@@ -39,93 +40,140 @@ void main() {
 
     group('Scenario 2: Free Event Registration Flow', () {
       test('should register user for free event without payment', () async {
+        // Test business logic: free event registration without payment processing
         // Arrange
         final scenario = IntegrationTestFixtures.freeEventHostingScenario();
-        final event = scenario['event'] as ExpertiseEvent;
+        final host = scenario['host'] as UnifiedUser;
         final user = IntegrationTestHelpers.createUserWithCityExpertise();
+        
+        // Create event in service first
+        final event = await eventService.createEvent(
+          host: host,
+          title: 'Free Test Event',
+          description: 'A free event for testing',
+          category: scenario['category'] as String,
+          eventType: ExpertiseEventType.tour,
+          startTime: DateTime.now().add(const Duration(days: 7)),
+          endTime: DateTime.now().add(const Duration(days: 7, hours: 2)),
+        );
 
         // Verify initial state
         expect(event.isPaid, isFalse);
-        expect(event.price, isNull || event.price == 0.0);
+        expect(event.price, anyOf(isNull, equals(0.0)));
         expect(event.attendeeCount, equals(0));
         expect(event.canUserAttend(user.id), isTrue);
 
         // Act - Register for free event
-        // Note: This would require actual ExpertiseEventService registration method
-        // await eventService.registerForEvent(
-        //   eventId: event.id,
-        //   userId: user.id,
-        // );
+        await eventService.registerForEvent(event, user);
 
         // Assert - User registered
-        // final updatedEvent = await eventService.getEventById(event.id);
-        // expect(updatedEvent.attendeeIds, contains(user.id));
-        // expect(updatedEvent.attendeeCount, equals(1));
-
-        // Placeholder for actual test
-        expect(event.isPaid, isFalse);
+        final updatedEvent = await eventService.getEventById(event.id);
+        expect(updatedEvent, isNotNull);
+        expect(updatedEvent!.attendeeIds, contains(user.id));
+        expect(updatedEvent.attendeeCount, equals(1));
       });
 
       test('should not process payment for free event', () async {
+        // Test business logic: free event registration does not require payment
         // Arrange
         final scenario = IntegrationTestFixtures.freeEventHostingScenario();
-        final event = scenario['event'] as ExpertiseEvent;
+        final host = scenario['host'] as UnifiedUser;
+        final user = IntegrationTestHelpers.createUserWithCityExpertise();
+        
+        // Create free event in service
+        final event = await eventService.createEvent(
+          host: host,
+          title: 'Free Test Event',
+          description: 'A free event for testing',
+          category: scenario['category'] as String,
+          eventType: ExpertiseEventType.tour,
+          startTime: DateTime.now().add(const Duration(days: 7)),
+          endTime: DateTime.now().add(const Duration(days: 7, hours: 2)),
+          price: 0.0, // Free event
+        );
 
         // Verify event is free
         expect(event.isPaid, isFalse);
-        expect(event.price, isNull || event.price == 0.0);
+        expect(event.price, anyOf(isNull, equals(0.0)));
 
         // Act - Register for free event
         // Registration should succeed without payment processing
+        await eventService.registerForEvent(event, user);
 
-        // Assert - No payment should be created
-        // No payment record should exist for this registration
-
-        // Placeholder for actual test
-        expect(event.isPaid, isFalse);
+        // Assert - User registered successfully (no payment required)
+        final updatedEvent = await eventService.getEventById(event.id);
+        expect(updatedEvent, isNotNull);
+        expect(updatedEvent!.attendeeIds, contains(user.id));
+        expect(updatedEvent.attendeeCount, equals(1));
+        // Note: In a real system, we would verify no Payment record was created
+        // For now, we verify registration succeeded without payment
       });
     });
 
     group('Scenario 3: Event Capacity Limits', () {
       test('should enforce capacity limits correctly', () async {
+        // Test business logic: registration fails when event is at capacity
         // Arrange
         final scenario = IntegrationTestFixtures.fullEventScenario();
-        final event = scenario['event'] as ExpertiseEvent;
-        final newUser = IntegrationTestHelpers.createUserWithCityExpertise();
+        final host = scenario['host'] as UnifiedUser;
+        
+        // Create event at capacity (use category host has expertise in)
+        final event = await eventService.createEvent(
+          host: host,
+          title: 'Full Event',
+          description: 'Event at capacity',
+          category: 'Coffee', // Host has Coffee expertise (from createExpertUser default)
+          eventType: ExpertiseEventType.tour,
+          startTime: DateTime.now().add(const Duration(days: 7)),
+          endTime: DateTime.now().add(const Duration(days: 7, hours: 2)),
+          maxAttendees: 1,
+        );
+        
+        // Fill event to capacity with unique user ID
+        final firstUser = IntegrationTestHelpers.createUserWithCityExpertise(id: 'first-user-${DateTime.now().millisecondsSinceEpoch}');
+        await eventService.registerForEvent(event, firstUser);
+        final fullEvent = await eventService.getEventById(event.id);
+        
+        // Create a different user with unique ID for the failed registration attempt
+        final newUser = IntegrationTestHelpers.createUserWithCityExpertise(id: 'new-user-${DateTime.now().millisecondsSinceEpoch}');
 
         // Verify event is full
-        expect(event.isFull, isTrue);
-        expect(event.attendeeCount, equals(event.maxAttendees));
-        expect(event.canUserAttend(newUser.id), isFalse);
+        expect(fullEvent, isNotNull);
+        expect(fullEvent!.isFull, isTrue);
+        expect(fullEvent.attendeeCount, equals(fullEvent.maxAttendees));
+        expect(fullEvent.canUserAttend(newUser.id), isFalse);
 
         // Act - Attempt to register for full event
-        // Note: This would require actual ExpertiseEventService registration method
-        // final result = await eventService.registerForEvent(
-        //   eventId: event.id,
-        //   userId: newUser.id,
-        // );
+        // Should throw exception
+        expect(
+          () => eventService.registerForEvent(fullEvent, newUser),
+          throwsException,
+        );
 
-        // Assert - Registration should fail
-        // expect(result.isSuccess, isFalse);
-        // expect(result.errorMessage, contains('full'));
-
-        // Event should remain full
-        // final updatedEvent = await eventService.getEventById(event.id);
-        // expect(updatedEvent.attendeeCount, equals(event.maxAttendees));
-        // expect(updatedEvent.attendeeIds, isNot(contains(newUser.id)));
-
-        // Placeholder for actual test
-        expect(event.isFull, isTrue);
+        // Assert - Event should remain full
+        final updatedEvent = await eventService.getEventById(event.id);
+        expect(updatedEvent, isNotNull);
+        expect(updatedEvent!.attendeeCount, equals(fullEvent.maxAttendees));
+        expect(updatedEvent.attendeeIds, isNot(contains(newUser.id)));
       });
 
       test('should allow registration when capacity available', () async {
+        // Test business logic: registration succeeds when event has capacity
         // Arrange
         final host = IntegrationTestHelpers.createExpertUser();
-        final event = IntegrationTestHelpers.createTestEvent(
+        final user = IntegrationTestHelpers.createUserWithCityExpertise();
+        
+        // Create event in service (use category host has expertise in)
+        final event = await eventService.createEvent(
           host: host,
+          title: 'Test Event',
+          description: 'Event with capacity',
+          category: 'Coffee', // Host has Coffee expertise (from createExpertUser default)
+          eventType: ExpertiseEventType.tour,
+          startTime: DateTime.now().add(const Duration(days: 7)),
+          endTime: DateTime.now().add(const Duration(days: 7, hours: 2)),
           maxAttendees: 10,
         );
-        final user = IntegrationTestHelpers.createUserWithCityExpertise();
 
         // Verify capacity available
         expect(event.isFull, isFalse);
@@ -133,19 +181,13 @@ void main() {
         expect(event.canUserAttend(user.id), isTrue);
 
         // Act - Register for event with available capacity
-        // final result = await eventService.registerForEvent(
-        //   eventId: event.id,
-        //   userId: user.id,
-        // );
+        await eventService.registerForEvent(event, user);
 
         // Assert - Registration should succeed
-        // expect(result.isSuccess, isTrue);
-        // final updatedEvent = await eventService.getEventById(event.id);
-        // expect(updatedEvent.attendeeIds, contains(user.id));
-        // expect(updatedEvent.attendeeCount, equals(1));
-
-        // Placeholder for actual test
-        expect(event.canUserAttend(user.id), isTrue);
+        final updatedEvent = await eventService.getEventById(event.id);
+        expect(updatedEvent, isNotNull);
+        expect(updatedEvent!.attendeeIds, contains(user.id));
+        expect(updatedEvent.attendeeCount, equals(1));
       });
     });
 

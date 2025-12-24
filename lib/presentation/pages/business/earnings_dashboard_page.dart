@@ -54,29 +54,24 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
     });
 
     try {
-      // Get total earnings
-      final totalEarned = await _payoutService.getHostEarnings(widget.business.id);
+      // Get total earnings and payout history
+      final earningsReport = await _payoutService.trackEarnings(
+        partyId: widget.business.id,
+      );
+      final totalEarned = earningsReport.totalEarnings;
+      final payoutHistory = earningsReport.payouts;
       
-      // Get payout history
-      final payoutHistory = await _payoutService.getPayoutHistory(widget.business.id);
-      
-      // Calculate pending payout (from locked but not yet paid splits)
+      // Calculate pending payout (from scheduled but not yet completed payouts)
       double pending = 0.0;
-      for (final split in payoutHistory) {
-        if (split.isLocked && split.parties.isNotEmpty) {
-          // Find business's share
-          try {
-            final businessParty = split.parties.firstWhere(
-              (p) => p.partyId == widget.business.id && p.type.name == 'business',
-            );
-            if (businessParty.amount != null) {
-              pending += businessParty.amount!;
-            }
-          } catch (e) {
-            // Business not in this split, skip
-          }
+      for (final payout in payoutHistory) {
+        if (payout.status == PayoutStatus.scheduled || payout.status == PayoutStatus.processing) {
+          pending += payout.amount;
         }
       }
+      
+      // TODO: Get revenue splits separately if needed for detailed breakdown
+      // For now, using payout data
+      final revenueSplits = <RevenueSplit>[];
 
       // Calculate next payout date (2 days after most recent event)
       DateTime? nextPayout;
@@ -89,7 +84,7 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
       setState(() {
         _totalEarned = totalEarned;
         _pendingPayout = pending;
-        _revenueSplits = payoutHistory;
+        _revenueSplits = revenueSplits; // Empty for now, can be populated from RevenueSplitService if needed
         _nextPayoutDate = nextPayout;
         _isLoading = false;
       });

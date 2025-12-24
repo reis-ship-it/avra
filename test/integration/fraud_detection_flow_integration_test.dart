@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/fraud_score.dart';
 import 'package:spots/core/models/fraud_signal.dart';
 import 'package:spots/core/models/fraud_recommendation.dart';
-import '../../fixtures/model_factories.dart';
 
 /// Integration tests for fraud detection flow
 /// 

@@ -2,9 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:spots/core/services/payout_service.dart';
 import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/models/payout.dart';
 
 import 'payout_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([RevenueSplitService])
 void main() {
@@ -19,41 +19,28 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Payout tests focus on business logic (payout scheduling, status updates, earnings tracking), not property assignment
+
     group('schedulePayout', () {
-      test('should schedule payout for a party', () async {
-        // Arrange
+      test('should schedule payout for a party and generate unique payout ID',
+          () async {
+        // Test business logic: payout scheduling
         final scheduledDate = DateTime.now().add(const Duration(days: 2));
-
-        // Act
-        final payout = await service.schedulePayout(
-          partyId: 'user-123',
-          amount: 50.00,
-          eventId: 'event-123',
-          scheduledDate: scheduledDate,
-        );
-
-        // Assert
-        expect(payout, isA<Payout>());
-        expect(payout.partyId, equals('user-123'));
-        expect(payout.amount, equals(50.00));
-        expect(payout.eventId, equals('event-123'));
-        expect(payout.status, equals(PayoutStatus.scheduled));
-        expect(payout.scheduledDate, equals(scheduledDate));
-        expect(payout.createdAt, isNotNull);
-        expect(payout.updatedAt, isNotNull);
-      });
-
-      test('should generate unique payout ID', () async {
-        // Arrange
-        final scheduledDate = DateTime.now().add(const Duration(days: 2));
-
-        // Act
         final payout1 = await service.schedulePayout(
           partyId: 'user-123',
           amount: 50.00,
           eventId: 'event-123',
           scheduledDate: scheduledDate,
         );
+        expect(payout1, isA<Payout>());
+        expect(payout1.partyId, equals('user-123'));
+        expect(payout1.amount, equals(50.00));
+        expect(payout1.eventId, equals('event-123'));
+        expect(payout1.status, equals(PayoutStatus.scheduled));
+        expect(payout1.scheduledDate, equals(scheduledDate));
+        expect(payout1.createdAt, isNotNull);
+        expect(payout1.updatedAt, isNotNull);
 
         final payout2 = await service.schedulePayout(
           partyId: 'user-123',
@@ -61,57 +48,42 @@ void main() {
           eventId: 'event-123',
           scheduledDate: scheduledDate,
         );
-
-        // Assert
         expect(payout1.id, isNot(equals(payout2.id)));
       });
     });
 
     group('updatePayoutStatus', () {
-      test('should update payout status', () async {
-        // Arrange
+      test(
+          'should update payout status, set completedAt when status is completed, or throw exception if payout not found',
+          () async {
+        // Test business logic: payout status updates with error handling
         final scheduledDate = DateTime.now().add(const Duration(days: 2));
-        final payout = await service.schedulePayout(
+        final payout1 = await service.schedulePayout(
           partyId: 'user-123',
           amount: 50.00,
           eventId: 'event-123',
           scheduledDate: scheduledDate,
         );
-
-        // Act
         final updated = await service.updatePayoutStatus(
-          payoutId: payout.id,
+          payoutId: payout1.id,
           status: PayoutStatus.processing,
         );
-
-        // Assert
         expect(updated.status, equals(PayoutStatus.processing));
-        expect(updated.updatedAt.isAfter(payout.updatedAt), isTrue);
-      });
+        expect(updated.updatedAt.isAfter(payout1.updatedAt), isTrue);
 
-      test('should set completedAt when status is completed', () async {
-        // Arrange
-        final scheduledDate = DateTime.now().add(const Duration(days: 2));
-        final payout = await service.schedulePayout(
-          partyId: 'user-123',
+        final payout2 = await service.schedulePayout(
+          partyId: 'user-124',
           amount: 50.00,
-          eventId: 'event-123',
+          eventId: 'event-124',
           scheduledDate: scheduledDate,
         );
-
-        // Act
         final completed = await service.updatePayoutStatus(
-          payoutId: payout.id,
+          payoutId: payout2.id,
           status: PayoutStatus.completed,
         );
-
-        // Assert
         expect(completed.status, equals(PayoutStatus.completed));
         expect(completed.completedAt, isNotNull);
-      });
 
-      test('should throw exception if payout not found', () async {
-        // Act & Assert
         expect(
           () => service.updatePayoutStatus(
             payoutId: 'nonexistent-payout',
@@ -127,8 +99,9 @@ void main() {
     });
 
     group('getPayout', () {
-      test('should return payout by ID', () async {
-        // Arrange
+      test('should return payout by ID, or return null if payout not found',
+          () async {
+        // Test business logic: payout retrieval
         final scheduledDate = DateTime.now().add(const Duration(days: 2));
         final created = await service.schedulePayout(
           partyId: 'user-123',
@@ -136,28 +109,21 @@ void main() {
           eventId: 'event-123',
           scheduledDate: scheduledDate,
         );
+        final payout1 = await service.getPayout(created.id);
+        expect(payout1, isNotNull);
+        expect(payout1?.id, equals(created.id));
+        expect(payout1?.partyId, equals('user-123'));
 
-        // Act
-        final payout = await service.getPayout(created.id);
-
-        // Assert
-        expect(payout, isNotNull);
-        expect(payout?.id, equals(created.id));
-        expect(payout?.partyId, equals('user-123'));
-      });
-
-      test('should return null if payout not found', () async {
-        // Act
-        final payout = await service.getPayout('nonexistent-payout');
-
-        // Assert
-        expect(payout, isNull);
+        final payout2 = await service.getPayout('nonexistent-payout');
+        expect(payout2, isNull);
       });
     });
 
     group('getPayoutsForParty', () {
-      test('should return payouts for a party', () async {
-        // Arrange
+      test(
+          'should return payouts for a party, or return empty list if no payouts for party',
+          () async {
+        // Test business logic: party payout retrieval
         final scheduledDate = DateTime.now().add(const Duration(days: 2));
         await service.schedulePayout(
           partyId: 'user-123',
@@ -177,30 +143,26 @@ void main() {
           eventId: 'event-789',
           scheduledDate: scheduledDate,
         );
+        final payouts1 = await service.getPayoutsForParty('user-123');
+        expect(payouts1, hasLength(2));
+        expect(payouts1.every((p) => p.partyId == 'user-123'), isTrue);
+        expect(
+            payouts1[0].scheduledDate.isAfter(payouts1[1].scheduledDate) ||
+                payouts1[0]
+                    .scheduledDate
+                    .isAtSameMomentAs(payouts1[1].scheduledDate),
+            isTrue);
 
-        // Act
-        final payouts = await service.getPayoutsForParty('user-123');
-
-        // Assert
-        expect(payouts, hasLength(2));
-        expect(payouts.every((p) => p.partyId == 'user-123'), isTrue);
-        // Should be sorted by scheduledDate (newest first)
-        expect(payouts[0].scheduledDate.isAfter(payouts[1].scheduledDate) ||
-            payouts[0].scheduledDate.isAtSameMomentAs(payouts[1].scheduledDate), isTrue);
-      });
-
-      test('should return empty list if no payouts for party', () async {
-        // Act
-        final payouts = await service.getPayoutsForParty('nonexistent-party');
-
-        // Assert
-        expect(payouts, isEmpty);
+        final payouts2 = await service.getPayoutsForParty('nonexistent-party');
+        expect(payouts2, isEmpty);
       });
     });
 
     group('trackEarnings', () {
-      test('should track total earnings for a party', () async {
-        // Arrange
+      test(
+          'should track total earnings for a party, calculate total paid and pending amounts, filter earnings by date range, or return zero earnings if no payouts',
+          () async {
+        // Test business logic: earnings tracking with various scenarios
         final scheduledDate = DateTime.now().add(const Duration(days: 2));
         await service.schedulePayout(
           partyId: 'user-123',
@@ -214,101 +176,75 @@ void main() {
           eventId: 'event-456',
           scheduledDate: scheduledDate,
         );
-
-        // Act
-        final report = await service.trackEarnings(
+        final report1 = await service.trackEarnings(
           partyId: 'user-123',
         );
+        expect(report1, isA<EarningsReport>());
+        expect(report1.partyId, equals('user-123'));
+        expect(report1.totalEarnings, equals(125.00));
+        expect(report1.payoutCount, equals(2));
+        expect(report1.payouts, hasLength(2));
 
-        // Assert
-        expect(report, isA<EarningsReport>());
-        expect(report.partyId, equals('user-123'));
-        expect(report.totalEarnings, equals(125.00));
-        expect(report.payoutCount, equals(2));
-        expect(report.payouts, hasLength(2));
-      });
-
-      test('should calculate total paid and pending amounts', () async {
-        // Arrange
-        final scheduledDate = DateTime.now().add(const Duration(days: 2));
         final payout1 = await service.schedulePayout(
-          partyId: 'user-123',
+          partyId: 'user-124',
           amount: 50.00,
-          eventId: 'event-123',
+          eventId: 'event-124',
           scheduledDate: scheduledDate,
         );
         final payout2 = await service.schedulePayout(
-          partyId: 'user-123',
+          partyId: 'user-124',
           amount: 75.00,
-          eventId: 'event-456',
+          eventId: 'event-125',
           scheduledDate: scheduledDate,
         );
-
-        // Mark one as completed
         await service.updatePayoutStatus(
           payoutId: payout1.id,
           status: PayoutStatus.completed,
         );
-
-        // Act
-        final report = await service.trackEarnings(
-          partyId: 'user-123',
+        final report2 = await service.trackEarnings(
+          partyId: 'user-124',
         );
+        expect(report2.totalEarnings, equals(125.00));
+        expect(report2.totalPaid, equals(50.00));
+        expect(report2.totalPending, equals(75.00));
 
-        // Assert
-        expect(report.totalEarnings, equals(125.00));
-        expect(report.totalPaid, equals(50.00));
-        expect(report.totalPending, equals(75.00));
-      });
-
-      test('should filter earnings by date range', () async {
-        // Arrange
         final pastDate = DateTime.now().subtract(const Duration(days: 10));
         final futureDate = DateTime.now().add(const Duration(days: 10));
-
         await service.schedulePayout(
-          partyId: 'user-123',
+          partyId: 'user-125',
           amount: 50.00,
-          eventId: 'event-123',
+          eventId: 'event-126',
           scheduledDate: pastDate,
         );
         await service.schedulePayout(
-          partyId: 'user-123',
+          partyId: 'user-125',
           amount: 75.00,
-          eventId: 'event-456',
+          eventId: 'event-127',
           scheduledDate: futureDate,
         );
-
         final startDate = DateTime.now().subtract(const Duration(days: 5));
         final endDate = DateTime.now().add(const Duration(days: 5));
-
-        // Act
-        final report = await service.trackEarnings(
-          partyId: 'user-123',
+        final report3 = await service.trackEarnings(
+          partyId: 'user-125',
           startDate: startDate,
           endDate: endDate,
         );
+        expect(report3.startDate, equals(startDate));
+        expect(report3.endDate, equals(endDate));
+        expect(report3.payouts.length, lessThanOrEqualTo(2));
 
-        // Assert
-        expect(report.startDate, equals(startDate));
-        expect(report.endDate, equals(endDate));
-        // Should only include payouts within date range
-        expect(report.payouts.length, lessThanOrEqualTo(2));
-      });
-
-      test('should return zero earnings if no payouts', () async {
-        // Act
-        final report = await service.trackEarnings(
+        final report4 = await service.trackEarnings(
           partyId: 'nonexistent-party',
         );
-
-        // Assert
-        expect(report.totalEarnings, equals(0.0));
-        expect(report.totalPaid, equals(0.0));
-        expect(report.totalPending, equals(0.0));
-        expect(report.payoutCount, equals(0));
+        expect(report4.totalEarnings, equals(0.0));
+        expect(report4.totalPaid, equals(0.0));
+        expect(report4.totalPending, equals(0.0));
+        expect(report4.payoutCount, equals(0));
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

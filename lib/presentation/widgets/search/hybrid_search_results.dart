@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
 import 'package:spots/presentation/pages/spots/spot_details_page.dart';
 import 'package:spots/presentation/widgets/common/standard_error_widget.dart';
 import 'package:spots/presentation/widgets/common/standard_loading_widget.dart';
+import 'package:spots/presentation/widgets/common/source_indicator_widget.dart';
 
 class HybridSearchResults extends StatelessWidget {
   const HybridSearchResults({super.key});
@@ -20,10 +20,10 @@ class HybridSearchResults extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                 Icon(
+                Icon(
                   Icons.search,
                   size: 64,
-                   color: AppColors.textSecondary,
+                  color: AppColors.textSecondary,
                 ),
                 SizedBox(height: 16),
                 Text(
@@ -97,7 +97,7 @@ class HybridSearchResults extends StatelessWidget {
               // Search Statistics Header
               _buildSearchStats(context, state),
               const SizedBox(height: 8),
-              
+
               // Results List
               Expanded(
                 child: ListView.builder(
@@ -119,9 +119,8 @@ class HybridSearchResults extends StatelessWidget {
 
   Widget _buildSearchStats(BuildContext context, HybridSearchLoaded state) {
     return Card(
-      color: state.isCommunityPrioritized 
-          ? AppColors.grey100 
-          : AppColors.grey100,
+      color:
+          state.isCommunityPrioritized ? AppColors.grey100 : AppColors.grey100,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -129,8 +128,8 @@ class HybridSearchResults extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  state.isCommunityPrioritized 
-                      ? Icons.verified_user 
+                  state.isCommunityPrioritized
+                      ? Icons.verified_user
                       : Icons.warning_amber,
                   color: AppColors.textSecondary,
                   size: 20,
@@ -141,8 +140,8 @@ class HybridSearchResults extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        state.isCommunityPrioritized 
-                            ? 'Community-First Results' 
+                        state.isCommunityPrioritized
+                            ? 'Community-First Results'
                             : 'External Data Heavy',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -173,13 +172,13 @@ class HybridSearchResults extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 children: state.sources.entries.map((entry) {
-                   return Chip(
+                  return Chip(
                     label: Text(
                       '${entry.key}: ${entry.value}',
                       style: const TextStyle(fontSize: 12),
                     ),
-                     backgroundColor: AppColors.grey100,
-                     side: const BorderSide(color: AppColors.grey300),
+                    backgroundColor: AppColors.grey100,
+                    side: const BorderSide(color: AppColors.grey300),
                   );
                 }).toList(),
               ),
@@ -191,18 +190,16 @@ class HybridSearchResults extends StatelessWidget {
   }
 
   Widget _buildSpotCard(BuildContext context, Spot spot) {
-    final isExternal = spot.metadata.containsKey('is_external') && 
-                      spot.metadata['is_external'] == true;
-    final source = spot.metadata['source']?.toString() ?? 'community';
+    final indicator = spot.getSourceIndicator();
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
-          backgroundColor: _getSourceColor(source),
+          backgroundColor: indicator.badgeColor,
           child: Icon(
-            _getSourceIcon(source),
+            indicator.badgeIcon,
             color: AppColors.white,
             size: 20,
           ),
@@ -215,7 +212,12 @@ class HybridSearchResults extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
-            _buildSourceBadge(source, isExternal),
+            // Use SourceIndicator for consistent source display
+            SourceIndicatorWidget(
+              indicator: indicator,
+              compact: true,
+              showWarning: false,
+            ),
           ],
         ),
         subtitle: Column(
@@ -231,7 +233,8 @@ class HybridSearchResults extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.grey200,
                     borderRadius: BorderRadius.circular(12),
@@ -252,12 +255,14 @@ class HybridSearchResults extends StatelessWidget {
                 ],
                 if (spot.address != null) ...[
                   const SizedBox(width: 8),
-                  const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.location_on,
+                      size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 2),
                   Expanded(
                     child: Text(
                       spot.address!,
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: const TextStyle(
+                          fontSize: 12, color: AppColors.textSecondary),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -278,66 +283,5 @@ class HybridSearchResults extends StatelessWidget {
         },
       ),
     );
-  }
-
-  Widget _buildSourceBadge(String source, bool isExternal) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: _getSourceColor(source).withValues(alpha: 0.1),
-        border: Border.all(color: _getSourceColor(source), width: 1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        _getSourceDisplayName(source),
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-          color: _getSourceColor(source),
-        ),
-      ),
-    );
-  }
-
-  Color _getSourceColor(String source) {
-    switch (source.toLowerCase()) {
-      case 'community':
-        return AppTheme.successColor;
-      case 'google_places':
-        return AppColors.grey600;
-      case 'openstreetmap':
-      case 'osm':
-        return AppColors.warning;
-      default:
-        return AppColors.grey600;
-    }
-  }
-
-  IconData _getSourceIcon(String source) {
-    switch (source.toLowerCase()) {
-      case 'community':
-        return Icons.people;
-      case 'google_places':
-        return Icons.business;
-      case 'openstreetmap':
-      case 'osm':
-        return Icons.map;
-      default:
-        return Icons.place;
-    }
-  }
-
-  String _getSourceDisplayName(String source) {
-    switch (source.toLowerCase()) {
-      case 'community':
-        return 'Community';
-      case 'google_places':
-        return 'Google';
-      case 'openstreetmap':
-      case 'osm':
-        return 'OSM';
-      default:
-        return source.toUpperCase();
-    }
   }
 }

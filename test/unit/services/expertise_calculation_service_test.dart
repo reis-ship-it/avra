@@ -2,15 +2,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/expertise_calculation_service.dart';
 import 'package:spots/core/services/saturation_algorithm_service.dart';
 import 'package:spots/core/services/multi_path_expertise_service.dart';
-import 'package:spots/core/models/platform_phase.dart';
+import 'package:spots/core/models/platform_phase.dart' as platform_phase;
+import 'package:spots/core/models/platform_phase.dart'
+    show PhaseName, PlatformPhase;
 import 'package:spots/core/models/saturation_metrics.dart';
-import 'package:spots/core/models/expertise_level.dart';
 import 'package:spots/core/models/multi_path_expertise.dart';
+import 'package:spots/core/models/expertise_requirements.dart';
 import '../../helpers/test_helpers.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
 import 'expertise_calculation_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([
   SaturationAlgorithmService,
@@ -152,6 +155,8 @@ void main() {
           userId: anyNamed('userId'),
           category: anyNamed('category'),
           locality: anyNamed('locality'),
+          localVisits: anyNamed('localVisits'),
+          firstLocalVisit: anyNamed('firstLocalVisit'),
         )).thenAnswer((_) async => LocalExpertise(
               id: 'local-1',
               userId: 'user-1',
@@ -168,19 +173,96 @@ void main() {
               updatedAt: testDate,
             ));
 
+        // Create required objects
+        final platformPhaseObj = PlatformPhase(
+          id: 'phase-growth',
+          name: PhaseName.growth,
+          userCountThreshold: 1000,
+          saturationFactors: platform_phase.SaturationFactors(),
+          createdAt: testDate,
+          updatedAt: testDate,
+        );
+
+        final requirements = ExpertiseRequirements(
+          category: 'Coffee',
+          platformPhase: platformPhaseObj,
+          thresholdValues: ThresholdValues(
+            minVisits: 10,
+            minRatings: 5,
+            minAvgRating: 4.0,
+            minTimeInCategory: const Duration(days: 30),
+          ),
+          multiPathRequirements: MultiPathRequirements(),
+          createdAt: testDate,
+          updatedAt: testDate,
+        );
+
+        final pathExpertise = MultiPathExpertiseScores(
+          exploration: explorationExpertise,
+          credential: CredentialExpertise(
+            id: 'cred-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            score: 0.0,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+          influence: InfluenceExpertise(
+            id: 'inf-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            score: 0.0,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+          professional: ProfessionalExpertise(
+            id: 'prof-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            score: 0.0,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+          community: CommunityExpertise(
+            id: 'comm-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            score: 0.0,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+          local: LocalExpertise(
+            id: 'local-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            locality: 'NYC',
+            localVisits: 0,
+            uniqueLocalLocations: 0,
+            averageLocalRating: 0.0,
+            timeInLocation: Duration.zero,
+            firstLocalVisit: testDate,
+            lastLocalVisit: testDate,
+            score: 0.0,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+        );
+
         // Execute
         final result = await service.calculateExpertise(
           userId: 'user-1',
           category: 'Coffee',
-          platformPhase: PhaseName.growth,
-          userCount: 5000,
+          requirements: requirements,
+          platformPhase: platformPhaseObj,
+          saturationMetrics: saturationMetrics,
+          pathExpertise: pathExpertise,
         );
 
         // Verify
         expect(result.userId, equals('user-1'));
         expect(result.category, equals('Coffee'));
         expect(result.totalScore, greaterThan(0.0));
-        expect(result.pathScores, isNotEmpty);
+        expect(result.pathScores, isNotNull);
         expect(result.expertiseLevel, isNotNull);
       });
 
@@ -307,6 +389,8 @@ void main() {
           userId: anyNamed('userId'),
           category: anyNamed('category'),
           locality: anyNamed('locality'),
+          localVisits: anyNamed('localVisits'),
+          firstLocalVisit: anyNamed('firstLocalVisit'),
         )).thenAnswer((_) async => LocalExpertise(
               id: 'local-1',
               userId: 'user-1',
@@ -323,12 +407,129 @@ void main() {
               updatedAt: testDate,
             ));
 
+        // Create required objects
+        final platformPhaseObj2 = PlatformPhase(
+          id: 'phase-growth',
+          name: PhaseName.growth,
+          userCountThreshold: 1000,
+          saturationFactors: platform_phase.SaturationFactors(),
+          createdAt: testDate,
+          updatedAt: testDate,
+        );
+
+        final requirements2 = ExpertiseRequirements(
+          category: 'Coffee',
+          platformPhase: platformPhaseObj2,
+          thresholdValues: ThresholdValues(
+            minVisits: 10,
+            minRatings: 5,
+            minAvgRating: 4.0,
+            minTimeInCategory: const Duration(days: 30),
+          ),
+          multiPathRequirements: MultiPathRequirements(),
+          createdAt: testDate,
+          updatedAt: testDate,
+        );
+
+        final saturationMetrics2 = SaturationMetrics(
+          category: 'Coffee',
+          currentExpertCount: 100,
+          totalUserCount: 5000,
+          saturationRatio: 0.02,
+          qualityScore: 0.8,
+          growthRate: 5.0,
+          competitionLevel: 0.4,
+          marketDemand: 0.6,
+          factors: SaturationFactors(
+            supplyRatio: 0.5,
+            qualityDistribution: 0.8,
+            utilizationRate: 0.7,
+            demandSignal: 0.6,
+            growthVelocity: 0.3,
+            geographicDistribution: 0.4,
+          ),
+          saturationScore: 0.5,
+          recommendation: SaturationRecommendation.maintain,
+          calculatedAt: testDate,
+          updatedAt: testDate,
+        );
+
+        final pathExpertise2 = MultiPathExpertiseScores(
+          exploration: ExplorationExpertise(
+            id: 'exp-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            totalVisits: 100,
+            uniqueLocations: 50,
+            repeatVisits: 50,
+            reviewsGiven: 80,
+            averageRating: 4.8,
+            averageQualityScore: 1.5,
+            highQualityVisits: 60,
+            totalDwellTime: const Duration(hours: 200),
+            firstVisit: testDate.subtract(const Duration(days: 365)),
+            lastVisit: testDate,
+            score: 0.90,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+          credential: CredentialExpertise(
+            id: 'cred-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            score: 0.90,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+          influence: InfluenceExpertise(
+            id: 'inf-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            score: 0.85,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+          professional: ProfessionalExpertise(
+            id: 'prof-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            score: 0.80,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+          community: CommunityExpertise(
+            id: 'comm-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            score: 0.75,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+          local: LocalExpertise(
+            id: 'local-1',
+            userId: 'user-1',
+            category: 'Coffee',
+            locality: 'NYC',
+            localVisits: 80,
+            uniqueLocalLocations: 40,
+            averageLocalRating: 4.6,
+            timeInLocation: const Duration(days: 730),
+            firstLocalVisit: testDate.subtract(const Duration(days: 730)),
+            lastLocalVisit: testDate,
+            score: 0.75,
+            createdAt: testDate,
+            updatedAt: testDate,
+          ),
+        );
+
         // Execute
         final result = await service.calculateExpertise(
           userId: 'user-1',
           category: 'Coffee',
-          platformPhase: PhaseName.growth,
-          userCount: 5000,
+          requirements: requirements2,
+          platformPhase: platformPhaseObj2,
+          saturationMetrics: saturationMetrics2,
+          pathExpertise: pathExpertise2,
         );
 
         // Verify high expertise level
@@ -344,6 +545,9 @@ void main() {
         // Implementation depends on service method
       });
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }
-

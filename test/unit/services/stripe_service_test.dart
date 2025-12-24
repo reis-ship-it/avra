@@ -1,18 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/stripe_service.dart';
 import 'package:spots/core/config/stripe_config.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// SPOTS StripeService Unit Tests
 /// Date: December 1, 2025
 /// Purpose: Test StripeService functionality
-/// 
+///
 /// Test Coverage:
 /// - Initialization: Service setup and configuration
 /// - Payment Intent Creation: Client-side payment intent creation (placeholder)
 /// - Payment Confirmation: Payment confirmation flow
 /// - Refund Processing: Refund handling
 /// - Error Handling: Invalid inputs, edge cases
-/// 
+///
 /// Dependencies:
 /// - StripeConfig: Configuration for Stripe API
 
@@ -28,34 +29,31 @@ void main() {
         merchantIdentifier: 'merchant.com.spots',
         isTestMode: true,
       );
-      
+
       invalidConfig = StripeConfig(
         publishableKey: '',
         isTestMode: true,
       );
     });
 
-    group('Initialization', () {
-      test('should initialize with valid configuration', () async {
-        stripeService = StripeService(validConfig);
-        
-        expect(stripeService.isInitialized, false);
-        
-        // Note: Actual Stripe initialization requires platform channels
-        // This test verifies the service can be instantiated
-        expect(stripeService, isNotNull);
-      });
+    // Removed: Property assignment tests
+    // Stripe service tests focus on business logic (initialization, payment operations, error handling), not property assignment
 
-      test('should throw exception when initializing with invalid config', () async {
+    group('Initialization', () {
+      test(
+          'should initialize with valid configuration, throw exception when initializing with invalid config, or set isInitialized to false initially',
+          () async {
+        // Test business logic: service initialization
+        stripeService = StripeService(validConfig);
+        expect(stripeService.isInitialized, false);
+        expect(stripeService, isNotNull);
+
         stripeService = StripeService(invalidConfig);
-        
         expect(
           () => stripeService.initializeStripe(),
           throwsException,
         );
-      });
 
-      test('should set isInitialized to false initially', () {
         stripeService = StripeService(validConfig);
         expect(stripeService.isInitialized, false);
       });
@@ -73,11 +71,12 @@ void main() {
         );
       });
 
-      test('should throw UnimplementedError for client-side creation', () async {
+      test('should throw UnimplementedError for client-side creation',
+          () async {
         // Note: This test documents the current behavior
         // In production, payment intents should be created server-side
         // The service currently throws UnimplementedError as a safety measure
-        
+
         // We can't actually initialize Stripe in unit tests without platform channels
         // So we test the error handling logic
         expect(stripeService.isInitialized, false);
@@ -115,48 +114,51 @@ void main() {
     });
 
     group('Error Handling', () {
-      test('should handle payment errors gracefully', () {
+      test(
+          'should handle payment errors gracefully or handle generic errors gracefully',
+          () {
+        // Test business logic: error handling
         stripeService = StripeService(validConfig);
-        
-        // Test with generic exception (StripeException structure may vary)
-        final errorMessage = stripeService.handlePaymentError(Exception('Card declined'));
-        expect(errorMessage, 'An unexpected error occurred. Please try again.');
-      });
+        final errorMessage1 =
+            stripeService.handlePaymentError(Exception('Card declined'));
+        expect(
+            errorMessage1, 'An unexpected error occurred. Please try again.');
 
-      test('should handle generic errors gracefully', () {
-        stripeService = StripeService(validConfig);
-        
-        final errorMessage = stripeService.handlePaymentError(Exception('Generic error'));
-        expect(errorMessage, 'An unexpected error occurred. Please try again.');
+        final errorMessage2 =
+            stripeService.handlePaymentError(Exception('Generic error'));
+        expect(
+            errorMessage2, 'An unexpected error occurred. Please try again.');
       });
     });
 
     group('Configuration Validation', () {
-      test('should accept valid publishable key', () {
-        final config = StripeConfig(
+      test(
+          'should accept valid publishable key, reject empty publishable key, or accept merchant identifier',
+          () {
+        // Test business logic: configuration validation
+        final config1 = StripeConfig(
           publishableKey: 'pk_test_validkey',
           isTestMode: true,
         );
-        expect(config.isValid, true);
-      });
+        expect(config1.isValid, true);
 
-      test('should reject empty publishable key', () {
-        final config = StripeConfig(
+        final config2 = StripeConfig(
           publishableKey: '',
           isTestMode: true,
         );
-        expect(config.isValid, false);
-      });
+        expect(config2.isValid, false);
 
-      test('should accept merchant identifier', () {
-        final config = StripeConfig(
+        final config3 = StripeConfig(
           publishableKey: 'pk_test_validkey',
           merchantIdentifier: 'merchant.com.spots',
           isTestMode: true,
         );
-        expect(config.merchantIdentifier, 'merchant.com.spots');
+        expect(config3.merchantIdentifier, 'merchant.com.spots');
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

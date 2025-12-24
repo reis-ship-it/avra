@@ -1,5 +1,6 @@
 import 'interfaces/backend_interface.dart';
 import 'models/connection_config.dart';
+import 'backend_factory.dart';
 
 /// Factory for creating component-specific backend instances
 /// Allows different components to use different backends based on their needs

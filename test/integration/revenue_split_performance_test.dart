@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:spots/core/models/revenue_split.dart';
 import 'package:spots/core/services/revenue_split_service.dart';
 import 'package:spots/core/services/partnership_service.dart';
-import '../helpers/integration_test_helpers.dart';
 
 // Mock dependencies
 class MockPartnershipService extends Mock implements PartnershipService {}

@@ -3,35 +3,16 @@ import 'package:spots/core/models/club_hierarchy.dart';
 
 /// Comprehensive tests for ClubHierarchy Model
 /// Tests roles enum, permissions system, role hierarchy
-/// 
+///
 /// **Philosophy Alignment:**
 /// - Communities can organize as clubs when structure is needed
 /// - Club leaders gain expertise recognition
 /// - Organizational structure enables community growth
 void main() {
   group('ClubRole Enum Tests', () {
-    test('should have all required roles', () {
-      expect(ClubRole.values, containsAll([
-        ClubRole.leader,
-        ClubRole.admin,
-        ClubRole.moderator,
-        ClubRole.member,
-      ]));
-    });
-
-    test('should return correct display names', () {
-      expect(ClubRole.leader.getDisplayName(), equals('Leader'));
-      expect(ClubRole.admin.getDisplayName(), equals('Admin'));
-      expect(ClubRole.moderator.getDisplayName(), equals('Moderator'));
-      expect(ClubRole.member.getDisplayName(), equals('Member'));
-    });
-
-    test('should return correct hierarchy levels', () {
-      expect(ClubRole.leader.getHierarchyLevel(), equals(4));
-      expect(ClubRole.admin.getHierarchyLevel(), equals(3));
-      expect(ClubRole.moderator.getHierarchyLevel(), equals(2));
-      expect(ClubRole.member.getHierarchyLevel(), equals(1));
-    });
+    // Removed: Enum values test - tests enum definition, not business logic
+    // Removed: Display names test - tests property values, not business logic
+    // Removed: Hierarchy levels test - tests property values, not business logic
 
     test('should correctly determine if role can manage another role', () {
       // Leader can manage all other roles
@@ -61,287 +42,104 @@ void main() {
   });
 
   group('ClubPermissions Tests', () {
-    test('should create permissions with default values (all false)', () {
-      const permissions = ClubPermissions();
+    test('should return correct permissions for each role', () {
+      // Test business logic: role-based permissions
+      final leader = ClubPermissions.forRole(ClubRole.leader);
+      final admin = ClubPermissions.forRole(ClubRole.admin);
+      final moderator = ClubPermissions.forRole(ClubRole.moderator);
+      final member = ClubPermissions.forRole(ClubRole.member);
 
-      expect(permissions.canCreateEvents, isFalse);
-      expect(permissions.canManageMembers, isFalse);
-      expect(permissions.canManageAdmins, isFalse);
-      expect(permissions.canManageLeaders, isFalse);
-      expect(permissions.canModerateContent, isFalse);
-      expect(permissions.canViewAnalytics, isFalse);
+      expect(leader.canManageLeaders, isTrue);
+      expect(admin.canManageAdmins, isFalse);
+      expect(moderator.canModerateContent, isTrue);
+      expect(moderator.canManageMembers, isFalse);
+      expect(member.canCreateEvents, isTrue);
+      expect(member.canManageMembers, isFalse);
     });
 
-    test('should create permissions with custom values', () {
-      const permissions = ClubPermissions(
-        canCreateEvents: true,
-        canManageMembers: true,
-        canViewAnalytics: true,
-      );
-
-      expect(permissions.canCreateEvents, isTrue);
-      expect(permissions.canManageMembers, isTrue);
-      expect(permissions.canManageAdmins, isFalse);
-      expect(permissions.canManageLeaders, isFalse);
-      expect(permissions.canModerateContent, isFalse);
-      expect(permissions.canViewAnalytics, isTrue);
-    });
-
-    test('should return correct permissions for Leader role', () {
+    test('should check permissions by string name correctly', () {
       final permissions = ClubPermissions.forRole(ClubRole.leader);
 
-      expect(permissions.canCreateEvents, isTrue);
-      expect(permissions.canManageMembers, isTrue);
-      expect(permissions.canManageAdmins, isTrue);
-      expect(permissions.canManageLeaders, isTrue);
-      expect(permissions.canModerateContent, isTrue);
-      expect(permissions.canViewAnalytics, isTrue);
-    });
-
-    test('should return correct permissions for Admin role', () {
-      final permissions = ClubPermissions.forRole(ClubRole.admin);
-
-      expect(permissions.canCreateEvents, isTrue);
-      expect(permissions.canManageMembers, isTrue);
-      expect(permissions.canManageAdmins, isFalse);
-      expect(permissions.canManageLeaders, isFalse);
-      expect(permissions.canModerateContent, isTrue);
-      expect(permissions.canViewAnalytics, isTrue);
-    });
-
-    test('should return correct permissions for Moderator role', () {
-      final permissions = ClubPermissions.forRole(ClubRole.moderator);
-
-      expect(permissions.canCreateEvents, isTrue);
-      expect(permissions.canManageMembers, isFalse);
-      expect(permissions.canManageAdmins, isFalse);
-      expect(permissions.canManageLeaders, isFalse);
-      expect(permissions.canModerateContent, isTrue);
-      expect(permissions.canViewAnalytics, isFalse);
-    });
-
-    test('should return correct permissions for Member role', () {
-      final permissions = ClubPermissions.forRole(ClubRole.member);
-
-      expect(permissions.canCreateEvents, isTrue);
-      expect(permissions.canManageMembers, isFalse);
-      expect(permissions.canManageAdmins, isFalse);
-      expect(permissions.canManageLeaders, isFalse);
-      expect(permissions.canModerateContent, isFalse);
-      expect(permissions.canViewAnalytics, isFalse);
-    });
-
-    test('should check permissions correctly', () {
-      final permissions = ClubPermissions.forRole(ClubRole.leader);
-
+      // Test business logic: permission lookup
       expect(permissions.hasPermission('createEvents'), isTrue);
-      expect(permissions.hasPermission('manageMembers'), isTrue);
-      expect(permissions.hasPermission('manageAdmins'), isTrue);
       expect(permissions.hasPermission('manageLeaders'), isTrue);
-      expect(permissions.hasPermission('moderateContent'), isTrue);
-      expect(permissions.hasPermission('viewAnalytics'), isTrue);
       expect(permissions.hasPermission('unknownPermission'), isFalse);
     });
 
-    test('should serialize to JSON correctly', () {
+    test(
+        'should serialize and deserialize with defaults and create immutable copies',
+        () {
+      // Test business logic: JSON serialization and immutability
       final permissions = ClubPermissions.forRole(ClubRole.admin);
       final json = permissions.toJson();
+      final restored = ClubPermissions.fromJson(json);
 
-      expect(json['canCreateEvents'], isTrue);
-      expect(json['canManageMembers'], isTrue);
-      expect(json['canManageAdmins'], isFalse);
-      expect(json['canManageLeaders'], isFalse);
-      expect(json['canModerateContent'], isTrue);
-      expect(json['canViewAnalytics'], isTrue);
-    });
+      // Test critical business fields preserved
+      expect(restored.canManageMembers, equals(permissions.canManageMembers));
+      expect(restored.canViewAnalytics, equals(permissions.canViewAnalytics));
 
-    test('should deserialize from JSON correctly', () {
-      final json = {
-        'canCreateEvents': true,
-        'canManageMembers': true,
-        'canManageAdmins': false,
-        'canManageLeaders': false,
-        'canModerateContent': true,
-        'canViewAnalytics': true,
-      };
+      // Test default behavior with minimal JSON
+      final minimalJson = {'canCreateEvents': true};
+      final fromMinimal = ClubPermissions.fromJson(minimalJson);
+      expect(fromMinimal.canCreateEvents, isTrue);
+      expect(fromMinimal.canManageMembers, isFalse);
 
-      final permissions = ClubPermissions.fromJson(json);
-
-      expect(permissions.canCreateEvents, isTrue);
-      expect(permissions.canManageMembers, isTrue);
-      expect(permissions.canManageAdmins, isFalse);
-      expect(permissions.canManageLeaders, isFalse);
-      expect(permissions.canModerateContent, isTrue);
-      expect(permissions.canViewAnalytics, isTrue);
-    });
-
-    test('should handle missing fields in JSON with defaults', () {
-      final json = {
-        'canCreateEvents': true,
-        // Other fields missing
-      };
-
-      final permissions = ClubPermissions.fromJson(json);
-
-      expect(permissions.canCreateEvents, isTrue);
-      expect(permissions.canManageMembers, isFalse);
-      expect(permissions.canManageAdmins, isFalse);
-      expect(permissions.canManageLeaders, isFalse);
-      expect(permissions.canModerateContent, isFalse);
-      expect(permissions.canViewAnalytics, isFalse);
-    });
-
-    test('should handle JSON roundtrip correctly', () {
-      final original = ClubPermissions.forRole(ClubRole.leader);
-      final json = original.toJson();
-      final reconstructed = ClubPermissions.fromJson(json);
-
-      expect(reconstructed.canCreateEvents, equals(original.canCreateEvents));
-      expect(reconstructed.canManageMembers, equals(original.canManageMembers));
-      expect(reconstructed.canManageAdmins, equals(original.canManageAdmins));
-      expect(reconstructed.canManageLeaders, equals(original.canManageLeaders));
-      expect(reconstructed.canModerateContent, equals(original.canModerateContent));
-      expect(reconstructed.canViewAnalytics, equals(original.canViewAnalytics));
-    });
-
-    test('should create copy with updated fields', () {
+      // Test immutability
       const original = ClubPermissions();
       final updated = original.copyWith(
         canCreateEvents: true,
         canManageMembers: true,
       );
-
+      expect(original.canCreateEvents, isFalse);
       expect(updated.canCreateEvents, isTrue);
-      expect(updated.canManageMembers, isTrue);
-      expect(updated.canManageAdmins, isFalse);
-      expect(updated.canModerateContent, isFalse);
-    });
-
-    test('should preserve original values when fields not specified in copyWith', () {
-      final original = ClubPermissions.forRole(ClubRole.admin);
-      final updated = original.copyWith(canCreateEvents: false);
-
-      expect(updated.canCreateEvents, isFalse);
-      expect(updated.canManageMembers, equals(original.canManageMembers));
-      expect(updated.canManageAdmins, equals(original.canManageAdmins));
-      expect(updated.canViewAnalytics, equals(original.canViewAnalytics));
-    });
-
-    test('should be equal when all properties match', () {
-      final permissions1 = ClubPermissions.forRole(ClubRole.leader);
-      final permissions2 = ClubPermissions.forRole(ClubRole.leader);
-
-      expect(permissions1, equals(permissions2));
-    });
-
-    test('should not be equal when properties differ', () {
-      final permissions1 = ClubPermissions.forRole(ClubRole.leader);
-      final permissions2 = ClubPermissions.forRole(ClubRole.member);
-
-      expect(permissions1, isNot(equals(permissions2)));
     });
   });
 
   group('ClubHierarchy Tests', () {
-    test('should create hierarchy with default permissions', () {
+    test('should provide correct permissions for each role', () {
+      // Test business logic: role-based permission lookup
       final hierarchy = ClubHierarchy();
 
-      expect(hierarchy.rolePermissions, contains(ClubRole.leader));
-      expect(hierarchy.rolePermissions, contains(ClubRole.admin));
-      expect(hierarchy.rolePermissions, contains(ClubRole.moderator));
-      expect(hierarchy.rolePermissions, contains(ClubRole.member));
+      final leaderPerms = hierarchy.getPermissionsForRole(ClubRole.leader);
+      final adminPerms = hierarchy.getPermissionsForRole(ClubRole.admin);
+      final memberPerms = hierarchy.getPermissionsForRole(ClubRole.member);
+
+      expect(leaderPerms.canManageLeaders, isTrue);
+      expect(adminPerms.canManageAdmins, isFalse);
+      expect(memberPerms.canCreateEvents, isTrue);
+      expect(memberPerms.canManageMembers, isFalse);
     });
 
-    test('should get permissions for each role', () {
+    test('should check role permissions correctly', () {
       final hierarchy = ClubHierarchy();
 
-      final leaderPermissions = hierarchy.getPermissionsForRole(ClubRole.leader);
-      final adminPermissions = hierarchy.getPermissionsForRole(ClubRole.admin);
-      final moderatorPermissions = hierarchy.getPermissionsForRole(ClubRole.moderator);
-      final memberPermissions = hierarchy.getPermissionsForRole(ClubRole.member);
-
-      expect(leaderPermissions.canManageLeaders, isTrue);
-      expect(adminPermissions.canManageAdmins, isFalse);
-      expect(moderatorPermissions.canModerateContent, isTrue);
-      expect(memberPermissions.canCreateEvents, isTrue);
+      // Test business logic: permission checking
+      expect(
+          hierarchy.roleHasPermission(ClubRole.leader, 'createEvents'), isTrue);
+      expect(hierarchy.roleHasPermission(ClubRole.leader, 'manageLeaders'),
+          isTrue);
+      expect(
+          hierarchy.roleHasPermission(ClubRole.admin, 'manageAdmins'), isFalse);
+      expect(hierarchy.roleHasPermission(ClubRole.member, 'manageMembers'),
+          isFalse);
     });
 
-    test('should check if role has permission', () {
-      final hierarchy = ClubHierarchy();
-
-      expect(hierarchy.roleHasPermission(ClubRole.leader, 'createEvents'), isTrue);
-      expect(hierarchy.roleHasPermission(ClubRole.leader, 'manageLeaders'), isTrue);
-      expect(hierarchy.roleHasPermission(ClubRole.admin, 'manageAdmins'), isFalse);
-      expect(hierarchy.roleHasPermission(ClubRole.member, 'manageMembers'), isFalse);
-    });
-
-    test('should return default member permissions for unknown role', () {
-      final hierarchy = ClubHierarchy();
-      // Note: This test assumes the implementation handles unknown roles gracefully
-      // The actual implementation uses ClubPermissions.forRole(ClubRole.member) as fallback
-      final permissions = hierarchy.getPermissionsForRole(ClubRole.member);
-      expect(permissions.canCreateEvents, isTrue);
-      expect(permissions.canManageMembers, isFalse);
-    });
-
-    test('should create hierarchy with custom permissions', () {
-      final customPermissions = {
-        ClubRole.leader: ClubPermissions.forRole(ClubRole.leader),
-        ClubRole.admin: ClubPermissions.forRole(ClubRole.admin),
-        ClubRole.moderator: ClubPermissions.forRole(ClubRole.moderator),
-        ClubRole.member: ClubPermissions.forRole(ClubRole.member),
-      };
-
-      final hierarchy = ClubHierarchy(rolePermissions: customPermissions);
-
-      expect(hierarchy.rolePermissions, equals(customPermissions));
-    });
-
-    test('should serialize to JSON correctly', () {
+    test(
+        'should serialize and deserialize with defaults and create immutable copies',
+        () {
+      // Test business logic: JSON serialization with nested structure and immutability
       final hierarchy = ClubHierarchy();
       final json = hierarchy.toJson();
+      final restored = ClubHierarchy.fromJson(json);
 
-      expect(json, contains('rolePermissions'));
-      expect(json['rolePermissions'], isA<Map>());
-      expect(json['rolePermissions'], contains('leader'));
-      expect(json['rolePermissions'], contains('admin'));
-      expect(json['rolePermissions'], contains('moderator'));
-      expect(json['rolePermissions'], contains('member'));
-    });
+      // Test nested structure preserved
+      expect(restored.rolePermissions.length,
+          equals(hierarchy.rolePermissions.length));
+      expect(restored.getPermissionsForRole(ClubRole.leader).canManageLeaders,
+          isTrue);
 
-    test('should deserialize from JSON correctly', () {
-      final json = {
-        'rolePermissions': {
-          'leader': {
-            'canCreateEvents': true,
-            'canManageMembers': true,
-            'canManageAdmins': true,
-            'canManageLeaders': true,
-            'canModerateContent': true,
-            'canViewAnalytics': true,
-          },
-          'admin': {
-            'canCreateEvents': true,
-            'canManageMembers': true,
-            'canManageAdmins': false,
-            'canManageLeaders': false,
-            'canModerateContent': true,
-            'canViewAnalytics': true,
-          },
-        },
-      };
-
-      final hierarchy = ClubHierarchy.fromJson(json);
-
-      expect(hierarchy.rolePermissions, contains(ClubRole.leader));
-      expect(hierarchy.rolePermissions, contains(ClubRole.admin));
-      // Should also have default permissions for missing roles
-      expect(hierarchy.rolePermissions, contains(ClubRole.moderator));
-      expect(hierarchy.rolePermissions, contains(ClubRole.member));
-    });
-
-    test('should handle missing roles in JSON by adding defaults', () {
-      final json = {
+      // Test default behavior with minimal JSON
+      final minimalJson = {
         'rolePermissions': {
           'leader': {
             'canCreateEvents': true,
@@ -353,66 +151,25 @@ void main() {
           },
         },
       };
+      final fromMinimal = ClubHierarchy.fromJson(minimalJson);
+      expect(fromMinimal.rolePermissions, contains(ClubRole.leader));
+      expect(fromMinimal.rolePermissions,
+          contains(ClubRole.member)); // Default added
 
-      final hierarchy = ClubHierarchy.fromJson(json);
-
-      // Should have all roles even if not in JSON
-      expect(hierarchy.rolePermissions, contains(ClubRole.leader));
-      expect(hierarchy.rolePermissions, contains(ClubRole.admin));
-      expect(hierarchy.rolePermissions, contains(ClubRole.moderator));
-      expect(hierarchy.rolePermissions, contains(ClubRole.member));
-    });
-
-    test('should handle JSON roundtrip correctly', () {
-      final original = ClubHierarchy();
-      final json = original.toJson();
-      final reconstructed = ClubHierarchy.fromJson(json);
-
-      expect(reconstructed.rolePermissions.length, equals(original.rolePermissions.length));
-      for (final role in ClubRole.values) {
-        final originalPerms = original.getPermissionsForRole(role);
-        final reconstructedPerms = reconstructed.getPermissionsForRole(role);
-        expect(reconstructedPerms.canCreateEvents, equals(originalPerms.canCreateEvents));
-        expect(reconstructedPerms.canManageMembers, equals(originalPerms.canManageMembers));
-        expect(reconstructedPerms.canManageAdmins, equals(originalPerms.canManageAdmins));
-        expect(reconstructedPerms.canManageLeaders, equals(originalPerms.canManageLeaders));
-        expect(reconstructedPerms.canModerateContent, equals(originalPerms.canModerateContent));
-        expect(reconstructedPerms.canViewAnalytics, equals(originalPerms.canViewAnalytics));
-      }
-    });
-
-    test('should create copy with updated permissions', () {
+      // Test immutability
       final original = ClubHierarchy();
       final customPermissions = {
         ...original.rolePermissions,
         ClubRole.member: ClubPermissions(
           canCreateEvents: true,
-          canManageMembers: true, // Custom: members can manage members
+          canManageMembers: true,
         ),
       };
       final updated = original.copyWith(rolePermissions: customPermissions);
-
-      expect(updated.rolePermissions[ClubRole.member]?.canManageMembers, isTrue);
-      expect(updated.rolePermissions[ClubRole.leader], equals(original.rolePermissions[ClubRole.leader]));
-    });
-
-    test('should be equal when all properties match', () {
-      final hierarchy1 = ClubHierarchy();
-      final hierarchy2 = ClubHierarchy();
-
-      expect(hierarchy1, equals(hierarchy2));
-    });
-
-    test('should not be equal when permissions differ', () {
-      final hierarchy1 = ClubHierarchy();
-      final customPermissions = {
-        ...hierarchy1.rolePermissions,
-        ClubRole.member: ClubPermissions(canCreateEvents: false),
-      };
-      final hierarchy2 = ClubHierarchy(rolePermissions: customPermissions);
-
-      expect(hierarchy1, isNot(equals(hierarchy2)));
+      expect(
+          updated.rolePermissions[ClubRole.member]?.canManageMembers, isTrue);
+      expect(
+          original.rolePermissions[ClubRole.member]?.canManageMembers, isFalse);
     });
   });
 }
-

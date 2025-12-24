@@ -1,16 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/community_service.dart';
 import 'package:spots/core/services/club_service.dart';
-import 'package:spots/core/models/community.dart';
 import 'package:spots/core/models/club.dart';
 import 'package:spots/core/models/club_hierarchy.dart';
 import 'package:spots/core/models/community_event.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
 import '../fixtures/model_factories.dart';
 import '../helpers/test_helpers.dart';
-import '../helpers/integration_test_helpers.dart';
 
 /// Integration tests for Community/Club system
 /// Tests end-to-end flows: Event → Community → Club
@@ -76,13 +73,16 @@ void main() {
 
         // Step 2: Add more members and events to meet upgrade criteria
         // Add more members
+        var currentCommunity = community;
         for (int i = 0; i < 5; i++) {
-          await communityService.addMember(community, 'new-member-$i');
+          await communityService.addMember(currentCommunity, 'new-member-$i');
+          currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
         }
 
-        // Add more events
+        // Add more events (retrieve updated community after each add)
         for (int i = 2; i <= 4; i++) {
-          await communityService.addEvent(community, 'event-$i');
+          await communityService.addEvent(currentCommunity, 'event-$i');
+          currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
         }
 
         // Get updated community
@@ -109,14 +109,20 @@ void main() {
           event: successfulEvent,
         );
 
-        // Add members and events
-        await communityService.addMember(community, 'member-1');
-        await communityService.addEvent(community, 'event-2');
-        await communityService.addEvent(community, 'event-3');
+        // Add members and events (retrieve updated community after each operation)
+        var currentCommunity = community;
+        await communityService.addMember(currentCommunity, 'member-1');
+        currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
+        
+        await communityService.addEvent(currentCommunity, 'event-2');
+        currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
+        
+        await communityService.addEvent(currentCommunity, 'event-3');
+        currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
 
-        // Update growth metrics
+        // Update growth metrics (use latest community)
         await communityService.updateGrowthMetrics(
-          community,
+          currentCommunity,
           memberGrowthRate: 0.25,
           eventGrowthRate: 0.15,
         );
@@ -154,12 +160,15 @@ void main() {
           event: successfulEvent,
         );
 
-        // Add members and events to meet criteria
+        // Add members and events to meet criteria (retrieve updated community after each operation)
+        var currentCommunity = community;
         for (int i = 0; i < 5; i++) {
-          await communityService.addMember(community, 'member-$i');
+          await communityService.addMember(currentCommunity, 'member-$i');
+          currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
         }
         for (int i = 2; i <= 4; i++) {
-          await communityService.addEvent(community, 'event-$i');
+          await communityService.addEvent(currentCommunity, 'event-$i');
+          currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
         }
 
         final updatedCommunity = await communityService.getCommunityById(community.id);
@@ -169,13 +178,15 @@ void main() {
       });
 
       test('should manage organizational structure: add leaders and admins', () async {
-        // Add additional leader
-        const leaderId = 'leader-1';
+        // Add users as members first (they need to be members before becoming leaders/admins)
+        // Note: We need to add them to the community before upgrading to club, or add them via club service
+        // Since club extends community, we can use existing members
+        const leaderId = 'member-1'; // Use existing member
         await clubService.addLeader(club, leaderId);
 
-        // Add admins
-        const admin1Id = 'admin-1';
-        const admin2Id = 'admin-2';
+        // Add admins (use existing members)
+        const admin1Id = 'member-2';
+        const admin2Id = 'member-3';
         await clubService.addAdmin(club, admin1Id);
         await clubService.addAdmin(club, admin2Id);
 
@@ -188,8 +199,8 @@ void main() {
       });
 
       test('should manage member roles and permissions', () async {
-        // Assign moderator role
-        const moderatorId = 'moderator-1';
+        // Assign moderator role (use existing member)
+        const moderatorId = 'member-1';
         await clubService.assignRole(club, moderatorId, ClubRole.moderator);
 
         // Verify role and permissions
@@ -202,9 +213,9 @@ void main() {
       });
 
       test('should enforce role hierarchy in permissions', () async {
-        // Add leader and admin
-        const leaderId = 'leader-1';
-        const adminId = 'admin-1';
+        // Add leader and admin (use existing members)
+        const leaderId = 'member-1';
+        const adminId = 'member-2';
         await clubService.addLeader(club, leaderId);
         await clubService.addAdmin(club, adminId);
 
@@ -239,12 +250,15 @@ void main() {
           event: successfulEvent,
         );
 
-        // Add members and events
+        // Add members and events (retrieve updated community after each operation)
+        var currentCommunity = community;
         for (int i = 0; i < 5; i++) {
-          await communityService.addMember(community, 'member-$i');
+          await communityService.addMember(currentCommunity, 'member-$i');
+          currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
         }
         for (int i = 2; i <= 4; i++) {
-          await communityService.addEvent(community, 'event-$i');
+          await communityService.addEvent(currentCommunity, 'event-$i');
+          currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
         }
 
         final updatedCommunity = await communityService.getCommunityById(community.id);
@@ -284,9 +298,10 @@ void main() {
       });
 
       test('should enforce role management permissions', () async {
-        const leaderId = 'leader-1';
-        const adminId = 'admin-1';
-        const moderatorId = 'moderator-1';
+        // Use existing members for roles
+        const leaderId = 'member-1';
+        const adminId = 'member-2';
+        const moderatorId = 'member-3';
         const memberId = 'member-0';
 
         // Set up roles
@@ -319,18 +334,21 @@ void main() {
     group('End-to-End: Geographic Expansion Tracking', () {
       late Club club;
 
-      setUp() async {
+      setUp(() async {
         // Create community and upgrade to club
         final community = await communityService.createCommunityFromEvent(
           event: successfulEvent,
         );
 
-        // Add members and events
+        // Add members and events (retrieve updated community after each operation)
+        var currentCommunity = community;
         for (int i = 0; i < 5; i++) {
-          await communityService.addMember(community, 'member-$i');
+          await communityService.addMember(currentCommunity, 'member-$i');
+          currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
         }
         for (int i = 2; i <= 4; i++) {
-          await communityService.addEvent(community, 'event-$i');
+          await communityService.addEvent(currentCommunity, 'event-$i');
+          currentCommunity = await communityService.getCommunityById(community.id) ?? currentCommunity;
         }
 
         final updatedCommunity = await communityService.getCommunityById(community.id);

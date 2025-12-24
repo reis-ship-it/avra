@@ -9,9 +9,14 @@ import '../../../helpers/test_helpers.dart';
 /// Tests personality overview display with dimensions, confidence, and archetype
 void main() {
   group('PersonalityOverviewCard Widget Tests', () {
-    testWidgets('displays personality overview with all dimensions', (WidgetTester tester) async {
-      // Arrange
-      final profile = PersonalityProfile(
+    // Removed: Property assignment tests
+    // Personality overview card tests focus on business logic (personality overview display, dimension bars, authenticity progress, empty dimensions), not property assignment
+
+    testWidgets(
+        'should display personality overview with all dimensions, display dimension bars with correct values, display authenticity progress bar, or handle empty dimensions gracefully',
+        (WidgetTester tester) async {
+      // Test business logic: Personality overview card display and functionality
+      final profile1 = PersonalityProfile(
         userId: 'test-user-id',
         dimensions: {
           'adventure': 0.7,
@@ -30,15 +35,10 @@ void main() {
         evolutionGeneration: 3,
         learningHistory: {},
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: PersonalityOverviewCard(profile: profile),
+      final widget1 = WidgetTestHelpers.createTestableWidget(
+        child: PersonalityOverviewCard(profile: profile1),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(PersonalityOverviewCard), findsOneWidget);
       expect(find.text('Personality Overview'), findsOneWidget);
       expect(find.text('EXPLORER'), findsOneWidget);
@@ -47,11 +47,8 @@ void main() {
       expect(find.text('Core Dimensions'), findsOneWidget);
       expect(find.text('Evolution Generation'), findsOneWidget);
       expect(find.text('3'), findsOneWidget);
-    });
 
-    testWidgets('displays dimension bars with correct values', (WidgetTester tester) async {
-      // Arrange
-      final profile = PersonalityProfile(
+      final profile2 = PersonalityProfile(
         userId: 'test-user-id',
         dimensions: {
           'adventure': 0.7,
@@ -68,23 +65,15 @@ void main() {
         evolutionGeneration: 1,
         learningHistory: {},
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: PersonalityOverviewCard(profile: profile),
+      final widget2 = WidgetTestHelpers.createTestableWidget(
+        child: PersonalityOverviewCard(profile: profile2),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Check dimension values are displayed
-      expect(find.text('70%'), findsWidgets); // adventure dimension
-      expect(find.text('80%'), findsWidgets); // social dimension
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
+      expect(find.text('70%'), findsWidgets);
+      expect(find.text('80%'), findsWidgets);
       expect(find.byType(LinearProgressIndicator), findsWidgets);
-    });
 
-    testWidgets('displays authenticity progress bar', (WidgetTester tester) async {
-      // Arrange
-      final profile = PersonalityProfile(
+      final profile3 = PersonalityProfile(
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -95,41 +84,12 @@ void main() {
         evolutionGeneration: 1,
         learningHistory: {},
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: PersonalityOverviewCard(profile: profile),
+      final widget3 = WidgetTestHelpers.createTestableWidget(
+        child: PersonalityOverviewCard(profile: profile3),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('50%'), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsWidgets);
-    });
-
-    testWidgets('handles empty dimensions gracefully', (WidgetTester tester) async {
-      // Arrange
-      final profile = PersonalityProfile(
-        userId: 'test-user-id',
-        dimensions: {},
-        dimensionConfidence: {},
-        archetype: 'developing',
-        authenticity: 0.5,
-        createdAt: TestHelpers.createTestDateTime(),
-        lastUpdated: TestHelpers.createTestDateTime(),
-        evolutionGeneration: 1,
-        learningHistory: {},
-      );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: PersonalityOverviewCard(profile: profile),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should still render without errors
       expect(find.byType(PersonalityOverviewCard), findsOneWidget);
       expect(find.text('Personality Overview'), findsOneWidget);
     });

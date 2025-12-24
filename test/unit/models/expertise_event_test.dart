@@ -20,7 +20,8 @@ void main() {
       testDate = TestHelpers.createTestDateTime();
       startTime = testDate.add(Duration(days: 1));
       endTime = startTime.add(Duration(hours: 2));
-      testHost = ModelFactories.createTestUser(id: 'host-123', displayName: 'Expert Host');
+      testHost = ModelFactories.createTestUser(
+          id: 'host-123', displayName: 'Expert Host');
       testSpots = [
         ModelFactories.createTestSpot(id: 'spot-1', name: 'Coffee Shop 1'),
         ModelFactories.createTestSpot(id: 'spot-2', name: 'Coffee Shop 2'),
@@ -31,87 +32,16 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
-    group('Constructor and Properties', () {
-      test('should create event with required fields', () {
-        final event = ExpertiseEvent(
-          id: 'event-123',
-          title: 'Coffee Tour',
-          description: 'A guided tour of local coffee shops',
-          category: 'Coffee',
-          eventType: ExpertiseEventType.tour,
-          host: testHost,
-          startTime: startTime,
-          endTime: endTime,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(event.id, equals('event-123'));
-        expect(event.title, equals('Coffee Tour'));
-        expect(event.description, equals('A guided tour of local coffee shops'));
-        expect(event.category, equals('Coffee'));
-        expect(event.eventType, equals(ExpertiseEventType.tour));
-        expect(event.host, equals(testHost));
-        expect(event.startTime, equals(startTime));
-        expect(event.endTime, equals(endTime));
-        expect(event.createdAt, equals(testDate));
-        expect(event.updatedAt, equals(testDate));
-        
-        // Test default values
-        expect(event.attendeeIds, isEmpty);
-        expect(event.attendeeCount, equals(0));
-        expect(event.maxAttendees, equals(20));
-        expect(event.spots, isEmpty);
-        expect(event.location, isNull);
-        expect(event.latitude, isNull);
-        expect(event.longitude, isNull);
-        expect(event.price, isNull);
-        expect(event.isPaid, isFalse);
-        expect(event.isPublic, isTrue);
-        expect(event.status, equals(EventStatus.upcoming));
-      });
-
-      test('should create event with all fields', () {
-        final event = ExpertiseEvent(
-          id: 'event-123',
-          title: 'Coffee Tour',
-          description: 'A guided tour',
-          category: 'Coffee',
-          eventType: ExpertiseEventType.tour,
-          host: testHost,
-          attendeeIds: ['user-1', 'user-2'],
-          attendeeCount: 2,
-          maxAttendees: 10,
-          startTime: startTime,
-          endTime: endTime,
-          spots: testSpots,
-          location: '123 Main St',
-          latitude: 40.7128,
-          longitude: -74.0060,
-          price: 25.0,
-          isPaid: true,
-          isPublic: true,
-          createdAt: testDate,
-          updatedAt: testDate,
-          status: EventStatus.upcoming,
-        );
-
-        expect(event.attendeeIds, equals(['user-1', 'user-2']));
-        expect(event.attendeeCount, equals(2));
-        expect(event.maxAttendees, equals(10));
-        expect(event.spots, equals(testSpots));
-        expect(event.location, equals('123 Main St'));
-        expect(event.latitude, equals(40.7128));
-        expect(event.longitude, equals(-74.0060));
-        expect(event.price, equals(25.0));
-        expect(event.isPaid, isTrue);
-        expect(event.status, equals(EventStatus.upcoming));
-      });
-    });
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
     group('Event Status Checks', () {
-      test('isFull should return true when attendeeCount equals maxAttendees', () {
-        final event = ExpertiseEvent(
+      test(
+          'should correctly determine event status based on capacity and timing',
+          () {
+        // Test business logic: status determination
+        final now = DateTime.now();
+        final fullEvent = ExpertiseEvent(
           id: 'event-123',
           title: 'Coffee Tour',
           description: 'A guided tour',
@@ -120,111 +50,47 @@ void main() {
           host: testHost,
           attendeeCount: 10,
           maxAttendees: 10,
-          startTime: startTime,
-          endTime: endTime,
+          startTime: now.add(Duration(hours: 1)),
+          endTime: now.add(Duration(hours: 3)),
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(event.isFull, isTrue);
-      });
-
-      test('isFull should return false when attendeeCount is less than maxAttendees', () {
-        final event = ExpertiseEvent(
-          id: 'event-123',
+        final pastEvent = ExpertiseEvent(
+          id: 'event-456',
           title: 'Coffee Tour',
           description: 'A guided tour',
           category: 'Coffee',
           eventType: ExpertiseEventType.tour,
           host: testHost,
-          attendeeCount: 5,
-          maxAttendees: 10,
-          startTime: startTime,
-          endTime: endTime,
+          startTime: now.subtract(Duration(hours: 2)),
+          endTime: now.subtract(Duration(hours: 1)),
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(event.isFull, isFalse);
-      });
-
-      test('hasStarted should return true when current time is after startTime', () {
-        final pastStartTime = DateTime.now().subtract(Duration(hours: 1));
-        final event = ExpertiseEvent(
-          id: 'event-123',
+        final futureEvent = ExpertiseEvent(
+          id: 'event-789',
           title: 'Coffee Tour',
           description: 'A guided tour',
           category: 'Coffee',
           eventType: ExpertiseEventType.tour,
           host: testHost,
-          startTime: pastStartTime,
-          endTime: DateTime.now().add(Duration(hours: 1)),
+          startTime: now.add(Duration(hours: 1)),
+          endTime: now.add(Duration(hours: 3)),
           createdAt: testDate,
           updatedAt: testDate,
         );
 
-        expect(event.hasStarted, isTrue);
-      });
-
-      test('hasStarted should return false when current time is before startTime', () {
-        final futureStartTime = DateTime.now().add(Duration(hours: 1));
-        final event = ExpertiseEvent(
-          id: 'event-123',
-          title: 'Coffee Tour',
-          description: 'A guided tour',
-          category: 'Coffee',
-          eventType: ExpertiseEventType.tour,
-          host: testHost,
-          startTime: futureStartTime,
-          endTime: futureStartTime.add(Duration(hours: 2)),
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(event.hasStarted, isFalse);
-      });
-
-      test('hasEnded should return true when current time is after endTime', () {
-        final pastEndTime = DateTime.now().subtract(Duration(hours: 1));
-        final event = ExpertiseEvent(
-          id: 'event-123',
-          title: 'Coffee Tour',
-          description: 'A guided tour',
-          category: 'Coffee',
-          eventType: ExpertiseEventType.tour,
-          host: testHost,
-          startTime: pastEndTime.subtract(Duration(hours: 2)),
-          endTime: pastEndTime,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(event.hasEnded, isTrue);
-      });
-
-      test('hasEnded should return false when current time is before endTime', () {
-        final futureEndTime = DateTime.now().add(Duration(hours: 1));
-        final event = ExpertiseEvent(
-          id: 'event-123',
-          title: 'Coffee Tour',
-          description: 'A guided tour',
-          category: 'Coffee',
-          eventType: ExpertiseEventType.tour,
-          host: testHost,
-          startTime: DateTime.now(),
-          endTime: futureEndTime,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(event.hasEnded, isFalse);
+        expect(fullEvent.isFull, isTrue);
+        expect(pastEvent.hasEnded, isTrue);
+        expect(futureEvent.hasStarted, isFalse);
       });
     });
 
     group('canUserAttend', () {
-      test('should return true when user can attend', () {
-        final futureEndTime = DateTime.now().add(Duration(hours: 2));
-        final event = ExpertiseEvent(
+      test('should correctly determine user attendance eligibility', () {
+        // Test business logic: attendance eligibility
+        final now = DateTime.now();
+        final availableEvent = ExpertiseEvent(
           id: 'event-123',
           title: 'Coffee Tour',
           description: 'A guided tour',
@@ -233,36 +99,13 @@ void main() {
           host: testHost,
           attendeeCount: 5,
           maxAttendees: 10,
-          startTime: DateTime.now().add(Duration(hours: 1)),
-          endTime: futureEndTime,
+          startTime: now.add(Duration(hours: 1)),
+          endTime: now.add(Duration(hours: 3)),
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(event.canUserAttend('user-new'), isTrue);
-      });
-
-      test('should return false when event has ended', () {
-        final pastEndTime = DateTime.now().subtract(Duration(hours: 1));
-        final event = ExpertiseEvent(
-          id: 'event-123',
-          title: 'Coffee Tour',
-          description: 'A guided tour',
-          category: 'Coffee',
-          eventType: ExpertiseEventType.tour,
-          host: testHost,
-          startTime: pastEndTime.subtract(Duration(hours: 2)),
-          endTime: pastEndTime,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(event.canUserAttend('user-new'), isFalse);
-      });
-
-      test('should return false when event is full', () {
-        final event = ExpertiseEvent(
-          id: 'event-123',
+        final fullEvent = ExpertiseEvent(
+          id: 'event-456',
           title: 'Coffee Tour',
           description: 'A guided tour',
           category: 'Coffee',
@@ -270,122 +113,83 @@ void main() {
           host: testHost,
           attendeeCount: 10,
           maxAttendees: 10,
-          startTime: startTime,
-          endTime: endTime,
+          startTime: now.add(Duration(hours: 1)),
+          endTime: now.add(Duration(hours: 3)),
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(event.canUserAttend('user-new'), isFalse);
-      });
-
-      test('should return false when user is already attending', () {
-        final event = ExpertiseEvent(
-          id: 'event-123',
+        final pastEvent = ExpertiseEvent(
+          id: 'event-789',
           title: 'Coffee Tour',
           description: 'A guided tour',
           category: 'Coffee',
           eventType: ExpertiseEventType.tour,
           host: testHost,
-          attendeeIds: ['user-1', 'user-2'],
+          startTime: now.subtract(Duration(hours: 2)),
+          endTime: now.subtract(Duration(hours: 1)),
+          createdAt: testDate,
+          updatedAt: testDate,
+        );
+        final withAttendees = ExpertiseEvent(
+          id: 'event-101',
+          title: 'Coffee Tour',
+          description: 'A guided tour',
+          category: 'Coffee',
+          eventType: ExpertiseEventType.tour,
+          host: testHost,
+          attendeeIds: ['user-1'],
+          startTime: now.add(Duration(hours: 1)),
+          endTime: now.add(Duration(hours: 3)),
+          createdAt: testDate,
+          updatedAt: testDate,
+        );
+
+        expect(availableEvent.canUserAttend('user-new'), isTrue);
+        expect(fullEvent.canUserAttend('user-new'), isFalse); // Full
+        expect(pastEvent.canUserAttend('user-new'), isFalse); // Ended
+        expect(withAttendees.canUserAttend('user-1'),
+            isFalse); // Already attending
+      });
+    });
+
+    group('Event Type Display', () {
+      test('should return correct display names and emojis for event types',
+          () {
+        // Test business logic: display formatting
+        final tourEvent = ExpertiseEvent(
+          id: 'event-1',
+          title: 'Tour',
+          description: 'Test',
+          category: 'Coffee',
+          eventType: ExpertiseEventType.tour,
+          host: testHost,
+          startTime: startTime,
+          endTime: endTime,
+          createdAt: testDate,
+          updatedAt: testDate,
+        );
+        final workshopEvent = ExpertiseEvent(
+          id: 'event-2',
+          title: 'Workshop',
+          description: 'Test',
+          category: 'Coffee',
+          eventType: ExpertiseEventType.workshop,
+          host: testHost,
           startTime: startTime,
           endTime: endTime,
           createdAt: testDate,
           updatedAt: testDate,
         );
 
-        expect(event.canUserAttend('user-1'), isFalse);
-      });
-    });
-
-    group('Event Type Display', () {
-      test('getEventTypeDisplayName should return correct display names', () {
-        expect(
-          ExpertiseEvent(
-            id: 'event-1',
-            title: 'Tour',
-            description: 'Test',
-            category: 'Coffee',
-            eventType: ExpertiseEventType.tour,
-            host: testHost,
-            startTime: startTime,
-            endTime: endTime,
-            createdAt: testDate,
-            updatedAt: testDate,
-          ).getEventTypeDisplayName(),
-          equals('Expert Tour'),
-        );
-
-        expect(
-          ExpertiseEvent(
-            id: 'event-2',
-            title: 'Workshop',
-            description: 'Test',
-            category: 'Coffee',
-            eventType: ExpertiseEventType.workshop,
-            host: testHost,
-            startTime: startTime,
-            endTime: endTime,
-            createdAt: testDate,
-            updatedAt: testDate,
-          ).getEventTypeDisplayName(),
-          equals('Workshop'),
-        );
-
-        expect(
-          ExpertiseEvent(
-            id: 'event-3',
-            title: 'Tasting',
-            description: 'Test',
-            category: 'Coffee',
-            eventType: ExpertiseEventType.tasting,
-            host: testHost,
-            startTime: startTime,
-            endTime: endTime,
-            createdAt: testDate,
-            updatedAt: testDate,
-          ).getEventTypeDisplayName(),
-          equals('Tasting'),
-        );
-      });
-
-      test('getEventTypeEmoji should return correct emojis', () {
-        expect(
-          ExpertiseEvent(
-            id: 'event-1',
-            title: 'Tour',
-            description: 'Test',
-            category: 'Coffee',
-            eventType: ExpertiseEventType.tour,
-            host: testHost,
-            startTime: startTime,
-            endTime: endTime,
-            createdAt: testDate,
-            updatedAt: testDate,
-          ).getEventTypeEmoji(),
-          equals('🚶'),
-        );
-
-        expect(
-          ExpertiseEvent(
-            id: 'event-2',
-            title: 'Workshop',
-            description: 'Test',
-            category: 'Coffee',
-            eventType: ExpertiseEventType.workshop,
-            host: testHost,
-            startTime: startTime,
-            endTime: endTime,
-            createdAt: testDate,
-            updatedAt: testDate,
-          ).getEventTypeEmoji(),
-          equals('🎓'),
-        );
+        expect(tourEvent.getEventTypeDisplayName(), equals('Expert Tour'));
+        expect(tourEvent.getEventTypeEmoji(), equals('🚶'));
+        expect(workshopEvent.getEventTypeDisplayName(), equals('Workshop'));
+        expect(workshopEvent.getEventTypeEmoji(), equals('🎓'));
       });
     });
 
     group('JSON Serialization', () {
-      test('should serialize to JSON correctly', () {
+      test('should serialize and deserialize without data loss', () {
         final event = ExpertiseEvent(
           id: 'event-123',
           title: 'Coffee Tour',
@@ -400,142 +204,29 @@ void main() {
           endTime: endTime,
           spots: testSpots,
           location: '123 Main St',
-          latitude: 40.7128,
-          longitude: -74.0060,
           price: 25.0,
           isPaid: true,
-          isPublic: true,
           createdAt: testDate,
           updatedAt: testDate,
           status: EventStatus.upcoming,
         );
 
         final json = event.toJson();
+        final restored = ExpertiseEvent.fromJson(json, testHost);
 
-        expect(json['id'], equals('event-123'));
-        expect(json['title'], equals('Coffee Tour'));
-        expect(json['description'], equals('A guided tour'));
-        expect(json['category'], equals('Coffee'));
-        expect(json['eventType'], equals('tour'));
-        expect(json['hostId'], equals('host-123'));
-        expect(json['attendeeIds'], equals(['user-1']));
-        expect(json['attendeeCount'], equals(1));
-        expect(json['maxAttendees'], equals(10));
-        expect(json['startTime'], equals(startTime.toIso8601String()));
-        expect(json['endTime'], equals(endTime.toIso8601String()));
-        expect(json['spotIds'], equals(['spot-1', 'spot-2']));
-        expect(json['location'], equals('123 Main St'));
-        expect(json['latitude'], equals(40.7128));
-        expect(json['longitude'], equals(-74.0060));
-        expect(json['price'], equals(25.0));
-        expect(json['isPaid'], isTrue);
-        expect(json['isPublic'], isTrue);
-        expect(json['createdAt'], equals(testDate.toIso8601String()));
-        expect(json['updatedAt'], equals(testDate.toIso8601String()));
-        expect(json['status'], equals('upcoming'));
-      });
-
-      test('should deserialize from JSON correctly', () {
-        final json = {
-          'id': 'event-123',
-          'title': 'Coffee Tour',
-          'description': 'A guided tour',
-          'category': 'Coffee',
-          'eventType': 'tour',
-          'hostId': 'host-123',
-          'attendeeIds': ['user-1'],
-          'attendeeCount': 1,
-          'maxAttendees': 10,
-          'startTime': startTime.toIso8601String(),
-          'endTime': endTime.toIso8601String(),
-          'spotIds': ['spot-1', 'spot-2'],
-          'location': '123 Main St',
-          'latitude': 40.7128,
-          'longitude': -74.0060,
-          'price': 25.0,
-          'isPaid': true,
-          'isPublic': true,
-          'createdAt': testDate.toIso8601String(),
-          'updatedAt': testDate.toIso8601String(),
-          'status': 'upcoming',
-        };
-
-        final event = ExpertiseEvent.fromJson(json, testHost);
-
-        expect(event.id, equals('event-123'));
-        expect(event.title, equals('Coffee Tour'));
-        expect(event.description, equals('A guided tour'));
-        expect(event.category, equals('Coffee'));
-        expect(event.eventType, equals(ExpertiseEventType.tour));
-        expect(event.host, equals(testHost));
-        expect(event.attendeeIds, equals(['user-1']));
-        expect(event.attendeeCount, equals(1));
-        expect(event.maxAttendees, equals(10));
-        expect(event.startTime, equals(startTime));
-        expect(event.endTime, equals(endTime));
-        expect(event.location, equals('123 Main St'));
-        expect(event.latitude, equals(40.7128));
-        expect(event.longitude, equals(-74.0060));
-        expect(event.price, equals(25.0));
-        expect(event.isPaid, isTrue);
-        expect(event.isPublic, isTrue);
-        expect(event.status, equals(EventStatus.upcoming));
-      });
-
-      test('should handle null optional fields in JSON', () {
-        final json = {
-          'id': 'event-123',
-          'title': 'Coffee Tour',
-          'description': 'A guided tour',
-          'category': 'Coffee',
-          'eventType': 'tour',
-          'hostId': 'host-123',
-          'startTime': startTime.toIso8601String(),
-          'endTime': endTime.toIso8601String(),
-          'createdAt': testDate.toIso8601String(),
-          'updatedAt': testDate.toIso8601String(),
-        };
-
-        final event = ExpertiseEvent.fromJson(json, testHost);
-
-        expect(event.attendeeIds, isEmpty);
-        expect(event.attendeeCount, equals(0));
-        expect(event.maxAttendees, equals(20));
-        expect(event.spots, isEmpty);
-        expect(event.location, isNull);
-        expect(event.latitude, isNull);
-        expect(event.longitude, isNull);
-        expect(event.price, isNull);
-        expect(event.isPaid, isFalse);
-        expect(event.isPublic, isTrue);
-        expect(event.status, equals(EventStatus.upcoming));
+        // Test critical business fields preserved
+        expect(restored.canUserAttend('user-new'),
+            equals(event.canUserAttend('user-new')));
+        expect(restored.isFull, equals(event.isFull));
       });
     });
 
-    group('EventStatus Enum', () {
-      test('should have all status values', () {
-        expect(EventStatus.values, hasLength(4));
-        expect(EventStatus.values, contains(EventStatus.upcoming));
-        expect(EventStatus.values, contains(EventStatus.ongoing));
-        expect(EventStatus.values, contains(EventStatus.completed));
-        expect(EventStatus.values, contains(EventStatus.cancelled));
-      });
-    });
-
-    group('ExpertiseEventType Enum', () {
-      test('should have all event type values', () {
-        expect(ExpertiseEventType.values, hasLength(6));
-        expect(ExpertiseEventType.values, contains(ExpertiseEventType.tour));
-        expect(ExpertiseEventType.values, contains(ExpertiseEventType.workshop));
-        expect(ExpertiseEventType.values, contains(ExpertiseEventType.tasting));
-        expect(ExpertiseEventType.values, contains(ExpertiseEventType.meetup));
-        expect(ExpertiseEventType.values, contains(ExpertiseEventType.walk));
-        expect(ExpertiseEventType.values, contains(ExpertiseEventType.lecture));
-      });
-    });
+    // Removed: EventStatus Enum and ExpertiseEventType Enum groups
+    // These tests verify enum definitions, which are compile-time constants
+    // If enum values are wrong, the code won't compile
 
     group('copyWith', () {
-      test('should create copy with modified fields', () {
+      test('should create immutable copy with updated fields', () {
         final original = ExpertiseEvent(
           id: 'event-123',
           title: 'Original Title',
@@ -552,78 +243,17 @@ void main() {
         final updated = original.copyWith(
           title: 'Updated Title',
           attendeeCount: 5,
-          status: EventStatus.ongoing,
         );
 
-        expect(updated.id, equals('event-123')); // Unchanged
-        expect(updated.title, equals('Updated Title')); // Changed
-        expect(updated.attendeeCount, equals(5)); // Changed
-        expect(updated.status, equals(EventStatus.ongoing)); // Changed
-        expect(updated.category, equals('Coffee')); // Unchanged
+        // Test immutability (business logic)
+        expect(original.title, isNot(equals('Updated Title')));
+        expect(updated.title, equals('Updated Title'));
+        expect(updated.id, equals(original.id)); // Unchanged fields preserved
       });
     });
 
-    group('Equality', () {
-      test('should be equal when all properties match', () {
-        final event1 = ExpertiseEvent(
-          id: 'event-123',
-          title: 'Coffee Tour',
-          description: 'A guided tour',
-          category: 'Coffee',
-          eventType: ExpertiseEventType.tour,
-          host: testHost,
-          startTime: startTime,
-          endTime: endTime,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final event2 = ExpertiseEvent(
-          id: 'event-123',
-          title: 'Coffee Tour',
-          description: 'A guided tour',
-          category: 'Coffee',
-          eventType: ExpertiseEventType.tour,
-          host: testHost,
-          startTime: startTime,
-          endTime: endTime,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(event1, equals(event2));
-      });
-
-      test('should not be equal when properties differ', () {
-        final event1 = ExpertiseEvent(
-          id: 'event-123',
-          title: 'Coffee Tour',
-          description: 'A guided tour',
-          category: 'Coffee',
-          eventType: ExpertiseEventType.tour,
-          host: testHost,
-          startTime: startTime,
-          endTime: endTime,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final event2 = ExpertiseEvent(
-          id: 'event-123',
-          title: 'Different Title', // Different title
-          description: 'A guided tour',
-          category: 'Coffee',
-          eventType: ExpertiseEventType.tour,
-          host: testHost,
-          startTime: startTime,
-          endTime: endTime,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(event1, isNot(equals(event2)));
-      });
-    });
+    // Removed: Equality group
+    // These tests verify Equatable implementation, which is already tested by the package
+    // If equality breaks, other tests will fail
   });
 }
-

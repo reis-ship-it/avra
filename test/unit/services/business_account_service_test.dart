@@ -3,6 +3,7 @@ import 'package:spots/core/services/business_account_service.dart';
 import 'package:spots/core/models/business_account.dart';
 import 'package:spots/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Business Account Service Tests
 /// Tests business account creation and management
@@ -19,29 +20,32 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Business account tests focus on business logic (account creation, updates, retrieval, expert connections), not property assignment
+
     group('createBusinessAccount', () {
-      test('should create business account with required fields', () async {
-        final account = await service.createBusinessAccount(
+      test(
+          'should create business account with required fields, create business account with all optional fields, or generate unique business ID',
+          () async {
+        // Test business logic: business account creation
+        final account1 = await service.createBusinessAccount(
           creator: creator,
           name: 'Test Business',
           email: 'test@business.com',
           businessType: 'Restaurant',
         );
+        expect(account1, isA<BusinessAccount>());
+        expect(account1.name, equals('Test Business'));
+        expect(account1.email, equals('test@business.com'));
+        expect(account1.businessType, equals('Restaurant'));
+        expect(account1.createdBy, equals(creator.id));
+        expect(account1.createdAt, isNotNull);
+        expect(account1.updatedAt, isNotNull);
 
-        expect(account, isA<BusinessAccount>());
-        expect(account.name, equals('Test Business'));
-        expect(account.email, equals('test@business.com'));
-        expect(account.businessType, equals('Restaurant'));
-        expect(account.createdBy, equals(creator.id));
-        expect(account.createdAt, isNotNull);
-        expect(account.updatedAt, isNotNull);
-      });
-
-      test('should create business account with all optional fields', () async {
-        final account = await service.createBusinessAccount(
+        final account2 = await service.createBusinessAccount(
           creator: creator,
-          name: 'Test Business',
-          email: 'test@business.com',
+          name: 'Test Business 2',
+          email: 'test2@business.com',
           businessType: 'Retail',
           description: 'A test business',
           website: 'https://testbusiness.com',
@@ -52,23 +56,46 @@ void main() {
           requiredExpertise: ['Restaurant Management'],
           preferredCommunities: ['community-1'],
         );
+        expect(account2.description, equals('A test business'));
+        expect(account2.website, equals('https://testbusiness.com'));
+        expect(account2.location, equals('San Francisco'));
+        expect(account2.phone, equals('555-1234'));
+        expect(account2.logoUrl, equals('https://example.com/logo.png'));
+        expect(account2.categories, contains('Food'));
+        expect(account2.requiredExpertise, contains('Restaurant Management'));
 
-        expect(account.description, equals('A test business'));
-        expect(account.website, equals('https://testbusiness.com'));
-        expect(account.location, equals('San Francisco'));
-        expect(account.phone, equals('555-1234'));
-        expect(account.logoUrl, equals('https://example.com/logo.png'));
-        expect(account.categories, contains('Food'));
-        expect(account.requiredExpertise, contains('Restaurant Management'));
-      });
-
-      test('should generate unique business ID', () async {
-        final account1 = await service.createBusinessAccount(
+        await Future.delayed(const Duration(milliseconds: 1));
+        final account3 = await service.createBusinessAccount(
           creator: creator,
-          name: 'Test Business',
-          email: 'test1@business.com',
+          name: 'Test Business 3',
+          email: 'test3@business.com',
           businessType: 'Restaurant',
         );
+        expect(account1.id, isNot(equals(account3.id)));
+        expect(account2.id, isNot(equals(account3.id)));
+      });
+    });
+
+    group('updateBusinessAccount', () {
+      test('should update business account fields, or update categories',
+          () async {
+        // Test business logic: business account updates
+        final account1 = await service.createBusinessAccount(
+          creator: creator,
+          name: 'Original Name',
+          email: 'test@business.com',
+          businessType: 'Restaurant',
+        );
+        final updated1 = await service.updateBusinessAccount(
+          account1,
+          name: 'Updated Name',
+          description: 'Updated description',
+          website: 'https://updated.com',
+        );
+        expect(updated1.name, equals('Updated Name'));
+        expect(updated1.description, equals('Updated description'));
+        expect(updated1.website, equals('https://updated.com'));
+        expect(updated1.updatedAt, isNot(equals(account1.updatedAt)));
 
         final account2 = await service.createBusinessAccount(
           creator: creator,
@@ -76,66 +103,28 @@ void main() {
           email: 'test2@business.com',
           businessType: 'Restaurant',
         );
-
-        expect(account1.id, isNot(equals(account2.id)));
-      });
-    });
-
-    group('updateBusinessAccount', () {
-      test('should update business account fields', () async {
-        final account = await service.createBusinessAccount(
-          creator: creator,
-          name: 'Original Name',
-          email: 'test@business.com',
-          businessType: 'Restaurant',
-        );
-
-        final updated = await service.updateBusinessAccount(
-          account,
-          name: 'Updated Name',
-          description: 'Updated description',
-          website: 'https://updated.com',
-        );
-
-        expect(updated.name, equals('Updated Name'));
-        expect(updated.description, equals('Updated description'));
-        expect(updated.website, equals('https://updated.com'));
-        expect(updated.updatedAt, isNot(equals(account.updatedAt)));
-      });
-
-      test('should update categories', () async {
-        final account = await service.createBusinessAccount(
-          creator: creator,
-          name: 'Test Business',
-          email: 'test@business.com',
-          businessType: 'Restaurant',
-        );
-
-        final updated = await service.updateBusinessAccount(
-          account,
+        final updated2 = await service.updateBusinessAccount(
+          account2,
           categories: ['Food', 'Dining', 'Italian'],
         );
-
-        expect(updated.categories, equals(['Food', 'Dining', 'Italian']));
+        expect(updated2.categories, equals(['Food', 'Dining', 'Italian']));
       });
     });
 
     group('getBusinessAccount', () {
-      test('should return null for non-existent account', () async {
-        final account = await service.getBusinessAccount('non-existent-id');
-        expect(account, isNull);
-      });
+      test(
+          'should return null for non-existent account, or return account after creation',
+          () async {
+        // Test business logic: business account retrieval
+        final account1 = await service.getBusinessAccount('non-existent-id');
+        expect(account1, isNull);
 
-      test('should return account after creation', () async {
         final created = await service.createBusinessAccount(
           creator: creator,
           name: 'Test Business',
           email: 'test@business.com',
           businessType: 'Restaurant',
         );
-
-        // Note: This will return null in test environment since _getAllBusinessAccounts returns []
-        // In production, it would query the database
         final retrieved = await service.getBusinessAccount(created.id);
         expect(retrieved, anyOf(isNull, isA<BusinessAccount>()));
       });
@@ -149,64 +138,71 @@ void main() {
     });
 
     group('addExpertConnection', () {
-      test('should add expert connection', () async {
-        final account = await service.createBusinessAccount(
+      test(
+          'should add expert connection, or not add duplicate expert connection',
+          () async {
+        // Test business logic: expert connection management
+        final account1 = await service.createBusinessAccount(
           creator: creator,
           name: 'Test Business',
           email: 'test@business.com',
           businessType: 'Restaurant',
         );
+        final updated1 =
+            await service.addExpertConnection(account1, 'expert-123');
+        expect(updated1.connectedExpertIds, contains('expert-123'));
+        expect(updated1.pendingConnectionIds, isNot(contains('expert-123')));
 
-        final updated = await service.addExpertConnection(account, 'expert-123');
-
-        expect(updated.connectedExpertIds, contains('expert-123'));
-        expect(updated.pendingConnectionIds, isNot(contains('expert-123')));
-      });
-
-      test('should not add duplicate expert connection', () async {
-        final account = await service.createBusinessAccount(
+        final account2 = await service.createBusinessAccount(
           creator: creator,
-          name: 'Test Business',
-          email: 'test@business.com',
+          name: 'Test Business 2',
+          email: 'test2@business.com',
           businessType: 'Restaurant',
         );
-
-        final updated1 = await service.addExpertConnection(account, 'expert-123');
-        final updated2 = await service.addExpertConnection(updated1, 'expert-123');
-
-        expect(updated2.connectedExpertIds.where((id) => id == 'expert-123').length, equals(1));
+        final updated2a =
+            await service.addExpertConnection(account2, 'expert-456');
+        final updated2b =
+            await service.addExpertConnection(updated2a, 'expert-456');
+        expect(
+            updated2b.connectedExpertIds
+                .where((id) => id == 'expert-456')
+                .length,
+            equals(1));
       });
     });
 
     group('requestExpertConnection', () {
-      test('should add expert to pending connections', () async {
-        final account = await service.createBusinessAccount(
+      test(
+          'should add expert to pending connections, or not add if already connected',
+          () async {
+        // Test business logic: expert connection requests
+        final account1 = await service.createBusinessAccount(
           creator: creator,
           name: 'Test Business',
           email: 'test@business.com',
           businessType: 'Restaurant',
         );
+        final updated1 =
+            await service.requestExpertConnection(account1, 'expert-123');
+        expect(updated1.pendingConnectionIds, contains('expert-123'));
 
-        final updated = await service.requestExpertConnection(account, 'expert-123');
-
-        expect(updated.pendingConnectionIds, contains('expert-123'));
-      });
-
-      test('should not add if already connected', () async {
-        final account = await service.createBusinessAccount(
+        final account2 = await service.createBusinessAccount(
           creator: creator,
-          name: 'Test Business',
-          email: 'test@business.com',
+          name: 'Test Business 2',
+          email: 'test2@business.com',
           businessType: 'Restaurant',
         );
-
-        final connected = await service.addExpertConnection(account, 'expert-123');
-        final requested = await service.requestExpertConnection(connected, 'expert-123');
-
-        expect(requested.pendingConnectionIds, isNot(contains('expert-123')));
-        expect(requested.connectedExpertIds, contains('expert-123'));
+        final connected =
+            await service.addExpertConnection(account2, 'expert-456');
+        final requested =
+            await service.requestExpertConnection(connected, 'expert-456');
+        expect(requested.pendingConnectionIds, isNot(contains('expert-456')));
+        expect(requested.connectedExpertIds, contains('expert-456'));
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

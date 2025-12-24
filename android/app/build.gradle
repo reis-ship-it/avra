@@ -30,7 +30,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.spots.app"
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 36
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -43,13 +43,13 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += ['src/main/kotlin', 'src/main/java']
     }
 
     defaultConfig {
         applicationId "com.spots.app"
         minSdkVersion 26
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }

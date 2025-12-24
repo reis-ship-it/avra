@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/search_cache_service.dart';
 import 'package:spots/data/repositories/hybrid_search_repository.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Search Cache Service Tests
 /// Tests search caching functionality for performance optimization
@@ -12,41 +13,43 @@ void main() {
       service = SearchCacheService();
     });
 
+    // Removed: Property assignment tests
+    // Search cache tests focus on business logic (caching, retrieval, maintenance), not property assignment
+
     group('getCachedResult', () {
-      test('should return null when no cached result exists', () async {
-        final result = await service.getCachedResult(
+      test(
+          'should return null when no cached result exists, return null for new query, or accept query with location',
+          () async {
+        // Test business logic: cache retrieval
+        final result1 = await service.getCachedResult(
           query: 'test query',
         );
+        expect(result1, isNull);
 
-        expect(result, isNull);
-      });
-
-      test('should return null for new query', () async {
-        final result = await service.getCachedResult(
+        final result2 = await service.getCachedResult(
           query: 'coffee shops',
           latitude: 40.7128,
           longitude: -74.0060,
         );
+        expect(result2, isNull);
 
-        expect(result, isNull);
-      });
-
-      test('should accept query with location', () async {
-        final result = await service.getCachedResult(
+        final result3 = await service.getCachedResult(
           query: 'restaurants',
           latitude: 37.7749,
           longitude: -122.4194,
           maxResults: 20,
           includeExternal: false,
         );
-
-        expect(result, anyOf(isNull, isA<HybridSearchResult>()));
+        expect(result3, anyOf(isNull, isA<HybridSearchResult>()));
       });
     });
 
     group('cacheResult', () {
-      test('should cache search result', () async {
-        final searchResult = HybridSearchResult(
+      test(
+          'should cache search result, cache result with location, or cache result with custom maxResults',
+          () async {
+        // Test business logic: result caching
+        final searchResult1 = HybridSearchResult(
           spots: [],
           communityCount: 0,
           externalCount: 0,
@@ -54,18 +57,13 @@ void main() {
           searchDuration: Duration(milliseconds: 100),
           sources: {},
         );
-
         await service.cacheResult(
           query: 'test query',
-          result: searchResult,
+          result: searchResult1,
         );
+        expect(searchResult1, isNotNull);
 
-        // Verify caching doesn't throw
-        expect(searchResult, isNotNull);
-      });
-
-      test('should cache result with location', () async {
-        final searchResult = HybridSearchResult(
+        final searchResult2 = HybridSearchResult(
           spots: [],
           communityCount: 0,
           externalCount: 0,
@@ -73,19 +71,15 @@ void main() {
           searchDuration: Duration(milliseconds: 50),
           sources: {},
         );
-
         await service.cacheResult(
           query: 'coffee',
           latitude: 40.7128,
           longitude: -74.0060,
-          result: searchResult,
+          result: searchResult2,
         );
+        expect(searchResult2, isNotNull);
 
-        expect(searchResult, isNotNull);
-      });
-
-      test('should cache result with custom maxResults', () async {
-        final searchResult = HybridSearchResult(
+        final searchResult3 = HybridSearchResult(
           spots: [],
           communityCount: 0,
           externalCount: 0,
@@ -93,14 +87,12 @@ void main() {
           searchDuration: Duration(milliseconds: 75),
           sources: {},
         );
-
         await service.cacheResult(
           query: 'restaurants',
           maxResults: 100,
-          result: searchResult,
+          result: searchResult3,
         );
-
-        expect(searchResult, isNotNull);
+        expect(searchResult3, isNotNull);
       });
     });
 
@@ -171,6 +163,9 @@ void main() {
         expect(service, isNotNull);
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

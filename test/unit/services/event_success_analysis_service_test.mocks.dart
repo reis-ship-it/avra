@@ -3,21 +3,22 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i9;
+import 'dart:async' as _i10;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:spots/core/models/event_feedback.dart' as _i3;
 import 'package:spots/core/models/expertise_event.dart' as _i2;
-import 'package:spots/core/models/payment.dart' as _i7;
-import 'package:spots/core/models/payment_intent.dart' as _i14;
-import 'package:spots/core/models/payment_result.dart' as _i5;
-import 'package:spots/core/models/revenue_split.dart' as _i6;
-import 'package:spots/core/models/spot.dart' as _i11;
-import 'package:spots/core/models/unified_user.dart' as _i10;
-import 'package:spots/core/services/expertise_event_service.dart' as _i8;
-import 'package:spots/core/services/payment_service.dart' as _i13;
-import 'package:spots/core/services/post_event_feedback_service.dart' as _i12;
-import 'package:spots/core/services/stripe_service.dart' as _i4;
+import 'package:spots/core/models/partner_rating.dart' as _i4;
+import 'package:spots/core/models/payment.dart' as _i8;
+import 'package:spots/core/models/payment_intent.dart' as _i15;
+import 'package:spots/core/models/payment_result.dart' as _i6;
+import 'package:spots/core/models/revenue_split.dart' as _i7;
+import 'package:spots/core/models/spot.dart' as _i12;
+import 'package:spots/core/models/unified_user.dart' as _i11;
+import 'package:spots/core/services/expertise_event_service.dart' as _i9;
+import 'package:spots/core/services/payment_service.dart' as _i14;
+import 'package:spots/core/services/post_event_feedback_service.dart' as _i13;
+import 'package:spots/core/services/stripe_service.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -64,8 +65,8 @@ class _FakeEventFeedback_2 extends _i1.SmartFake implements _i3.EventFeedback {
         );
 }
 
-class _FakeStripeService_3 extends _i1.SmartFake implements _i4.StripeService {
-  _FakeStripeService_3(
+class _FakePartnerRating_3 extends _i1.SmartFake implements _i4.PartnerRating {
+  _FakePartnerRating_3(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -74,8 +75,8 @@ class _FakeStripeService_3 extends _i1.SmartFake implements _i4.StripeService {
         );
 }
 
-class _FakePaymentResult_4 extends _i1.SmartFake implements _i5.PaymentResult {
-  _FakePaymentResult_4(
+class _FakeStripeService_4 extends _i1.SmartFake implements _i5.StripeService {
+  _FakeStripeService_4(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -84,8 +85,8 @@ class _FakePaymentResult_4 extends _i1.SmartFake implements _i5.PaymentResult {
         );
 }
 
-class _FakeRevenueSplit_5 extends _i1.SmartFake implements _i6.RevenueSplit {
-  _FakeRevenueSplit_5(
+class _FakePaymentResult_5 extends _i1.SmartFake implements _i6.PaymentResult {
+  _FakePaymentResult_5(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -94,8 +95,18 @@ class _FakeRevenueSplit_5 extends _i1.SmartFake implements _i6.RevenueSplit {
         );
 }
 
-class _FakePayment_6 extends _i1.SmartFake implements _i7.Payment {
-  _FakePayment_6(
+class _FakeRevenueSplit_6 extends _i1.SmartFake implements _i7.RevenueSplit {
+  _FakeRevenueSplit_6(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakePayment_7 extends _i1.SmartFake implements _i8.Payment {
+  _FakePayment_7(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -108,21 +119,21 @@ class _FakePayment_6 extends _i1.SmartFake implements _i7.Payment {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockExpertiseEventService extends _i1.Mock
-    implements _i8.ExpertiseEventService {
+    implements _i9.ExpertiseEventService {
   MockExpertiseEventService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i9.Future<_i2.ExpertiseEvent> createEvent({
-    required _i10.UnifiedUser? host,
+  _i10.Future<_i2.ExpertiseEvent> createEvent({
+    required _i11.UnifiedUser? host,
     required String? title,
     required String? description,
     required String? category,
     required _i2.ExpertiseEventType? eventType,
     required DateTime? startTime,
     required DateTime? endTime,
-    List<_i11.Spot>? spots,
+    List<_i12.Spot>? spots,
     String? location,
     double? latitude,
     double? longitude,
@@ -151,7 +162,8 @@ class MockExpertiseEventService extends _i1.Mock
             #isPublic: isPublic,
           },
         ),
-        returnValue: _i9.Future<_i2.ExpertiseEvent>.value(_FakeExpertiseEvent_0(
+        returnValue:
+            _i10.Future<_i2.ExpertiseEvent>.value(_FakeExpertiseEvent_0(
           this,
           Invocation.method(
             #createEvent,
@@ -174,10 +186,10 @@ class MockExpertiseEventService extends _i1.Mock
             },
           ),
         )),
-      ) as _i9.Future<_i2.ExpertiseEvent>);
+      ) as _i10.Future<_i2.ExpertiseEvent>);
 
   @override
-  _i9.Future<_i2.ExpertiseEvent> duplicateEvent({
+  _i10.Future<_i2.ExpertiseEvent> duplicateEvent({
     required _i2.ExpertiseEvent? originalEvent,
     DateTime? newStartTime,
     bool? autoSuggestTime = true,
@@ -192,7 +204,8 @@ class MockExpertiseEventService extends _i1.Mock
             #autoSuggestTime: autoSuggestTime,
           },
         ),
-        returnValue: _i9.Future<_i2.ExpertiseEvent>.value(_FakeExpertiseEvent_0(
+        returnValue:
+            _i10.Future<_i2.ExpertiseEvent>.value(_FakeExpertiseEvent_0(
           this,
           Invocation.method(
             #duplicateEvent,
@@ -204,12 +217,12 @@ class MockExpertiseEventService extends _i1.Mock
             },
           ),
         )),
-      ) as _i9.Future<_i2.ExpertiseEvent>);
+      ) as _i10.Future<_i2.ExpertiseEvent>);
 
   @override
-  _i9.Future<void> registerForEvent(
+  _i10.Future<void> registerForEvent(
     _i2.ExpertiseEvent? event,
-    _i10.UnifiedUser? user,
+    _i11.UnifiedUser? user,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -219,14 +232,14 @@ class MockExpertiseEventService extends _i1.Mock
             user,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
 
   @override
-  _i9.Future<void> cancelRegistration(
+  _i10.Future<void> cancelRegistration(
     _i2.ExpertiseEvent? event,
-    _i10.UnifiedUser? user,
+    _i11.UnifiedUser? user,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -236,52 +249,53 @@ class MockExpertiseEventService extends _i1.Mock
             user,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
 
   @override
-  _i9.Future<List<_i2.ExpertiseEvent>> getEventsByHost(
-          _i10.UnifiedUser? host) =>
+  _i10.Future<List<_i2.ExpertiseEvent>> getEventsByHost(
+          _i11.UnifiedUser? host) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventsByHost,
           [host],
         ),
         returnValue:
-            _i9.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
-      ) as _i9.Future<List<_i2.ExpertiseEvent>>);
+            _i10.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i10.Future<List<_i2.ExpertiseEvent>>);
 
   @override
-  _i9.Future<List<_i2.ExpertiseEvent>> getEventsByAttendee(
-          _i10.UnifiedUser? user) =>
+  _i10.Future<List<_i2.ExpertiseEvent>> getEventsByAttendee(
+          _i11.UnifiedUser? user) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventsByAttendee,
           [user],
         ),
         returnValue:
-            _i9.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
-      ) as _i9.Future<List<_i2.ExpertiseEvent>>);
+            _i10.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i10.Future<List<_i2.ExpertiseEvent>>);
 
   @override
-  _i9.Future<_i2.ExpertiseEvent?> getEventById(String? eventId) =>
+  _i10.Future<_i2.ExpertiseEvent?> getEventById(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventById,
           [eventId],
         ),
-        returnValue: _i9.Future<_i2.ExpertiseEvent?>.value(),
-      ) as _i9.Future<_i2.ExpertiseEvent?>);
+        returnValue: _i10.Future<_i2.ExpertiseEvent?>.value(),
+      ) as _i10.Future<_i2.ExpertiseEvent?>);
 
   @override
-  _i9.Future<List<_i2.ExpertiseEvent>> searchEvents({
+  _i10.Future<List<_i2.ExpertiseEvent>> searchEvents({
     String? category,
     String? location,
     _i2.ExpertiseEventType? eventType,
     DateTime? startDate,
     DateTime? endDate,
     int? maxResults = 20,
+    bool? includeCommunityEvents = true,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -294,14 +308,15 @@ class MockExpertiseEventService extends _i1.Mock
             #startDate: startDate,
             #endDate: endDate,
             #maxResults: maxResults,
+            #includeCommunityEvents: includeCommunityEvents,
           },
         ),
         returnValue:
-            _i9.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
-      ) as _i9.Future<List<_i2.ExpertiseEvent>>);
+            _i10.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i10.Future<List<_i2.ExpertiseEvent>>);
 
   @override
-  _i9.Future<List<_i2.ExpertiseEvent>> getUpcomingEventsInCategory(
+  _i10.Future<List<_i2.ExpertiseEvent>> getUpcomingEventsInCategory(
     String? category, {
     int? maxResults = 10,
   }) =>
@@ -312,11 +327,41 @@ class MockExpertiseEventService extends _i1.Mock
           {#maxResults: maxResults},
         ),
         returnValue:
-            _i9.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
-      ) as _i9.Future<List<_i2.ExpertiseEvent>>);
+            _i10.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i10.Future<List<_i2.ExpertiseEvent>>);
 
   @override
-  _i9.Future<void> updateEventStatus(
+  _i10.Future<List<_i2.ExpertiseEvent>> searchEventsWithConnectedLocalities({
+    required _i11.UnifiedUser? user,
+    String? category,
+    String? location,
+    _i2.ExpertiseEventType? eventType,
+    DateTime? startDate,
+    DateTime? endDate,
+    int? maxResults = 20,
+    bool? includeConnectedLocalities = true,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #searchEventsWithConnectedLocalities,
+          [],
+          {
+            #user: user,
+            #category: category,
+            #location: location,
+            #eventType: eventType,
+            #startDate: startDate,
+            #endDate: endDate,
+            #maxResults: maxResults,
+            #includeConnectedLocalities: includeConnectedLocalities,
+          },
+        ),
+        returnValue:
+            _i10.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i10.Future<List<_i2.ExpertiseEvent>>);
+
+  @override
+  _i10.Future<void> updateEventStatus(
     _i2.ExpertiseEvent? event,
     _i2.EventStatus? status,
   ) =>
@@ -328,48 +373,49 @@ class MockExpertiseEventService extends _i1.Mock
             status,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
 }
 
 /// A class which mocks [PostEventFeedbackService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockPostEventFeedbackService extends _i1.Mock
-    implements _i12.PostEventFeedbackService {
+    implements _i13.PostEventFeedbackService {
   MockPostEventFeedbackService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i9.Future<DateTime> scheduleFeedbackCollection(String? eventId) =>
+  _i10.Future<DateTime> scheduleFeedbackCollection(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #scheduleFeedbackCollection,
           [eventId],
         ),
-        returnValue: _i9.Future<DateTime>.value(_FakeDateTime_1(
+        returnValue: _i10.Future<DateTime>.value(_FakeDateTime_1(
           this,
           Invocation.method(
             #scheduleFeedbackCollection,
             [eventId],
           ),
         )),
-      ) as _i9.Future<DateTime>);
+      ) as _i10.Future<DateTime>);
 
   @override
-  _i9.Future<void> sendFeedbackRequests(String? eventId) => (super.noSuchMethod(
+  _i10.Future<void> sendFeedbackRequests(String? eventId) =>
+      (super.noSuchMethod(
         Invocation.method(
           #sendFeedbackRequests,
           [eventId],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
 
   @override
-  _i9.Future<_i3.EventFeedback> submitFeedback({
+  _i10.Future<_i3.EventFeedback> submitFeedback({
     required String? eventId,
     required String? userId,
     required double? overallRating,
@@ -396,7 +442,7 @@ class MockPostEventFeedbackService extends _i1.Mock
             #wouldRecommend: wouldRecommend,
           },
         ),
-        returnValue: _i9.Future<_i3.EventFeedback>.value(_FakeEventFeedback_2(
+        returnValue: _i10.Future<_i3.EventFeedback>.value(_FakeEventFeedback_2(
           this,
           Invocation.method(
             #submitFeedback,
@@ -414,10 +460,10 @@ class MockPostEventFeedbackService extends _i1.Mock
             },
           ),
         )),
-      ) as _i9.Future<_i3.EventFeedback>);
+      ) as _i10.Future<_i3.EventFeedback>);
 
   @override
-  _i9.Future<dynamic> submitPartnerRating({
+  _i10.Future<_i4.PartnerRating> submitPartnerRating({
     required String? eventId,
     required String? raterId,
     required String? ratedId,
@@ -448,56 +494,79 @@ class MockPostEventFeedbackService extends _i1.Mock
             #improvements: improvements,
           },
         ),
-        returnValue: _i9.Future<dynamic>.value(),
-      ) as _i9.Future<dynamic>);
+        returnValue: _i10.Future<_i4.PartnerRating>.value(_FakePartnerRating_3(
+          this,
+          Invocation.method(
+            #submitPartnerRating,
+            [],
+            {
+              #eventId: eventId,
+              #raterId: raterId,
+              #ratedId: ratedId,
+              #partnershipRole: partnershipRole,
+              #overallRating: overallRating,
+              #professionalism: professionalism,
+              #communication: communication,
+              #reliability: reliability,
+              #wouldPartnerAgain: wouldPartnerAgain,
+              #positives: positives,
+              #improvements: improvements,
+            },
+          ),
+        )),
+      ) as _i10.Future<_i4.PartnerRating>);
 
   @override
-  _i9.Future<List<_i3.EventFeedback>> getFeedbackForEvent(String? eventId) =>
+  _i10.Future<List<_i3.EventFeedback>> getFeedbackForEvent(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getFeedbackForEvent,
           [eventId],
         ),
         returnValue:
-            _i9.Future<List<_i3.EventFeedback>>.value(<_i3.EventFeedback>[]),
-      ) as _i9.Future<List<_i3.EventFeedback>>);
+            _i10.Future<List<_i3.EventFeedback>>.value(<_i3.EventFeedback>[]),
+      ) as _i10.Future<List<_i3.EventFeedback>>);
 
   @override
-  _i9.Future<List<_i3.EventFeedback>> getEventFeedback(String? eventId) =>
+  _i10.Future<List<_i3.EventFeedback>> getEventFeedback(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventFeedback,
           [eventId],
         ),
         returnValue:
-            _i9.Future<List<_i3.EventFeedback>>.value(<_i3.EventFeedback>[]),
-      ) as _i9.Future<List<_i3.EventFeedback>>);
+            _i10.Future<List<_i3.EventFeedback>>.value(<_i3.EventFeedback>[]),
+      ) as _i10.Future<List<_i3.EventFeedback>>);
 
   @override
-  _i9.Future<List<dynamic>> getPartnerRatingsForEvent(String? eventId) =>
+  _i10.Future<List<_i4.PartnerRating>> getPartnerRatingsForEvent(
+          String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getPartnerRatingsForEvent,
           [eventId],
         ),
-        returnValue: _i9.Future<List<dynamic>>.value(<dynamic>[]),
-      ) as _i9.Future<List<dynamic>>);
+        returnValue:
+            _i10.Future<List<_i4.PartnerRating>>.value(<_i4.PartnerRating>[]),
+      ) as _i10.Future<List<_i4.PartnerRating>>);
 
   @override
-  _i9.Future<List<dynamic>> getEventPartnerRatings(String? eventId) =>
+  _i10.Future<List<_i4.PartnerRating>> getEventPartnerRatings(
+          String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventPartnerRatings,
           [eventId],
         ),
-        returnValue: _i9.Future<List<dynamic>>.value(<dynamic>[]),
-      ) as _i9.Future<List<dynamic>>);
+        returnValue:
+            _i10.Future<List<_i4.PartnerRating>>.value(<_i4.PartnerRating>[]),
+      ) as _i10.Future<List<_i4.PartnerRating>>);
 }
 
 /// A class which mocks [PaymentService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
+class MockPaymentService extends _i1.Mock implements _i14.PaymentService {
   MockPaymentService() {
     _i1.throwOnMissingStub(this);
   }
@@ -509,26 +578,26 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
       ) as bool);
 
   @override
-  _i4.StripeService get stripeService => (super.noSuchMethod(
+  _i5.StripeService get stripeService => (super.noSuchMethod(
         Invocation.getter(#stripeService),
-        returnValue: _FakeStripeService_3(
+        returnValue: _FakeStripeService_4(
           this,
           Invocation.getter(#stripeService),
         ),
-      ) as _i4.StripeService);
+      ) as _i5.StripeService);
 
   @override
-  _i9.Future<void> initialize() => (super.noSuchMethod(
+  _i10.Future<void> initialize() => (super.noSuchMethod(
         Invocation.method(
           #initialize,
           [],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
 
   @override
-  _i9.Future<_i5.PaymentResult> purchaseEventTicket({
+  _i10.Future<_i6.PaymentResult> purchaseEventTicket({
     required String? eventId,
     required String? userId,
     required double? ticketPrice,
@@ -545,7 +614,7 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
             #quantity: quantity,
           },
         ),
-        returnValue: _i9.Future<_i5.PaymentResult>.value(_FakePaymentResult_4(
+        returnValue: _i10.Future<_i6.PaymentResult>.value(_FakePaymentResult_5(
           this,
           Invocation.method(
             #purchaseEventTicket,
@@ -558,10 +627,10 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
             },
           ),
         )),
-      ) as _i9.Future<_i5.PaymentResult>);
+      ) as _i10.Future<_i6.PaymentResult>);
 
   @override
-  _i6.RevenueSplit calculateRevenueSplit({
+  _i7.RevenueSplit calculateRevenueSplit({
     required double? totalAmount,
     required int? ticketsSold,
     required String? eventId,
@@ -576,7 +645,7 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
             #eventId: eventId,
           },
         ),
-        returnValue: _FakeRevenueSplit_5(
+        returnValue: _FakeRevenueSplit_6(
           this,
           Invocation.method(
             #calculateRevenueSplit,
@@ -588,10 +657,10 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
             },
           ),
         ),
-      ) as _i6.RevenueSplit);
+      ) as _i7.RevenueSplit);
 
   @override
-  _i9.Future<_i7.Payment> confirmPayment({
+  _i10.Future<_i8.Payment> confirmPayment({
     required String? paymentId,
     required String? paymentIntentId,
   }) =>
@@ -604,7 +673,7 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
             #paymentIntentId: paymentIntentId,
           },
         ),
-        returnValue: _i9.Future<_i7.Payment>.value(_FakePayment_6(
+        returnValue: _i10.Future<_i8.Payment>.value(_FakePayment_7(
           this,
           Invocation.method(
             #confirmPayment,
@@ -615,10 +684,10 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
             },
           ),
         )),
-      ) as _i9.Future<_i7.Payment>);
+      ) as _i10.Future<_i8.Payment>);
 
   @override
-  _i9.Future<void> handlePaymentFailure({
+  _i10.Future<void> handlePaymentFailure({
     required String? paymentId,
     required String? errorMessage,
   }) =>
@@ -631,35 +700,44 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
             #errorMessage: errorMessage,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
 
   @override
-  _i7.Payment? getPayment(String? paymentId) =>
+  _i8.Payment? getPayment(String? paymentId) =>
       (super.noSuchMethod(Invocation.method(
         #getPayment,
         [paymentId],
-      )) as _i7.Payment?);
+      )) as _i8.Payment?);
 
   @override
-  _i14.PaymentIntent? getPaymentIntent(String? paymentIntentId) =>
+  void upsertPaymentForTests(_i8.Payment? payment) => super.noSuchMethod(
+        Invocation.method(
+          #upsertPaymentForTests,
+          [payment],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i15.PaymentIntent? getPaymentIntent(String? paymentIntentId) =>
       (super.noSuchMethod(Invocation.method(
         #getPaymentIntent,
         [paymentIntentId],
-      )) as _i14.PaymentIntent?);
+      )) as _i15.PaymentIntent?);
 
   @override
-  List<_i7.Payment> getPaymentsForEvent(String? eventId) => (super.noSuchMethod(
+  List<_i8.Payment> getPaymentsForEvent(String? eventId) => (super.noSuchMethod(
         Invocation.method(
           #getPaymentsForEvent,
           [eventId],
         ),
-        returnValue: <_i7.Payment>[],
-      ) as List<_i7.Payment>);
+        returnValue: <_i8.Payment>[],
+      ) as List<_i8.Payment>);
 
   @override
-  _i7.Payment? getPaymentForEventAndUser(
+  _i8.Payment? getPaymentForEventAndUser(
     String? eventId,
     String? userId,
   ) =>
@@ -669,19 +747,44 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
           eventId,
           userId,
         ],
-      )) as _i7.Payment?);
+      )) as _i8.Payment?);
 
   @override
-  _i9.Future<bool> hasPartnership(String? eventId) => (super.noSuchMethod(
+  List<_i8.Payment> getPaymentsForUser(String? userId) => (super.noSuchMethod(
+        Invocation.method(
+          #getPaymentsForUser,
+          [userId],
+        ),
+        returnValue: <_i8.Payment>[],
+      ) as List<_i8.Payment>);
+
+  @override
+  List<_i8.Payment> getPaymentsForUserInYear(
+    String? userId,
+    int? year,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPaymentsForUserInYear,
+          [
+            userId,
+            year,
+          ],
+        ),
+        returnValue: <_i8.Payment>[],
+      ) as List<_i8.Payment>);
+
+  @override
+  _i10.Future<bool> hasPartnership(String? eventId) => (super.noSuchMethod(
         Invocation.method(
           #hasPartnership,
           [eventId],
         ),
-        returnValue: _i9.Future<bool>.value(false),
-      ) as _i9.Future<bool>);
+        returnValue: _i10.Future<bool>.value(false),
+      ) as _i10.Future<bool>);
 
   @override
-  _i9.Future<_i6.RevenueSplit> calculatePartnershipRevenueSplit({
+  _i10.Future<_i7.RevenueSplit> calculatePartnershipRevenueSplit({
     required String? eventId,
     required double? totalAmount,
     required int? ticketsSold,
@@ -696,7 +799,7 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
             #ticketsSold: ticketsSold,
           },
         ),
-        returnValue: _i9.Future<_i6.RevenueSplit>.value(_FakeRevenueSplit_5(
+        returnValue: _i10.Future<_i7.RevenueSplit>.value(_FakeRevenueSplit_6(
           this,
           Invocation.method(
             #calculatePartnershipRevenueSplit,
@@ -708,10 +811,10 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
             },
           ),
         )),
-      ) as _i9.Future<_i6.RevenueSplit>);
+      ) as _i10.Future<_i7.RevenueSplit>);
 
   @override
-  _i9.Future<Map<String, double>> distributePartnershipPayment({
+  _i10.Future<Map<String, double>> distributePartnershipPayment({
     required String? paymentId,
     required String? partnershipId,
   }) =>
@@ -724,6 +827,6 @@ class MockPaymentService extends _i1.Mock implements _i13.PaymentService {
             #partnershipId: partnershipId,
           },
         ),
-        returnValue: _i9.Future<Map<String, double>>.value(<String, double>{}),
-      ) as _i9.Future<Map<String, double>>);
+        returnValue: _i10.Future<Map<String, double>>.value(<String, double>{}),
+      ) as _i10.Future<Map<String, double>>);
 }

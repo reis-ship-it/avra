@@ -42,6 +42,9 @@ class UnifiedUser extends Equatable {
   // Age verification for 18+ content
   final bool isAgeVerified;
   final DateTime? ageVerificationDate;
+  
+  // Birthday for age-based filtering and compatibility
+  final DateTime? birthday;
 
   const UnifiedUser({
     required this.id,
@@ -67,6 +70,7 @@ class UnifiedUser extends Equatable {
     this.primaryRole = UserRole.follower,
     this.isAgeVerified = false,
     this.ageVerificationDate,
+    this.birthday,
   });
 
   factory UnifiedUser.fromJson(Map<String, dynamic> json) {
@@ -100,6 +104,9 @@ class UnifiedUser extends Equatable {
       isAgeVerified: json['isAgeVerified'] as bool? ?? false,
       ageVerificationDate: json['ageVerificationDate'] != null
           ? DateTime.parse(json['ageVerificationDate'] as String)
+          : null,
+      birthday: json['birthday'] != null
+          ? DateTime.parse(json['birthday'] as String)
           : null,
     );
   }
@@ -136,6 +143,9 @@ class UnifiedUser extends Equatable {
       ageVerificationDate: map['ageVerificationDate'] != null
           ? DateTime.parse(map['ageVerificationDate'] as String)
           : null,
+      birthday: map['birthday'] != null
+          ? DateTime.parse(map['birthday'] as String)
+          : null,
     );
   }
 
@@ -164,6 +174,7 @@ class UnifiedUser extends Equatable {
       'primaryRole': primaryRole.name,
       'isAgeVerified': isAgeVerified,
       'ageVerificationDate': ageVerificationDate?.toIso8601String(),
+      'birthday': birthday?.toIso8601String(),
     };
   }
 
@@ -192,6 +203,7 @@ class UnifiedUser extends Equatable {
       'primaryRole': primaryRole.name,
       'isAgeVerified': isAgeVerified,
       'ageVerificationDate': ageVerificationDate?.toIso8601String(),
+      'birthday': birthday?.toIso8601String(),
     };
   }
 
@@ -219,6 +231,7 @@ class UnifiedUser extends Equatable {
     UserRole? primaryRole,
     bool? isAgeVerified,
     DateTime? ageVerificationDate,
+    DateTime? birthday,
   }) {
     return UnifiedUser(
       id: id ?? this.id,
@@ -246,12 +259,35 @@ class UnifiedUser extends Equatable {
       primaryRole: primaryRole ?? this.primaryRole,
       isAgeVerified: isAgeVerified ?? this.isAgeVerified,
       ageVerificationDate: ageVerificationDate ?? this.ageVerificationDate,
+      birthday: birthday ?? this.birthday,
     );
   }
 
   /// Check if user can access age-restricted content
   bool canAccessAgeRestrictedContent() {
     return isAgeVerified && ageVerificationDate != null;
+  }
+  
+  /// Calculate user's age from birthday
+  int? get age {
+    if (birthday == null) return null;
+    final now = DateTime.now();
+    int age = now.year - birthday!.year;
+    if (now.month < birthday!.month ||
+        (now.month == birthday!.month && now.day < birthday!.day)) {
+      age--;
+    }
+    return age;
+  }
+  
+  /// Get age group category
+  AgeGroup? get ageGroup {
+    final userAge = age;
+    if (userAge == null) return null;
+    if (userAge < 13) return AgeGroup.child;
+    if (userAge < 18) return AgeGroup.teen;
+    if (userAge < 21) return AgeGroup.youngAdult;
+    return AgeGroup.adult;
   }
 
   /// Check if user is a curator of any lists
@@ -345,6 +381,7 @@ class UnifiedUser extends Equatable {
         primaryRole,
         isAgeVerified,
         ageVerificationDate,
+        birthday,
       ];
 }
 
@@ -378,4 +415,12 @@ extension UserRoleExtension on UserRole {
         return 'Follower';
     }
   }
+}
+
+/// Age groups for filtering and compatibility
+enum AgeGroup {
+  child,      // Under 13
+  teen,       // 13-17
+  youngAdult, // 18-20
+  adult,      // 21+
 }

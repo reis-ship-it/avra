@@ -71,7 +71,7 @@ class IntegrationTestHelpers {
     EventStatus? status,
     List<String>? attendeeIds,
   }) {
-    final now = TestHelpers.createTestDateTime();
+    final now = DateTime.now(); // Use current time to ensure events are always in the future
     final eventStartTime = startTime ?? now.add(const Duration(days: 1));
     final eventEndTime = endTime ?? eventStartTime.add(const Duration(hours: 2));
 

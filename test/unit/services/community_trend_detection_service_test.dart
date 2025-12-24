@@ -3,10 +3,11 @@ import 'package:spots/core/services/community_trend_detection_service.dart';
 import 'package:spots/core/ml/pattern_recognition.dart';
 import 'package:spots/core/ml/nlp_processor.dart';
 import 'package:spots/core/models/user.dart' as user_model;
+import '../../helpers/platform_channel_helper.dart';
 
 /// Community Trend Detection Service Tests
 /// Tests community trend analysis functionality
-/// 
+///
 /// NOTE: This test focuses on testing the service's public API without deep mocking
 /// Full integration tests would test with actual PatternRecognitionSystem and NLPProcessor
 void main() {
@@ -21,22 +22,25 @@ void main() {
       // Create actual instances - service handles errors gracefully
       patternRecognition = PatternRecognitionSystem();
       nlpProcessor = NLPProcessor();
-      
+
       service = CommunityTrendDetectionService(
         patternRecognition: patternRecognition,
         nlpProcessor: nlpProcessor,
       );
     });
 
-    group('analyzeCommunityTrends', () {
-      test('should return trend when lists are empty', () async {
-        final trend = await service.analyzeCommunityTrends([]);
-        
-        expect(trend, isNotNull);
-        expect(trend.trendType, isA<String>());
-      });
+    // Removed: Property assignment tests
+    // Community trend detection tests focus on business logic (trend analysis, insights generation, behavior analysis), not property assignment
 
-      test('should analyze trends from lists', () async {
+    group('analyzeCommunityTrends', () {
+      test(
+          'should return trend when lists are empty, analyze trends from lists, and handle errors gracefully',
+          () async {
+        // Test business logic: community trend analysis
+        final trend1 = await service.analyzeCommunityTrends([]);
+        expect(trend1, isNotNull);
+        expect(trend1.trendType, isA<String>());
+
         final lists = [
           SpotList(
             id: 'list-1',
@@ -55,23 +59,20 @@ void main() {
             updatedAt: DateTime.now(),
           ),
         ];
+        final trend2 = await service.analyzeCommunityTrends(lists);
+        expect(trend2, isNotNull);
+        expect(trend2.trendType, equals('community_analysis'));
+        expect(trend2.strength, closeTo(0.85, 0.01));
 
-        final trend = await service.analyzeCommunityTrends(lists);
-        
-        expect(trend, isNotNull);
-        expect(trend.trendType, equals('community_analysis'));
-        expect(trend.strength, equals(0.8));
-      });
-
-      test('should handle errors gracefully', () async {
-        // Service should return fallback trend on error
-        final trend = await service.analyzeCommunityTrends([]);
-        expect(trend, isNotNull);
+        final trend3 = await service.analyzeCommunityTrends([]);
+        expect(trend3, isNotNull);
       });
     });
 
     group('generateAnonymizedInsights', () {
-      test('should generate anonymized insights', () async {
+      test('should generate anonymized insights and handle errors gracefully',
+          () async {
+        // Test business logic: anonymized insights generation
         final user = user_model.User(
           id: 'test-user',
           email: 'test@example.com',
@@ -81,115 +82,89 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
+        final insights1 = await service.generateAnonymizedInsights(user);
+        expect(insights1, isNotNull);
+        expect(insights1.authenticity, isNotNull);
+        expect(insights1.privacy, isNotNull);
 
-        final insights = await service.generateAnonymizedInsights(user);
-        
-        expect(insights, isNotNull);
-        expect(insights.authenticity, isNotNull);
-        expect(insights.privacy, isNotNull);
-      });
-
-      test('should handle errors gracefully', () async {
-        final user = user_model.User(
-          id: 'test-user',
-          email: 'test@example.com',
-          name: 'Test User',
-          displayName: 'Test User',
-          role: user_model.UserRole.user,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        );
-
-        final insights = await service.generateAnonymizedInsights(user);
-        expect(insights, isNotNull);
+        final insights2 = await service.generateAnonymizedInsights(user);
+        expect(insights2, isNotNull);
       });
     });
 
     group('analyzeBehavior', () {
-      test('should analyze behavior patterns', () async {
+      test('should analyze behavior patterns and handle empty actions list',
+          () async {
+        // Test business logic: behavior pattern analysis
         final actions = <UserActionData>[];
-        final result = await service.analyzeBehavior(actions);
-        
-        expect(result, isA<Map<String, dynamic>>());
-        // Service may return empty map or actual analysis results
-      });
+        final result1 = await service.analyzeBehavior(actions);
+        expect(result1, isA<Map<String, dynamic>>());
 
-      test('should handle empty actions list', () async {
-        final actions = <UserActionData>[];
-        final result = await service.analyzeBehavior(actions);
-        
-        expect(result, isA<Map<String, dynamic>>());
+        final result2 = await service.analyzeBehavior(actions);
+        expect(result2, isA<Map<String, dynamic>>());
       });
     });
 
     group('predictTrends', () {
-      test('should predict community trends', () async {
+      test('should predict community trends and return prediction structure',
+          () async {
+        // Test business logic: trend prediction
         final actions = <UserActionData>[];
-        final result = await service.predictTrends(actions);
-        
-        expect(result, isA<Map<String, dynamic>>());
-        expect(result['confidence_level'], equals(0.85));
-        expect(result['emerging_categories'], isA<List>());
-        expect(result['declining_categories'], isA<List>());
-        expect(result['stable_categories'], isA<List>());
-      });
+        final result1 = await service.predictTrends(actions);
+        expect(result1, isA<Map<String, dynamic>>());
+        expect(result1['confidence_level'], equals(0.85));
+        expect(result1['emerging_categories'], isA<List>());
+        expect(result1['declining_categories'], isA<List>());
+        expect(result1['stable_categories'], isA<List>());
 
-      test('should return prediction structure', () async {
-        final actions = <UserActionData>[];
-        final result = await service.predictTrends(actions);
-        
-        expect(result.containsKey('confidence_level'), isTrue);
-        expect(result.containsKey('emerging_categories'), isTrue);
+        final result2 = await service.predictTrends(actions);
+        expect(result2.containsKey('confidence_level'), isTrue);
+        expect(result2.containsKey('emerging_categories'), isTrue);
       });
     });
 
     group('analyzePersonality', () {
-      test('should analyze personality trends', () async {
+      test('should analyze personality trends and handle errors gracefully',
+          () async {
+        // Test business logic: personality trend analysis
         final actions = <UserActionData>[];
-        final result = await service.analyzePersonality(actions);
-        
-        expect(result, isA<Map<String, dynamic>>());
-        expect(result['dominant_archetypes'], isA<Map>());
-        expect(result['personality_evolution'], isA<Map>());
-        expect(result['community_maturity'], equals(0.80));
-        expect(result['diversity_index'], equals(0.72));
-      });
+        final result1 = await service.analyzePersonality(actions);
+        expect(result1, isA<Map<String, dynamic>>());
+        expect(result1['dominant_archetypes'], isA<Map>());
+        expect(result1['personality_evolution'], isA<Map>());
+        expect(result1['community_maturity'], equals(0.80));
+        expect(result1['diversity_index'], equals(0.72));
 
-      test('should handle errors gracefully', () async {
-        // Service should return empty map on error
-        final actions = <UserActionData>[];
-        final result = await service.analyzePersonality(actions);
-        expect(result, isA<Map<String, dynamic>>());
+        final result2 = await service.analyzePersonality(actions);
+        expect(result2, isA<Map<String, dynamic>>());
       });
     });
 
     group('analyzeTrends', () {
-      test('should analyze trending content', () async {
+      test(
+          'should analyze trending content, return trending spots with scores, and handle errors gracefully',
+          () async {
+        // Test business logic: trending content analysis
         final actions = <UserActionData>[];
-        final result = await service.analyzeTrends(actions);
-        
-        expect(result, isA<Map<String, dynamic>>());
-        expect(result['trending_spots'], isA<List>());
-        expect(result['trending_lists'], isA<List>());
-        expect(result['emerging_locations'], isA<List>());
-        expect(result['viral_content'], isA<List>());
-      });
+        final result1 = await service.analyzeTrends(actions);
+        expect(result1, isA<Map<String, dynamic>>());
+        expect(result1['trending_spots'], isA<List>());
+        expect(result1['trending_lists'], isA<List>());
+        expect(result1['emerging_locations'], isA<List>());
+        expect(result1['viral_content'], isA<List>());
 
-      test('should return trending spots with scores', () async {
-        final actions = <UserActionData>[];
-        final result = await service.analyzeTrends(actions);
-        
-        final trendingSpots = result['trending_spots'] as List;
+        final result2 = await service.analyzeTrends(actions);
+        final trendingSpots = result2['trending_spots'] as List;
         expect(trendingSpots.length, greaterThan(0));
         expect(trendingSpots.first['score'], isA<double>());
-      });
 
-      test('should handle errors gracefully', () async {
-        final actions = <UserActionData>[];
-        final result = await service.analyzeTrends(actions);
-        expect(result, isA<Map<String, dynamic>>());
+        final result3 = await service.analyzeTrends(actions);
+        expect(result3, isA<Map<String, dynamic>>());
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

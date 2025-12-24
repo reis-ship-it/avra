@@ -301,6 +301,25 @@ class MockConnectionMonitor extends _i1.Mock implements _i2.ConnectionMonitor {
         returnValue: _i4.Future<List<_i2.ConnectionAnomaly>>.value(
             <_i2.ConnectionAnomaly>[]),
       ) as _i4.Future<List<_i2.ConnectionAnomaly>>);
+
+  @override
+  _i4.Stream<_i2.ActiveConnectionsOverview> streamActiveConnections() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #streamActiveConnections,
+          [],
+        ),
+        returnValue: _i4.Stream<_i2.ActiveConnectionsOverview>.empty(),
+      ) as _i4.Stream<_i2.ActiveConnectionsOverview>);
+
+  @override
+  void disposeStreams() => super.noSuchMethod(
+        Invocation.method(
+          #disposeStreams,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
 }
 
 /// A class which mocks [AI2AIChatAnalyzer].

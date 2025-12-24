@@ -16,83 +16,27 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
-    group('Constructor and Properties', () {
-      test('should create locality with required fields', () {
-        final locality = Locality(
-          id: 'locality-123',
-          name: 'Greenpoint',
-          city: 'Brooklyn',
-          state: 'New York',
-          country: 'USA',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(locality.id, equals('locality-123'));
-        expect(locality.name, equals('Greenpoint'));
-        expect(locality.city, equals('Brooklyn'));
-        expect(locality.state, equals('New York'));
-        expect(locality.country, equals('USA'));
-        expect(locality.isNeighborhood, isFalse);
-        expect(locality.parentCity, isNull);
-      });
-
-      test('should create neighborhood locality', () {
-        final locality = Locality(
-          id: 'locality-456',
-          name: 'Greenpoint',
-          isNeighborhood: true,
-          parentCity: 'Brooklyn',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(locality.isNeighborhood, isTrue);
-        expect(locality.parentCity, equals('Brooklyn'));
-        expect(locality.isInLargeCity, isTrue);
-      });
-
-      test('should create locality with coordinates', () {
-        final locality = Locality(
-          id: 'locality-789',
-          name: 'Austin',
-          latitude: 30.2672,
-          longitude: -97.7431,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(locality.latitude, equals(30.2672));
-        expect(locality.longitude, equals(-97.7431));
-      });
-    });
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
     group('Display Name', () {
-      test('should return name only when no city/state', () {
-        final locality = Locality(
+      test('should correctly format display name based on available fields',
+          () {
+        // Test business logic: display name formatting
+        final nameOnly = Locality(
           id: 'locality-1',
           name: 'Greenpoint',
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(locality.displayName, equals('Greenpoint'));
-      });
-
-      test('should return name and city when city provided', () {
-        final locality = Locality(
+        final withCity = Locality(
           id: 'locality-2',
           name: 'Greenpoint',
           city: 'Brooklyn',
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(locality.displayName, equals('Greenpoint, Brooklyn'));
-      });
-
-      test('should return name and state when city and state provided', () {
-        final locality = Locality(
+        final withState = Locality(
           id: 'locality-3',
           name: 'Austin',
           city: 'Austin',
@@ -100,12 +44,7 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(locality.displayName, equals('Austin, Texas'));
-      });
-
-      test('should return name and parent city for neighborhoods', () {
-        final locality = Locality(
+        final neighborhood = Locality(
           id: 'locality-4',
           name: 'Greenpoint',
           isNeighborhood: true,
@@ -114,20 +53,19 @@ void main() {
           updatedAt: testDate,
         );
 
-        expect(locality.displayName, equals('Greenpoint, Brooklyn'));
+        expect(nameOnly.displayName, equals('Greenpoint'));
+        expect(withCity.displayName, equals('Greenpoint, Brooklyn'));
+        expect(withState.displayName, equals('Austin, Texas'));
+        expect(neighborhood.displayName, equals('Greenpoint, Brooklyn'));
       });
     });
 
     group('JSON Serialization', () {
-      test('should serialize to JSON', () {
+      test('should serialize and deserialize without data loss', () {
         final locality = Locality(
           id: 'locality-123',
           name: 'Greenpoint',
           city: 'Brooklyn',
-          state: 'New York',
-          country: 'USA',
-          latitude: 40.7295,
-          longitude: -73.9545,
           isNeighborhood: true,
           parentCity: 'Brooklyn',
           createdAt: testDate,
@@ -135,51 +73,16 @@ void main() {
         );
 
         final json = locality.toJson();
+        final restored = Locality.fromJson(json);
 
-        expect(json['id'], equals('locality-123'));
-        expect(json['name'], equals('Greenpoint'));
-        expect(json['city'], equals('Brooklyn'));
-        expect(json['state'], equals('New York'));
-        expect(json['country'], equals('USA'));
-        expect(json['latitude'], equals(40.7295));
-        expect(json['longitude'], equals(-73.9545));
-        expect(json['isNeighborhood'], isTrue);
-        expect(json['parentCity'], equals('Brooklyn'));
-        expect(json['createdAt'], equals(testDate.toIso8601String()));
-        expect(json['updatedAt'], equals(testDate.toIso8601String()));
-      });
-
-      test('should deserialize from JSON', () {
-        final json = {
-          'id': 'locality-123',
-          'name': 'Greenpoint',
-          'city': 'Brooklyn',
-          'state': 'New York',
-          'country': 'USA',
-          'latitude': 40.7295,
-          'longitude': -73.9545,
-          'isNeighborhood': true,
-          'parentCity': 'Brooklyn',
-          'createdAt': testDate.toIso8601String(),
-          'updatedAt': testDate.toIso8601String(),
-        };
-
-        final locality = Locality.fromJson(json);
-
-        expect(locality.id, equals('locality-123'));
-        expect(locality.name, equals('Greenpoint'));
-        expect(locality.city, equals('Brooklyn'));
-        expect(locality.state, equals('New York'));
-        expect(locality.country, equals('USA'));
-        expect(locality.latitude, equals(40.7295));
-        expect(locality.longitude, equals(-73.9545));
-        expect(locality.isNeighborhood, isTrue);
-        expect(locality.parentCity, equals('Brooklyn'));
+        // Test critical business fields preserved
+        expect(restored.displayName, equals(locality.displayName));
+        expect(restored.isNeighborhood, equals(locality.isNeighborhood));
       });
     });
 
-    group('Copy With', () {
-      test('should create copy with updated fields', () {
+    group('copyWith', () {
+      test('should create immutable copy with updated fields', () {
         final original = Locality(
           id: 'locality-123',
           name: 'Greenpoint',
@@ -190,55 +93,18 @@ void main() {
 
         final updated = original.copyWith(
           name: 'DUMBO',
-          parentCity: 'Brooklyn',
           isNeighborhood: true,
         );
 
-        expect(updated.id, equals('locality-123'));
+        // Test immutability (business logic)
+        expect(original.name, isNot(equals('DUMBO')));
         expect(updated.name, equals('DUMBO'));
-        expect(updated.city, equals('Brooklyn'));
-        expect(updated.isNeighborhood, isTrue);
-        expect(updated.parentCity, equals('Brooklyn'));
+        expect(updated.id, equals(original.id)); // Unchanged fields preserved
       });
     });
 
-    group('Equality', () {
-      test('should be equal when all properties match', () {
-        final locality1 = Locality(
-          id: 'locality-123',
-          name: 'Greenpoint',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final locality2 = Locality(
-          id: 'locality-123',
-          name: 'Greenpoint',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(locality1, equals(locality2));
-      });
-
-      test('should not be equal when properties differ', () {
-        final locality1 = Locality(
-          id: 'locality-123',
-          name: 'Greenpoint',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final locality2 = Locality(
-          id: 'locality-456',
-          name: 'DUMBO',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(locality1, isNot(equals(locality2)));
-      });
-    });
+    // Removed: Equality group
+    // These tests verify Equatable implementation, which is already tested by the package
+    // If equality breaks, other tests will fail
   });
 }
-

@@ -19,11 +19,15 @@ class EvolutionTimelineWidget extends StatelessWidget {
 
     return Card(
       elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
             Text(
               'Evolution Timeline',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -86,10 +90,10 @@ class EvolutionTimelineWidget extends StatelessWidget {
               )
             else
               ...milestones.reversed.take(10).map((milestone) => _buildTimelineItem(
-                    context,
-                    milestone,
-                    milestones.indexOf(milestone) == milestones.length - 1,
-                  )),
+                context,
+                milestone,
+                milestones.indexOf(milestone) == milestones.length - 1,
+              )),
             // Created date
             const Divider(),
             const SizedBox(height: 8),
@@ -117,8 +121,11 @@ class EvolutionTimelineWidget extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

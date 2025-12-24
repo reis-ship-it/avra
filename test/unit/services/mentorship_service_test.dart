@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/mentorship_service.dart';
 import 'package:spots/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Mentorship Service Tests
 /// Tests mentorship relationship management
@@ -13,7 +14,7 @@ void main() {
 
     setUp(() {
       service = MentorshipService();
-      
+
       // Create mentee with local level expertise
       mentee = ModelFactories.createTestUser(
         id: 'mentee-123',
@@ -21,7 +22,7 @@ void main() {
       ).copyWith(
         expertiseMap: {'food': 'local'},
       );
-      
+
       // Create mentor with local level+ expertise (can host events)
       mentor = ModelFactories.createTestUser(
         id: 'mentor-123',
@@ -31,31 +32,34 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Mentorship tests focus on business logic (mentorship requests, acceptance/rejection, retrieval), not property assignment
+
     group('requestMentorship', () {
-      test('should create mentorship request when mentor has higher level', () async {
-        final relationship = await service.requestMentorship(
+      test(
+          'should create mentorship request when mentor has higher level, throw exception when mentor level is not higher, throw exception when mentee lacks expertise, or throw exception when mentor lacks expertise',
+          () async {
+        // Test business logic: mentorship request validation
+        final relationship1 = await service.requestMentorship(
           mentee: mentee,
           mentor: mentor,
           category: 'food',
           message: 'I would like to learn more about food curation',
         );
+        expect(relationship1, isA<MentorshipRelationship>());
+        expect(relationship1.mentee.id, equals(mentee.id));
+        expect(relationship1.mentor.id, equals(mentor.id));
+        expect(relationship1.category, equals('food'));
+        expect(relationship1.status, equals(MentorshipStatus.pending));
+        expect(relationship1.message,
+            equals('I would like to learn more about food curation'));
 
-        expect(relationship, isA<MentorshipRelationship>());
-        expect(relationship.mentee.id, equals(mentee.id));
-        expect(relationship.mentor.id, equals(mentor.id));
-        expect(relationship.category, equals('food'));
-        expect(relationship.status, equals(MentorshipStatus.pending));
-        expect(relationship.message, equals('I would like to learn more about food curation'));
-      });
-
-      test('should throw exception when mentor level is not higher', () async {
         final sameLevelMentor = ModelFactories.createTestUser(
           id: 'mentor-456',
           tags: ['food'],
         ).copyWith(
           expertiseMap: {'food': 'local'},
         );
-
         expect(
           () => service.requestMentorship(
             mentee: mentee,
@@ -64,14 +68,11 @@ void main() {
           ),
           throwsA(isA<Exception>()),
         );
-      });
 
-      test('should throw exception when mentee lacks expertise', () async {
         final noExpertiseMentee = ModelFactories.createTestUser(
           id: 'mentee-456',
           tags: [],
         );
-
         expect(
           () => service.requestMentorship(
             mentee: noExpertiseMentee,
@@ -80,14 +81,11 @@ void main() {
           ),
           throwsA(isA<Exception>()),
         );
-      });
 
-      test('should throw exception when mentor lacks expertise', () async {
         final noExpertiseMentor = ModelFactories.createTestUser(
-          id: 'mentor-456',
+          id: 'mentor-789',
           tags: [],
         );
-
         expect(
           () => service.requestMentorship(
             mentee: mentee,
@@ -99,9 +97,12 @@ void main() {
       });
     });
 
-    group('acceptMentorship', () {
-      test('should accept mentorship request', () async {
-        final relationship = MentorshipRelationship(
+    group('Mentorship Status Management', () {
+      test(
+          'should accept mentorship request, reject mentorship request, or complete mentorship',
+          () async {
+        // Test business logic: mentorship status management
+        final relationship1 = MentorshipRelationship(
           id: 'relationship-123',
           mentee: mentee,
           mentor: mentor,
@@ -110,19 +111,11 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
+        await service.acceptMentorship(relationship1);
+        expect(relationship1.status, equals(MentorshipStatus.pending));
 
-        await service.acceptMentorship(relationship);
-
-        // Note: In test environment, relationship is not persisted
-        // This test verifies the method executes without error
-        expect(relationship.status, equals(MentorshipStatus.pending)); // Original unchanged
-      });
-    });
-
-    group('rejectMentorship', () {
-      test('should reject mentorship request', () async {
-        final relationship = MentorshipRelationship(
-          id: 'relationship-123',
+        final relationship2 = MentorshipRelationship(
+          id: 'relationship-456',
           mentee: mentee,
           mentor: mentor,
           category: 'food',
@@ -130,30 +123,34 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
+        await service.rejectMentorship(relationship2);
+        expect(relationship2.status, equals(MentorshipStatus.pending));
 
-        await service.rejectMentorship(relationship);
-
-        // Note: In test environment, relationship is not persisted
-        expect(relationship.status, equals(MentorshipStatus.pending)); // Original unchanged
+        final relationship3 = MentorshipRelationship(
+          id: 'relationship-789',
+          mentee: mentee,
+          mentor: mentor,
+          category: 'food',
+          status: MentorshipStatus.active,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+        await service.completeMentorship(relationship3);
+        expect(relationship3.status, equals(MentorshipStatus.active));
       });
     });
 
-    group('getMentorships', () {
-      test('should return empty list for user with no mentorships', () async {
+    group('Mentorship Retrieval', () {
+      test(
+          'should return empty list for user with no mentorships, return empty list for user with no mentors, or return empty list for user with no mentees',
+          () async {
+        // Test business logic: mentorship retrieval
         final mentorships = await service.getMentorships(mentee);
         expect(mentorships, isEmpty);
-      });
-    });
 
-    group('getMentors', () {
-      test('should return empty list for user with no mentors', () async {
         final mentors = await service.getMentors(mentee);
         expect(mentors, isEmpty);
-      });
-    });
 
-    group('getMentees', () {
-      test('should return empty list for user with no mentees', () async {
         final mentees = await service.getMentees(mentor);
         expect(mentees, isEmpty);
       });
@@ -184,9 +181,13 @@ void main() {
         await service.completeMentorship(relationship);
 
         // Note: In test environment, relationship is not persisted
-        expect(relationship.status, equals(MentorshipStatus.active)); // Original unchanged
+        expect(relationship.status,
+            equals(MentorshipStatus.active)); // Original unchanged
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

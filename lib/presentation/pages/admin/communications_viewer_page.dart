@@ -31,7 +31,7 @@ class CommunicationsViewerPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.chat, size: 64, color: AppColors.grey500,
+                Icon(Icons.chat, size: 64, color: AppColors.grey500),
                 const SizedBox(height: 16),
                 Text(
                   'View AI2AI and user communications',

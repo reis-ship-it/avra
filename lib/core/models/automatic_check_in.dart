@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
 
 /// Automatic Check-In Model
-/// 
+///
 /// Represents an automatic check-in triggered by geofencing or Bluetooth ai2ai detection.
-/// 
+///
 /// **Philosophy Alignment:**
 /// - Opens doors to expertise through automatic exploration
 /// - Zero friction (no phone interaction needed)
 /// - Works offline (Bluetooth-based)
-/// 
+///
 /// **Technology:**
 /// - Background location detection (geofencing, 50m radius)
 /// - Bluetooth ai2ai proximity verification (works offline)
@@ -17,31 +17,31 @@ import 'package:equatable/equatable.dart';
 class AutomaticCheckIn extends Equatable {
   /// Check-in ID
   final String id;
-  
+
   /// Visit reference (the visit this check-in created)
   final String visitId;
-  
+
   /// Geofence trigger (if triggered by geofencing)
   final GeofenceTrigger? geofenceTrigger;
-  
+
   /// Bluetooth trigger (if triggered by Bluetooth ai2ai)
   final BluetoothTrigger? bluetoothTrigger;
-  
+
   /// Dwell time (calculated after check-out)
   final Duration? dwellTime;
-  
+
   /// Quality score (calculated based on dwell time and engagement)
   final double qualityScore;
-  
+
   /// Check-in time
   final DateTime checkInTime;
-  
+
   /// Check-out time (null if still checked in)
   final DateTime? checkOutTime;
-  
+
   /// Visit created flag
   final bool visitCreated;
-  
+
   /// Metadata
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -77,7 +77,7 @@ class AutomaticCheckIn extends Equatable {
   }
 
   /// Calculate quality score based on dwell time
-  /// 
+  ///
   /// **Quality Formula:**
   /// - Quick stop (5 min): 0.5 points
   /// - Normal visit (15 min): 0.8 points
@@ -102,13 +102,29 @@ class AutomaticCheckIn extends Equatable {
   AutomaticCheckIn checkOut({DateTime? checkOutTime}) {
     final checkout = checkOutTime ?? DateTime.now();
     final dwell = checkout.difference(this.checkInTime);
-    final quality = calculateQualityScore();
+    // Calculate quality score using the dwell time we just calculated
+    final quality = _calculateQualityScoreFromDuration(dwell);
 
     return copyWith(
       checkOutTime: checkout,
       dwellTime: dwell,
       qualityScore: quality,
     );
+  }
+
+  /// Calculate quality score from a duration (helper for checkOut)
+  double _calculateQualityScoreFromDuration(Duration dwell) {
+    final minutes = dwell.inMinutes;
+
+    if (minutes >= 30) {
+      return 1.0;
+    } else if (minutes >= 15) {
+      return 0.8;
+    } else if (minutes >= 5) {
+      return 0.5;
+    } else {
+      return 0.0; // Too short, invalid
+    }
   }
 
   /// Convert to JSON
@@ -209,9 +225,9 @@ class AutomaticCheckIn extends Equatable {
 
 /// Check-In Trigger Type
 enum CheckInTriggerType {
-  geofence,   // Triggered by geofencing
-  bluetooth,  // Triggered by Bluetooth ai2ai
-  unknown,    // Unknown trigger
+  geofence, // Triggered by geofencing
+  bluetooth, // Triggered by Bluetooth ai2ai
+  unknown, // Unknown trigger
 }
 
 /// Geofence Trigger
@@ -219,19 +235,19 @@ enum CheckInTriggerType {
 class GeofenceTrigger extends Equatable {
   /// Location ID (Spot ID)
   final String locationId;
-  
+
   /// Latitude
   final double latitude;
-  
+
   /// Longitude
   final double longitude;
-  
+
   /// Geofence radius (meters)
   final double radius;
-  
+
   /// Accuracy (meters)
   final double? accuracy;
-  
+
   /// Trigger time
   final DateTime triggeredAt;
 
@@ -282,19 +298,19 @@ class GeofenceTrigger extends Equatable {
 class BluetoothTrigger extends Equatable {
   /// Device ID detected
   final String? deviceId;
-  
+
   /// Signal strength (RSSI)
   final int? rssi;
-  
+
   /// Detection time
   final DateTime detectedAt;
-  
+
   /// ai2ai connection established
   final bool ai2aiConnected;
-  
+
   /// Personality exchange completed
   final bool personalityExchanged;
-  
+
   /// Location ID (if known from ai2ai exchange)
   final String? locationId;
 
@@ -339,4 +355,3 @@ class BluetoothTrigger extends Equatable {
         locationId,
       ];
 }
-

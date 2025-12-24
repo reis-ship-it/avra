@@ -5,49 +5,29 @@ import '../../../fixtures/model_factories.dart';
 import '../../../helpers/integration_test_helpers.dart';
 
 /// Widget tests for EventHostAgainButton
-/// 
+///
 /// Agent 2: Phase 7, Section 51-52 - Widget Test Coverage
 void main() {
   group('EventHostAgainButton Widget Tests', () {
-    testWidgets('displays host again button', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Event host again button tests focus on business logic (button display), not property assignment
+
+    testWidgets('should display host again button and display replay icon',
+        (WidgetTester tester) async {
+      // Test business logic: event host again button display
       final host = ModelFactories.createTestUser();
       final event = IntegrationTestHelpers.createTestEvent(
         host: host,
         title: 'Community Coffee Meetup',
       );
-
       final widget = WidgetTestHelpers.createTestableWidget(
         child: EventHostAgainButton(
           originalEvent: event,
         ),
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
       expect(find.byType(EventHostAgainButton), findsOneWidget);
       expect(find.text('Host Again'), findsOneWidget);
     });
-
-    testWidgets('displays replay icon', (WidgetTester tester) async {
-      // Arrange
-      final host = ModelFactories.createTestUser();
-      final event = IntegrationTestHelpers.createTestEvent(host: host);
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: EventHostAgainButton(
-          originalEvent: event,
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
-      expect(find.byType(EventHostAgainButton), findsOneWidget);
-    });
   });
 }
-

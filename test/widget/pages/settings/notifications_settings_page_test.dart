@@ -14,33 +14,21 @@ void main() {
   });
 
   group('NotificationsSettingsPage Widget Tests', () {
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Notifications settings page tests focus on business logic (UI display, notification preference toggles), not property assignment
+
+    testWidgets(
+        'should display all required UI elements or display notification preference toggles',
+        (WidgetTester tester) async {
+      // Test business logic: Notifications settings page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const NotificationsSettingsPage(),
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify all UI elements are present
       expect(find.text('Notifications'), findsOneWidget);
       expect(find.text('Privacy First'), findsOneWidget);
       expect(find.text('Notification Types'), findsOneWidget);
-    });
-
-    testWidgets('displays notification preference toggles', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const NotificationsSettingsPage(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show notification toggles
       expect(find.byType(NotificationsSettingsPage), findsOneWidget);
     });
   });
 }
-

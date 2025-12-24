@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/payment_service.dart';
 import 'package:spots/core/services/sales_tax_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -39,11 +38,7 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  final _paymentService = GetIt.instance<PaymentService>();
-  final _salesTaxService = SalesTaxService(
-    eventService: GetIt.instance<ExpertiseEventService>(),
-    paymentService: GetIt.instance<PaymentService>(),
-  );
+  final _salesTaxService = GetIt.instance<SalesTaxService>();
   final _legalService = LegalDocumentService(
     eventService: GetIt.instance<ExpertiseEventService>(),
   );
@@ -62,7 +57,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
   void initState() {
     super.initState();
     _calculateSalesTax();
-    _checkWaiverStatus();
+    // Delay waiver check until after first frame to ensure context is available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _checkWaiverStatus();
+      }
+    });
   }
 
   Future<void> _checkWaiverStatus() async {
@@ -246,11 +246,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Ticket Price',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
+                      Flexible(
+                        child: Text(
+                          'Ticket Price',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(
@@ -269,11 +272,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Subtotal',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
+                      Flexible(
+                        child: Text(
+                          'Subtotal',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(
@@ -293,11 +299,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Sales Tax',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.textPrimary,
+                        Flexible(
+                          child: Text(
+                            'Sales Tax',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.textPrimary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(
@@ -314,29 +323,38 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Sales Tax',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: AppColors.textPrimary,
+                            Flexible(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      'Sales Tax',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 16,
-                                  color: AppColors.electricGreen,
-                                ),
-                              ],
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    Icons.check_circle,
+                                    size: 16,
+                                    color: AppColors.electricGreen,
+                                  ),
+                                ],
+                              ),
                             ),
-                            Text(
-                              'Tax-Exempt',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.electricGreen,
-                                fontWeight: FontWeight.w600,
+                            Flexible(
+                              child: Text(
+                                'Tax-Exempt',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.electricGreen,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
@@ -357,26 +375,35 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Text(
-                              'Sales Tax',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            if (_taxRate > 0) ...[
-                              const SizedBox(width: 4),
-                              Text(
-                                '(${_taxRate.toStringAsFixed(2)}%)',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
+                        Flexible(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  'Sales Tax',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                              if (_taxRate > 0) ...[
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    '(${_taxRate.toStringAsFixed(2)}%)',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                         Text(
                           '\$${_salesTax.toStringAsFixed(2)}',
@@ -396,14 +423,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Quantity',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
+                      Flexible(
+                        child: Text(
+                          'Quantity',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             onPressed: _quantity > 1 && !_isProcessing
@@ -468,12 +499,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Total',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                      Flexible(
+                        child: Text(
+                          'Total',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(

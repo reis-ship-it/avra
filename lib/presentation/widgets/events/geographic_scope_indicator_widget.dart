@@ -39,8 +39,8 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
         return 'Your Locality Only';
       case ExpertiseLevel.city:
         return 'All Localities in Your City';
-      case ExpertiseLevel.state:
-        return 'All Cities in Your State';
+      case ExpertiseLevel.regional:
+        return 'All Cities in Your Region';
       case ExpertiseLevel.national:
         return 'All States in Your Nation';
       case ExpertiseLevel.global:
@@ -62,7 +62,7 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
         return Icons.location_on;
       case ExpertiseLevel.city:
         return Icons.location_city;
-      case ExpertiseLevel.state:
+      case ExpertiseLevel.regional:
         return Icons.map;
       case ExpertiseLevel.national:
         return Icons.public;
@@ -85,14 +85,14 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
         return AppColors.electricGreen;
       case ExpertiseLevel.city:
         return AppTheme.primaryColor;
-      case ExpertiseLevel.state:
+      case ExpertiseLevel.regional:
         return AppTheme.accentColor;
       case ExpertiseLevel.national:
         return AppColors.electricGreen;
       case ExpertiseLevel.global:
         return AppColors.grey600;
       case ExpertiseLevel.universal:
-        return AppColors.gold;
+        return AppColors.warning;
       default:
         return AppColors.textSecondary;
     }
@@ -112,9 +112,9 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
       case ExpertiseLevel.city:
         return 'You can host events in all localities within your city. '
             'Choose the locality that best fits your event.';
-      case ExpertiseLevel.state:
-        return 'You can host events anywhere in your state. '
-            'Select any city or locality within your state.';
+      case ExpertiseLevel.regional:
+        return 'You can host events anywhere in your region. '
+            'Select any city or locality within your region.';
       case ExpertiseLevel.national:
         return 'You can host events anywhere in your nation. '
             'Select any state, city, or locality.';

@@ -1,32 +1,24 @@
-// TODO: Re-enable when RateLimitingService is implemented
-// The service file does not exist yet: lib/core/services/rate_limiting_service.dart
-
-import 'package:flutter_test/flutter_test.dart';
-
-/// Placeholder to ensure this file has a `main()` entrypoint.
-///
-/// The full test suite is intentionally commented out below until the
-/// RateLimitingService is promoted to a real implementation.
-void main() {
-  test(
-    'RateLimitingService tests are pending implementation',
-    () => expect(true, isTrue),
-    skip: 'Pending RateLimitingService implementation (see commented suite below).',
-  );
-}
-
-/*
-import 'package:flutter_test/flutter_test.dart';
-import '../../helpers/platform_channel_helper.dart';
-// Note: Service implementation is stubbed in this test file (see bottom)
-// TODO: Move to lib/core/services/rate_limiting_service.dart when service is fully implemented
-
 /// Tests for Rate Limiting Service
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"
 /// 
 /// These tests ensure rate limiting prevents abuse
 /// and protects sensitive operations
+/// 
+/// Phase 7, Section 41 (7.4.3): Backend Completion
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:spots/core/services/rate_limiting_service.dart';
+import '../../helpers/platform_channel_helper.dart';
+
 void main() {
+  setUpAll(() async {
+    await setupTestStorage();
+  });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
+
   group('RateLimitingService', () {
     late RateLimitingService service;
 
@@ -50,7 +42,7 @@ void main() {
       test('should block requests exceeding rate limit', () async {
         const userId = 'user-456';
         const operation = 'data_access';
-        const maxRequests = 10;
+        const maxRequests = 100; // data_access limit is 100
 
         // Make requests up to limit
         for (int i = 0; i < maxRequests; i++) {
@@ -69,18 +61,28 @@ void main() {
         // Sensitive operations should have lower limits
         final sensitiveAllowed = await service.checkRateLimit(
           userId,
-          'decrypt_email', // Sensitive
+          'decrypt_email', // Sensitive - limit is 10
         );
         final normalAllowed = await service.checkRateLimit(
           userId,
-          'data_access', // Normal
+          'data_access', // Normal - limit is 100
         );
 
         expect(sensitiveAllowed, isTrue);
         expect(normalAllowed, isTrue);
 
         // But sensitive operations should hit limit faster
-        // (tested by making many requests)
+        // Make 10 requests to sensitive operation (the limit)
+        for (int i = 0; i < 10; i++) {
+          await service.checkRateLimit(userId, 'decrypt_email');
+        }
+        // Next request should be blocked
+        final sensitiveBlocked = await service.checkRateLimit(userId, 'decrypt_email');
+        expect(sensitiveBlocked, isFalse);
+
+        // Normal operation should still be allowed (only used 1 request)
+        final normalStillAllowed = await service.checkRateLimit(userId, 'data_access');
+        expect(normalStillAllowed, isTrue);
       });
 
       test('should track rate limits per user', () async {
@@ -89,7 +91,7 @@ void main() {
         const operation = 'data_access';
 
         // User 1 hits limit
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
           await service.checkRateLimit(user1, operation);
         }
         final user1Blocked = await service.checkRateLimit(user1, operation);
@@ -108,14 +110,13 @@ void main() {
         const operation = 'data_access';
 
         // Hit limit
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
           await service.checkRateLimit(userId, operation);
         }
         final blocked = await service.checkRateLimit(userId, operation);
         expect(blocked, isFalse);
 
-        // Wait for reset (in real test, would use fake async)
-        // For now, manually reset
+        // Manually reset
         await service.resetRateLimit(userId, operation);
 
         // Should be allowed again
@@ -127,15 +128,17 @@ void main() {
         const userId = 'user-reset-all';
 
         // Hit limit on multiple operations
-        await service.checkRateLimit(userId, 'operation1');
-        await service.checkRateLimit(userId, 'operation2');
+        for (int i = 0; i < 10; i++) {
+          await service.checkRateLimit(userId, 'decrypt_email');
+        }
+        await service.checkRateLimit(userId, 'data_access');
 
         // Reset all
         await service.resetAllRateLimits(userId);
 
         // Both should be allowed
-        expect(await service.checkRateLimit(userId, 'operation1'), isTrue);
-        expect(await service.checkRateLimit(userId, 'operation2'), isTrue);
+        expect(await service.checkRateLimit(userId, 'decrypt_email'), isTrue);
+        expect(await service.checkRateLimit(userId, 'data_access'), isTrue);
       });
     });
 
@@ -145,7 +148,7 @@ void main() {
         const operation = 'data_access';
 
         // Hit limit
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
           await service.checkRateLimit(userId, operation);
         }
 
@@ -184,118 +187,3 @@ void main() {
     });
   });
 }
-
-/// RateLimitingService (to be implemented by Agent 1)
-class RateLimitingService {
-  final Map<String, RateLimitInfo> _rateLimits = {};
-  final Map<String, int> _operationLimits = {
-    'data_access': 100,
-    'decrypt_email': 10, // Lower limit for sensitive operations
-    'decrypt_name': 10,
-    'decrypt_location': 10,
-    'decrypt_phone': 10,
-  };
-  final Duration _windowDuration = Duration(minutes: 15);
-
-  Future<bool> checkRateLimit(
-    String userId,
-    String operation, {
-    bool throwOnLimit = false,
-  }) async {
-    final key = '$userId:$operation';
-    final limit = _operationLimits[operation] ?? 100;
-
-    final info = _rateLimits[key];
-    final now = DateTime.now();
-
-    if (info == null || now.isAfter(info.resetAt)) {
-      // Reset or create new
-      _rateLimits[key] = RateLimitInfo(
-        userId: userId,
-        operation: operation,
-        count: 1,
-        limit: limit,
-        resetAt: now.add(_windowDuration),
-      );
-      return true;
-    }
-
-    if (info.count >= info.limit) {
-      if (throwOnLimit) {
-        throw RateLimitException(
-          'Rate limit exceeded for $operation. Reset at ${info.resetAt}',
-        );
-      }
-      return false;
-    }
-
-    // Increment count
-    _rateLimits[key] = RateLimitInfo(
-      userId: userId,
-      operation: operation,
-      count: info.count + 1,
-      limit: info.limit,
-      resetAt: info.resetAt,
-    );
-
-    return true;
-  }
-
-  Future<void> resetRateLimit(String userId, String operation) async {
-    final key = '$userId:$operation';
-    _rateLimits.remove(key);
-  }
-
-  Future<void> resetAllRateLimits(String userId) async {
-    _rateLimits.removeWhere((key, _) => key.startsWith('$userId:'));
-  }
-
-  Future<RateLimitInfo> getRateLimitInfo(String userId, String operation) async {
-    final key = '$userId:$operation';
-    final info = _rateLimits[key];
-    final limit = _operationLimits[operation] ?? 100;
-
-    if (info == null) {
-      return RateLimitInfo(
-        userId: userId,
-        operation: operation,
-        count: 0,
-        limit: limit,
-        resetAt: DateTime.now().add(_windowDuration),
-      );
-    }
-
-    return info;
-  }
-}
-
-class RateLimitInfo {
-  final String userId;
-  final String operation;
-  final int count;
-  final int limit;
-  final DateTime resetAt;
-
-  RateLimitInfo({
-    required this.userId,
-    required this.operation,
-    required this.count,
-    required this.limit,
-    required this.resetAt,
-  });
-
-  int get remaining => (limit - count).clamp(0, limit);
-
-  tearDownAll(() async {
-    await cleanupTestStorage();
-  });
-}
-
-class RateLimitException implements Exception {
-  final String message;
-  RateLimitException(this.message);
-  
-  @override
-  String toString() => 'RateLimitException: $message';
-}
-*/

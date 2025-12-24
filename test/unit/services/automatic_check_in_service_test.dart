@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/automatic_check_in_service.dart';
 import '../../helpers/test_helpers.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Comprehensive tests for AutomaticCheckInService
 void main() {
@@ -18,213 +19,201 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
+    // Removed: Property assignment tests
+    // Automatic check-in tests focus on business logic (geofence/Bluetooth triggers, check-out, visit management), not property assignment
+
     group('handleGeofenceTrigger', () {
-      test('should create automatic check-in with geofence trigger', () async {
-        final checkIn = await service.handleGeofenceTrigger(
+      test(
+          'should create automatic check-in with geofence trigger and create visit when geofence triggered',
+          () async {
+        // Test business logic: geofence trigger handling
+        final checkIn1 = await service.handleGeofenceTrigger(
           userId: 'user-1',
           locationId: 'location-1',
           latitude: 40.7128,
           longitude: -74.0060,
           accuracy: 10.0,
         );
+        expect(checkIn1.id, isNotEmpty);
+        expect(checkIn1.visitId, isNotEmpty);
+        expect(checkIn1.geofenceTrigger, isNotNull);
+        expect(checkIn1.geofenceTrigger!.locationId, equals('location-1'));
+        expect(checkIn1.geofenceTrigger!.latitude, equals(40.7128));
+        expect(checkIn1.geofenceTrigger!.longitude, equals(-74.0060));
+        expect(checkIn1.isActive, isTrue);
+        expect(checkIn1.visitCreated, isTrue);
 
-        expect(checkIn.id, isNotEmpty);
-        expect(checkIn.visitId, isNotEmpty);
-        expect(checkIn.geofenceTrigger, isNotNull);
-        expect(checkIn.geofenceTrigger!.locationId, equals('location-1'));
-        expect(checkIn.geofenceTrigger!.latitude, equals(40.7128));
-        expect(checkIn.geofenceTrigger!.longitude, equals(-74.0060));
-        expect(checkIn.isActive, isTrue);
-        expect(checkIn.visitCreated, isTrue);
-      });
-
-      test('should create visit when geofence triggered', () async {
-        final checkIn = await service.handleGeofenceTrigger(
-          userId: 'user-1',
-          locationId: 'location-1',
+        final checkIn2 = await service.handleGeofenceTrigger(
+          userId: 'user-2',
+          locationId: 'location-2',
           latitude: 40.7128,
           longitude: -74.0060,
         );
-
-        final visit = await service.getVisitById(checkIn.visitId);
+        final visit = service.getVisit(checkIn2.visitId);
         expect(visit, isNotNull);
-        expect(visit!.userId, equals('user-1'));
-        expect(visit.locationId, equals('location-1'));
+        expect(visit!.userId, equals('user-2'));
+        expect(visit.locationId, equals('location-2'));
         expect(visit.isAutomatic, isTrue);
         expect(visit.isActive, isTrue);
       });
     });
 
     group('handleBluetoothTrigger', () {
-      test('should create automatic check-in with Bluetooth trigger', () async {
-        final checkIn = await service.handleBluetoothTrigger(
+      test(
+          'should create automatic check-in with Bluetooth trigger and handle ai2ai connection',
+          () async {
+        // Test business logic: Bluetooth trigger handling with ai2ai
+        final checkIn1 = await service.handleBluetoothTrigger(
           userId: 'user-1',
           locationId: 'location-1',
           deviceId: 'device-123',
           rssi: -50,
         );
+        expect(checkIn1.id, isNotEmpty);
+        expect(checkIn1.visitId, isNotEmpty);
+        expect(checkIn1.bluetoothTrigger, isNotNull);
+        expect(checkIn1.bluetoothTrigger!.deviceId, equals('device-123'));
+        expect(checkIn1.bluetoothTrigger!.rssi, equals(-50));
+        expect(checkIn1.isActive, isTrue);
 
-        expect(checkIn.id, isNotEmpty);
-        expect(checkIn.visitId, isNotEmpty);
-        expect(checkIn.bluetoothTrigger, isNotNull);
-        expect(checkIn.bluetoothTrigger!.deviceId, equals('device-123'));
-        expect(checkIn.bluetoothTrigger!.rssi, equals(-50));
-        expect(checkIn.isActive, isTrue);
-      });
-
-      test('should handle ai2ai connection', () async {
-        final checkIn = await service.handleBluetoothTrigger(
-          userId: 'user-1',
-          locationId: 'location-1',
-          deviceId: 'device-123',
+        final checkIn2 = await service.handleBluetoothTrigger(
+          userId: 'user-2',
+          locationId: 'location-2',
+          deviceId: 'device-456',
           rssi: -50,
           ai2aiConnected: true,
           personalityExchanged: true,
         );
-
-        expect(checkIn.bluetoothTrigger!.ai2aiConnected, isTrue);
-        expect(checkIn.bluetoothTrigger!.personalityExchanged, isTrue);
+        expect(checkIn2.bluetoothTrigger!.ai2aiConnected, isTrue);
+        expect(checkIn2.bluetoothTrigger!.personalityExchanged, isTrue);
       });
     });
 
     group('checkOut', () {
-      test('should check out from automatic check-in', () async {
-        final checkIn = await service.handleGeofenceTrigger(
+      test(
+          'should check out from automatic check-in, calculate quality score based on dwell time, or return zero quality for short visits',
+          () async {
+        // Test business logic: check-out with quality score calculation
+        final checkIn1 = await service.handleGeofenceTrigger(
           userId: 'user-1',
           locationId: 'location-1',
           latitude: 40.7128,
           longitude: -74.0060,
         );
-
-        // Wait a bit (simulate dwell time)
         await Future.delayed(const Duration(milliseconds: 100));
-
-        final checkedOut = await service.checkOut(
+        final checkOutTime1 =
+            checkIn1.checkInTime.add(const Duration(minutes: 6));
+        final checkedOut1 = await service.checkOut(
           userId: 'user-1',
+          checkOutTime: checkOutTime1,
         );
+        expect(checkedOut1.isActive, isFalse);
+        expect(checkedOut1.checkOutTime, isNotNull);
+        expect(checkedOut1.dwellTime, isNotNull);
+        expect(checkedOut1.qualityScore, greaterThan(0.0));
 
-        expect(checkedOut.isActive, isFalse);
-        expect(checkedOut.checkOutTime, isNotNull);
-        expect(checkedOut.dwellTime, isNotNull);
-        expect(checkedOut.qualityScore, greaterThan(0.0));
-      });
-
-      test('should calculate quality score based on dwell time', () async {
-        final checkIn = await service.handleGeofenceTrigger(
-          userId: 'user-1',
-          locationId: 'location-1',
+        final checkIn2 = await service.handleGeofenceTrigger(
+          userId: 'user-2',
+          locationId: 'location-2',
           latitude: 40.7128,
           longitude: -74.0060,
         );
-
-        // Simulate long dwell time (30+ minutes)
         final longDwellTime = const Duration(minutes: 35);
-        final checkInTime = checkIn.checkInTime;
-        final checkOutTime = checkInTime.add(longDwellTime);
-
-        final checkedOut = await service.checkOut(
-          userId: 'user-1',
-          checkOutTime: checkOutTime,
+        final checkOutTime2 = checkIn2.checkInTime.add(longDwellTime);
+        final checkedOut2 = await service.checkOut(
+          userId: 'user-2',
+          checkOutTime: checkOutTime2,
         );
+        expect(checkedOut2.qualityScore, greaterThanOrEqualTo(1.0));
 
-        // Long stay should give high quality score
-        expect(checkedOut.qualityScore, greaterThanOrEqualTo(1.0));
-      });
-
-      test('should return zero quality for short visits', () async {
-        final checkIn = await service.handleGeofenceTrigger(
-          userId: 'user-1',
-          locationId: 'location-1',
+        final checkIn3 = await service.handleGeofenceTrigger(
+          userId: 'user-3',
+          locationId: 'location-3',
           latitude: 40.7128,
           longitude: -74.0060,
         );
-
-        // Simulate short visit (less than 5 minutes)
         final shortDwellTime = const Duration(minutes: 3);
-        final checkInTime = checkIn.checkInTime;
-        final checkOutTime = checkInTime.add(shortDwellTime);
-
-        final checkedOut = await service.checkOut(
-          userId: 'user-1',
-          checkOutTime: checkOutTime,
+        final checkOutTime3 = checkIn3.checkInTime.add(shortDwellTime);
+        final checkedOut3 = await service.checkOut(
+          userId: 'user-3',
+          checkOutTime: checkOutTime3,
         );
-
-        // Short visit should give zero quality
-        expect(checkedOut.qualityScore, equals(0.0));
+        expect(checkedOut3.qualityScore, equals(0.0));
       });
     });
 
     group('getActiveCheckIns', () {
-      test('should return active check-ins for user', () async {
+      test(
+          'should return active check-ins for user, or return null when no active check-ins',
+          () async {
+        // Test business logic: active check-in retrieval
         await service.handleGeofenceTrigger(
           userId: 'user-1',
           locationId: 'location-1',
           latitude: 40.7128,
           longitude: -74.0060,
         );
-
         await service.handleGeofenceTrigger(
-          userId: 'user-1',
+          userId: 'user-2',
           locationId: 'location-2',
           latitude: 40.7130,
           longitude: -74.0062,
         );
+        final activeCheckIn1 = service.getActiveCheckIn('user-1');
+        final activeCheckIn2 = service.getActiveCheckIn('user-2');
+        expect(activeCheckIn1, isNotNull);
+        expect(activeCheckIn2, isNotNull);
 
-        final activeCheckIns = await service.getActiveCheckIns('user-1');
-        expect(activeCheckIns.length, equals(2));
-      });
-
-      test('should return empty list when no active check-ins', () async {
-        final activeCheckIns = await service.getActiveCheckIns('user-1');
-        expect(activeCheckIns, isEmpty);
+        final activeCheckIn3 = service.getActiveCheckIn('user-3');
+        expect(activeCheckIn3, isNull);
       });
     });
 
-    group('getVisitById', () {
-      test('should return visit by ID', () async {
+    group('getVisit', () {
+      test('should return visit by ID, or return null for non-existent visit',
+          () async {
+        // Test business logic: visit retrieval
         final checkIn = await service.handleGeofenceTrigger(
           userId: 'user-1',
           locationId: 'location-1',
           latitude: 40.7128,
           longitude: -74.0060,
         );
+        final visit1 = service.getVisit(checkIn.visitId);
+        expect(visit1, isNotNull);
+        expect(visit1!.id, equals(checkIn.visitId));
 
-        final visit = await service.getVisitById(checkIn.visitId);
-        expect(visit, isNotNull);
-        expect(visit!.id, equals(checkIn.visitId));
-      });
-
-      test('should return null for non-existent visit', () async {
-        final visit = await service.getVisitById('non-existent');
-        expect(visit, isNull);
+        final visit2 = service.getVisit('non-existent');
+        expect(visit2, isNull);
       });
     });
 
     group('getVisitsForUser', () {
       test('should return all visits for user', () async {
-        await service.handleGeofenceTrigger(
+        // Test business logic: user visit retrieval
+        final checkIn1 = await service.handleGeofenceTrigger(
           userId: 'user-1',
           locationId: 'location-1',
           latitude: 40.7128,
           longitude: -74.0060,
         );
-
+        await service.checkOut(
+          userId: 'user-1',
+          checkOutTime: checkIn1.checkInTime.add(const Duration(minutes: 10)),
+        );
         await service.handleGeofenceTrigger(
           userId: 'user-1',
           locationId: 'location-2',
           latitude: 40.7130,
           longitude: -74.0062,
         );
-
-        final visits = await service.getVisitsForUser('user-1');
+        final visits = service.getUserVisits('user-1');
         expect(visits.length, equals(2));
       });
+    });
 
-      test('should filter visits by category', () async {
-        // This would require category information in visits
-        // Implementation depends on Visit model structure
-      });
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

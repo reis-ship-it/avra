@@ -20,33 +20,19 @@ void main() {
       );
     });
 
-    testWidgets('displays all required form fields', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Edit spot page tests focus on business logic (form fields, spot information display), not property assignment
+
+    testWidgets(
+        'should display all required form fields or display spot information for editing',
+        (WidgetTester tester) async {
+      // Test business logic: Edit spot page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: EditSpotPage(spot: testSpot),
         spotsBloc: mockSpotsBloc,
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify form is present
-      expect(find.byType(EditSpotPage), findsOneWidget);
-    });
-
-    testWidgets('displays spot information for editing', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: EditSpotPage(spot: testSpot),
-        spotsBloc: mockSpotsBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show spot data in form
       expect(find.byType(EditSpotPage), findsOneWidget);
     });
   });
 }
-

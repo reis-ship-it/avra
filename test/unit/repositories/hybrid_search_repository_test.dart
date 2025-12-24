@@ -13,7 +13,7 @@
 /// OUR_GUTS.md: "Community, Not Just Places" - Local community knowledge comes first
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/data/repositories/hybrid_search_repository.dart';
 import 'package:spots/core/models/spot.dart';
@@ -24,9 +24,8 @@ import 'package:spots/data/datasources/remote/openstreetmap_datasource.dart';
 import 'package:spots/core/services/google_places_cache_service.dart';
 
 import '../../fixtures/model_factories.dart';
-import '../../helpers/test_helpers.dart';
 
-// Manual mocks for all dependencies
+// All mocks now use Mocktail (eliminates library conflict)
 class MockSpotsLocalDataSource extends Mock implements SpotsLocalDataSource {}
 class MockSpotsRemoteDataSource extends Mock implements SpotsRemoteDataSource {}
 class MockGooglePlacesDataSource extends Mock implements GooglePlacesDataSource {}
@@ -36,7 +35,6 @@ class MockConnectivity extends Mock implements Connectivity {}
 
 void main() {
   group('HybridSearchRepository Tests', () {
-    late HybridSearchRepository repository;
     late MockSpotsLocalDataSource mockLocalDataSource;
     late MockSpotsRemoteDataSource mockRemoteDataSource;
     late MockGooglePlacesDataSource mockGooglePlacesDataSource;
@@ -49,6 +47,7 @@ void main() {
 
     setUp(() {
       // Create fresh mocks for each test
+      // Fresh mocks prevent Mockito state issues from previous tests
       mockLocalDataSource = MockSpotsLocalDataSource();
       mockRemoteDataSource = MockSpotsRemoteDataSource();
       mockGooglePlacesDataSource = MockGooglePlacesDataSource();
@@ -56,62 +55,69 @@ void main() {
       mockGooglePlacesCache = MockGooglePlacesCacheService();
       mockConnectivity = MockConnectivity();
       
-      // Set up default connectivity mock - use thenReturn to avoid async issues
-      // Set it up BEFORE creating repository to avoid conflicts
-      when(mockConnectivity.checkConnectivity())
-          .thenReturn(Future.value([ConnectivityResult.wifi]));
-      
-      // Create repository AFTER all mocks are set up
-      repository = HybridSearchRepository(
-        localDataSource: mockLocalDataSource,
-        remoteDataSource: mockRemoteDataSource,
-        googlePlacesDataSource: mockGooglePlacesDataSource,
-        osmDataSource: mockOsmDataSource,
-        googlePlacesCache: mockGooglePlacesCache,
-        connectivity: mockConnectivity,
-      );
+      // Set up default connectivity mock in setUp()
+      // Individual tests can override this by calling when() again
+      when(() => mockConnectivity.checkConnectivity())
+          .thenAnswer((_) async => [ConnectivityResult.wifi]);
       
       testCommunitySpots = ModelFactories.createTestSpots(3);
       testExternalSpots = ModelFactories.createTestSpots(5);
     });
 
     tearDown(() async {
-      // Wait a bit to ensure any async operations complete
+      // Wait a bit to ensure async operations complete
       await Future.delayed(const Duration(milliseconds: 50));
-      
-      // Reset all mocks
-      reset(mockLocalDataSource);
-      reset(mockRemoteDataSource);
-      reset(mockGooglePlacesDataSource);
-      reset(mockOsmDataSource);
-      reset(mockGooglePlacesCache);
-      reset(mockConnectivity);
+      // NOTE: Do NOT reset mocks here - this can cause Mockito state issues
+      // Fresh mocks are created in setUp() for each test anyway
     });
+    
+    /// Helper to create repository with properly configured mocks
+    /// CRITICAL: All when() calls must happen BEFORE calling this helper
+    /// The connectivity mock should be set up by the test itself
+    HybridSearchRepository createRepository({
+      Connectivity? connectivityOverride,
+    }) {
+      final connectivity = connectivityOverride ?? mockConnectivity;
+      
+      // DO NOT set up mocks here - they must be set up by the test before calling this
+      // Setting up mocks here can cause "when within stub" errors if called during stub execution
+      
+      return HybridSearchRepository(
+        localDataSource: mockLocalDataSource,
+        remoteDataSource: mockRemoteDataSource,
+        googlePlacesDataSource: mockGooglePlacesDataSource,
+        osmDataSource: mockOsmDataSource,
+        googlePlacesCache: mockGooglePlacesCache,
+        connectivity: connectivity,
+      );
+    }
 
     group('searchSpots - Community-First Prioritization', () {
       test('should prioritize community data over external sources', () async {
-        // Arrange: Configure online scenario with both community and external data
-        // Connectivity is already mocked in setUp()
-        
-        // Mock community data search
-        when(mockLocalDataSource.searchSpots('cafe'))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots('cafe'))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => testCommunitySpots);
         
         // Mock external data sources
-        when(mockGooglePlacesDataSource.searchPlaces(
+        when(() => mockGooglePlacesDataSource.searchPlaces(
           query: 'cafe',
-          latitude: anyNamed('latitude'),
-          longitude: anyNamed('longitude'),
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
           radius: 1000,
         )).thenAnswer((_) async => testExternalSpots);
-        when(mockOsmDataSource.searchPlaces(
+        when(() => mockOsmDataSource.searchPlaces(
           query: 'cafe',
-          latitude: anyNamed('latitude'),
-          longitude: anyNamed('longitude'),
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
           limit: 10,
         )).thenAnswer((_) async => []);
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act
         final result = await repository.searchSpots(
@@ -127,17 +133,21 @@ void main() {
         expect(result.totalCount, lessThanOrEqualTo(10));
         
         // Verify community data was searched first
-        verify(mockLocalDataSource.searchSpots('cafe')).called(1);
-        verify(mockRemoteDataSource.getSpots()).called(1);
+        verify(() => mockLocalDataSource.searchSpots('cafe')).called(1);
+        verify(() => mockRemoteDataSource.getSpots()).called(1);
       });
 
       test('should return only community data when includeExternal is false', () async {
-        // Arrange
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots('restaurant'))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots('restaurant'))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => testCommunitySpots);
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act
         final result = await repository.searchSpots(
@@ -151,12 +161,12 @@ void main() {
         expect(result.communityCount, greaterThan(0));
         
         // Verify external sources were not called
-        verifyNever(mockGooglePlacesDataSource.searchPlaces(
+        verifyNever(() => mockGooglePlacesDataSource.searchPlaces(
           query: '',
           latitude: 0.0,
           longitude: 0.0,
         ));
-        verifyNever(mockOsmDataSource.searchPlaces(
+        verifyNever(() => mockOsmDataSource.searchPlaces(
           query: '',
           latitude: 0.0,
           longitude: 0.0,
@@ -165,11 +175,18 @@ void main() {
 
       test('should use cached Google Places data when offline', () async {
         // Arrange: Configure offline scenario
-        // Create a new connectivity mock for this test to avoid reset issues
+        // Create a new connectivity mock for this test
         final offlineConnectivity = MockConnectivity();
-        TestHelpers.mockOfflineConnectivity(offlineConnectivity);
         
-        // Create a new repository instance with offline connectivity
+        // Set up ALL mocks BEFORE creating repository
+        when(() => offlineConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.none]);
+        when(() => mockLocalDataSource.searchSpots('coffee'))
+            .thenAnswer((_) async => testCommunitySpots);
+        when(() => mockGooglePlacesCache.searchCachedPlaces('coffee'))
+            .thenAnswer((_) async => testExternalSpots);
+        
+        // Create repository AFTER all mocks are set up
         final offlineRepository = HybridSearchRepository(
           localDataSource: mockLocalDataSource,
           remoteDataSource: mockRemoteDataSource,
@@ -178,11 +195,6 @@ void main() {
           googlePlacesCache: mockGooglePlacesCache,
           connectivity: offlineConnectivity,
         );
-        
-        when(mockLocalDataSource.searchSpots('coffee'))
-            .thenAnswer((_) async => testCommunitySpots);
-        when(mockGooglePlacesCache.searchCachedPlaces('coffee'))
-            .thenAnswer((_) async => testExternalSpots);
 
         // Act
         final result = await offlineRepository.searchSpots(
@@ -192,8 +204,8 @@ void main() {
 
         // Assert: Should use cached data
         expect(result, isNotNull);
-        verify(mockGooglePlacesCache.searchCachedPlaces('coffee')).called(1);
-        verifyNever(mockGooglePlacesDataSource.searchPlaces(
+        verify(() => mockGooglePlacesCache.searchCachedPlaces('coffee')).called(1);
+        verifyNever(() => mockGooglePlacesDataSource.searchPlaces(
           query: '',
           latitude: 0.0,
           longitude: 0.0,
@@ -203,12 +215,16 @@ void main() {
 
     group('searchSpots - Caching', () {
       test('should return cached result when available', () async {
-        // Arrange: First search to populate cache
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots('cafe'))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots('cafe'))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => testCommunitySpots);
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // First search
         final firstResult = await repository.searchSpots(query: 'cafe');
@@ -219,16 +235,20 @@ void main() {
         expect(secondResult, isNotNull);
         
         // Verify data sources were only called once (first search)
-        verify(mockLocalDataSource.searchSpots('cafe')).called(1);
+        verify(() => mockLocalDataSource.searchSpots('cafe')).called(1);
       });
 
       test('should cache results with proper expiration', () async {
-        // Arrange
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots('restaurant'))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots('restaurant'))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => testCommunitySpots);
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act: Perform search
         final result = await repository.searchSpots(query: 'restaurant');
@@ -241,12 +261,16 @@ void main() {
 
     group('searchSpots - Filtering and Sorting', () {
       test('should apply filters when provided', () async {
-        // Arrange
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots('cafe'))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots('cafe'))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => testCommunitySpots);
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act: Search with filters
         final result = await repository.searchSpots(
@@ -263,12 +287,16 @@ void main() {
       });
 
       test('should respect maxResults limit', () async {
-        // Arrange
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots('restaurant'))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots('restaurant'))
             .thenAnswer((_) async => ModelFactories.createTestSpots(20));
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => ModelFactories.createTestSpots(20));
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act: Search with maxResults limit
         final result = await repository.searchSpots(
@@ -285,10 +313,14 @@ void main() {
 
     group('searchSpots - Error Handling', () {
       test('should return empty result on error', () async {
-        // Arrange: Simulate error in data source
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots('cafe'))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots('cafe'))
             .thenThrow(Exception('Database error'));
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act
         final result = await repository.searchSpots(query: 'cafe');
@@ -302,17 +334,21 @@ void main() {
       });
 
       test('should handle external data source errors gracefully', () async {
-        // Arrange
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots('cafe'))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots('cafe'))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockGooglePlacesDataSource.searchPlaces(
+        when(() => mockGooglePlacesDataSource.searchPlaces(
           query: 'cafe',
-          latitude: anyNamed('latitude'),
-          longitude: anyNamed('longitude'),
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
         )).thenThrow(Exception('API error'));
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act
         final result = await repository.searchSpots(
@@ -328,12 +364,16 @@ void main() {
 
     group('searchNearbySpots', () {
       test('should search nearby spots with location', () async {
-        // Arrange
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots(''))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots(''))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => testCommunitySpots);
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act
         final result = await repository.searchNearbySpots(
@@ -348,12 +388,16 @@ void main() {
       });
 
       test('should respect radius parameter', () async {
-        // Arrange
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots(''))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots(''))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => testCommunitySpots);
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act: Search with small radius
         final result = await repository.searchNearbySpots(
@@ -418,17 +462,21 @@ void main() {
 
     group('OUR_GUTS.md Compliance', () {
       test('should prioritize community data over external sources', () async {
-        // Arrange
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots('cafe'))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots('cafe'))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockGooglePlacesDataSource.searchPlaces(
+        when(() => mockGooglePlacesDataSource.searchPlaces(
           query: 'cafe',
           latitude: 0.0,
           longitude: 0.0,
         )).thenAnswer((_) async => testExternalSpots);
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act
         final result = await repository.searchSpots(
@@ -438,19 +486,23 @@ void main() {
 
         // Assert: Community data should be searched first and prioritized
         expect(result.communityCount, greaterThan(0));
-        verify(mockLocalDataSource.searchSpots('cafe')).called(1);
-        verify(mockRemoteDataSource.getSpots()).called(1);
+        verify(() => mockLocalDataSource.searchSpots('cafe')).called(1);
+        verify(() => mockRemoteDataSource.getSpots()).called(1);
       });
 
       test('should maintain privacy-preserving search analytics', () async {
-        // Arrange
-        // Connectivity is already mocked in setUp()
-        when(mockLocalDataSource.searchSpots('cafe'))
+        // Arrange: Set up ALL mocks BEFORE creating repository
+        when(() => mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(() => mockLocalDataSource.searchSpots('cafe'))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockLocalDataSource.searchSpots('restaurant'))
+        when(() => mockLocalDataSource.searchSpots('restaurant'))
             .thenAnswer((_) async => testCommunitySpots);
-        when(mockRemoteDataSource.getSpots())
+        when(() => mockRemoteDataSource.getSpots())
             .thenAnswer((_) async => testCommunitySpots);
+
+        // Create repository AFTER all mocks are set up
+        final repository = createRepository();
 
         // Act: Perform multiple searches
         await repository.searchSpots(query: 'cafe');

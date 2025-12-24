@@ -102,7 +102,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
               weight: '25%',
               score: credential!.score,
               icon: Icons.school,
-              color: AppColors.primaryBlue,
+              color: AppColors.primary,
               details: showDetails
                   ? '${credential!.degrees.length} degrees, ${credential!.certifications.length} certifications'
                   : null,
@@ -124,7 +124,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
               weight: '25%',
               score: professional!.score,
               icon: Icons.work,
-              color: AppColors.primaryBlue,
+              color: AppColors.primary,
               details: showDetails
                   ? '${professional!.roles.length} roles, ${professional!.peerEndorsements.length} endorsements'
                   : null,

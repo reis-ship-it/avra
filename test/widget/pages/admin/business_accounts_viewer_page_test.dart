@@ -6,32 +6,20 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests business accounts viewer UI
 void main() {
   group('BusinessAccountsViewerPage Widget Tests', () {
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Business accounts viewer page tests focus on business logic (UI display, business accounts content), not property assignment
+
+    testWidgets(
+        'should display all required UI elements or display business accounts content',
+        (WidgetTester tester) async {
+      // Test business logic: Business accounts viewer page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const BusinessAccountsViewerPage(),
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify viewer UI is present
       expect(find.text('Business Accounts Viewer'), findsOneWidget);
       expect(find.text('View and manage business accounts'), findsOneWidget);
-    });
-
-    testWidgets('displays business accounts content', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const BusinessAccountsViewerPage(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show business accounts UI
       expect(find.byType(BusinessAccountsViewerPage), findsOneWidget);
     });
   });
 }
-

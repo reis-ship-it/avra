@@ -201,7 +201,7 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '15 is a good number',
+                    'Select 15 preferences (recommended)',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),

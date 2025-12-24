@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots_network/backend_factory.dart';
 import 'package:spots_network/models/connection_config.dart';
+import 'package:spots_network/interfaces/backend_interface.dart';
 
 void main() {
   group('Supabase Backend Tests', () {

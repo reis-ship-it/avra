@@ -20,6 +20,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:spots/presentation/widgets/common/offline_indicator_widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/presentation/pages/events/events_browse_page.dart';
+import 'package:spots/presentation/widgets/chat/chat_button_with_badge.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
@@ -252,6 +253,9 @@ class _SpotsTabState extends State<SpotsTab> {
             return const SizedBox.shrink();
           },
         ),
+        actions: const [
+          ChatButtonWithBadge(),
+        ],
       ),
       body: Column(
         children: [

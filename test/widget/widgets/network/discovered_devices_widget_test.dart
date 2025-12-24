@@ -1,5 +1,5 @@
 /// Tests for Discovered Devices Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1: Critical UI/UX
 /// Section 1.2: Device Discovery UI
 
@@ -12,15 +12,20 @@ import 'package:spots/presentation/widgets/network/discovered_devices_widget.dar
 import '../../helpers/widget_test_helpers.dart';
 
 void main() {
-  setUpAll(() {
-  });
+  setUpAll(() {});
 
   tearDown(() {
     GetIt.instance.reset();
   });
 
   group('DiscoveredDevicesWidget', () {
-    testWidgets('displays empty state when no devices', (tester) async {
+    // Removed: Property assignment tests
+    // Discovered devices widget tests focus on business logic (device display, user interactions, connection), not property assignment
+
+    testWidgets(
+        'should display empty state when no devices, display device list when devices provided, display personality badge for AI-enabled devices, show proximity indicators correctly, trigger connection button callback, hide connection button when showConnectionButton is false, or call onDeviceTap when device card is tapped',
+        (tester) async {
+      // Test business logic: discovered devices widget display and interactions
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -30,13 +35,10 @@ void main() {
           ),
         ),
       );
-
       expect(find.text('No devices discovered'), findsOneWidget);
       expect(find.byIcon(Icons.devices_other), findsOneWidget);
-    });
 
-    testWidgets('displays device list when devices provided', (tester) async {
-      final devices = [
+      final devices1 = [
         DiscoveredDevice(
           deviceId: 'device-1',
           deviceName: 'Test Device',
@@ -46,23 +48,19 @@ void main() {
           discoveredAt: DateTime.now(),
         ),
       ];
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: DiscoveredDevicesWidget(
-              devices: devices,
+              devices: devices1,
             ),
           ),
         ),
       );
-
       expect(find.text('Test Device'), findsOneWidget);
       expect(find.text('WiFi'), findsOneWidget);
-    });
 
-    testWidgets('displays personality badge for AI-enabled devices', (tester) async {
-      final devices = [
+      final devices2 = [
         DiscoveredDevice(
           deviceId: 'device-1',
           deviceName: 'AI Device',
@@ -76,23 +74,19 @@ void main() {
           discoveredAt: DateTime.now(),
         ),
       ];
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: DiscoveredDevicesWidget(
-              devices: devices,
+              devices: devices2,
             ),
           ),
         ),
       );
-
       expect(find.text('AI Enabled'), findsOneWidget);
       expect(find.byIcon(Icons.psychology), findsOneWidget);
-    });
 
-    testWidgets('shows proximity indicators correctly', (tester) async {
-      final devices = [
+      final devices3 = [
         DiscoveredDevice(
           deviceId: 'close-device',
           deviceName: 'Close Device',
@@ -102,23 +96,19 @@ void main() {
           discoveredAt: DateTime.now(),
         ),
       ];
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: DiscoveredDevicesWidget(
-              devices: devices,
+              devices: devices3,
             ),
           ),
         ),
       );
-
       expect(find.textContaining('Very Close'), findsOneWidget);
       expect(find.textContaining('-30 dBm'), findsOneWidget);
-    });
 
-    testWidgets('connection button triggers callback', (tester) async {
-      final devices = [
+      final devices4 = [
         DiscoveredDevice(
           deviceId: 'device-1',
           deviceName: 'Test Device',
@@ -127,31 +117,22 @@ void main() {
           discoveredAt: DateTime.now(),
         ),
       ];
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: DiscoveredDevicesWidget(
-              devices: devices,
+              devices: devices4,
               showConnectionButton: true,
             ),
           ),
         ),
       );
-
-      // Should have connect button
       expect(find.text('Connect'), findsOneWidget);
-
-      // Tap connect button
       await tester.tap(find.text('Connect'));
       await tester.pump();
-
-      // Should show connecting state
       expect(find.text('Connecting...'), findsOneWidget);
-    });
 
-    testWidgets('hides connection button when showConnectionButton is false', (tester) async {
-      final devices = [
+      final devices5 = [
         DiscoveredDevice(
           deviceId: 'device-1',
           deviceName: 'Test Device',
@@ -160,26 +141,20 @@ void main() {
           discoveredAt: DateTime.now(),
         ),
       ];
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: DiscoveredDevicesWidget(
-              devices: devices,
+              devices: devices5,
               showConnectionButton: false,
             ),
           ),
         ),
       );
-
-      // Should not have connect button
       expect(find.text('Connect'), findsNothing);
-    });
 
-    testWidgets('calls onDeviceTap when device card is tapped', (tester) async {
       DiscoveredDevice? tappedDevice;
-      
-      final devices = [
+      final devices6 = [
         DiscoveredDevice(
           deviceId: 'device-1',
           deviceName: 'Tappable Device',
@@ -188,12 +163,11 @@ void main() {
           discoveredAt: DateTime.now(),
         ),
       ];
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: DiscoveredDevicesWidget(
-              devices: devices,
+              devices: devices6,
               onDeviceTap: (device) {
                 tappedDevice = device;
               },
@@ -201,11 +175,8 @@ void main() {
           ),
         ),
       );
-
-      // Tap on device card
       await tester.tap(find.text('Tappable Device'));
       await tester.pumpAndSettle();
-
       expect(tappedDevice, isNotNull);
       expect(tappedDevice?.deviceName, equals('Tappable Device'));
     });

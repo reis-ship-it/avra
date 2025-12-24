@@ -7,48 +7,39 @@ import '../../../fixtures/model_factories.dart';
 /// Tests community validation UI for external spots
 void main() {
   group('CommunityValidationWidget Widget Tests', () {
-    testWidgets('displays validation widget for external spots', (WidgetTester tester) async {
-      // Arrange
-      final testSpot = ModelFactories.createTestSpot(
+    // Removed: Property assignment tests
+    // Community validation widget tests focus on business logic (validation widget display for external/community spots), not property assignment
+
+    testWidgets(
+        'should display validation widget for external spots or not display for community spots',
+        (WidgetTester tester) async {
+      // Test business logic: community validation widget display
+      final testSpot1 = ModelFactories.createTestSpot(
         id: 'spot-123',
         name: 'External Spot',
       );
-      // Add external metadata
-      final externalSpot = testSpot.copyWith(
+      final externalSpot = testSpot1.copyWith(
         metadata: {
-          ...testSpot.metadata,
+          ...testSpot1.metadata,
           'is_external': true,
           'source': 'google_places',
         },
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: CommunityValidationWidget(spot: externalSpot),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show validation widget
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(CommunityValidationWidget), findsOneWidget);
-    });
 
-    testWidgets('does not display for community spots', (WidgetTester tester) async {
-      // Arrange
-      final testSpot = ModelFactories.createTestSpot(
+      final testSpot2 = ModelFactories.createTestSpot(
         id: 'spot-123',
         name: 'Community Spot',
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: CommunityValidationWidget(spot: testSpot),
+      final widget2 = WidgetTestHelpers.createTestableWidget(
+        child: CommunityValidationWidget(spot: testSpot2),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should not show validation widget
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(CommunityValidationWidget), findsOneWidget);
-      // Note: Widget returns SizedBox.shrink() for non-external spots
     });
   });
 }
-

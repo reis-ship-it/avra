@@ -9,9 +9,12 @@ import '../../../widget/mocks/mock_blocs.dart';
 /// Widget tests for AI2AILearningMethodsWidget
 void main() {
   group('AI2AILearningMethodsWidget Widget Tests', () {
+    // Removed: Property assignment tests
+    // AI2AI learning methods widget tests focus on business logic (widget initialization, data display, error handling), not property assignment
+
     late AI2AILearning learningService;
     late SharedPreferences prefs;
-    
+
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
       prefs = await SharedPreferences.getInstance();
@@ -21,124 +24,57 @@ void main() {
         personalityLearning: personalityLearning,
       );
     });
-    
-    group('Widget Initialization', () {
-      testWidgets('displays widget with loading state initially', (WidgetTester tester) async {
-        // Arrange
-        const userId = 'test_user';
-        final mockAuthBloc = MockBlocFactory.createAuthenticatedAuthBloc();
-        
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AILearningMethodsWidget(
-            userId: userId,
-            learningService: learningService,
-          ),
-          authBloc: mockAuthBloc,
-        );
 
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pump(); // Don't settle to see loading state
+    testWidgets(
+        'should display widget with loading state initially, call service methods on initialization, display learning insights when available, handle empty data gracefully, or handle service errors gracefully',
+        (WidgetTester tester) async {
+      // Test business logic: AI2AI learning methods widget display and interactions
+      const userId1 = 'test_user';
+      final mockAuthBloc1 = MockBlocFactory.createAuthenticatedAuthBloc();
+      final widget1 = WidgetTestHelpers.createTestableWidget(
+        child: AI2AILearningMethodsWidget(
+          userId: userId1,
+          learningService: learningService,
+        ),
+        authBloc: mockAuthBloc1,
+      );
+      await tester.pumpWidget(widget1);
+      await tester.pump();
+      expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
+      expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
 
-        // Assert - Widget should be present
-        expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
-      });
-      
-      testWidgets('calls service methods on initialization', (WidgetTester tester) async {
-        // Arrange
-        const userId = 'test_user';
-        final mockAuthBloc = MockBlocFactory.createAuthenticatedAuthBloc();
-        
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AILearningMethodsWidget(
-            userId: userId,
-            learningService: learningService,
-          ),
-          authBloc: mockAuthBloc,
-        );
+      const userId2 = 'new_user';
+      final mockAuthBloc2 = MockBlocFactory.createAuthenticatedAuthBloc();
+      final widget2 = WidgetTestHelpers.createTestableWidget(
+        child: AI2AILearningMethodsWidget(
+          userId: userId2,
+          learningService: learningService,
+        ),
+        authBloc: mockAuthBloc2,
+      );
+      await tester.pumpWidget(widget2);
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
+      expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
 
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pumpAndSettle();
-        await tester.pump(const Duration(seconds: 2));
-        await tester.pumpAndSettle();
-
-        // Assert - Widget should have loaded data
-        expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
-      });
-    });
-    
-    group('Data Display', () {
-      testWidgets('displays learning insights when available', (WidgetTester tester) async {
-        // Arrange
-        const userId = 'test_user';
-        final mockAuthBloc = MockBlocFactory.createAuthenticatedAuthBloc();
-        
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AILearningMethodsWidget(
-            userId: userId,
-            learningService: learningService,
-          ),
-          authBloc: mockAuthBloc,
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pumpAndSettle();
-        await tester.pump(const Duration(seconds: 2));
-        await tester.pumpAndSettle();
-
-        // Assert - Widget should display content (even if empty)
-        expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
-      });
-      
-      testWidgets('handles empty data gracefully', (WidgetTester tester) async {
-        // Arrange
-        const userId = 'new_user';
-        final mockAuthBloc = MockBlocFactory.createAuthenticatedAuthBloc();
-        
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AILearningMethodsWidget(
-            userId: userId,
-            learningService: learningService,
-          ),
-          authBloc: mockAuthBloc,
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pumpAndSettle();
-        await tester.pump(const Duration(seconds: 2));
-        await tester.pumpAndSettle();
-
-        // Assert - Widget should still render with empty state
-        expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
-      });
-    });
-    
-    group('Error Handling', () {
-      testWidgets('handles service errors gracefully', (WidgetTester tester) async {
-        // Arrange
-        const userId = 'error_user';
-        final mockAuthBloc = MockBlocFactory.createAuthenticatedAuthBloc();
-        
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AILearningMethodsWidget(
-            userId: userId,
-            learningService: learningService,
-          ),
-          authBloc: mockAuthBloc,
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pumpAndSettle();
-        await tester.pump(const Duration(seconds: 2));
-        await tester.pumpAndSettle();
-
-        // Assert - Widget should not crash on error
-        expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
-      });
+      const userId3 = 'error_user';
+      final mockAuthBloc3 = MockBlocFactory.createAuthenticatedAuthBloc();
+      final widget3 = WidgetTestHelpers.createTestableWidget(
+        child: AI2AILearningMethodsWidget(
+          userId: userId3,
+          learningService: learningService,
+        ),
+        authBloc: mockAuthBloc3,
+      );
+      await tester.pumpWidget(widget3);
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
+      expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
     });
   });
 }

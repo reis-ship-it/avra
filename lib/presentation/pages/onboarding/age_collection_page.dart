@@ -26,7 +26,8 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
     super.initState();
     _selectedBirthday = widget.selectedBirthday;
     if (_selectedBirthday != null) {
-      _dateController.text = DateFormat('MM/dd/yyyy').format(_selectedBirthday!);
+      _dateController.text =
+          DateFormat('MM/dd/yyyy').format(_selectedBirthday!);
     }
   }
 
@@ -56,9 +57,11 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    // Default to 30 years old (1995) for better UX - most users won't need to scroll
+    final defaultDate = DateTime.now().subtract(const Duration(days: 365 * 30));
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedBirthday ?? DateTime.now().subtract(const Duration(days: 365 * 18)),
+      initialDate: _selectedBirthday ?? defaultDate,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       helpText: 'Select your birthday',
@@ -132,18 +135,23 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
                         children: [
                           Text(
                             'Birthday',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
                                   color: AppColors.grey600,
                                 ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             _selectedBirthday != null
-                                ? DateFormat('MMMM dd, yyyy').format(_selectedBirthday!)
+                                ? DateFormat('MMMM dd, yyyy')
+                                    .format(_selectedBirthday!)
                                 : 'Tap to select your birthday',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
                           ),
                         ],
                       ),
@@ -185,17 +193,19 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
                       children: [
                         Text(
                           'Age: $age years old',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryColor,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.primaryColor,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Age Group: $ageGroup',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppColors.grey700,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.grey700,
+                                  ),
                         ),
                       ],
                     ),
@@ -240,4 +250,3 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
     );
   }
 }
-

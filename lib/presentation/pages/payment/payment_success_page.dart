@@ -24,12 +24,15 @@ class PaymentSuccessPage extends StatefulWidget {
   final ExpertiseEvent event;
   final String paymentId;
   final int quantity;
+  /// Optional eventService for testing. If not provided, uses GetIt instance.
+  final ExpertiseEventService? eventService;
 
   const PaymentSuccessPage({
     super.key,
     required this.event,
     required this.paymentId,
     required this.quantity,
+    this.eventService,
   });
 
   @override
@@ -38,7 +41,7 @@ class PaymentSuccessPage extends StatefulWidget {
 
 class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
   final _paymentService = GetIt.instance<PaymentService>();
-  final _eventService = ExpertiseEventService();
+  late final ExpertiseEventService _eventService;
   bool _isRegistering = false;
   bool _registrationComplete = false;
   String? _error;
@@ -46,6 +49,9 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
   @override
   void initState() {
     super.initState();
+    // Use injected instance (for testing) or get from DI (for production)
+    // This ensures single instance across app, not per-page
+    _eventService = widget.eventService ?? GetIt.instance<ExpertiseEventService>();
     _registerForEvent();
   }
 

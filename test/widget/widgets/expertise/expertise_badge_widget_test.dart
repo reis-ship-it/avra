@@ -9,9 +9,14 @@ import '../../../helpers/test_helpers.dart';
 /// Tests expertise badge display
 void main() {
   group('ExpertiseBadgeWidget Widget Tests', () {
-    testWidgets('displays badge when expert pins are provided', (WidgetTester tester) async {
-      // Arrange
-      final testPin = ExpertisePin(
+    // Removed: Property assignment tests
+    // Expertise badge widget tests focus on business logic (badge display, category matching, compact mode), not property assignment
+
+    testWidgets(
+        'should display badge when expert pins are provided, not display when no relevant pins, or display compact badge when compact is true',
+        (WidgetTester tester) async {
+      // Test business logic: expertise badge display
+      final testPin1 = ExpertisePin(
         id: 'pin-123',
         userId: 'user-123',
         category: 'Coffee',
@@ -19,23 +24,16 @@ void main() {
         earnedAt: TestHelpers.createTestDateTime(),
         earnedReason: 'Test',
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: ExpertiseBadgeWidget(
-          expertPins: [testPin],
+          expertPins: [testPin1],
           category: 'Coffee',
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show badge
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Expert'), findsOneWidget);
-    });
 
-    testWidgets('does not display when no relevant pins', (WidgetTester tester) async {
-      // Arrange
-      final testPin = ExpertisePin(
+      final testPin2 = ExpertisePin(
         id: 'pin-123',
         userId: 'user-123',
         category: 'Coffee',
@@ -43,23 +41,16 @@ void main() {
         earnedAt: TestHelpers.createTestDateTime(),
         earnedReason: 'Test',
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: ExpertiseBadgeWidget(
-          expertPins: [testPin],
+          expertPins: [testPin2],
           category: 'Restaurant', // Different category
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should not show badge
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Expert'), findsNothing);
-    });
 
-    testWidgets('displays compact badge when compact is true', (WidgetTester tester) async {
-      // Arrange
-      final testPin = ExpertisePin(
+      final testPin3 = ExpertisePin(
         id: 'pin-123',
         userId: 'user-123',
         category: 'Coffee',
@@ -67,20 +58,15 @@ void main() {
         earnedAt: TestHelpers.createTestDateTime(),
         earnedReason: 'Test',
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: ExpertiseBadgeWidget(
-          expertPins: [testPin],
+          expertPins: [testPin3],
           category: 'Coffee',
           compact: true,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show compact badge
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Expert'), findsOneWidget);
     });
   });
 }
-

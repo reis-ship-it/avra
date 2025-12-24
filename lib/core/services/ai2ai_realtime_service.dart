@@ -10,43 +10,47 @@ import 'package:spots/core/ai2ai/aipersonality_node.dart';
 /// OUR_GUTS.md: "Privacy-preserving AI2AI communication with real-time updates"
 class AI2AIRealtimeService {
   static const String _logName = 'AI2AIRealtimeService';
-  
+
   final RealtimeBackend _realtimeBackend;
   final VibeConnectionOrchestrator _orchestrator;
-  final AppLogger _logger = const AppLogger(defaultTag: 'AI2AI', minimumLevel: LogLevel.debug);
-  
+  final AppLogger _logger =
+      const AppLogger(defaultTag: 'AI2AI', minimumLevel: LogLevel.debug);
+
   // Realtime channels for AI2AI communication
   static const String _ai2aiChannel = 'ai2ai-network';
   static const String _personalityDiscoveryChannel = 'personality-discovery';
   static const String _vibeLearningChannel = 'vibe-learning';
-  static const String _anonymousCommunicationChannel = 'anonymous-communication';
-  
+  static const String _anonymousCommunicationChannel =
+      'anonymous-communication';
+
   // Active channel ids tracked locally
   final Set<String> _activeChannels = {};
-  
+
   AI2AIRealtimeService(this._realtimeBackend, this._orchestrator);
-  
+
   /// Initialize AI2AI realtime system
   Future<bool> initialize() async {
     try {
       _logger.info('Initializing AI2AI Realtime Service', tag: _logName);
-      
+
       await _realtimeBackend.connect();
-      
+
       // Subscribe to AI2AI channels
       await _subscribeToAI2AIChannels();
-      
+
       // Set up presence tracking
       await _setupPresenceTracking();
-      
-      _logger.info('AI2AI Realtime Service initialized successfully', tag: _logName);
+
+      _logger.info('AI2AI Realtime Service initialized successfully',
+          tag: _logName);
       return true;
     } catch (e) {
-      _logger.error('AI2AI Realtime Service initialization failed', error: e, tag: _logName);
+      _logger.error('AI2AI Realtime Service initialization failed',
+          error: e, tag: _logName);
       return false;
     }
   }
-  
+
   /// Subscribe to all AI2AI realtime channels
   Future<void> _subscribeToAI2AIChannels() async {
     try {
@@ -60,14 +64,16 @@ class AI2AIRealtimeService {
         await _realtimeBackend.joinChannel(channel);
         _activeChannels.add(channel);
       }
-      
-      _logger.info('Subscribed to ${_activeChannels.length} AI2AI channels', tag: _logName);
+
+      _logger.info('Subscribed to ${_activeChannels.length} AI2AI channels',
+          tag: _logName);
     } catch (e) {
-      _logger.error('Failed to subscribe to AI2AI channels', error: e, tag: _logName);
+      _logger.error('Failed to subscribe to AI2AI channels',
+          error: e, tag: _logName);
       rethrow;
     }
   }
-  
+
   /// Set up presence tracking for AI2AI network
   Future<void> _setupPresenceTracking() async {
     try {
@@ -84,20 +90,21 @@ class AI2AIRealtimeService {
           },
         ),
       );
-      
+
       _logger.info('AI2AI presence tracking enabled', tag: _logName);
     } catch (e) {
-      _logger.error('Failed to setup presence tracking', error: e, tag: _logName);
+      _logger.error('Failed to setup presence tracking',
+          error: e, tag: _logName);
     }
   }
-  
+
   /// Generate anonymous vibe signature for AI2AI communication
   String _generateVibeSignature() {
     // Create anonymous signature based on current vibe dimensions
     // This preserves privacy while enabling AI2AI matching
     final vibeData = _orchestrator.getCurrentVibe();
     if (vibeData == null) return 'anonymous';
-    
+
     final dims = vibeData.anonymizedDimensions;
     final signatureData = {
       'exploration_eagerness': dims['exploration_eagerness'] ?? 0.5,
@@ -109,11 +116,11 @@ class AI2AIRealtimeService {
       'feedback_style': dims['feedback_style'] ?? 0.5,
       'learning_approach': dims['learning_approach'] ?? 0.5,
     };
-    
+
     // Hash the signature for privacy
     return base64.encode(utf8.encode(json.encode(signatureData)));
   }
-  
+
   /// Broadcast AI personality discovery event
   Future<void> broadcastPersonalityDiscovery(AIPersonalityNode node) async {
     try {
@@ -134,14 +141,17 @@ class AI2AIRealtimeService {
           },
         ),
       );
-      _logger.info('Broadcasted personality discovery: ${node.nodeId}', tag: _logName);
+      _logger.info('Broadcasted personality discovery: ${node.nodeId}',
+          tag: _logName);
     } catch (e) {
-      _logger.error('Failed to broadcast personality discovery', error: e, tag: _logName);
+      _logger.error('Failed to broadcast personality discovery',
+          error: e, tag: _logName);
     }
   }
-  
+
   /// Broadcast vibe learning insights
-  Future<void> broadcastVibeLearning(Map<String, double> dimensionUpdates) async {
+  Future<void> broadcastVibeLearning(
+      Map<String, double> dimensionUpdates) async {
     try {
       await _realtimeBackend.sendMessage(
         _vibeLearningChannel,
@@ -161,12 +171,14 @@ class AI2AIRealtimeService {
       );
       _logger.info('Broadcasted vibe learning insights', tag: _logName);
     } catch (e) {
-      _logger.error('Failed to broadcast vibe learning', error: e, tag: _logName);
+      _logger.error('Failed to broadcast vibe learning',
+          error: e, tag: _logName);
     }
   }
-  
+
   /// Send anonymous AI2AI message
-  Future<void> sendAnonymousMessage(String messageType, Map<String, dynamic> payload) async {
+  Future<void> sendAnonymousMessage(
+      String messageType, Map<String, dynamic> payload) async {
     try {
       await _realtimeBackend.sendMessage(
         _anonymousCommunicationChannel,
@@ -184,37 +196,42 @@ class AI2AIRealtimeService {
       );
       _logger.info('Sent anonymous AI2AI message: $messageType', tag: _logName);
     } catch (e) {
-      _logger.error('Failed to send anonymous message', error: e, tag: _logName);
+      _logger.error('Failed to send anonymous message',
+          error: e, tag: _logName);
     }
   }
-  
+
   /// Listen for AI2AI network events
   Stream<RealtimeMessage> listenToAI2AINetwork() {
     if (!_activeChannels.contains(_ai2aiChannel)) return const Stream.empty();
     return _realtimeBackend.subscribeToMessages(_ai2aiChannel);
   }
-  
+
   /// Listen for personality discovery events
   Stream<RealtimeMessage> listenToPersonalityDiscovery() {
-    if (!_activeChannels.contains(_personalityDiscoveryChannel)) return const Stream.empty();
+    if (!_activeChannels.contains(_personalityDiscoveryChannel))
+      return const Stream.empty();
     return _realtimeBackend.subscribeToMessages(_personalityDiscoveryChannel);
   }
-  
+
   /// Listen for vibe learning events
   Stream<RealtimeMessage> listenToVibeLearning() {
-    if (!_activeChannels.contains(_vibeLearningChannel)) return const Stream.empty();
+    if (!_activeChannels.contains(_vibeLearningChannel))
+      return const Stream.empty();
     return _realtimeBackend.subscribeToMessages(_vibeLearningChannel);
   }
-  
+
   /// Listen for anonymous communication
   Stream<RealtimeMessage> listenToAnonymousCommunication() {
-    if (!_activeChannels.contains(_anonymousCommunicationChannel)) return const Stream.empty();
+    if (!_activeChannels.contains(_anonymousCommunicationChannel))
+      return const Stream.empty();
     return _realtimeBackend.subscribeToMessages(_anonymousCommunicationChannel);
   }
 
   /// Send a private message to a user (used by coordinator to deliver summaries)
   /// Note: this should typically be performed server-side; here we route via realtime boundary if available
-  Future<void> sendPrivateMessage(String toUserId, Map<String, dynamic> payload) async {
+  Future<void> sendPrivateMessage(
+      String toUserId, Map<String, dynamic> payload) async {
     try {
       await _realtimeBackend.sendMessage(
         _ai2aiChannel,
@@ -231,18 +248,19 @@ class AI2AIRealtimeService {
           },
         ),
       );
-      _logger.info('Queued private message to $toUserId via realtime', tag: _logName);
+      _logger.info('Queued private message to $toUserId via realtime',
+          tag: _logName);
     } catch (e) {
       _logger.error('Failed to send private message', error: e, tag: _logName);
     }
   }
-  
+
   /// Get current AI2AI network presence
   Stream<List<UserPresence>> watchAINetworkPresence() {
     if (!_activeChannels.contains(_ai2aiChannel)) return const Stream.empty();
     return _realtimeBackend.subscribeToPresence(_ai2aiChannel);
   }
-  
+
   /// Disconnect from all AI2AI channels
   Future<void> disconnect() async {
     try {
@@ -250,16 +268,19 @@ class AI2AIRealtimeService {
         await _realtimeBackend.leaveChannel(channel);
       }
       _activeChannels.clear();
-      
+
       _logger.info('Disconnected from all AI2AI channels', tag: _logName);
     } catch (e) {
-      _logger.error('Failed to disconnect from AI2AI channels', error: e, tag: _logName);
+      _logger.error('Failed to disconnect from AI2AI channels',
+          error: e, tag: _logName);
+      // Clear channels even if errors occurred to maintain consistent state
+      _activeChannels.clear();
     }
   }
-  
+
   /// Get connection status
   bool get isConnected => _activeChannels.isNotEmpty;
-  
+
   /// Get active channels
   List<String> get activeChannels => _activeChannels.toList();
 
@@ -281,13 +302,6 @@ class AI2AIRealtimeService {
 
       // Start listening before sending to avoid race conditions
       final stream = _realtimeBackend.subscribeToMessages(channel);
-      final future = stream.firstWhere((m) {
-        try {
-          return m.type == 'latency_ping' && (m.metadata['trace_id'] == traceId);
-        } catch (_) {
-          return false;
-        }
-      }).timeout(timeout);
 
       await _realtimeBackend.sendMessage(
         channel,
@@ -304,16 +318,35 @@ class AI2AIRealtimeService {
         ),
       );
 
-      final received = await future;
+      RealtimeMessage received;
+      try {
+        received = await stream.firstWhere(
+          (m) {
+            try {
+              return m.type == 'latency_ping' &&
+                  (m.metadata['trace_id'] == traceId);
+            } catch (_) {
+              return false;
+            }
+          },
+        ).timeout(timeout);
+      } catch (e) {
+        // Handle timeout or no element found - return null
+        if (e is TimeoutException || e is StateError) {
+          return null;
+        }
+        rethrow;
+      }
       final recvAt = DateTime.now();
-      final stamped = DateTime.tryParse(received.metadata['send_ts'] ?? '') ?? sendAt;
+      final stamped =
+          DateTime.tryParse(received.metadata['send_ts'] ?? '') ?? sendAt;
       final ms = recvAt.difference(stamped).inMilliseconds;
       _logger.info('Realtime latency_ping RTT: ${ms}ms', tag: _logName);
       return ms;
     } catch (e) {
-      _logger.warning('Realtime latency measurement failed', tag: _logName, error: e);
+      _logger.warning('Realtime latency measurement failed',
+          tag: _logName, error: e);
       return null;
     }
   }
 }
-

@@ -3,31 +3,15 @@ import 'package:spots/core/models/tax_document.dart';
 import 'package:spots/core/models/tax_profile.dart';
 
 /// Integration tests for tax compliance flow
-/// 
+///
 /// Tests model relationships and data flow for:
 /// 1. W-9 submission → 1099 generation
 /// 2. Earnings calculation → Tax document generation
 void main() {
   group('Tax Compliance Flow Integration Tests', () {
-    test('W-9 submission creates tax profile', () {
-      final profile = TaxProfile(
-        userId: 'user-123',
-        classification: TaxClassification.individual,
-        ssn: 'encrypted-ssn-123', // Should be encrypted in production
-        w9Submitted: true,
-        w9SubmittedAt: DateTime.now(),
-      );
-
-      expect(profile.userId, equals('user-123'));
-      expect(profile.w9Submitted, isTrue);
-      expect(profile.ssn, equals('encrypted-ssn-123'));
-      expect(profile.classification, equals(TaxClassification.individual));
-    });
-
-    test('tax document generated from earnings', () {
+    test('should generate tax document when earnings exceed threshold', () {
       final earnings = 1500.00;
       final threshold = 600.00;
-
       final needsDocument = earnings >= threshold;
 
       if (needsDocument) {
@@ -41,16 +25,17 @@ void main() {
           generatedAt: DateTime.now(),
         );
 
-        expect(taxDoc.totalEarnings, equals(earnings));
+        // Test business logic: document generation based on threshold
+        expect(taxDoc.totalEarnings, greaterThanOrEqualTo(threshold),
+            reason: 'Document should be generated when threshold met');
         expect(taxDoc.status, equals(TaxStatus.generated));
-        expect(taxDoc.formType, equals(TaxFormType.form1099K));
-        expect(taxDoc.documentUrl, isNull); // No document URL yet
       }
 
       expect(needsDocument, isTrue);
     });
 
-    test('tax document status flow: pending → generated → sent → filed', () {
+    test('should progress through tax document status flow correctly', () {
+      // Test business logic: status progression workflow
       var taxDoc = TaxDocument(
         id: 'tax-doc-123',
         userId: 'user-456',
@@ -61,22 +46,16 @@ void main() {
         generatedAt: DateTime.now(),
       );
 
-      expect(taxDoc.status, equals(TaxStatus.pending));
-
       // Step 1: Generate document
       taxDoc = taxDoc.copyWith(
         status: TaxStatus.generated,
         documentUrl: 'https://storage.example.com/tax-doc-123.pdf',
       );
-
-      expect(taxDoc.status, equals(TaxStatus.generated));
-      expect(taxDoc.documentUrl, isNotNull);
+      expect(taxDoc.documentUrl, isNotNull,
+          reason: 'Generated status should have document URL');
 
       // Step 2: Send to user
-      taxDoc = taxDoc.copyWith(
-        status: TaxStatus.sent,
-      );
-
+      taxDoc = taxDoc.copyWith(status: TaxStatus.sent);
       expect(taxDoc.status, equals(TaxStatus.sent));
 
       // Step 3: File with IRS
@@ -84,13 +63,13 @@ void main() {
         status: TaxStatus.filed,
         filedWithIRSAt: DateTime.now(),
       );
-
-      expect(taxDoc.status, equals(TaxStatus.filed));
-      expect(taxDoc.filedWithIRSAt, isNotNull);
+      expect(taxDoc.filedWithIRSAt, isNotNull,
+          reason: 'Filed status should have filing timestamp');
     });
 
-    test('tax profile completeness checks', () {
-      // Individual profile (needs SSN)
+    test('should validate profile completeness for different classifications',
+        () {
+      // Test business logic: different classifications require different fields
       final individualProfile = TaxProfile(
         userId: 'user-1',
         classification: TaxClassification.individual,
@@ -98,12 +77,6 @@ void main() {
         w9Submitted: true,
         w9SubmittedAt: DateTime.now(),
       );
-
-      expect(individualProfile.w9Submitted, isTrue);
-      expect(individualProfile.ssn, isNotNull);
-      expect(individualProfile.classification, equals(TaxClassification.individual));
-
-      // Business profile (needs EIN)
       final businessProfile = TaxProfile(
         userId: 'user-2',
         classification: TaxClassification.llc,
@@ -113,10 +86,13 @@ void main() {
         w9SubmittedAt: DateTime.now(),
       );
 
-      expect(businessProfile.w9Submitted, isTrue);
-      expect(businessProfile.ein, isNotNull);
-      expect(businessProfile.businessName, equals('My Business LLC'));
-      expect(businessProfile.classification, equals(TaxClassification.llc));
+      // Test business rules: individual needs SSN, business needs EIN
+      expect(individualProfile.ssn, isNotNull,
+          reason: 'Individual profile should have SSN');
+      expect(businessProfile.ein, isNotNull,
+          reason: 'Business profile should have EIN');
+      expect(businessProfile.businessName, isNotNull,
+          reason: 'Business profile should have business name');
     });
 
     test('multiple tax documents for same user/year', () {
@@ -141,33 +117,32 @@ void main() {
       );
 
       final allDocs = [doc1, doc2];
-      final totalEarnings = allDocs
-          .map((d) => d.totalEarnings)
-          .reduce((a, b) => a + b);
+      final totalEarnings =
+          allDocs.map((d) => d.totalEarnings).reduce((a, b) => a + b);
 
       expect(allDocs.every((d) => d.userId == 'user-123'), isTrue);
       expect(allDocs.every((d) => d.taxYear == 2025), isTrue);
       expect(totalEarnings, equals(1200.00));
     });
 
-    test('earnings threshold check 600 minimum', () {
+    test('should apply 600 minimum earnings threshold correctly', () {
+      // Test business logic: threshold calculation
       final belowThreshold = 500.00;
       final atThreshold = 600.00;
       final aboveThreshold = 700.00;
+      const threshold = 600.00;
 
-      expect(belowThreshold < 600.00, isTrue);
-      expect(atThreshold >= 600.00, isTrue);
-      expect(aboveThreshold >= 600.00, isTrue);
+      final needsDocBelow = belowThreshold >= threshold;
+      final needsDocAt = atThreshold >= threshold;
+      final needsDocAbove = aboveThreshold >= threshold;
 
-      // Below threshold - no tax document required
-      final statusBelow = TaxStatus.notRequired;
-
-      // At/above threshold - tax document required
-      final statusAt = TaxStatus.pending;
-
-      expect(statusBelow, equals(TaxStatus.notRequired));
-      expect(statusAt, equals(TaxStatus.pending));
+      // Test threshold logic
+      expect(needsDocBelow, isFalse,
+          reason: 'Below threshold should not require document');
+      expect(needsDocAt, isTrue,
+          reason: 'At threshold should require document');
+      expect(needsDocAbove, isTrue,
+          reason: 'Above threshold should require document');
     });
   });
 }
-

@@ -7,7 +7,7 @@ import '../../helpers/platform_channel_helper.dart';
 /// SPOTS AIImprovementTrackingService Unit Tests
 /// Date: December 1, 2025
 /// Purpose: Test AIImprovementTrackingService functionality
-/// 
+///
 /// Test Coverage:
 /// - Initialization: Service setup and configuration
 /// - Metrics Retrieval: Get current improvement metrics
@@ -15,7 +15,7 @@ import '../../helpers/platform_channel_helper.dart';
 /// - Milestone Detection: Detect improvement milestones
 /// - Accuracy Metrics: Get accuracy metrics
 /// - Storage: Load and save history
-/// 
+///
 /// Dependencies:
 /// - GetStorage: Local storage for history persistence
 
@@ -23,7 +23,7 @@ class MockGetStorage extends Mock implements GetStorage {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  
+
   group('AIImprovementTrackingService', () {
     AIImprovementTrackingService? service;
 
@@ -49,100 +49,71 @@ void main() {
       await cleanupTestStorage();
     });
 
-    group('Initialization', () {
-      test('should initialize service', () {
-        // Service may be null if platform channels aren't available
-        // This is expected in unit test environment
-        if (service == null) {
-          // Skip test if service couldn't be created
-          return;
-        }
-        expect(service, isNotNull);
-      });
+    // Removed: Property assignment tests
+    // AI improvement tracking tests focus on business logic (metrics, history, milestones), not property assignment
 
-      test('should have metrics stream', () {
+    group('Initialization', () {
+      test('should initialize service and have metrics stream', () {
+        // Test business logic: service initialization
         if (service == null) return; // Skip if service couldn't be created
+        expect(service, isNotNull);
         expect(service!.metricsStream, isNotNull);
       });
     });
 
     group('Metrics Retrieval', () {
-      test('should get current metrics for user', () async {
+      test(
+          'should get current metrics for user or return cached metrics if available',
+          () async {
+        // Test business logic: metrics retrieval and caching
         skipIfServiceNull();
         const userId = 'test-user-1';
-        
-        final metrics = await service!.getCurrentMetrics(userId);
-        
-        expect(metrics, isNotNull);
-        expect(metrics.userId, userId);
-        expect(metrics.dimensionScores, isNotEmpty);
-        expect(metrics.performanceScores, isNotEmpty);
-        expect(metrics.overallScore, greaterThanOrEqualTo(0.0));
-        expect(metrics.overallScore, lessThanOrEqualTo(1.0));
-      });
 
-      test('should return cached metrics if available', () async {
-        skipIfServiceNull();
-        const userId = 'test-user-1';
-        
-        // First call
         final metrics1 = await service!.getCurrentMetrics(userId);
-        
-        // Second call - should use cache if available
+        expect(metrics1, isNotNull);
+        expect(metrics1.userId, userId);
+        expect(metrics1.dimensionScores, isNotEmpty);
+        expect(metrics1.performanceScores, isNotEmpty);
+        expect(metrics1.overallScore, greaterThanOrEqualTo(0.0));
+        expect(metrics1.overallScore, lessThanOrEqualTo(1.0));
+
         final metrics2 = await service!.getCurrentMetrics(userId);
-        
         expect(metrics1.userId, metrics2.userId);
       });
     });
 
     group('History Management', () {
-      test('should get history for user', () {
-        const userId = 'test-user-1';
-        
+      test(
+          'should get history for user, filter by time window, return empty list for user with no history, and sort by timestamp descending',
+          () {
+        // Test business logic: history retrieval with filtering and sorting
         skipIfServiceNull();
-        final history = service!.getHistory(userId: userId);
-        
-        expect(history, isA<List>());
-      });
+        const userId = 'test-user-1';
 
-      test('should filter history by time window', () {
-        skipIfServiceNull();
-        const userId = 'test-user-1';
+        final history1 = service!.getHistory(userId: userId);
+        expect(history1, isA<List>());
+
         final timeWindow = const Duration(days: 30);
-        
-        final history = service!.getHistory(
-          userId: userId,
-          timeWindow: timeWindow,
-        );
-        
-        expect(history, isA<List>());
-        // All snapshots should be within time window
+        final history2 =
+            service!.getHistory(userId: userId, timeWindow: timeWindow);
+        expect(history2, isA<List>());
         final cutoff = DateTime.now().subtract(timeWindow);
-        for (final snapshot in history) {
+        for (final snapshot in history2) {
           expect(snapshot.timestamp.isAfter(cutoff), true);
         }
-      });
 
-      test('should return empty list for user with no history', () {
-        const userId = 'non-existent-user';
-        
-        skipIfServiceNull();
-        final history = service!.getHistory(userId: userId);
-        
-        expect(history, isEmpty);
-      });
+        const nonExistentUserId = 'non-existent-user';
+        final emptyHistory = service!.getHistory(userId: nonExistentUserId);
+        expect(emptyHistory, isEmpty);
 
-      test('should sort history by timestamp descending', () {
-        const userId = 'test-user-1';
-        
-        skipIfServiceNull();
-        final history = service!.getHistory(userId: userId);
-        
-        if (history.length > 1) {
-          for (int i = 0; i < history.length - 1; i++) {
+        final history3 = service!.getHistory(userId: userId);
+        if (history3.length > 1) {
+          for (int i = 0; i < history3.length - 1; i++) {
             expect(
-              history[i].timestamp.isAfter(history[i + 1].timestamp) ||
-              history[i].timestamp.isAtSameMomentAs(history[i + 1].timestamp),
+              history3[i].timestamp.isAfter(history3[i + 1].timestamp) ||
+                  history3[i]
+                      .timestamp
+                      .isAtSameMomentAs(history3[i + 1].timestamp),
               true,
             );
           }
@@ -151,32 +122,22 @@ void main() {
     });
 
     group('Milestone Detection', () {
-      test('should get milestones for user', () {
+      test(
+          'should get milestones for user, return empty list for user with no history, and detect significant improvements',
+          () {
+        // Test business logic: milestone detection and validation
+        skipIfServiceNull();
         const userId = 'test-user-1';
-        
-        skipIfServiceNull();
-        final milestones = service!.getMilestones(userId);
-        
-        expect(milestones, isA<List>());
-      });
 
-      test('should return empty list for user with no history', () {
-        const userId = 'non-existent-user';
-        
-        skipIfServiceNull();
-        final milestones = service!.getMilestones(userId);
-        
-        expect(milestones, isEmpty);
-      });
+        final milestones1 = service!.getMilestones(userId);
+        expect(milestones1, isA<List>());
 
-      test('should detect significant improvements', () {
-        const userId = 'test-user-1';
-        
-        skipIfServiceNull();
-        final milestones = service!.getMilestones(userId);
-        
-        // If milestones exist, they should have valid structure
-        for (final milestone in milestones) {
+        const nonExistentUserId = 'non-existent-user';
+        final emptyMilestones = service!.getMilestones(nonExistentUserId);
+        expect(emptyMilestones, isEmpty);
+
+        final milestones2 = service!.getMilestones(userId);
+        for (final milestone in milestones2) {
           expect(milestone.dimension, isNotEmpty);
           expect(milestone.improvement, greaterThan(0.0));
           expect(milestone.fromScore, greaterThanOrEqualTo(0.0));
@@ -189,12 +150,13 @@ void main() {
     group('Accuracy Metrics', () {
       test('should get accuracy metrics for user', () async {
         const userId = 'test-user-1';
-        
+
         skipIfServiceNull();
         final accuracy = await service!.getAccuracyMetrics(userId);
-        
+
         expect(accuracy, isNotNull);
-        expect(accuracy.recommendationAcceptanceRate, greaterThanOrEqualTo(0.0));
+        expect(
+            accuracy.recommendationAcceptanceRate, greaterThanOrEqualTo(0.0));
         expect(accuracy.recommendationAcceptanceRate, lessThanOrEqualTo(1.0));
         expect(accuracy.predictionAccuracy, greaterThanOrEqualTo(0.0));
         expect(accuracy.predictionAccuracy, lessThanOrEqualTo(1.0));
@@ -208,7 +170,7 @@ void main() {
       test('should handle storage errors gracefully', () async {
         // Service should handle storage errors without crashing
         const userId = 'test-user-1';
-        
+
         skipIfServiceNull();
         final metrics = await service!.getCurrentMetrics(userId);
         expect(metrics, isNotNull);
@@ -225,41 +187,27 @@ void main() {
     });
 
     group('Edge Cases', () {
-      test('should handle empty user ID', () async {
-        const userId = '';
-        
+      test(
+          'should handle empty user ID, very long time window, and zero time window',
+          () async {
+        // Test business logic: edge case handling
         skipIfServiceNull();
-        final metrics = await service!.getCurrentMetrics(userId);
+        const emptyUserId = '';
+        final metrics = await service!.getCurrentMetrics(emptyUserId);
         expect(metrics, isNotNull);
-        expect(metrics.userId, userId);
-      });
+        expect(metrics.userId, emptyUserId);
 
-      test('should handle very long time window', () {
-        skipIfServiceNull();
         const userId = 'test-user-1';
-        final timeWindow = const Duration(days: 365);
-        
-        final history = service!.getHistory(
-          userId: userId,
-          timeWindow: timeWindow,
-        );
-        
-        expect(history, isA<List>());
-      });
+        final longTimeWindow = const Duration(days: 365);
+        final history1 =
+            service!.getHistory(userId: userId, timeWindow: longTimeWindow);
+        expect(history1, isA<List>());
 
-      test('should handle zero time window', () {
-        skipIfServiceNull();
-        const userId = 'test-user-1';
-        final timeWindow = const Duration(seconds: 0);
-        
-        final history = service!.getHistory(
-          userId: userId,
-          timeWindow: timeWindow,
-        );
-        
-        expect(history, isA<List>());
+        final zeroTimeWindow = const Duration(seconds: 0);
+        final history2 =
+            service!.getHistory(userId: userId, timeWindow: zeroTimeWindow);
+        expect(history2, isA<List>());
       });
     });
   });
 }
-

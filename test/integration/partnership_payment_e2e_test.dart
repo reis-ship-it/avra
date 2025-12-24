@@ -2,16 +2,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:spots/core/models/event_partnership.dart';
 import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/payment.dart';
 import 'package:spots/core/models/revenue_split.dart';
 import 'package:spots/core/services/partnership_service.dart';
 import 'package:spots/core/services/payment_service.dart';
 import 'package:spots/core/services/revenue_split_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/business_service.dart';
+import 'package:spots/core/services/business_account_service.dart';
 import 'package:spots/core/services/stripe_service.dart';
+import 'package:spots/core/models/unified_user.dart';
 import '../helpers/integration_test_helpers.dart';
 import '../fixtures/integration_test_fixtures.dart';
+import '../fixtures/model_factories.dart';
 
 // Mock dependencies
 class MockStripeService extends Mock implements StripeService {}
@@ -65,9 +67,10 @@ void main() {
       );
       
       // Setup Stripe mock
+      // Note: For getters in mocktail, we access the getter directly
       when(() => mockStripeService.isInitialized).thenReturn(true);
       when(() => mockStripeService.initializeStripe())
-          .thenAnswer((_) async => {});
+          .thenAnswer((_) async {});
     });
     
     tearDown(() {
@@ -84,8 +87,9 @@ void main() {
         final scenario = IntegrationTestFixtures.eventHostingScenario();
         final event = scenario['event'] as ExpertiseEvent;
         final host = scenario['host'] as UnifiedUser;
-        final attendee = IntegrationTestHelpers.createTestUser();
+        final attendee = ModelFactories.createTestUser();
         
+        // Mock getEventById to return event (called multiple times in createPartnership and checkPartnershipEligibility)
         when(() => mockEventService.getEventById(any()))
             .thenAnswer((_) async => event);
         
@@ -98,10 +102,9 @@ void main() {
           isVerified: true,
         );
         
+        // Mock getBusinessById to return business (called multiple times in createPartnership and checkPartnershipEligibility)
         when(() => mockBusinessService.getBusinessById(any()))
             .thenAnswer((_) async => business);
-        when(() => mockBusinessService.checkBusinessEligibility(any()))
-            .thenAnswer((_) async => true);
         
         final partnership = await partnershipService.createPartnership(
           eventId: event.id,
@@ -134,11 +137,10 @@ void main() {
         // ============================================
         // STEP 4: Create Revenue Split
         // ============================================
-        when(() => partnershipService.getPartnershipById(any()))
-            .thenAnswer((_) async => businessApproved);
-        
+        // Note: partnershipService is a real instance, so getPartnershipById will work
+        // with the partnership we just created and approved (stored in in-memory map)
         final revenueSplit = await revenueSplitService.calculateFromPartnership(
-          partnershipId: partnership.id,
+          partnershipId: businessApproved.id,
           totalAmount: 100.00,
           ticketsSold: 1,
         );
@@ -161,13 +163,9 @@ void main() {
         // ============================================
         // STEP 6: Process Payment
         // ============================================
-        when(() => partnershipService.getPartnershipsForEvent(any()))
-            .thenAnswer((_) async => [businessApproved]);
-        when(() => revenueSplitService.calculateFromPartnership(
-          partnershipId: any(named: 'partnershipId'),
-          totalAmount: any(named: 'totalAmount'),
-          ticketsSold: any(named: 'ticketsSold'),
-        )).thenAnswer((_) async => lockedSplit);
+        // Note: partnershipService and revenueSplitService are real instances,
+        // so they will use the actual partnerships and splits we created
+        // No need to mock - the real services will work with the in-memory data
         
         await paymentService.initialize();
         
@@ -185,9 +183,8 @@ void main() {
         // ============================================
         // STEP 7: Distribute Payments
         // ============================================
-        when(() => revenueSplitService.getRevenueSplit(any()))
-            .thenAnswer((_) async => lockedSplit);
-        
+        // Note: revenueSplitService is a real instance, so getRevenueSplit will work
+        // with the split we just created and locked (stored in in-memory map)
         final payoutAmounts = await revenueSplitService.distributePayments(
           revenueSplitId: lockedSplit.id,
           eventEndTime: event.endTime,
@@ -215,10 +212,6 @@ void main() {
         // Arrange: User + Business + Sponsor
         final event = IntegrationTestHelpers.createTestEvent(
           host: IntegrationTestHelpers.createExpertUser(),
-        );
-        final business = IntegrationTestHelpers.createTestBusinessAccount(
-          id: 'business-1',
-          isVerified: true,
         );
         
         // Create N-way split with 3 parties
@@ -251,13 +244,14 @@ void main() {
         expect(revenueSplit.isValid, isTrue);
         
         // Verify split amounts
+        // Calculation: $1000 - $100 (10% platform) - $32 (2.9% + $0.30*10 tickets) = $868
         final splitAmount = revenueSplit.splitAmount; // After fees
-        expect(splitAmount, closeTo(870.00, 0.01)); // ~$1000 - $100 - $30
+        expect(splitAmount, closeTo(868.00, 0.01)); // $1000 - $100 - $32
         
-        // Verify party amounts
-        expect(revenueSplit.parties[0].amount, closeTo(348.00, 0.01)); // 40% of $870
-        expect(revenueSplit.parties[1].amount, closeTo(304.50, 0.01)); // 35% of $870
-        expect(revenueSplit.parties[2].amount, closeTo(217.50, 0.01)); // 25% of $870
+        // Verify party amounts (percentages of $868)
+        expect(revenueSplit.parties[0].amount, closeTo(347.20, 0.01)); // 40% of $868
+        expect(revenueSplit.parties[1].amount, closeTo(303.80, 0.01)); // 35% of $868
+        expect(revenueSplit.parties[2].amount, closeTo(217.00, 0.01)); // 25% of $868
       });
     });
   });

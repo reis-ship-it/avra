@@ -221,7 +221,7 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
       ),
       child: Row(
         children: [
-          Icon(Icons.reviews, size: 48, color: badgeColor),
+          Icon(Icons.rate_review, size: 48, color: badgeColor),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -415,7 +415,7 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
         break;
       case FraudRecommendation.review:
         recColor = AppTheme.warningColor;
-        recIcon = Icons.review;
+        recIcon = Icons.rate_review;
         recText = 'Review';
         break;
       case FraudRecommendation.requireVerification:

@@ -13,261 +13,150 @@ void main() {
   });
 
   group('UniversalAISearch Widget Tests', () {
-    testWidgets('displays search field with hint text',
+    // Removed: Property assignment tests
+    // Universal AI search widget tests focus on business logic (search field display, command submission, text clearing, loading state, disabled state, tap callbacks, initial value, suggestions, empty command handling, whitespace trimming, accessibility, rapid input, focus state), not property assignment
+
+    testWidgets(
+        'should display search field with hint text, call onCommand when text is submitted, clear text after submission, show loading state when enabled, disable input when disabled, call onTap when tapped, display initial value correctly, show search suggestions when focused, handle empty command submission gracefully, trim whitespace from commands, meet accessibility requirements, handle rapid text input changes, or maintain focus state correctly',
         (WidgetTester tester) async {
-      // Arrange
+      // Test business logic: Universal AI search widget display and interactions
       const hintText = 'Search for anything...';
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const UniversalAISearch(
           hintText: hintText,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
-      // Verify TextField exists (not TextFormField)
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(TextField), findsOneWidget);
+      final textFieldWidget1 = tester.widget<TextField>(find.byType(TextField));
+      expect(textFieldWidget1.decoration?.hintText, equals(hintText));
 
-      // Verify hint text by checking TextField's decoration property
-      // (hint text in InputDecoration is not rendered as a Text widget)
-      final textFieldWidget = tester.widget<TextField>(find.byType(TextField));
-      expect(textFieldWidget.decoration?.hintText, equals(hintText));
-    });
-
-    testWidgets('calls onCommand when text is submitted',
-        (WidgetTester tester) async {
-      // Arrange
-      String? submittedCommand;
-      final widget = WidgetTestHelpers.createTestableWidget(
+      String? submittedCommand1;
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
           hintText: 'Test search',
-          onCommand: (command) => submittedCommand = command,
+          onCommand: (command) => submittedCommand1 = command,
         ),
       );
-
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Act
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       await tester.enterText(find.byType(TextField), 'test command');
       await tester.testTextInput.receiveAction(TextInputAction.search);
       await tester.pump();
-
-      // Assert
-      expect(submittedCommand, equals('test command'));
-    });
-
-    testWidgets('clears text after submission', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: UniversalAISearch(
-          hintText: 'Test search',
-          onCommand: (command) {},
-        ),
-      );
-
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Act
-      await tester.enterText(find.byType(TextField), 'test command');
-      await tester.testTextInput.receiveAction(TextInputAction.search);
-      await tester.pump();
-
-      // Assert - Text field should be cleared
+      expect(submittedCommand1, equals('test command'));
       expect(find.text('test command'), findsNothing);
-    });
 
-    testWidgets('shows loading state when enabled',
-        (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const UniversalAISearch(
           hintText: 'Loading search',
           isLoading: true,
         ),
       );
-
-      // Act
-      await tester.pumpWidget(widget);
+      await tester.pumpWidget(widget3);
       await tester.pump();
-
-      // Assert
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
 
-    testWidgets('disables input when disabled', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: const UniversalAISearch(
           hintText: 'Disabled search',
           enabled: false,
         ),
       );
-
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Act
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       await tester.enterText(find.byType(TextField), 'should not work');
-
-      // Assert - Text should not be entered when disabled
       expect(find.text('should not work'), findsNothing);
-    });
 
-    testWidgets('calls onTap when tapped', (WidgetTester tester) async {
-      // Arrange
       var tapped = false;
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget5 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
           hintText: 'Tappable search',
           onTap: () => tapped = true,
         ),
       );
-
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Act
+      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
       await tester.tap(find.byType(TextField));
       await tester.pump();
-
-      // Assert
       expect(tapped, isTrue);
-    });
 
-    testWidgets('displays initial value correctly',
-        (WidgetTester tester) async {
-      // Arrange
       const initialValue = 'Initial search term';
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget6 = WidgetTestHelpers.createTestableWidget(
         child: const UniversalAISearch(
           hintText: 'Search',
           initialValue: initialValue,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget6);
       expect(find.text(initialValue), findsOneWidget);
-    });
 
-    testWidgets('shows search suggestions when focused',
-        (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget7 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
           hintText: 'Search with suggestions',
           onCommand: (command) {},
         ),
       );
-
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Act
+      await WidgetTestHelpers.pumpAndSettle(tester, widget7);
       await tester.tap(find.byType(TextField));
       await tester.enterText(find.byType(TextField), 'test');
       await tester.pump();
-
-      // Assert - Would show suggestions in a real implementation
       expect(find.byType(TextField), findsOneWidget);
-    });
 
-    testWidgets('handles empty command submission gracefully',
-        (WidgetTester tester) async {
-      // Arrange
-      String? submittedCommand;
+      String? submittedCommand2;
       var callbackCount = 0;
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget8 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
           hintText: 'Empty test',
           onCommand: (command) {
-            submittedCommand = command;
+            submittedCommand2 = command;
             callbackCount++;
           },
         ),
       );
-
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Act - Submit empty text
+      await WidgetTestHelpers.pumpAndSettle(tester, widget8);
       await tester.testTextInput.receiveAction(TextInputAction.search);
       await tester.pump();
-
-      // Assert - Should not call callback for empty command
-      expect(submittedCommand, isNull);
+      expect(submittedCommand2, isNull);
       expect(callbackCount, equals(0));
-    });
 
-    testWidgets('trims whitespace from commands', (WidgetTester tester) async {
-      // Arrange
-      String? submittedCommand;
-      final widget = WidgetTestHelpers.createTestableWidget(
+      String? submittedCommand3;
+      final widget9 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
           hintText: 'Trim test',
-          onCommand: (command) => submittedCommand = command,
+          onCommand: (command) => submittedCommand3 = command,
         ),
       );
-
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Act
+      await WidgetTestHelpers.pumpAndSettle(tester, widget9);
       await tester.enterText(find.byType(TextField), '  test command  ');
       await tester.testTextInput.receiveAction(TextInputAction.search);
       await tester.pump();
+      expect(submittedCommand3, equals('test command'));
 
-      // Assert
-      expect(submittedCommand, equals('test command'));
-    });
-
-    testWidgets('meets accessibility requirements',
-        (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget10 = WidgetTestHelpers.createTestableWidget(
         child: const UniversalAISearch(
           hintText: 'Accessible search',
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
-      final textFieldWidget = tester.widget<TextField>(find.byType(TextField));
-      expect(textFieldWidget.decoration?.hintText, equals('Accessible search'));
-      
-      // Text field should meet minimum size requirements
+      await WidgetTestHelpers.pumpAndSettle(tester, widget10);
+      final textFieldWidget2 = tester.widget<TextField>(find.byType(TextField));
+      expect(
+          textFieldWidget2.decoration?.hintText, equals('Accessible search'));
       final textField = tester.getSize(find.byType(TextField));
       expect(textField.height, greaterThanOrEqualTo(48.0));
-    });
 
-    testWidgets('handles rapid text input changes',
-        (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget11 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
           hintText: 'Rapid input test',
           onCommand: (command) {},
         ),
       );
-
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Act - Rapidly change text
+      await WidgetTestHelpers.pumpAndSettle(tester, widget11);
       await tester.enterText(find.byType(TextField), 'a');
       await tester.pump(const Duration(milliseconds: 10));
       await tester.enterText(find.byType(TextField), 'ab');
       await tester.pump(const Duration(milliseconds: 10));
       await tester.enterText(find.byType(TextField), 'abc');
       await tester.pump();
-
-      // Assert - Should handle rapid changes gracefully
       expect(find.text('abc'), findsOneWidget);
-    });
 
-    testWidgets('maintains focus state correctly', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget12 = WidgetTestHelpers.createTestableWidget(
         child: Scaffold(
           body: Column(
             children: [
@@ -275,19 +164,14 @@ void main() {
                 hintText: 'Focus test',
                 onCommand: (command) {},
               ),
-              const TextField(), // Another field to test focus transfer
+              const TextField(),
             ],
           ),
         ),
       );
-
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Act - Focus on search field
+      await WidgetTestHelpers.pumpAndSettle(tester, widget12);
       await tester.tap(find.byType(UniversalAISearch));
       await tester.pump();
-
-      // Assert - Should handle focus correctly
       expect(find.byType(UniversalAISearch), findsOneWidget);
     });
   });

@@ -1,5 +1,5 @@
 /// Tests for Offline Indicator Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1.3: LLM Full Integration
 
 import 'package:flutter/material.dart';
@@ -7,9 +7,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/common/offline_indicator_widget.dart';
 
 void main() {
-
   group('OfflineIndicatorWidget', () {
-    testWidgets('shows indicator when offline', (tester) async {
+    // Removed: Property assignment tests
+    // Offline indicator widget tests focus on business logic (offline indicator display, user interactions), not property assignment
+
+    testWidgets(
+        'should show indicator when offline, hide indicator when online, expand to show feature details when tapped, show retry button when onRetry provided, be dismissed when showDismiss is true, or display custom features when provided',
+        (tester) async {
+      // Test business logic: offline indicator display and interactions
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -17,13 +22,11 @@ void main() {
           ),
         ),
       );
-
       expect(find.text('Limited Functionality'), findsOneWidget);
-      expect(find.text('You\'re offline. Some features are unavailable.'), findsOneWidget);
+      expect(find.text('You\'re offline. Some features are unavailable.'),
+          findsOneWidget);
       expect(find.byIcon(Icons.cloud_off), findsOneWidget);
-    });
 
-    testWidgets('hides indicator when online', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -31,11 +34,8 @@ void main() {
           ),
         ),
       );
-
       expect(find.text('Limited Functionality'), findsNothing);
-    });
 
-    testWidgets('expands to show feature details when tapped', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -43,22 +43,13 @@ void main() {
           ),
         ),
       );
-
-      // Initially collapsed
       expect(find.text('Not Available Offline'), findsNothing);
-
-      // Tap to expand
       await tester.tap(find.text('Limited Functionality'));
       await tester.pumpAndSettle();
-
-      // Should show expanded content
       expect(find.text('Not Available Offline'), findsOneWidget);
       expect(find.text('Still Works Offline'), findsOneWidget);
-    });
 
-    testWidgets('shows retry button when onRetry provided', (tester) async {
       bool retryCalled = false;
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -71,18 +62,11 @@ void main() {
           ),
         ),
       );
-
-      // Should show retry button
       expect(find.byIcon(Icons.refresh), findsOneWidget);
-
-      // Tap retry
       await tester.tap(find.byIcon(Icons.refresh));
       await tester.pumpAndSettle();
-
       expect(retryCalled, isTrue);
-    });
 
-    testWidgets('can be dismissed when showDismiss is true', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -93,19 +77,11 @@ void main() {
           ),
         ),
       );
-
-      // Should show dismiss button
       expect(find.byIcon(Icons.close), findsOneWidget);
-
-      // Tap dismiss
       await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
-
-      // Indicator should be gone
       expect(find.text('Limited Functionality'), findsNothing);
-    });
 
-    testWidgets('displays custom features when provided', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -117,12 +93,8 @@ void main() {
           ),
         ),
       );
-
-      // Expand
       await tester.tap(find.text('Limited Functionality'));
       await tester.pumpAndSettle();
-
-      // Should show custom features
       expect(find.textContaining('Feature A'), findsOneWidget);
       expect(find.textContaining('Feature B'), findsOneWidget);
       expect(find.textContaining('Feature C'), findsOneWidget);
@@ -130,7 +102,10 @@ void main() {
   });
 
   group('OfflineBanner', () {
-    testWidgets('shows banner when offline', (tester) async {
+    testWidgets(
+        'should show banner when offline, hide banner when online, or call onTap callback when tapped',
+        (tester) async {
+      // Test business logic: offline banner display and interactions
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -138,12 +113,9 @@ void main() {
           ),
         ),
       );
-
       expect(find.text('Offline mode • Limited functionality'), findsOneWidget);
       expect(find.byIcon(Icons.cloud_off), findsOneWidget);
-    });
 
-    testWidgets('hides banner when online', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -151,13 +123,9 @@ void main() {
           ),
         ),
       );
-
       expect(find.text('Offline mode • Limited functionality'), findsNothing);
-    });
 
-    testWidgets('calls onTap callback when tapped', (tester) async {
       bool tapped = false;
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -170,17 +138,15 @@ void main() {
           ),
         ),
       );
-
-      // Tap banner
       await tester.tap(find.text('Offline mode • Limited functionality'));
       await tester.pumpAndSettle();
-
       expect(tapped, isTrue);
     });
   });
 
   group('AutoOfflineIndicator', () {
-    testWidgets('builds with builder function', (tester) async {
+    testWidgets('should build with builder function', (tester) async {
+      // Test business logic: auto offline indicator builder
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -192,12 +158,8 @@ void main() {
           ),
         ),
       );
-
       await tester.pumpAndSettle();
-
-      // Should render something (actual connectivity depends on test environment)
       expect(find.byType(Text), findsOneWidget);
     });
   });
 }
-

@@ -527,6 +527,23 @@ class MockAuthRemoteDataSource extends _i1.Mock
         ),
         returnValue: _i6.Future<_i14.User?>.value(),
       ) as _i6.Future<_i14.User?>);
+
+  @override
+  _i6.Future<void> updatePassword(
+    String? currentPassword,
+    String? newPassword,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updatePassword,
+          [
+            currentPassword,
+            newPassword,
+          ],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }
 
 /// A class which mocks [StorageService].
@@ -578,6 +595,28 @@ class MockStorageService extends _i1.Mock implements _i16.StorageService {
         Invocation.method(
           #init,
           [],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> initForTesting({
+    required _i4.GetStorage? defaultStorage,
+    required _i4.GetStorage? userStorage,
+    required _i4.GetStorage? aiStorage,
+    required _i4.GetStorage? analyticsStorage,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #initForTesting,
+          [],
+          {
+            #defaultStorage: defaultStorage,
+            #userStorage: userStorage,
+            #aiStorage: aiStorage,
+            #analyticsStorage: analyticsStorage,
+          },
         ),
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),

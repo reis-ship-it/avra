@@ -5,9 +5,9 @@ import 'package:spots/core/models/list.dart';
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/presentation/pages/spots/spot_details_page.dart';
-import 'package:spots/presentation/pages/lists/edit_list_page.dart';
 import 'package:spots/presentation/widgets/lists/spot_picker_dialog.dart';
+import 'package:go_router/go_router.dart';
+import 'package:spots/presentation/widgets/common/source_indicator_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:spots/core/theme/app_theme.dart';
@@ -58,9 +58,12 @@ class ListDetailsPage extends StatelessWidget {
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
+                    Icon(Icons.delete,
+                        color: Theme.of(context).colorScheme.error),
                     SizedBox(width: 8),
-                    Text('Delete List', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                    Text('Delete List',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error)),
                   ],
                 ),
               ),
@@ -75,13 +78,13 @@ class ListDetailsPage extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
-               boxShadow: [
-                 BoxShadow(
-                   color: AppColors.black.withValues(alpha: 0.1),
-                   blurRadius: 4,
-                   offset: const Offset(0, 2),
-                 ),
-               ],
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.black.withValues(alpha: 0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,7 +176,10 @@ class ListDetailsPage extends StatelessWidget {
                           Icon(
                             Icons.location_off_outlined,
                             size: 64,
-                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: 0.5),
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -236,6 +242,12 @@ class ListDetailsPage extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 8),
+                              SourceIndicatorWidget(
+                                indicator: spot.getSourceIndicator(),
+                                compact: true,
+                                showWarning: false,
+                              ),
+                              const SizedBox(height: 8),
                               Row(
                                 children: [
                                   Container(
@@ -272,7 +284,7 @@ class ListDetailsPage extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '${spot.rating ?? 0}',
+                                    '${spot.rating}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall
@@ -305,13 +317,7 @@ class ListDetailsPage extends StatelessWidget {
                             ],
                           ),
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    SpotDetailsPage(spot: spot),
-                              ),
-                            );
+                            context.go('/spot/${spot.id}');
                           },
                         ),
                       );
@@ -350,22 +356,8 @@ class ListDetailsPage extends StatelessWidget {
     }
   }
 
-  void _navigateToEdit(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditListPage(list: list),
-      ),
-    );
-
-    // If list was updated, the result will contain the updated list
-    if (result != null && result is SpotList) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('List updated successfully'),
-        ),
-      );
-    }
+  void _navigateToEdit(BuildContext context) {
+    context.go('/list/${list.id}/edit');
   }
 
   void _showShareDialog(BuildContext context) {
@@ -434,13 +426,13 @@ SPOTS - know you belong.''';
   void _copyListLink(BuildContext context) {
     // Generate a shareable link (this would normally be a deep link to the app)
     final listLink = 'https://spots.app/list/${list.id}';
-    
+
     Clipboard.setData(ClipboardData(text: listLink));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('List link copied to clipboard'),
-        ),
-      );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('List link copied to clipboard'),
+      ),
+    );
   }
 
   void _sharePublicList() {
@@ -537,14 +529,14 @@ SPOTS - know you belong.''';
               // Actually remove the spot from the list
               final updatedSpotIds = List<String>.from(list.spotIds);
               updatedSpotIds.remove(spot.id);
-              
+
               final updatedList = list.copyWith(
                 spotIds: updatedSpotIds,
                 updatedAt: DateTime.now(),
               );
-              
+
               context.read<ListsBloc>().add(UpdateList(updatedList));
-              
+
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

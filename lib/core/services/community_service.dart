@@ -158,6 +158,8 @@ class CommunityService {
   }
 
   /// Add member to community
+  /// 
+  /// **Note:** Retrieves latest community from storage to ensure correct memberCount
   Future<void> addMember(Community community, String userId) async {
     try {
       _logger.info(
@@ -165,7 +167,13 @@ class CommunityService {
         tag: _logName,
       );
 
-      if (community.memberIds.contains(userId)) {
+      // Retrieve latest community from storage to ensure we have the correct memberCount
+      final latestCommunity = await getCommunityById(community.id);
+      if (latestCommunity == null) {
+        throw Exception('Community not found: ${community.id}');
+      }
+
+      if (latestCommunity.memberIds.contains(userId)) {
         _logger.warning(
           'User $userId is already a member of community ${community.id}',
           tag: _logName,
@@ -173,9 +181,9 @@ class CommunityService {
         return;
       }
 
-      final updated = community.copyWith(
-        memberIds: [...community.memberIds, userId],
-        memberCount: community.memberCount + 1,
+      final updated = latestCommunity.copyWith(
+        memberIds: [...latestCommunity.memberIds, userId],
+        memberCount: latestCommunity.memberCount + 1,
         updatedAt: DateTime.now(),
       );
 
@@ -240,7 +248,13 @@ class CommunityService {
         tag: _logName,
       );
 
-      if (community.eventIds.contains(eventId)) {
+      // Retrieve latest community from storage to ensure we have the correct eventCount
+      final latestCommunity = await getCommunityById(community.id);
+      if (latestCommunity == null) {
+        throw Exception('Community not found: ${community.id}');
+      }
+
+      if (latestCommunity.eventIds.contains(eventId)) {
         _logger.warning(
           'Event $eventId is already in community ${community.id}',
           tag: _logName,
@@ -248,9 +262,9 @@ class CommunityService {
         return;
       }
 
-      final updated = community.copyWith(
-        eventIds: [...community.eventIds, eventId],
-        eventCount: community.eventCount + 1,
+      final updated = latestCommunity.copyWith(
+        eventIds: [...latestCommunity.eventIds, eventId],
+        eventCount: latestCommunity.eventCount + 1,
         lastEventAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -276,6 +290,8 @@ class CommunityService {
   }
 
   /// Update growth metrics
+  /// 
+  /// **Note:** Retrieves latest community from storage to ensure we update the correct version
   Future<void> updateGrowthMetrics(
     Community community, {
     double? memberGrowthRate,
@@ -287,9 +303,15 @@ class CommunityService {
         tag: _logName,
       );
 
-      final updated = community.copyWith(
-        memberGrowthRate: memberGrowthRate ?? community.memberGrowthRate,
-        eventGrowthRate: eventGrowthRate ?? community.eventGrowthRate,
+      // Retrieve latest community from storage to ensure we update the correct version
+      final latestCommunity = await getCommunityById(community.id);
+      if (latestCommunity == null) {
+        throw Exception('Community not found: ${community.id}');
+      }
+
+      final updated = latestCommunity.copyWith(
+        memberGrowthRate: memberGrowthRate ?? latestCommunity.memberGrowthRate,
+        eventGrowthRate: eventGrowthRate ?? latestCommunity.eventGrowthRate,
         updatedAt: DateTime.now(),
       );
 

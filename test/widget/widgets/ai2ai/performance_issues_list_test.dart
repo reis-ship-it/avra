@@ -8,27 +8,26 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests performance issues and recommendations display
 void main() {
   group('PerformanceIssuesList Widget Tests', () {
-    testWidgets('displays empty state when no issues or recommendations', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+    // Removed: Property assignment tests
+    // Performance issues list tests focus on business logic (issues and recommendations display), not property assignment
+
+    testWidgets(
+        'should display empty state when no issues or recommendations, display performance issues, display optimization recommendations, or display both issues and recommendations',
+        (WidgetTester tester) async {
+      // Test business logic: performance issues list display
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const PerformanceIssuesList(
           issues: [],
           recommendations: [],
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(PerformanceIssuesList), findsOneWidget);
       expect(find.text('Performance & Optimization'), findsOneWidget);
-      expect(find.text('No issues detected. Network operating optimally.'), findsOneWidget);
-    });
+      expect(find.text('No issues detected. Network operating optimally.'),
+          findsOneWidget);
 
-    testWidgets('displays performance issues', (WidgetTester tester) async {
-      // Arrange
-      final issues = [
+      final issues1 = [
         PerformanceIssue(
           type: IssueType.highUtilization,
           severity: IssueSeverity.high,
@@ -44,28 +43,20 @@ void main() {
           recommendedAction: 'Review compatibility algorithms',
         ),
       ];
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: PerformanceIssuesList(
-          issues: issues,
+          issues: issues1,
           recommendations: [],
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Issues (2)'), findsOneWidget);
       expect(find.text('High latency detected'), findsOneWidget);
       expect(find.text('Low throughput'), findsOneWidget);
       expect(find.byIcon(Icons.warning), findsWidgets);
       expect(find.byIcon(Icons.error), findsWidgets);
-    });
 
-    testWidgets('displays optimization recommendations', (WidgetTester tester) async {
-      // Arrange
-      final recommendations = [
+      final recommendations1 = [
         OptimizationRecommendation(
           category: 'Connection Quality',
           recommendation: 'Consider reducing connection pool size',
@@ -81,27 +72,20 @@ void main() {
           estimatedEffort: 'Low',
         ),
       ];
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: PerformanceIssuesList(
           issues: [],
-          recommendations: recommendations,
+          recommendations: recommendations1,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Recommendations (2)'), findsOneWidget);
-      expect(find.text('Consider reducing connection pool size'), findsOneWidget);
+      expect(
+          find.text('Consider reducing connection pool size'), findsOneWidget);
       expect(find.text('Enable connection caching'), findsOneWidget);
       expect(find.byIcon(Icons.lightbulb_outline), findsWidgets);
-    });
 
-    testWidgets('displays both issues and recommendations', (WidgetTester tester) async {
-      // Arrange
-      final issues = [
+      final issues2 = [
         PerformanceIssue(
           type: IssueType.highUtilization,
           severity: IssueSeverity.high,
@@ -110,8 +94,7 @@ void main() {
           recommendedAction: 'Consider load balancing optimization',
         ),
       ];
-
-      final recommendations = [
+      final recommendations2 = [
         OptimizationRecommendation(
           category: 'Connection Quality',
           recommendation: 'Test recommendation',
@@ -120,21 +103,15 @@ void main() {
           estimatedEffort: 'Medium',
         ),
       ];
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: PerformanceIssuesList(
-          issues: issues,
-          recommendations: recommendations,
+          issues: issues2,
+          recommendations: recommendations2,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.text('Issues (1)'), findsOneWidget);
       expect(find.text('Recommendations (1)'), findsOneWidget);
     });
   });
 }
-

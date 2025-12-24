@@ -126,6 +126,13 @@ Use these insights to enhance your recommendations. The AI2AI network has learne
 
 The user's AI personality is actively learning from the network. Consider this in your recommendations.`
       }
+      
+      // Language style integration (Phase 2.4)
+      if (context.languageStyle) {
+        systemContext += `\n\n${context.languageStyle}
+
+Important: Match the user's communication style gradually. Don't copy exactly, but adapt your responses to feel natural to them. The style should influence your tone, vocabulary choices, and phrasing, but your responses should still be authentic and helpful.`
+      }
     }
 
     // Convert messages to Gemini format

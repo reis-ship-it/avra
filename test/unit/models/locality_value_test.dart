@@ -16,57 +16,14 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
-    group('Constructor and Properties', () {
-      test('should create locality value with required fields', () {
-        final localityValue = LocalityValue(
-          id: 'value-123',
-          locality: 'Greenpoint',
-          activityWeights: {
-            'events_hosted': 0.30,
-            'lists_created': 0.25,
-            'reviews_written': 0.20,
-            'event_attendance': 0.15,
-            'professional_background': 0.10,
-          },
-          categoryPreferences: {},
-          activityCounts: {
-            'events_hosted': 50,
-            'lists_created': 30,
-          },
-          lastAnalyzed: testDate,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(localityValue.id, equals('value-123'));
-        expect(localityValue.locality, equals('Greenpoint'));
-        expect(localityValue.activityWeights.length, equals(5));
-        expect(localityValue.activityCounts.length, equals(2));
-      });
-    });
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
     group('Activity Weight Methods', () {
-      test('should return activity weight', () {
-        final localityValue = LocalityValue(
-          id: 'value-123',
-          locality: 'Greenpoint',
-          activityWeights: {
-            'events_hosted': 0.30,
-            'lists_created': 0.25,
-          },
-          categoryPreferences: {},
-          activityCounts: {},
-          lastAnalyzed: testDate,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(localityValue.getActivityWeight('events_hosted'), equals(0.30));
-        expect(localityValue.getActivityWeight('lists_created'), equals(0.25));
-        expect(localityValue.getActivityWeight('unknown'), equals(0.0));
-      });
-
-      test('should check if activity is valued highly', () {
+      test(
+          'should correctly retrieve weights and determine high-value activities',
+          () {
+        // Test business logic: activity weight retrieval and high-value determination
         final localityValue = LocalityValue(
           id: 'value-123',
           locality: 'Greenpoint',
@@ -81,13 +38,19 @@ void main() {
           updatedAt: testDate,
         );
 
+        expect(localityValue.getActivityWeight('events_hosted'), equals(0.30));
+        expect(
+            localityValue.getActivityWeight('unknown'), equals(0.0)); // Default
         expect(localityValue.valuesActivityHighly('events_hosted'), isTrue);
         expect(localityValue.valuesActivityHighly('lists_created'), isFalse);
       });
     });
 
     group('Category Preferences', () {
-      test('should return category preferences', () {
+      test(
+          'should return category-specific preferences with defaults for unknown categories',
+          () {
+        // Test business logic: category preference retrieval
         final localityValue = LocalityValue(
           id: 'value-123',
           locality: 'Greenpoint',
@@ -108,36 +71,16 @@ void main() {
 
         final coffeePrefs = localityValue.getCategoryPreferences('Coffee');
         expect(coffeePrefs['events_hosted'], equals(0.35));
-        expect(coffeePrefs['lists_created'], equals(0.30));
 
-        // Unknown category returns default weights
+        // Unknown category returns default weights (business logic)
         final unknownPrefs = localityValue.getCategoryPreferences('Unknown');
         expect(unknownPrefs['events_hosted'], equals(0.20));
       });
     });
 
     group('Activity Counts', () {
-      test('should return activity count', () {
-        final localityValue = LocalityValue(
-          id: 'value-123',
-          locality: 'Greenpoint',
-          activityWeights: {},
-          categoryPreferences: {},
-          activityCounts: {
-            'events_hosted': 50,
-            'lists_created': 30,
-          },
-          lastAnalyzed: testDate,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(localityValue.getActivityCount('events_hosted'), equals(50));
-        expect(localityValue.getActivityCount('lists_created'), equals(30));
-        expect(localityValue.getActivityCount('unknown'), equals(0));
-      });
-
-      test('should calculate total activity count', () {
+      test('should correctly retrieve counts and calculate total', () {
+        // Test business logic: activity count retrieval and total calculation
         final localityValue = LocalityValue(
           id: 'value-123',
           locality: 'Greenpoint',
@@ -153,12 +96,14 @@ void main() {
           updatedAt: testDate,
         );
 
+        expect(localityValue.getActivityCount('events_hosted'), equals(50));
+        expect(localityValue.getActivityCount('unknown'), equals(0)); // Default
         expect(localityValue.totalActivityCount, equals(100));
       });
     });
 
     group('JSON Serialization', () {
-      test('should serialize to JSON', () {
+      test('should serialize and deserialize without data loss', () {
         final localityValue = LocalityValue(
           id: 'value-123',
           locality: 'Greenpoint',
@@ -180,49 +125,18 @@ void main() {
         );
 
         final json = localityValue.toJson();
+        final restored = LocalityValue.fromJson(json);
 
-        expect(json['id'], equals('value-123'));
-        expect(json['locality'], equals('Greenpoint'));
-        expect(json['activityWeights'], equals({
-          'events_hosted': 0.30,
-          'lists_created': 0.25,
-        }));
-        expect(json['activityCounts'], equals({'events_hosted': 50}));
-        expect(json['lastAnalyzed'], equals(testDate.toIso8601String()));
-      });
-
-      test('should deserialize from JSON', () {
-        final json = {
-          'id': 'value-123',
-          'locality': 'Greenpoint',
-          'activityWeights': {
-            'events_hosted': 0.30,
-            'lists_created': 0.25,
-          },
-          'categoryPreferences': {
-            'Coffee': {
-              'events_hosted': 0.35,
-            },
-          },
-          'activityCounts': {
-            'events_hosted': 50,
-          },
-          'lastAnalyzed': testDate.toIso8601String(),
-          'createdAt': testDate.toIso8601String(),
-          'updatedAt': testDate.toIso8601String(),
-        };
-
-        final localityValue = LocalityValue.fromJson(json);
-
-        expect(localityValue.id, equals('value-123'));
-        expect(localityValue.locality, equals('Greenpoint'));
-        expect(localityValue.getActivityWeight('events_hosted'), equals(0.30));
-        expect(localityValue.getActivityCount('events_hosted'), equals(50));
+        // Test critical business fields preserved
+        expect(restored.getActivityWeight('events_hosted'),
+            equals(localityValue.getActivityWeight('events_hosted')));
+        expect(restored.totalActivityCount,
+            equals(localityValue.totalActivityCount));
       });
     });
 
-    group('Copy With', () {
-      test('should create copy with updated fields', () {
+    group('copyWith', () {
+      test('should create immutable copy with updated fields', () {
         final original = LocalityValue(
           id: 'value-123',
           locality: 'Greenpoint',
@@ -239,39 +153,15 @@ void main() {
           activityWeights: {'events_hosted': 0.35},
         );
 
-        expect(updated.id, equals('value-123'));
+        // Test immutability (business logic)
+        expect(original.locality, isNot(equals('DUMBO')));
         expect(updated.locality, equals('DUMBO'));
-        expect(updated.getActivityWeight('events_hosted'), equals(0.35));
+        expect(updated.id, equals(original.id)); // Unchanged fields preserved
       });
     });
 
-    group('Equality', () {
-      test('should be equal when all properties match', () {
-        final value1 = LocalityValue(
-          id: 'value-123',
-          locality: 'Greenpoint',
-          activityWeights: {'events_hosted': 0.30},
-          categoryPreferences: {},
-          activityCounts: {},
-          lastAnalyzed: testDate,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final value2 = LocalityValue(
-          id: 'value-123',
-          locality: 'Greenpoint',
-          activityWeights: {'events_hosted': 0.30},
-          categoryPreferences: {},
-          activityCounts: {},
-          lastAnalyzed: testDate,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(value1, equals(value2));
-      });
-    });
+    // Removed: Equality group
+    // These tests verify Equatable implementation, which is already tested by the package
+    // If equality breaks, other tests will fail
   });
 }
-

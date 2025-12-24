@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/ai2ai/anonymous_communication.dart';
+import 'dart:convert';
 
 void main() {
   group('AnonymousCommunicationProtocol - Enhanced Validation', () {
@@ -147,6 +148,89 @@ void main() {
         ),
         returnsNormally,
       );
+    });
+  });
+
+  group('AnonymousCommunicationProtocol - Encryption/Decryption', () {
+    late AnonymousCommunicationProtocol protocol;
+
+    setUp(() {
+      protocol = AnonymousCommunicationProtocol();
+    });
+
+    test('should encrypt and decrypt payload correctly', () async {
+      final payload = {
+        'agentId': 'agent-123',
+        'data': 'test data',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+
+      // Send encrypted message
+      final message = await protocol.sendEncryptedMessage(
+        'agent-123',
+        MessageType.discoverySync,
+        payload,
+      );
+
+      // Verify message was created
+      expect(message, isNotNull);
+      expect(message.encryptedPayload, isNotEmpty);
+      expect(message.encryptedPayload, isNot(equals('')));
+
+      // Verify encrypted payload is different from plaintext
+      final payloadJson = jsonEncode(payload);
+      expect(message.encryptedPayload, isNot(equals(payloadJson)));
+      
+      // Verify it's base64 encoded (real encryption produces base64)
+      expect(() => base64Decode(message.encryptedPayload), returnsNormally);
+    });
+
+    test('should produce different encrypted values for same payload', () async {
+      final payload = {
+        'agentId': 'agent-123',
+        'data': 'test',
+      };
+
+      // Encrypt same payload twice
+      final message1 = await protocol.sendEncryptedMessage(
+        'agent-123',
+        MessageType.discoverySync,
+        payload,
+      );
+
+      final message2 = await protocol.sendEncryptedMessage(
+        'agent-123',
+        MessageType.discoverySync,
+        payload,
+      );
+
+      // Encrypted values should be different (due to random IV)
+      expect(message1.encryptedPayload, isNot(equals(message2.encryptedPayload)));
+    });
+
+    test('should handle encryption of various payload sizes', () async {
+      final smallPayload = {'data': 'small'};
+      final largePayload = {
+        'data': 'x' * 1000, // 1000 character string
+        'array': List.generate(100, (i) => i),
+      };
+
+      // Both should encrypt successfully
+      final smallMessage = await protocol.sendEncryptedMessage(
+        'agent-123',
+        MessageType.discoverySync,
+        smallPayload,
+      );
+
+      final largeMessage = await protocol.sendEncryptedMessage(
+        'agent-123',
+        MessageType.discoverySync,
+        largePayload,
+      );
+
+      expect(smallMessage.encryptedPayload, isNotEmpty);
+      expect(largeMessage.encryptedPayload, isNotEmpty);
+      expect(largeMessage.encryptedPayload.length, greaterThan(smallMessage.encryptedPayload.length));
     });
   });
 }

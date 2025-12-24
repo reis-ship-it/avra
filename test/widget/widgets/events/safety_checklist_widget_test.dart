@@ -5,69 +5,52 @@ import '../../../fixtures/model_factories.dart';
 import '../../../helpers/integration_test_helpers.dart';
 
 /// Widget tests for SafetyChecklistWidget
-/// 
+///
 /// Agent 2: Phase 7, Section 51-52 - Widget Test Coverage
 void main() {
   group('SafetyChecklistWidget Widget Tests', () {
-    testWidgets('displays safety checklist widget', (WidgetTester tester) async {
-      // Arrange
-      final host = ModelFactories.createTestUser();
-      final event = IntegrationTestHelpers.createTestEvent(host: host);
+    // Removed: Property assignment tests
+    // Safety checklist widget tests focus on business logic (checklist display, acknowledgment, read-only mode), not property assignment
 
-      final widget = WidgetTestHelpers.createTestableWidget(
+    testWidgets(
+        'should display safety checklist widget, display with acknowledgment checkbox, or display in read-only mode',
+        (WidgetTester tester) async {
+      // Test business logic: safety checklist widget display and interactions
+      final host1 = ModelFactories.createTestUser();
+      final event1 = IntegrationTestHelpers.createTestEvent(host: host1);
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: SafetyChecklistWidget(
-          event: event,
+          event: event1,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(SafetyChecklistWidget), findsOneWidget);
-    });
 
-    testWidgets('displays with acknowledgment checkbox', (WidgetTester tester) async {
-      // Arrange
-      final host = ModelFactories.createTestUser();
-      final event = IntegrationTestHelpers.createTestEvent(host: host);
+      final host2 = ModelFactories.createTestUser();
+      final event2 = IntegrationTestHelpers.createTestEvent(host: host2);
       bool acknowledged = false;
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: SafetyChecklistWidget(
-          event: event,
+          event: event2,
           showAcknowledgment: true,
           onAcknowledged: (value) {
             acknowledged = value;
           },
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(SafetyChecklistWidget), findsOneWidget);
-    });
 
-    testWidgets('displays in read-only mode', (WidgetTester tester) async {
-      // Arrange
-      final host = ModelFactories.createTestUser();
-      final event = IntegrationTestHelpers.createTestEvent(host: host);
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final host3 = ModelFactories.createTestUser();
+      final event3 = IntegrationTestHelpers.createTestEvent(host: host3);
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: SafetyChecklistWidget(
-          event: event,
+          event: event3,
           readOnly: true,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.byType(SafetyChecklistWidget), findsOneWidget);
     });
   });
 }
-

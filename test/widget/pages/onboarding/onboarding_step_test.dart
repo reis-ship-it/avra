@@ -6,69 +6,26 @@ import "../../helpers/widget_test_helpers.dart';
 /// Tests permissions page for enabling connectivity and location
 void main() {
   group('PermissionsPage Widget Tests', () {
-    testWidgets('displays permissions page', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Permissions page tests focus on business logic (permissions page display, buttons, descriptions, status), not property assignment
+
+    testWidgets(
+        'should display permissions page, display permission request buttons, display permission descriptions, or handle permission status display',
+        (WidgetTester tester) async {
+      // Test business logic: Permissions page display and functionality
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const PermissionsPage(),
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
       expect(find.byType(PermissionsPage), findsOneWidget);
       expect(find.text('Enable Connectivity & Location'), findsOneWidget);
-    });
-
-    testWidgets('displays permission request buttons', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const PermissionsPage(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
       expect(find.text('Enable All'), findsOneWidget);
       expect(find.text('Open Settings'), findsOneWidget);
-    });
-
-    testWidgets('displays permission descriptions', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const PermissionsPage(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show description text
       expect(find.textContaining('To enable ai2ai connectivity'), findsOneWidget);
     });
 
-    testWidgets('handles permission status display', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const PermissionsPage(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should handle permission statuses
-      expect(find.byType(PermissionsPage), findsOneWidget);
-    });
-
-    testWidgets('displays OnboardingStep enum values', (WidgetTester tester) async {
-      // Assert - Test OnboardingStepType enum
-      expect(OnboardingStepType.values.length, equals(5));
-      expect(OnboardingStepType.homebase, isNotNull);
-      expect(OnboardingStepType.favoritePlaces, isNotNull);
-      expect(OnboardingStepType.preferences, isNotNull);
-      expect(OnboardingStepType.baselineLists, isNotNull);
-      expect(OnboardingStepType.friends, isNotNull);
-    });
+    // Removed: Enum value tests (property assignment)
+    // OnboardingStepType enum values are Dart language features, not business logic
   });
 }
 

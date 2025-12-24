@@ -25,7 +25,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   
   // Run tests in a zone that catches and ignores MissingPluginException errors
-  async.runZoned(() {
+  async.runZonedGuarded(() {
   group('AIImprovementTrackingService', () {
     AIImprovementTrackingService? service;
       
@@ -382,8 +382,9 @@ void main() {
     
     group('Error Handling', () {
       test('should handle initialization errors gracefully', () async {
-        // Arrange
-        final service = AIImprovementTrackingService();
+        // Arrange - Use mock storage via dependency injection
+        final mockStorage = getTestStorage();
+        final service = AIImprovementTrackingService(storage: mockStorage);
         
         // Act & Assert - Should not throw
         await expectLater(
@@ -395,9 +396,10 @@ void main() {
       });
       
       test('should return empty metrics on calculation error', () async {
-        // Arrange
+        // Arrange - Use mock storage via dependency injection
         const userId = 'error_user';
-        final service = AIImprovementTrackingService();
+        final mockStorage = getTestStorage();
+        final service = AIImprovementTrackingService(storage: mockStorage);
         
         // Act
         final metrics = await service.getCurrentMetrics(userId);
@@ -412,16 +414,18 @@ void main() {
     
     group('Disposal', () {
       test('should dispose resources without errors', () {
-        // Arrange
-        final service = AIImprovementTrackingService();
+        // Arrange - Use mock storage via dependency injection
+        final mockStorage = getTestStorage();
+        final service = AIImprovementTrackingService(storage: mockStorage);
         
         // Act & Assert
         expect(() => service.dispose(), returnsNormally);
       });
       
-      test('should close metrics stream on dispose', () {
-        // Arrange
-        final service = AIImprovementTrackingService();
+      test('should close metrics stream on dispose', () async {
+        // Arrange - Use mock storage via dependency injection
+        final mockStorage = getTestStorage();
+        final service = AIImprovementTrackingService(storage: mockStorage);
         bool streamClosed = false;
         final subscription = service.metricsStream.listen(
           (_) {},
@@ -431,13 +435,16 @@ void main() {
         // Act
         service.dispose();
         
+        // Wait for stream to close (onDone callback may be async)
+        await Future.delayed(const Duration(milliseconds: 50));
+        
         // Assert
         expect(streamClosed, isTrue);
         subscription.cancel();
       });
     });
   });
-  }, onError: (error, stackTrace) {
+  }, (error, stackTrace) {
     // Ignore MissingPluginException errors from GetStorage's async flush
     // These occur in tests when GetStorage tries to use path_provider
     if (error.toString().contains('MissingPluginException') ||

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/category_colors.dart';
+import 'package:spots/presentation/widgets/common/source_indicator_widget.dart';
 
 class SpotCard extends StatelessWidget {
   final Spot spot;
@@ -41,19 +42,26 @@ class SpotCard extends StatelessWidget {
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                   decoration: BoxDecoration(
-                     color: _getCategoryColor(spot.category).withValues(alpha: 0.2),
+                  decoration: BoxDecoration(
+                    color:
+                        _getCategoryColor(spot.category).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     spot.category,
                     style: TextStyle(
                       fontSize: 12,
-                       color: _getCategoryColor(spot.category),
+                      color: _getCategoryColor(spot.category),
                     ),
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 4),
+            SourceIndicatorWidget(
+              indicator: spot.getSourceIndicator(),
+              compact: true,
+              showWarning: false,
             ),
           ],
         ),

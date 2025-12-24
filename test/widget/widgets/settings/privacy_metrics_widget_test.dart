@@ -1,13 +1,13 @@
 /// SPOTS PrivacyMetricsWidget Widget Tests
 /// Date: November 20, 2025
 /// Purpose: Test PrivacyMetricsWidget functionality and UI behavior
-/// 
+///
 /// Test Coverage:
 /// - Rendering: Privacy compliance display
 /// - Anonymization Levels: Display of anonymization quality
 /// - Data Protection Metrics: Security scores and exposure levels
 /// - Edge Cases: Missing data, error states
-/// 
+///
 /// Dependencies:
 /// - PrivacyMetrics: For privacy data
 /// - NetworkAnalytics: For privacy metrics
@@ -23,333 +23,265 @@ import '../../helpers/widget_test_helpers.dart';
 void main() {
   group('PrivacyMetricsWidget Widget Tests', () {
     group('Rendering', () {
-      testWidgets('displays widget with title', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics.secure();
-        final widget = WidgetTestHelpers.createTestableWidget(
+      // Removed: Property assignment tests
+      // Rendering tests focus on business logic (widget display, privacy compliance score, anonymization level, data protection metrics), not property assignment
+
+      testWidgets(
+          'should display widget with title, display privacy compliance score, display anonymization level, or display data protection metrics',
+          (WidgetTester tester) async {
+        // Test business logic: Privacy metrics widget rendering
+        final privacyMetrics1 = PrivacyMetrics.secure();
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics1,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
         expect(find.byType(PrivacyMetricsWidget), findsOneWidget);
         expect(find.textContaining('Privacy'), findsWidgets);
-      });
 
-      testWidgets('displays privacy compliance score', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+        final privacyMetrics2 = PrivacyMetrics(
           complianceRate: 0.95,
           anonymizationLevel: 0.90,
           dataSecurityScore: 0.98,
           privacyViolations: 0,
           encryptionStrength: 0.99,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics2,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         expect(find.textContaining('95'), findsOneWidget);
         expect(find.textContaining('%'), findsWidgets);
-      });
 
-      testWidgets('displays anonymization level', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+        final privacyMetrics3 = PrivacyMetrics(
           complianceRate: 0.95,
           anonymizationLevel: 0.92,
           dataSecurityScore: 0.98,
           privacyViolations: 0,
           encryptionStrength: 0.99,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget3 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics3,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget3);
         expect(find.textContaining('Anonymization'), findsOneWidget);
         expect(find.textContaining('92'), findsOneWidget);
-      });
 
-      testWidgets('displays data protection metrics', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+        final privacyMetrics4 = PrivacyMetrics(
           complianceRate: 0.95,
           anonymizationLevel: 0.90,
           dataSecurityScore: 0.97,
           privacyViolations: 0,
           encryptionStrength: 0.99,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget4 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics4,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget4);
         expect(find.textContaining('Data Security'), findsOneWidget);
         expect(find.textContaining('97'), findsOneWidget);
       });
     });
 
     group('Privacy Compliance', () {
-      testWidgets('displays high compliance score with success color', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics.secure();
-        final widget = WidgetTestHelpers.createTestableWidget(
+      // Removed: Property assignment tests
+      // Privacy compliance tests focus on business logic (high compliance score, overall privacy score), not property assignment
+
+      testWidgets(
+          'should display high compliance score with success color or display overall privacy score',
+          (WidgetTester tester) async {
+        // Test business logic: Privacy metrics widget privacy compliance
+        final privacyMetrics1 = PrivacyMetrics.secure();
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics1,
           ),
         );
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
+        expect(find.textContaining('98'), findsWidgets);
 
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        expect(find.textContaining('98'), findsWidgets); // May appear multiple times
-        // High compliance should show success color (green)
-      });
-
-      testWidgets('displays overall privacy score', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+        final privacyMetrics2 = PrivacyMetrics(
           complianceRate: 0.95,
           anonymizationLevel: 0.90,
           dataSecurityScore: 0.98,
           privacyViolations: 0,
           encryptionStrength: 0.99,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics2,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         expect(find.textContaining('Privacy Compliance'), findsOneWidget);
       });
     });
 
     group('Anonymization Levels', () {
-      testWidgets('displays anonymization quality metric', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+      // Removed: Property assignment tests
+      // Anonymization levels tests focus on business logic (anonymization quality metric, re-identification risk), not property assignment
+
+      testWidgets(
+          'should display anonymization quality metric or display re-identification risk',
+          (WidgetTester tester) async {
+        // Test business logic: Privacy metrics widget anonymization levels
+        final privacyMetrics1 = PrivacyMetrics(
           complianceRate: 0.95,
           anonymizationLevel: 0.88,
           dataSecurityScore: 0.98,
           privacyViolations: 0,
           encryptionStrength: 0.99,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics1,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
         expect(find.textContaining('Anonymization'), findsOneWidget);
         expect(find.textContaining('88'), findsOneWidget);
-      });
 
-      testWidgets('displays re-identification risk', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+        final privacyMetrics2 = PrivacyMetrics(
           complianceRate: 0.95,
-          anonymizationLevel: 0.90, // High anonymization = low risk
+          anonymizationLevel: 0.90,
           dataSecurityScore: 0.98,
           privacyViolations: 0,
           encryptionStrength: 0.99,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics2,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         expect(find.textContaining('Re-identification'), findsOneWidget);
-        // Risk should be low (1.0 - 0.90 = 0.10 = 10%)
       });
     });
 
     group('Data Protection Metrics', () {
-      testWidgets('displays data security score', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+      // Removed: Property assignment tests
+      // Data protection metrics tests focus on business logic (data security score, encryption strength, privacy violations count), not property assignment
+
+      testWidgets(
+          'should display data security score, display encryption strength, or display privacy violations count',
+          (WidgetTester tester) async {
+        // Test business logic: Privacy metrics widget data protection metrics
+        final privacyMetrics1 = PrivacyMetrics(
           complianceRate: 0.95,
           anonymizationLevel: 0.90,
           dataSecurityScore: 0.96,
           privacyViolations: 0,
           encryptionStrength: 0.99,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics1,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
         expect(find.textContaining('96'), findsOneWidget);
-      });
 
-      testWidgets('displays encryption strength', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+        final privacyMetrics2 = PrivacyMetrics(
           complianceRate: 0.95,
           anonymizationLevel: 0.90,
           dataSecurityScore: 0.98,
           privacyViolations: 0,
           encryptionStrength: 0.97,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics2,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         expect(find.textContaining('Encryption'), findsOneWidget);
         expect(find.textContaining('97'), findsOneWidget);
-      });
 
-      testWidgets('displays privacy violations count', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+        final privacyMetrics3 = PrivacyMetrics(
           complianceRate: 0.95,
           anonymizationLevel: 0.90,
           dataSecurityScore: 0.98,
           privacyViolations: 0,
           encryptionStrength: 0.99,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget3 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics3,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget3);
         expect(find.textContaining('Violations'), findsOneWidget);
         expect(find.textContaining('0'), findsWidgets);
       });
     });
 
     group('Visual Indicators', () {
-      testWidgets('displays progress indicators for metrics', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Visual indicators tests focus on business logic (progress indicators, info icon), not property assignment
+
+      testWidgets(
+          'should display progress indicators for metrics or display info icon for privacy explanation',
+          (WidgetTester tester) async {
+        // Test business logic: Privacy metrics widget visual indicators
         final privacyMetrics = PrivacyMetrics.secure();
         final widget = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
             privacyMetrics: privacyMetrics,
           ),
         );
-
-        // Act
         await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
         expect(find.byType(LinearProgressIndicator), findsWidgets);
-      });
-
-      testWidgets('displays info icon for privacy explanation', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics.secure();
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
-          ),
-        );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
         final infoButtons = find.byIcon(Icons.info_outline);
         expect(infoButtons, findsWidgets);
       });
     });
 
     group('Edge Cases', () {
-      testWidgets('handles low privacy scores gracefully', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+      // Removed: Property assignment tests
+      // Edge cases tests focus on business logic (low privacy scores, zero privacy violations), not property assignment
+
+      testWidgets(
+          'should handle low privacy scores gracefully or display zero privacy violations correctly',
+          (WidgetTester tester) async {
+        // Test business logic: Privacy metrics widget edge cases
+        final privacyMetrics1 = PrivacyMetrics(
           complianceRate: 0.70,
           anonymizationLevel: 0.65,
           dataSecurityScore: 0.75,
           privacyViolations: 2,
           encryptionStrength: 0.80,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget1 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics1,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget1);
         expect(find.byType(PrivacyMetricsWidget), findsOneWidget);
         expect(find.textContaining('70'), findsOneWidget);
-      });
 
-      testWidgets('displays zero privacy violations correctly', (WidgetTester tester) async {
-        // Arrange
-        final privacyMetrics = PrivacyMetrics(
+        final privacyMetrics2 = PrivacyMetrics(
           complianceRate: 0.95,
           anonymizationLevel: 0.90,
           dataSecurityScore: 0.98,
           privacyViolations: 0,
           encryptionStrength: 0.99,
         );
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: PrivacyMetricsWidget(
-            privacyMetrics: privacyMetrics,
+            privacyMetrics: privacyMetrics2,
           ),
         );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
+        await WidgetTestHelpers.pumpAndSettle(tester, widget2);
         expect(find.textContaining('0'), findsWidgets);
       });
     });
   });
 }
-

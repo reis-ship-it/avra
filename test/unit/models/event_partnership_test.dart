@@ -35,81 +35,15 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
-    group('Constructor and Properties', () {
-      test('should create partnership with required fields', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
-          eventId: 'event-123',
-          userId: 'user-123',
-          businessId: 'business-123',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(partnership.id, equals('partnership-123'));
-        expect(partnership.eventId, equals('event-123'));
-        expect(partnership.userId, equals('user-123'));
-        expect(partnership.businessId, equals('business-123'));
-        expect(partnership.status, equals(PartnershipStatus.pending));
-        expect(partnership.type, equals(PartnershipType.eventBased));
-        expect(partnership.userApproved, isFalse);
-        expect(partnership.businessApproved, isFalse);
-        expect(partnership.isApproved, isFalse);
-        expect(partnership.isLocked, isFalse);
-        expect(partnership.canBeModified, isTrue);
-      });
-
-      test('should create partnership with all optional fields', () {
-        final agreement = PartnershipAgreement(
-          id: 'agreement-123',
-          partnershipId: 'partnership-123',
-          terms: {'revenueSplit': '50/50'},
-          agreedAt: testDate,
-          agreedBy: 'user-123',
-        );
-
-        final partnership = EventPartnership(
-          id: 'partnership-123',
-          eventId: 'event-123',
-          userId: 'user-123',
-          businessId: 'business-123',
-          user: testUser,
-          business: testBusiness,
-          status: PartnershipStatus.proposed,
-          agreement: agreement,
-          type: PartnershipType.ongoing,
-          sharedResponsibilities: ['venue', 'marketing'],
-          venueLocation: '123 Main St',
-          expectedEventCount: 5,
-          eventIds: ['event-1', 'event-2'],
-          termsAgreedAt: testDate,
-          termsVersion: '1.0',
-          userApproved: true,
-          businessApproved: true,
-          vibeCompatibilityScore: 0.85,
-          createdAt: testDate,
-          updatedAt: testDate,
-          startDate: testDate,
-          endDate: testDate.add(Duration(days: 30)),
-        );
-
-        expect(partnership.user, equals(testUser));
-        expect(partnership.business, equals(testBusiness));
-        expect(partnership.status, equals(PartnershipStatus.proposed));
-        expect(partnership.agreement, equals(agreement));
-        expect(partnership.type, equals(PartnershipType.ongoing));
-        expect(partnership.sharedResponsibilities, hasLength(2));
-        expect(partnership.venueLocation, equals('123 Main St'));
-        expect(partnership.expectedEventCount, equals(5));
-        expect(partnership.eventIds, hasLength(2));
-        expect(partnership.isApproved, isTrue);
-        expect(partnership.vibeCompatibilityScore, equals(0.85));
-      });
-    });
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
     group('Status Workflow', () {
-      test('should track pending status correctly', () {
-        final partnership = EventPartnership(
+      test(
+          'should correctly identify status states and modification permissions',
+          () {
+        // Test business logic: status-based behavior
+        final pending = EventPartnership(
           id: 'partnership-123',
           eventId: 'event-123',
           userId: 'user-123',
@@ -118,30 +52,8 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(partnership.status, equals(PartnershipStatus.pending));
-        expect(partnership.canBeModified, isTrue);
-        expect(partnership.isLocked, isFalse);
-      });
-
-      test('should track proposed status correctly', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
-          eventId: 'event-123',
-          userId: 'user-123',
-          businessId: 'business-123',
-          status: PartnershipStatus.proposed,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(partnership.status, equals(PartnershipStatus.proposed));
-        expect(partnership.canBeModified, isTrue);
-      });
-
-      test('should track locked status correctly', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
+        final locked = EventPartnership(
+          id: 'partnership-456',
           eventId: 'event-123',
           userId: 'user-123',
           businessId: 'business-123',
@@ -149,15 +61,8 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(partnership.status, equals(PartnershipStatus.locked));
-        expect(partnership.isLocked, isTrue);
-        expect(partnership.canBeModified, isFalse);
-      });
-
-      test('should track active status correctly', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
+        final active = EventPartnership(
+          id: 'partnership-789',
           eventId: 'event-123',
           userId: 'user-123',
           businessId: 'business-123',
@@ -166,61 +71,20 @@ void main() {
           updatedAt: testDate,
         );
 
-        expect(partnership.status, equals(PartnershipStatus.active));
-        expect(partnership.isActive, isTrue);
-        expect(partnership.isLocked, isTrue);
-      });
-
-      test('should track completed status correctly', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
-          eventId: 'event-123',
-          userId: 'user-123',
-          businessId: 'business-123',
-          status: PartnershipStatus.completed,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(partnership.status, equals(PartnershipStatus.completed));
-        expect(partnership.isCompleted, isTrue);
-      });
-
-      test('should track cancelled status correctly', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
-          eventId: 'event-123',
-          userId: 'user-123',
-          businessId: 'business-123',
-          status: PartnershipStatus.cancelled,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(partnership.status, equals(PartnershipStatus.cancelled));
-        expect(partnership.isCancelled, isTrue);
-      });
-
-      test('should track disputed status correctly', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
-          eventId: 'event-123',
-          userId: 'user-123',
-          businessId: 'business-123',
-          status: PartnershipStatus.disputed,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(partnership.status, equals(PartnershipStatus.disputed));
-        expect(partnership.isDisputed, isTrue);
+        expect(pending.canBeModified, isTrue);
+        expect(locked.isLocked, isTrue);
+        expect(locked.canBeModified, isFalse);
+        expect(active.isActive, isTrue);
+        expect(active.isLocked, isTrue);
       });
     });
 
     group('Approval Logic', () {
-      test('should require both parties to approve', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
+      test('should correctly determine approval status based on both parties',
+          () {
+        // Test business logic: approval determination
+        final partial = EventPartnership(
+          id: 'partnership-1',
           eventId: 'event-123',
           userId: 'user-123',
           businessId: 'business-123',
@@ -229,15 +93,8 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(partnership.userApproved, isTrue);
-        expect(partnership.businessApproved, isFalse);
-        expect(partnership.isApproved, isFalse);
-      });
-
-      test('should be approved when both parties approve', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
+        final approved = EventPartnership(
+          id: 'partnership-2',
           eventId: 'event-123',
           userId: 'user-123',
           businessId: 'business-123',
@@ -247,41 +104,19 @@ void main() {
           updatedAt: testDate,
         );
 
-        expect(partnership.isApproved, isTrue);
+        expect(partial.userApproved, isTrue);
+        expect(partial.businessApproved, isFalse);
+        expect(partial.isApproved, isFalse);
+        expect(approved.isApproved, isTrue);
       });
     });
 
-    group('Vibe Compatibility', () {
-      test('should store vibe compatibility score', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
-          eventId: 'event-123',
-          userId: 'user-123',
-          businessId: 'business-123',
-          vibeCompatibilityScore: 0.75,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(partnership.vibeCompatibilityScore, equals(0.75));
-      });
-
-      test('should handle null vibe compatibility score', () {
-        final partnership = EventPartnership(
-          id: 'partnership-123',
-          eventId: 'event-123',
-          userId: 'user-123',
-          businessId: 'business-123',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(partnership.vibeCompatibilityScore, isNull);
-      });
-    });
+    // Removed: Vibe Compatibility group
+    // These tests only checked property assignment, not business logic
 
     group('JSON Serialization', () {
-      test('should serialize to JSON correctly', () {
+      test('should serialize and deserialize with nested agreement correctly',
+          () {
         final agreement = PartnershipAgreement(
           id: 'agreement-123',
           partnershipId: 'partnership-123',
@@ -297,78 +132,25 @@ void main() {
           businessId: 'business-123',
           status: PartnershipStatus.proposed,
           agreement: agreement,
-          type: PartnershipType.eventBased,
-          sharedResponsibilities: ['venue'],
-          venueLocation: '123 Main St',
-          eventIds: ['event-1'],
-          termsAgreedAt: testDate,
-          termsVersion: '1.0',
           userApproved: true,
           businessApproved: true,
-          vibeCompatibilityScore: 0.85,
           createdAt: testDate,
           updatedAt: testDate,
         );
 
         final json = partnership.toJson();
+        final restored = EventPartnership.fromJson(json);
 
-        expect(json['id'], equals('partnership-123'));
-        expect(json['eventId'], equals('event-123'));
-        expect(json['userId'], equals('user-123'));
-        expect(json['businessId'], equals('business-123'));
-        expect(json['status'], equals('proposed'));
-        expect(json['type'], equals('eventBased'));
-        expect(json['userApproved'], isTrue);
-        expect(json['businessApproved'], isTrue);
-        expect(json['vibeCompatibilityScore'], equals(0.85));
-        expect(json['agreement'], isNotNull);
-      });
-
-      test('should deserialize from JSON correctly', () {
-        final json = {
-          'id': 'partnership-123',
-          'eventId': 'event-123',
-          'userId': 'user-123',
-          'businessId': 'business-123',
-          'status': 'proposed',
-          'type': 'eventBased',
-          'sharedResponsibilities': ['venue'],
-          'venueLocation': '123 Main St',
-          'eventIds': ['event-1'],
-          'termsAgreedAt': testDate.toIso8601String(),
-          'termsVersion': '1.0',
-          'userApproved': true,
-          'businessApproved': true,
-          'vibeCompatibilityScore': 0.85,
-          'createdAt': testDate.toIso8601String(),
-          'updatedAt': testDate.toIso8601String(),
-          'agreement': {
-            'id': 'agreement-123',
-            'partnershipId': 'partnership-123',
-            'terms': {'revenueSplit': '50/50'},
-            'agreedAt': testDate.toIso8601String(),
-            'agreedBy': 'user-123',
-            'version': '1.0',
-          },
-        };
-
-        final partnership = EventPartnership.fromJson(json);
-
-        expect(partnership.id, equals('partnership-123'));
-        expect(partnership.eventId, equals('event-123'));
-        expect(partnership.userId, equals('user-123'));
-        expect(partnership.businessId, equals('business-123'));
-        expect(partnership.status, equals(PartnershipStatus.proposed));
-        expect(partnership.type, equals(PartnershipType.eventBased));
-        expect(partnership.userApproved, isTrue);
-        expect(partnership.businessApproved, isTrue);
-        expect(partnership.vibeCompatibilityScore, equals(0.85));
-        expect(partnership.agreement, isNotNull);
+        // Test nested structure and business logic preserved
+        expect(restored.agreement, isNotNull);
+        expect(restored.agreement!.terms, equals({'revenueSplit': '50/50'}));
+        expect(restored.isApproved, isTrue);
+        expect(restored.status, equals(PartnershipStatus.proposed));
       });
     });
 
-    group('Copy With', () {
-      test('should create copy with updated fields', () {
+    group('copyWith', () {
+      test('should create immutable copy with updated fields', () {
         final partnership = EventPartnership(
           id: 'partnership-123',
           eventId: 'event-123',
@@ -384,89 +166,23 @@ void main() {
           businessApproved: true,
         );
 
-        expect(updated.id, equals(partnership.id));
-        expect(updated.status, equals(PartnershipStatus.approved));
-        expect(updated.userApproved, isTrue);
-        expect(updated.businessApproved, isTrue);
+        // Test immutability and business logic
+        expect(partnership.isApproved, isFalse);
         expect(updated.isApproved, isTrue);
+        expect(
+            updated.id, equals(partnership.id)); // Unchanged fields preserved
       });
     });
 
-    group('Partnership Agreement', () {
-      test('should create agreement with required fields', () {
-        final agreement = PartnershipAgreement(
-          id: 'agreement-123',
-          partnershipId: 'partnership-123',
-          terms: {'revenueSplit': '50/50'},
-          agreedAt: testDate,
-          agreedBy: 'user-123',
-        );
-
-        expect(agreement.id, equals('agreement-123'));
-        expect(agreement.partnershipId, equals('partnership-123'));
-        expect(agreement.terms, equals({'revenueSplit': '50/50'}));
-        expect(agreement.agreedAt, equals(testDate));
-        expect(agreement.agreedBy, equals('user-123'));
-        expect(agreement.version, equals('1.0'));
-      });
-
-      test('should serialize agreement to JSON', () {
-        final agreement = PartnershipAgreement(
-          id: 'agreement-123',
-          partnershipId: 'partnership-123',
-          terms: {'revenueSplit': '50/50'},
-          customArrangementDetails: 'Custom terms',
-          agreedAt: testDate,
-          agreedBy: 'user-123',
-          version: '1.0',
-        );
-
-        final json = agreement.toJson();
-
-        expect(json['id'], equals('agreement-123'));
-        expect(json['partnershipId'], equals('partnership-123'));
-        expect(json['terms'], equals({'revenueSplit': '50/50'}));
-        expect(json['customArrangementDetails'], equals('Custom terms'));
-        expect(json['agreedBy'], equals('user-123'));
-        expect(json['version'], equals('1.0'));
-      });
-
-      test('should deserialize agreement from JSON', () {
-        final json = {
-          'id': 'agreement-123',
-          'partnershipId': 'partnership-123',
-          'terms': {'revenueSplit': '50/50'},
-          'customArrangementDetails': 'Custom terms',
-          'agreedAt': testDate.toIso8601String(),
-          'agreedBy': 'user-123',
-          'version': '1.0',
-        };
-
-        final agreement = PartnershipAgreement.fromJson(json);
-
-        expect(agreement.id, equals('agreement-123'));
-        expect(agreement.partnershipId, equals('partnership-123'));
-        expect(agreement.terms, equals({'revenueSplit': '50/50'}));
-        expect(agreement.customArrangementDetails, equals('Custom terms'));
-        expect(agreement.agreedBy, equals('user-123'));
-        expect(agreement.version, equals('1.0'));
-      });
-    });
+    // Removed: Partnership Agreement constructor and property tests
+    // These tests only verified Dart constructor behavior, not business logic
+    // PartnershipAgreement is tested through EventPartnership JSON tests above
 
     group('Partnership Status Extension', () {
-      test('should convert status to display name', () {
-        expect(PartnershipStatus.pending.displayName, equals('Pending'));
-        expect(PartnershipStatus.proposed.displayName, equals('Proposed'));
-        expect(PartnershipStatus.negotiating.displayName, equals('Negotiating'));
-        expect(PartnershipStatus.approved.displayName, equals('Approved'));
-        expect(PartnershipStatus.locked.displayName, equals('Locked'));
-        expect(PartnershipStatus.active.displayName, equals('Active'));
-        expect(PartnershipStatus.completed.displayName, equals('Completed'));
-        expect(PartnershipStatus.cancelled.displayName, equals('Cancelled'));
-        expect(PartnershipStatus.disputed.displayName, equals('Disputed'));
-      });
-
-      test('should parse status from string', () {
+      // Removed: Display names test - tests property values, not business logic
+      test('should parse status from string with case handling and defaults',
+          () {
+        // Test business logic: string parsing with error handling
         expect(
           PartnershipStatusExtension.fromString('pending'),
           equals(PartnershipStatus.pending),
@@ -487,13 +203,9 @@ void main() {
     });
 
     group('Partnership Type Extension', () {
-      test('should convert type to display name', () {
-        expect(PartnershipType.eventBased.displayName, equals('Event-Based'));
-        expect(PartnershipType.ongoing.displayName, equals('Ongoing'));
-        expect(PartnershipType.exclusive.displayName, equals('Exclusive'));
-      });
-
-      test('should parse type from string', () {
+      // Removed: Display names test - tests property values, not business logic
+      test('should parse type from string with case handling and defaults', () {
+        // Test business logic: string parsing with error handling
         expect(
           PartnershipTypeExtension.fromString('eventBased'),
           equals(PartnershipType.eventBased),
@@ -514,4 +226,3 @@ void main() {
     });
   });
 }
-

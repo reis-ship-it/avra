@@ -29,43 +29,34 @@ void main() {
       mockSpotsBloc = MockSpotsBloc();
     });
 
-    testWidgets('displays loading state when auth is loading', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Home page tests focus on business logic (loading state, authentication states, tab initialization, data loading), not property assignment
+
+    testWidgets(
+        'should display loading state when auth is loading, display unauthenticated content when not logged in, display authenticated content when logged in, initialize with correct tab index, or load lists on initialization',
+        (WidgetTester tester) async {
+      // Test business logic: Home page state management and initialization
       mockAuthBloc.setState(AuthLoading());
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const HomePage(),
         authBloc: mockAuthBloc,
         listsBloc: mockListsBloc,
         spotsBloc: mockSpotsBloc,
       );
-
-      // Act
-      await tester.pumpWidget(widget);
-      await tester.pump(); // Pump once to render loading state
-
-      // Assert - Should show loading indicator
+      await tester.pumpWidget(widget1);
+      await tester.pump();
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
 
-    testWidgets('displays unauthenticated content when not logged in', (WidgetTester tester) async {
-      // Arrange
       mockAuthBloc.setState(Unauthenticated());
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: const HomePage(),
         authBloc: mockAuthBloc,
         listsBloc: mockListsBloc,
         spotsBloc: mockSpotsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show unauthenticated UI
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(HomePage), findsOneWidget);
-    });
 
-    testWidgets('displays authenticated content when logged in', (WidgetTester tester) async {
-      // Arrange
       final testUser = User(
         id: 'test-user',
         email: 'test@example.com',
@@ -75,70 +66,32 @@ void main() {
         updatedAt: TestHelpers.createTestDateTime(),
       );
       mockAuthBloc.setState(Authenticated(user: testUser));
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const HomePage(),
         authBloc: mockAuthBloc,
         listsBloc: mockListsBloc,
         spotsBloc: mockSpotsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show authenticated UI with tabs
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.byType(HomePage), findsOneWidget);
-    });
 
-    testWidgets('initializes with correct tab index', (WidgetTester tester) async {
-      // Arrange
-      final testUser = User(
-        id: 'test-user',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: UserRole.user,
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-      );
-      mockAuthBloc.setState(Authenticated(user: testUser));
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: const HomePage(initialTabIndex: 1),
         authBloc: mockAuthBloc,
         listsBloc: mockListsBloc,
         spotsBloc: mockSpotsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should initialize with specified tab
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.byType(HomePage), findsOneWidget);
-    });
 
-    testWidgets('loads lists on initialization', (WidgetTester tester) async {
-      // Arrange
-      final testUser = User(
-        id: 'test-user',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: UserRole.user,
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-      );
-      mockAuthBloc.setState(Authenticated(user: testUser));
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget5 = WidgetTestHelpers.createTestableWidget(
         child: const HomePage(),
         authBloc: mockAuthBloc,
         listsBloc: mockListsBloc,
         spotsBloc: mockSpotsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should be rendered
+      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
       expect(find.byType(HomePage), findsOneWidget);
-      // Note: BLoC event verification would require more complex setup
     });
   });
 }
-

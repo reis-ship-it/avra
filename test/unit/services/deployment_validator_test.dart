@@ -4,9 +4,10 @@ import 'package:spots/core/services/deployment_validator.dart';
 import 'package:spots/core/services/performance_monitor.dart';
 import 'package:spots/core/services/security_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart';
 
 import '../../mocks/mock_dependencies.mocks.dart';
+import '../../mocks/mock_storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {
@@ -15,7 +16,7 @@ void main() {
     late PerformanceMonitor performanceMonitor;
     late SecurityValidator securityValidator;
     late MockStorageService mockStorageService;
-    late SharedPreferences prefs;
+    late SharedPreferencesCompat prefs;
 
     setUpAll(() async {
       await setupTestStorage();
@@ -24,7 +25,9 @@ void main() {
 
     setUp(() async {
       mockStorageService = MockStorageService();
-      prefs = await real_prefs.SharedPreferences.getInstance();
+      final mockStorage = MockGetStorage.getInstance();
+      MockGetStorage.reset();
+      prefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
 
       performanceMonitor = PerformanceMonitor(
         storageService: mockStorageService,
@@ -40,7 +43,7 @@ void main() {
 
     tearDown(() async {
       await performanceMonitor.stopMonitoring();
-      await prefs.clear();
+      MockGetStorage.reset();
     });
 
     tearDownAll(() async {

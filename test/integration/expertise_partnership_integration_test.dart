@@ -129,17 +129,18 @@ void main() {
         when(() => mockBusinessService.checkBusinessEligibility(any()))
             .thenAnswer((_) async => true);
         
-        // Partnership can be created even if host doesn't have City level
-        // (Partnership service doesn't check expertise level)
-        // But event creation requires City level
-        final partnership = await partnershipService.createPartnership(
-          eventId: event.id,
-          userId: host.id,
-          businessId: business.id,
-          vibeCompatibilityScore: 0.85,
+        // Partnership cannot be created if host doesn't have Local level expertise
+        // (Partnership service checks event.host.canHostEvents())
+        // This should throw "Partnership not eligible" exception
+        await expectLater(
+          () => partnershipService.createPartnership(
+            eventId: event.id,
+            userId: host.id,
+            businessId: business.id,
+            vibeCompatibilityScore: 0.85,
+          ),
+          throwsA(isA<Exception>()),
         );
-        
-        expect(partnership, isNotNull);
       });
     });
     
@@ -297,13 +298,10 @@ void main() {
           approvedBy: business.id,
         );
         
-        // Lock partnership
-        final locked = await partnershipService.updatePartnershipStatus(
-          partnershipId: partnership.id,
-          status: PartnershipStatus.locked,
-        );
-        
-        expect(locked.isLocked, isTrue);
+        // Note: approvePartnership automatically locks the partnership when both parties approve
+        // No need to call updatePartnershipStatus separately
+        expect(approved.isLocked, isTrue);
+        expect(approved.status, equals(PartnershipStatus.locked));
         
         // Partnership events contribute to:
         // - Community expertise (hosting events with partnerships)
@@ -311,8 +309,8 @@ void main() {
         // - Influence expertise (multi-party events)
         
         // Verify partnership is ready for event
-        expect(locked.eventId, equals(event.id));
-        expect(locked.isApproved, isTrue);
+        expect(approved.eventId, equals(event.id));
+        expect(approved.isApproved, isTrue);
       });
     });
   });

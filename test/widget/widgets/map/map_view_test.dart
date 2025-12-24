@@ -6,59 +6,39 @@ import "../../helpers/widget_test_helpers.dart';
 /// Tests map view display
 void main() {
   group('MapView Widget Tests', () {
-    testWidgets('displays map view', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+    // Removed: Property assignment tests
+    // Map view tests focus on business logic (map view display, app bar visibility, initial selected list), not property assignment
+
+    testWidgets(
+        'should display map view, display map view with app bar when showAppBar is true, display map view without app bar when showAppBar is false, or handle initial selected list',
+        (WidgetTester tester) async {
+      // Test business logic: map view display
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const MapView(),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(MapView), findsOneWidget);
-    });
 
-    testWidgets('displays map view with app bar when showAppBar is true', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: const MapView(
           showAppBar: true,
           appBarTitle: 'Map',
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(MapView), findsOneWidget);
-    });
 
-    testWidgets('displays map view without app bar when showAppBar is false', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const MapView(showAppBar: false),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.byType(MapView), findsOneWidget);
-    });
 
-    testWidgets('handles initial selected list', (WidgetTester tester) async {
-      // Arrange
       final list = WidgetTestHelpers.createTestList();
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: MapView(initialSelectedList: list),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.byType(MapView), findsOneWidget);
     });
   });

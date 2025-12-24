@@ -12,6 +12,7 @@ import 'package:spots/core/ml/predictive_analytics.dart';
 import 'package:spots/core/ai/ai2ai_learning.dart';
 
 import 'admin_god_mode_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([
   AdminAuthService,
@@ -54,140 +55,112 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Admin god mode service tests focus on business logic (authorization, data watching, retrieval), not property assignment
+
     group('isAuthorized', () {
-      test('should return false when not authenticated', () {
+      test(
+          'should return false when not authenticated or when authenticated but lacks permission, or true when authenticated with permission',
+          () {
+        // Test business logic: authorization checking
         when(mockAuthService.isAuthenticated()).thenReturn(false);
-
         expect(service.isAuthorized, isFalse);
-      });
 
-      test('should return false when authenticated but lacks permission', () {
         when(mockAuthService.isAuthenticated()).thenReturn(true);
         when(mockAuthService.hasPermission(AdminPermission.viewRealTimeData))
             .thenReturn(false);
-
         expect(service.isAuthorized, isFalse);
-      });
 
-      test('should return true when authenticated with permission', () {
         when(mockAuthService.isAuthenticated()).thenReturn(true);
         when(mockAuthService.hasPermission(AdminPermission.viewRealTimeData))
             .thenReturn(true);
-
         expect(service.isAuthorized, isTrue);
       });
     });
 
     group('watchUserData', () {
-      test('should throw exception when not authorized', () {
+      test(
+          'should throw exception when not authorized, or return stream when authorized',
+          () {
+        // Test business logic: user data watching with authorization
         when(mockAuthService.isAuthenticated()).thenReturn(false);
-
         expect(
           () => service.watchUserData('user-123'),
           throwsA(isA<Exception>()),
         );
-      });
 
-      test('should return stream when authorized', () {
         when(mockAuthService.isAuthenticated()).thenReturn(true);
         when(mockAuthService.hasPermission(AdminPermission.viewRealTimeData))
             .thenReturn(true);
-
         final stream = service.watchUserData('user-123');
-
         expect(stream, isA<Stream<UserDataSnapshot>>());
       });
     });
 
     group('watchAIData', () {
-      test('should throw exception when not authorized', () {
+      test(
+          'should throw exception when not authorized, or return stream when authorized',
+          () {
+        // Test business logic: AI data watching with authorization
         when(mockAuthService.isAuthenticated()).thenReturn(false);
-
         expect(
           () => service.watchAIData('ai-signature-123'),
           throwsA(isA<Exception>()),
         );
-      });
 
-      test('should return stream when authorized', () {
         when(mockAuthService.isAuthenticated()).thenReturn(true);
         when(mockAuthService.hasPermission(AdminPermission.viewRealTimeData))
             .thenReturn(true);
-
         final stream = service.watchAIData('ai-signature-123');
-
         expect(stream, isA<Stream<AIDataSnapshot>>());
       });
     });
 
     group('watchCommunications', () {
-      test('should throw exception when not authorized', () {
+      test(
+          'should throw exception when not authorized, or return stream when authorized',
+          () {
+        // Test business logic: communications watching with authorization
         when(mockAuthService.isAuthenticated()).thenReturn(false);
-
         expect(
           () => service.watchCommunications(),
           throwsA(isA<Exception>()),
         );
-      });
 
-      test('should return stream when authorized', () {
         when(mockAuthService.isAuthenticated()).thenReturn(true);
         when(mockAuthService.hasPermission(AdminPermission.viewRealTimeData))
             .thenReturn(true);
-
         final stream = service.watchCommunications();
-
         expect(stream, isA<Stream<CommunicationsSnapshot>>());
       });
     });
 
-    group('getUserProgress', () {
-      test('should throw exception when not authorized', () async {
+    group('Data Retrieval Methods', () {
+      test(
+          'should throw exception when not authorized for getUserProgress, getDashboardData, searchUsers, getUserPredictions, and getAllBusinessAccounts',
+          () async {
+        // Test business logic: authorization enforcement for all data retrieval methods
         when(mockAuthService.isAuthenticated()).thenReturn(false);
 
         expect(
           () => service.getUserProgress('user-123'),
           throwsA(isA<Exception>()),
         );
-      });
-    });
-
-    group('getDashboardData', () {
-      test('should throw exception when not authorized', () async {
-        when(mockAuthService.isAuthenticated()).thenReturn(false);
 
         expect(
           () => service.getDashboardData(),
           throwsA(isA<Exception>()),
         );
-      });
-    });
-
-    group('searchUsers', () {
-      test('should throw exception when not authorized', () async {
-        when(mockAuthService.isAuthenticated()).thenReturn(false);
 
         expect(
           () => service.searchUsers(),
           throwsA(isA<Exception>()),
         );
-      });
-    });
-
-    group('getUserPredictions', () {
-      test('should throw exception when not authorized', () async {
-        when(mockAuthService.isAuthenticated()).thenReturn(false);
 
         expect(
           () => service.getUserPredictions('user-123'),
           throwsA(isA<Exception>()),
         );
-      });
-    });
-
-    group('getAllBusinessAccounts', () {
-      test('should throw exception when not authorized', () async {
-        when(mockAuthService.isAuthenticated()).thenReturn(false);
 
         expect(
           () => service.getAllBusinessAccounts(),
@@ -210,6 +183,9 @@ void main() {
         expect(() => service.dispose(), returnsNormally);
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

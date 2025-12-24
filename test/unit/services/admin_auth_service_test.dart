@@ -1,90 +1,50 @@
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:spots/core/services/admin_auth_service.dart';
+import 'package:spots/core/services/storage_service.dart';
 
-import 'admin_auth_service_test.mocks.dart';
+import '../../mocks/mock_storage_service.dart';
+import '../../helpers/platform_channel_helper.dart';
 
-@GenerateMocks([SharedPreferences])
+class MockSharedPreferencesCompat extends Mock implements SharedPreferencesCompat {}
+
 void main() {
   group('AdminAuthService Tests', () {
     late AdminAuthService service;
-    late MockSharedPreferences mockPrefs;
+    late SharedPreferencesCompat prefs;
 
-    setUp(() {
-      mockPrefs = MockSharedPreferences();
-      service = AdminAuthService(mockPrefs);
+    setUpAll(() async {
+      await setupTestStorage();
     });
 
-    group('authenticate', () {
-      test('should return failed result when credentials are invalid', () async {
-        when(mockPrefs.getInt(any)).thenReturn(null);
-        when(mockPrefs.setInt(any, any)).thenAnswer((_) async => true);
-
-        final result = await service.authenticate(
-          username: 'admin',
-          password: 'wrong-password',
-        );
-
-        expect(result.success, isFalse);
-        expect(result.lockedOut, isFalse);
-        expect(result.remainingAttempts, lessThan(5));
-      });
-
-      test('should lockout after max login attempts', () async {
-        when(mockPrefs.getInt(any)).thenReturn(4); // 4 previous attempts
-        when(mockPrefs.setInt(any, any)).thenAnswer((_) async => true);
-
-        final result = await service.authenticate(
-          username: 'admin',
-          password: 'wrong-password',
-        );
-
-        expect(result.lockedOut, isTrue);
-        expect(result.lockoutRemaining, isNotNull);
-      });
-
-      test('should return locked out when account is locked', () async {
-        final lockoutUntil = DateTime.now().add(const Duration(minutes: 10)).millisecondsSinceEpoch;
-        when(mockPrefs.getInt(any)).thenReturn(lockoutUntil);
-
-        final result = await service.authenticate(
-          username: 'admin',
-          password: 'password',
-        );
-
-        expect(result.lockedOut, isTrue);
-        expect(result.lockoutRemaining, isNotNull);
-      });
-
-      test('should reset failed attempts on successful authentication', () async {
-        when(mockPrefs.getInt(any)).thenReturn(null);
-        when(mockPrefs.getString(any)).thenReturn(null);
-        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
-        when(mockPrefs.remove(any)).thenAnswer((_) async => true);
-
-        // Note: This will fail because _getExpectedPasswordHash returns null
-        // In a real test, we'd need to mock or set up credentials
-        final result = await service.authenticate(
-          username: 'admin',
-          password: 'password',
-        );
-
-        expect(result.success, isFalse); // Will fail due to no credentials set up
-      });
+    setUp(() async {
+      // Use real SharedPreferencesCompat with mock storage for consistency
+      final mockStorage = MockGetStorage.getInstance();
+      MockGetStorage.reset();
+      prefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
+      service = AdminAuthService(prefs);
     });
+
+    tearDown(() {
+      MockGetStorage.reset();
+    });
+
+    // Removed: Property assignment tests
+    // Admin auth tests focus on business logic (session management, permissions), not property assignment
+    // Note: authenticate() tests moved to integration tests (test/integration/admin_auth_integration_test.dart)
+    // because they require real Supabase connection to test edge function behavior
 
     group('isAuthenticated', () {
-      test('should return false when no session exists', () {
-        when(mockPrefs.getString(any)).thenReturn(null);
+      test(
+          'should return false when no session exists, return false when session is expired, or return true when valid session exists',
+          () async {
+        // Test business logic: session validation
+        // No session exists
+        final isAuth1 = service.isAuthenticated();
+        expect(isAuth1, isFalse);
 
-        final isAuth = service.isAuthenticated();
-
-        expect(isAuth, isFalse);
-      });
-
-      test('should return false when session is expired', () {
+        // Create expired session
         final expiredSession = AdminSession(
           username: 'admin',
           loginTime: DateTime.now().subtract(const Duration(hours: 10)),
@@ -92,18 +52,11 @@ void main() {
           accessLevel: AdminAccessLevel.godMode,
           permissions: AdminPermissions.all(),
         );
+        await prefs.setString('admin_session', jsonEncode(expiredSession.toJson()));
+        final isAuth2 = service.isAuthenticated();
+        expect(isAuth2, isFalse); // Should remove expired session
 
-        when(mockPrefs.getString(any)).thenReturn(
-          '{"username":"admin","loginTime":"${expiredSession.loginTime.toIso8601String()}","expiresAt":"${expiredSession.expiresAt.toIso8601String()}","accessLevel":"godMode","permissions":{}}',
-        );
-        when(mockPrefs.remove(any)).thenAnswer((_) async => true);
-
-        final isAuth = service.isAuthenticated();
-
-        expect(isAuth, isFalse);
-      });
-
-      test('should return true when valid session exists', () {
+        // Create valid session
         final validSession = AdminSession(
           username: 'admin',
           loginTime: DateTime.now().subtract(const Duration(hours: 1)),
@@ -111,27 +64,22 @@ void main() {
           accessLevel: AdminAccessLevel.godMode,
           permissions: AdminPermissions.all(),
         );
-
-        when(mockPrefs.getString(any)).thenReturn(
-          '{"username":"admin","loginTime":"${validSession.loginTime.toIso8601String()}","expiresAt":"${validSession.expiresAt.toIso8601String()}","accessLevel":"godMode","permissions":{}}',
-        );
-
-        final isAuth = service.isAuthenticated();
-
-        expect(isAuth, isTrue);
+        await prefs.setString('admin_session', jsonEncode(validSession.toJson()));
+        final isAuth3 = service.isAuthenticated();
+        expect(isAuth3, isTrue);
       });
     });
 
     group('hasPermission', () {
-      test('should return false when not authenticated', () {
-        when(mockPrefs.getString(any)).thenReturn(null);
+      test(
+          'should return false when not authenticated, or return true when session has permission',
+          () async {
+        // Test business logic: permission checking
+        // No session exists
+        final hasPerm1 = service.hasPermission(AdminPermission.viewUserData);
+        expect(hasPerm1, isFalse);
 
-        final hasPerm = service.hasPermission(AdminPermission.viewUserData);
-
-        expect(hasPerm, isFalse);
-      });
-
-      test('should return true when session has permission', () {
+        // Create session with permissions
         final session = AdminSession(
           username: 'admin',
           loginTime: DateTime.now(),
@@ -139,29 +87,38 @@ void main() {
           accessLevel: AdminAccessLevel.godMode,
           permissions: AdminPermissions.all(),
         );
-
-        when(mockPrefs.getString(any)).thenReturn(
-          '{"username":"admin","loginTime":"${session.loginTime.toIso8601String()}","expiresAt":"${session.expiresAt.toIso8601String()}","accessLevel":"godMode","permissions":{"viewUserData":true,"viewAIData":true,"viewCommunications":true,"viewUserProgress":true,"viewUserPredictions":true,"viewBusinessAccounts":true,"viewRealTimeData":true,"modifyUserData":true,"modifyAIData":true,"modifyBusinessData":true,"accessAuditLogs":true}}',
-        );
-
-        final hasPerm = service.hasPermission(AdminPermission.viewUserData);
-
-        expect(hasPerm, isTrue);
+        await prefs.setString('admin_session', jsonEncode(session.toJson()));
+        final hasPerm2 = service.hasPermission(AdminPermission.viewUserData);
+        expect(hasPerm2, isTrue);
       });
     });
 
     group('logout', () {
       test('should remove session on logout', () async {
-        when(mockPrefs.remove(any)).thenAnswer((_) async => true);
+        // Create a session first
+        final session = AdminSession(
+          username: 'admin',
+          loginTime: DateTime.now(),
+          expiresAt: DateTime.now().add(const Duration(hours: 8)),
+          accessLevel: AdminAccessLevel.godMode,
+          permissions: AdminPermissions.all(),
+        );
+        await prefs.setString('admin_session', jsonEncode(session.toJson()));
+        expect(service.isAuthenticated(), isTrue);
 
         await service.logout();
 
-        verify(mockPrefs.remove('admin_session')).called(1);
+        // Verify session was removed
+        expect(service.isAuthenticated(), isFalse);
+        expect(service.getCurrentSession(), isNull);
       });
     });
 
     group('extendSession', () {
-      test('should extend session expiration time', () async {
+      test(
+          'should extend session expiration time, or do nothing when no session exists',
+          () async {
+        // Test business logic: session extension
         final session = AdminSession(
           username: 'admin',
           loginTime: DateTime.now(),
@@ -169,36 +126,34 @@ void main() {
           accessLevel: AdminAccessLevel.godMode,
           permissions: AdminPermissions.all(),
         );
-
-        when(mockPrefs.getString(any)).thenReturn(
-          '{"username":"admin","loginTime":"${session.loginTime.toIso8601String()}","expiresAt":"${session.expiresAt.toIso8601String()}","accessLevel":"godMode","permissions":{}}',
-        );
-        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
-
+        await prefs.setString('admin_session', jsonEncode(session.toJson()));
+        final originalExpiresAt = service.getCurrentSession()?.expiresAt;
+        
         await service.extendSession();
+        
+        // Verify session expiration was extended
+        final extendedSession = service.getCurrentSession();
+        expect(extendedSession, isNotNull);
+        expect(extendedSession!.expiresAt.isAfter(originalExpiresAt!), isTrue);
 
-        verify(mockPrefs.setString(any, any)).called(1);
-      });
-
-      test('should do nothing when no session exists', () async {
-        when(mockPrefs.getString(any)).thenReturn(null);
-
+        // Test with no session
+        await prefs.remove('admin_session');
         await service.extendSession();
-
-        verifyNever(mockPrefs.setString(any, any));
+        // Should not throw, just do nothing
+        expect(service.getCurrentSession(), isNull);
       });
     });
 
     group('getCurrentSession', () {
-      test('should return null when no session exists', () {
-        when(mockPrefs.getString(any)).thenReturn(null);
+      test(
+          'should return null when no session exists, or return session when valid session exists',
+          () async {
+        // Test business logic: session retrieval
+        // No session exists
+        final session1 = service.getCurrentSession();
+        expect(session1, isNull);
 
-        final session = service.getCurrentSession();
-
-        expect(session, isNull);
-      });
-
-      test('should return session when valid session exists', () {
+        // Create and save session
         final session = AdminSession(
           username: 'admin',
           loginTime: DateTime.now(),
@@ -206,22 +161,15 @@ void main() {
           accessLevel: AdminAccessLevel.godMode,
           permissions: AdminPermissions.all(),
         );
-
-        when(mockPrefs.getString(any)).thenReturn(
-          '{"username":"admin","loginTime":"${session.loginTime.toIso8601String()}","expiresAt":"${session.expiresAt.toIso8601String()}","accessLevel":"godMode","permissions":{}}',
-        );
-
+        await prefs.setString('admin_session', jsonEncode(session.toJson()));
         final currentSession = service.getCurrentSession();
-
         expect(currentSession, isNotNull);
         expect(currentSession?.username, equals('admin'));
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-
-
-
-
-
-

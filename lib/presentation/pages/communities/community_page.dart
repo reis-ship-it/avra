@@ -589,7 +589,7 @@ class _CommunityPageState extends State<CommunityPage> {
           _buildMetricCard(
             title: 'Activity Level',
             value: _community?.getActivityLevelDisplayName().toUpperCase() ?? 'ACTIVE',
-            icon: Icons.activity,
+            icon: Icons.trending_up,
             fullWidth: true,
           ),
         ],

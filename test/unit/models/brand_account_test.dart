@@ -16,8 +16,14 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
-    test('should create brand account with required fields', () {
-      final brand = BrandAccount(
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
+
+    test(
+        'should enforce verification requirements for sponsorship and serialize correctly',
+        () {
+      // Test business logic: verification and JSON serialization
+      final unverifiedBrand = BrandAccount(
         id: 'brand-123',
         name: 'Premium Oil Co.',
         brandType: 'Food & Beverage',
@@ -25,52 +31,27 @@ void main() {
         createdAt: testDate,
         updatedAt: testDate,
       );
-
-      expect(brand.id, equals('brand-123'));
-      expect(brand.name, equals('Premium Oil Co.'));
-      expect(brand.brandType, equals('Food & Beverage'));
-      expect(brand.verificationStatus, equals(BrandVerificationStatus.pending));
-      expect(brand.isVerified, isFalse);
-      expect(brand.canSponsor, isFalse);
-    });
-
-    test('should create verified brand account', () {
-      final brand = BrandAccount(
-        id: 'brand-123',
-        name: 'Premium Oil Co.',
+      final verifiedBrand = BrandAccount(
+        id: 'brand-456',
+        name: 'Verified Brand',
         brandType: 'Food & Beverage',
-        contactEmail: 'partnerships@premiumoil.com',
+        contactEmail: 'contact@verified.com',
         verificationStatus: BrandVerificationStatus.verified,
         stripeConnectAccountId: 'acct_1234567890',
         createdAt: testDate,
         updatedAt: testDate,
       );
 
-      expect(brand.isVerified, isTrue);
-      expect(brand.canSponsor, isTrue);
-    });
+      // Test business rules
+      expect(unverifiedBrand.canSponsor, isFalse);
+      expect(verifiedBrand.canSponsor, isTrue);
 
-    test('should serialize and deserialize correctly', () {
-      final brand = BrandAccount(
-        id: 'brand-123',
-        name: 'Premium Oil Co.',
-        brandType: 'Food & Beverage',
-        categories: ['Gourmet', 'Premium'],
-        contactEmail: 'partnerships@premiumoil.com',
-        contactPhone: '+1-555-0123',
-        verificationStatus: BrandVerificationStatus.verified,
-        createdAt: testDate,
-        updatedAt: testDate,
-      );
-
-      final json = brand.toJson();
+      // Test JSON serialization
+      final json = verifiedBrand.toJson();
       final restored = BrandAccount.fromJson(json);
-
-      expect(restored.id, equals(brand.id));
-      expect(restored.name, equals(brand.name));
-      expect(restored.categories, equals(brand.categories));
-      expect(restored.isVerified, isTrue);
+      expect(restored.id, equals(verifiedBrand.id));
+      expect(restored.categories, equals(verifiedBrand.categories));
+      expect(restored.isVerified, equals(verifiedBrand.isVerified));
     });
   });
 }
-

@@ -1,0 +1,11 @@
+[0;34m[10:45:02][0m === Test Pass Rate Fix Script ===
+[0;34m[10:45:02][0m Analyzing test failures...
+[0;31m[10:45:02] ❌[0m Test output file not found. Running tests first...
+[0;34m[10:45:02][0m Running tests in: test/unit
+[0;34m[10:46:55][0m Test Results:
+[0;34m[10:46:55][0m   Total: 0
+[0;34m[10:46:55][0m   Passing: 0
+[0;34m[10:46:55][0m   Failing: 0
+[0;34m[10:46:55][0m Categorizing failures...
+[0;32m[10:46:55] ✅[0m Analysis complete. Report saved to: docs/reports/test_fixes/test_fix_report_2025-12-08_10-45-02.md
+[0;34m[10:46:55][0m Failure Breakdown:

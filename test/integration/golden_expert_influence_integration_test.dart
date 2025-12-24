@@ -15,31 +15,27 @@
 /// - MultiPathExpertiseService: Golden expert data
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:spots/core/services/golden_expert_ai_influence_service.dart';
 import 'package:spots/core/services/locality_personality_service.dart';
 import 'package:spots/core/models/multi_path_expertise.dart';
 import 'package:spots/core/models/personality_profile.dart';
 import '../helpers/test_helpers.dart';
 
-class MockGoldenExpertAIInfluenceService extends Mock implements GoldenExpertAIInfluenceService {}
-
 void main() {
   group('Golden Expert Influence Integration Tests', () {
     late GoldenExpertAIInfluenceService goldenExpertService;
     late LocalityPersonalityService localityPersonalityService;
-    late MockGoldenExpertAIInfluenceService mockInfluenceService;
     late DateTime testDate;
 
     setUp(() {
       TestHelpers.setupTestEnvironment();
       testDate = TestHelpers.createTestDateTime();
-      mockInfluenceService = MockGoldenExpertAIInfluenceService();
 
       goldenExpertService = GoldenExpertAIInfluenceService();
 
+      // Use real service for integration test - we're testing the integration, not mocking
       localityPersonalityService = LocalityPersonalityService(
-        influenceService: mockInfluenceService,
+        influenceService: goldenExpertService,
       );
     });
 
@@ -90,11 +86,7 @@ void main() {
         expect(weightedBehavior, isA<Map<String, dynamic>>());
 
         // Step 3: Update locality personality with golden expert influence
-        when(mockInfluenceService.calculateInfluenceWeight(localExpertise))
-            .thenReturn(weight);
-        when(mockInfluenceService.applyWeightToBehavior(behaviorData, weight))
-            .thenReturn(weightedBehavior);
-
+        // Using real service (no mocking needed for integration test)
         final updatedPersonality = await localityPersonalityService.updateLocalityPersonality(
           locality: 'Brooklyn',
           userBehavior: behaviorData,
@@ -149,11 +141,7 @@ void main() {
           'communityScore': 0.8,
         };
 
-        when(mockInfluenceService.calculateInfluenceWeight(goldenExpert1))
-            .thenReturn(1.4);
-        when(mockInfluenceService.applyWeightToBehavior(behaviorData1, 1.4))
-            .thenReturn(behaviorData1);
-
+        // Using real service (no mocking needed for integration test)
         await localityPersonalityService.incorporateGoldenExpertInfluence(
           locality: 'Brooklyn',
           goldenExpertBehavior: behaviorData1,
@@ -166,11 +154,7 @@ void main() {
           'authenticityScore': 0.9,
         };
 
-        when(mockInfluenceService.calculateInfluenceWeight(goldenExpert2))
-            .thenReturn(1.35);
-        when(mockInfluenceService.applyWeightToBehavior(behaviorData2, 1.35))
-            .thenReturn(behaviorData2);
-
+        // Using real service (no mocking needed for integration test)
         await localityPersonalityService.incorporateGoldenExpertInfluence(
           locality: 'Brooklyn',
           goldenExpertBehavior: behaviorData2,
@@ -305,11 +289,7 @@ void main() {
           'authenticityScore': 0.7,
         };
 
-        when(mockInfluenceService.calculateInfluenceWeight(localExpertise))
-            .thenReturn(1.4);
-        when(mockInfluenceService.applyWeightToBehavior(behaviorData, 1.4))
-            .thenReturn(behaviorData);
-
+        // Using real service (no mocking needed for integration test)
         await localityPersonalityService.updateLocalityPersonality(
           locality: 'Brooklyn',
           userBehavior: behaviorData,
@@ -358,11 +338,7 @@ void main() {
           'communityScore': 0.8,
         };
 
-        when(mockInfluenceService.calculateInfluenceWeight(localExpertise))
-            .thenReturn(1.4);
-        when(mockInfluenceService.applyWeightToBehavior(behaviorData, 1.4))
-            .thenReturn(behaviorData);
-
+        // Using real service (no mocking needed for integration test)
         await localityPersonalityService.incorporateGoldenExpertInfluence(
           locality: 'Brooklyn',
           goldenExpertBehavior: behaviorData,
@@ -417,11 +393,7 @@ void main() {
         expect(weightedBehavior, isA<Map<String, dynamic>>());
 
         // Step 3: Update locality personality
-        when(mockInfluenceService.calculateInfluenceWeight(localExpertise))
-            .thenReturn(weight);
-        when(mockInfluenceService.applyWeightToBehavior(behaviorData, weight))
-            .thenReturn(weightedBehavior);
-
+        // Using real service (no mocking needed for integration test)
         final updatedPersonality = await localityPersonalityService.updateLocalityPersonality(
           locality: 'Brooklyn',
           userBehavior: behaviorData,

@@ -8,6 +8,9 @@ import 'package:spots/core/services/logger.dart';
 class ExpertiseCommunityService {
   static const String _logName = 'ExpertiseCommunityService';
   final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
+  
+  // In-memory storage for testing
+  final Map<String, ExpertiseCommunity> _communities = {};
 
   /// Create a new expertise community
   Future<ExpertiseCommunity> createCommunity({
@@ -164,12 +167,20 @@ class ExpertiseCommunityService {
   }
 
   Future<void> _saveCommunity(ExpertiseCommunity community) async {
+    // In-memory storage for testing
+    _communities[community.id] = community;
     // In production, save to database
   }
 
   Future<List<ExpertiseCommunity>> _getAllCommunities() async {
+    // In-memory storage for testing
+    return _communities.values.toList();
     // In production, query database
-    return [];
+  }
+  
+  /// Get community by ID (for testing)
+  ExpertiseCommunity? getCommunityById(String id) {
+    return _communities[id];
   }
 }
 

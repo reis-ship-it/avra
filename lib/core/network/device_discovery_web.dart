@@ -5,9 +5,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 // This file is only imported when dart.library.html is available (web platform)
 // Conditional import ensures this code is never analyzed on mobile platforms
-// Note: dart:html is deprecated but still needed for WebSocket and window APIs
-// TODO: Migrate to package:web and dart:js_interop when stable
-import 'dart:html' as html show window, WebSocket;
+// Migrated from dart:html to package:web for modern web API bindings
+import 'package:web/web.dart';
+import 'dart:js_interop';
 // Note: flutter_nsd may not be fully supported on web
 // Using conditional imports would be ideal, but for now we'll use dynamic typing
 import 'package:get_it/get_it.dart';
@@ -135,12 +135,12 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
   bool _isSecureContext() {
     try {
       // Check if we're in a secure context (HTTPS)
-      return html.window.isSecureContext ?? false;
+      return window.isSecureContext;
     } catch (e) {
       developer.log('Error checking secure context: $e', name: _logName);
       // Fallback: check if URL is HTTPS
       try {
-        return html.window.location.protocol == 'https:';
+        return window.location.protocol == 'https:';
       } catch (_) {
         return false;
       }
@@ -150,8 +150,8 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
   /// Get user agent string
   String _getUserAgent() {
     try {
-      // userAgent is non-nullable in dart:html, but wrap in try-catch for safety
-      return html.window.navigator.userAgent;
+      // userAgent is non-nullable in package:web, but wrap in try-catch for safety
+      return window.navigator.userAgent;
     } catch (e) {
       developer.log('Error getting user agent: $e', name: _logName);
       return 'Unknown Browser';
@@ -188,15 +188,20 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
     
     try {
       // Connect to signaling server via WebSocket
-      final ws = html.WebSocket(signalingUrl);
+      final ws = WebSocket(signalingUrl);
       
       // Wait for connection
-      await ws.onOpen.first;
+      final openCompleter = Completer<void>();
+      ws.addEventListener('open', (Event event) {
+        openCompleter.complete();
+      }.toJS);
+      await openCompleter.future;
       
       // Register this device and request peer list
-      ws.sendString(html.window.btoa(
-        '{"type": "discover", "device_id": "${_generateDeviceId()}"}',
-      ));
+      final messageJson = '{"type": "discover", "device_id": "${_generateDeviceId()}"}';
+      final messageBytes = utf8.encode(messageJson);
+      final messageBase64 = base64Encode(messageBytes);
+      ws.send(messageBase64.toJS);
       
       // Listen for peer list response
       final completer = Completer<List<DiscoveredDevice>>();
@@ -206,9 +211,12 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
         }
       });
       
-      ws.onMessage.listen((event) {
+      ws.addEventListener('message', ((Event event) {
         try {
-          final data = html.window.atob(event.data as String);
+          final messageEvent = event as MessageEvent;
+          final dataString = (messageEvent.data as JSString).toDart;
+          final dataBytes = base64Decode(dataString);
+          final data = utf8.decode(dataBytes);
           final json = jsonDecode(data) as Map<String, dynamic>;
           
           if (json['type'] == 'peers') {
@@ -242,15 +250,15 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
         } catch (e) {
           developer.log('Error parsing WebRTC message: $e', name: _logName);
         }
-      });
+      }).toJS);
       
-      ws.onError.listen((error) {
+      ws.addEventListener('error', ((Event error) {
         developer.log('WebSocket error: $error', name: _logName);
         if (!completer.isCompleted) {
           timer.cancel();
           completer.complete(devices);
         }
-      });
+      }).toJS);
       
       await completer.future;
       ws.close();
@@ -273,11 +281,18 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
     
     try {
       // Use same signaling server but simpler protocol
-      final ws = html.WebSocket(signalingUrl);
-      await ws.onOpen.first;
+      final ws = WebSocket(signalingUrl);
+      final openCompleter = Completer<void>();
+      ws.addEventListener('open', (Event event) {
+        openCompleter.complete();
+      }.toJS);
+      await openCompleter.future;
       
       // Request device list
-      ws.sendString(html.window.btoa('{"action": "discover"}'));
+      final messageJson = '{"action": "discover"}';
+      final messageBytes = utf8.encode(messageJson);
+      final messageBase64 = base64Encode(messageBytes);
+      ws.send(messageBase64.toJS);
       
       final completer = Completer<List<DiscoveredDevice>>();
       final timer = Timer(const Duration(seconds: 3), () {
@@ -286,9 +301,12 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
         }
       });
       
-      ws.onMessage.listen((event) {
+      ws.addEventListener('message', ((Event event) {
         try {
-          final data = html.window.atob(event.data as String);
+          final messageEvent = event as MessageEvent;
+          final dataString = (messageEvent.data as JSString).toDart;
+          final dataBytes = base64Decode(dataString);
+          final data = utf8.decode(dataBytes);
           final json = jsonDecode(data) as Map<String, dynamic>;
           
           if (json['action'] == 'devices') {
@@ -314,7 +332,7 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
         } catch (e) {
           developer.log('Error parsing WebSocket message: $e', name: _logName);
         }
-      });
+      }).toJS);
       
       await completer.future;
       ws.close();

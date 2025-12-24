@@ -175,12 +175,15 @@ class MentorshipService {
     String category,
   ) async {
     final allRelationships = await _getAllRelationships();
-    return allRelationships.firstWhere(
-      (r) => r.mentee.id == menteeId &&
-            r.mentor.id == mentorId &&
-            r.category == category,
-      orElse: () => throw StateError('Not found'),
-    );
+    try {
+      return allRelationships.firstWhere(
+        (r) => r.mentee.id == menteeId &&
+              r.mentor.id == mentorId &&
+              r.category == category,
+      );
+    } catch (e) {
+      return null; // Return null if not found
+    }
   }
 
   Future<List<MentorshipRelationship>> _getAllRelationships() async {

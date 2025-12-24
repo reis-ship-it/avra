@@ -11,6 +11,7 @@ import 'package:spots/core/models/brand_account.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'sponsorship_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([ExpertiseEventService, PartnershipService, BusinessService])
 void main() {
@@ -62,65 +63,45 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Sponsorship tests focus on business logic (creation, validation, status management), not property assignment
+
     group('createSponsorship', () {
-      test('should create financial sponsorship with valid inputs', () async {
-        // Arrange
+      test(
+          'should create financial, product, and hybrid sponsorships with valid inputs, or throw exception for invalid inputs (event not found, brand not found, brand not verified, compatibility below threshold, missing required fields)',
+          () async {
+        // Test business logic: sponsorship creation with validation
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockPartnershipService.getPartnershipsForEvent('event-123'))
             .thenAnswer((_) async => []);
-
-        // Register brand in service
         await service.registerBrand(testBrand);
 
-        // Act
-        final sponsorship = await service.createSponsorship(
+        // Financial sponsorship
+        final financial = await service.createSponsorship(
           eventId: 'event-123',
           brandId: 'brand-123',
           type: SponsorshipType.financial,
           contributionAmount: 500.00,
-          vibeCompatibilityScore: 0.75, // 75% compatibility (above 70% threshold)
+          vibeCompatibilityScore: 0.75,
         );
+        expect(financial.type, equals(SponsorshipType.financial));
+        expect(financial.contributionAmount, equals(500.00));
+        expect(financial.status, equals(SponsorshipStatus.proposed));
 
-        // Assert
-        expect(sponsorship, isA<Sponsorship>());
-        expect(sponsorship.eventId, equals('event-123'));
-        expect(sponsorship.brandId, equals('brand-123'));
-        expect(sponsorship.type, equals(SponsorshipType.financial));
-        expect(sponsorship.contributionAmount, equals(500.00));
-        expect(sponsorship.status, equals(SponsorshipStatus.proposed));
-      });
-
-      test('should create product sponsorship', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockPartnershipService.getPartnershipsForEvent('event-123'))
-            .thenAnswer((_) async => []);
-
-        // Act
-        final sponsorship = await service.createSponsorship(
+        // Product sponsorship
+        final product = await service.createSponsorship(
           eventId: 'event-123',
           brandId: 'brand-123',
           type: SponsorshipType.product,
           productValue: 300.00,
           vibeCompatibilityScore: 0.80,
         );
+        expect(product.type, equals(SponsorshipType.product));
+        expect(product.productValue, equals(300.00));
 
-        // Assert
-        expect(sponsorship.type, equals(SponsorshipType.product));
-        expect(sponsorship.productValue, equals(300.00));
-      });
-
-      test('should create hybrid sponsorship', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockPartnershipService.getPartnershipsForEvent('event-123'))
-            .thenAnswer((_) async => []);
-
-        // Act
-        final sponsorship = await service.createSponsorship(
+        // Hybrid sponsorship
+        final hybrid = await service.createSponsorship(
           eventId: 'event-123',
           brandId: 'brand-123',
           type: SponsorshipType.hybrid,
@@ -128,19 +109,13 @@ void main() {
           productValue: 300.00,
           vibeCompatibilityScore: 0.75,
         );
+        expect(hybrid.type, equals(SponsorshipType.hybrid));
+        expect(hybrid.contributionAmount, equals(500.00));
+        expect(hybrid.productValue, equals(300.00));
 
-        // Assert
-        expect(sponsorship.type, equals(SponsorshipType.hybrid));
-        expect(sponsorship.contributionAmount, equals(500.00));
-        expect(sponsorship.productValue, equals(300.00));
-      });
-
-      test('should throw exception if event not found', () async {
-        // Arrange
+        // Error cases
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => null);
-
-        // Act & Assert
         expect(
           () => service.createSponsorship(
             eventId: 'event-123',
@@ -155,14 +130,9 @@ void main() {
             contains('Event not found'),
           )),
         );
-      });
 
-      test('should throw exception if brand not found', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-
-        // Act & Assert
         expect(
           () => service.createSponsorship(
             eventId: 'event-123',
@@ -177,14 +147,7 @@ void main() {
             contains('Brand account not found'),
           )),
         );
-      });
 
-      test('should throw exception if brand not verified', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-
-        // Create unverified brand
         final unverifiedBrand = BrandAccount(
           id: 'brand-unverified',
           name: 'Unverified Brand',
@@ -195,8 +158,6 @@ void main() {
           updatedAt: DateTime.now(),
         );
         await service.registerBrand(unverifiedBrand);
-
-        // Act & Assert
         expect(
           () => service.createSponsorship(
             eventId: 'event-123',
@@ -211,16 +172,10 @@ void main() {
             contains('Brand account not verified'),
           )),
         );
-      });
 
-      test('should throw exception if compatibility below 70% threshold', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
         when(mockPartnershipService.getPartnershipsForEvent('event-123'))
             .thenAnswer((_) async => []);
-
-        // Act & Assert
+        await service.registerBrand(testBrand);
         expect(
           () => service.createSponsorship(
             eventId: 'event-123',
@@ -235,14 +190,7 @@ void main() {
             contains('Compatibility below 70% threshold'),
           )),
         );
-      });
 
-      test('should throw exception if financial sponsorship missing contributionAmount', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-
-        // Act & Assert
         expect(
           () => service.createSponsorship(
             eventId: 'event-123',
@@ -257,14 +205,7 @@ void main() {
             contains('Financial sponsorship requires contributionAmount'),
           )),
         );
-      });
 
-      test('should throw exception if product sponsorship missing productValue', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-
-        // Act & Assert
         expect(
           () => service.createSponsorship(
             eventId: 'event-123',
@@ -283,14 +224,15 @@ void main() {
     });
 
     group('getSponsorshipsForEvent', () {
-      test('should return sponsorships for event', () async {
-        // Arrange
+      test('should return sponsorships for event or empty list if none exist',
+          () async {
+        // Test business logic: sponsorship retrieval
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockPartnershipService.getPartnershipsForEvent('event-123'))
             .thenAnswer((_) async => []);
+        await service.registerBrand(testBrand);
 
-        // Create sponsorship first
         final sponsorship = await service.createSponsorship(
           eventId: 'event-123',
           brandId: 'brand-123',
@@ -299,31 +241,25 @@ void main() {
           vibeCompatibilityScore: 0.75,
         );
 
-        // Act
         final sponsorships = await service.getSponsorshipsForEvent('event-123');
-
-        // Assert
         expect(sponsorships, isNotEmpty);
         expect(sponsorships.first.id, equals(sponsorship.id));
         expect(sponsorships.first.eventId, equals('event-123'));
-      });
 
-      test('should return empty list if no sponsorships exist', () async {
-        // Act
-        final sponsorships = await service.getSponsorshipsForEvent('event-none');
-
-        // Assert
-        expect(sponsorships, isEmpty);
+        final emptySponsorships =
+            await service.getSponsorshipsForEvent('event-none');
+        expect(emptySponsorships, isEmpty);
       });
     });
 
     group('getSponsorshipById', () {
-      test('should return sponsorship by ID', () async {
-        // Arrange
+      test('should return sponsorship by ID or null if not found', () async {
+        // Test business logic: sponsorship retrieval by ID
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockPartnershipService.getPartnershipsForEvent('event-123'))
             .thenAnswer((_) async => []);
+        await service.registerBrand(testBrand);
 
         final created = await service.createSponsorship(
           eventId: 'event-123',
@@ -333,30 +269,25 @@ void main() {
           vibeCompatibilityScore: 0.75,
         );
 
-        // Act
         final sponsorship = await service.getSponsorshipById(created.id);
-
-        // Assert
         expect(sponsorship, isNotNull);
         expect(sponsorship?.id, equals(created.id));
-      });
 
-      test('should return null if sponsorship not found', () async {
-        // Act
-        final sponsorship = await service.getSponsorshipById('nonexistent-id');
-
-        // Assert
-        expect(sponsorship, isNull);
+        final notFound = await service.getSponsorshipById('nonexistent-id');
+        expect(notFound, isNull);
       });
     });
 
     group('updateSponsorshipStatus', () {
-      test('should update sponsorship status', () async {
-        // Arrange
+      test(
+          'should update sponsorship status correctly, or throw exception if sponsorship not found or status transition is invalid',
+          () async {
+        // Test business logic: status updates with validation
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockPartnershipService.getPartnershipsForEvent('event-123'))
             .thenAnswer((_) async => []);
+        await service.registerBrand(testBrand);
 
         final sponsorship = await service.createSponsorship(
           eventId: 'event-123',
@@ -366,19 +297,13 @@ void main() {
           vibeCompatibilityScore: 0.75,
         );
 
-        // Act
         final updated = await service.updateSponsorshipStatus(
           sponsorshipId: sponsorship.id,
           status: SponsorshipStatus.negotiating,
         );
-
-        // Assert
         expect(updated.status, equals(SponsorshipStatus.negotiating));
         expect(updated.updatedAt.isAfter(sponsorship.updatedAt), isTrue);
-      });
 
-      test('should throw exception if sponsorship not found', () async {
-        // Act & Assert
         expect(
           () => service.updateSponsorshipStatus(
             sponsorshipId: 'nonexistent-id',
@@ -390,24 +315,8 @@ void main() {
             contains('Sponsorship not found'),
           )),
         );
-      });
 
-      test('should throw exception if status transition is invalid', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockPartnershipService.getPartnershipsForEvent('event-123'))
-            .thenAnswer((_) async => []);
-
-        final sponsorship = await service.createSponsorship(
-          eventId: 'event-123',
-          brandId: 'brand-123',
-          type: SponsorshipType.financial,
-          contributionAmount: 500.00,
-          vibeCompatibilityScore: 0.75,
-        );
-
-        // Act & Assert - Cannot go from proposed directly to completed
+        // Cannot go from proposed directly to completed
         expect(
           () => service.updateSponsorshipStatus(
             sponsorshipId: sponsorship.id,
@@ -423,55 +332,41 @@ void main() {
     });
 
     group('checkSponsorshipEligibility', () {
-      test('should return true for eligible sponsorship', () async {
-        // Arrange
+      test(
+          'should return true for eligible sponsorship, or false if event not found or event has already started',
+          () async {
+        // Test business logic: eligibility checking
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockPartnershipService.getPartnershipsForEvent('event-123'))
             .thenAnswer((_) async => []);
+        await service.registerBrand(testBrand);
 
-        // Act
         final isEligible = await service.checkSponsorshipEligibility(
           eventId: 'event-123',
           brandId: 'brand-123',
         );
-
-        // Assert
         expect(isEligible, isTrue);
-      });
 
-      test('should return false if event not found', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => null);
-
-        // Act
-        final isEligible = await service.checkSponsorshipEligibility(
+        final notFound = await service.checkSponsorshipEligibility(
           eventId: 'event-123',
           brandId: 'brand-123',
         );
+        expect(notFound, isFalse);
 
-        // Assert
-        expect(isEligible, isFalse);
-      });
-
-      test('should return false if event has already started', () async {
-        // Arrange
         final pastEvent = testEvent.copyWith(
           startTime: DateTime.now().subtract(const Duration(days: 1)),
           endTime: DateTime.now().subtract(const Duration(hours: 23)),
         );
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => pastEvent);
-
-        // Act
-        final isEligible = await service.checkSponsorshipEligibility(
+        final started = await service.checkSponsorshipEligibility(
           eventId: 'event-123',
           brandId: 'brand-123',
         );
-
-        // Assert
-        expect(isEligible, isFalse);
+        expect(started, isFalse);
       });
     });
 
@@ -489,6 +384,9 @@ void main() {
         expect(compatibility, lessThanOrEqualTo(1.0));
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

@@ -1,0 +1,207 @@
+🚀 Running all 16 aggressive marketing scenarios
+
+🚀 Starting execution of 16 aggressive marketing scenarios
+📁 Results will be saved to: /Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing
+⚠️  These scenarios test SPOTS against AGGRESSIVE/UNTRADITIONAL marketing techniques
+
+[1/16] ================================================================================
+Running Aggressive Scenario: Aggressive Data Harvesting - Extensive User Profiling
+ID: aggressive_data_harvesting
+Description: Test against competitors who collect extensive user data (purchases, browsing, location, social media)
+================================================================================
+⚠️  Aggressive Techniques: Aggressive Data Collection
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario aggressive_data_harvesting: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[2/16] ================================================================================
+Running Aggressive Scenario: Data Reselling - Third-Party User Profiles
+ID: aggressive_data_reselling
+Description: Test against competitors who buy user data from data brokers and third-party sources
+================================================================================
+⚠️  Aggressive Techniques: Aggressive Data Collection, Micro-Targeting
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario aggressive_data_reselling: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[3/16] ================================================================================
+Running Aggressive Scenario: Privacy-Invasive Tracking - Cross-Platform Cookies
+ID: privacy_invasive_tracking
+Description: Test against competitors using extensive cookie tracking, fingerprinting, and cross-site tracking
+================================================================================
+⚠️  Aggressive Techniques: Privacy-Invasive Tracking, Cross-Platform Tracking
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario privacy_invasive_tracking: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[4/16] ================================================================================
+Running Aggressive Scenario: Aggressive Location Tracking - Always-On GPS
+ID: privacy_invasive_location
+Description: Test against competitors using always-on location tracking and geofencing
+================================================================================
+⚠️  Aggressive Techniques: Privacy-Invasive Tracking
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario privacy_invasive_location: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[5/16] ================================================================================
+Running Aggressive Scenario: Behavioral Manipulation - Dark Patterns & Psychological Tricks
+ID: behavioral_manipulation
+Description: Test against competitors using dark patterns, FOMO, scarcity, and psychological manipulation
+================================================================================
+⚠️  Aggressive Techniques: Behavioral Manipulation, Psychological Manipulation, Dark Patterns
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario behavioral_manipulation: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[6/16] ================================================================================
+Running Aggressive Scenario: FOMO & Scarcity Manipulation - Fake Urgency
+ID: fomo_scarcity
+Description: Test against competitors using fake scarcity, countdown timers, and FOMO tactics
+================================================================================
+⚠️  Aggressive Techniques: Psychological Manipulation
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario fomo_scarcity: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[7/16] ================================================================================
+Running Aggressive Scenario: Micro-Targeting - Extensive User Data Profiles
+ID: micro_targeting_extensive
+Description: Test against competitors using micro-targeting with extensive user data (100+ data points per user)
+================================================================================
+⚠️  Aggressive Techniques: Aggressive Data Collection, Micro-Targeting
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario micro_targeting_extensive: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[8/16] ================================================================================
+Running Aggressive Scenario: AI-Powered Micro-Targeting - Machine Learning Profiling
+ID: micro_targeting_ai
+Description: Test against competitors using AI/ML to create detailed user profiles from all available data
+================================================================================
+⚠️  Aggressive Techniques: Aggressive Data Collection, Privacy-Invasive Tracking, Micro-Targeting
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario micro_targeting_ai: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[9/16] ================================================================================
+Running Aggressive Scenario: Cross-Platform Tracking - User Behavior Across All Apps
+ID: cross_platform_tracking
+Description: Test against competitors tracking users across all platforms, apps, and services
+================================================================================
+⚠️  Aggressive Techniques: Privacy-Invasive Tracking, Cross-Platform Tracking
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario cross_platform_tracking: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[10/16] ================================================================================
+Running Aggressive Scenario: Device Fingerprinting - Unique Device Identification
+ID: device_fingerprinting
+Description: Test against competitors using device fingerprinting to track users without cookies
+================================================================================
+⚠️  Aggressive Techniques: Privacy-Invasive Tracking, Cross-Platform Tracking
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario device_fingerprinting: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[11/16] ================================================================================
+Running Aggressive Scenario: Social Proof Manipulation - Fake Reviews & Testimonials
+ID: psychological_social_proof
+Description: Test against competitors using fake social proof, reviews, and testimonials
+================================================================================
+⚠️  Aggressive Techniques: Psychological Manipulation
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario psychological_social_proof: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[12/16] ================================================================================
+Running Aggressive Scenario: Price Anchoring - Manipulative Pricing Strategies
+ID: psychological_anchoring
+Description: Test against competitors using price anchoring, fake discounts, and manipulative pricing
+================================================================================
+⚠️  Aggressive Techniques: Psychological Manipulation
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario psychological_anchoring: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[13/16] ================================================================================
+Running Aggressive Scenario: Dark Patterns - Deceptive UI & Hidden Costs
+ID: dark_patterns_ui
+Description: Test against competitors using deceptive UI, hidden costs, and confusing interfaces
+================================================================================
+⚠️  Aggressive Techniques: Behavioral Manipulation, Dark Patterns
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario dark_patterns_ui: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[14/16] ================================================================================
+Running Aggressive Scenario: Consent Dark Patterns - Forced Opt-Ins
+ID: dark_patterns_consent
+Description: Test against competitors using dark patterns to force consent and data sharing
+================================================================================
+⚠️  Aggressive Techniques: Privacy-Invasive Tracking, Dark Patterns
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario dark_patterns_consent: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[15/16] ================================================================================
+Running Aggressive Scenario: Perfect Storm - All Aggressive Techniques Combined
+ID: aggressive_perfect_storm
+Description: Test against competitors using ALL aggressive techniques: data harvesting, tracking, manipulation, dark patterns
+================================================================================
+⚠️  Aggressive Techniques: Aggressive Data Collection, Privacy-Invasive Tracking, Behavioral Manipulation, Micro-Targeting, Cross-Platform Tracking, Psychological Manipulation, Dark Patterns
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario aggressive_perfect_storm: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+[16/16] ================================================================================
+Running Aggressive Scenario: Aggressive Marketing Optimal - Maximum Invasion
+ID: aggressive_optimal
+Description: Test against competitors using maximum data collection, tracking, and manipulation
+================================================================================
+⚠️  Aggressive Techniques: Aggressive Data Collection, Privacy-Invasive Tracking, Behavioral Manipulation, Micro-Targeting, Cross-Platform Tracking, Psychological Manipulation, Dark Patterns
+
+Creating 1000 users for control group...
+Creating 1000 users for test group...
+Creating 500 events...
+❌ Error running aggressive scenario aggressive_optimal: 'ScenarioConfig' object has no attribute 'last_minute_event'
+
+
+================================================================================
+Aggressive Marketing Scenarios Execution Complete
+================================================================================
+Total scenarios run: 16
+Total execution time: 1.02 seconds
+Summary: /Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/AGGRESSIVE_SCENARIOS_SUMMARY.md
+Results: /Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/aggressive_results.json
+

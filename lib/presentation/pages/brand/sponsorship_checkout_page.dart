@@ -8,7 +8,7 @@ import 'package:spots/core/services/payment_service.dart';
 // import 'package:spots/core/services/sponsorship_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
 import 'package:spots/presentation/widgets/payment/payment_form_widget.dart';
 import 'package:spots/presentation/widgets/brand/product_contribution_widget.dart';
 import 'package:spots/presentation/widgets/brand/sponsorship_revenue_split_display.dart';
@@ -606,7 +606,8 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
     });
     
     try {
-      final userId = context.read<AuthBloc>().state.user?.id;
+      final authState = context.read<AuthBloc>().state;
+      final userId = authState is Authenticated ? authState.user.id : null;
       if (userId == null) {
         throw Exception('User not authenticated');
       }

@@ -3,9 +3,10 @@ import 'package:mockito/mockito.dart';
 import 'package:spots/core/services/community_validation_service.dart';
 import 'package:spots/core/models/community_validation.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart';
 
 import '../../mocks/mock_dependencies.mocks.dart';
+import '../../mocks/mock_storage_service.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/platform_channel_helper.dart';
 
@@ -15,7 +16,7 @@ void main() {
   group('CommunityValidationService Tests', () {
     late CommunityValidationService service;
     late MockStorageService mockStorageService;
-    late SharedPreferences prefs;
+    late SharedPreferencesCompat prefs;
 
     setUpAll(() async {
       real_prefs.SharedPreferences.setMockInitialValues({});
@@ -24,7 +25,9 @@ void main() {
 
     setUp(() async {
       mockStorageService = MockStorageService();
-      prefs = await real_prefs.SharedPreferences.getInstance();
+      final mockStorage = MockGetStorage.getInstance();
+      MockGetStorage.reset();
+      prefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
 
       service = CommunityValidationService(
         storageService: mockStorageService,
@@ -33,7 +36,7 @@ void main() {
     });
 
     tearDown(() async {
-      await prefs.clear();
+      MockGetStorage.reset();
     });
 
     tearDownAll(() async {

@@ -6,9 +6,10 @@ import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/fraud_score.dart';
 import 'package:spots/core/models/fraud_recommendation.dart';
-import 'package:spots/core/models/unified_user.dart';
+import '../../fixtures/model_factories.dart';
 
 import 'fraud_detection_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([ExpertiseEventService])
 void main() {
@@ -22,19 +23,22 @@ void main() {
       mockEventService = MockExpertiseEventService();
       service = FraudDetectionService(eventService: mockEventService);
 
+      final host = ModelFactories.createTestUser(
+        id: 'host-123',
+        displayName: 'Test Host',
+      );
+      
       testEvent = ExpertiseEvent(
         id: 'event-123',
-        host: UnifiedUser(
-          id: 'host-123',
-          name: 'Test Host',
-        ),
+        host: host,
         title: 'Test Event',
         description: 'Test Description',
+        category: 'Workshops',
+        eventType: ExpertiseEventType.workshop,
         startTime: DateTime.now().add(const Duration(days: 5)),
         endTime: DateTime.now().add(const Duration(days: 5, hours: 2)),
         maxAttendees: 50,
         attendeeCount: 10,
-        eventType: ExpertiseEventType.workshop,
         isPaid: true,
         price: 25.00,
         location: 'Test Location',
@@ -130,6 +134,10 @@ void main() {
         // Scores requiring review should have high risk or multiple signals
       });
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }
 

@@ -5,7 +5,7 @@ import 'package:spots/core/models/brand_discovery.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
 import 'package:spots/presentation/widgets/brand/sponsorable_event_card.dart';
 import 'package:spots/presentation/pages/brand/sponsorship_checkout_page.dart';
 import 'package:get_it/get_it.dart';
@@ -57,7 +57,8 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
   }
   
   Future<void> _loadBrandAccount() async {
-    final userId = context.read<AuthBloc>().state.user?.id;
+    final authState = context.read<AuthBloc>().state;
+    final userId = authState is Authenticated ? authState.user.id : null;
     if (userId == null) return;
     
     // TODO: Get brand account when service available
@@ -298,12 +299,15 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              Text(
-                '🌟 Recommended for ${_currentBrand?.name ?? "Your Brand"}',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+              Expanded(
+                child: Text(
+                  '🌟 Recommended for ${_currentBrand?.name ?? "Your Brand"}',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 8),

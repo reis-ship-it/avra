@@ -9,26 +9,27 @@ import '../../helpers/widget_test_helpers.dart';
 
 void main() {
   group('FederatedLearningPage Tests', () {
-    testWidgets('Page renders correctly', (tester) async {
-      final widget = WidgetTestHelpers.createTestableWidget(
+    // Removed: Property assignment tests (Page can be instantiated - property check)
+    // Federated learning page tests focus on business logic (page rendering, widgets presence, scrollability, footer information), not property assignment
+
+    testWidgets(
+        'should render page correctly, show all 4 widgets are present, be scrollable, or display footer information',
+        (tester) async {
+      // Test business logic: Federated learning page display and functionality
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const FederatedLearningPage(),
       );
-      await tester.pumpWidget(widget);
+      await tester.pumpWidget(widget1);
       await tester.pump();
-
-      // Verify app bar (AppBar title is more specific)
       expect(find.byType(AppBar), findsOneWidget);
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
       expect((appBar.title as Text).data, equals('Federated Learning'));
-      
-      // Verify header (should be visible immediately)
       expect(find.text('Privacy-Preserving AI Training'), findsOneWidget);
-      expect(find.text('Help improve AI without sharing your data'), findsOneWidget);
-      
-      // Verify first section header (should be visible)
+      expect(find.text('Help improve AI without sharing your data'),
+          findsOneWidget);
       expect(find.text('Settings & Participation'), findsOneWidget);
-      
-      // Scroll to bring other sections into view (ListView builds lazily)
+      expect(find.byType(FederatedLearningSettingsSection), findsOneWidget);
+      expect(find.byType(ListView), findsOneWidget);
       final listView = find.byType(ListView);
       final activeRoundsText = find.text('Active Learning Rounds');
       for (var i = 0; i < 10 && activeRoundsText.evaluate().isEmpty; i++) {
@@ -36,91 +37,43 @@ void main() {
         await tester.pump();
       }
       expect(activeRoundsText, findsOneWidget);
-      
-      final privacyMetricsText = find.text('Your Privacy Metrics');
-      for (var i = 0; i < 5 && privacyMetricsText.evaluate().isEmpty; i++) {
-        await tester.drag(listView, const Offset(0, -200));
-        await tester.pump();
-      }
-      expect(privacyMetricsText, findsOneWidget);
-      
-      final historyText = find.text('Participation History');
-      for (var i = 0; i < 5 && historyText.evaluate().isEmpty; i++) {
-        await tester.drag(listView, const Offset(0, -200));
-        await tester.pump();
-      }
-      // Text may appear multiple times (section header + widget title), so just verify it exists
-      expect(historyText, findsWidgets);
-    });
-
-    testWidgets('All 4 widgets are present', (tester) async {
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const FederatedLearningPage(),
-      );
-      await tester.pumpWidget(widget);
-      await tester.pump();
-
-      // Verify first widget is rendered (should be visible immediately)
-      expect(find.byType(FederatedLearningSettingsSection), findsOneWidget);
-      
-      // Scroll to bring other widgets into view (ListView builds lazily)
-      final listView = find.byType(ListView);
       final statusWidget = find.byType(FederatedLearningStatusWidget);
       for (var i = 0; i < 10 && statusWidget.evaluate().isEmpty; i++) {
         await tester.drag(listView, const Offset(0, -200));
         await tester.pump();
       }
       expect(statusWidget, findsOneWidget);
-      
+      final privacyMetricsText = find.text('Your Privacy Metrics');
+      for (var i = 0; i < 5 && privacyMetricsText.evaluate().isEmpty; i++) {
+        await tester.drag(listView, const Offset(0, -200));
+        await tester.pump();
+      }
+      expect(privacyMetricsText, findsOneWidget);
       final privacyWidget = find.byType(PrivacyMetricsWidget);
       for (var i = 0; i < 5 && privacyWidget.evaluate().isEmpty; i++) {
         await tester.drag(listView, const Offset(0, -200));
         await tester.pump();
       }
       expect(privacyWidget, findsOneWidget);
-      
+      final historyText = find.text('Participation History');
+      for (var i = 0; i < 5 && historyText.evaluate().isEmpty; i++) {
+        await tester.drag(listView, const Offset(0, -200));
+        await tester.pump();
+      }
+      expect(historyText, findsWidgets);
       final historyWidget = find.byType(FederatedParticipationHistoryWidget);
       for (var i = 0; i < 5 && historyWidget.evaluate().isEmpty; i++) {
         await tester.drag(listView, const Offset(0, -200));
         await tester.pump();
       }
       expect(historyWidget, findsOneWidget);
-    });
-
-    testWidgets('Page is scrollable', (tester) async {
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const FederatedLearningPage(),
-      );
-      await tester.pumpWidget(widget);
-
-      // Verify ListView is present
-      expect(find.byType(ListView), findsOneWidget);
-    });
-
-    testWidgets('Footer information is displayed', (tester) async {
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const FederatedLearningPage(),
-      );
-      await tester.pumpWidget(widget);
-      await tester.pump();
-
-      // Scroll to footer (ListView builds lazily)
-      final listView = find.byType(ListView);
       final learnMoreFinder = find.text('Learn More');
       for (var i = 0; i < 15 && learnMoreFinder.evaluate().isEmpty; i++) {
         await tester.drag(listView, const Offset(0, -200));
         await tester.pump();
       }
-
-      // Verify footer content
       expect(learnMoreFinder, findsOneWidget);
       expect(find.text('Your data never leaves your device'), findsOneWidget);
     });
-
-    test('Page can be instantiated', () {
-      const page = FederatedLearningPage();
-      expect(page, isA<StatelessWidget>());
-    });
   });
 }
-

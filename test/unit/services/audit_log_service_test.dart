@@ -1,9 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/audit_log_service.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Tests for AuditLogService
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"
-/// 
+///
 /// These tests ensure all sensitive data access is logged
 /// and audit logs are stored securely
 void main() {
@@ -14,325 +15,140 @@ void main() {
       service = AuditLogService();
     });
 
+    // Removed: Property assignment tests
+    // Audit log tests focus on business logic (logging operations, error handling), not property assignment
+
     group('Data Access Logging', () {
-      test('should log data access', () async {
-        const userId = 'user-123';
-        const fieldName = 'email';
-        const action = 'read';
+      test(
+          'should log data access with metadata, different actions, and different fields without throwing',
+          () async {
+        // Test business logic: data access logging with various parameters
+        await service.logDataAccess('user-123', 'email', 'read');
 
-        // Should not throw
-        await service.logDataAccess(userId, fieldName, action);
+        final metadata = {'source': 'api', 'ipAddress': '192.168.1.1'};
+        await service.logDataAccess('user-456', 'email', 'read',
+            metadata: metadata);
 
-        // In actual implementation, would verify log was created
-        // For now, just verify no exception thrown
-        expect(true, isTrue);
-      });
+        await service.logDataAccess('user-789', 'phone', 'read');
+        await service.logDataAccess('user-789', 'phone', 'write');
+        await service.logDataAccess('user-789', 'phone', 'delete');
+        await service.logDataAccess('user-789', 'phone', 'update');
 
-      test('should include metadata in data access log', () async {
-        const userId = 'user-456';
-        const fieldName = 'email';
-        const action = 'read';
-        final metadata = {
-          'source': 'api',
-          'ipAddress': '192.168.1.1',
-        };
+        await service.logDataAccess('user-fields', 'email', 'read');
+        await service.logDataAccess('user-fields', 'phone', 'read');
+        await service.logDataAccess('user-fields', 'name', 'read');
+        await service.logDataAccess('user-fields', 'location', 'read');
 
-        // Should not throw
-        await service.logDataAccess(
-          userId,
-          fieldName,
-          action,
-          metadata: metadata,
-        );
-
-        expect(true, isTrue);
-      });
-
-      test('should log different actions', () async {
-        const userId = 'user-789';
-        const fieldName = 'phone';
-
-        // Test different actions
-        await service.logDataAccess(userId, fieldName, 'read');
-        await service.logDataAccess(userId, fieldName, 'write');
-        await service.logDataAccess(userId, fieldName, 'delete');
-        await service.logDataAccess(userId, fieldName, 'update');
-
-        expect(true, isTrue);
-      });
-
-      test('should log access to different fields', () async {
-        const userId = 'user-fields';
-
-        await service.logDataAccess(userId, 'email', 'read');
-        await service.logDataAccess(userId, 'phone', 'read');
-        await service.logDataAccess(userId, 'name', 'read');
-        await service.logDataAccess(userId, 'location', 'read');
-
-        expect(true, isTrue);
+        // Assert - All operations completed without throwing (test passes if we reach here)
       });
     });
 
     group('Security Event Logging', () {
-      test('should log security events', () async {
-        const eventType = 'authentication';
-        const userId = 'user-auth';
-        const status = 'success';
-
-        // Should not throw
-        await service.logSecurityEvent(eventType, userId, status);
-
-        expect(true, isTrue);
-      });
-
-      test('should log security events without userId', () async {
-        const eventType = 'authorization';
-        const status = 'blocked';
-
-        // Should not throw
-        await service.logSecurityEvent(eventType, null, status);
-
-        expect(true, isTrue);
-      });
-
-      test('should include metadata in security event log', () async {
-        const eventType = 'encryption';
-        const userId = 'user-encrypt';
-        const status = 'success';
-        final metadata = {
-          'algorithm': 'AES-256-GCM',
-          'fieldName': 'email',
-        };
-
-        // Should not throw
+      test(
+          'should log security events with or without userId, with metadata, different event types, and different statuses without throwing',
+          () async {
+        // Test business logic: security event logging with various parameters
         await service.logSecurityEvent(
-          eventType,
-          userId,
-          status,
-          metadata: metadata,
-        );
+            'authentication', 'user-auth', 'success');
+        await service.logSecurityEvent('authorization', null, 'blocked');
 
-        expect(true, isTrue);
-      });
+        final metadata = {'algorithm': 'AES-256-GCM', 'fieldName': 'email'};
+        await service.logSecurityEvent('encryption', 'user-encrypt', 'success',
+            metadata: metadata);
 
-      test('should log different event types', () async {
-        const userId = 'user-events';
+        await service.logSecurityEvent(
+            'authentication', 'user-events', 'success');
+        await service.logSecurityEvent(
+            'authorization', 'user-events', 'success');
+        await service.logSecurityEvent('encryption', 'user-events', 'success');
+        await service.logSecurityEvent('decryption', 'user-events', 'blocked');
 
-        await service.logSecurityEvent('authentication', userId, 'success');
-        await service.logSecurityEvent('authorization', userId, 'success');
-        await service.logSecurityEvent('encryption', userId, 'success');
-        await service.logSecurityEvent('decryption', userId, 'blocked');
+        await service.logSecurityEvent(
+            'authentication', 'user-status', 'success');
+        await service.logSecurityEvent(
+            'authentication', 'user-status', 'failure');
+        await service.logSecurityEvent(
+            'authentication', 'user-status', 'blocked');
 
-        expect(true, isTrue);
-      });
-
-      test('should log different statuses', () async {
-        const eventType = 'authentication';
-        const userId = 'user-status';
-
-        await service.logSecurityEvent(eventType, userId, 'success');
-        await service.logSecurityEvent(eventType, userId, 'failure');
-        await service.logSecurityEvent(eventType, userId, 'blocked');
-
-        expect(true, isTrue);
+        // Assert - All operations completed without throwing (test passes if we reach here)
       });
     });
 
     group('Data Modification Logging', () {
-      test('should log data modifications', () async {
-        const userId = 'user-modify';
-        const fieldName = 'email';
-        const oldValue = 'old@example.com';
-        const newValue = 'new@example.com';
-
-        // Should not throw
+      test(
+          'should log data modifications with masking, null values, metadata, and different sensitive fields without throwing',
+          () async {
+        // Test business logic: data modification logging with various parameters and edge cases
         await service.logDataModification(
-          userId,
-          fieldName,
-          oldValue,
-          newValue,
-        );
-
-        expect(true, isTrue);
-      });
-
-      test('should mask sensitive values in modification logs', () async {
-        const userId = 'user-mask';
-        const fieldName = 'email';
-        const oldValue = 'old@example.com';
-        const newValue = 'new@example.com';
-
-        // Should mask sensitive values (implementation detail)
-        await service.logDataModification(
-          userId,
-          fieldName,
-          oldValue,
-          newValue,
-        );
-
-        expect(true, isTrue);
-      });
-
-      test('should handle null values in modification logs', () async {
-        const userId = 'user-null';
-        const fieldName = 'phone';
-
-        // Should handle null oldValue or newValue
-        await service.logDataModification(
-          userId,
-          fieldName,
-          null,
-          '555-123-4567',
-        );
+            'user-modify', 'email', 'old@example.com', 'new@example.com');
 
         await service.logDataModification(
-          userId,
-          fieldName,
-          '555-123-4567',
-          null,
-        );
+            'user-mask', 'email', 'old@example.com', 'new@example.com');
 
-        expect(true, isTrue);
-      });
+        await service.logDataModification(
+            'user-null', 'phone', null, '555-123-4567');
+        await service.logDataModification(
+            'user-null', 'phone', '555-123-4567', null);
 
-      test('should include metadata in modification logs', () async {
-        const userId = 'user-metadata';
-        const fieldName = 'name';
         final metadata = {
           'source': 'user_profile_update',
-          'ipAddress': '192.168.1.1',
+          'ipAddress': '192.168.1.1'
         };
+        await service.logDataModification(
+            'user-metadata', 'name', 'Old Name', 'New Name',
+            metadata: metadata);
 
         await service.logDataModification(
-          userId,
-          fieldName,
-          'Old Name',
-          'New Name',
-          metadata: metadata,
-        );
-
-        expect(true, isTrue);
-      });
-
-      test('should mask different sensitive fields', () async {
-        const userId = 'user-mask-fields';
-
-        // Email should be masked
+            'user-mask-fields', 'email', 'old@example.com', 'new@example.com');
         await service.logDataModification(
-          userId,
-          'email',
-          'old@example.com',
-          'new@example.com',
-        );
-
-        // Phone should be masked
+            'user-mask-fields', 'phone', '555-123-4567', '555-987-6543');
         await service.logDataModification(
-          userId,
-          'phone',
-          '555-123-4567',
-          '555-987-6543',
-        );
+            'user-mask-fields', 'ssn', '123-45-6789', '987-65-4321');
 
-        // SSN should be masked
-        await service.logDataModification(
-          userId,
-          'ssn',
-          '123-45-6789',
-          '987-65-4321',
-        );
-
-        expect(true, isTrue);
+        // Assert - All operations completed without throwing (test passes if we reach here)
       });
     });
 
     group('Anonymization Logging', () {
-      test('should log anonymization events', () async {
-        const userId = 'user-anon';
-        const agentId = 'agent_123';
+      test(
+          'should log anonymization events with metadata and multiple anonymizations without throwing',
+          () async {
+        // Test business logic: anonymization logging with various parameters
+        await service.logAnonymization('user-anon', 'agent_123');
 
-        // Should not throw
-        await service.logAnonymization(userId, agentId);
-
-        expect(true, isTrue);
-      });
-
-      test('should include metadata in anonymization logs', () async {
-        const userId = 'user-anon-meta';
-        const agentId = 'agent_456';
         final metadata = {
           'source': 'ai2ai_network',
           'timestamp': DateTime.now().toIso8601String(),
         };
+        await service.logAnonymization('user-anon-meta', 'agent_456',
+            metadata: metadata);
 
-        await service.logAnonymization(
-          userId,
-          agentId,
-          metadata: metadata,
-        );
+        await service.logAnonymization('user-anon-1', 'agent_111');
+        await service.logAnonymization('user-anon-2', 'agent_222');
 
-        expect(true, isTrue);
-      });
-
-      test('should log multiple anonymizations', () async {
-        const userId1 = 'user-anon-1';
-        const userId2 = 'user-anon-2';
-        const agentId1 = 'agent_111';
-        const agentId2 = 'agent_222';
-
-        await service.logAnonymization(userId1, agentId1);
-        await service.logAnonymization(userId2, agentId2);
-
-        expect(true, isTrue);
+        // Assert - All operations completed without throwing (test passes if we reach here)
       });
     });
 
     group('Error Handling', () {
-      test('should handle errors gracefully in data access logging', () async {
-        const userId = 'user-error';
-        const fieldName = 'email';
-        const action = 'read';
-
-        // Should not throw even if logging fails
-        await service.logDataAccess(userId, fieldName, action);
-
-        expect(true, isTrue);
-      });
-
-      test('should handle errors gracefully in security event logging', () async {
-        const eventType = 'authentication';
-        const userId = 'user-error';
-        const status = 'success';
-
-        // Should not throw even if logging fails
-        await service.logSecurityEvent(eventType, userId, status);
-
-        expect(true, isTrue);
-      });
-
-      test('should handle errors gracefully in data modification logging', () async {
-        const userId = 'user-error';
-        const fieldName = 'email';
-
-        // Should not throw even if logging fails
+      test(
+          'should handle errors gracefully for all logging methods without throwing',
+          () async {
+        // Test business logic: error handling for all logging operations
+        await service.logDataAccess('user-error', 'email', 'read');
+        await service.logSecurityEvent(
+            'authentication', 'user-error', 'success');
         await service.logDataModification(
-          userId,
-          fieldName,
-          'old@example.com',
-          'new@example.com',
-        );
+            'user-error', 'email', 'old@example.com', 'new@example.com');
+        await service.logAnonymization('user-error', 'agent_error');
 
-        expect(true, isTrue);
+        // Assert - All operations completed without throwing, even if logging fails internally
+        // (test passes if we reach here)
       });
+    });
 
-      test('should handle errors gracefully in anonymization logging', () async {
-        const userId = 'user-error';
-        const agentId = 'agent_error';
-
-        // Should not throw even if logging fails
-        await service.logAnonymization(userId, agentId);
-
-        expect(true, isTrue);
-      });
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }

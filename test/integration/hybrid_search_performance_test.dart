@@ -28,6 +28,9 @@ void main() {
       mockCacheService = MockSearchCacheService();
       mockSuggestionsService = MockAISearchSuggestionsService();
 
+      // Default mock for getCacheStatistics (used in all search operations)
+      when(mockCacheService.getCacheStatistics()).thenReturn({});
+
       bloc = HybridSearchBloc(
         hybridSearchUseCase: mockUseCase,
         cacheService: mockCacheService,
@@ -46,9 +49,12 @@ void main() {
 
         when(mockCacheService.getCachedResult(
           query: 'coffee',
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: 50,
           includeExternal: true,
-        )).thenReturn(Future.value(testResult));
+        )).thenAnswer((_) async => testResult);
+        when(mockCacheService.getCacheStatistics()).thenReturn({});
 
         // Act
         bloc.add(SearchHybridSpots(query: 'coffee'));
@@ -57,6 +63,8 @@ void main() {
         // Assert
         verify(mockCacheService.getCachedResult(
           query: 'coffee',
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: 50,
           includeExternal: true,
         )).called(1);
@@ -72,14 +80,18 @@ void main() {
 
         when(mockCacheService.getCachedResult(
           query: anyNamed('query'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: anyNamed('maxResults'),
           includeExternal: anyNamed('includeExternal'),
-        )).thenReturn(Future.value(null));
+        )).thenAnswer((_) async => null);
         when(mockUseCase.searchSpots(
           query: 'restaurant',
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: 50,
           includeExternal: true,
-        )).thenReturn(Future.value(testResult));
+        )).thenAnswer((_) async => testResult);
 
         // Act
         bloc.add(SearchHybridSpots(query: 'restaurant'));
@@ -88,6 +100,8 @@ void main() {
         // Assert
         verify(mockCacheService.cacheResult(
           query: 'restaurant',
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           result: testResult,
           maxResults: 50,
           includeExternal: true,
@@ -116,8 +130,8 @@ void main() {
       test('should warm up cache with popular searches', () async {
         // Arrange
         when(mockCacheService.prefetchPopularSearches(
-          searchFunction: any,
-        )).thenReturn(Future.value());
+          searchFunction: anyNamed('searchFunction'),
+        )).thenAnswer((_) async => {});
 
         // Act
         bloc.add(WarmupCache());
@@ -125,14 +139,14 @@ void main() {
 
         // Assert
         verify(mockCacheService.prefetchPopularSearches(
-          searchFunction: any,
+          searchFunction: anyNamed('searchFunction'),
         )).called(1);
       });
 
       test('should clear cache when requested', () async {
         // Arrange
         when(mockCacheService.clearCache(preserveOffline: true))
-            .thenReturn(Future.value());
+            .thenAnswer((_) async => {});
         when(mockSuggestionsService.clearLearningData()).thenReturn(null);
 
         // Act
@@ -166,9 +180,10 @@ void main() {
 
         when(mockSuggestionsService.generateSuggestions(
           query: 'cof',
-          userLocation: any,
-          communityTrends: any,
-        )).thenReturn(Future.value(mockSuggestions));
+          userLocation: anyNamed('userLocation'),
+          communityTrends: anyNamed('communityTrends'),
+        )).thenAnswer((_) async => mockSuggestions);
+        when(mockSuggestionsService.getSearchPatterns()).thenReturn({});
 
         // Act
         bloc.add(GetSearchSuggestions(query: 'cof'));
@@ -187,14 +202,18 @@ void main() {
 
         when(mockCacheService.getCachedResult(
           query: anyNamed('query'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: anyNamed('maxResults'),
           includeExternal: anyNamed('includeExternal'),
-        )).thenReturn(Future.value(null));
+        )).thenAnswer((_) async => null);
         when(mockUseCase.searchSpots(
           query: 'pizza',
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: 50,
           includeExternal: true,
-        )).thenReturn(Future.value(testResult));
+        )).thenAnswer((_) async => testResult);
 
         // Act
         bloc.add(SearchHybridSpots(query: 'pizza'));
@@ -242,14 +261,18 @@ void main() {
 
         when(mockCacheService.getCachedResult(
           query: anyNamed('query'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: anyNamed('maxResults'),
           includeExternal: anyNamed('includeExternal'),
-        )).thenReturn(Future.value(null));
+        )).thenAnswer((_) async => null);
         when(mockUseCase.searchSpots(
           query: 'test',
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: 50,
           includeExternal: true,
-        )).thenReturn(Future.value(testResult));
+        )).thenAnswer((_) async => testResult);
 
         // Act
         final stopwatch = Stopwatch()..start();
@@ -268,14 +291,18 @@ void main() {
 
         when(mockCacheService.getCachedResult(
           query: anyNamed('query'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: anyNamed('maxResults'),
           includeExternal: anyNamed('includeExternal'),
-        )).thenReturn(Future.value(null));
+        )).thenAnswer((_) async => null);
         when(mockUseCase.searchSpots(
           query: 'popular',
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: 100,
           includeExternal: true,
-        )).thenReturn(Future.value(largeResult));
+        )).thenAnswer((_) async => largeResult);
 
         // Act
         bloc.add(SearchHybridSpots(query: 'popular', maxResults: 100));
@@ -294,14 +321,18 @@ void main() {
 
         when(mockCacheService.getCachedResult(
           query: anyNamed('query'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: anyNamed('maxResults'),
           includeExternal: anyNamed('includeExternal'),
-        )).thenReturn(Future.value(null));
+        )).thenAnswer((_) async => null);
         when(mockUseCase.searchSpots(
           query: 'mixed',
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: 50,
           includeExternal: true,
-        )).thenReturn(Future.value(mixedResult));
+        )).thenAnswer((_) async => mixedResult);
 
         // Act
         bloc.add(SearchHybridSpots(query: 'mixed'));
@@ -330,19 +361,24 @@ void main() {
 
         when(mockCacheService.getCachedResult(
           query: anyNamed('query'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: anyNamed('maxResults'),
           includeExternal: anyNamed('includeExternal'),
-        )).thenReturn(Future.value(null));
+        )).thenAnswer((_) async => null);
         when(mockUseCase.searchSpots(
           query: anyNamed('query'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: anyNamed('maxResults'),
           includeExternal: anyNamed('includeExternal'),
-        )).thenReturn(Future.value(testResult));
+        )).thenAnswer((_) async => testResult);
         when(mockSuggestionsService.generateSuggestions(
           query: anyNamed('query'),
           userLocation: anyNamed('userLocation'),
           communityTrends: anyNamed('communityTrends'),
-        )).thenReturn(Future.value(suggestions));
+        )).thenAnswer((_) async => suggestions);
+        when(mockSuggestionsService.getSearchPatterns()).thenReturn({});
 
         // Act - Search, then get suggestions
         bloc.add(SearchHybridSpots(query: 'integration'));
@@ -359,6 +395,8 @@ void main() {
         )).called(1);
         verify(mockCacheService.cacheResult(
           query: anyNamed('query'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           result: anyNamed('result'),
           maxResults: anyNamed('maxResults'),
           includeExternal: anyNamed('includeExternal'),
@@ -371,9 +409,11 @@ void main() {
 
         when(mockCacheService.getCachedResult(
           query: anyNamed('query'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: anyNamed('maxResults'),
           includeExternal: anyNamed('includeExternal'),
-        )).thenReturn(Future.value(cachedResult));
+        )).thenAnswer((_) async => cachedResult);
 
         // Act
         bloc.add(SearchHybridSpots(query: 'offline'));
@@ -397,6 +437,8 @@ void main() {
         )).thenThrow(Exception('Cache error'));
         when(mockUseCase.searchSpots(
           query: anyNamed('query'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
           maxResults: anyNamed('maxResults'),
           includeExternal: anyNamed('includeExternal'),
         )).thenThrow(Exception('Search error'));

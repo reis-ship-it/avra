@@ -5,9 +5,9 @@ import '../../../fixtures/model_factories.dart';
 import '../../../helpers/integration_test_helpers.dart';
 
 /// Widget tests for CommunityEventWidget
-/// 
+///
 /// Agent 2: Phase 7, Section 51-52 - Widget Test Coverage
-/// 
+///
 /// Tests:
 /// - Widget rendering
 /// - Event display
@@ -16,138 +16,86 @@ import '../../../helpers/integration_test_helpers.dart';
 /// - Upgrade eligibility
 void main() {
   group('CommunityEventWidget Widget Tests', () {
-    testWidgets('displays community event with title', (WidgetTester tester) async {
-      // Arrange
-      final host = ModelFactories.createTestUser();
-      final event = IntegrationTestHelpers.createTestEvent(
-        host: host,
+    // Removed: Property assignment tests
+    // Community event widget tests focus on business logic (event display, registration, user interactions), not property assignment
+
+    testWidgets(
+        'should display community event with title, display community badge, display register button when user can register, display upgrade eligibility indicator, call onTap callback when card is tapped, or display event details',
+        (WidgetTester tester) async {
+      // Test business logic: community event widget display and interactions
+      final host1 = ModelFactories.createTestUser();
+      final event1 = IntegrationTestHelpers.createTestEvent(
+        host: host1,
         title: 'Community Coffee Meetup',
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: CommunityEventWidget(
-          event: event,
+          event: event1,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(CommunityEventWidget), findsOneWidget);
       expect(find.text('Community Coffee Meetup'), findsOneWidget);
-    });
-
-    testWidgets('displays community badge', (WidgetTester tester) async {
-      // Arrange
-      final host = ModelFactories.createTestUser();
-      final event = IntegrationTestHelpers.createTestEvent(host: host);
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: CommunityEventWidget(
-          event: event,
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
-      expect(find.byType(CommunityEventWidget), findsOneWidget);
       expect(find.text('Community'), findsOneWidget);
-    });
 
-    testWidgets('displays register button when user can register', (WidgetTester tester) async {
-      // Arrange
       final user = WidgetTestHelpers.createTestUser();
-      final host = ModelFactories.createTestUser();
-      final event = IntegrationTestHelpers.createTestEvent(
-        host: host,
+      final host2 = ModelFactories.createTestUser();
+      final event2 = IntegrationTestHelpers.createTestEvent(
+        host: host2,
         maxAttendees: 10,
         attendeeIds: [],
       );
-
       bool registerCalled = false;
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: CommunityEventWidget(
-          event: event,
+          event: event2,
           currentUser: user,
           onRegister: () => registerCalled = true,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(CommunityEventWidget), findsOneWidget);
       expect(find.text('Join Event'), findsOneWidget);
-    });
 
-    testWidgets('displays upgrade eligibility indicator', (WidgetTester tester) async {
-      // Arrange
-      final host = ModelFactories.createTestUser();
-      final event = IntegrationTestHelpers.createTestEvent(host: host);
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final host3 = ModelFactories.createTestUser();
+      final event3 = IntegrationTestHelpers.createTestEvent(host: host3);
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: CommunityEventWidget(
-          event: event,
+          event: event3,
           isEligibleForUpgrade: true,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.byType(CommunityEventWidget), findsOneWidget);
       expect(find.textContaining('Eligible for upgrade'), findsOneWidget);
-    });
 
-    testWidgets('calls onTap callback when card is tapped', (WidgetTester tester) async {
-      // Arrange
       bool wasTapped = false;
-      final host = ModelFactories.createTestUser();
-      final event = IntegrationTestHelpers.createTestEvent(host: host);
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final host4 = ModelFactories.createTestUser();
+      final event4 = IntegrationTestHelpers.createTestEvent(host: host4);
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: CommunityEventWidget(
-          event: event,
+          event: event4,
           onTap: () => wasTapped = true,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       await tester.tap(find.byType(CommunityEventWidget));
       await tester.pump();
-
-      // Assert
       expect(wasTapped, isTrue);
-    });
 
-    testWidgets('displays event details', (WidgetTester tester) async {
-      // Arrange
-      final host = ModelFactories.createTestUser();
-      final event = IntegrationTestHelpers.createTestEvent(
-        host: host,
+      final host5 = ModelFactories.createTestUser();
+      final event5 = IntegrationTestHelpers.createTestEvent(
+        host: host5,
         location: 'Brooklyn, NY',
         maxAttendees: 20,
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget5 = WidgetTestHelpers.createTestableWidget(
         child: CommunityEventWidget(
-          event: event,
+          event: event5,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
       expect(find.byType(CommunityEventWidget), findsOneWidget);
-      // Event details should be visible
     });
   });
 }
-

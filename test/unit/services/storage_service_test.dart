@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/storage_service.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Storage Service Tests
 /// Tests storage operations using get_storage backend
@@ -8,6 +9,11 @@ import 'package:spots/core/services/storage_service.dart';
 /// in unit tests. For full testing, use integration tests or mock GetStorage.
 /// This test file focuses on testing the API structure and singleton pattern.
 void main() {
+
+  setUpAll(() async {
+    await setupTestStorage();
+  });
+
   group('StorageService', () {
     group('Singleton Pattern', () {
       test('should return same instance', () {
@@ -52,6 +58,10 @@ void main() {
           
           // Note: Full testing requires platform channels (integration tests)
         });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
       });
     });
 

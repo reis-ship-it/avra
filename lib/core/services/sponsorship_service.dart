@@ -185,6 +185,28 @@ class SponsorshipService {
     }
   }
   
+  /// Get all sponsorships for a brand
+  /// 
+  /// **Parameters:**
+  /// - `brandId`: Brand ID
+  /// 
+  /// **Returns:**
+  /// List of Sponsorship records for the brand
+  Future<List<Sponsorship>> getSponsorshipsForBrand(String brandId) async {
+    try {
+      _logger.info('Getting sponsorships for brand: $brandId', tag: _logName);
+      
+      final allSponsorships = await _getAllSponsorships();
+      return allSponsorships
+          .where((s) => s.brandId == brandId)
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } catch (e) {
+      _logger.error('Error getting sponsorships for brand', error: e, tag: _logName);
+      return [];
+    }
+  }
+  
   /// Get sponsorship by ID
   /// 
   /// **Parameters:**

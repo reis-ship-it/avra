@@ -4,6 +4,7 @@ import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
+import 'package:spots/presentation/widgets/common/success_animation.dart';
 import 'package:geolocator/geolocator.dart';
 
 class CreateSpotPage extends StatefulWidget {
@@ -115,7 +116,8 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
       if (_latitude == null || _longitude == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Please enable location services to create a spot'),
+            content:
+                const Text('Please enable location services to create a spot'),
             backgroundColor: AppTheme.errorColor,
           ),
         );
@@ -140,14 +142,20 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
 
       context.read<SpotsBloc>().add(CreateSpot(spot));
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Spot created successfully!'),
-          backgroundColor: AppTheme.successColor,
-        ),
+      // Show success animation (it will auto-dismiss)
+      SuccessAnimation.show(
+        context,
+        message: 'Spot created successfully!',
+        icon: Icons.check_circle,
+        duration: const Duration(milliseconds: 1500),
       );
 
-      Navigator.pop(context);
+      // Pop the page after a brief delay to let animation show
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      });
     }
   }
 
@@ -257,8 +265,9 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                             ),
                           ),
                           const Spacer(),
-                      if (_latitude != null && _longitude != null)
-                            Icon(Icons.check_circle, color: AppTheme.successColor),
+                          if (_latitude != null && _longitude != null)
+                            Icon(Icons.check_circle,
+                                color: AppTheme.successColor),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -277,13 +286,13 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                       else if (_locationError != null)
                         Row(
                           children: [
-                             Icon(Icons.error,
-                                 color: AppTheme.errorColor, size: 16),
+                            Icon(Icons.error,
+                                color: AppTheme.errorColor, size: 16),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 _locationError!,
-                                 style: TextStyle(color: AppTheme.errorColor),
+                                style: TextStyle(color: AppTheme.errorColor),
                               ),
                             ),
                           ],
@@ -319,7 +328,8 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
               ElevatedButton(
                 onPressed: _saveSpot,
                 // Use global ElevatedButtonTheme; keep padding only
-                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16)),
                 child: const Text(
                   'Create Spot',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

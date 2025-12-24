@@ -1,12 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/cancellation.dart';
+import 'package:spots/core/models/cancellation_initiator.dart';
 import 'package:spots/core/models/refund_status.dart';
 import 'package:spots/core/models/refund_distribution.dart';
 import 'package:spots/core/models/refund_policy.dart';
 import 'package:spots/core/models/payment.dart';
 import 'package:spots/core/models/payment_status.dart';
 import 'package:spots/core/models/expertise_event.dart';
-import '../../fixtures/model_factories.dart';
+import '../fixtures/model_factories.dart';
 
 /// Integration tests for cancellation and refund flow
 /// 
@@ -88,7 +89,7 @@ void main() {
 
       expect(cancellation.initiator, equals(CancellationInitiator.host));
       expect(cancellation.isFullEventCancellation, isTrue);
-      expect(cancellation.isHostInitiated, isTrue);
+        expect(cancellation.initiator.isHostInitiated, isTrue);
     });
 
     test('emergency cancellation is force majeure', () {

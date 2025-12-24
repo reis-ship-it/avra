@@ -1,5 +1,5 @@
 /// Tests for AI2AI Connection View Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1: Critical UI/UX
 /// Section 1.2: Device Discovery UI
 
@@ -11,18 +11,23 @@ import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:spots/presentation/widgets/network/ai2ai_connection_view_widget.dart';
 
 void main() {
-  setUpAll(() {
-  });
+  setUpAll(() {});
 
   tearDown(() {
     GetIt.instance.reset();
   });
 
   group('AI2AIConnectionViewWidget', () {
-    testWidgets('displays empty state when no connections', (tester) async {
-      final mockOrchestrator = MockVibeConnectionOrchestrator();
-      GetIt.instance.registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator);
+    // Removed: Property assignment tests
+    // AI2AI connection view widget tests focus on business logic (empty state, active connections, compatibility display, human connection button, compatibility explanation, fleeting connection notice, callbacks), not property assignment
 
+    testWidgets(
+        'should display empty state when no connections, display active connections, show compatibility bar and metrics, show human connection button at 100% compatibility, hide human connection button when below 100%, display compatibility explanation, show fleeting connection notice, or call callback when human connection enabled',
+        (tester) async {
+      // Test business logic: AI2AI connection view widget display and interactions
+      final mockOrchestrator1 = MockVibeConnectionOrchestrator();
+      GetIt.instance
+          .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator1);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -30,21 +35,16 @@ void main() {
           ),
         ),
       );
-
       await tester.pumpAndSettle();
-
       expect(find.text('No Active AI Connections'), findsOneWidget);
       expect(find.textContaining('Enable device discovery'), findsOneWidget);
-    });
 
-    testWidgets('displays active connections', (tester) async {
-      final mockOrchestrator = MockVibeConnectionOrchestrator();
-      mockOrchestrator.setConnections([
+      final mockOrchestrator2 = MockVibeConnectionOrchestrator();
+      mockOrchestrator2.setConnections([
         _createMockConnection(vibeAlignment: 0.85),
       ]);
-      
-      GetIt.instance.registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator);
-
+      GetIt.instance
+          .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator2);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -52,26 +52,21 @@ void main() {
           ),
         ),
       );
-
       await tester.pumpAndSettle();
-
       expect(find.text('AI Connection'), findsOneWidget);
       expect(find.text('85%'), findsOneWidget);
       expect(find.text('High Compatibility'), findsOneWidget);
-    });
 
-    testWidgets('shows compatibility bar and metrics', (tester) async {
-      final mockOrchestrator = MockVibeConnectionOrchestrator();
-      mockOrchestrator.setConnections([
+      final mockOrchestrator3 = MockVibeConnectionOrchestrator();
+      mockOrchestrator3.setConnections([
         _createMockConnection(
           vibeAlignment: 0.75,
           sharedInsights: 12,
           learningExchanges: 8,
         ),
       ]);
-      
-      GetIt.instance.registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator);
-
+      GetIt.instance
+          .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator3);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -79,22 +74,17 @@ void main() {
           ),
         ),
       );
-
       await tester.pumpAndSettle();
-
       expect(find.text('Compatibility Score'), findsOneWidget);
-      expect(find.text('12'), findsOneWidget); // Insights
-      expect(find.text('8'), findsOneWidget); // Exchanges
-    });
+      expect(find.text('12'), findsOneWidget);
+      expect(find.text('8'), findsOneWidget);
 
-    testWidgets('shows human connection button at 100% compatibility', (tester) async {
-      final mockOrchestrator = MockVibeConnectionOrchestrator();
-      mockOrchestrator.setConnections([
+      final mockOrchestrator4 = MockVibeConnectionOrchestrator();
+      mockOrchestrator4.setConnections([
         _createMockConnection(vibeAlignment: 1.0),
       ]);
-      
-      GetIt.instance.registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator);
-
+      GetIt.instance
+          .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator4);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -102,22 +92,17 @@ void main() {
           ),
         ),
       );
-
       await tester.pumpAndSettle();
-
       expect(find.text('Perfect Match!'), findsOneWidget);
       expect(find.text('Enable Human Conversation'), findsOneWidget);
       expect(find.text('100%'), findsOneWidget);
-    });
 
-    testWidgets('hides human connection button when below 100%', (tester) async {
-      final mockOrchestrator = MockVibeConnectionOrchestrator();
-      mockOrchestrator.setConnections([
+      final mockOrchestrator5 = MockVibeConnectionOrchestrator();
+      mockOrchestrator5.setConnections([
         _createMockConnection(vibeAlignment: 0.95),
       ]);
-      
-      GetIt.instance.registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator);
-
+      GetIt.instance
+          .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator5);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -125,21 +110,16 @@ void main() {
           ),
         ),
       );
-
       await tester.pumpAndSettle();
-
       expect(find.text('Enable Human Conversation'), findsNothing);
       expect(find.text('95%'), findsOneWidget);
-    });
 
-    testWidgets('displays compatibility explanation', (tester) async {
-      final mockOrchestrator = MockVibeConnectionOrchestrator();
-      mockOrchestrator.setConnections([
+      final mockOrchestrator6 = MockVibeConnectionOrchestrator();
+      mockOrchestrator6.setConnections([
         _createMockConnection(vibeAlignment: 0.8),
       ]);
-      
-      GetIt.instance.registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator);
-
+      GetIt.instance
+          .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator6);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -147,21 +127,16 @@ void main() {
           ),
         ),
       );
-
       await tester.pumpAndSettle();
-
       expect(find.text('Why They\'re Compatible'), findsOneWidget);
       expect(find.textContaining('vibe compatibility'), findsOneWidget);
-    });
 
-    testWidgets('shows fleeting connection notice', (tester) async {
-      final mockOrchestrator = MockVibeConnectionOrchestrator();
-      mockOrchestrator.setConnections([
+      final mockOrchestrator7 = MockVibeConnectionOrchestrator();
+      mockOrchestrator7.setConnections([
         _createMockConnection(vibeAlignment: 0.7),
       ]);
-      
-      GetIt.instance.registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator);
-
+      GetIt.instance
+          .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator7);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -169,23 +144,17 @@ void main() {
           ),
         ),
       );
-
       await tester.pumpAndSettle();
-
       expect(find.textContaining('Fleeting connection'), findsOneWidget);
       expect(find.textContaining('Managed by AI'), findsOneWidget);
-    });
 
-    testWidgets('calls callback when human connection enabled', (tester) async {
       ConnectionMetrics? enabledConnection;
-      
-      final mockOrchestrator = MockVibeConnectionOrchestrator();
-      mockOrchestrator.setConnections([
+      final mockOrchestrator8 = MockVibeConnectionOrchestrator();
+      mockOrchestrator8.setConnections([
         _createMockConnection(vibeAlignment: 1.0),
       ]);
-      
-      GetIt.instance.registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator);
-
+      GetIt.instance
+          .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator8);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -197,13 +166,9 @@ void main() {
           ),
         ),
       );
-
       await tester.pumpAndSettle();
-
-      // Tap enable button
       await tester.tap(find.text('Enable Human Conversation'));
       await tester.pumpAndSettle();
-
       expect(enabledConnection, isNotNull);
       expect(find.text('Human connection enabled!'), findsOneWidget);
     });
@@ -233,10 +198,11 @@ class MockVibeConnectionOrchestrator extends VibeConnectionOrchestrator {
   List<ConnectionMetrics> _connections = [];
 
   // Use minimal constructor bypassing complex dependencies
-  MockVibeConnectionOrchestrator() : super(
-    vibeAnalyzer: _createMockVibeAnalyzer(),
-    connectivity: _createMockConnectivity(),
-  );
+  MockVibeConnectionOrchestrator()
+      : super(
+          vibeAnalyzer: _createMockVibeAnalyzer(),
+          connectivity: _createMockConnectivity(),
+        );
 
   void setConnections(List<ConnectionMetrics> connections) {
     _connections = connections;
@@ -246,16 +212,15 @@ class MockVibeConnectionOrchestrator extends VibeConnectionOrchestrator {
   List<ConnectionMetrics> getActiveConnections() {
     return _connections;
   }
-  
+
   // Helper to create minimal mock dependencies
   static _createMockVibeAnalyzer() {
     // Return a minimal implementation or null-safe default
     // This is a simplified mock that avoids complex setup
     throw UnimplementedError('Mock setup simplified for testing');
   }
-  
+
   static _createMockConnectivity() {
     throw UnimplementedError('Mock setup simplified for testing');
   }
 }
-

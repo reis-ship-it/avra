@@ -1,34 +1,35 @@
 /// Action Error Dialog Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1: Action Execution UI & Integration
-/// 
+///
 /// Displays an error dialog when an AI action fails, showing:
 /// - Error message (user-friendly)
 /// - Optional retry mechanism
 /// - Intent context (what failed)
 /// - View Details button (shows technical details)
 /// - Actionable guidance and alternatives
-/// 
+///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/ai/action_models.dart';
+import 'package:spots/core/services/action_error_handler.dart';
 import 'package:spots/core/theme/colors.dart';
 
 /// Dialog widget that shows action failure details
 class ActionErrorDialog extends StatefulWidget {
   /// The error message to display
   final String error;
-  
+
   /// The intent that failed (optional)
   final ActionIntent? intent;
-  
+
   /// Callback when user dismisses the dialog
   final VoidCallback onDismiss;
-  
+
   /// Callback when user wants to retry (optional)
   final VoidCallback? onRetry;
-  
+
   /// Technical error details (optional, shown in View Details)
   final String? technicalDetails;
 
@@ -50,8 +51,17 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final userFriendlyError = _translateError(widget.error);
-    final suggestions = _getSuggestions(widget.error, widget.intent);
+    // Use ActionErrorHandler for error categorization and user-friendly messages
+    final errorString = widget.technicalDetails ?? widget.error;
+    final userFriendlyError = ActionErrorHandler.getUserFriendlyMessage(
+      errorString,
+      null, // ActionResult not available here
+      widget.intent,
+    );
+    final suggestions = _getSuggestions(errorString, widget.intent);
+
+    // Determine if retry should be available based on error category
+    final canRetry = ActionErrorHandler.canRetry(errorString, null);
 
     return AlertDialog(
       backgroundColor: AppColors.surface,
@@ -158,29 +168,29 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
                     ),
                     const SizedBox(height: 8),
                     ...suggestions.map((suggestion) => Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '• ',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              suggestion,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                '• ',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
-                            ),
+                              Expanded(
+                                child: Text(
+                                  suggestion,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    )),
+                        )),
                   ],
                 ),
               ),
@@ -227,7 +237,8 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
         ),
       ),
       actions: [
-        if (widget.technicalDetails != null || widget.error != userFriendlyError)
+        if (widget.technicalDetails != null ||
+            widget.error != userFriendlyError)
           TextButton(
             onPressed: () {
               setState(() {
@@ -255,7 +266,8 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
             ),
           ),
         ),
-        if (widget.onRetry != null)
+        // Show retry button if retry callback is provided and error is retryable
+        if (widget.onRetry != null && canRetry)
           ElevatedButton(
             onPressed: () {
               widget.onRetry!();
@@ -301,97 +313,82 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
     return Icons.help_outline;
   }
 
-  /// Translate technical errors to user-friendly messages
-  String _translateError(String error) {
-    final lowerError = error.toLowerCase();
-    
-    // Network errors
-    if (lowerError.contains('network') || lowerError.contains('connection') || lowerError.contains('timeout')) {
-      return 'Unable to connect to the server. Please check your internet connection and try again.';
-    }
-    
-    // Permission errors
-    if (lowerError.contains('permission') || lowerError.contains('unauthorized') || lowerError.contains('forbidden')) {
-      return 'You don\'t have permission to perform this action. Please check your account settings.';
-    }
-    
-    // Validation errors
-    if (lowerError.contains('invalid') || lowerError.contains('validation') || lowerError.contains('required')) {
-      return 'The information provided is invalid. Please check your input and try again.';
-    }
-    
-    // Not found errors
-    if (lowerError.contains('not found') || lowerError.contains('does not exist')) {
-      return 'The requested item could not be found. It may have been deleted or moved.';
-    }
-    
-    // Duplicate errors
-    if (lowerError.contains('duplicate') || lowerError.contains('already exists')) {
-      return 'This item already exists. Please use a different name or check your existing items.';
-    }
-    
-    // Storage errors
-    if (lowerError.contains('storage') || lowerError.contains('save') || lowerError.contains('database')) {
-      return 'Unable to save the data. Please try again or contact support if the problem persists.';
-    }
-    
-    // Generic fallback
-    return error;
-  }
+  // Removed _translateError - now using ActionErrorHandler.getUserFriendlyMessage
 
   /// Get actionable suggestions based on error and intent
+  /// Enhanced with ActionErrorHandler error categorization
   List<String> _getSuggestions(String error, ActionIntent? intent) {
     final suggestions = <String>[];
-    final lowerError = error.toLowerCase();
-    
-    // Network-related suggestions
-    if (lowerError.contains('network') || lowerError.contains('connection')) {
-      suggestions.add('Check your internet connection');
-      suggestions.add('Try again in a few moments');
-      if (intent != null) {
-        suggestions.add('You can try this action again later');
-      }
+    final errorCategory = ActionErrorHandler.categorizeError(error, null);
+
+    // Use error category for more accurate suggestions
+    switch (errorCategory) {
+      case ActionErrorCategory.network:
+        suggestions.add('Check your internet connection');
+        suggestions.add('Try again in a few moments');
+        if (intent != null) {
+          suggestions.add('You can try this action again later');
+        }
+        break;
+
+      case ActionErrorCategory.validation:
+        if (intent is CreateSpotIntent) {
+          suggestions.add('Make sure the spot name is not empty');
+          suggestions.add('Check that the location is valid');
+        } else if (intent is CreateListIntent) {
+          suggestions.add('Make sure the list name is not empty');
+          suggestions.add('Try using a different name');
+        } else {
+          suggestions.add('Please check your input and try again');
+        }
+        break;
+
+      case ActionErrorCategory.permission:
+        suggestions.add('Check your account permissions');
+        suggestions.add('You may need to grant additional permissions');
+        break;
+
+      case ActionErrorCategory.notFound:
+        if (intent is AddSpotToListIntent) {
+          suggestions.add('The spot or list may have been deleted');
+          suggestions
+              .add('Try creating a new list or selecting a different spot');
+        } else {
+          suggestions.add('The requested item could not be found');
+          suggestions.add('It may have been deleted or moved');
+        }
+        break;
+
+      case ActionErrorCategory.conflict:
+        if (intent is CreateSpotIntent) {
+          suggestions.add('A spot with this name may already exist');
+          suggestions.add('Try using a different name or location');
+        } else if (intent is CreateListIntent) {
+          suggestions.add('A list with this name may already exist');
+          suggestions.add('Try using a different name');
+        } else {
+          suggestions.add('This conflicts with existing data');
+          suggestions.add('Please check and use different information');
+        }
+        break;
+
+      case ActionErrorCategory.server:
+        suggestions.add('Server may be temporarily unavailable');
+        suggestions.add('Try again in a few moments');
+        break;
+
+      case ActionErrorCategory.unknown:
+        // Generic suggestions
+        if (intent != null) {
+          suggestions.add('Please try again');
+          if (ActionErrorHandler.canRetry(error, null) &&
+              widget.onRetry != null) {
+            suggestions.add('You can retry this action using the Retry button');
+          }
+        }
+        break;
     }
-    
-    // Validation-related suggestions
-    if (lowerError.contains('invalid') || lowerError.contains('validation')) {
-      if (intent is CreateSpotIntent) {
-        suggestions.add('Make sure the spot name is not empty');
-        suggestions.add('Check that the location is valid');
-      } else if (intent is CreateListIntent) {
-        suggestions.add('Make sure the list name is not empty');
-        suggestions.add('Try using a different name');
-      }
-    }
-    
-    // Not found suggestions
-    if (lowerError.contains('not found')) {
-      if (intent is AddSpotToListIntent) {
-        suggestions.add('The spot or list may have been deleted');
-        suggestions.add('Try creating a new list or selecting a different spot');
-      }
-    }
-    
-    // Duplicate suggestions
-    if (lowerError.contains('duplicate') || lowerError.contains('already exists')) {
-      if (intent is CreateSpotIntent) {
-        suggestions.add('A spot with this name may already exist');
-        suggestions.add('Try using a different name or location');
-      } else if (intent is CreateListIntent) {
-        suggestions.add('A list with this name may already exist');
-        suggestions.add('Try using a different name');
-      }
-    }
-    
-    // Generic suggestions if no specific ones
-    if (suggestions.isEmpty && intent != null) {
-      suggestions.add('Please try again');
-      if (widget.onRetry != null) {
-        suggestions.add('You can retry this action using the Retry button');
-      }
-    }
-    
+
     return suggestions;
   }
 }
-

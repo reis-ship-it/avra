@@ -47,6 +47,16 @@ void main() {
       mockBusinessService = MockBusinessService();
       mockEventService = MockExpertiseEventService();
 
+      // Mock getSponsorshipsForEvent to return empty list by default
+      // Tests can override this if they need specific sponsorships
+      when(mockSponsorshipService.getSponsorshipsForEvent(any))
+          .thenAnswer((_) async => []);
+      
+      // Mock getBrandById to return null by default
+      // Tests can override this if they need specific brands
+      when(mockSponsorshipService.getBrandById(any))
+          .thenAnswer((_) async => null);
+
       service = PartnershipProfileService(
         partnershipService: mockPartnershipService,
         sponsorshipService: mockSponsorshipService,

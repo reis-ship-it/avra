@@ -1,9 +1,18 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/personality_profile.dart';
 import 'package:spots/core/models/multi_path_expertise.dart';
+import 'package:spots/core/models/outcome_result.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/services/golden_expert_ai_influence_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/social_media_vibe_analyzer.dart';
+import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
+import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:spots/injection_container.dart' as di;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // Lightweight preferences abstraction to allow in-memory prefs during tests
 abstract class PreferencesLike {
@@ -18,7 +27,8 @@ class _SharedPreferencesAdapter implements PreferencesLike {
   @override
   String? getString(String key) => _prefs.getString(key);
   @override
-  Future<bool> setString(String key, String value) => _prefs.setString(key, value);
+  Future<bool> setString(String key, String value) =>
+      _prefs.setString(key, value);
   @override
   Future<bool> remove(String key) => _prefs.remove(key);
 }
@@ -28,9 +38,16 @@ class _InMemoryPreferences implements PreferencesLike {
   @override
   String? getString(String key) => _store[key];
   @override
-  Future<bool> setString(String key, String value) async { _store[key] = value; return true; }
+  Future<bool> setString(String key, String value) async {
+    _store[key] = value;
+    return true;
+  }
+
   @override
-  Future<bool> remove(String key) async { _store.remove(key); return true; }
+  Future<bool> remove(String key) async {
+    _store.remove(key);
+    return true;
+  }
 }
 
 /// OUR_GUTS.md: "AI personality that evolves and learns from user behavior while preserving privacy"
@@ -38,68 +55,514 @@ class _InMemoryPreferences implements PreferencesLike {
 /// Phase 2: Expanded from 8 to 12 dimensions for more precise learning
 class PersonalityLearning {
   static const String _logName = 'PersonalityLearning';
-  
+
   // Storage keys for personality data
   static const String _personalityProfileKey = 'personality_profile';
   static const String _learningHistoryKey = 'personality_learning_history';
   static const String _dimensionConfidenceKey = 'dimension_confidence';
-  
+
   final PreferencesLike _prefs;
   PersonalityProfile? _currentProfile;
   bool _isLearning = false;
-  
+
   // Golden expert influence service
   final GoldenExpertAIInfluenceService _goldenExpertService;
-  
+
   // Callback for personality evolution events
-  Function(String userId, PersonalityProfile evolvedProfile)? onPersonalityEvolved;
-  
+  Function(String userId, PersonalityProfile evolvedProfile)?
+      onPersonalityEvolved;
+
   // Zero-arg constructor for tests (in-memory prefs)
-  PersonalityLearning() 
+  PersonalityLearning()
       : _prefs = _InMemoryPreferences(),
         _goldenExpertService = GoldenExpertAIInfluenceService();
   // App constructor using real SharedPreferences
-  PersonalityLearning.withPrefs(SharedPreferences prefs) 
+  PersonalityLearning.withPrefs(SharedPreferences prefs)
       : _prefs = _SharedPreferencesAdapter(prefs),
         _goldenExpertService = GoldenExpertAIInfluenceService();
-  
+
   /// Set callback for personality evolution events
-  void setEvolutionCallback(Function(String userId, PersonalityProfile evolvedProfile) callback) {
+  void setEvolutionCallback(
+      Function(String userId, PersonalityProfile evolvedProfile) callback) {
     onPersonalityEvolved = callback;
   }
-  
+
   /// Initialize personality learning system for a user
-  Future<PersonalityProfile> initializePersonality(String userId) async {
-    developer.log('Initializing personality learning for user: $userId', name: _logName);
-    
+  ///
+  /// [password] is optional and only used for cloud sync operations.
+  /// If provided and cloud sync is enabled, will attempt to load profile from cloud.
+  Future<PersonalityProfile> initializePersonality(String userId,
+      {String? password}) async {
+    developer.log('Initializing personality learning for user: $userId',
+        name: _logName);
+
     try {
-      // Try to load existing personality profile
+      // Try to load existing personality profile from local storage
       final existingProfile = await _loadPersonalityProfile(userId);
       if (existingProfile != null) {
         _currentProfile = existingProfile;
-        developer.log('Loaded existing personality profile (generation ${existingProfile.evolutionGeneration})', name: _logName);
+        developer.log(
+            'Loaded existing personality profile (generation ${existingProfile.evolutionGeneration})',
+            name: _logName);
         return existingProfile;
       }
-      
+
+      // If not found locally and password provided, try loading from cloud
+      if (password != null && password.isNotEmpty) {
+        try {
+          // Import here to avoid circular dependency
+          final syncService = di.sl<PersonalitySyncService>();
+          final syncEnabled = await syncService.isCloudSyncEnabled(userId);
+
+          if (syncEnabled) {
+            developer.log(
+                'Cloud sync enabled, attempting to load from cloud...',
+                name: _logName);
+            final cloudProfile =
+                await syncService.loadFromCloud(userId, password);
+
+            if (cloudProfile != null) {
+              // Save cloud profile locally
+              await _savePersonalityProfile(cloudProfile);
+              _currentProfile = cloudProfile;
+              developer.log(
+                  'Loaded personality profile from cloud (generation ${cloudProfile.evolutionGeneration})',
+                  name: _logName);
+              return cloudProfile;
+            } else {
+              developer.log('No cloud profile found or decryption failed',
+                  name: _logName);
+            }
+          }
+        } catch (e) {
+          developer.log('Error loading from cloud: $e', name: _logName);
+          // Continue to create new profile if cloud load fails
+        }
+      }
+
       // Create new personality profile
       final newProfile = PersonalityProfile.initial(userId);
       await _savePersonalityProfile(newProfile);
       _currentProfile = newProfile;
-      
+
       developer.log('Created new personality profile for user', name: _logName);
       return newProfile;
     } catch (e) {
       developer.log('Error initializing personality: $e', name: _logName);
-      
+
       // Fallback to default profile
       final fallbackProfile = PersonalityProfile.initial(userId);
       _currentProfile = fallbackProfile;
       return fallbackProfile;
     }
   }
-  
+
+  /// Initialize personality from onboarding data including social media
+  /// Accepts userId from UI layer, converts to agentId internally for privacy protection
+  Future<PersonalityProfile> initializePersonalityFromOnboarding(
+    String userId, {
+    Map<String, dynamic>? onboardingData,
+    Map<String, dynamic>? socialMediaData,
+  }) async {
+    // Convert userId → agentId for privacy protection
+    final agentIdService = AgentIdService();
+    final agentId = await agentIdService.getUserAgentId(userId);
+    
+    developer.log(
+      'Initializing personality from onboarding for user: $userId (agentId: ${agentId.substring(0, 10)}...)',
+      name: _logName,
+    );
+
+    try {
+      // Check if profile already exists (using userId for now, will migrate to agentId in Phase 7.3)
+      final existingProfile = await _loadPersonalityProfile(userId);
+      if (existingProfile != null && existingProfile.evolutionGeneration > 1) {
+        // Profile already evolved, don't overwrite
+        developer.log(
+          'Profile already evolved (generation ${existingProfile.evolutionGeneration}), skipping initialization',
+          name: _logName,
+        );
+        return existingProfile;
+      }
+      
+      // Start with default initial profile
+      // TODO: Update PersonalityProfile.initial() to accept agentId after Phase 7.3 migration
+      final baseProfile = PersonalityProfile.initial(userId);
+      final initialDimensions = Map<String, double>.from(baseProfile.dimensions);
+      final initialConfidence = Map<String, double>.from(baseProfile.dimensionConfidence);
+      
+      // 1. Apply onboarding data (if provided)
+      if (onboardingData != null && onboardingData.isNotEmpty) {
+        final onboardingInsights = _mapOnboardingToDimensions(onboardingData);
+        
+        // Apply insights to dimensions (60% onboarding, 40% default)
+        onboardingInsights.forEach((dimension, value) {
+          final currentValue = initialDimensions[dimension] ?? 0.5;
+          initialDimensions[dimension] = 
+              (currentValue * 0.4 + value * 0.6).clamp(0.0, 1.0);
+          initialConfidence[dimension] = 0.3; // Some confidence from onboarding
+        });
+      }
+      
+      // 2. Apply social media insights (if provided)
+      if (socialMediaData != null && socialMediaData.isNotEmpty) {
+        try {
+          final analyzer = SocialMediaVibeAnalyzer();
+          final socialInsights = await analyzer.analyzeProfileForVibe(
+            profileData: socialMediaData['profile'] as Map<String, dynamic>? ?? {},
+            follows: socialMediaData['follows'] as List<Map<String, dynamic>>? ?? [],
+            connections: socialMediaData['connections'] as List<Map<String, dynamic>>? ?? [],
+            platform: socialMediaData['platform'] as String? ?? 'unknown',
+          );
+          
+          // Blend social media insights (40% social, 60% existing)
+          socialInsights.forEach((dimension, socialValue) {
+            final existingValue = initialDimensions[dimension] ?? 0.5;
+            initialDimensions[dimension] = 
+                (existingValue * 0.6 + socialValue * 0.4).clamp(0.0, 1.0);
+            initialConfidence[dimension] = 
+                (initialConfidence[dimension] ?? 0.0) + 0.2;
+          });
+        } catch (e) {
+          developer.log('Error analyzing social media: $e', name: _logName);
+          // Continue without social media data
+        }
+      }
+      
+      // 3. Use quantum engine for final dimension calculation (Phase 4)
+      try {
+        final quantumEngine = di.sl<QuantumVibeEngine>();
+        
+        // Convert initial dimensions to insight types for quantum compilation
+        final personalityInsights = PersonalityVibeInsights(
+          dominantTraits: _extractDominantTraits(initialDimensions),
+          personalityStrength: _calculateAverageDimension(initialDimensions),
+          evolutionMomentum: 0.3, // Initial momentum
+          authenticityLevel: _calculateInitialAuthenticity(initialDimensions, onboardingData),
+          confidenceLevel: _calculateAverageConfidence(initialConfidence),
+        );
+        
+        final behavioralInsights = BehavioralVibeInsights(
+          activityLevel: 0.5, // Default for new users
+          explorationTendency: initialDimensions['exploration_eagerness'] ?? 0.5,
+          socialEngagement: initialDimensions['community_orientation'] ?? 0.5,
+          spontaneityIndex: initialDimensions['temporal_flexibility'] ?? 0.5,
+          consistencyScore: 0.5, // Default for new users
+        );
+        
+        final socialInsights = SocialVibeInsights(
+          communityEngagement: initialDimensions['community_orientation'] ?? 0.5,
+          socialPreference: initialDimensions['social_discovery_style'] ?? 0.5,
+          leadershipTendency: initialDimensions['curation_tendency'] ?? 0.5,
+          collaborationStyle: (initialDimensions['community_orientation'] ?? 0.5) * 0.5 +
+                             (initialDimensions['social_discovery_style'] ?? 0.5) * 0.5,
+          trustNetworkStrength: initialDimensions['trust_network_reliance'] ?? 0.5,
+        );
+        
+        final relationshipInsights = RelationshipVibeInsights(
+          connectionDepth: 0.5, // Default for new users
+          relationshipStability: 0.5, // Default for new users
+          influenceReceptivity: initialDimensions['trust_network_reliance'] ?? 0.5,
+          givingTendency: initialDimensions['community_orientation'] ?? 0.5,
+          boundaryFlexibility: initialDimensions['temporal_flexibility'] ?? 0.5,
+        );
+        
+        final temporalInsights = TemporalVibeInsights(
+          currentEnergyLevel: _calculateAverageDimension(initialDimensions),
+          timeOfDayInfluence: 0.5, // Default
+          weekdayInfluence: 0.5, // Default
+          seasonalInfluence: 0.5, // Default
+          contextualModifier: 1.0, // No context yet
+        );
+        
+        // Use quantum engine to compile final dimensions
+        final quantumDimensions = await quantumEngine.compileVibeDimensionsQuantum(
+          personalityInsights,
+          behavioralInsights,
+          socialInsights,
+          relationshipInsights,
+          temporalInsights,
+        );
+        
+        // Blend quantum dimensions with onboarding dimensions (70% quantum, 30% onboarding)
+        quantumDimensions.forEach((dimension, quantumValue) {
+          final onboardingValue = initialDimensions[dimension] ?? 0.5;
+          initialDimensions[dimension] = 
+              (onboardingValue * 0.3 + quantumValue * 0.7).clamp(0.0, 1.0);
+          // Increase confidence from quantum compilation
+          initialConfidence[dimension] = 
+              (initialConfidence[dimension] ?? 0.0) + 0.1;
+        });
+        
+        developer.log('✅ Quantum compilation applied to ${quantumDimensions.length} dimensions', name: _logName);
+      } catch (e) {
+        developer.log('⚠️ Quantum compilation failed, using classical dimensions: $e', name: _logName);
+        // Continue with classical dimensions
+      }
+      
+      // 4. Determine archetype from dimensions
+      final archetype = _determineArchetypeFromDimensions(initialDimensions);
+      
+      // 5. Calculate initial authenticity
+      final authenticity = _calculateInitialAuthenticity(
+        initialDimensions,
+        onboardingData,
+      );
+      
+      // 6. Create profile with initial dimensions
+      // TODO: Update to use agentId after PersonalityProfile migration (Phase 7.3)
+      // For now, use userId but log agentId for tracking
+      final newProfile = PersonalityProfile(
+        userId: userId, // TODO: Change to agentId after Phase 7.3 migration
+        dimensions: initialDimensions,
+        dimensionConfidence: initialConfidence,
+        archetype: archetype,
+        authenticity: authenticity,
+        createdAt: DateTime.now(),
+        lastUpdated: DateTime.now(),
+        evolutionGeneration: 1,
+        learningHistory: {
+          'total_interactions': 0,
+          'successful_ai2ai_connections': 0,
+          'learning_sources': [
+            if (onboardingData != null) 'onboarding',
+            if (socialMediaData != null) 'social_media',
+          ],
+          'evolution_milestones': [DateTime.now()],
+          'onboarding_data_used': onboardingData != null,
+          'social_media_data_used': socialMediaData != null,
+          'agent_id': agentId, // ✅ Store agentId in learning history for tracking
+        },
+      );
+      
+      await _savePersonalityProfile(newProfile);
+      _currentProfile = newProfile;
+      
+      developer.log('✅ Personality initialized with agentId: ${agentId.substring(0, 10)}...', name: _logName);
+      return newProfile;
+    } catch (e, stackTrace) {
+      developer.log('Error initializing from onboarding: $e', name: _logName, error: e, stackTrace: stackTrace);
+      // Fallback to default
+      return PersonalityProfile.initial(userId);
+    }
+  }
+
+  /// Map onboarding data to personality dimensions
+  Map<String, double> _mapOnboardingToDimensions(
+    Map<String, dynamic> onboardingData,
+  ) {
+    final insights = <String, double>{};
+    
+    // Age adjustments
+    final age = onboardingData['age'] as int?;
+    if (age != null) {
+      if (age < 25) {
+        insights['exploration_eagerness'] = 0.6;
+        insights['temporal_flexibility'] = 0.65;
+      } else if (age > 45) {
+        insights['authenticity_preference'] = 0.65;
+        insights['trust_network_reliance'] = 0.6;
+      }
+    }
+    
+    // Homebase → location dimensions
+    final homebase = onboardingData['homebase'] as String?;
+    if (homebase != null && _isUrbanArea(homebase)) {
+      insights['location_adventurousness'] = 
+          (insights['location_adventurousness'] ?? 0.5) + 0.1;
+    }
+    
+    // Favorite places → exploration, location adventurousness
+    final favoritePlaces = onboardingData['favoritePlaces'] as List<dynamic>? ?? [];
+    if (favoritePlaces.length > 5) {
+      insights['exploration_eagerness'] = 
+          (insights['exploration_eagerness'] ?? 0.5) + 0.1;
+      insights['location_adventurousness'] = 
+          (insights['location_adventurousness'] ?? 0.5) + 0.12;
+    }
+    
+    // Preferences mapping
+    final preferences = onboardingData['preferences'] as Map<String, dynamic>? ?? {};
+    
+    // Food & Drink → curation, authenticity
+    if (preferences.containsKey('Food & Drink')) {
+      final foodPrefs = preferences['Food & Drink'] as List<dynamic>? ?? [];
+      if (foodPrefs.isNotEmpty) {
+        insights['curation_tendency'] = 
+            (insights['curation_tendency'] ?? 0.5) + 0.05;
+        insights['authenticity_preference'] = 
+            (insights['authenticity_preference'] ?? 0.5) + 0.03;
+      }
+    }
+    
+    // Activities → exploration, social
+    if (preferences.containsKey('Activities')) {
+      final activityPrefs = preferences['Activities'] as List<dynamic>? ?? [];
+      if (activityPrefs.isNotEmpty) {
+        insights['exploration_eagerness'] = 
+            (insights['exploration_eagerness'] ?? 0.5) + 0.08;
+        insights['social_discovery_style'] = 
+            (insights['social_discovery_style'] ?? 0.5) + 0.05;
+      }
+    }
+    
+    // Outdoor & Nature → location adventurousness, exploration
+    if (preferences.containsKey('Outdoor & Nature')) {
+      final outdoorPrefs = preferences['Outdoor & Nature'] as List<dynamic>? ?? [];
+      if (outdoorPrefs.isNotEmpty) {
+        insights['location_adventurousness'] = 
+            (insights['location_adventurousness'] ?? 0.5) + 0.1;
+        insights['exploration_eagerness'] = 
+            (insights['exploration_eagerness'] ?? 0.5) + 0.08;
+      }
+    }
+    
+    // Social preferences → community orientation, social discovery
+    if (preferences.containsKey('Social')) {
+      final socialPrefs = preferences['Social'] as List<dynamic>? ?? [];
+      if (socialPrefs.isNotEmpty) {
+        insights['community_orientation'] = 
+            (insights['community_orientation'] ?? 0.5) + 0.1;
+        insights['social_discovery_style'] = 
+            (insights['social_discovery_style'] ?? 0.5) + 0.08;
+      }
+    }
+    
+    // Friends/Respected Lists → community orientation, trust network
+    final respectedFriends = onboardingData['respectedFriends'] as List<dynamic>? ?? [];
+    if (respectedFriends.isNotEmpty) {
+      insights['community_orientation'] = 
+          (insights['community_orientation'] ?? 0.5) + 0.08;
+      insights['trust_network_reliance'] = 
+          (insights['trust_network_reliance'] ?? 0.5) + 0.06;
+    }
+    
+    // Clamp all values to valid range
+    insights.forEach((key, value) {
+      insights[key] = value.clamp(0.0, 1.0);
+    });
+    
+    return insights;
+  }
+
+  /// Determine archetype from initial dimensions
+  String _determineArchetypeFromDimensions(Map<String, double> dimensions) {
+    final exploration = dimensions['exploration_eagerness'] ?? 0.5;
+    final social = dimensions['social_discovery_style'] ?? 0.5;
+    final energy = (dimensions['exploration_eagerness'] ?? 0.5) +
+                 (dimensions['temporal_flexibility'] ?? 0.5) +
+                 (dimensions['location_adventurousness'] ?? 0.5);
+    final avgEnergy = energy / 3.0;
+    
+    if (exploration >= 0.8 && avgEnergy >= 0.7) {
+      return 'adventurous_explorer';
+    }
+    if (social >= 0.8 && avgEnergy >= 0.6) {
+      return 'social_connector';
+    }
+    if (exploration <= 0.3 && social >= 0.7) {
+      return 'community_curator';
+    }
+    if (exploration >= 0.7 && social <= 0.4) {
+      return 'authentic_seeker';
+    }
+    if (avgEnergy >= 0.8) {
+      return 'spontaneous_wanderer';
+    }
+    
+    return 'balanced_explorer';
+  }
+
+  /// Calculate initial authenticity from dimensions and onboarding data
+  double _calculateInitialAuthenticity(
+    Map<String, double> dimensions,
+    Map<String, dynamic>? onboardingData,
+  ) {
+    // Base authenticity from dimension consistency
+    double consistency = 0.0;
+    int count = 0;
+    
+    // Check consistency between related dimensions
+    final exploration = dimensions['exploration_eagerness'] ?? 0.5;
+    final location = dimensions['location_adventurousness'] ?? 0.5;
+    final temporal = dimensions['temporal_flexibility'] ?? 0.5;
+    
+    // Exploration-related consistency
+    final explorationConsistency = 1.0 - (exploration - location).abs();
+    consistency += explorationConsistency;
+    count++;
+    
+    // Temporal consistency
+    final temporalConsistency = 1.0 - (temporal - exploration).abs();
+    consistency += temporalConsistency;
+    count++;
+    
+    final baseAuthenticity = count > 0 ? consistency / count : 0.5;
+    
+    // Boost from onboarding data completeness
+    double completenessBoost = 0.0;
+    if (onboardingData != null) {
+      int completedFields = 0;
+      int totalFields = 7; // age, homebase, favoritePlaces, preferences, baselineLists, respectedFriends, socialMedia
+      
+      if (onboardingData['age'] != null) completedFields++;
+      if (onboardingData['homebase'] != null && (onboardingData['homebase'] as String).isNotEmpty) completedFields++;
+      if ((onboardingData['favoritePlaces'] as List?)?.isNotEmpty ?? false) completedFields++;
+      if ((onboardingData['preferences'] as Map?)?.isNotEmpty ?? false) completedFields++;
+      if ((onboardingData['baselineLists'] as List?)?.isNotEmpty ?? false) completedFields++;
+      if ((onboardingData['respectedFriends'] as List?)?.isNotEmpty ?? false) completedFields++;
+      if ((onboardingData['socialMediaConnected'] as Map?)?.isNotEmpty ?? false) completedFields++;
+      
+      completenessBoost = (completedFields / totalFields) * 0.2; // Up to 0.2 boost
+    }
+    
+    return (baseAuthenticity + completenessBoost).clamp(0.0, 1.0);
+  }
+
+  /// Extract dominant traits from dimensions
+  List<String> _extractDominantTraits(Map<String, double> dimensions) {
+    final traits = <String>[];
+    dimensions.forEach((dimension, value) {
+      if (value > 0.7) {
+        traits.add(dimension);
+      }
+    });
+    return traits;
+  }
+
+  /// Calculate average dimension value
+  double _calculateAverageDimension(Map<String, double> dimensions) {
+    if (dimensions.isEmpty) return 0.5;
+    final sum = dimensions.values.fold(0.0, (a, b) => a + b);
+    return (sum / dimensions.length).clamp(0.0, 1.0);
+  }
+
+  /// Calculate average confidence
+  double _calculateAverageConfidence(Map<String, double> confidence) {
+    if (confidence.isEmpty) return 0.5;
+    final sum = confidence.values.fold(0.0, (a, b) => a + b);
+    return (sum / confidence.length).clamp(0.0, 1.0);
+  }
+
+  /// Check if homebase is an urban area
+  bool _isUrbanArea(String homebase) {
+    // Simple heuristic: check for common urban indicators
+    final lowerHomebase = homebase.toLowerCase();
+    return lowerHomebase.contains('city') ||
+           lowerHomebase.contains('san francisco') ||
+           lowerHomebase.contains('new york') ||
+           lowerHomebase.contains('los angeles') ||
+           lowerHomebase.contains('chicago') ||
+           lowerHomebase.contains('boston') ||
+           lowerHomebase.contains('seattle') ||
+           lowerHomebase.contains('portland') ||
+           lowerHomebase.contains('austin') ||
+           lowerHomebase.contains('miami') ||
+           lowerHomebase.contains('denver');
+  }
+
   /// Evolve personality based on user action
-  /// 
+  ///
   /// **Parameters:**
   /// - `userId`: User ID
   /// - `action`: User action
@@ -109,44 +572,58 @@ class PersonalityLearning {
     UserAction action, {
     LocalExpertise? localExpertise,
   }) async {
-    if (_currentProfile == null) {
-      await initializePersonality(userId);
+    // Load profile for this specific userId (don't rely on shared _currentProfile)
+    // This ensures correct behavior when called concurrently for different users
+    PersonalityProfile profile;
+    if (_currentProfile != null && _currentProfile!.userId == userId) {
+      // Use cached profile if it matches the requested userId
+      profile = _currentProfile!;
+    } else {
+      // Load from storage to ensure we have the correct profile for this userId
+      final loadedProfile = await _loadPersonalityProfile(userId);
+      if (loadedProfile != null) {
+        profile = loadedProfile;
+        // Update cache only if it matches
+        _currentProfile = profile;
+      } else {
+        // No profile exists, initialize new one
+        profile = await initializePersonality(userId);
+      }
     }
-    
-    if (_isLearning) {
-      developer.log('Personality learning already in progress, queuing action', name: _logName);
-      return _currentProfile!;
-    }
-    
-    _isLearning = true;
-    
+
+    // Note: _isLearning flag is intentionally not checked here
+    // Concurrent evolution for different users should be allowed
+    // The flag would prevent concurrent evolution even for different users, which is too restrictive
+
     try {
-      developer.log('Evolving personality from user action: ${action.type}', name: _logName);
-      
+      developer.log('Evolving personality from user action: ${action.type}',
+          name: _logName);
+
       // Analyze action for personality insights
       final dimensionUpdates = await _analyzeActionForDimensions(action);
       final confidenceUpdates = await _analyzeActionForConfidence(action);
-      
+
       // Calculate golden expert weight if applicable
       double influenceWeight = 1.0;
       if (localExpertise != null) {
-        influenceWeight = _goldenExpertService.calculateInfluenceWeight(localExpertise);
+        influenceWeight =
+            _goldenExpertService.calculateInfluenceWeight(localExpertise);
         developer.log(
           'Applying golden expert weight: $influenceWeight',
           name: _logName,
         );
       }
-      
+
       // Apply learning rate and golden expert weight to dimension updates
       final adjustedUpdates = <String, double>{};
       dimensionUpdates.forEach((dimension, change) {
-        adjustedUpdates[dimension] = 
+        adjustedUpdates[dimension] =
             change * VibeConstants.personalityLearningRate * influenceWeight;
       });
-      
+
       // Calculate new authenticity score
       final newAuthenticity = await _calculateAuthenticityFromAction(action);
-      
+
       // Create learning history entry
       final learningData = {
         'total_interactions': 1,
@@ -154,31 +631,41 @@ class PersonalityLearning {
         'learning_source': 'user_action',
         'dimension_changes': adjustedUpdates,
       };
-      
+
       // Evolve the personality
-      final evolvedProfile = _currentProfile!.evolve(
+      final evolvedProfile = profile.evolve(
         newDimensions: adjustedUpdates,
         newConfidence: confidenceUpdates,
         newAuthenticity: newAuthenticity,
         additionalLearning: learningData,
       );
-      
-      // Save updated profile
+
+      // Save updated profile locally
       await _savePersonalityProfile(evolvedProfile);
-      _currentProfile = evolvedProfile;
-      
-      developer.log('Personality evolved to generation ${evolvedProfile.evolutionGeneration}', name: _logName);
-      developer.log('Dominant traits: ${evolvedProfile.getDominantTraits()}', name: _logName);
-      
+      // Update cache only if it matches the userId we just evolved
+      if (_currentProfile == null || _currentProfile!.userId == userId) {
+        _currentProfile = evolvedProfile;
+      }
+
+      developer.log(
+          'Personality evolved to generation ${evolvedProfile.evolutionGeneration}',
+          name: _logName);
+      developer.log('Dominant traits: ${evolvedProfile.getDominantTraits()}',
+          name: _logName);
+
+      // Sync to cloud if enabled (non-blocking)
+      _syncProfileToCloud(userId, evolvedProfile);
+
       // Notify listeners of personality evolution
       if (onPersonalityEvolved != null) {
         try {
           onPersonalityEvolved!(userId, evolvedProfile);
         } catch (e) {
-          developer.log('Error in personality evolution callback: $e', name: _logName);
+          developer.log('Error in personality evolution callback: $e',
+              name: _logName);
         }
       }
-      
+
       return evolvedProfile;
     } catch (e) {
       developer.log('Error evolving personality: $e', name: _logName);
@@ -187,32 +674,60 @@ class PersonalityLearning {
       _isLearning = false;
     }
   }
-  
+
   /// Evolve personality from AI2AI learning interaction
+  ///
+  /// NEW: Supports outcome-based learning from real-world actions.
   Future<PersonalityProfile> evolveFromAI2AILearning(
     String userId,
-    AI2AILearningInsight insight,
-  ) async {
+    AI2AILearningInsight insight, {
+    OutcomeResult? outcome, // NEW: Real-world action outcome
+  }) async {
     if (_currentProfile == null) {
       await initializePersonality(userId);
     }
-    
+
     if (_isLearning) {
-      developer.log('Personality learning already in progress, queuing AI2AI learning', name: _logName);
+      developer.log(
+          'Personality learning already in progress, queuing AI2AI learning',
+          name: _logName);
       return _currentProfile!;
     }
-    
+
     _isLearning = true;
-    
+
     try {
-      developer.log('Evolving personality from AI2AI learning: ${insight.type}', name: _logName);
-      
+      developer.log('Evolving personality from AI2AI learning: ${insight.type}',
+          name: _logName);
+
       // Apply AI2AI learning rate (typically lower than direct user actions)
+      // Also apply age-based learning filter if user data is available
       final adjustedInsights = <String, double>{};
       insight.dimensionInsights.forEach((dimension, change) {
-        adjustedInsights[dimension] = change * VibeConstants.ai2aiLearningRate;
+        double learningRate = VibeConstants.ai2aiLearningRate;
+
+        adjustedInsights[dimension] = change * learningRate;
       });
-      
+
+      // NEW: Apply outcome-based learning if outcome is available
+      if (outcome != null) {
+        final outcomeInsights = _calculateOutcomeInsights(
+          outcome: outcome,
+          baseInsights: adjustedInsights,
+        );
+
+        // Merge outcome insights with base insights
+        outcomeInsights.forEach((dimension, outcomeChange) {
+          adjustedInsights[dimension] =
+              (adjustedInsights[dimension] ?? 0.0) + outcomeChange;
+        });
+
+        developer.log(
+          'Applied outcome-based learning: ${outcome.outcomeType}, score: ${outcome.outcomeScore}',
+          name: _logName,
+        );
+      }
+
       // Create learning history entry
       final learningData = {
         'total_interactions': 1,
@@ -220,53 +735,64 @@ class PersonalityLearning {
         'learning_source': 'ai2ai_interaction',
         'insight_type': insight.type.toString(),
         'dimension_changes': adjustedInsights,
+        'outcome_applied': outcome != null,
+        'outcome_type': outcome?.outcomeType.toString(),
+        'outcome_score': outcome?.outcomeScore,
       };
-      
-      // Evolve personality with AI2AI insights
+
+      // Evolve personality with AI2AI insights (including outcome-based)
       final evolvedProfile = _currentProfile!.evolve(
         newDimensions: adjustedInsights,
         additionalLearning: learningData,
       );
-      
-      // Save updated profile
+
+      // Save updated profile locally
       await _savePersonalityProfile(evolvedProfile);
       _currentProfile = evolvedProfile;
-      
-      developer.log('Personality evolved from AI2AI learning to generation ${evolvedProfile.evolutionGeneration}', name: _logName);
-      
+
+      developer.log(
+          'Personality evolved from AI2AI learning to generation ${evolvedProfile.evolutionGeneration}',
+          name: _logName);
+
+      // Sync to cloud if enabled (non-blocking)
+      _syncProfileToCloud(userId, evolvedProfile);
+
       // Notify listeners of personality evolution
       if (onPersonalityEvolved != null) {
         try {
           onPersonalityEvolved!(userId, evolvedProfile);
         } catch (e) {
-          developer.log('Error in personality evolution callback: $e', name: _logName);
+          developer.log('Error in personality evolution callback: $e',
+              name: _logName);
         }
       }
-      
+
       return evolvedProfile;
     } catch (e) {
-      developer.log('Error evolving personality from AI2AI learning: $e', name: _logName);
+      developer.log('Error evolving personality from AI2AI learning: $e',
+          name: _logName);
       return _currentProfile!;
     } finally {
       _isLearning = false;
     }
   }
-  
+
   /// Get current personality profile
   Future<PersonalityProfile?> getCurrentPersonality(String userId) async {
     if (_currentProfile != null && _currentProfile!.userId == userId) {
       return _currentProfile;
     }
-    
+
     return await _loadPersonalityProfile(userId);
   }
-  
+
   /// Get personality evolution history
-  Future<List<PersonalityEvolutionEvent>> getEvolutionHistory(String userId) async {
+  Future<List<PersonalityEvolutionEvent>> getEvolutionHistory(
+      String userId) async {
     try {
       final historyJson = _prefs.getString('${_learningHistoryKey}_$userId');
       if (historyJson == null) return [];
-      
+
       // Parse evolution history
       // This would contain timestamp, generation, dimension changes, etc.
       // Implementation depends on storage format
@@ -276,7 +802,7 @@ class PersonalityLearning {
       return [];
     }
   }
-  
+
   /// Calculate personality readiness for AI2AI connections
   Future<PersonalityReadiness> calculateAI2AIReadiness(String userId) async {
     final profile = await getCurrentPersonality(userId);
@@ -287,168 +813,221 @@ class PersonalityLearning {
         reasons: ['No personality profile found'],
       );
     }
-    
+
     final reasons = <String>[];
     double readinessScore = 0.0;
-    
+
     // Check if personality is well-developed
     if (profile.isWellDeveloped) {
       readinessScore += 0.4;
     } else {
-      reasons.add('Personality needs more development (${profile.learningHistory['total_interactions']} interactions)');
+      reasons.add(
+          'Personality needs more development (${profile.learningHistory['total_interactions']} interactions)');
     }
-    
+
     // Check confidence levels
     final avgConfidence = profile.dimensionConfidence.values.isNotEmpty
-        ? profile.dimensionConfidence.values.reduce((a, b) => a + b) / profile.dimensionConfidence.length
+        ? profile.dimensionConfidence.values.reduce((a, b) => a + b) /
+            profile.dimensionConfidence.length
         : 0.0;
-    
+
     if (avgConfidence >= VibeConstants.personalityConfidenceThreshold) {
       readinessScore += 0.3;
     } else {
-      reasons.add('Low confidence in personality dimensions (${(avgConfidence * 100).toStringAsFixed(1)}%)');
+      reasons.add(
+          'Low confidence in personality dimensions (${(avgConfidence * 100).toStringAsFixed(1)}%)');
     }
-    
+
     // Check authenticity score
     if (profile.authenticity >= 0.6) {
       readinessScore += 0.2;
     } else {
-      reasons.add('Low authenticity score (${(profile.authenticity * 100).toStringAsFixed(1)}%)');
+      reasons.add(
+          'Low authenticity score (${(profile.authenticity * 100).toStringAsFixed(1)}%)');
     }
-    
+
     // Check evolution generation (more evolved = more ready)
     if (profile.evolutionGeneration >= 5) {
       readinessScore += 0.1;
     } else {
-      reasons.add('Personality needs more evolution (generation ${profile.evolutionGeneration})');
+      reasons.add(
+          'Personality needs more evolution (generation ${profile.evolutionGeneration})');
     }
-    
+
     return PersonalityReadiness(
       isReady: readinessScore >= 0.7,
       readinessScore: readinessScore,
       reasons: reasons,
     );
   }
-  
+
   /// Reset personality learning (for testing or user request)
   Future<void> resetPersonality(String userId) async {
     developer.log('Resetting personality for user: $userId', name: _logName);
-    
+
     await _prefs.remove('${_personalityProfileKey}_$userId');
     await _prefs.remove('${_learningHistoryKey}_$userId');
     await _prefs.remove('${_dimensionConfidenceKey}_$userId');
-    
+
     _currentProfile = null;
-    
+
     developer.log('Personality reset completed', name: _logName);
   }
-  
+
   // Private helper methods
   Future<PersonalityProfile?> _loadPersonalityProfile(String userId) async {
     try {
       final profileJson = _prefs.getString('${_personalityProfileKey}_$userId');
       if (profileJson == null) return null;
-      
-      // In a real implementation, this would parse JSON
-      // For now, return null to create new profile
-      return null;
+
+      // Parse JSON and create profile
+      try {
+        final profileMap = jsonDecode(profileJson) as Map<String, dynamic>;
+        return PersonalityProfile.fromJson(profileMap);
+      } catch (e) {
+        developer.log('Error parsing personality profile JSON: $e',
+            name: _logName);
+        return null;
+      }
     } catch (e) {
       developer.log('Error loading personality profile: $e', name: _logName);
       return null;
     }
   }
-  
+
   Future<void> _savePersonalityProfile(PersonalityProfile profile) async {
     try {
-      // In a real implementation, this would serialize to JSON
+      // Serialize profile to JSON
+      final profileJson = jsonEncode(profile.toJson());
       await _prefs.setString(
         '${_personalityProfileKey}_${profile.userId}',
-        'profile_data', // Would be profile.toJson()
+        profileJson,
       );
-      
-      developer.log('Personality profile saved (generation ${profile.evolutionGeneration})', name: _logName);
+
+      developer.log(
+          'Personality profile saved (generation ${profile.evolutionGeneration})',
+          name: _logName);
     } catch (e) {
       developer.log('Error saving personality profile: $e', name: _logName);
     }
   }
-  
-  Future<Map<String, double>> _analyzeActionForDimensions(UserAction action) async {
+
+  /// Sync profile to cloud if enabled (non-blocking, fire-and-forget)
+  void _syncProfileToCloud(String userId, PersonalityProfile profile) {
+    // Run async without awaiting to avoid blocking evolution
+    Future.microtask(() async {
+      try {
+        final syncService = di.sl<PersonalitySyncService>();
+        final syncEnabled = await syncService.isCloudSyncEnabled(userId);
+
+        if (!syncEnabled) {
+          return; // Sync disabled, skip
+        }
+
+        // Get password from secure storage (stored during login)
+        const secureStorage = FlutterSecureStorage();
+        final password = await secureStorage.read(
+          key: 'user_password_session_$userId',
+        );
+
+        if (password != null && password.isNotEmpty) {
+          await syncService.syncToCloud(userId, profile, password);
+          developer.log(
+              'Profile synced to cloud (generation ${profile.evolutionGeneration})',
+              name: _logName);
+        } else {
+          developer.log('Password not available for cloud sync',
+              name: _logName);
+        }
+      } catch (e) {
+        developer.log('Error syncing profile to cloud: $e', name: _logName);
+        // Don't throw - sync failures shouldn't block evolution
+      }
+    });
+  }
+
+  Future<Map<String, double>> _analyzeActionForDimensions(
+      UserAction action) async {
     final dimensionUpdates = <String, double>{};
-    
+
     switch (action.type) {
       case UserActionType.spotVisit:
         // Visiting spots indicates exploration eagerness
         dimensionUpdates['exploration_eagerness'] = 0.1;
-        
+
         // Check if it's a social or solo visit
         if (action.metadata['social_visit'] == true) {
           dimensionUpdates['community_orientation'] = 0.05;
         }
-        
+
         // Check distance traveled
-        final distanceTraveled = action.metadata['distance_km'] as double? ?? 0.0;
+        final distanceTraveled =
+            action.metadata['distance_km'] as double? ?? 0.0;
         if (distanceTraveled > 10.0) {
           dimensionUpdates['location_adventurousness'] = 0.08;
         }
-        
+
         // NEW: Energy preference (Phase 2)
-        final spotEnergyLevel = action.metadata['spot_energy_level'] as double? ?? 0.5;
+        final spotEnergyLevel =
+            action.metadata['spot_energy_level'] as double? ?? 0.5;
         dimensionUpdates['energy_preference'] = (spotEnergyLevel - 0.5) * 0.15;
-        
+
         // NEW: Novelty seeking (Phase 2)
-        final isRepeatVisit = action.metadata['is_repeat_visit'] as bool? ?? false;
+        final isRepeatVisit =
+            action.metadata['is_repeat_visit'] as bool? ?? false;
         dimensionUpdates['novelty_seeking'] = isRepeatVisit ? -0.08 : 0.08;
-        
+
         // NEW: Value orientation (Phase 2)
         final priceLevel = action.metadata['price_level'] as double? ?? 0.5;
         dimensionUpdates['value_orientation'] = (priceLevel - 0.5) * 0.12;
-        
+
         // NEW: Crowd tolerance (Phase 2)
         final crowdLevel = action.metadata['crowd_level'] as double? ?? 0.5;
         dimensionUpdates['crowd_tolerance'] = (crowdLevel - 0.5) * 0.10;
         break;
-        
+
       case UserActionType.socialInteraction:
         dimensionUpdates['community_orientation'] = 0.12;
         dimensionUpdates['social_discovery_style'] = 0.08;
         break;
-        
+
       case UserActionType.spontaneousActivity:
         dimensionUpdates['temporal_flexibility'] = 0.15;
         dimensionUpdates['exploration_eagerness'] = 0.08;
         break;
-        
+
       case UserActionType.curationActivity:
         dimensionUpdates['curation_tendency'] = 0.12;
         dimensionUpdates['community_orientation'] = 0.06;
         break;
-        
+
       case UserActionType.authenticPreference:
         dimensionUpdates['authenticity_preference'] = 0.10;
         break;
-        
+
       case UserActionType.trustNetworkUse:
         dimensionUpdates['trust_network_reliance'] = 0.08;
         break;
     }
-    
+
     return dimensionUpdates;
   }
-  
-  Future<Map<String, double>> _analyzeActionForConfidence(UserAction action) async {
+
+  Future<Map<String, double>> _analyzeActionForConfidence(
+      UserAction action) async {
     // Increase confidence for dimensions that are consistently expressed
     final confidenceUpdates = <String, double>{};
-    
+
     // Base confidence increase for any action
     const baseConfidenceIncrease = 0.02;
-    
+
     switch (action.type) {
       case UserActionType.spotVisit:
         confidenceUpdates['exploration_eagerness'] = baseConfidenceIncrease;
         if (action.metadata['social_visit'] == true) {
           confidenceUpdates['community_orientation'] = baseConfidenceIncrease;
         }
-        
+
         // NEW: Confidence for new dimensions (Phase 2)
         if (action.metadata.containsKey('spot_energy_level')) {
           confidenceUpdates['energy_preference'] = baseConfidenceIncrease;
@@ -463,37 +1042,40 @@ class PersonalityLearning {
           confidenceUpdates['crowd_tolerance'] = baseConfidenceIncrease;
         }
         break;
-        
+
       case UserActionType.socialInteraction:
-        confidenceUpdates['community_orientation'] = baseConfidenceIncrease * 1.5;
+        confidenceUpdates['community_orientation'] =
+            baseConfidenceIncrease * 1.5;
         confidenceUpdates['social_discovery_style'] = baseConfidenceIncrease;
         break;
-        
+
       case UserActionType.spontaneousActivity:
-        confidenceUpdates['temporal_flexibility'] = baseConfidenceIncrease * 1.2;
+        confidenceUpdates['temporal_flexibility'] =
+            baseConfidenceIncrease * 1.2;
         break;
-        
+
       case UserActionType.curationActivity:
         confidenceUpdates['curation_tendency'] = baseConfidenceIncrease * 1.3;
         break;
-        
+
       case UserActionType.authenticPreference:
-        confidenceUpdates['authenticity_preference'] = baseConfidenceIncrease * 1.1;
+        confidenceUpdates['authenticity_preference'] =
+            baseConfidenceIncrease * 1.1;
         break;
-        
+
       case UserActionType.trustNetworkUse:
         confidenceUpdates['trust_network_reliance'] = baseConfidenceIncrease;
         break;
     }
-    
+
     return confidenceUpdates;
   }
-  
+
   Future<double> _calculateAuthenticityFromAction(UserAction action) async {
     if (_currentProfile == null) return 0.5;
-    
+
     double authenticityChange = 0.0;
-    
+
     switch (action.type) {
       case UserActionType.authenticPreference:
         authenticityChange = 0.05;
@@ -509,7 +1091,8 @@ class PersonalityLearning {
         break;
       case UserActionType.spotVisit:
         // Visiting lesser-known spots indicates authenticity preference
-        final spotPopularity = action.metadata['spot_popularity'] as double? ?? 0.5;
+        final spotPopularity =
+            action.metadata['spot_popularity'] as double? ?? 0.5;
         if (spotPopularity < 0.3) {
           authenticityChange = 0.02;
         }
@@ -518,8 +1101,9 @@ class PersonalityLearning {
         // Neutral actions don't affect authenticity much
         break;
     }
-    
-    final newAuthenticity = (_currentProfile!.authenticity + authenticityChange).clamp(0.0, 1.0);
+
+    final newAuthenticity =
+        (_currentProfile!.authenticity + authenticityChange).clamp(0.0, 1.0);
     return newAuthenticity;
   }
 
@@ -550,7 +1134,8 @@ class PersonalityLearning {
     return _currentProfile!;
   }
 
-  Future<List<BehavioralPattern>> recognizeBehavioralPatterns(List<UserAction> actions) async {
+  Future<List<BehavioralPattern>> recognizeBehavioralPatterns(
+      List<UserAction> actions) async {
     return [];
   }
 
@@ -559,7 +1144,8 @@ class PersonalityLearning {
     return Map<String, double>.from(_currentProfile!.dimensions);
   }
 
-  Future<void> updatePersonalityProfile(Map<String, dynamic> personalityData) async {}
+  Future<void> updatePersonalityProfile(
+      Map<String, dynamic> personalityData) async {}
 
   Future<double> calculatePersonalityCompatibility(
     Map<String, dynamic> a,
@@ -579,8 +1165,11 @@ class PersonalityLearning {
     }
     return AnonymizedPersonalityData(
       hashedUserId: _currentProfile!.userId.hashCode.toString(),
-      hashedSignature: (_currentProfile!.userId + _currentProfile!.archetype).hashCode.toString(),
-      anonymizedDimensions: Map<String, double>.from(_currentProfile!.dimensions),
+      hashedSignature: (_currentProfile!.userId + _currentProfile!.archetype)
+          .hashCode
+          .toString(),
+      anonymizedDimensions:
+          Map<String, double>.from(_currentProfile!.dimensions),
       metadata: const {},
     );
   }
@@ -616,7 +1205,7 @@ class UserAction {
   final UserActionType type;
   final DateTime timestamp;
   final Map<String, dynamic> metadata;
-  
+
   UserAction({
     required this.type,
     required this.timestamp,
@@ -638,7 +1227,7 @@ class AI2AILearningInsight {
   final Map<String, double> dimensionInsights;
   final double learningQuality;
   final DateTime timestamp;
-  
+
   AI2AILearningInsight({
     required this.type,
     required this.dimensionInsights,
@@ -660,7 +1249,7 @@ class PersonalityReadiness {
   final bool isReady;
   final double readinessScore;
   final List<String> reasons;
-  
+
   PersonalityReadiness({
     required this.isReady,
     required this.readinessScore,
@@ -673,13 +1262,53 @@ class PersonalityEvolutionEvent {
   final int generation;
   final Map<String, double> dimensionChanges;
   final String learningSource;
-  
+
   PersonalityEvolutionEvent({
     required this.timestamp,
     required this.generation,
     required this.dimensionChanges,
     required this.learningSource,
   });
+}
+
+/// Calculate outcome-based insights
+///
+/// NEW: Calculates personality dimension changes based on real-world action outcomes.
+/// Positive outcomes boost similar opportunities, negative outcomes reduce them.
+Map<String, double> _calculateOutcomeInsights({
+  required OutcomeResult outcome,
+  required Map<String, double> baseInsights,
+}) {
+  final outcomeInsights = <String, double>{};
+
+  // Outcome learning rate (2x base convergence rate)
+  final outcomeLearningRate = VibeConstants.ai2aiLearningRate * 2.0;
+
+  // Calculate outcome vector based on outcome type and score
+  double outcomeMultiplier;
+  switch (outcome.outcomeType) {
+    case OutcomeType.positive:
+      // Positive outcome: boost dimensions that led to this opportunity
+      outcomeMultiplier = outcome.outcomeScore; // 0.7 to 1.0
+      break;
+    case OutcomeType.negative:
+      // Negative outcome: reduce dimensions that led to this opportunity
+      outcomeMultiplier = -(1.0 - outcome.outcomeScore); // -0.3 to -0.0
+      break;
+    case OutcomeType.neutral:
+      // Neutral outcome: minimal change
+      outcomeMultiplier = (outcome.outcomeScore - 0.5) * 0.2; // -0.1 to +0.1
+      break;
+  }
+
+  // Apply outcome to each dimension that was influenced
+  baseInsights.forEach((dimension, baseChange) {
+    // Outcome change = base change × outcome multiplier × outcome learning rate
+    final outcomeChange = baseChange * outcomeMultiplier * outcomeLearningRate;
+    outcomeInsights[dimension] = outcomeChange;
+  });
+
+  return outcomeInsights;
 }
   // Remove duplicate methods below; keep single minimal versions
   

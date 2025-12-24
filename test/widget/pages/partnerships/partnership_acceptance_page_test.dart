@@ -7,9 +7,9 @@ import 'package:spots/core/models/business_account.dart';
 import 'package:spots/presentation/pages/partnerships/partnership_acceptance_page.dart';
 
 /// Partnership Acceptance Page Widget Tests
-/// 
+///
 /// Agent 2: Partnership UI, Business UI (Week 8)
-/// 
+///
 /// Tests the partnership acceptance page functionality.
 void main() {
   group('PartnershipAcceptancePage Widget Tests', () {
@@ -66,49 +66,24 @@ void main() {
       );
     });
 
-    testWidgets('should display partnership acceptance page', (WidgetTester tester) async {
-      // Act
+    // Removed: Property assignment tests
+    // Partnership acceptance page tests focus on business logic (page display, accept and decline buttons, event details), not property assignment
+
+    testWidgets(
+        'should display partnership acceptance page, display accept and decline buttons, or display event details',
+        (WidgetTester tester) async {
+      // Test business logic: Partnership acceptance page display and functionality
       await tester.pumpWidget(
         MaterialApp(
           home: PartnershipAcceptancePage(partnership: testPartnership),
         ),
       );
-
       await tester.pumpAndSettle();
-
-      // Assert
       expect(find.text('Partnership Proposal'), findsOneWidget);
       expect(find.text('Partnership Details'), findsOneWidget);
-    });
-
-    testWidgets('should display accept and decline buttons', (WidgetTester tester) async {
-      // Act
-      await tester.pumpWidget(
-        MaterialApp(
-          home: PartnershipAcceptancePage(partnership: testPartnership),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      // Assert
       expect(find.text('Accept Partnership'), findsOneWidget);
       expect(find.text('Decline'), findsOneWidget);
-    });
-
-    testWidgets('should display event details', (WidgetTester tester) async {
-      // Act
-      await tester.pumpWidget(
-        MaterialApp(
-          home: PartnershipAcceptancePage(partnership: testPartnership),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      // Assert
       expect(find.text('Event Details'), findsOneWidget);
     });
   });
 }
-

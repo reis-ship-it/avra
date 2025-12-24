@@ -40,29 +40,21 @@ void main() {
     setUp(() async {
       TestHelpers.setupTestEnvironment();
       real_prefs.SharedPreferences.setMockInitialValues({});
-      // Use SharedPreferencesCompat with mock storage to avoid platform channel issues
-      // PersonalityLearning.withPrefs expects SharedPreferences (typedef for SharedPreferencesCompat)
-      // AI2AIChatAnalyzer expects real SharedPreferences, but we'll use CompatPrefs (the typedef)
-      // which should work since it's the same interface
       
       // Wrap initialization in platform channel error handling
       await runTestWithPlatformChannelHandlingVoid(() async {
-        final mockStorage = getTestStorage();
-        if (mockStorage == null) {
-          // If we can't get mock storage, skip tests
-          personalityLearning = null;
-          analyzer = null;
-          return;
-        }
-        
         try {
+          final mockStorage = getTestStorage();
+          // Use SharedPreferencesCompat with mock storage for PersonalityLearning
           final compatPrefs = await storage.SharedPreferencesCompat.getInstance(storage: mockStorage);
           final learning = PersonalityLearning.withPrefs(compatPrefs);
           personalityLearning = learning;
-          // AI2AIChatAnalyzer expects SharedPreferences, but CompatPrefs (the typedef) should work
-          // Cast to dynamic to bypass type checking since they have the same interface
+          
+          // AI2AIChatAnalyzer expects real SharedPreferences from the package
+          // Get real SharedPreferences instance (mocked via setMockInitialValues)
+          final realPrefs = await real_prefs.SharedPreferences.getInstance();
           analyzer = AI2AIChatAnalyzer(
-            prefs: compatPrefs as dynamic, // CompatPrefs has same interface as SharedPreferences
+            prefs: realPrefs,
             personalityLearning: learning,
           );
         } catch (e) {
@@ -725,7 +717,10 @@ void main() {
           () async {
         const userId = 'test_user';
 
-        final personality = ModelFactories.createTestPersonalityProfile(
+        // Create personality with low confidence values (< 0.5) to trigger development areas
+        // The logic skips dimensions with confidence >= 0.7 AND balanced values (0.3-0.7)
+        // So we need low confidence (< 0.5) to ensure areas are recommended
+        final basePersonality = ModelFactories.createTestPersonalityProfile(
           userId: userId,
           dimensions: {
             'exploration_eagerness': 0.5,
@@ -739,6 +734,20 @@ void main() {
           },
           archetype: 'adventurous_explorer',
         );
+        
+        // Evolve to set low confidence values (< 0.5) so development areas are recommended
+        final personality = basePersonality.evolve(
+          newConfidence: {
+            'exploration_eagerness': 0.3,
+            'community_orientation': 0.3,
+            'authenticity_preference': 0.3,
+            'social_discovery_style': 0.3,
+            'temporal_flexibility': 0.3,
+            'location_adventurousness': 0.3,
+            'curation_tendency': 0.3,
+            'trust_network_reliance': 0.3,
+          },
+        );
 
         if (shouldSkipTest()) return; // Skip test if services couldn't be initialized
         final recommendations = await analyzer!.generateLearningRecommendations(
@@ -746,7 +755,7 @@ void main() {
           personality,
         );
 
-        // Should recommend development areas
+        // Should recommend development areas for low confidence dimensions
         expect(recommendations.developmentAreas, isNotEmpty);
         expect(recommendations.developmentAreas.length, lessThanOrEqualTo(5));
 

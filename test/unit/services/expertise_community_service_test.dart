@@ -4,6 +4,7 @@ import 'package:spots/core/models/expertise_community.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_level.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Expertise Community Service Tests
 /// Tests expertise-based community management functionality
@@ -22,26 +23,55 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Expertise community tests focus on business logic (creation, membership, search), not property assignment
+
     group('createCommunity', () {
-      test('should create community when user has expertise', () async {
-        final community = await service.createCommunity(
+      test(
+          'should create community when user has expertise with optional parameters (location, minLevel, isPublic), or throw exception when creator lacks expertise',
+          () async {
+        // Test business logic: community creation with validation and parameters
+        final community1 = await service.createCommunity(
           creator: user,
           category: 'food',
           description: 'Food experts community',
         );
+        expect(community1, isA<ExpertiseCommunity>());
+        expect(community1.category, equals('food'));
+        expect(community1.memberIds, contains(user.id));
+        expect(community1.memberCount, equals(1));
+        expect(community1.createdBy, equals(user.id));
 
-        expect(community, isA<ExpertiseCommunity>());
-        expect(community.category, equals('food'));
-        expect(community.memberIds, contains(user.id));
-        expect(community.memberCount, equals(1));
-        expect(community.createdBy, equals(user.id));
-      });
+        final community2 = await service.createCommunity(
+          creator: user,
+          category: 'food',
+          location: 'San Francisco',
+        );
+        expect(community2.name, contains('San Francisco'));
+        expect(community2.location, equals('San Francisco'));
 
-      test('should throw exception when creator lacks expertise', () async {
+        final regionalUser = ModelFactories.createTestUser(
+          id: 'user-123',
+        ).copyWith(
+          expertiseMap: {'food': 'regional'},
+        );
+        final community3 = await service.createCommunity(
+          creator: regionalUser,
+          category: 'food',
+          minLevel: ExpertiseLevel.city,
+        );
+        expect(community3.minLevel, equals(ExpertiseLevel.city));
+
+        final community4 = await service.createCommunity(
+          creator: user,
+          category: 'food',
+          isPublic: false,
+        );
+        expect(community4.isPublic, equals(false));
+
         final userWithoutExpertise = ModelFactories.createTestUser(
           id: 'user-456',
         ).copyWith(expertiseMap: {});
-
         expect(
           () => service.createCommunity(
             creator: userWithoutExpertise,
@@ -50,48 +80,14 @@ void main() {
           throwsException,
         );
       });
-
-      test('should include location in community name when provided', () async {
-        final community = await service.createCommunity(
-          creator: user,
-          category: 'food',
-          location: 'San Francisco',
-        );
-
-        expect(community.name, contains('San Francisco'));
-        expect(community.location, equals('San Francisco'));
-      });
-
-      test('should respect minLevel parameter', () async {
-        final regionalUser = ModelFactories.createTestUser(
-          id: 'user-123',
-        ).copyWith(
-          expertiseMap: {'food': 'regional'},
-        );
-
-        final community = await service.createCommunity(
-          creator: regionalUser,
-          category: 'food',
-          minLevel: ExpertiseLevel.city,
-        );
-
-        expect(community.minLevel, equals(ExpertiseLevel.city));
-      });
-
-      test('should respect isPublic parameter', () async {
-        final community = await service.createCommunity(
-          creator: user,
-          category: 'food',
-          isPublic: false,
-        );
-
-        expect(community.isPublic, equals(false));
-      });
     });
 
     group('joinCommunity', () {
-      test('should allow user to join community when eligible', () async {
-        final community = await service.createCommunity(
+      test(
+          'should allow user to join community when eligible, or throw exception when user cannot join or is already a member',
+          () async {
+        // Test business logic: community membership with validation
+        final community1 = await service.createCommunity(
           creator: user,
           category: 'food',
         );
@@ -101,117 +97,97 @@ void main() {
         ).copyWith(
           expertiseMap: {'food': 'local'},
         );
+        await service.joinCommunity(community1, newUser);
+        expect(community1.canUserJoin(newUser), isTrue);
 
-        await service.joinCommunity(community, newUser);
-
-        // Verify user was added (in production, would fetch updated community)
-        expect(community.canUserJoin(newUser), isTrue);
-      });
-
-      test('should throw exception when user cannot join', () async {
-        final community = await service.createCommunity(
+        final community2 = await service.createCommunity(
           creator: user,
           category: 'food',
           minLevel: ExpertiseLevel.city,
         );
-
         final localUser = ModelFactories.createTestUser(
-          id: 'user-456',
+          id: 'user-789',
         ).copyWith(
           expertiseMap: {'food': 'local'},
         );
-
         expect(
-          () => service.joinCommunity(community, localUser),
+          () => service.joinCommunity(community2, localUser),
           throwsException,
         );
-      });
 
-      test('should throw exception when user is already a member', () async {
-        final community = await service.createCommunity(
+        final community3 = await service.createCommunity(
           creator: user,
           category: 'food',
         );
-
         expect(
-          () => service.joinCommunity(community, user),
+          () => service.joinCommunity(community3, user),
           throwsException,
         );
       });
     });
 
     group('leaveCommunity', () {
-      test('should allow user to leave community', () async {
-        final community = await service.createCommunity(
+      test(
+          'should allow user to leave community, or throw exception when user is not a member',
+          () async {
+        // Test business logic: community leaving with validation
+        final community1 = await service.createCommunity(
           creator: user,
           category: 'food',
         );
+        await service.leaveCommunity(community1, user);
+        final updatedCommunity = service.getCommunityById(community1.id);
+        expect(updatedCommunity, isNotNull);
+        expect(updatedCommunity!.isMember(user), isFalse);
 
-        await service.leaveCommunity(community, user);
-
-        // Verify user was removed (in production, would fetch updated community)
-        expect(community.isMember(user), isFalse);
-      });
-
-      test('should throw exception when user is not a member', () async {
-        final community = await service.createCommunity(
+        final community2 = await service.createCommunity(
           creator: user,
           category: 'food',
         );
-
         final nonMember = ModelFactories.createTestUser(
           id: 'user-456',
         );
-
         expect(
-          () => service.leaveCommunity(community, nonMember),
+          () => service.leaveCommunity(community2, nonMember),
           throwsException,
         );
       });
     });
 
     group('findCommunitiesForUser', () {
-      test('should return communities matching user expertise', () async {
-        final communities = await service.findCommunitiesForUser(user);
+      test(
+          'should return communities matching user expertise, or return empty list when user has no expertise',
+          () async {
+        // Test business logic: community discovery for users
+        final communities1 = await service.findCommunitiesForUser(user);
+        expect(communities1, isA<List<ExpertiseCommunity>>());
 
-        expect(communities, isA<List<ExpertiseCommunity>>());
-      });
-
-      test('should return empty list when user has no expertise', () async {
         final userWithoutExpertise = ModelFactories.createTestUser(
           id: 'user-456',
         ).copyWith(expertiseMap: {});
-
-        final communities = await service.findCommunitiesForUser(userWithoutExpertise);
-
-        expect(communities, isEmpty);
+        final communities2 =
+            await service.findCommunitiesForUser(userWithoutExpertise);
+        expect(communities2, isEmpty);
       });
     });
 
     group('searchCommunities', () {
-      test('should search communities by category', () async {
-        final communities = await service.searchCommunities(
-          category: 'food',
-        );
+      test(
+          'should search communities by category or location, and respect maxResults parameter',
+          () async {
+        // Test business logic: community search with filters
+        final communities1 = await service.searchCommunities(category: 'food');
+        expect(communities1, isA<List<ExpertiseCommunity>>());
 
-        expect(communities, isA<List<ExpertiseCommunity>>());
-      });
+        final communities2 =
+            await service.searchCommunities(location: 'San Francisco');
+        expect(communities2, isA<List<ExpertiseCommunity>>());
 
-      test('should search communities by location', () async {
-        final communities = await service.searchCommunities(
-          location: 'San Francisco',
-        );
-
-        expect(communities, isA<List<ExpertiseCommunity>>());
-      });
-
-      test('should respect maxResults parameter', () async {
-        final communities = await service.searchCommunities(
+        final communities3 = await service.searchCommunities(
           category: 'food',
           maxResults: 5,
         );
-
-        expect(communities.length, lessThanOrEqualTo(5));
+        expect(communities3.length, lessThanOrEqualTo(5));
       });
     });
 
@@ -227,6 +203,9 @@ void main() {
         expect(members, isA<List<UnifiedUser>>());
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

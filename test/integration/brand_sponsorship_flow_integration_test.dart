@@ -9,7 +9,7 @@ import 'package:spots/core/models/sponsorship.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/brand_account.dart';
 import 'package:spots/core/models/unified_user.dart';
-import '../../fixtures/model_factories.dart';
+import '../fixtures/model_factories.dart';
 
 /// Integration tests for end-to-end brand sponsorship flow
 /// 
@@ -26,13 +26,14 @@ void main() {
     late ExpertiseEventService eventService;
     late PartnershipService partnershipService;
     late BusinessService businessService;
+    late BusinessAccountService businessAccountService;
     late UnifiedUser testUser;
     late ExpertiseEvent testEvent;
     late BrandAccount testBrand;
 
     setUp(() {
       eventService = ExpertiseEventService();
-      final businessAccountService = BusinessAccountService();
+      businessAccountService = BusinessAccountService();
       businessService = BusinessService(accountService: businessAccountService);
       partnershipService = PartnershipService(
         eventService: eventService,
@@ -56,6 +57,7 @@ void main() {
         expertiseMap: {
           'Coffee': 'city',
         },
+        location: 'San Francisco', // Set location to match event location for city expert
       );
 
       testEvent = ExpertiseEvent(
@@ -85,19 +87,33 @@ void main() {
     });
 
     test('complete brand sponsorship flow: discovery → proposal → acceptance', () async {
-      // Step 1: Register brand
+      // Step 0: Create event in service so it can be found
+      final createdEvent = await eventService.createEvent(
+        host: testUser,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+      );
+      
+      // Step 1: Register brand in both services
       await sponsorshipService.registerBrand(testBrand);
+      // Also register in BrandDiscoveryService so it can find the brand
+      await brandDiscoveryService.registerBrand(testBrand);
 
       // Step 2: Get sponsorship suggestions
       final discovery = await brandDiscoveryService.getSponsorshipSuggestions(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
       );
 
       expect(discovery.matchingResults, isNotEmpty);
 
       // Step 3: Create sponsorship proposal
       final sponsorship = await sponsorshipService.createSponsorship(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         brandId: testBrand.id,
         type: SponsorshipType.financial,
         contributionAmount: 500.00,
@@ -127,6 +143,18 @@ void main() {
     });
 
     test('multi-party sponsorship flow with partnership', () async {
+      // Step 0: Create event in service so it can be found
+      final createdEvent = await eventService.createEvent(
+        host: testUser,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+      );
+      
       // Step 1: Create business and partnership
       final business = await businessService.createBusinessAccount(
         name: 'Test Business',
@@ -134,10 +162,17 @@ void main() {
         businessType: 'Restaurant',
         createdBy: 'user-123',
       );
-      final verifiedBusiness = business.copyWith(isVerified: true);
+      // Update business to be verified and active in the service
+      // Use the same BusinessAccountService instance that BusinessService uses
+      final verifiedBusiness = await businessAccountService.updateBusinessAccount(
+        business,
+        name: business.name,
+        isVerified: true,
+        isActive: true,
+      );
 
       final partnership = await partnershipService.createPartnership(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         userId: testUser.id,
         businessId: verifiedBusiness.id,
         vibeCompatibilityScore: 0.75,
@@ -147,7 +182,7 @@ void main() {
       await sponsorshipService.registerBrand(testBrand);
 
       final sponsorship = await sponsorshipService.createSponsorship(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         brandId: testBrand.id,
         type: SponsorshipType.financial,
         contributionAmount: 500.00,
@@ -155,22 +190,34 @@ void main() {
       );
 
       // Step 3: Verify both partnership and sponsorship exist for event
-      final partnerships = await partnershipService.getPartnershipsForEvent(testEvent.id);
-      final sponsorships = await sponsorshipService.getSponsorshipsForEvent(testEvent.id);
+      final partnerships = await partnershipService.getPartnershipsForEvent(createdEvent.id);
+      final sponsorships = await sponsorshipService.getSponsorshipsForEvent(createdEvent.id);
 
       expect(partnerships, isNotEmpty);
       expect(sponsorships, isNotEmpty);
-      expect(partnerships.first.eventId, equals(testEvent.id));
-      expect(sponsorships.first.eventId, equals(testEvent.id));
+      expect(partnerships.first.eventId, equals(createdEvent.id));
+      expect(sponsorships.first.eventId, equals(createdEvent.id));
     });
 
     test('product sponsorship flow with product tracking', () async {
+      // Step 0: Create event in service so it can be found
+      final createdEvent = await eventService.createEvent(
+        host: testUser,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+      );
+      
       // Step 1: Register brand
       await sponsorshipService.registerBrand(testBrand);
 
       // Step 2: Create product sponsorship
       final sponsorship = await sponsorshipService.createSponsorship(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         brandId: testBrand.id,
         type: SponsorshipType.product,
         productValue: 300.00,
@@ -185,12 +232,24 @@ void main() {
     });
 
     test('hybrid sponsorship flow (cash + product)', () async {
+      // Step 0: Create event in service so it can be found
+      final createdEvent = await eventService.createEvent(
+        host: testUser,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+      );
+      
       // Step 1: Register brand
       await sponsorshipService.registerBrand(testBrand);
 
       // Step 2: Create hybrid sponsorship
       final sponsorship = await sponsorshipService.createSponsorship(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         brandId: testBrand.id,
         type: SponsorshipType.hybrid,
         contributionAmount: 500.00,
@@ -205,6 +264,18 @@ void main() {
     });
 
     test('sponsorship eligibility checks', () async {
+      // Step 0: Create event in service so it can be found
+      final createdEvent = await eventService.createEvent(
+        host: testUser,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+      );
+      
       // Step 1: Create unverified brand
       final unverifiedBrand = BrandAccount(
         id: 'brand-unverified',
@@ -220,7 +291,7 @@ void main() {
 
       // Step 2: Try to create sponsorship (should fail eligibility check)
       final isEligible = await sponsorshipService.checkSponsorshipEligibility(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         brandId: unverifiedBrand.id,
       );
 
@@ -233,7 +304,7 @@ void main() {
       await sponsorshipService.registerBrand(verifiedBrand);
 
       final isEligibleAfterVerification = await sponsorshipService.checkSponsorshipEligibility(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         brandId: verifiedBrand.id,
       );
 

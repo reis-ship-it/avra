@@ -39,22 +39,20 @@ void main() {
     });
     
     setUp(() async {
-      // Use SharedPreferencesCompat with mock storage to avoid platform channel issues
+      // Use SharedPreferencesCompat with mock storage for PersonalityLearning
+      // Use real SharedPreferences for AI2AILearning.create() and AI2AIChatAnalyzer
       try {
         final mockStorage = getTestStorage();
-        if (mockStorage == null) {
-          service = null;
-          personalityLearning = null;
-          prefs = null;
-          return;
-        }
         
+        // Use SharedPreferencesCompat for PersonalityLearning (accepts the typedef)
         final compatPrefs = await storage.SharedPreferencesCompat.getInstance(storage: mockStorage);
         prefs = compatPrefs;
         personalityLearning = PersonalityLearning.withPrefs(compatPrefs);
-        // Use factory constructor to avoid type conflicts
+        
+        // Use real SharedPreferences for AI2AILearning.create() (expects real type)
+        final realPrefs = await real_prefs.SharedPreferences.getInstance();
         service = AI2AILearning.create(
-          prefs: compatPrefs as dynamic, // CompatPrefs has same interface as SharedPreferences
+          prefs: realPrefs,
           personalityLearning: personalityLearning!,
         );
       } catch (e) {
@@ -90,8 +88,10 @@ void main() {
           expect(true, isTrue, reason: 'Service creation requires platform channels');
           return;
         }
+        // Use real SharedPreferences for AI2AILearning.create()
+        final realPrefs = await real_prefs.SharedPreferences.getInstance();
         final factoryService = AI2AILearning.create(
-          prefs: prefs! as dynamic,
+          prefs: realPrefs,
           personalityLearning: personalityLearning!,
         );
         
@@ -104,8 +104,10 @@ void main() {
           expect(true, isTrue, reason: 'Service creation requires platform channels');
           return;
         }
+        // Use real SharedPreferences for AI2AILearning.create()
+        final realPrefs = await real_prefs.SharedPreferences.getInstance();
         final factoryService = AI2AILearning.create(
-          prefs: prefs! as dynamic,
+          prefs: realPrefs,
           personalityLearning: personalityLearning!,
         );
         
@@ -135,9 +137,10 @@ void main() {
         }
         const userId = 'user_with_history';
         
-        // Create chat analyzer for this test
+        // Create chat analyzer for this test - use real SharedPreferences
+        final realPrefs = await real_prefs.SharedPreferences.getInstance();
         final chatAnalyzer = AI2AIChatAnalyzer(
-          prefs: prefs! as dynamic,
+          prefs: realPrefs,
           personalityLearning: personalityLearning!,
         );
         
@@ -454,9 +457,10 @@ void main() {
         }
         const userId = 'data_flow_test';
         
-        // Create chat analyzer for this test
+        // Create chat analyzer for this test - use real SharedPreferences
+        final realPrefs = await real_prefs.SharedPreferences.getInstance();
         final chatAnalyzer = AI2AIChatAnalyzer(
-          prefs: prefs! as dynamic,
+          prefs: realPrefs,
           personalityLearning: personalityLearning!,
         );
         

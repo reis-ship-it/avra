@@ -1,126 +1,40 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/monitoring/network_analytics.dart' as analytics;
 import 'package:spots/core/monitoring/connection_monitor.dart';
 import 'package:spots/core/models/connection_metrics.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import '../../../test/mocks/mock_storage_service.dart';
 
-/// Phase 4: Network Monitoring Test
-/// OUR_GUTS.md: "Validation of AI2AI personality network monitoring and analytics systems"
+/// Phase 4: Connection Monitor Test
+/// OUR_GUTS.md: "Validation of AI2AI personality network monitoring systems"
+/// 
+/// This test focuses on ConnectionMonitor behavior testing.
+/// NetworkAnalytics is tested separately in network_analytics_test.dart
 void main() {
-  group('Phase 4: Network Monitoring Tests', () {
-    late SharedPreferences mockPrefs;
+  group('Phase 4: Connection Monitor Tests', () {
+    late SharedPreferencesCompat compatPrefs;
     
     setUpAll(() async {
-      // Initialize mock shared preferences
-      SharedPreferences.setMockInitialValues({});
-      mockPrefs = await SharedPreferences.getInstance();
+      // Initialize mock storage for SharedPreferencesCompat
+      final mockStorage = MockGetStorage.getInstance();
+      MockGetStorage.reset();
+      compatPrefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
     });
     
-    group('Network Analytics System', () {
-      test('should create NetworkAnalytics successfully', () {
-        final analyticsSystem = analytics.NetworkAnalytics(prefs: mockPrefs);
-        
-        expect(analyticsSystem, isNotNull);
-      });
-      
-      test('should analyze network health and generate report', () async {
-        final analyticsSystem = analytics.NetworkAnalytics(prefs: mockPrefs);
-        
-        final healthReport = await analyticsSystem.analyzeNetworkHealth();
-        
-        expect(healthReport.overallHealthScore, greaterThanOrEqualTo(0.0));
-        expect(healthReport.overallHealthScore, lessThanOrEqualTo(1.0));
-        expect(healthReport.connectionQuality, isNotNull);
-        expect(healthReport.learningEffectiveness, isNotNull);
-        expect(healthReport.privacyMetrics, isNotNull);
-        expect(healthReport.stabilityMetrics, isNotNull);
-        expect(healthReport.performanceIssues, isA<List>());
-        expect(healthReport.optimizationRecommendations, isA<List>());
-        expect(healthReport.totalActiveConnections, greaterThanOrEqualTo(0));
-        expect(healthReport.networkUtilization, greaterThanOrEqualTo(0.0));
-        expect(healthReport.networkUtilization, lessThanOrEqualTo(1.0));
-        expect(healthReport.analysisTimestamp, isNotNull);
-      });
-      
-      test('should collect real-time network metrics', () async {
-        final analyticsSystem = analytics.NetworkAnalytics(prefs: mockPrefs);
-        
-        final realTimeMetrics = await analyticsSystem.collectRealTimeMetrics();
-        
-        expect(realTimeMetrics.connectionThroughput, greaterThanOrEqualTo(0.0));
-        expect(realTimeMetrics.matchingSuccessRate, greaterThanOrEqualTo(0.0));
-        expect(realTimeMetrics.matchingSuccessRate, lessThanOrEqualTo(1.0));
-        expect(realTimeMetrics.learningConvergenceSpeed, greaterThanOrEqualTo(0.0));
-        expect(realTimeMetrics.learningConvergenceSpeed, lessThanOrEqualTo(1.0));
-        expect(realTimeMetrics.vibeSynchronizationQuality, greaterThanOrEqualTo(0.0));
-        expect(realTimeMetrics.vibeSynchronizationQuality, lessThanOrEqualTo(1.0));
-        expect(realTimeMetrics.networkResponsiveness, greaterThanOrEqualTo(0.0));
-        expect(realTimeMetrics.networkResponsiveness, lessThanOrEqualTo(1.0));
-        expect(realTimeMetrics.resourceUtilization, isNotNull);
-        expect(realTimeMetrics.timestamp, isNotNull);
-      });
-      
-      test('should generate comprehensive analytics dashboard', () async {
-        final analyticsSystem = analytics.NetworkAnalytics(prefs: mockPrefs);
-        
-        final dashboard = await analyticsSystem.generateAnalyticsDashboard(Duration(days: 7));
-        
-        expect(dashboard.timeWindow, equals(Duration(days: 7)));
-        expect(dashboard.performanceTrends, isA<List>());
-        expect(dashboard.evolutionStatistics, isNotNull);
-        expect(dashboard.connectionPatterns, isA<List>());
-        expect(dashboard.learningDistribution, isNotNull);
-        expect(dashboard.privacyPreservationStats, isNotNull);
-        expect(dashboard.usageAnalytics, isNotNull);
-        expect(dashboard.networkGrowthMetrics, isNotNull);
-        expect(dashboard.topPerformingArchetypes, isA<List<String>>());
-        expect(dashboard.generatedAt, isNotNull);
-      });
-      
-      test('should detect network anomalies', () async {
-        final analyticsSystem = analytics.NetworkAnalytics(prefs: mockPrefs);
-        
-        final anomalies = await analyticsSystem.detectNetworkAnomalies();
-        
-        expect(anomalies, isA<List<analytics.NetworkAnomaly>>());
-        // Anomalies list can be empty if no anomalies are detected
-        for (final anomaly in anomalies) {
-          expect(anomaly.type, isA<analytics.AnomalyType>());
-          expect(anomaly.severity, isA<analytics.IssueSeverity>());
-          expect(anomaly.description, isNotEmpty);
-          expect(anomaly.detectedAt, isNotNull);
-          expect(anomaly.metadata, isA<Map<String, dynamic>>());
-        }
-      });
-      
-      test('should analyze network optimization opportunities', () async {
-        final analyticsSystem = analytics.NetworkAnalytics(prefs: mockPrefs);
-        
-        final optimizationReport = await analyticsSystem.analyzeNetworkOptimization();
-        
-        expect(optimizationReport.connectionEfficiency, isNotNull);
-        expect(optimizationReport.learningBottlenecks, isA<List>());
-        expect(optimizationReport.resourceOptimization, isNotNull);
-        expect(optimizationReport.performanceImprovements, isNotNull);
-        expect(optimizationReport.optimizationActions, isA<List>());
-        expect(optimizationReport.impactEstimates, isNotNull);
-        expect(optimizationReport.currentEfficiencyScore, greaterThanOrEqualTo(0.0));
-        expect(optimizationReport.currentEfficiencyScore, lessThanOrEqualTo(1.0));
-        expect(optimizationReport.potentialEfficiencyScore, greaterThanOrEqualTo(0.0));
-        expect(optimizationReport.potentialEfficiencyScore, lessThanOrEqualTo(1.0));
-        expect(optimizationReport.analyzedAt, isNotNull);
-      });
+    setUp(() async {
+      // Reset mock storage for test isolation
+      MockGetStorage.reset();
+      final mockStorage = MockGetStorage.getInstance();
+      compatPrefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
+    });
+    
+    tearDown(() {
+      // Reset mock storage for test isolation
+      MockGetStorage.reset();
     });
     
     group('Connection Monitor System', () {
-      test('should create ConnectionMonitor successfully', () {
-        final connectionMonitor = ConnectionMonitor(prefs: mockPrefs);
-        
-        expect(connectionMonitor, isNotNull);
-      });
-      
       test('should start monitoring a connection', () async {
-        final connectionMonitor = ConnectionMonitor(prefs: mockPrefs);
+        final connectionMonitor = ConnectionMonitor(prefs: compatPrefs);
         
         final testMetrics = ConnectionMetrics(
           connectionId: 'test_connection_001',
@@ -138,22 +52,22 @@ void main() {
           dimensionEvolution: {'exploration_eagerness': 0.05, 'community_orientation': 0.03},
         );
         
-                 final session = await connectionMonitor.startMonitoring('test_connection_001', testMetrics);
-         
-         expect(session.connectionId, equals('test_connection_001'));
-         expect(session.localAISignature, equals('local_ai_signature'));
-         expect(session.remoteAISignature, equals('remote_ai_signature'));
-         expect(session.initialMetrics, equals(testMetrics));
-         expect(session.currentMetrics, equals(testMetrics));
-         expect(session.qualityHistory, hasLength(1));
-         expect(session.learningProgressHistory, hasLength(1));
-         expect(session.alertsGenerated, isEmpty);
-         expect(session.monitoringStatus, equals(MonitoringStatus.active));
+        final session = await connectionMonitor.startMonitoring('test_connection_001', testMetrics);
+        
+        expect(session.connectionId, equals('test_connection_001'));
+        expect(session.localAISignature, equals('local_ai_signature'));
+        expect(session.remoteAISignature, equals('remote_ai_signature'));
+        expect(session.initialMetrics, equals(testMetrics));
+        expect(session.currentMetrics, equals(testMetrics));
+        expect(session.qualityHistory, hasLength(1));
+        expect(session.learningProgressHistory, hasLength(1));
+        expect(session.alertsGenerated, isEmpty);
+        expect(session.monitoringStatus, equals(MonitoringStatus.active));
         expect(session.startTime, isNotNull);
       });
       
       test('should update connection metrics during monitoring', () async {
-        final monitor = ConnectionMonitor(prefs: mockPrefs);
+        final monitor = ConnectionMonitor(prefs: compatPrefs);
         
         final initialMetrics = ConnectionMetrics(
           connectionId: 'test_connection_002',
@@ -200,7 +114,7 @@ void main() {
       });
       
       test('should get real-time connection status', () async {
-        final monitor = ConnectionMonitor(prefs: mockPrefs);
+        final monitor = ConnectionMonitor(prefs: compatPrefs);
         
         final testMetrics = ConnectionMetrics(
           connectionId: 'test_connection_003',
@@ -234,7 +148,7 @@ void main() {
       });
       
       test('should handle connection not found gracefully', () async {
-        final monitor = ConnectionMonitor(prefs: mockPrefs);
+        final monitor = ConnectionMonitor(prefs: compatPrefs);
         
         final connectionStatus = await monitor.getConnectionStatus('non_existent_connection');
         
@@ -244,7 +158,7 @@ void main() {
       });
       
       test('should analyze connection performance trends', () async {
-        final monitor = ConnectionMonitor(prefs: mockPrefs);
+        final monitor = ConnectionMonitor(prefs: compatPrefs);
         
         final testMetrics = ConnectionMetrics(
           connectionId: 'test_connection_004',
@@ -283,7 +197,7 @@ void main() {
       });
       
       test('should generate active connections overview when no connections exist', () async {
-        final monitor = ConnectionMonitor(prefs: mockPrefs);
+        final monitor = ConnectionMonitor(prefs: compatPrefs);
         
         final overview = await monitor.getActiveConnectionsOverview();
         
@@ -299,7 +213,7 @@ void main() {
       });
       
       test('should detect connection anomalies', () async {
-        final monitor = ConnectionMonitor(prefs: mockPrefs);
+        final monitor = ConnectionMonitor(prefs: compatPrefs);
         
         final anomalies = await monitor.detectConnectionAnomalies();
         
@@ -316,7 +230,7 @@ void main() {
       });
       
       test('should stop monitoring and generate report', () async {
-        final monitor = ConnectionMonitor(prefs: mockPrefs);
+        final monitor = ConnectionMonitor(prefs: compatPrefs);
         
         final testMetrics = ConnectionMetrics(
           connectionId: 'test_connection_005',
@@ -361,27 +275,6 @@ void main() {
     });
     
     group('Integration Validation', () {
-      test('should validate Phase 4 component integration', () async {
-        // Create both Phase 4 components
-        final analyticsSystem = analytics.NetworkAnalytics(prefs: mockPrefs);
-        final monitor = ConnectionMonitor(prefs: mockPrefs);
-        
-        // Validate component creation
-        expect(analyticsSystem, isNotNull);
-        expect(monitor, isNotNull);
-        
-        // Test that both components work independently
-        expect(analyticsSystem.runtimeType, equals(analytics.NetworkAnalytics));
-        expect(monitor.runtimeType, equals(ConnectionMonitor));
-        
-        // Test basic functionality
-        final healthReport = await analyticsSystem.analyzeNetworkHealth();
-        expect(healthReport.overallHealthScore, greaterThanOrEqualTo(0.0));
-        
-        final overview = await monitor.getActiveConnectionsOverview();
-        expect(overview.totalActiveConnections, equals(0));
-      });
-      
       test('should validate monitoring data structures compatibility', () async {
         // Test that monitoring data structures are compatible with connection metrics
         final testMetrics = ConnectionMetrics(
@@ -410,9 +303,8 @@ void main() {
         expect(testMetrics.dimensionEvolution, isA<Map<String, double>>());
       });
       
-      test('should validate Phase 4 monitoring capabilities', () async {
-        final monitor = ConnectionMonitor(prefs: mockPrefs);
-        final analyticsSystem = analytics.NetworkAnalytics(prefs: mockPrefs);
+      test('should validate complete monitoring lifecycle', () async {
+        final monitor = ConnectionMonitor(prefs: compatPrefs);
         
         // Test monitoring lifecycle
         final testMetrics = ConnectionMetrics(
@@ -435,21 +327,19 @@ void main() {
         final session = await monitor.startMonitoring('lifecycle_test', testMetrics);
         expect(session.monitoringStatus, equals(MonitoringStatus.active));
         
-        // Check network analytics can run while monitoring is active
-        final healthReport = await analyticsSystem.analyzeNetworkHealth();
-        expect(healthReport, isNotNull);
-        
-        // Get connection status
+        // Get connection status while monitoring
         final status = await monitor.getConnectionStatus('lifecycle_test');
         expect(status.connectionId, equals('lifecycle_test'));
+        expect(status.healthScore, greaterThan(0.0));
         
         // Stop monitoring
         final report = await monitor.stopMonitoring('lifecycle_test');
         expect(report.connectionId, equals('lifecycle_test'));
-        
-        // Verify monitoring system handles the full lifecycle correctly
-        expect(session.connectionId, equals('lifecycle_test'));
         expect(report.connectionDuration, greaterThan(Duration.zero));
+        
+        // Verify connection is no longer being monitored
+        final statusAfterStop = await monitor.getConnectionStatus('lifecycle_test');
+        expect(statusAfterStop.healthScore, equals(0.0));
       });
     });
   });

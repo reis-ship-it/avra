@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/models/product_tracking.dart';
 import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/payment_status.dart';
 import 'package:spots/core/services/product_tracking_service.dart';
 import 'package:spots/core/services/sponsorship_service.dart';
 import 'package:spots/core/services/revenue_split_service.dart';
@@ -39,8 +37,7 @@ void main() {
     late Sponsorship testSponsorship;
     
     setUp(() {
-      TestHelpers.setupTestEnvironment();
-      testDate = TestHelpers.createTestDateTime();
+      testDate = DateTime(2025, 1, 1);
       
       mockSponsorshipService = MockSponsorshipService();
       mockRevenueSplitService = MockRevenueSplitService();
@@ -63,7 +60,7 @@ void main() {
     tearDown(() {
       reset(mockSponsorshipService);
       reset(mockRevenueSplitService);
-      TestHelpers.teardownTestEnvironment();
+      // No teardown needed
     });
     
     group('Scenario 1: Product Contribution Tracking', () {

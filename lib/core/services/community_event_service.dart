@@ -6,16 +6,16 @@ import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/community_service.dart';
 
 /// Community Event Service
-/// 
+///
 /// Manages non-expert community events (dinner parties, park hangs, walks, runs, etc.)
-/// 
+///
 /// **Philosophy Alignment:**
 /// - Opens doors for anyone to host community events (no expertise gate)
 /// - Enables organic community building
 /// - Creates natural path from community events to expert events
 /// - Tracks event metrics for upgrade eligibility
 /// - Auto-creates communities from successful events
-/// 
+///
 /// **Key Features:**
 /// - Non-experts can create events (no expertise required)
 /// - No payment on app (price must be null or 0.0, isPaid must be false)
@@ -33,9 +33,17 @@ class CommunityEventService {
 
   final CommunityService _communityService;
 
+  // In-memory storage (in production, use database)
+  final Map<String, CommunityEvent> _events = {};
+
   CommunityEventService({
     CommunityService? communityService,
   }) : _communityService = communityService ?? CommunityService();
+
+  /// Reset in-memory storage (for testing)
+  void reset() {
+    _events.clear();
+  }
 
   /// Create a new community event
   /// Allows non-experts to create events (no expertise level required)
@@ -141,7 +149,8 @@ class CommunityEventService {
 
     // Validate public requirement
     if (!isPublic) {
-      throw Exception('Community events must be public (isPublic must be true)');
+      throw Exception(
+          'Community events must be public (isPublic must be true)');
     }
   }
 
@@ -197,7 +206,8 @@ class CommunityEventService {
       final saveScore = (newSaveCount / 100.0).clamp(0.0, 1.0) * 0.4;
       final shareScore = (newShareCount / 50.0).clamp(0.0, 1.0) * 0.3;
 
-      final engagementScore = (viewScore + saveScore + shareScore).clamp(0.0, 1.0);
+      final engagementScore =
+          (viewScore + saveScore + shareScore).clamp(0.0, 1.0);
 
       final updated = event.copyWith(
         viewCount: newViewCount,
@@ -301,7 +311,7 @@ class CommunityEventService {
   }
 
   /// Check if event is successful and create community
-  /// 
+  ///
   /// Auto-creates a community from a successful event when:
   /// - Event has sufficient attendees
   /// - Event has repeat attendees
@@ -322,7 +332,8 @@ class CommunityEventService {
       final meetsAttendeeCriteria = event.attendeeCount >= minAttendees;
       final meetsRepeatAttendeeCriteria =
           event.repeatAttendeesCount >= minRepeatAttendees;
-      final meetsEngagementCriteria = event.engagementScore >= minEngagementScore;
+      final meetsEngagementCriteria =
+          event.engagementScore >= minEngagementScore;
 
       if (meetsAttendeeCriteria &&
           meetsRepeatAttendeeCriteria &&
@@ -378,9 +389,7 @@ class CommunityEventService {
       final filteredEvents = allEvents.where((event) {
         if (category != null && event.category != category) return false;
         if (location != null && event.location != null) {
-          if (!event.location!
-              .toLowerCase()
-              .contains(location.toLowerCase())) {
+          if (!event.location!.toLowerCase().contains(location.toLowerCase())) {
             return false;
           }
         }
@@ -409,9 +418,7 @@ class CommunityEventService {
   ) async {
     try {
       final allEvents = await _getAllEvents();
-      return allEvents
-          .where((event) => event.host.id == host.id)
-          .toList()
+      return allEvents.where((event) => event.host.id == host.id).toList()
         ..sort((a, b) => a.startTime.compareTo(b.startTime));
     } catch (e) {
       _logger.error(
@@ -514,7 +521,7 @@ class CommunityEventService {
   }
 
   /// Mark event as completed and check for community creation
-  /// 
+  ///
   /// Marks event as completed and automatically creates a community
   /// if the event meets success criteria.
   Future<CommunityEvent> completeCommunityEvent(CommunityEvent event) async {
@@ -568,16 +575,22 @@ class CommunityEventService {
   // Private helper methods
 
   String _generateEventId() {
-    return 'community_event_${DateTime.now().millisecondsSinceEpoch}';
+    // Use microsecondsSinceEpoch for better uniqueness, especially in tests
+    // Add random component to prevent collisions in rapid succession
+    final timestamp = DateTime.now().microsecondsSinceEpoch;
+    final random = (timestamp % 10000).toString().padLeft(4, '0');
+    return 'community_event_${timestamp}_$random';
   }
 
   Future<void> _saveEvent(CommunityEvent event) async {
     // In production, save to database
+    // For now, store in memory
+    _events[event.id] = event;
   }
 
   Future<List<CommunityEvent>> _getAllEvents() async {
     // In production, query database
-    return [];
+    // For now, return in-memory events
+    return _events.values.toList();
   }
 }
-

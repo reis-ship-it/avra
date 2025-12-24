@@ -629,6 +629,9 @@ class LLMContext {
   final List<pl.AI2AILearningInsight>? ai2aiInsights;
   final ConnectionMetrics? connectionMetrics;
   
+  // Language Learning Integration (Phase 2.4)
+  final String? languageStyle; // Formatted language style summary from LanguageProfile
+  
   LLMContext({
     this.userId,
     this.location,
@@ -639,6 +642,8 @@ class LLMContext {
     this.vibe,
     this.ai2aiInsights,
     this.connectionMetrics,
+    // Language Learning
+    this.languageStyle,
   });
   
   Map<String, dynamic> toJson() {
@@ -697,6 +702,11 @@ class LLMContext {
         'status': connectionMetrics!.status.toString(),
         'learningOutcomes': connectionMetrics!.learningOutcomes,
       };
+    }
+    
+    // Language style integration (Phase 2.4)
+    if (languageStyle != null && languageStyle!.isNotEmpty) {
+      json['languageStyle'] = languageStyle;
     }
     
     return json;

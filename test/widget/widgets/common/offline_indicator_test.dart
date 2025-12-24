@@ -18,8 +18,13 @@ void main() {
       mockAuthBloc = MockAuthBloc();
     });
 
-    testWidgets('displays offline indicator when user is offline', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Offline indicator tests focus on business logic (offline indicator display based on auth state), not property assignment
+
+    testWidgets(
+        'should display offline indicator when user is offline, not display when user is online, or not display when user is not authenticated',
+        (WidgetTester tester) async {
+      // Test business logic: Offline indicator display based on auth state
       final testUser = User(
         id: 'test-user',
         email: 'test@example.com',
@@ -28,57 +33,32 @@ void main() {
         createdAt: TestHelpers.createTestDateTime(),
         updatedAt: TestHelpers.createTestDateTime(),
       );
-      when(mockAuthBloc.state).thenReturn(Authenticated(user: testUser, isOffline: true));
-      final widget = WidgetTestHelpers.createTestableWidget(
+      when(mockAuthBloc.state)
+          .thenReturn(Authenticated(user: testUser, isOffline: true));
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const OfflineIndicator(),
         authBloc: mockAuthBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show offline indicator
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Offline'), findsOneWidget);
       expect(find.byIcon(Icons.wifi_off), findsOneWidget);
-    });
 
-    testWidgets('does not display when user is online', (WidgetTester tester) async {
-      // Arrange
-      final testUser = User(
-        id: 'test-user',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: UserRole.user,
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-      );
-      when(mockAuthBloc.state).thenReturn(Authenticated(user: testUser, isOffline: false));
-      final widget = WidgetTestHelpers.createTestableWidget(
+      when(mockAuthBloc.state)
+          .thenReturn(Authenticated(user: testUser, isOffline: false));
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: const OfflineIndicator(),
         authBloc: mockAuthBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should not show offline indicator
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Offline'), findsNothing);
-    });
 
-    testWidgets('does not display when user is not authenticated', (WidgetTester tester) async {
-      // Arrange
       when(mockAuthBloc.state).thenReturn(Unauthenticated());
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const OfflineIndicator(),
         authBloc: mockAuthBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should not show offline indicator
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Offline'), findsNothing);
     });
   });
 }
-

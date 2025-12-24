@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:spots/core/models/user_partnership.dart';
+import 'package:spots/core/models/event_partnership.dart' show PartnershipStatus, PartnershipStatusExtension;
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/widgets/profile/partnership_card.dart';
-import 'package:spots/presentation/widgets/profile/partnership_visibility_toggle.dart';
 
 /// Partnership Display Widget
 /// 
@@ -199,7 +199,7 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
               ...PartnershipStatus.values.map((status) {
                 return DropdownMenuItem<PartnershipStatus?>(
                   value: status,
-                  child: Text(status.displayName),
+                  child: Text(PartnershipStatusExtension(status).displayName),
                 );
               }),
             ],

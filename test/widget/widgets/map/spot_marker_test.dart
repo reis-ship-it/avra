@@ -9,66 +9,40 @@ import '../../../fixtures/model_factories.dart';
 /// Tests map marker display and interactions
 void main() {
   group('SpotMarker Widget Tests', () {
-    testWidgets('displays marker with correct color', (WidgetTester tester) async {
-      // Arrange
-      final testSpot = ModelFactories.createTestSpot(
+    // Removed: Property assignment tests
+    // Spot marker tests focus on business logic (marker display, category icon, user interactions), not property assignment
+
+    testWidgets(
+        'should display marker with correct color, display category icon, or call onTap callback when tapped',
+        (WidgetTester tester) async {
+      // Test business logic: spot marker display and interactions
+      final testSpot1 = ModelFactories.createTestSpot(
         id: 'spot-123',
         category: 'Coffee',
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: SpotMarker(
-          spot: testSpot,
+          spot: testSpot1,
           color: AppColors.electricGreen,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show marker
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(SpotMarker), findsOneWidget);
-    });
-
-    testWidgets('displays category icon', (WidgetTester tester) async {
-      // Arrange
-      final testSpot = ModelFactories.createTestSpot(
-        id: 'spot-123',
-        category: 'Coffee',
-      );
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: SpotMarker(
-          spot: testSpot,
-          color: AppColors.electricGreen,
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show category icon
       expect(find.byIcon(Icons.coffee), findsOneWidget);
-    });
 
-    testWidgets('calls onTap callback when tapped', (WidgetTester tester) async {
-      // Arrange
       bool wasTapped = false;
-      final testSpot = ModelFactories.createTestSpot(id: 'spot-123');
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final testSpot2 = ModelFactories.createTestSpot(id: 'spot-123');
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: SpotMarker(
-          spot: testSpot,
+          spot: testSpot2,
           color: AppColors.electricGreen,
           onTap: () => wasTapped = true,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       await tester.tap(find.byType(SpotMarker));
       await tester.pump();
-
-      // Assert - Callback should be called
       expect(wasTapped, isTrue);
     });
   });
 }
-

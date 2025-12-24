@@ -11,6 +11,7 @@ import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
 
 import 'dispute_resolution_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([
   ExpertiseEventService,
@@ -21,13 +22,18 @@ void main() {
     late DisputeResolutionService service;
     late MockExpertiseEventService mockEventService;
     late MockRefundService mockRefundService;
-    
+
     late ExpertiseEvent testEvent;
 
     setUp(() {
       mockEventService = MockExpertiseEventService();
       mockRefundService = MockRefundService();
-      
+
+      // Mock getEventById to return null by default (event not found)
+      // Tests can override this if they need specific events
+      when(mockEventService.getEventById(any))
+          .thenAnswer((_) async => null);
+
       service = DisputeResolutionService(
         eventService: mockEventService,
         refundService: mockRefundService,
@@ -37,9 +43,13 @@ void main() {
         id: 'event-123',
         host: UnifiedUser(
           id: 'host-123',
-          name: 'Test Host',
+          email: 'host@example.com',
+          displayName: 'Test Host',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
         ),
         title: 'Test Event',
+        category: 'General',
         description: 'Test Description',
         startTime: DateTime.now().add(const Duration(days: 5)),
         endTime: DateTime.now().add(const Duration(days: 5, hours: 2)),
@@ -54,29 +64,29 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Dispute resolution tests focus on business logic (dispute submission, review, resolution), not property assignment
+
     group('submitDispute', () {
-      test('should create dispute successfully', () async {
-        // Act
-        final dispute = await service.submitDispute(
+      test(
+          'should create dispute successfully or include evidence URLs if provided',
+          () async {
+        // Test business logic: dispute submission
+        final dispute1 = await service.submitDispute(
           eventId: 'event-123',
           reporterId: 'user-456',
           reportedId: 'user-789',
           type: DisputeType.payment,
           description: 'Payment issue',
         );
+        expect(dispute1, isA<Dispute>());
+        expect(dispute1.eventId, equals('event-123'));
+        expect(dispute1.reporterId, equals('user-456'));
+        expect(dispute1.reportedId, equals('user-789'));
+        expect(dispute1.type, equals(DisputeType.payment));
+        expect(dispute1.status, equals(DisputeStatus.pending));
 
-        // Assert
-        expect(dispute, isA<Dispute>());
-        expect(dispute.eventId, equals('event-123'));
-        expect(dispute.reporterId, equals('user-456'));
-        expect(dispute.reportedId, equals('user-789'));
-        expect(dispute.type, equals(DisputeType.payment));
-        expect(dispute.status, equals(DisputeStatus.pending));
-      });
-
-      test('should include evidence URLs if provided', () async {
-        // Act
-        final dispute = await service.submitDispute(
+        final dispute2 = await service.submitDispute(
           eventId: 'event-123',
           reporterId: 'user-456',
           reportedId: 'user-789',
@@ -84,16 +94,15 @@ void main() {
           description: 'Event quality issue',
           evidenceUrls: ['https://example.com/evidence1.jpg'],
         );
-
-        // Assert
-        expect(dispute.evidenceUrls, hasLength(1));
-        expect(dispute.evidenceUrls, contains('https://example.com/evidence1.jpg'));
+        expect(dispute2.evidenceUrls, hasLength(1));
+        expect(dispute2.evidenceUrls,
+            contains('https://example.com/evidence1.jpg'));
       });
     });
 
     group('reviewDispute', () {
       test('should update dispute status to inReview', () async {
-        // Arrange
+        // Test business logic: dispute review assignment
         final dispute = await service.submitDispute(
           eventId: 'event-123',
           reporterId: 'user-456',
@@ -101,14 +110,10 @@ void main() {
           type: DisputeType.payment,
           description: 'Payment issue',
         );
-
-        // Act
         final reviewed = await service.reviewDispute(
           disputeId: dispute.id,
           adminId: 'admin-123',
         );
-
-        // Assert
         expect(reviewed.status, equals(DisputeStatus.inReview));
         expect(reviewed.assignedAdminId, equals('admin-123'));
         expect(reviewed.assignedAt, isNotNull);
@@ -117,10 +122,9 @@ void main() {
 
     group('attemptAutomatedResolution', () {
       test('should auto-resolve payment disputes when possible', () async {
-        // Arrange
+        // Test business logic: automated dispute resolution
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-        
         final dispute = await service.submitDispute(
           eventId: 'event-123',
           reporterId: 'user-456',
@@ -128,11 +132,7 @@ void main() {
           type: DisputeType.payment,
           description: 'Refund disagreement',
         );
-
-        // Act
         final resolved = await service.attemptAutomatedResolution(dispute.id);
-
-        // Assert
         expect(resolved, isNotNull);
         expect(resolved?.status, equals(DisputeStatus.resolved));
         expect(resolved?.resolution, isNotNull);
@@ -141,7 +141,7 @@ void main() {
 
     group('resolveDispute', () {
       test('should resolve dispute with resolution details', () async {
-        // Arrange
+        // Test business logic: manual dispute resolution
         final dispute = await service.submitDispute(
           eventId: 'event-123',
           reporterId: 'user-456',
@@ -149,16 +149,12 @@ void main() {
           type: DisputeType.event,
           description: 'Event quality issue',
         );
-
-        // Act
         final resolved = await service.resolveDispute(
           disputeId: dispute.id,
           adminId: 'admin-123',
           resolution: 'Issue resolved with full refund',
           refundAmount: 25.00,
         );
-
-        // Assert
         expect(resolved.status, equals(DisputeStatus.resolved));
         expect(resolved.resolution, equals('Issue resolved with full refund'));
         expect(resolved.refundAmount, equals(25.00));
@@ -167,8 +163,10 @@ void main() {
     });
 
     group('getDispute', () {
-      test('should return dispute if exists', () async {
-        // Arrange
+      test(
+          'should return dispute if exists or return null if dispute not found',
+          () async {
+        // Test business logic: dispute retrieval
         final dispute = await service.submitDispute(
           eventId: 'event-123',
           reporterId: 'user-456',
@@ -176,27 +174,18 @@ void main() {
           type: DisputeType.payment,
           description: 'Payment issue',
         );
+        final retrieved1 = await service.getDispute(dispute.id);
+        expect(retrieved1, isNotNull);
+        expect(retrieved1?.id, equals(dispute.id));
 
-        // Act
-        final retrieved = await service.getDispute(dispute.id);
-
-        // Assert
-        expect(retrieved, isNotNull);
-        expect(retrieved?.id, equals(dispute.id));
-      });
-
-      test('should return null if dispute not found', () async {
-        // Act
-        final dispute = await service.getDispute('non-existent');
-
-        // Assert
-        expect(dispute, isNull);
+        final retrieved2 = await service.getDispute('non-existent');
+        expect(retrieved2, isNull);
       });
     });
 
     group('getDisputesForEvent', () {
       test('should return all disputes for event', () async {
-        // Arrange
+        // Test business logic: dispute retrieval by event
         await service.submitDispute(
           eventId: 'event-123',
           reporterId: 'user-456',
@@ -211,15 +200,14 @@ void main() {
           type: DisputeType.event,
           description: 'Event quality issue',
         );
-
-        // Act
         final disputes = await service.getDisputesForEvent('event-123');
-
-        // Assert
         expect(disputes, hasLength(2));
         expect(disputes.every((d) => d.eventId == 'event-123'), isTrue);
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

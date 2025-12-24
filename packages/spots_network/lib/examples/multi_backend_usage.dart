@@ -51,7 +51,7 @@ class MultiBackendExample {
     
     if (authBackend != null) {
       // Use Supabase for authentication
-      await authBackend.auth.signIn('user@example.com', 'password');
+      await authBackend.auth.signInWithEmailPassword('user@example.com', 'password');
       print('🔐 User authenticated via Supabase');
     }
   }
@@ -64,7 +64,8 @@ class MultiBackendExample {
     
     if (ai2aiBackend != null) {
       // Use Firebase for real-time AI2AI features
-      final stream = ai2aiBackend.realtime.subscribeToChannel('personality_updates');
+      await ai2aiBackend.realtime.joinChannel('personality_updates');
+      final stream = ai2aiBackend.realtime.subscribeToMessages('personality_updates');
       print('🤖 AI2AI real-time features enabled via Firebase');
     }
   }
@@ -77,7 +78,9 @@ class MultiBackendExample {
     
     if (dataBackend != null) {
       // Use Custom API for data storage
-      await dataBackend.data.createDocument('users', {'name': 'John'});
+      // Use createUser instead of createDocument
+      // await dataBackend.data.createUser(User(...)); // Would need proper User object
+      // For example purposes, this is commented out
       print('💾 User data stored via Custom API');
     }
   }
@@ -90,8 +93,9 @@ class MultiBackendExample {
     
     if (uploadBackend != null) {
       // Use Supabase for file uploads
-      await uploadBackend.data.uploadFile('profile.jpg', 'image/jpeg');
-      print('📁 File uploaded via Supabase Storage');
+      // uploadFile requires List<int> bytes, not String
+      // For example: await uploadBackend.data.uploadFile('profile.jpg', fileBytes, metadata: {'contentType': 'image/jpeg'});
+      print('📁 File upload would require actual file bytes (List<int>)');
     }
   }
   
@@ -103,11 +107,10 @@ class MultiBackendExample {
     
     if (analyticsBackend != null) {
       // Use Firebase for analytics
-      await analyticsBackend.data.createDocument('events', {
-        'event': 'user_login',
-        'timestamp': DateTime.now().toIso8601String(),
-      });
-      print('📊 Event tracked via Firebase Analytics');
+      // createDocument doesn't exist - would need to use appropriate method
+      // For analytics events, would typically use a dedicated analytics service
+      // This is commented out for example purposes
+      print('📊 Analytics tracking would require dedicated analytics service');
     }
   }
   

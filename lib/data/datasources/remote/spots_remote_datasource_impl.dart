@@ -5,45 +5,76 @@ import 'package:spots_core/spots_core.dart' as spots_core;
 import 'package:spots/injection_container.dart' as di;
 
 class SpotsRemoteDataSourceImpl implements SpotsRemoteDataSource {
-  DataBackend get _data => di.sl<DataBackend>();
+  DataBackend? get _data {
+    try {
+      return di.sl<DataBackend>();
+    } catch (_) {
+      // DataBackend not registered (e.g., Supabase not initialized)
+      return null;
+    }
+  }
 
   static const String _collection = 'spots';
 
   @override
   Future<List<Spot>> getSpots() async {
-    final res = await _data.getSpots(limit: 100);
+    final data = _data;
+    if (data == null) return [];
+    try {
+      final res = await data.getSpots(limit: 100);
     if (res.hasData && res.data != null) {
       return res.data!
           .map((coreSpot) => Spot.fromJson(coreSpot.toJson()))
           .toList();
     }
     return [];
+    } catch (_) {
+      return [];
+    }
   }
 
   @override
   Future<Spot> createSpot(Spot spot) async {
-    final res = await _data.createSpot(
-      spots_core.Spot.fromJson(spot.toJson()),
-    );
-    if (res.hasData && res.data != null) {
-      return Spot.fromJson(res.data!.toJson());
+    final data = _data;
+    if (data == null) return spot;
+    try {
+      final res = await data.createSpot(
+        spots_core.Spot.fromJson(spot.toJson()),
+      );
+      if (res.hasData && res.data != null) {
+        return Spot.fromJson(res.data!.toJson());
+      }
+      return spot;
+    } catch (_) {
+      return spot;
     }
-    return spot;
   }
 
   @override
   Future<Spot> updateSpot(Spot spot) async {
-    final res = await _data.updateSpot(
-      spots_core.Spot.fromJson(spot.toJson()),
-    );
-    if (res.hasData && res.data != null) {
-      return Spot.fromJson(res.data!.toJson());
+    final data = _data;
+    if (data == null) return spot;
+    try {
+      final res = await data.updateSpot(
+        spots_core.Spot.fromJson(spot.toJson()),
+      );
+      if (res.hasData && res.data != null) {
+        return Spot.fromJson(res.data!.toJson());
+      }
+      return spot;
+    } catch (_) {
+      return spot;
     }
-    return spot;
   }
 
   @override
   Future<void> deleteSpot(String id) async {
-    await _data.deleteSpot(id);
+    final data = _data;
+    if (data == null) return;
+    try {
+      await data.deleteSpot(id);
+    } catch (_) {
+      // Ignore errors if backend not available
+    }
   }
 }

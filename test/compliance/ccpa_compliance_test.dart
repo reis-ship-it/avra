@@ -3,6 +3,7 @@ import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/user_anonymization_service.dart';
 import 'package:spots/core/services/field_encryption_service.dart';
 import 'package:spots/core/services/location_obfuscation_service.dart';
+import 'helpers/platform_channel_helper.dart';
 
 /// CCPA Compliance Tests
 /// 
@@ -14,6 +15,10 @@ import 'package:spots/core/services/location_obfuscation_service.dart';
 /// - Data security
 /// - User rights (access, deletion, opt-out)
 void main() {
+
+  setUpAll(() async {
+    await setupTestStorage();
+  });
   group('CCPA Compliance Tests', () {
     late FieldEncryptionService encryptionService;
     late UserAnonymizationService anonymizationService;

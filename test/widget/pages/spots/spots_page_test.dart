@@ -15,84 +15,40 @@ void main() {
       mockSpotsBloc = MockSpotsBloc();
     });
 
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Spots page tests focus on business logic (UI display, search field, initialization, state management), not property assignment
+
+    testWidgets(
+        'should display all required UI elements, display search field with correct hint, load spots on initialization, display loading state when spots are loading, or display empty state when no spots available',
+        (WidgetTester tester) async {
+      // Test business logic: Spots page display and state management
       mockSpotsBloc.setState(SpotsInitial());
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const SpotsPage(),
         spotsBloc: mockSpotsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify all UI elements are present
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Spots'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
       expect(find.text('Search spots...'), findsOneWidget);
-    });
-
-    testWidgets('displays search field with correct hint', (WidgetTester tester) async {
-      // Arrange
-      mockSpotsBloc.setState(SpotsInitial());
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const SpotsPage(),
-        spotsBloc: mockSpotsBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Search field should be present
-      expect(find.text('Search spots...'), findsOneWidget);
       expect(find.byIcon(Icons.search), findsOneWidget);
-    });
-
-    testWidgets('loads spots on initialization', (WidgetTester tester) async {
-      // Arrange
-      mockSpotsBloc.setState(SpotsInitial());
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const SpotsPage(),
-        spotsBloc: mockSpotsBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should be rendered
       expect(find.byType(SpotsPage), findsOneWidget);
-      // Note: BLoC event verification would require more complex setup
-    });
 
-    testWidgets('displays loading state when spots are loading', (WidgetTester tester) async {
-      // Arrange
       mockSpotsBloc.setState(SpotsLoading());
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: const SpotsPage(),
         spotsBloc: mockSpotsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show loading indicator
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(CircularProgressIndicator), findsWidgets);
-    });
 
-    testWidgets('displays empty state when no spots available', (WidgetTester tester) async {
-      // Arrange
       mockSpotsBloc.setState(SpotsLoaded([]));
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const SpotsPage(),
         spotsBloc: mockSpotsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show empty state or list
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.byType(SpotsPage), findsOneWidget);
     });
   });
 }
-

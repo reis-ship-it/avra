@@ -1,0 +1,141 @@
+======================================================================
+SCALABILITY TESTS - LARGE AGENT COUNTS
+======================================================================
+
+Testing with:
+  - 10,000 agents
+  - 100,000 agents
+  - 500,000 agents
+  - 1,000,000 agents
+
+======================================================================
+
+======================================================================
+SCALABILITY TEST: 10,000 AGENTS
+======================================================================
+
+📊 Step 1: Generating data for 10,000 agents...
+----------------------------------------------------------------------
+✅ Data generation completed in 0.38 seconds
+
+🔬 Step 2: Running Patent #1 experiments...
+----------------------------------------------------------------------
+✅ Patent #1 completed in 1.29 seconds
+
+🔬 Step 3: Running Patent #3 experiments (6 months)...
+----------------------------------------------------------------------
+✅ Patent #3 completed in 2.20 seconds
+
+🔬 Step 4: Running Patent #21 experiments...
+----------------------------------------------------------------------
+✅ Patent #21 completed in 0.40 seconds
+
+🔬 Step 5: Running Patent #29 experiments...
+----------------------------------------------------------------------
+✅ Patent #29 completed in 4.08 seconds
+
+======================================================================
+✅ 10,000 AGENTS TEST COMPLETE
+======================================================================
+Total Duration: 8.35 seconds (0.14 minutes)
+
+
+📄 Results saved to: /Users/reisgordon/SPOTS/docs/patents/experiments/results/scalability/scalability_10000_agents.json
+
+======================================================================
+SCALABILITY TEST: 100,000 AGENTS
+======================================================================
+
+📊 Step 1: Generating data for 100,000 agents...
+----------------------------------------------------------------------
+✅ Data generation completed in 0.38 seconds
+
+🔬 Step 2: Running Patent #1 experiments...
+----------------------------------------------------------------------
+✅ Patent #1 completed in 1.31 seconds
+
+🔬 Step 3: Running Patent #3 experiments (6 months)...
+----------------------------------------------------------------------
+✅ Patent #3 completed in 2.20 seconds
+
+🔬 Step 4: Running Patent #21 experiments...
+----------------------------------------------------------------------
+✅ Patent #21 completed in 0.40 seconds
+
+🔬 Step 5: Running Patent #29 experiments...
+----------------------------------------------------------------------
+✅ Patent #29 completed in 4.03 seconds
+
+======================================================================
+✅ 100,000 AGENTS TEST COMPLETE
+======================================================================
+Total Duration: 8.33 seconds (0.14 minutes)
+
+
+📄 Results saved to: /Users/reisgordon/SPOTS/docs/patents/experiments/results/scalability/scalability_100000_agents.json
+
+======================================================================
+SCALABILITY TEST: 500,000 AGENTS
+======================================================================
+
+📊 Step 1: Generating data for 500,000 agents...
+----------------------------------------------------------------------
+✅ Data generation completed in 0.40 seconds
+
+🔬 Step 2: Running Patent #1 experiments...
+----------------------------------------------------------------------
+✅ Patent #1 completed in 1.30 seconds
+
+⏭️  Step 3: Skipping Patent #3 (too many agents for time-based simulation)
+
+🔬 Step 4: Running Patent #21 experiments...
+----------------------------------------------------------------------
+✅ Patent #21 completed in 0.39 seconds
+
+🔬 Step 5: Running Patent #29 experiments...
+----------------------------------------------------------------------
+✅ Patent #29 completed in 3.47 seconds
+
+======================================================================
+✅ 500,000 AGENTS TEST COMPLETE
+======================================================================
+Total Duration: 5.55 seconds (0.09 minutes)
+
+
+📄 Results saved to: /Users/reisgordon/SPOTS/docs/patents/experiments/results/scalability/scalability_500000_agents.json
+
+======================================================================
+SCALABILITY TEST: 1,000,000 AGENTS
+======================================================================
+
+📊 Step 1: Generating data for 1,000,000 agents...
+----------------------------------------------------------------------
+✅ Data generation completed in 0.36 seconds
+
+🔬 Step 2: Running Patent #1 experiments...
+----------------------------------------------------------------------
+✅ Patent #1 completed in 1.22 seconds
+
+⏭️  Step 3: Skipping Patent #3 (too many agents for time-based simulation)
+
+🔬 Step 4: Running Patent #21 experiments...
+----------------------------------------------------------------------
+✅ Patent #21 completed in 0.38 seconds
+
+🔬 Step 5: Running Patent #29 experiments...
+----------------------------------------------------------------------
+✅ Patent #29 completed in 3.47 seconds
+
+======================================================================
+✅ 1,000,000 AGENTS TEST COMPLETE
+======================================================================
+Total Duration: 5.44 seconds (0.09 minutes)
+
+
+📄 Results saved to: /Users/reisgordon/SPOTS/docs/patents/experiments/results/scalability/scalability_1000000_agents.json
+
+======================================================================
+✅ ALL SCALABILITY TESTS COMPLETE
+======================================================================
+📄 Summary saved to: /Users/reisgordon/SPOTS/docs/patents/experiments/results/scalability/scalability_summary.md
+

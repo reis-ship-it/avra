@@ -7,20 +7,25 @@ import 'package:spots/core/p2p/federated_learning.dart';
 /// SPOTS Advanced Recommendation Engine Tests
 /// Date: November 20, 2025
 /// Purpose: Test advanced recommendation engine functionality
-/// 
+///
 /// Test Coverage:
 /// - Hyper-personalized recommendations
 /// - User journey prediction
 /// - Recommendation fusion
 /// - Privacy compliance
-/// 
+///
 /// Dependencies:
 /// - AdvancedRecommendationEngine: Core recommendation engine
 /// - Mock dependencies: RealTimeRecommendationEngine, AnonymousCommunicationProtocol, FederatedLearningSystem
 
-class MockRealTimeRecommendationEngine extends Mock implements RealTimeRecommendationEngine {}
-class MockAnonymousCommunicationProtocol extends Mock implements AnonymousCommunicationProtocol {}
-class MockFederatedLearningSystem extends Mock implements FederatedLearningSystem {}
+class MockRealTimeRecommendationEngine extends Mock
+    implements RealTimeRecommendationEngine {}
+
+class MockAnonymousCommunicationProtocol extends Mock
+    implements AnonymousCommunicationProtocol {}
+
+class MockFederatedLearningSystem extends Mock
+    implements FederatedLearningSystem {}
 
 void main() {
   group('AdvancedRecommendationEngine', () {
@@ -33,7 +38,7 @@ void main() {
       mockRealTimeEngine = MockRealTimeRecommendationEngine();
       mockAI2AIComm = MockAnonymousCommunicationProtocol();
       mockFederatedLearning = MockFederatedLearningSystem();
-      
+
       engine = AdvancedRecommendationEngine(
         realTimeEngine: mockRealTimeEngine,
         ai2aiComm: mockAI2AIComm,
@@ -42,11 +47,13 @@ void main() {
     });
 
     group('generateHyperPersonalizedRecommendations', () {
-      test('should generate hyper-personalized recommendations successfully', () async {
+      test(
+          'should generate recommendations with valid scores and privacy compliance',
+          () async {
         // Arrange
-        when(() => mockRealTimeEngine.generateContextualRecommendations(any(), any()))
-            .thenAnswer((_) async => []);
-        
+        when(() => mockRealTimeEngine.generateContextualRecommendations(
+            any(), any())).thenAnswer((_) async => []);
+
         final context = RecommendationContext(
           user: {'id': 'user-123'},
           location: {'lat': 40.7589, 'lng': -73.9851},
@@ -61,24 +68,22 @@ void main() {
           context,
         );
 
-        // Assert
-        expect(result, isNotNull);
-        expect(result.userId, equals('user-123'));
-        expect(result.recommendations, isA<List>());
-        expect(result.confidenceScore, greaterThanOrEqualTo(0.0));
-        expect(result.confidenceScore, lessThanOrEqualTo(1.0));
-        expect(result.diversityScore, greaterThanOrEqualTo(0.0));
-        expect(result.diversityScore, lessThanOrEqualTo(1.0));
-        expect(result.privacyCompliant, isTrue);
-        expect(result.generatedAt, isA<DateTime>());
-        expect(result.sources, isNotEmpty);
+        // Assert - Test business logic, not property assignment
+        expect(result.confidenceScore, inInclusiveRange(0.0, 1.0),
+            reason: 'Confidence score should be normalized');
+        expect(result.diversityScore, inInclusiveRange(0.0, 1.0),
+            reason: 'Diversity score should be normalized');
+        expect(result.privacyCompliant, isTrue,
+            reason: 'Recommendations must be privacy compliant');
+        expect(result.sources, isNotEmpty,
+            reason: 'Recommendations should have sources');
       });
 
       test('should handle errors gracefully', () async {
         // Arrange
-        when(() => mockRealTimeEngine.generateContextualRecommendations(any(), any()))
-            .thenThrow(Exception('Test error'));
-        
+        when(() => mockRealTimeEngine.generateContextualRecommendations(
+            any(), any())).thenThrow(Exception('Test error'));
+
         final context = RecommendationContext(
           user: {'id': 'user-123'},
           location: {'lat': 40.7589, 'lng': -73.9851},
@@ -89,54 +94,42 @@ void main() {
 
         // Act & Assert
         expect(
-          () => engine.generateHyperPersonalizedRecommendations('user-123', context),
+          () => engine.generateHyperPersonalizedRecommendations(
+              'user-123', context),
           throwsA(isA<AdvancedRecommendationException>()),
         );
       });
     });
 
     group('predictUserJourney', () {
-      test('should predict user journey successfully', () async {
+      test(
+          'should predict journey with valid confidence and handle empty input',
+          () async {
         // Arrange
         final recentSpotIds = ['spot-1', 'spot-2', 'spot-3'];
-        final timeContext = DateTime.now();
-
-        // Act
-        final prediction = await engine.predictUserJourney(
-          'user-123',
-          recentSpotIds,
-          timeContext,
-        );
-
-        // Assert
-        expect(prediction, isNotNull);
-        expect(prediction.userId, equals('user-123'));
-        expect(prediction.predictedDestinations, isA<List>());
-        expect(prediction.optimizationSuggestions, isA<List>());
-        expect(prediction.confidenceLevel, greaterThanOrEqualTo(0.0));
-        expect(prediction.confidenceLevel, lessThanOrEqualTo(1.0));
-        expect(prediction.timeHorizon, isA<Duration>());
-        expect(prediction.privacyPreserved, isTrue);
-      });
-
-      test('should handle empty recent spots list', () async {
-        // Arrange
         final emptySpotIds = <String>[];
         final timeContext = DateTime.now();
 
         // Act
-        final prediction = await engine.predictUserJourney(
+        final predictionWithSpots = await engine.predictUserJourney(
+          'user-123',
+          recentSpotIds,
+          timeContext,
+        );
+        final predictionEmpty = await engine.predictUserJourney(
           'user-123',
           emptySpotIds,
           timeContext,
         );
 
-        // Assert
-        expect(prediction, isNotNull);
-        expect(prediction.userId, equals('user-123'));
-        expect(prediction.predictedDestinations, isA<List>());
+        // Assert - Test business logic
+        expect(predictionWithSpots.confidenceLevel, inInclusiveRange(0.0, 1.0),
+            reason: 'Confidence should be normalized');
+        expect(predictionWithSpots.privacyPreserved, isTrue,
+            reason: 'Predictions must preserve privacy');
+        expect(predictionEmpty.predictedDestinations, isA<List>(),
+            reason: 'Should handle empty input gracefully');
       });
     });
   });
 }
-

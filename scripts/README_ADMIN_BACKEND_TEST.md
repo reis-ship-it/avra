@@ -1,31 +1,32 @@
 # Admin Backend Connections Test
 
-This test script verifies all backend integrations for the god-mode admin system.
+Integration tests verify all backend integrations for the god-mode admin system.
 
 ## Prerequisites
 
-1. **Supabase Configuration**: Ensure your Supabase credentials are configured in `lib/supabase_config.dart`
+1. **Supabase Configuration**: Ensure your Supabase credentials are configured in `lib/supabase_config.dart` (optional - tests work with or without real Supabase)
 2. **Dependencies**: All required packages should be installed (`flutter pub get`)
 
-## Running the Test
+## Running the Tests
 
-### Option 1: Standalone Dart Script
-
-```bash
-# From project root
-dart run scripts/test_admin_backend_connections.dart
-```
-
-### Option 2: Flutter Test (Recommended)
+### Flutter Integration Tests (Recommended)
 
 ```bash
 # From project root
-flutter test test/integration/admin_backend_connections_test.dart
+flutter test test/integration/admin_backend_connections_integration_test.dart
 ```
 
-### Option 3: Run from Flutter App
+### With Real Supabase Connection
 
-You can also run the test from within the Flutter app by navigating to the admin dashboard and checking the console output.
+To test with real Supabase connections:
+
+```bash
+flutter test test/integration/admin_backend_connections_integration_test.dart \
+  --dart-define=SUPABASE_URL=... \
+  --dart-define=SUPABASE_ANON_KEY=...
+```
+
+Tests will gracefully skip Supabase-dependent tests if credentials are not available.
 
 ## What Gets Tested
 
@@ -67,52 +68,17 @@ You can also run the test from within the Flutter app by navigating to the admin
 - AI signature lookups
 - Session retrieval
 
-## Expected Output
+## Expected Test Results
 
-```
-🧪 Admin Backend Connections Test
-==================================================
+The integration tests verify:
+- ✅ Supabase service initialization
+- ✅ Admin services initialization
+- ✅ Authorization enforcement
+- ✅ AI signature lookups
+- ✅ Error handling
+- ✅ Service disposal
 
-📡 Testing Supabase Initialization...
-  ✓ Supabase already initialized
-
-🔌 Testing Supabase Service...
-  ✓ Supabase connection test passed
-  ✓ Supabase client accessible
-
-⚙️  Testing Admin Services Initialization...
-  ✓ SharedPreferences initialized
-  ✓ ConnectionMonitor initialized
-  ✓ AdminAuthService initialized
-  ✓ AdminCommunicationService initialized
-  ✓ BusinessAccountService initialized
-  ✓ PredictiveAnalytics initialized
-  ✓ AdminGodModeService initialized
-
-🗄️  Testing Database Queries...
-  ✓ Users table accessible (found X users)
-  ✓ Spots table accessible (found X spots)
-  ✓ Spot lists table accessible (found X lists)
-  ✓ User respects table accessible (found X respects)
-  ⚠️  Business accounts table not found (expected if not created yet)
-
-👑 Testing Admin God-Mode Service Methods...
-  ✓ Authorization check works (authorized: false)
-  ✓ Dashboard data correctly requires authorization
-  ✓ User search correctly requires authorization
-  ✓ Business accounts correctly requires authorization
-
-🔒 Testing Privacy Filtering...
-  ✓ Privacy filtering structure verified
-
-🤖 Testing AI Data Streams...
-  ✓ AI signature reverse index works (found 0 connections)
-  ✓ AI signature session lookup works (found 0 sessions)
-  ✓ Reverse index correctly returns empty set for non-existent signature
-  ✓ AI data streams infrastructure ready
-
-✅ All backend connection tests passed!
-```
+All tests should pass. Tests that require Supabase will gracefully skip if credentials are not available.
 
 ## Troubleshooting
 
@@ -137,12 +103,12 @@ You can also run the test from within the Flutter app by navigating to the admin
 
 ## Integration with CI/CD
 
-You can integrate this test into your CI/CD pipeline:
+You can integrate the integration tests into your CI/CD pipeline:
 
 ```yaml
 # Example GitHub Actions
 - name: Test Admin Backend Connections
-  run: dart run scripts/test_admin_backend_connections.dart
+  run: flutter test test/integration/admin_backend_connections_integration_test.dart
   env:
     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
     SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_colors.dart';
 
 /// Success Animation Widget
 /// Agent 2: Event Discovery & Hosting UI (Week 4, Task 2.12)
-/// 
+///
 /// Provides a smooth success animation for actions
 class SuccessAnimation extends StatefulWidget {
   final IconData icon;
@@ -20,6 +19,39 @@ class SuccessAnimation extends StatefulWidget {
 
   @override
   State<SuccessAnimation> createState() => _SuccessAnimationState();
+
+  /// Show success animation as overlay
+  ///
+  /// Public API for displaying success feedback. Use this method to show
+  /// a simple success animation after user actions complete successfully.
+  ///
+  /// Example:
+  /// ```dart
+  /// SuccessAnimation.show(
+  ///   context,
+  ///   message: 'Spot created successfully!',
+  ///   icon: Icons.check_circle,
+  /// );
+  /// ```
+  static void show(
+    BuildContext context, {
+    required String message,
+    IconData icon = Icons.check_circle,
+    Duration duration = const Duration(milliseconds: 2000),
+  }) {
+    showDialog(
+      context: context,
+      barrierColor: AppColors.black.withValues(alpha: 0),
+      barrierDismissible: false,
+      builder: (context) => Center(
+        child: SuccessAnimation(
+          message: message,
+          icon: icon,
+          duration: duration,
+        ),
+      ),
+    );
+  }
 }
 
 class _SuccessAnimationState extends State<SuccessAnimation>
@@ -114,26 +146,4 @@ class _SuccessAnimationState extends State<SuccessAnimation>
       ),
     );
   }
-
-  /// Show success animation as overlay
-  static void show(
-    BuildContext context, {
-    required String message,
-    IconData icon = Icons.check_circle,
-    Duration duration = const Duration(milliseconds: 2000),
-  }) {
-    showDialog(
-      context: context,
-      barrierColor: AppColors.black.withValues(alpha: 0),
-      barrierDismissible: false,
-      builder: (context) => Center(
-        child: SuccessAnimation(
-          message: message,
-          icon: icon,
-          duration: duration,
-        ),
-      ),
-    );
-  }
 }
-

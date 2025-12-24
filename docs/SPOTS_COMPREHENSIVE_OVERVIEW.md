@@ -4,7 +4,7 @@
 **Version:** 1.0  
 **Date:** December 2, 2025  
 **Status:** Active Development  
-**Last Updated:** December 2, 2025
+**Last Updated:** December 2025 (Linux Support Plan added)
 
 ---
 
@@ -532,6 +532,8 @@ lib/
 **Future Platforms:**
 - ⏳ **Web** - Planned (PWA)
 - ⏳ **Desktop** - Considered (Windows, macOS, Linux)
+  - 📋 **Linux Support Plan:** See `docs/plans/general_docs/LINUX_SUPPORT_IMPLEMENTATION_PLAN.md`
+  - Includes both Linux desktop and Linux mobile (phone) support
 
 **Device Requirements:**
 - GPS/Location services (for discovery)
@@ -1029,6 +1031,7 @@ lib/
 - `OUR_GUTS.md` - Core philosophy and values
 - `README_DEVELOPMENT.md` - Development guide
 - `docs/plans/` - Detailed feature plans
+- `docs/plans/general_docs/LINUX_SUPPORT_IMPLEMENTATION_PLAN.md` - Linux desktop and mobile support plan
 
 ### **Codebase:**
 - GitHub repository (private, access available)
@@ -1079,7 +1082,7 @@ lib/
 
 ---
 
-**Last Updated:** December 2, 2025  
+**Last Updated:** December 2025 (Linux Support Plan added)  
 **Version:** 1.0  
 **Status:** Active Development
 

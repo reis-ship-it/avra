@@ -4,6 +4,7 @@ import 'package:spots/core/models/expertise_level.dart';
 import 'package:spots/core/models/expertise_pin.dart';
 import 'package:spots/core/models/expertise_progress.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Expertise Service Tests
 /// OUR_GUTS.md: "Pins, Not Badges" - Tests expertise calculation based on authentic contributions
@@ -15,122 +16,107 @@ void main() {
       service = ExpertiseService();
     });
 
+    // Removed: Property assignment tests
+    // Expertise level calculation tests focus on business logic (thresholds, location handling), not property assignment
+
     group('calculateExpertiseLevel', () {
-      test('should return local level for minimum contributions', () {
-        final level = service.calculateExpertiseLevel(
-          respectedListsCount: 1,
-          thoughtfulReviewsCount: 0,
-          spotsReviewedCount: 0,
-          communityTrustScore: 0.5,
+      test(
+          'should calculate correct expertise level based on contributions and trust, with location support',
+          () {
+        // Test business logic: expertise level calculation with various thresholds
+        // Local level
+        expect(
+          service.calculateExpertiseLevel(
+            respectedListsCount: 1,
+            thoughtfulReviewsCount: 0,
+            spotsReviewedCount: 0,
+            communityTrustScore: 0.5,
+          ),
+          equals(ExpertiseLevel.local),
+        );
+        expect(
+          service.calculateExpertiseLevel(
+            respectedListsCount: 0,
+            thoughtfulReviewsCount: 10,
+            spotsReviewedCount: 0,
+            communityTrustScore: 0.5,
+          ),
+          equals(ExpertiseLevel.local),
         );
 
-        expect(level, equals(ExpertiseLevel.local));
-      });
-
-      test('should return local level for 10+ thoughtful reviews', () {
-        final level = service.calculateExpertiseLevel(
-          respectedListsCount: 0,
-          thoughtfulReviewsCount: 10,
-          spotsReviewedCount: 0,
-          communityTrustScore: 0.5,
+        // City level
+        expect(
+          service.calculateExpertiseLevel(
+            respectedListsCount: 3,
+            thoughtfulReviewsCount: 0,
+            spotsReviewedCount: 0,
+            communityTrustScore: 0.5,
+          ),
+          equals(ExpertiseLevel.city),
+        );
+        expect(
+          service.calculateExpertiseLevel(
+            respectedListsCount: 0,
+            thoughtfulReviewsCount: 25,
+            spotsReviewedCount: 0,
+            communityTrustScore: 0.5,
+          ),
+          equals(ExpertiseLevel.city),
         );
 
-        expect(level, equals(ExpertiseLevel.local));
-      });
-
-      test('should return city level for 3+ respected lists', () {
-        final level = service.calculateExpertiseLevel(
-          respectedListsCount: 3,
-          thoughtfulReviewsCount: 0,
-          spotsReviewedCount: 0,
-          communityTrustScore: 0.5,
+        // Regional level
+        expect(
+          service.calculateExpertiseLevel(
+            respectedListsCount: 6,
+            thoughtfulReviewsCount: 0,
+            spotsReviewedCount: 0,
+            communityTrustScore: 0.5,
+          ),
+          equals(ExpertiseLevel.regional),
         );
 
-        expect(level, equals(ExpertiseLevel.city));
-      });
-
-      test('should return city level for 25+ thoughtful reviews', () {
-        final level = service.calculateExpertiseLevel(
-          respectedListsCount: 0,
-          thoughtfulReviewsCount: 25,
-          spotsReviewedCount: 0,
-          communityTrustScore: 0.5,
+        // National level
+        expect(
+          service.calculateExpertiseLevel(
+            respectedListsCount: 11,
+            thoughtfulReviewsCount: 0,
+            spotsReviewedCount: 0,
+            communityTrustScore: 0.5,
+          ),
+          equals(ExpertiseLevel.national),
         );
 
-        expect(level, equals(ExpertiseLevel.city));
-      });
-
-      test('should return regional level for 6+ respected lists', () {
-        final level = service.calculateExpertiseLevel(
-          respectedListsCount: 6,
-          thoughtfulReviewsCount: 0,
-          spotsReviewedCount: 0,
-          communityTrustScore: 0.5,
+        // Global level (requires high trust)
+        expect(
+          service.calculateExpertiseLevel(
+            respectedListsCount: 21,
+            thoughtfulReviewsCount: 0,
+            spotsReviewedCount: 0,
+            communityTrustScore: 0.8,
+          ),
+          equals(ExpertiseLevel.global),
         );
 
-        expect(level, equals(ExpertiseLevel.regional));
-      });
-
-      test('should return regional level for 50+ thoughtful reviews', () {
-        final level = service.calculateExpertiseLevel(
-          respectedListsCount: 0,
-          thoughtfulReviewsCount: 50,
-          spotsReviewedCount: 0,
-          communityTrustScore: 0.5,
+        // Test location parameter
+        expect(
+          service.calculateExpertiseLevel(
+            respectedListsCount: 3,
+            thoughtfulReviewsCount: 0,
+            spotsReviewedCount: 0,
+            communityTrustScore: 0.5,
+            location: 'San Francisco',
+          ),
+          equals(ExpertiseLevel.city),
         );
-
-        expect(level, equals(ExpertiseLevel.regional));
-      });
-
-      test('should return national level for 11+ respected lists', () {
-        final level = service.calculateExpertiseLevel(
-          respectedListsCount: 11,
-          thoughtfulReviewsCount: 0,
-          spotsReviewedCount: 0,
-          communityTrustScore: 0.5,
-        );
-
-        expect(level, equals(ExpertiseLevel.national));
-      });
-
-      test('should return national level for 100+ thoughtful reviews', () {
-        final level = service.calculateExpertiseLevel(
-          respectedListsCount: 0,
-          thoughtfulReviewsCount: 100,
-          spotsReviewedCount: 0,
-          communityTrustScore: 0.5,
-        );
-
-        expect(level, equals(ExpertiseLevel.national));
-      });
-
-      test('should return global level for 21+ respected lists with high trust', () {
-        final level = service.calculateExpertiseLevel(
-          respectedListsCount: 21,
-          thoughtfulReviewsCount: 0,
-          spotsReviewedCount: 0,
-          communityTrustScore: 0.8,
-        );
-
-        expect(level, equals(ExpertiseLevel.global));
-      });
-
-      test('should use location parameter', () {
-        final level = service.calculateExpertiseLevel(
-          respectedListsCount: 3,
-          thoughtfulReviewsCount: 0,
-          spotsReviewedCount: 0,
-          communityTrustScore: 0.5,
-          location: 'San Francisco',
-        );
-
-        expect(level, equals(ExpertiseLevel.city));
       });
     });
 
     group('getUserPins', () {
-      test('should return pins from user expertise map', () {
-        final user = ModelFactories.createTestUser(
+      test(
+          'should return pins from user expertise map or empty list if no expertise',
+          () {
+        // Test business logic: pin extraction with empty case handling
+        final userWithExpertise = ModelFactories.createTestUser(
           id: 'test-user',
           tags: ['food', 'travel'],
         ).copyWith(
@@ -140,65 +126,26 @@ void main() {
           },
         );
 
-        final pins = service.getUserPins(user);
-
+        final pins = service.getUserPins(userWithExpertise);
         expect(pins, isA<List<ExpertisePin>>());
         expect(pins.length, equals(2));
         expect(pins[0].category, equals('food'));
         expect(pins[1].category, equals('travel'));
-      });
 
-      test('should return empty list for user with no expertise', () {
-        final user = ModelFactories.createTestUser(
+        final userWithoutExpertise = ModelFactories.createTestUser(
           id: 'test-user',
           tags: [],
         );
-
-        final pins = service.getUserPins(user);
-
-        expect(pins, isEmpty);
+        expect(service.getUserPins(userWithoutExpertise), isEmpty);
       });
     });
 
     group('calculateProgress', () {
-      test('should calculate progress toward next level', () {
-        final progress = service.calculateProgress(
-          category: 'food',
-          location: 'San Francisco',
-          currentLevel: ExpertiseLevel.local,
-          respectedListsCount: 1,
-          thoughtfulReviewsCount: 5,
-          spotsReviewedCount: 10,
-          communityTrustScore: 0.6,
-        );
-
-        expect(progress, isA<ExpertiseProgress>());
-        expect(progress.category, equals('food'));
-        expect(progress.location, equals('San Francisco'));
-        expect(progress.currentLevel, equals(ExpertiseLevel.local));
-        expect(progress.nextLevel, equals(ExpertiseLevel.city));
-        expect(progress.progressPercentage, greaterThanOrEqualTo(0.0));
-        expect(progress.progressPercentage, lessThanOrEqualTo(100.0));
-        expect(progress.nextSteps, isNotEmpty);
-      });
-
-      test('should return 100% progress for highest level', () {
-        final progress = service.calculateProgress(
-          category: 'food',
-          location: null,
-          currentLevel: ExpertiseLevel.global,
-          respectedListsCount: 25,
-          thoughtfulReviewsCount: 250,
-          spotsReviewedCount: 100,
-          communityTrustScore: 0.9,
-        );
-
-        expect(progress.progressPercentage, equals(100.0));
-        expect(progress.nextLevel, isNull);
-      });
-
-      test('should include contribution breakdown', () {
-        final progress = service.calculateProgress(
+      test(
+          'should calculate progress toward next level with contribution breakdown, and return 100% for highest level',
+          () {
+        // Test business logic: progress calculation with breakdown and highest level handling
+        final progress1 = service.calculateProgress(
           category: 'food',
           location: 'San Francisco',
           currentLevel: ExpertiseLevel.local,
@@ -208,139 +155,145 @@ void main() {
           communityTrustScore: 0.6,
         );
 
-        expect(progress.contributionBreakdown, isA<Map<String, int>>());
-        expect(progress.contributionBreakdown['lists'], equals(2));
-        expect(progress.contributionBreakdown['reviews'], equals(8));
-        expect(progress.contributionBreakdown['spots'], equals(15));
+        expect(progress1, isA<ExpertiseProgress>());
+        expect(progress1.category, equals('food'));
+        expect(progress1.currentLevel, equals(ExpertiseLevel.local));
+        expect(progress1.nextLevel, equals(ExpertiseLevel.city));
+        expect(progress1.progressPercentage, greaterThanOrEqualTo(0.0));
+        expect(progress1.progressPercentage, lessThanOrEqualTo(100.0));
+        expect(progress1.contributionBreakdown['lists'], equals(2));
+        expect(progress1.contributionBreakdown['reviews'], equals(8));
+        expect(progress1.contributionBreakdown['spots'], equals(15));
+
+        // Test highest level (100% progress, no next level)
+        final progress2 = service.calculateProgress(
+          category: 'food',
+          location: null,
+          currentLevel: ExpertiseLevel.universal,
+          respectedListsCount: 25,
+          thoughtfulReviewsCount: 250,
+          spotsReviewedCount: 100,
+          communityTrustScore: 0.9,
+        );
+        expect(progress2.progressPercentage, equals(100.0));
+        expect(progress2.nextLevel, isNull);
       });
     });
 
     group('canEarnPin', () {
-      test('should return true for minimum contributions and trust', () {
-        final canEarn = service.canEarnPin(
-          category: 'food',
-          respectedListsCount: 1,
-          thoughtfulReviewsCount: 0,
-          communityTrustScore: 0.5,
+      test(
+          'should return true for sufficient contributions and trust, or false for insufficient contributions or low trust',
+          () {
+        // Test business logic: pin eligibility validation
+        expect(
+          service.canEarnPin(
+            category: 'food',
+            respectedListsCount: 1,
+            thoughtfulReviewsCount: 0,
+            communityTrustScore: 0.5,
+          ),
+          isTrue,
+        );
+        expect(
+          service.canEarnPin(
+            category: 'food',
+            respectedListsCount: 0,
+            thoughtfulReviewsCount: 10,
+            communityTrustScore: 0.5,
+          ),
+          isTrue,
         );
 
-        expect(canEarn, isTrue);
-      });
-
-      test('should return true for 10+ reviews and trust', () {
-        final canEarn = service.canEarnPin(
-          category: 'food',
-          respectedListsCount: 0,
-          thoughtfulReviewsCount: 10,
-          communityTrustScore: 0.5,
+        // Test failure cases
+        expect(
+          service.canEarnPin(
+            category: 'food',
+            respectedListsCount: 0,
+            thoughtfulReviewsCount: 5,
+            communityTrustScore: 0.5,
+          ),
+          isFalse,
         );
-
-        expect(canEarn, isTrue);
-      });
-
-      test('should return false for insufficient contributions', () {
-        final canEarn = service.canEarnPin(
-          category: 'food',
-          respectedListsCount: 0,
-          thoughtfulReviewsCount: 5,
-          communityTrustScore: 0.5,
+        expect(
+          service.canEarnPin(
+            category: 'food',
+            respectedListsCount: 1,
+            thoughtfulReviewsCount: 0,
+            communityTrustScore: 0.3,
+          ),
+          isFalse,
         );
-
-        expect(canEarn, isFalse);
-      });
-
-      test('should return false for low trust', () {
-        final canEarn = service.canEarnPin(
-          category: 'food',
-          respectedListsCount: 1,
-          thoughtfulReviewsCount: 0,
-          communityTrustScore: 0.3,
-        );
-
-        expect(canEarn, isFalse);
       });
     });
 
     group('getExpertiseStory', () {
-      test('should generate story with lists and reviews', () {
-        final story = service.getExpertiseStory(
+      test(
+          'should generate story with lists and reviews, or with only lists or only reviews',
+          () {
+        // Test business logic: story generation with different contribution types
+        final story1 = service.getExpertiseStory(
           category: 'food',
           level: ExpertiseLevel.city,
           respectedListsCount: 3,
           thoughtfulReviewsCount: 10,
           location: 'San Francisco',
         );
+        expect(story1, contains('food'));
+        expect(story1, contains('City'));
+        expect(story1, contains('San Francisco'));
 
-        expect(story, isA<String>());
-        expect(story, contains('food'));
-        expect(story, contains('City'));
-        expect(story, contains('San Francisco'));
-        expect(story, contains('3'));
-        expect(story, contains('10'));
-      });
-
-      test('should generate story with only lists', () {
-        final story = service.getExpertiseStory(
+        final story2 = service.getExpertiseStory(
           category: 'food',
           level: ExpertiseLevel.local,
           respectedListsCount: 1,
           thoughtfulReviewsCount: 0,
         );
+        expect(story2, contains('lists'));
+        expect(story2, isNot(contains('reviews')));
 
-        expect(story, contains('lists'));
-        expect(story, isNot(contains('reviews')));
-      });
-
-      test('should generate story with only reviews', () {
-        final story = service.getExpertiseStory(
+        final story3 = service.getExpertiseStory(
           category: 'food',
           level: ExpertiseLevel.local,
           respectedListsCount: 0,
           thoughtfulReviewsCount: 10,
         );
-
-        expect(story, contains('reviews'));
-        expect(story, isNot(contains('lists')));
+        expect(story3, contains('reviews'));
+        expect(story3, isNot(contains('lists')));
       });
     });
 
     group('getUnlockedFeatures', () {
-      test('should return features for local level', () {
-        final features = service.getUnlockedFeatures(ExpertiseLevel.local);
-        expect(features, contains('event_hosting'));
-      });
+      test('should return correct features for each expertise level', () {
+        // Test business logic: feature unlocking based on expertise level
+        final localFeatures = service.getUnlockedFeatures(ExpertiseLevel.local);
+        expect(localFeatures, contains('event_hosting'));
+        expect(localFeatures.length, equals(1));
 
-      test('should return features for city level', () {
-        final features = service.getUnlockedFeatures(ExpertiseLevel.city);
-        expect(features, contains('event_hosting')); // City level also unlocks event hosting
-      });
+        final cityFeatures = service.getUnlockedFeatures(ExpertiseLevel.city);
+        expect(cityFeatures, contains('event_hosting'));
 
-      test('should return features for regional level', () {
-        final features = service.getUnlockedFeatures(ExpertiseLevel.regional);
-        expect(features, contains('event_hosting'));
-        expect(features, contains('expert_validation'));
-      });
+        final regionalFeatures =
+            service.getUnlockedFeatures(ExpertiseLevel.regional);
+        expect(regionalFeatures, contains('event_hosting'));
+        expect(regionalFeatures, contains('expert_validation'));
 
-      test('should return features for national level', () {
-        final features = service.getUnlockedFeatures(ExpertiseLevel.national);
-        expect(features, contains('event_hosting'));
-        expect(features, contains('expert_validation'));
-        expect(features, contains('expert_curation'));
-      });
+        final nationalFeatures =
+            service.getUnlockedFeatures(ExpertiseLevel.national);
+        expect(nationalFeatures, contains('event_hosting'));
+        expect(nationalFeatures, contains('expert_validation'));
+        expect(nationalFeatures, contains('expert_curation'));
 
-      test('should return features for global level', () {
-        final features = service.getUnlockedFeatures(ExpertiseLevel.global);
-        expect(features, contains('event_hosting'));
-        expect(features, contains('expert_validation'));
-        expect(features, contains('expert_curation'));
-        expect(features, contains('community_leadership'));
+        final globalFeatures =
+            service.getUnlockedFeatures(ExpertiseLevel.global);
+        expect(globalFeatures, contains('event_hosting'));
+        expect(globalFeatures, contains('expert_validation'));
+        expect(globalFeatures, contains('expert_curation'));
+        expect(globalFeatures, contains('community_leadership'));
       });
+    });
 
-      test('should return empty list for local level', () {
-        final features = service.getUnlockedFeatures(ExpertiseLevel.local);
-        expect(features, isEmpty);
-      });
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

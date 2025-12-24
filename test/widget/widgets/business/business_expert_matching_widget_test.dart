@@ -8,8 +8,13 @@ import '../../../helpers/test_helpers.dart';
 /// Tests business expert matching display
 void main() {
   group('BusinessExpertMatchingWidget Widget Tests', () {
-    testWidgets('displays loading state initially', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Business expert matching widget tests focus on business logic (loading state, header display, callbacks), not property assignment
+
+    testWidgets(
+        'should display loading state initially, display expert matches header, or call onExpertSelected when expert is selected',
+        (WidgetTester tester) async {
+      // Test business logic: Business expert matching widget state management and interactions
       final business = BusinessAccount(
         id: 'business-123',
         name: 'Test Business',
@@ -19,65 +24,16 @@ void main() {
         updatedAt: TestHelpers.createTestDateTime(),
         createdBy: 'user-123',
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: BusinessExpertMatchingWidget(business: business),
-      );
-
-      // Act
-      await tester.pumpWidget(widget);
-      await tester.pump(); // Don't settle, check loading state
-
-      // Assert - Should show loading indicator initially
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
-
-    testWidgets('displays expert matches header', (WidgetTester tester) async {
-      // Arrange
-      final business = BusinessAccount(
-        id: 'business-123',
-        name: 'Test Business',
-        email: 'business@test.com',
-        businessType: 'Restaurant',
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-        createdBy: 'user-123',
-      );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: BusinessExpertMatchingWidget(business: business),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should handle async loading
-      expect(find.byType(BusinessExpertMatchingWidget), findsOneWidget);
-    });
-
-    testWidgets('calls onExpertSelected when expert is selected', (WidgetTester tester) async {
-      // Arrange
-      final business = BusinessAccount(
-        id: 'business-123',
-        name: 'Test Business',
-        email: 'business@test.com',
-        businessType: 'Restaurant',
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-        createdBy: 'user-123',
-      );
-
       final widget = WidgetTestHelpers.createTestableWidget(
         child: BusinessExpertMatchingWidget(
           business: business,
           onExpertSelected: (_) {},
         ),
       );
-
-      // Act
+      await tester.pumpWidget(widget);
+      await tester.pump();
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should be present
       expect(find.byType(BusinessExpertMatchingWidget), findsOneWidget);
     });
   });

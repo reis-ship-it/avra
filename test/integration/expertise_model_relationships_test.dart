@@ -54,7 +54,7 @@ void main() {
         await Future.delayed(const Duration(milliseconds: 50));
         await checkInService.checkOut(userId: user.id);
         
-        final visit = await checkInService.getVisitById(checkIn.visitId);
+        final visit = await checkInService.getVisit(checkIn.visitId);
         expect(visit, isNotNull);
         
         // Visit contributes to expertise
@@ -90,7 +90,7 @@ void main() {
           await Future.delayed(const Duration(milliseconds: 50));
           await checkInService.checkOut(userId: user.id);
           
-          final visit = await checkInService.getVisitById(checkIn.visitId);
+          final visit = await checkInService.getVisit(checkIn.visitId);
           if (visit != null) {
             visits.add(visit);
           }
@@ -191,7 +191,6 @@ void main() {
         for (int i = 0; i < 5; i++) {
           final event = IntegrationTestHelpers.createPaidEvent(
             host: host,
-            id: 'event-$i',
             price: 25.00,
             category: 'Coffee',
           );
@@ -313,7 +312,7 @@ void main() {
           await Future.delayed(const Duration(milliseconds: 50));
           await checkInService.checkOut(userId: user.id);
           
-          final visit = await checkInService.getVisitById(checkIn.visitId);
+          final visit = await checkInService.getVisit(checkIn.visitId);
           if (visit != null) {
             visits.add(visit);
           }

@@ -679,6 +679,15 @@ class MockPaymentService extends _i1.Mock implements _i10.PaymentService {
       )) as _i7.Payment?);
 
   @override
+  void upsertPaymentForTests(_i7.Payment? payment) => super.noSuchMethod(
+        Invocation.method(
+          #upsertPaymentForTests,
+          [payment],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
   _i11.PaymentIntent? getPaymentIntent(String? paymentIntentId) =>
       (super.noSuchMethod(Invocation.method(
         #getPaymentIntent,
@@ -706,6 +715,31 @@ class MockPaymentService extends _i1.Mock implements _i10.PaymentService {
           userId,
         ],
       )) as _i7.Payment?);
+
+  @override
+  List<_i7.Payment> getPaymentsForUser(String? userId) => (super.noSuchMethod(
+        Invocation.method(
+          #getPaymentsForUser,
+          [userId],
+        ),
+        returnValue: <_i7.Payment>[],
+      ) as List<_i7.Payment>);
+
+  @override
+  List<_i7.Payment> getPaymentsForUserInYear(
+    String? userId,
+    int? year,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPaymentsForUserInYear,
+          [
+            userId,
+            year,
+          ],
+        ),
+        returnValue: <_i7.Payment>[],
+      ) as List<_i7.Payment>);
 
   @override
   _i8.Future<bool> hasPartnership(String? eventId) => (super.noSuchMethod(

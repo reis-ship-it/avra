@@ -8,8 +8,13 @@ import '../../../helpers/test_helpers.dart';
 /// Tests business verification form and submission
 void main() {
   group('BusinessVerificationWidget Widget Tests', () {
-    testWidgets('displays all required form fields', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Business verification widget tests focus on business logic (form display, pre-filling), not property assignment
+
+    testWidgets(
+        'should display all required form fields or pre-fill form with business information',
+        (WidgetTester tester) async {
+      // Test business logic: Business verification widget form display
       final testBusiness = BusinessAccount(
         id: 'business-123',
         name: 'Test Business',
@@ -22,35 +27,8 @@ void main() {
       final widget = WidgetTestHelpers.createTestableWidget(
         child: BusinessVerificationWidget(business: testBusiness),
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify form is present
-      expect(find.byType(BusinessVerificationWidget), findsOneWidget);
-    });
-
-    testWidgets('pre-fills form with business information', (WidgetTester tester) async {
-      // Arrange
-      final testBusiness = BusinessAccount(
-        id: 'business-123',
-        name: 'Test Business',
-        email: 'business@test.com',
-        businessType: 'Restaurant',
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-        createdBy: 'user-123',
-      );
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: BusinessVerificationWidget(business: testBusiness),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show business data
       expect(find.byType(BusinessVerificationWidget), findsOneWidget);
     });
   });
 }
-

@@ -7,81 +7,56 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests expert matching display
 void main() {
   group('ExpertMatchingWidget Widget Tests', () {
-    testWidgets('displays loading state initially', (WidgetTester tester) async {
-      // Arrange
-      final user = WidgetTestHelpers.createTestUser();
+    // Removed: Property assignment tests
+    // Expert matching widget tests focus on business logic (matching display, loading state, user interactions), not property assignment
 
-      final widget = WidgetTestHelpers.createTestableWidget(
+    testWidgets(
+        'should display loading state initially, display similar experts header, display mentors header for mentor matching type, or call onMatchSelected when match is selected',
+        (WidgetTester tester) async {
+      // Test business logic: expert matching widget display and interactions
+      final user1 = WidgetTestHelpers.createTestUser();
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: ExpertMatchingWidget(
-          user: user,
+          user: user1,
           category: 'Coffee',
         ),
       );
-
-      // Act
-      await tester.pumpWidget(widget);
+      await tester.pumpWidget(widget1);
       await tester.pump(); // Don't settle, check loading state
-
-      // Assert - Should show loading indicator initially
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
 
-    testWidgets('displays similar experts header', (WidgetTester tester) async {
-      // Arrange
-      final user = WidgetTestHelpers.createTestUser();
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final user2 = WidgetTestHelpers.createTestUser();
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: ExpertMatchingWidget(
-          user: user,
+          user: user2,
           category: 'Coffee',
           matchingType: MatchingType.similar,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should handle async loading
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(ExpertMatchingWidget), findsOneWidget);
-    });
 
-    testWidgets('displays mentors header for mentor matching type', (WidgetTester tester) async {
-      // Arrange
-      final user = WidgetTestHelpers.createTestUser();
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final user3 = WidgetTestHelpers.createTestUser();
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: ExpertMatchingWidget(
-          user: user,
+          user: user3,
           category: 'Coffee',
           matchingType: MatchingType.mentors,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should be present
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.byType(ExpertMatchingWidget), findsOneWidget);
-    });
 
-    testWidgets('calls onMatchSelected when match is selected', (WidgetTester tester) async {
-      // Arrange
-      final user = WidgetTestHelpers.createTestUser();
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final user4 = WidgetTestHelpers.createTestUser();
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: ExpertMatchingWidget(
-          user: user,
+          user: user4,
           category: 'Coffee',
           onMatchSelected: (_) {},
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should be present
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.byType(ExpertMatchingWidget), findsOneWidget);
     });
   });
 }
-

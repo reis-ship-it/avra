@@ -75,7 +75,9 @@ class SupabaseWorkingExample {
           'id': response.user!.id,
           'email': response.user!.email,
           'name': response.user!.userMetadata?['name'] ?? '',
-          'createdAt': response.user!.createdAt.toIso8601String(),
+          'createdAt': response.user!.createdAt is DateTime 
+              ? (response.user!.createdAt as DateTime).toIso8601String()
+              : response.user!.createdAt.toString(),
           'isEmailVerified': response.user!.emailConfirmedAt != null,
         };
       }
@@ -104,7 +106,9 @@ class SupabaseWorkingExample {
           'id': response.user!.id,
           'email': response.user!.email,
           'name': response.user!.userMetadata?['name'] ?? '',
-          'createdAt': response.user!.createdAt.toIso8601String(),
+          'createdAt': response.user!.createdAt is DateTime 
+              ? (response.user!.createdAt as DateTime).toIso8601String()
+              : response.user!.createdAt.toString(),
           'isEmailVerified': response.user!.emailConfirmedAt != null,
         };
       }

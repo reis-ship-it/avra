@@ -39,6 +39,39 @@ class StorageService {
     _initialized = true;
   }
   
+  /// Test-only initialization with mock storage
+  /// This bypasses platform channel requirements by accepting mock storage instances
+  /// 
+  /// Use this in tests to initialize StorageService without requiring platform channels.
+  /// The mock storage instances should be created using MockGetStorage.getInstance().
+  /// 
+  /// Example:
+  /// ```dart
+  /// setUpAll(() async {
+  ///   await StorageService.instance.initForTesting(
+  ///     defaultStorage: MockGetStorage.getInstance(boxName: 'spots_default'),
+  ///     userStorage: MockGetStorage.getInstance(boxName: 'spots_user'),
+  ///     aiStorage: MockGetStorage.getInstance(boxName: 'spots_ai'),
+  ///     analyticsStorage: MockGetStorage.getInstance(boxName: 'spots_analytics'),
+  ///   );
+  /// });
+  /// ```
+  Future<void> initForTesting({
+    required GetStorage defaultStorage,
+    required GetStorage userStorage,
+    required GetStorage aiStorage,
+    required GetStorage analyticsStorage,
+  }) async {
+    if (_initialized) return; // Already initialized
+    
+    // Set all storage instances from provided mocks
+    _defaultStorage = defaultStorage;
+    _userStorage = userStorage;
+    _aiStorage = aiStorage;
+    _analyticsStorage = analyticsStorage;
+    _initialized = true;
+  }
+  
   /// Static method to get a SharedPreferencesCompat instance for backward compatibility
   static Future<SharedPreferencesCompat> getInstance() async {
     await instance.init();

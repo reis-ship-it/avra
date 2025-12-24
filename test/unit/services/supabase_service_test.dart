@@ -9,7 +9,7 @@ import 'supabase_service_test.mocks.dart';
 
 @GenerateMocks([SupabaseClient, GoTrueClient, RealtimeClient, PostgrestClient])
 void main() {
-  group('SupabaseService Tests', () {
+  group('SupabaseService Unit Tests', () {
     late SupabaseService service;
     late MockSupabaseClient mockClient;
     late MockGoTrueClient mockAuth;
@@ -46,153 +46,24 @@ void main() {
       });
     });
 
-    group('testConnection', () {
-      test('should return true when connection succeeds', () async {
-        // Note: This test may require mocking Supabase.instance
-        // For now, we test the method exists and can be called
-        final result = await service.testConnection();
-        expect(result, isA<bool>());
-      });
-    });
-
-    group('Authentication', () {
-      test(
-          'should get current user and handle sign in, sign up, and sign out operations',
-          () async {
-        // Test business logic: authentication operations
-        final user = service.currentUser;
-        // Can be null if not signed in
-        expect(user, anyOf(isNull, isA<User>()));
-
-        // Test authentication methods (require actual Supabase setup or mocking)
-        try {
-          await service.signInWithEmail('test@example.com', 'password123');
-          // If successful, test passes
-        } catch (e) {
-          // Expected to fail in test environment without real Supabase
-          expect(e, isA<Exception>());
-        }
-
-        try {
-          await service.signUpWithEmail('test@example.com', 'password123');
-          // If successful, test passes
-        } catch (e) {
-          // Expected to fail in test environment without real Supabase
-          expect(e, isA<Exception>());
-        }
-
-        try {
-          await service.signOut();
-          // If successful, test passes
-        } catch (e) {
-          // Expected to fail in test environment without real Supabase
-          expect(e, isA<Exception>());
-        }
-      });
-    });
-
-    group('Spot Operations', () {
-      test(
-          'should create spots with required and optional fields, and retrieve spots by various criteria',
-          () async {
-        // Test business logic: spot creation and retrieval operations
-        // Note: These require actual Supabase setup or mocking
-        try {
-          // Test creation with required fields
-          final resultWithFields = await service.createSpot(
-            name: 'Test Spot',
-            latitude: 40.7128,
-            longitude: -74.0060,
-            description: 'A test spot',
-            tags: ['restaurant', 'dinner'],
-          );
-          expect(resultWithFields, isA<Map<String, dynamic>>());
-          expect(resultWithFields['name'], equals('Test Spot'));
-
-          // Test creation without optional fields
-          final resultMinimal = await service.createSpot(
-            name: 'Test Spot',
-            latitude: 40.7128,
-            longitude: -74.0060,
-          );
-          expect(resultMinimal, isA<Map<String, dynamic>>());
-
-          // Test retrieval operations
-          final allSpots = await service.getSpots();
-          expect(allSpots, isA<List<Map<String, dynamic>>>());
-
-          final userSpots = await service.getSpotsByUser('test-user-id');
-          expect(userSpots, isA<List<Map<String, dynamic>>>());
-        } catch (e) {
-          // Expected to fail in test environment without real Supabase
-          expect(e, isA<Exception>());
-        }
-      });
-    });
-
-    group('Spot List Operations', () {
-      test(
-          'should create spot lists, retrieve all lists, and add spots to lists',
-          () async {
-        // Test business logic: spot list operations
-        // Note: These require actual Supabase setup or mocking
-        try {
-          final createResult = await service.createSpotList(
-            name: 'Test List',
-            description: 'A test list',
-            tags: ['food'],
-          );
-          expect(createResult, isA<Map<String, dynamic>>());
-
-          final allLists = await service.getSpotLists();
-          expect(allLists, isA<List<Map<String, dynamic>>>());
-
-          final addResult = await service.addSpotToList(
-            listId: 'test-list-id',
-            spotId: 'test-spot-id',
-            note: 'Great spot!',
-          );
-          expect(addResult, isA<Map<String, dynamic>>());
-        } catch (e) {
-          // Expected to fail in test environment without real Supabase
-          expect(e, isA<Exception>());
-        }
-      });
-    });
-
-    group('User Profile Operations', () {
-      test('should update and retrieve user profiles', () async {
-        // Test business logic: user profile operations
-        // Note: These require actual Supabase setup or mocking
-        try {
-          final updateResult = await service.updateUserProfile(
-            name: 'Test User',
-            bio: 'Test bio',
-            location: 'Test Location',
-          );
-          expect(updateResult, isA<Map<String, dynamic>>());
-
-          final getResult = await service.getUserProfile('test-user-id');
-          expect(getResult, anyOf(isNull, isA<Map<String, dynamic>>()));
-        } catch (e) {
-          // Expected to fail in test environment without real Supabase
-          expect(e, isA<Exception>());
-        }
-      });
-    });
-
     group('Real-time Streams', () {
       test('should get spots stream or get spot lists stream', () {
         // Test business logic: real-time stream operations
+        // These work even without authentication (return empty streams)
         final spotsStream = service.getSpotsStream();
         expect(spotsStream, isA<Stream<List<Map<String, dynamic>>>>());
         final listsStream = service.getSpotListsStream();
         expect(listsStream, isA<Stream<List<Map<String, dynamic>>>>());
       });
     });
+
+    // Note: Tests that require real Supabase connection have been moved to:
+    // test/integration/supabase_service_integration_test.dart
+    // This includes: testConnection, Authentication, Spot Operations, Spot List Operations, User Profile Operations
   });
 
   tearDownAll(() async {
     await cleanupTestStorage();
   });
 }
+

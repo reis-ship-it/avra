@@ -8,14 +8,18 @@ import 'package:spots/core/services/llm_service.dart';
 import 'package:spots/core/services/partnership_service.dart';
 import 'package:spots/core/models/business_account.dart';
 import 'package:spots/core/models/business_expert_preferences.dart';
-import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_level.dart';
-import '../../fixtures/model_factories.dart';
 import '../../helpers/integration_test_helpers.dart';
 
 import 'business_expert_matching_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
-@GenerateMocks([ExpertiseMatchingService, ExpertiseCommunityService, LLMService, PartnershipService])
+@GenerateMocks([
+  ExpertiseMatchingService,
+  ExpertiseCommunityService,
+  LLMService,
+  PartnershipService
+])
 void main() {
   group('BusinessExpertMatchingService Tests', () {
     late BusinessExpertMatchingService service;
@@ -50,245 +54,159 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Business expert matching tests focus on business logic (expert finding, vibe-first matching), not property assignment
+
     group('findExpertsForBusiness', () {
-      test('should return empty list when no experts match', () async {
+      test(
+          'should return empty list when no experts match, respect maxResults parameter, use expert preferences when available, apply minimum match score threshold from preferences, find experts from preferred communities, use AI suggestions when LLM service available, or work without LLM service',
+          () async {
+        // Test business logic: expert finding with various configurations
         when(mockExpertiseMatchingService.findSimilarExperts(
           any,
           any,
           location: anyNamed('location'),
           maxResults: anyNamed('maxResults'),
         )).thenAnswer((_) async => []);
+        final matches1 = await service.findExpertsForBusiness(business);
+        expect(matches1, isEmpty);
 
-        final matches = await service.findExpertsForBusiness(business);
-
-        expect(matches, isEmpty);
-      });
-
-      test('should respect maxResults parameter', () async {
-        when(mockExpertiseMatchingService.findSimilarExperts(
-          any,
-          any,
-          location: anyNamed('location'),
-          maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => []);
-
-        final matches = await service.findExpertsForBusiness(
+        final matches2 = await service.findExpertsForBusiness(
           business,
           maxResults: 10,
         );
+        expect(matches2.length, lessThanOrEqualTo(10));
 
-        expect(matches.length, lessThanOrEqualTo(10));
-      });
-
-      test('should use expert preferences when available', () async {
-        final preferences = BusinessExpertPreferences(
+        final preferences1 = BusinessExpertPreferences(
           requiredExpertiseCategories: ['food'],
           preferredExpertiseCategories: ['restaurant'],
         );
-
-        final businessWithPreferences = business.copyWith(
-          expertPreferences: preferences,
+        final businessWithPreferences1 = business.copyWith(
+          expertPreferences: preferences1,
         );
-
-        when(mockExpertiseMatchingService.findSimilarExperts(
-          any,
-          any,
-          location: anyNamed('location'),
-          maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => []);
-
-        final matches = await service.findExpertsForBusiness(
-          businessWithPreferences,
+        final matches3 = await service.findExpertsForBusiness(
+          businessWithPreferences1,
         );
+        expect(matches3, isA<List<BusinessExpertMatch>>());
 
-        expect(matches, isA<List<BusinessExpertMatch>>());
-      });
-
-      test('should apply minimum match score threshold from preferences', () async {
-        final preferences = BusinessExpertPreferences(
+        final preferences2 = BusinessExpertPreferences(
           requiredExpertiseCategories: ['food'],
           minMatchScore: 0.7,
         );
-
-        final businessWithPreferences = business.copyWith(
-          expertPreferences: preferences,
+        final businessWithPreferences2 = business.copyWith(
+          expertPreferences: preferences2,
         );
-
-        when(mockExpertiseMatchingService.findSimilarExperts(
-          any,
-          any,
-          location: anyNamed('location'),
-          maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => []);
-
-        final matches = await service.findExpertsForBusiness(
-          businessWithPreferences,
+        final matches4 = await service.findExpertsForBusiness(
+          businessWithPreferences2,
         );
-
-        // All matches should meet minimum threshold
-        for (final match in matches) {
+        for (final match in matches4) {
           expect(match.matchScore, greaterThanOrEqualTo(0.7));
         }
-      });
 
-      test('should find experts from preferred communities', () async {
-        final preferences = BusinessExpertPreferences(
+        final preferences3 = BusinessExpertPreferences(
           requiredExpertiseCategories: ['food'],
           preferredCommunities: ['community-1'],
         );
-
-        final businessWithPreferences = business.copyWith(
-          expertPreferences: preferences,
+        final businessWithPreferences3 = business.copyWith(
+          expertPreferences: preferences3,
         );
-
-        when(mockExpertiseMatchingService.findSimilarExperts(
-          any,
-          any,
-          location: anyNamed('location'),
-          maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => []);
-
         when(mockCommunityService.searchCommunities())
             .thenAnswer((_) async => []);
-
-        final matches = await service.findExpertsForBusiness(
-          businessWithPreferences,
+        final matches5 = await service.findExpertsForBusiness(
+          businessWithPreferences3,
         );
-
-        expect(matches, isA<List<BusinessExpertMatch>>());
-      });
-
-      test('should use AI suggestions when LLM service available', () async {
-        when(mockExpertiseMatchingService.findSimilarExperts(
-          any,
-          any,
-          location: anyNamed('location'),
-          maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => []);
+        expect(matches5, isA<List<BusinessExpertMatch>>());
 
         when(mockLLMService.generateRecommendation(
           userQuery: anyNamed('userQuery'),
         )).thenAnswer((_) async => 'AI suggestion response');
+        final matches6 = await service.findExpertsForBusiness(business);
+        expect(matches6, isA<List<BusinessExpertMatch>>());
 
-        final matches = await service.findExpertsForBusiness(business);
-
-        expect(matches, isA<List<BusinessExpertMatch>>());
-      });
-
-      test('should work without LLM service', () async {
         final serviceWithoutLLM = BusinessExpertMatchingService(
           expertiseMatchingService: mockExpertiseMatchingService,
           communityService: mockCommunityService,
           llmService: null,
         );
-
-        when(mockExpertiseMatchingService.findSimilarExperts(
-          any,
-          any,
-          location: anyNamed('location'),
-          maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => []);
-
-        final matches = await serviceWithoutLLM.findExpertsForBusiness(business);
-
-        expect(matches, isA<List<BusinessExpertMatch>>());
+        final matches7 =
+            await serviceWithoutLLM.findExpertsForBusiness(business);
+        expect(matches7, isA<List<BusinessExpertMatch>>());
       });
     });
 
     group('Vibe-First Matching', () {
-      test('should use vibe-first matching formula (50% vibe, 30% expertise, 20% location)', () async {
-        // Create local expert with required expertise
-        final localExpert = IntegrationTestHelpers.createUserWithLocalExpertise(
+      test(
+          'should use vibe-first matching formula (50% vibe, 30% expertise, 20% location), include local experts in matching, include remote experts with great vibe, prioritize vibe compatibility as PRIMARY factor (50% weight), or apply location as preference boost not filter',
+          () async {
+        // Test business logic: vibe-first matching with various scenarios
+        final localExpert1 =
+            IntegrationTestHelpers.createUserWithLocalExpertise(
           id: 'local-expert-1',
           category: 'food',
           location: 'San Francisco',
         );
-
-        // Create expert match
-        final expertMatch = ExpertMatch(
-          user: localExpert,
+        final expertMatch1 = ExpertMatch(
+          user: localExpert1,
           category: 'food',
           matchScore: 0.8,
           matchReason: 'Expertise match',
           commonExpertise: ['food'],
           complementaryExpertise: [],
         );
-
         when(mockExpertiseMatchingService.findSimilarExperts(
           any,
           any,
           location: anyNamed('location'),
           maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => [expertMatch]);
-
-        // Mock vibe compatibility (high vibe match)
+        )).thenAnswer((_) async => [expertMatch1]);
         when(mockPartnershipService.calculateVibeCompatibility(
           userId: anyNamed('userId'),
           businessId: anyNamed('businessId'),
-        )).thenAnswer((_) async => 0.9); // 90% vibe compatibility
+        )).thenAnswer((_) async => 0.9);
+        final matches1 = await service.findExpertsForBusiness(business);
+        expect(matches1, isNotEmpty);
+        final match1 = matches1.first;
+        expect(match1.matchScore, greaterThan(0.0));
+        expect(match1.matchScore, lessThanOrEqualTo(1.0));
+        expect(match1.matchReason, contains('vibe-first'));
 
-        final matches = await service.findExpertsForBusiness(business);
-
-        expect(matches, isNotEmpty);
-        final match = matches.first;
-
-        // Verify vibe-first matching formula is applied
-        // Expected: (0.9 * 0.5) + (expertise * 0.3) + (location * 0.2)
-        // Vibe contributes 50% (0.9 * 0.5 = 0.45)
-        // The match score should reflect vibe-first weighting
-        expect(match.matchScore, greaterThan(0.0));
-        expect(match.matchScore, lessThanOrEqualTo(1.0));
-        expect(match.matchReason, contains('vibe-first'));
-      });
-
-      test('should include local experts in matching (no level-based filtering)', () async {
-        // Create local expert
-        final localExpert = IntegrationTestHelpers.createUserWithLocalExpertise(
-          id: 'local-expert-1',
+        final localExpert2 =
+            IntegrationTestHelpers.createUserWithLocalExpertise(
+          id: 'local-expert-2',
           category: 'food',
           location: 'San Francisco',
         );
-
-        // Create expert match
-        final expertMatch = ExpertMatch(
-          user: localExpert,
+        final expertMatch2 = ExpertMatch(
+          user: localExpert2,
           category: 'food',
           matchScore: 0.7,
           matchReason: 'Expertise match',
           commonExpertise: ['food'],
           complementaryExpertise: [],
         );
-
         when(mockExpertiseMatchingService.findSimilarExperts(
           any,
           any,
           location: anyNamed('location'),
           maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => [expertMatch]);
-
+        )).thenAnswer((_) async => [expertMatch2]);
         when(mockPartnershipService.calculateVibeCompatibility(
           userId: anyNamed('userId'),
           businessId: anyNamed('businessId'),
         )).thenAnswer((_) async => 0.75);
+        final matches2 = await service.findExpertsForBusiness(business);
+        expect(matches2, isNotEmpty);
+        final match2 = matches2.first;
+        expect(match2.expert.id, equals('local-expert-2'));
+        expect(match2.expert.getExpertiseLevel('food'),
+            equals(ExpertiseLevel.local));
 
-        final matches = await service.findExpertsForBusiness(business);
-
-        // Local expert should be included
-        expect(matches, isNotEmpty);
-        final match = matches.first;
-        expect(match.expert.id, equals('local-expert-1'));
-        expect(match.expert.getExpertiseLevel('food'), equals(ExpertiseLevel.local));
-      });
-
-      test('should include remote experts with great vibe (location is preference boost, not filter)', () async {
-        // Create remote expert (different location) with high vibe
         final remoteExpert = IntegrationTestHelpers.createUserWithExpertise(
           id: 'remote-expert-1',
           category: 'food',
           level: ExpertiseLevel.city,
-        ).copyWith(location: 'New York'); // Different location
-
-        final expertMatch = ExpertMatch(
+        ).copyWith(location: 'New York');
+        final expertMatch3 = ExpertMatch(
           user: remoteExpert,
           category: 'food',
           matchScore: 0.8,
@@ -296,169 +214,130 @@ void main() {
           commonExpertise: ['food'],
           complementaryExpertise: [],
         );
-
         final businessWithLocation = business.copyWith(
-          preferredLocation: 'San Francisco', // Different from expert location
+          preferredLocation: 'San Francisco',
         );
-
         when(mockExpertiseMatchingService.findSimilarExperts(
           any,
           any,
           location: anyNamed('location'),
           maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => [expertMatch]);
-
-        // High vibe compatibility (90%) should allow remote expert to be included
+        )).thenAnswer((_) async => [expertMatch3]);
         when(mockPartnershipService.calculateVibeCompatibility(
           userId: anyNamed('userId'),
           businessId: anyNamed('businessId'),
         )).thenAnswer((_) async => 0.9);
+        final matches3 =
+            await service.findExpertsForBusiness(businessWithLocation);
+        expect(matches3, isNotEmpty);
+        final match3 = matches3.first;
+        expect(match3.expert.id, equals('remote-expert-1'));
+        expect(match3.expert.location, equals('New York'));
+        expect(match3.matchScore, greaterThan(0.5));
 
-        final matches = await service.findExpertsForBusiness(businessWithLocation);
-
-        // Remote expert with great vibe should be included
-        expect(matches, isNotEmpty);
-        final match = matches.first;
-        expect(match.expert.id, equals('remote-expert-1'));
-        expect(match.expert.location, equals('New York'));
-        // Match score should reflect high vibe (50% weight) despite location mismatch
-        expect(match.matchScore, greaterThan(0.5));
-      });
-
-      test('should prioritize vibe compatibility as PRIMARY factor (50% weight)', () async {
-        // Create two experts: one with high expertise/low vibe, one with lower expertise/high vibe
-        final highExpertiseExpert = IntegrationTestHelpers.createUserWithExpertise(
+        final highExpertiseExpert =
+            IntegrationTestHelpers.createUserWithExpertise(
           id: 'expert-1',
           category: 'food',
-          level: ExpertiseLevel.national, // High expertise
+          level: ExpertiseLevel.national,
         );
-
-        final highVibeExpert = IntegrationTestHelpers.createUserWithLocalExpertise(
+        final highVibeExpert =
+            IntegrationTestHelpers.createUserWithLocalExpertise(
           id: 'expert-2',
           category: 'food',
           location: 'San Francisco',
         );
-
-        final expertMatch1 = ExpertMatch(
+        final expertMatch4 = ExpertMatch(
           user: highExpertiseExpert,
           category: 'food',
-          matchScore: 0.9, // High expertise match
+          matchScore: 0.9,
           matchReason: 'High expertise match',
           commonExpertise: ['food'],
           complementaryExpertise: [],
         );
-
-        final expertMatch2 = ExpertMatch(
+        final expertMatch5 = ExpertMatch(
           user: highVibeExpert,
           category: 'food',
-          matchScore: 0.6, // Lower expertise match
+          matchScore: 0.6,
           matchReason: 'Lower expertise match',
           commonExpertise: ['food'],
           complementaryExpertise: [],
         );
-
         when(mockExpertiseMatchingService.findSimilarExperts(
           any,
           any,
           location: anyNamed('location'),
           maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => [expertMatch1, expertMatch2]);
-
-        // Expert 1: High expertise (0.9), low vibe (0.5)
-        // Expert 2: Lower expertise (0.6), high vibe (0.9)
+        )).thenAnswer((_) async => [expertMatch4, expertMatch5]);
         when(mockPartnershipService.calculateVibeCompatibility(
           userId: 'expert-1',
           businessId: anyNamed('businessId'),
-        )).thenAnswer((_) async => 0.5); // Low vibe
-
+        )).thenAnswer((_) async => 0.5);
         when(mockPartnershipService.calculateVibeCompatibility(
           userId: 'expert-2',
           businessId: anyNamed('businessId'),
-        )).thenAnswer((_) async => 0.9); // High vibe
-
-        final matches = await service.findExpertsForBusiness(business);
-
-        expect(matches.length, greaterThanOrEqualTo(2));
-
-        // Expert with high vibe should rank higher due to 50% vibe weight
-        // Expected scores:
-        // Expert 1: (0.5 * 0.5) + (0.9 * 0.3) + (location * 0.2) ≈ 0.25 + 0.27 + 0.1 = 0.62
-        // Expert 2: (0.9 * 0.5) + (0.6 * 0.3) + (location * 0.2) ≈ 0.45 + 0.18 + 0.2 = 0.83
-        // Expert 2 should rank higher
-        final sortedMatches = matches.toList()
+        )).thenAnswer((_) async => 0.9);
+        final matches4 = await service.findExpertsForBusiness(business);
+        expect(matches4.length, greaterThanOrEqualTo(2));
+        final sortedMatches = matches4.toList()
           ..sort((a, b) => b.matchScore.compareTo(a.matchScore));
+        final highVibeMatch =
+            sortedMatches.firstWhere((m) => m.expert.id == 'expert-2');
+        final highExpertiseMatch =
+            sortedMatches.firstWhere((m) => m.expert.id == 'expert-1');
+        expect(highVibeMatch.matchScore,
+            greaterThanOrEqualTo(highExpertiseMatch.matchScore));
 
-        // High vibe expert should have higher or equal score
-        final highVibeMatch = sortedMatches.firstWhere((m) => m.expert.id == 'expert-2');
-        final highExpertiseMatch = sortedMatches.firstWhere((m) => m.expert.id == 'expert-1');
-
-        // High vibe expert should rank higher due to 50% vibe weight
-        expect(highVibeMatch.matchScore, greaterThanOrEqualTo(highExpertiseMatch.matchScore));
-      });
-
-      test('should apply location as preference boost, not filter', () async {
-        // Create local expert in preferred location
-        final localExpert = IntegrationTestHelpers.createUserWithLocalExpertise(
-          id: 'local-expert-1',
+        final localExpert3 =
+            IntegrationTestHelpers.createUserWithLocalExpertise(
+          id: 'local-expert-3',
           category: 'food',
           location: 'San Francisco',
         );
-
-        // Create remote expert
-        final remoteExpert = IntegrationTestHelpers.createUserWithExpertise(
-          id: 'remote-expert-1',
+        final remoteExpert2 = IntegrationTestHelpers.createUserWithExpertise(
+          id: 'remote-expert-2',
           category: 'food',
           level: ExpertiseLevel.city,
         ).copyWith(location: 'New York');
-
-        final businessWithLocation = business.copyWith(
-          preferredLocation: 'San Francisco',
-        );
-
-        final expertMatch1 = ExpertMatch(
-          user: localExpert,
+        final expertMatch6 = ExpertMatch(
+          user: localExpert3,
           category: 'food',
           matchScore: 0.7,
           matchReason: 'Local expert match',
           commonExpertise: ['food'],
           complementaryExpertise: [],
         );
-
-        final expertMatch2 = ExpertMatch(
-          user: remoteExpert,
+        final expertMatch7 = ExpertMatch(
+          user: remoteExpert2,
           category: 'food',
           matchScore: 0.7,
           matchReason: 'Remote expert match',
           commonExpertise: ['food'],
           complementaryExpertise: [],
         );
-
         when(mockExpertiseMatchingService.findSimilarExperts(
           any,
           any,
           location: anyNamed('location'),
           maxResults: anyNamed('maxResults'),
-        )).thenAnswer((_) async => [expertMatch1, expertMatch2]);
-
-        // Both have same vibe compatibility
+        )).thenAnswer((_) async => [expertMatch6, expertMatch7]);
         when(mockPartnershipService.calculateVibeCompatibility(
           userId: anyNamed('userId'),
           businessId: anyNamed('businessId'),
         )).thenAnswer((_) async => 0.75);
-
-        final matches = await service.findExpertsForBusiness(businessWithLocation);
-
-        // Both experts should be included (location is not a filter)
-        expect(matches.length, greaterThanOrEqualTo(2));
-
-        // Local expert should have higher score due to location boost (20% weight)
-        final localMatch = matches.firstWhere((m) => m.expert.id == 'local-expert-1');
-        final remoteMatch = matches.firstWhere((m) => m.expert.id == 'remote-expert-1');
-
-        // Local expert should have higher score due to location boost
+        final matches5 =
+            await service.findExpertsForBusiness(businessWithLocation);
+        expect(matches5.length, greaterThanOrEqualTo(2));
+        final localMatch =
+            matches5.firstWhere((m) => m.expert.id == 'local-expert-3');
+        final remoteMatch =
+            matches5.firstWhere((m) => m.expert.id == 'remote-expert-2');
         expect(localMatch.matchScore, greaterThan(remoteMatch.matchScore));
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

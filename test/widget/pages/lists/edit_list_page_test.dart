@@ -26,33 +26,19 @@ void main() {
       );
     });
 
-    testWidgets('displays all required form fields', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Edit list page tests focus on business logic (form fields display, list information display), not property assignment
+
+    testWidgets(
+        'should display all required form fields or display list information for editing',
+        (WidgetTester tester) async {
+      // Test business logic: Edit list page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: EditListPage(list: testList),
         listsBloc: mockListsBloc,
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify form is present
-      expect(find.byType(EditListPage), findsOneWidget);
-    });
-
-    testWidgets('displays list information for editing', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: EditListPage(list: testList),
-        listsBloc: mockListsBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show list data in form
       expect(find.byType(EditListPage), findsOneWidget);
     });
   });
 }
-

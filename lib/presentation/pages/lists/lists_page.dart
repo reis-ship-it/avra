@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/models/list.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
 import 'package:spots/presentation/pages/lists/create_list_page.dart';
-import 'package:spots/presentation/pages/lists/list_details_page.dart';
 import 'package:spots/presentation/widgets/lists/spot_list_card.dart';
+import 'package:go_router/go_router.dart';
 import 'package:spots/presentation/widgets/common/offline_indicator.dart';
 
 class ListsPage extends StatelessWidget {
@@ -189,15 +189,7 @@ class ListsPage extends StatelessWidget {
               return SpotListCard(
                 list: list,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ListDetailsPage(list: list),
-                    ),
-                  ).then((_) {
-                    // Reload lists when returning from details page
-                    context.read<ListsBloc>().add(LoadLists());
-                  });
+                  context.go('/list/${list.id}');
                 },
               );
             },

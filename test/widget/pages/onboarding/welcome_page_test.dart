@@ -6,61 +6,53 @@ import 'package:spots/core/theme/colors.dart';
 
 void main() {
   group('WelcomePage', () {
-    testWidgets('builds successfully', (WidgetTester tester) async {
+    // Removed: Property assignment tests
+    // Welcome page tests focus on business logic (UI display, callbacks, animations, accessibility, layout), not property assignment
+
+    testWidgets(
+        'should build successfully, display welcome text, display skip button, display tap to continue hint, call onSkip callback when skip button is tapped, call onContinue callback when tapped anywhere, have gradient background, fade out animation works, prevent multiple taps during exit, have proper semantic labels, use SafeArea for proper layout, skip button has proper styling, or continue hint has pulsing animation',
+        (WidgetTester tester) async {
+      // Test business logic: Welcome page display, callbacks, animations, accessibility, layout
       await tester.pumpWidget(
         const MaterialApp(
           home: WelcomePage(),
         ),
       );
-
       expect(find.byType(WelcomePage), findsOneWidget);
       expect(find.byType(FloatingTextWidget), findsOneWidget);
-    });
-
-    testWidgets('displays welcome text', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: WelcomePage(),
-        ),
-      );
-
-      // Manual pump (can't use pumpAndSettle with repeating float animation)
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
-
-      // Check for floating text widget
-      expect(find.byType(FloatingTextWidget), findsOneWidget);
-      
-      // Check for individual letters from "Hi, tell me"
       expect(find.text('H'), findsOneWidget);
       expect(find.text('i'), findsOneWidget);
-    });
-
-    testWidgets('displays skip button', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: WelcomePage(),
-        ),
-      );
-
       expect(find.text('Skip'), findsOneWidget);
       expect(find.widgetWithText(TextButton, 'Skip'), findsOneWidget);
-    });
-
-    testWidgets('displays tap to continue hint', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: WelcomePage(),
-        ),
-      );
-
       expect(find.text('Tap to continue'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_downward_rounded), findsOneWidget);
-    });
+      expect(find.byType(Semantics), findsWidgets);
+      expect(find.byType(SafeArea), findsOneWidget);
+      final skipButton = tester.widget<TextButton>(
+        find.widgetWithText(TextButton, 'Skip'),
+      );
+      expect(skipButton, isNotNull);
+      expect(find.byType(PulsingHintWidget), findsOneWidget);
 
-    testWidgets('skip button calls onSkip callback', (WidgetTester tester) async {
+      final container = tester.widget<Container>(
+        find
+            .descendant(
+              of: find.byType(GestureDetector),
+              matching: find.byType(Container),
+            )
+            .first,
+      );
+      expect(container.decoration, isA<BoxDecoration>());
+      final decoration = container.decoration as BoxDecoration;
+      expect(decoration.gradient, isNotNull);
+      expect(decoration.gradient, isA<LinearGradient>());
+      final gradient = decoration.gradient as LinearGradient;
+      expect(gradient.colors, contains(AppColors.white));
+      expect(gradient.colors, contains(AppColors.grey50));
+
       bool skipCalled = false;
-
       await tester.pumpWidget(
         MaterialApp(
           home: WelcomePage(
@@ -70,16 +62,11 @@ void main() {
           ),
         ),
       );
-
       await tester.tap(find.text('Skip'));
       await tester.pump();
-
       expect(skipCalled, true);
-    });
 
-    testWidgets('tap anywhere calls onContinue callback', (WidgetTester tester) async {
       bool continueCalled = false;
-
       await tester.pumpWidget(
         MaterialApp(
           home: WelcomePage(
@@ -89,82 +76,36 @@ void main() {
           ),
         ),
       );
-
-      // Tap in center of screen
       await tester.tap(find.byType(WelcomePage));
-      
-      // Wait for fade animation (manual pump)
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
-      
-      expect(continueCalled, false); // Animation in progress
-      
-      // Complete animation (manual pumps for 400ms fade)
+      expect(continueCalled, false);
       for (int i = 0; i < 8; i++) {
         await tester.pump(const Duration(milliseconds: 50));
       }
-      
       expect(continueCalled, true);
-    });
 
-    testWidgets('has gradient background', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: WelcomePage(),
-        ),
-      );
-
-      final container = tester.widget<Container>(
-        find.descendant(
-          of: find.byType(GestureDetector),
-          matching: find.byType(Container),
-        ).first,
-      );
-
-      expect(container.decoration, isA<BoxDecoration>());
-      final decoration = container.decoration as BoxDecoration;
-      expect(decoration.gradient, isNotNull);
-      expect(decoration.gradient, isA<LinearGradient>());
-      
-      final gradient = decoration.gradient as LinearGradient;
-      expect(gradient.colors, contains(AppColors.white));
-      expect(gradient.colors, contains(AppColors.grey50));
-    });
-
-    testWidgets('fade out animation works', (WidgetTester tester) async {
-      bool continueCalled = false;
-
+      bool continueCalled2 = false;
       await tester.pumpWidget(
         MaterialApp(
           home: WelcomePage(
             onContinue: () {
-              continueCalled = true;
+              continueCalled2 = true;
             },
           ),
         ),
       );
-
-      // Initial state - should be visible
       await tester.pump();
-      
-      // Tap to start fade out
       await tester.tap(find.byType(WelcomePage));
       await tester.pump();
-      
-      // Animation in progress
       await tester.pump(const Duration(milliseconds: 200));
-      expect(continueCalled, false);
-      
-      // Complete fade animation (400ms fade + buffer)
+      expect(continueCalled2, false);
       for (int i = 0; i < 10; i++) {
         await tester.pump(const Duration(milliseconds: 50));
       }
-      expect(continueCalled, true);
-    });
+      expect(continueCalled2, true);
 
-    testWidgets('prevents multiple taps during exit', (WidgetTester tester) async {
       int continueCallCount = 0;
-
       await tester.pumpWidget(
         MaterialApp(
           home: WelcomePage(
@@ -174,73 +115,16 @@ void main() {
           ),
         ),
       );
-
-      // Tap multiple times quickly
       await tester.tap(find.byType(WelcomePage));
       await tester.pump();
-      
       await tester.tap(find.byType(WelcomePage));
       await tester.pump();
-      
       await tester.tap(find.byType(WelcomePage));
       await tester.pump();
-      
-      // Complete animation (manual pump due to floating animation)
       for (int i = 0; i < 10; i++) {
         await tester.pump(const Duration(milliseconds: 50));
       }
-      
-      // Should only call once (first tap)
       expect(continueCallCount, 1);
-    });
-
-    testWidgets('has proper semantic labels', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: WelcomePage(),
-        ),
-      );
-
-      // Check for semantic labels (they exist in the widget tree even if not found by label finder)
-      expect(find.byType(Semantics), findsWidgets);
-      expect(find.text('Skip'), findsOneWidget);
-      expect(find.text('Tap to continue'), findsOneWidget);
-    });
-
-    testWidgets('uses SafeArea for proper layout', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: WelcomePage(),
-        ),
-      );
-
-      expect(find.byType(SafeArea), findsOneWidget);
-    });
-
-    testWidgets('skip button has proper styling', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: WelcomePage(),
-        ),
-      );
-
-      final skipButton = tester.widget<TextButton>(
-        find.widgetWithText(TextButton, 'Skip'),
-      );
-      
-      expect(skipButton, isNotNull);
-    });
-
-    testWidgets('continue hint has pulsing animation', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: WelcomePage(),
-        ),
-      );
-
-      expect(find.byType(PulsingHintWidget), findsOneWidget);
-      expect(find.text('Tap to continue'), findsOneWidget);
     });
   });
 }
-

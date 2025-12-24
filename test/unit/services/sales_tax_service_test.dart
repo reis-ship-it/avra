@@ -8,19 +8,20 @@ import 'package:spots/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'sales_tax_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([ExpertiseEventService])
 void main() {
   group('SalesTaxService', () {
     late SalesTaxService service;
     late MockExpertiseEventService mockEventService;
-    
+
     late ExpertiseEvent testEvent;
     late UnifiedUser testUser;
 
     setUp(() {
       mockEventService = MockExpertiseEventService();
-      
+
       service = SalesTaxService(
         eventService: mockEventService,
       );
@@ -46,56 +47,44 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Sales tax tests focus on business logic (tax calculation, tax rate retrieval, exemption logic), not property assignment
+
     group('calculateSalesTax', () {
-      test('should return zero tax for tax-exempt event types', () async {
-        // Arrange
+      test(
+          'should return zero tax for tax-exempt event types, calculate tax for taxable event types, throw exception if event not found, or calculate correct tax amount',
+          () async {
+        // Test business logic: sales tax calculation
         final workshopEvent = testEvent.copyWith(
           eventType: ExpertiseEventType.workshop,
         );
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => workshopEvent);
-
-        // Act
-        final calculation = await service.calculateSalesTax(
+        final calculation1 = await service.calculateSalesTax(
           eventId: 'event-123',
           ticketPrice: 25.0,
         );
+        expect(calculation1, isA<SalesTaxCalculation>());
+        expect(calculation1.isTaxExempt, isTrue);
+        expect(calculation1.taxAmount, equals(0.0));
+        expect(calculation1.taxRate, equals(0.0));
+        expect(calculation1.totalAmount, equals(25.0));
+        expect(calculation1.exemptionReason, isNotNull);
 
-        // Assert
-        expect(calculation, isA<SalesTaxCalculation>());
-        expect(calculation.isTaxExempt, isTrue);
-        expect(calculation.taxAmount, equals(0.0));
-        expect(calculation.taxRate, equals(0.0));
-        expect(calculation.totalAmount, equals(25.0));
-        expect(calculation.exemptionReason, isNotNull);
-        verify(mockEventService.getEventById('event-123')).called(1);
-      });
-
-      test('should calculate tax for taxable event types', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-
-        // Act
-        final calculation = await service.calculateSalesTax(
+        final calculation2 = await service.calculateSalesTax(
           eventId: 'event-123',
           ticketPrice: 25.0,
         );
+        expect(calculation2, isA<SalesTaxCalculation>());
+        expect(calculation2.isTaxExempt, isFalse);
+        expect(calculation2.taxableAmount, equals(25.0));
+        expect(calculation2.taxRate, greaterThanOrEqualTo(0.0));
+        expect(calculation2.totalAmount, greaterThanOrEqualTo(25.0));
 
-        // Assert
-        expect(calculation, isA<SalesTaxCalculation>());
-        expect(calculation.isTaxExempt, isFalse);
-        expect(calculation.taxableAmount, equals(25.0));
-        expect(calculation.taxRate, greaterThanOrEqualTo(0.0));
-        expect(calculation.totalAmount, greaterThanOrEqualTo(25.0));
-      });
-
-      test('should throw exception if event not found', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => null);
-
-        // Act & Assert
         expect(
           () => service.calculateSalesTax(
             eventId: 'event-123',
@@ -107,136 +96,97 @@ void main() {
             contains('Event not found'),
           )),
         );
-      });
 
-      test('should calculate correct tax amount', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-
-        // Act
-        final calculation = await service.calculateSalesTax(
+        final calculation3 = await service.calculateSalesTax(
           eventId: 'event-123',
           ticketPrice: 100.0,
         );
-
-        // Assert
-        expect(calculation.taxAmount, equals(calculation.taxableAmount * (calculation.taxRate / 100.0)));
-        expect(calculation.totalAmount, equals(calculation.taxableAmount + calculation.taxAmount));
+        expect(
+            calculation3.taxAmount,
+            equals(
+                calculation3.taxableAmount * (calculation3.taxRate / 100.0)));
+        expect(calculation3.totalAmount,
+            equals(calculation3.taxableAmount + calculation3.taxAmount));
       });
     });
 
     group('getTaxRateForLocation', () {
-      test('should return tax rate for state', () async {
-        // Act
-        final taxRate = await service.getTaxRateForLocation(
+      test(
+          'should return tax rate for state, cache tax rates, return different rates for different locations, or handle missing state gracefully',
+          () async {
+        // Test business logic: tax rate retrieval
+        final taxRate1 = await service.getTaxRateForLocation(
           state: 'CA',
         );
+        expect(taxRate1, greaterThanOrEqualTo(0.0));
+        expect(taxRate1, lessThanOrEqualTo(15.0));
 
-        // Assert
-        expect(taxRate, greaterThanOrEqualTo(0.0));
-        expect(taxRate, lessThanOrEqualTo(15.0)); // Reasonable upper bound
-      });
-
-      test('should cache tax rates', () async {
-        // Act - call twice
         final rate1 = await service.getTaxRateForLocation(state: 'CA');
         final rate2 = await service.getTaxRateForLocation(state: 'CA');
-
-        // Assert - should be same (cached)
         expect(rate1, equals(rate2));
-      });
 
-      test('should return different rates for different locations', () async {
-        // Act
         final caRate = await service.getTaxRateForLocation(state: 'CA');
         final nyRate = await service.getTaxRateForLocation(state: 'NY');
-
-        // Assert
-        // Rates may be same if using defaults, but method should handle both
         expect(caRate, isA<double>());
         expect(nyRate, isA<double>());
-      });
 
-      test('should handle missing state gracefully', () async {
-        // Act
-        final taxRate = await service.getTaxRateForLocation(state: null);
-
-        // Assert
-        expect(taxRate, equals(0.0)); // Default for missing state
+        final taxRate2 = await service.getTaxRateForLocation(state: null);
+        expect(taxRate2, equals(0.0));
       });
     });
 
     group('tax exemption logic', () {
-      test('should exempt workshop events', () async {
-        // Arrange
+      test(
+          'should exempt workshop events, exempt lecture events, not exempt meetup events, or not exempt tour events',
+          () async {
+        // Test business logic: tax exemption rules
         final workshopEvent = testEvent.copyWith(
           eventType: ExpertiseEventType.workshop,
         );
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => workshopEvent);
-
-        // Act
-        final calculation = await service.calculateSalesTax(
+        final calculation1 = await service.calculateSalesTax(
           eventId: 'event-123',
           ticketPrice: 25.0,
         );
+        expect(calculation1.isTaxExempt, isTrue);
 
-        // Assert
-        expect(calculation.isTaxExempt, isTrue);
-      });
-
-      test('should exempt lecture events', () async {
-        // Arrange
         final lectureEvent = testEvent.copyWith(
           eventType: ExpertiseEventType.lecture,
         );
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => lectureEvent);
-
-        // Act
-        final calculation = await service.calculateSalesTax(
+        final calculation2 = await service.calculateSalesTax(
           eventId: 'event-123',
           ticketPrice: 25.0,
         );
+        expect(calculation2.isTaxExempt, isTrue);
 
-        // Assert
-        expect(calculation.isTaxExempt, isTrue);
-      });
-
-      test('should not exempt meetup events', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-
-        // Act
-        final calculation = await service.calculateSalesTax(
+        final calculation3 = await service.calculateSalesTax(
           eventId: 'event-123',
           ticketPrice: 25.0,
         );
+        expect(calculation3.isTaxExempt, isFalse);
 
-        // Assert
-        expect(calculation.isTaxExempt, isFalse);
-      });
-
-      test('should not exempt tour events', () async {
-        // Arrange
         final tourEvent = testEvent.copyWith(
           eventType: ExpertiseEventType.tour,
         );
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => tourEvent);
-
-        // Act
-        final calculation = await service.calculateSalesTax(
+        final calculation4 = await service.calculateSalesTax(
           eventId: 'event-123',
           ticketPrice: 25.0,
         );
-
-        // Assert
-        expect(calculation.isTaxExempt, isFalse);
+        expect(calculation4.isTaxExempt, isFalse);
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

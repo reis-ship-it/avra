@@ -43,7 +43,7 @@ class LegalAcceptanceDialog extends StatelessWidget {
                       builder: (context) => const TermsOfServicePage(requireAcceptance: true),
                     ),
                   ).then((accepted) {
-                    if (accepted == true && mounted) {
+                    if (accepted == true && context.mounted) {
                       Navigator.pop(context);
                       showDialog(
                         context: context,
@@ -68,7 +68,7 @@ class LegalAcceptanceDialog extends StatelessWidget {
                       builder: (context) => const PrivacyPolicyPage(requireAcceptance: true),
                     ),
                   ).then((accepted) {
-                    if (accepted == true && mounted) {
+                    if (accepted == true && context.mounted) {
                       Navigator.pop(context);
                       showDialog(
                         context: context,

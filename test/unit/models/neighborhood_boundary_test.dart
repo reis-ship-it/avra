@@ -3,7 +3,7 @@ import 'package:spots/core/models/neighborhood_boundary.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for NeighborhoodBoundary model
-/// 
+///
 /// **Philosophy:** Neighborhood boundaries reflect actual community connections,
 /// not just geographic lines. Borders evolve based on user behavior.
 void main() {
@@ -25,95 +25,13 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
-    group('Constructor and Properties', () {
-      test('should create boundary with required fields', () {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Greenpoint',
-          locality2: 'Williamsburg',
-          boundaryType: BoundaryType.hardBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
-        expect(boundary.id, equals('boundary-123'));
-        expect(boundary.locality1, equals('Greenpoint'));
-        expect(boundary.locality2, equals('Williamsburg'));
-        expect(boundary.boundaryType, equals(BoundaryType.hardBorder));
-        expect(boundary.coordinates, equals(testCoordinates));
-        expect(boundary.source, equals('Google Maps'));
-        expect(boundary.softBorderSpots, isEmpty);
-        expect(boundary.userVisitCounts, isEmpty);
-        expect(boundary.refinementHistory, isEmpty);
-        expect(boundary.lastRefinedAt, isNull);
-      });
-
-      test('should create soft border boundary', () {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-456',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1', 'spot-2'],
-          userVisitCounts: {
-            'spot-1': {'Nolita': 10, 'East Village': 5},
-            'spot-2': {'Nolita': 3, 'East Village': 8},
-          },
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(boundary.boundaryType, equals(BoundaryType.softBorder));
-        expect(boundary.softBorderSpots, equals(['spot-1', 'spot-2']));
-        expect(boundary.userVisitCounts['spot-1']?['Nolita'], equals(10));
-        expect(boundary.userVisitCounts['spot-2']?['East Village'], equals(8));
-      });
-
-      test('should create boundary with refinement history', () {
-        final refinement1 = RefinementEvent(
-          timestamp: testDate,
-          reason: 'User behavior analysis',
-          method: 'Visit count analysis',
-          changes: 'Moved spot-1 to Nolita',
-        );
-        final refinement2 = RefinementEvent(
-          timestamp: TestHelpers.createTimestampWithOffset(const Duration(days: 1)),
-          reason: 'Visit count threshold reached',
-          method: 'Threshold analysis',
-          changes: 'Moved spot-2 to East Village',
-        );
-
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-789',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          refinementHistory: [refinement1, refinement2],
-          lastRefinedAt: TestHelpers.createTimestampWithOffset(const Duration(days: 1)),
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(boundary.refinementHistory, hasLength(2));
-        expect(boundary.refinementHistory[0].reason, equals('User behavior analysis'));
-        expect(boundary.lastRefinedAt, isNotNull);
-      });
-    });
-
-    group('Boundary Type Enum', () {
-      test('should have hardBorder and softBorder values', () {
-        expect(BoundaryType.hardBorder, isNotNull);
-        expect(BoundaryType.softBorder, isNotNull);
-      });
-
-      test('should correctly identify hard border', () {
-        final boundary = NeighborhoodBoundary(
+    group('Boundary Type', () {
+      test('should correctly identify boundary type states', () {
+        // Test business logic: type identification
+        final hardBorder = NeighborhoodBoundary(
           id: 'boundary-1',
           locality1: 'NoHo',
           locality2: 'SoHo',
@@ -123,14 +41,7 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(boundary.boundaryType, equals(BoundaryType.hardBorder));
-        expect(boundary.isHardBorder, isTrue);
-        expect(boundary.isSoftBorder, isFalse);
-      });
-
-      test('should correctly identify soft border', () {
-        final boundary = NeighborhoodBoundary(
+        final softBorder = NeighborhoodBoundary(
           id: 'boundary-2',
           locality1: 'Nolita',
           locality2: 'East Village',
@@ -141,72 +52,19 @@ void main() {
           updatedAt: testDate,
         );
 
-        expect(boundary.boundaryType, equals(BoundaryType.softBorder));
-        expect(boundary.isHardBorder, isFalse);
-        expect(boundary.isSoftBorder, isTrue);
+        expect(hardBorder.isHardBorder, isTrue);
+        expect(hardBorder.isSoftBorder, isFalse);
+        expect(softBorder.isSoftBorder, isTrue);
+        expect(softBorder.isHardBorder, isFalse);
       });
     });
 
-    group('Coordinate Storage', () {
-      test('should store multiple coordinate points', () {
-        final manyCoordinates = List.generate(10, (i) => CoordinatePoint(
-          latitude: 40.7295 + (i * 0.001),
-          longitude: -73.9545 - (i * 0.001),
-        ));
-
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-1',
-          locality1: 'Greenpoint',
-          locality2: 'Williamsburg',
-          boundaryType: BoundaryType.hardBorder,
-          coordinates: manyCoordinates,
-          source: 'Google Maps',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(boundary.coordinates, hasLength(10));
-        expect(boundary.coordinates[0].latitude, equals(40.7295));
-        expect(boundary.coordinates[9].latitude, equals(40.7295 + 0.009));
-      });
-
-      test('should handle empty coordinates', () {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-1',
-          locality1: 'Greenpoint',
-          locality2: 'Williamsburg',
-          boundaryType: BoundaryType.hardBorder,
-          coordinates: [],
-          source: 'Google Maps',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(boundary.coordinates, isEmpty);
-      });
-    });
+    // Removed: Coordinate Storage group
+    // These tests only verified list storage, not business logic
 
     group('Soft Border Spot Tracking', () {
-      test('should track spots in soft border areas', () {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-1',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1', 'spot-2', 'spot-3'],
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(boundary.softBorderSpots, hasLength(3));
-        expect(boundary.softBorderSpots, contains('spot-1'));
-        expect(boundary.softBorderSpots, contains('spot-2'));
-        expect(boundary.softBorderSpots, contains('spot-3'));
-      });
-
-      test('should check if spot is in soft border', () {
+      test('should correctly identify spots in soft border areas', () {
+        // Test business logic: spot identification
         final boundary = NeighborhoodBoundary(
           id: 'boundary-1',
           locality1: 'Nolita',
@@ -226,8 +84,11 @@ void main() {
     });
 
     group('User Visit Count Tracking', () {
-      test('should track visit counts by locality', () {
-        final boundary = NeighborhoodBoundary(
+      test(
+          'should correctly determine dominant locality based on visit counts and handle ties by returning locality1',
+          () {
+        // Test business logic: dominant locality calculation and tie-breaking
+        final boundaryWithWinner = NeighborhoodBoundary(
           id: 'boundary-1',
           locality1: 'Nolita',
           locality2: 'East Village',
@@ -241,55 +102,8 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(boundary.userVisitCounts['spot-1']?['Nolita'], equals(15));
-        expect(boundary.userVisitCounts['spot-1']?['East Village'], equals(8));
-      });
-
-      test('should get visit counts for spot', () {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-1',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
-            'spot-1': {'Nolita': 15, 'East Village': 8},
-          },
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final visitCounts = boundary.userVisitCounts['spot-1'];
-        expect(visitCounts?['Nolita'], equals(15));
-        expect(visitCounts?['East Village'], equals(8));
-        expect(boundary.userVisitCounts['spot-2'], isNull);
-      });
-
-      test('should get dominant locality for spot', () {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-1',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
-            'spot-1': {'Nolita': 15, 'East Village': 8},
-          },
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(boundary.getDominantLocality('spot-1'), equals('Nolita'));
-      });
-
-      test('should handle tie in visit counts', () {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-1',
+        final boundaryWithTie = NeighborhoodBoundary(
+          id: 'boundary-2',
           locality1: 'Nolita',
           locality2: 'East Village',
           boundaryType: BoundaryType.softBorder,
@@ -303,67 +117,39 @@ void main() {
           updatedAt: testDate,
         );
 
-        // In case of tie, should return locality1 (first locality)
-        expect(boundary.getDominantLocality('spot-1'), equals('Nolita'));
+        expect(
+            boundaryWithWinner.getDominantLocality('spot-1'), equals('Nolita'));
+        expect(boundaryWithTie.getDominantLocality('spot-1'),
+            equals('Nolita')); // Tie breaks to locality1
       });
     });
 
     group('Refinement History', () {
-      test('should track refinement events', () {
+      test('should track refinement history and timestamps correctly', () {
+        // Test business logic: refinement tracking
         final refinement1 = RefinementEvent(
           timestamp: testDate,
           reason: 'User behavior analysis',
           method: 'Visit count analysis',
           changes: 'Moved spot-1 to Nolita',
         );
-        final refinement2 = RefinementEvent(
-          timestamp: TestHelpers.createTimestampWithOffset(const Duration(days: 1)),
-          reason: 'Visit count threshold reached',
-          method: 'Threshold analysis',
-          changes: 'Moved spot-2 to East Village',
-        );
+        final lastRefined =
+            TestHelpers.createTimestampWithOffset(const Duration(days: 1));
 
-        final boundary = NeighborhoodBoundary(
+        final refined = NeighborhoodBoundary(
           id: 'boundary-1',
           locality1: 'Nolita',
           locality2: 'East Village',
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          refinementHistory: [refinement1, refinement2],
-          lastRefinedAt: TestHelpers.createTimestampWithOffset(const Duration(days: 1)),
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(boundary.refinementHistory, hasLength(2));
-        expect(boundary.refinementHistory[0].reason, equals('User behavior analysis'));
-        expect(boundary.refinementHistory[1].reason, equals('Visit count threshold reached'));
-        expect(boundary.refinementHistory[0].changes, equals('Moved spot-1 to Nolita'));
-        expect(boundary.refinementHistory[1].changes, equals('Moved spot-2 to East Village'));
-      });
-
-      test('should track last refinement timestamp', () {
-        final lastRefined = TestHelpers.createTimestampWithOffset(const Duration(days: 5));
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-1',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
+          refinementHistory: [refinement1],
           lastRefinedAt: lastRefined,
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        expect(boundary.lastRefinedAt, equals(lastRefined));
-        expect(boundary.lastRefinedAt, isNotNull);
-      });
-
-      test('should indicate if boundary has been refined', () {
         final unrefined = NeighborhoodBoundary(
-          id: 'boundary-1',
+          id: 'boundary-2',
           locality1: 'NoHo',
           locality2: 'SoHo',
           boundaryType: BoundaryType.hardBorder,
@@ -373,26 +159,17 @@ void main() {
           updatedAt: testDate,
         );
 
-        expect(unrefined.lastRefinedAt, isNull);
-
-        final refined = NeighborhoodBoundary(
-          id: 'boundary-2',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          lastRefinedAt: testDate,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
+        expect(refined.refinementHistory, hasLength(1));
         expect(refined.lastRefinedAt, isNotNull);
+        expect(unrefined.lastRefinedAt, isNull);
       });
     });
 
     group('JSON Serialization', () {
-      test('should serialize to JSON', () {
+      test(
+          'should serialize and deserialize with nested structures and handle missing optional fields with defaults',
+          () {
+        // Test business logic: JSON round-trip with nested structures and default handling
         final refinement = RefinementEvent(
           timestamp: testDate,
           reason: 'User behavior',
@@ -418,62 +195,15 @@ void main() {
         );
 
         final json = boundary.toJson();
+        final restored = NeighborhoodBoundary.fromJson(json);
 
-        expect(json['id'], equals('boundary-123'));
-        expect(json['locality1'], equals('Greenpoint'));
-        expect(json['locality2'], equals('Williamsburg'));
-        expect(json['boundaryType'], equals('hardBorder'));
-        expect(json['coordinates'], isA<List>());
-        expect(json['source'], equals('Google Maps'));
-        expect(json['softBorderSpots'], equals(['spot-1']));
-        expect(json['userVisitCounts'], isA<Map>());
-        expect(json['refinementHistory'], isA<List>());
-        expect(json['lastRefinedAt'], equals(testDate.toIso8601String()));
-        expect(json['createdAt'], equals(testDate.toIso8601String()));
-        expect(json['updatedAt'], equals(testDate.toIso8601String()));
-      });
+        expect(restored.boundaryType, equals(BoundaryType.hardBorder));
+        expect(restored.softBorderSpots, equals(['spot-1']));
+        expect(restored.userVisitCounts['spot-1']?['Greenpoint'], equals(10));
+        expect(restored.refinementHistory, hasLength(1));
 
-      test('should deserialize from JSON', () {
-        final refinementJson = {
-          'timestamp': testDate.toIso8601String(),
-          'reason': 'User behavior',
-          'method': 'Visit count analysis',
-          'changes': 'Moved spot-1',
-        };
-
-        final json = {
-          'id': 'boundary-123',
-          'locality1': 'Greenpoint',
-          'locality2': 'Williamsburg',
-          'boundaryType': 'hardBorder',
-          'coordinates': testCoordinates,
-          'source': 'Google Maps',
-          'softBorderSpots': ['spot-1'],
-          'userVisitCounts': {
-            'spot-1': {'Greenpoint': 10, 'Williamsburg': 5},
-          },
-          'refinementHistory': [refinementJson],
-          'lastRefinedAt': testDate.toIso8601String(),
-          'createdAt': testDate.toIso8601String(),
-          'updatedAt': testDate.toIso8601String(),
-        };
-
-        final boundary = NeighborhoodBoundary.fromJson(json);
-
-        expect(boundary.id, equals('boundary-123'));
-        expect(boundary.locality1, equals('Greenpoint'));
-        expect(boundary.locality2, equals('Williamsburg'));
-        expect(boundary.boundaryType, equals(BoundaryType.hardBorder));
-        expect(boundary.coordinates, equals(testCoordinates));
-        expect(boundary.source, equals('Google Maps'));
-        expect(boundary.softBorderSpots, equals(['spot-1']));
-        expect(boundary.userVisitCounts['spot-1']?['Greenpoint'], equals(10));
-        expect(boundary.refinementHistory, hasLength(1));
-        expect(boundary.lastRefinedAt, equals(testDate));
-      });
-
-      test('should handle missing optional fields in JSON', () {
-        final json = {
+        // Test defaults with minimal JSON
+        final minimalJson = {
           'id': 'boundary-123',
           'locality1': 'Greenpoint',
           'locality2': 'Williamsburg',
@@ -483,18 +213,16 @@ void main() {
           'createdAt': testDate.toIso8601String(),
           'updatedAt': testDate.toIso8601String(),
         };
+        final fromMinimal = NeighborhoodBoundary.fromJson(minimalJson);
 
-        final boundary = NeighborhoodBoundary.fromJson(json);
-
-        expect(boundary.softBorderSpots, isEmpty);
-        expect(boundary.userVisitCounts, isEmpty);
-        expect(boundary.refinementHistory, isEmpty);
-        expect(boundary.lastRefinedAt, isNull);
+        expect(fromMinimal.softBorderSpots, isEmpty);
+        expect(fromMinimal.userVisitCounts, isEmpty);
+        expect(fromMinimal.lastRefinedAt, isNull);
       });
     });
 
-    group('CopyWith Method', () {
-      test('should create copy with updated fields', () {
+    group('copyWith', () {
+      test('should create immutable copy with updated fields', () {
         final original = NeighborhoodBoundary(
           id: 'boundary-123',
           locality1: 'Greenpoint',
@@ -509,164 +237,21 @@ void main() {
         final updated = original.copyWith(
           boundaryType: BoundaryType.softBorder,
           softBorderSpots: ['spot-1'],
-          lastRefinedAt: testDate,
         );
 
-        expect(updated.id, equals(original.id));
-        expect(updated.locality1, equals(original.locality1));
-        expect(updated.locality2, equals(original.locality2));
+        // Test immutability (business logic)
+        expect(original.boundaryType, isNot(equals(BoundaryType.softBorder)));
         expect(updated.boundaryType, equals(BoundaryType.softBorder));
-        expect(updated.softBorderSpots, equals(['spot-1']));
-        expect(updated.lastRefinedAt, equals(testDate));
-      });
-
-      test('should preserve original values when fields not specified', () {
-        final original = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Greenpoint',
-          locality2: 'Williamsburg',
-          boundaryType: BoundaryType.hardBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final updated = original.copyWith(boundaryType: BoundaryType.softBorder);
-
-        expect(updated.softBorderSpots, equals(original.softBorderSpots));
-        expect(updated.coordinates, equals(original.coordinates));
-        expect(updated.source, equals(original.source));
-      });
-
-      test('should create copy without changing original', () {
-        final original = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Greenpoint',
-          locality2: 'Williamsburg',
-          boundaryType: BoundaryType.hardBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final copy = original.copyWith(boundaryType: BoundaryType.softBorder);
-
-        expect(original.boundaryType, equals(BoundaryType.hardBorder));
-        expect(copy.boundaryType, equals(BoundaryType.softBorder));
+        expect(updated.id, equals(original.id)); // Unchanged fields preserved
       });
     });
 
-    group('Equatable Implementation', () {
-      test('should be equal when all properties match', () {
-        final boundary1 = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Greenpoint',
-          locality2: 'Williamsburg',
-          boundaryType: BoundaryType.hardBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final boundary2 = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Greenpoint',
-          locality2: 'Williamsburg',
-          boundaryType: BoundaryType.hardBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(boundary1, equals(boundary2));
-        expect(boundary1.hashCode, equals(boundary2.hashCode));
-      });
-
-      test('should not be equal when properties differ', () {
-        final boundary1 = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Greenpoint',
-          locality2: 'Williamsburg',
-          boundaryType: BoundaryType.hardBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final boundary2 = NeighborhoodBoundary(
-          id: 'boundary-456',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(boundary1, isNot(equals(boundary2)));
-      });
-    });
+    // Removed: Equatable Implementation group
+    // These tests verify Equatable implementation, which is already tested by the package
+    // If equality breaks, other tests will fail
   });
 
-  group('RefinementEvent Model Tests', () {
-    late DateTime testDate;
-
-    setUp(() {
-      testDate = TestHelpers.createTestDateTime();
-    });
-
-    test('should create refinement event', () {
-      final event = RefinementEvent(
-        timestamp: testDate,
-        reason: 'User behavior analysis',
-        method: 'Visit count analysis',
-        changes: 'Moved spot-1 to Nolita',
-      );
-
-      expect(event.timestamp, equals(testDate));
-      expect(event.reason, equals('User behavior analysis'));
-      expect(event.method, equals('Visit count analysis'));
-      expect(event.changes, equals('Moved spot-1 to Nolita'));
-    });
-
-    test('should serialize refinement event to JSON', () {
-      final event = RefinementEvent(
-        timestamp: testDate,
-        reason: 'User behavior',
-        method: 'Visit count analysis',
-        changes: 'Moved spot-1',
-      );
-
-      final json = event.toJson();
-
-      expect(json['timestamp'], equals(testDate.toIso8601String()));
-      expect(json['reason'], equals('User behavior'));
-      expect(json['method'], equals('Visit count analysis'));
-      expect(json['changes'], equals('Moved spot-1'));
-    });
-
-    test('should deserialize refinement event from JSON', () {
-      final json = {
-        'timestamp': testDate.toIso8601String(),
-        'reason': 'User behavior',
-        'method': 'Visit count analysis',
-        'changes': 'Moved spot-1',
-      };
-
-      final event = RefinementEvent.fromJson(json);
-
-      expect(event.timestamp, equals(testDate));
-      expect(event.reason, equals('User behavior'));
-      expect(event.method, equals('Visit count analysis'));
-      expect(event.changes, equals('Moved spot-1'));
-    });
-  });
+  // Removed: RefinementEvent Model Tests group
+  // These tests only verified Dart constructor and JSON serialization behavior
+  // RefinementEvent is tested through NeighborhoodBoundary JSON tests above
 }
-

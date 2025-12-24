@@ -269,7 +269,7 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
         gradient: LinearGradient(
           colors: [
             AppColors.electricGreen,
-            AppColors.neonPink,
+            AppColors.primary,
           ],
         ),
         borderRadius: BorderRadius.circular(16),

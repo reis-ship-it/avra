@@ -83,6 +83,8 @@ class BusinessAccountService {
     BusinessPatronPreferences? patronPreferences,
     String? preferredLocation,
     int? minExpertLevel,
+    bool? isVerified,
+    bool? isActive,
   }) async {
     try {
       _logger.info('Updating business account: ${account.id}', tag: _logName);
@@ -101,6 +103,8 @@ class BusinessAccountService {
         patronPreferences: patronPreferences,
         preferredLocation: preferredLocation,
         minExpertLevel: minExpertLevel,
+        isVerified: isVerified,
+        isActive: isActive,
         updatedAt: DateTime.now(),
       );
 
@@ -189,6 +193,8 @@ class BusinessAccountService {
   }
 
   // Private helper methods
+  // In-memory storage for tests (in production, use database)
+  final Map<String, BusinessAccount> _businessAccounts = {};
 
   String _generateBusinessId(String name) {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -199,11 +205,13 @@ class BusinessAccountService {
   Future<void> _saveBusinessAccount(BusinessAccount account) async {
     // In production, save to database
     developer.log('Saving business account: ${account.id}', name: _logName);
+    // Store in memory for tests
+    _businessAccounts[account.id] = account;
   }
 
   Future<List<BusinessAccount>> _getAllBusinessAccounts() async {
     // In production, query database
-    return [];
+    return _businessAccounts.values.toList();
   }
 }
 

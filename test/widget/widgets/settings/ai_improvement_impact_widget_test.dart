@@ -1,17 +1,18 @@
 /// SPOTS AIImprovementImpactWidget Widget Tests
 /// Date: November 21, 2025
 /// Purpose: Test AIImprovementImpactWidget functionality and UI behavior
-/// 
+///
 /// Test Coverage:
 /// - Header Display: Title, icon
 /// - Impact Summary: Gradient container, impact points
 /// - Benefits Section: 4 benefit cards with icons
 /// - Transparency Section: Privacy points, settings link
 /// - Visual Elements: Icons, colors, layouts
-/// 
+///
 /// Dependencies:
 /// - AIImprovementTrackingService: For service reference (stateless widget)
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/settings/ai_improvement_impact_widget.dart';
@@ -23,11 +24,11 @@ import '../../helpers/widget_test_helpers.dart';
 void main() {
   group('AIImprovementImpactWidget Widget Tests', () {
     late MockAIImprovementTrackingService mockService;
-    
+
     setUp(() {
       mockService = MockAIImprovementTrackingService();
     });
-    
+
     /// Helper to create scrollable test widget with larger viewport
     Widget createScrollableTestWidget({required Widget child}) {
       return WidgetTestHelpers.createTestableWidget(
@@ -41,476 +42,270 @@ void main() {
     }
 
     group('Header Display', () {
-      testWidgets('displays header with title', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Header display tests focus on business logic (header display), not property assignment
+
+      testWidgets('should display header with title or display header icon',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement impact widget header display
         final widget = createScrollableTestWidget(
           child: AIImprovementImpactWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
         await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.text('What This Means for You'), findsOneWidget);
-      });
-
-      testWidgets('displays header icon', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);
       });
     });
 
     group('Impact Summary', () {
-      testWidgets('displays impact summary section', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Impact summary tests focus on business logic (impact summary display, impact points), not property assignment
+
+      testWidgets(
+          'should display impact summary section, display impact summary description, display better recommendations impact point, display faster responses impact point, or display deeper understanding impact point',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement impact widget impact summary
         final widget = createScrollableTestWidget(
           child: AIImprovementImpactWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
         await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.text('AI Evolution Impact'), findsOneWidget);
         expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
-      });
-
-      testWidgets('displays impact summary description', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
-        expect(find.text('As your AI improves, you experience:'), findsOneWidget);
-      });
-
-      testWidgets('displays better recommendations impact point', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
+        expect(
+            find.text('As your AI improves, you experience:'), findsOneWidget);
         expect(find.text('Better Recommendations'), findsOneWidget);
-        expect(find.textContaining('More accurate spot suggestions'), findsOneWidget);
+        expect(find.textContaining('More accurate spot suggestions'),
+            findsOneWidget);
         expect(find.byIcon(Icons.recommend), findsOneWidget);
-      });
-
-      testWidgets('displays faster responses impact point', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.text('Faster Responses'), findsOneWidget);
         expect(find.textContaining('Quicker AI processing'), findsOneWidget);
         expect(find.byIcon(Icons.speed), findsOneWidget);
-      });
-
-      testWidgets('displays deeper understanding impact point', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.text('Deeper Understanding'), findsOneWidget);
-        expect(find.textContaining('AI learns your preferences'), findsOneWidget);
+        expect(
+            find.textContaining('AI learns your preferences'), findsOneWidget);
         expect(find.byIcon(Icons.psychology), findsOneWidget);
       });
     });
 
     group('Benefits Section', () {
-      testWidgets('displays benefits section header', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Benefits section tests focus on business logic (benefits section display, benefit cards), not property assignment
+
+      testWidgets(
+          'should display benefits section header, display personalization benefit card, display discovery benefit card, display efficiency benefit card, display community benefit card, or display all 4 benefit cards',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement impact widget benefits section
         final widget = createScrollableTestWidget(
           child: AIImprovementImpactWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
         await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.text('Your Benefits'), findsOneWidget);
         expect(find.byIcon(Icons.card_giftcard), findsOneWidget);
-      });
-
-      testWidgets('displays personalization benefit card', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.text('Personalization'), findsOneWidget);
-        expect(find.text('AI adapts to your unique preferences'), findsOneWidget);
+        expect(
+            find.text('AI adapts to your unique preferences'), findsOneWidget);
         expect(find.byIcon(Icons.person), findsOneWidget);
-      });
-
-      testWidgets('displays discovery benefit card', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.text('Discovery'), findsOneWidget);
-        expect(find.text('Find hidden gems that match your vibe'), findsOneWidget);
+        expect(
+            find.text('Find hidden gems that match your vibe'), findsOneWidget);
         expect(find.byIcon(Icons.explore), findsOneWidget);
-      });
-
-      testWidgets('displays efficiency benefit card', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.text('Efficiency'), findsOneWidget);
-        expect(find.text('Less time searching, more time enjoying'), findsOneWidget);
+        expect(find.text('Less time searching, more time enjoying'),
+            findsOneWidget);
         expect(find.byIcon(Icons.flash_on), findsOneWidget);
-      });
-
-      testWidgets('displays community benefit card', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.text('Community'), findsOneWidget);
-        expect(find.text('Connect with like-minded people through AI'), findsOneWidget);
+        expect(find.text('Connect with like-minded people through AI'),
+            findsOneWidget);
         expect(find.byIcon(Icons.people), findsOneWidget);
-      });
-
-      testWidgets('displays all 4 benefit cards', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
-        expect(find.text('Personalization'), findsOneWidget);
-        expect(find.text('Discovery'), findsOneWidget);
-        expect(find.text('Efficiency'), findsOneWidget);
-        expect(find.text('Community'), findsOneWidget);
       });
     });
 
     group('Transparency Section', () {
-      testWidgets('displays transparency section header', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Transparency section tests focus on business logic (transparency section display, privacy settings button), not property assignment
+
+      testWidgets(
+          'should display transparency section header, display transparency points, display privacy settings button, have privacy settings button be tappable, or display check circle icons for transparency points',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement impact widget transparency section
         final widget = createScrollableTestWidget(
           child: AIImprovementImpactWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
         await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.text('Transparency & Control'), findsOneWidget);
         expect(find.byIcon(Icons.visibility), findsOneWidget);
-      });
-
-      testWidgets('displays transparency points', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
-        expect(find.text('You always know what your AI is learning'), findsOneWidget);
-        expect(find.text('All improvements are privacy-preserving'), findsOneWidget);
+        expect(find.text('You always know what your AI is learning'),
+            findsOneWidget);
+        expect(find.text('All improvements are privacy-preserving'),
+            findsOneWidget);
         expect(find.text('You control learning participation'), findsOneWidget);
         expect(find.text('Progress tracked in real-time'), findsOneWidget);
-      });
-
-      testWidgets('displays privacy settings button', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pumpAndSettle();
-
-        // Assert (button text should be visible - tappability tested separately)
-        expect(find.text('Privacy Settings'), findsOneWidget);
-      });
-
-      testWidgets('privacy settings button is tappable', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pumpAndSettle();
-        
-        // Verify button exists and can be tapped (no navigation implemented, so just check tap works)
-        final button = find.text('Privacy Settings');
-        expect(button, findsOneWidget);
-        
-        // Scroll to make button visible if needed, then tap
-        await tester.ensureVisible(button);
-        await tester.pumpAndSettle();
-        
-        await tester.tap(button);
-        await tester.pump();
-
-        // Assert - no error should occur
-        expect(button, findsOneWidget);
-      });
-
-      testWidgets('displays check circle icons for transparency points', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
-        // Should have 4 check circle icons (one per transparency point)
         final checkIcons = find.byIcon(Icons.check_circle_outline);
         expect(checkIcons, findsNWidgets(4));
+        await tester.pumpAndSettle();
+        final button = find.text('Privacy Settings');
+        expect(button, findsOneWidget);
+        await tester.ensureVisible(button);
+        await tester.pumpAndSettle();
+        await tester.tap(button);
+        await tester.pump();
+        expect(button, findsOneWidget);
       });
     });
 
     group('Visual Elements', () {
-      testWidgets('uses consistent color scheme', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Visual elements tests focus on business logic (color scheme, icons, Card widget), not property assignment
+
+      testWidgets(
+          'should use consistent color scheme, display all section icons, or render within a Card widget',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement impact widget visual elements
         final widget = createScrollableTestWidget(
           child: AIImprovementImpactWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
         await tester.pumpWidget(widget);
-
-        // Assert
-        // Electric green should be used in various places
         final containers = find.descendant(
           of: find.byType(Container),
           matching: find.byType(Container),
         );
         expect(containers, findsWidgets);
-      });
-
-      testWidgets('displays all section icons', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
-        expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget); // Header
-        expect(find.byIcon(Icons.auto_awesome), findsOneWidget); // Impact summary
-        expect(find.byIcon(Icons.card_giftcard), findsOneWidget); // Benefits header
-        expect(find.byIcon(Icons.visibility), findsOneWidget); // Transparency header
-      });
-
-      testWidgets('renders within a Card widget', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
+        expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);
+        expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
+        expect(find.byIcon(Icons.card_giftcard), findsOneWidget);
+        expect(find.byIcon(Icons.visibility), findsOneWidget);
         expect(find.byType(Card), findsOneWidget);
       });
     });
 
     group('Layout', () {
-      testWidgets('displays all sections in order', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Layout tests focus on business logic (section order, spacing), not property assignment
+
+      testWidgets(
+          'should display all sections in order or use proper spacing between sections',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement impact widget layout
         final widget = createScrollableTestWidget(
           child: AIImprovementImpactWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
         await tester.pumpWidget(widget);
-
-        // Assert
-        // Find sections in order by looking at their vertical positions
-        final headerY = tester.getTopLeft(find.text('What This Means for You')).dy;
+        final headerY =
+            tester.getTopLeft(find.text('What This Means for You')).dy;
         final impactY = tester.getTopLeft(find.text('AI Evolution Impact')).dy;
         final benefitsY = tester.getTopLeft(find.text('Your Benefits')).dy;
-        final transparencyY = tester.getTopLeft(find.text('Transparency & Control')).dy;
-
+        final transparencyY =
+            tester.getTopLeft(find.text('Transparency & Control')).dy;
         expect(headerY < impactY, isTrue);
         expect(impactY < benefitsY, isTrue);
         expect(benefitsY < transparencyY, isTrue);
-      });
-
-      testWidgets('uses proper spacing between sections', (WidgetTester tester) async {
-        // Arrange
-        final widget = createScrollableTestWidget(
-          child: AIImprovementImpactWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert
         expect(find.byType(SizedBox), findsWidgets);
       });
     });
   });
 }
 
-/// Mock service for testing (stateless widget doesn't use it)
+/// Real fake implementation with actual tracking behavior for testing
 class MockAIImprovementTrackingService implements AIImprovementTrackingService {
-  @override
-  Future<void> initialize() async {}
+  final Map<String, AIImprovementMetrics> _metrics = {};
+  final Map<String, List<AIImprovementSnapshot>> _history = {};
+  final Map<String, List<ImprovementMilestone>> _milestones = {};
+  final StreamController<AIImprovementMetrics> _metricsController = 
+      StreamController<AIImprovementMetrics>.broadcast();
+  bool _isInitialized = false;
+  String? _trackingUserId;
   
-  @override
-  void dispose() {}
+  /// Set metrics for a user (for testing)
+  void setMetrics(String userId, AIImprovementMetrics metrics) {
+    _metrics[userId] = metrics;
+    _metricsController.add(metrics);
+  }
   
-  // All overrides (none used in stateless widget)
+  /// Set history for a user (for testing)
+  void setHistory(String userId, List<AIImprovementSnapshot> history) {
+    _history[userId] = history;
+  }
+  
+  /// Set milestones for a user (for testing)
+  void setMilestones(String userId, List<ImprovementMilestone> milestones) {
+    _milestones[userId] = milestones;
+  }
+
+  @override
+  Future<void> initialize() async {
+    _isInitialized = true;
+  }
+
+  @override
+  void dispose() {
+    _metricsController.close();
+    _isInitialized = false;
+  }
+
   @override
   Future<AIImprovementMetrics> getCurrentMetrics(String userId) async {
-    throw UnimplementedError();
+    return _metrics[userId] ?? AIImprovementMetrics.empty(userId);
   }
-  
+
   @override
   Future<AccuracyMetrics> getAccuracyMetrics(String userId) async {
-    throw UnimplementedError();
+    return AccuracyMetrics(
+      recommendationAcceptanceRate: 0.75,
+      predictionAccuracy: 0.80,
+      userSatisfactionScore: 0.78,
+      averageConfidence: 0.85,
+      totalRecommendations: 100,
+      acceptedRecommendations: 75,
+      timestamp: DateTime.now(),
+    );
   }
-  
+
   @override
-  Stream<AIImprovementMetrics> get metricsStream => Stream.empty();
-  
+  Stream<AIImprovementMetrics> get metricsStream => _metricsController.stream;
+
   @override
   List<AIImprovementSnapshot> getHistory({
     required String userId,
     Duration? timeWindow,
-  }) => [];
-  
-  @override
-  List<ImprovementMilestone> getMilestones(String userId) => [];
-  
-  @override
-  void startTracking(String userId) {}
-  
-  @override
-  void stopTracking() {}
-}
+  }) {
+    final history = _history[userId] ?? [];
+    if (timeWindow != null) {
+      final cutoff = DateTime.now().subtract(timeWindow);
+      return history.where((s) => s.timestamp.isAfter(cutoff)).toList();
+    }
+    return history;
+  }
 
+  @override
+  List<ImprovementMilestone> getMilestones(String userId) {
+    return _milestones[userId] ?? [];
+  }
+
+  /// Helper method for testing (not part of interface)
+  void startTracking(String userId) {
+    _trackingUserId = userId;
+  }
+
+  /// Helper method for testing (not part of interface)
+  void stopTracking() {
+    _trackingUserId = null;
+  }
+}

@@ -20,11 +20,12 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<User?> signIn(String email, String password) async {
     try {
       developer.log('🔐 AuthRepository: Starting sign in for $email');
-      
+
       // Check connectivity first - offline-first approach
-      final connectivityResult = await connectivity?.checkConnectivity() ?? [ConnectivityResult.none];
+      final connectivityResult =
+          await connectivity?.checkConnectivity() ?? [ConnectivityResult.none];
       final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-      
+
       if (isOnline && remoteDataSource != null) {
         developer.log('🔐 AuthRepository: Trying remote sign in');
         final user = await remoteDataSource!.signIn(email, password);
@@ -34,12 +35,14 @@ class AuthRepositoryImpl implements AuthRepository {
           return user;
         }
       }
-      
+
       // Use local sign in (either offline or remote failed)
       developer.log('🔐 AuthRepository: Trying local sign in');
-      developer.log('🔐 AuthRepository: localDataSource is ${localDataSource == null ? 'null' : 'not null'}');
+      developer.log(
+          '🔐 AuthRepository: localDataSource is ${localDataSource == null ? 'null' : 'not null'}');
       final localUser = await localDataSource?.signIn(email, password);
-      developer.log('🔐 AuthRepository: Local sign in result: ${localUser?.email ?? 'null'}');
+      developer.log(
+          '🔐 AuthRepository: Local sign in result: ${localUser?.email ?? 'null'}');
       return localUser;
     } catch (e) {
       developer.log('🔐 AuthRepository: Sign in error: $e');
@@ -52,13 +55,15 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<User?> signUp(String email, String password, String name) async {
     // Check connectivity first
-    final connectivityResult = await connectivity?.checkConnectivity() ?? [ConnectivityResult.none];
+    final connectivityResult =
+        await connectivity?.checkConnectivity() ?? [ConnectivityResult.none];
     final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-    
+
     if (!isOnline) {
-      throw Exception('Cannot sign up while offline. Please connect to the internet to create a new account.');
+      throw Exception(
+          'Cannot sign up while offline. Please connect to the internet to create a new account.');
     }
-    
+
     try {
       // Online sign up
       if (remoteDataSource != null) {
@@ -68,7 +73,7 @@ class AuthRepositoryImpl implements AuthRepository {
           return user;
         }
       }
-      
+
       // If remote signup failed, create local user
       final now = DateTime.now();
       final user = User(
@@ -103,7 +108,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (remoteDataSource != null) {
         await remoteDataSource!.signOut();
       }
-      
+
       // Always clear local data
       await localDataSource?.clearUser();
     } catch (e) {
@@ -124,7 +129,7 @@ class AuthRepositoryImpl implements AuthRepository {
           return user;
         }
       }
-      
+
       // Fallback to local
       return await localDataSource?.getCurrentUser();
     } catch (e) {
@@ -145,7 +150,7 @@ class AuthRepositoryImpl implements AuthRepository {
           return updatedUser;
         }
       }
-      
+
       // Fallback to local update
       await localDataSource?.saveUser(user);
       return user;
@@ -165,5 +170,24 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> updateUser(User user) async {
     await updateCurrentUser(user);
+  }
+
+  @override
+  Future<void> updatePassword(
+      String currentPassword, String newPassword) async {
+    try {
+      // Try remote update first
+      if (remoteDataSource != null) {
+        await remoteDataSource!.updatePassword(currentPassword, newPassword);
+        developer.log('Password updated successfully', name: 'AuthRepository');
+        return;
+      }
+
+      // If no remote, throw error (password update requires online)
+      throw Exception('Cannot update password while offline');
+    } catch (e) {
+      developer.log('Password update failed: $e', name: 'AuthRepository');
+      rethrow;
+    }
   }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/business_expert_matching_service.dart';
 import 'package:spots/core/services/partnership_service.dart';
+import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/business_account_service.dart';
+import 'package:spots/core/services/business_service.dart';
 import 'package:spots/core/models/business_account.dart';
 import 'package:spots/core/models/expertise_level.dart';
 import '../helpers/integration_test_helpers.dart';
@@ -19,7 +22,13 @@ void main() {
     late PartnershipService partnershipService;
 
     setUp(() {
-      partnershipService = PartnershipService();
+      final eventService = ExpertiseEventService();
+      final accountService = BusinessAccountService();
+      final businessService = BusinessService(accountService: accountService);
+      partnershipService = PartnershipService(
+        eventService: eventService,
+        businessService: businessService,
+      );
       matchingService = BusinessExpertMatchingService(
         partnershipService: partnershipService,
       );

@@ -1,15 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:spots/core/services/payment_event_service.dart';
 import 'package:spots/core/services/payment_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/cross_locality_connection_service.dart';
 import 'package:spots/core/services/stripe_service.dart';
 import 'package:spots/core/config/stripe_config.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/models/payment_result.dart';
-import 'package:spots/core/models/user_role.dart';
+import '../../helpers/platform_channel_helper.dart';
+// UserRole is exported from unified_user.dart, no need for separate import
+
+// Mock to break circular dependency
+class MockCrossLocalityConnectionService extends Mock
+    implements CrossLocalityConnectionService {}
 
 /// Payment Event Service Integration Tests
 /// 
@@ -23,8 +27,13 @@ void main() {
     setUp(() {
       final stripeConfig = StripeConfig.test();
       final stripeService = StripeService(stripeConfig);
-      paymentService = PaymentService(stripeService, ExpertiseEventService());
-      eventService = ExpertiseEventService();
+      // Break circular dependency: ExpertiseEventService <-> CrossLocalityConnectionService
+      // Use a mock CrossLocalityConnectionService to break the cycle
+      final mockCrossLocalityService = MockCrossLocalityConnectionService();
+      eventService = ExpertiseEventService(
+        crossLocalityService: mockCrossLocalityService,
+      );
+      paymentService = PaymentService(stripeService, eventService);
       paymentEventService = PaymentEventService(paymentService, eventService);
     });
     
@@ -43,7 +52,7 @@ void main() {
         curatedLists: [],
         collaboratedLists: [],
         followedLists: [],
-        primaryRole: UserRole.user,
+        primaryRole: UserRole.follower, // Use follower as default user role
         isAgeVerified: false,
       );
       
@@ -75,7 +84,7 @@ void main() {
         curatedLists: [],
         collaboratedLists: [],
         followedLists: [],
-        primaryRole: UserRole.user,
+        primaryRole: UserRole.follower, // Use follower as default user role
         isAgeVerified: false,
       );
       
@@ -109,7 +118,7 @@ void main() {
         curatedLists: [],
         collaboratedLists: [],
         followedLists: [],
-        primaryRole: UserRole.user,
+        primaryRole: UserRole.follower, // Use follower as default user role
         isAgeVerified: false,
       );
       
@@ -141,14 +150,14 @@ void main() {
         curatedLists: [],
         collaboratedLists: [],
         followedLists: [],
-        primaryRole: UserRole.user,
+        primaryRole: UserRole.follower, // Use follower as default user role
         isAgeVerified: false,
       );
       
       // Process payment for paid event
       // Note: This will fail without actual Stripe backend integration
       // In production, this would use mocked services
-      final result = await paymentEventService.processEventPayment(
+      await paymentEventService.processEventPayment(
         event: paidEvent,
         user: user,
       );
@@ -156,6 +165,7 @@ void main() {
       // Result depends on payment service implementation
       // If payment fails (no backend), result.isSuccess will be false
       // This is expected behavior for MVP without backend
+      // Note: Not asserting result as it depends on Stripe backend availability
     });
     
     test('processEventPayment enforces capacity limits', () async {
@@ -173,7 +183,7 @@ void main() {
         curatedLists: [],
         collaboratedLists: [],
         followedLists: [],
-        primaryRole: UserRole.user,
+        primaryRole: UserRole.follower, // Use follower as default user role
         isAgeVerified: false,
       );
       
@@ -207,7 +217,7 @@ void main() {
         curatedLists: [],
         collaboratedLists: [],
         followedLists: [],
-        primaryRole: UserRole.user,
+        primaryRole: UserRole.follower, // Use follower as default user role
         isAgeVerified: false,
       );
       
@@ -221,6 +231,10 @@ void main() {
       expect(result.isSuccess, isFalse);
       expect(result.registered, isFalse);
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }
 

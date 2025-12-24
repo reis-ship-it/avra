@@ -3,6 +3,7 @@ import 'package:spots/core/services/expert_search_service.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_level.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Expert Search Service Tests
 /// Tests expert search functionality
@@ -18,119 +19,89 @@ void main() {
         tags: ['food'],
       ).copyWith(
         expertiseMap: {'food': 'city'},
-        location: 'San Francisco',
       );
     });
 
+    // Removed: Property assignment tests
+    // Expert search tests focus on business logic (searching, filtering, sorting), not property assignment
+
     group('searchExperts', () {
-      test('should return empty list when no experts match', () async {
-        final results = await service.searchExperts(
+      test(
+          'should return empty list when no experts match, filter by category, filter by location, filter by minimum level, respect maxResults parameter, and return results sorted by relevance score',
+          () async {
+        // Test business logic: expert search with various filters and sorting
+        final results1 = await service.searchExperts(
           category: 'food',
         );
+        expect(results1, isA<List<ExpertSearchResult>>());
+        expect(results1, isEmpty);
 
-        expect(results, isA<List<ExpertSearchResult>>());
-        // In test environment, _getAllUsers returns empty list
-        expect(results, isEmpty);
-      });
-
-      test('should filter by category', () async {
-        final results = await service.searchExperts(
+        final results2 = await service.searchExperts(
           category: 'food',
         );
+        expect(results2, isA<List<ExpertSearchResult>>());
 
-        expect(results, isA<List<ExpertSearchResult>>());
-      });
-
-      test('should filter by location', () async {
-        final results = await service.searchExperts(
+        final results3 = await service.searchExperts(
           location: 'San Francisco',
         );
+        expect(results3, isA<List<ExpertSearchResult>>());
 
-        expect(results, isA<List<ExpertSearchResult>>());
-      });
-
-      test('should filter by minimum level', () async {
-        final results = await service.searchExperts(
+        final results4 = await service.searchExperts(
           category: 'food',
           minLevel: ExpertiseLevel.city,
         );
+        expect(results4, isA<List<ExpertSearchResult>>());
 
-        expect(results, isA<List<ExpertSearchResult>>());
-      });
-
-      test('should respect maxResults parameter', () async {
-        final results = await service.searchExperts(
+        final results5 = await service.searchExperts(
           category: 'food',
           maxResults: 10,
         );
+        expect(results5.length, lessThanOrEqualTo(10));
 
-        expect(results.length, lessThanOrEqualTo(10));
-      });
-
-      test('should return results sorted by relevance score', () async {
-        final results = await service.searchExperts(
+        final results6 = await service.searchExperts(
           category: 'food',
         );
-
-        // Results should be sorted by relevance (highest first)
-        for (var i = 0; i < results.length - 1; i++) {
+        for (var i = 0; i < results6.length - 1; i++) {
           expect(
-            results[i].relevanceScore,
-            greaterThanOrEqualTo(results[i + 1].relevanceScore),
+            results6[i].relevanceScore,
+            greaterThanOrEqualTo(results6[i + 1].relevanceScore),
           );
         }
       });
     });
 
     group('getTopExperts', () {
-      test('should return top experts in category', () async {
-        final results = await service.getTopExperts(
+      test(
+          'should return top experts in category, filter by location when provided, and include local level experts (not filter out local level)',
+          () async {
+        // Test business logic: top experts retrieval with filtering
+        final results1 = await service.getTopExperts(
           'food',
           maxResults: 10,
         );
+        expect(results1, isA<List<ExpertSearchResult>>());
+        expect(results1.length, lessThanOrEqualTo(10));
 
-        expect(results, isA<List<ExpertSearchResult>>());
-        expect(results.length, lessThanOrEqualTo(10));
-      });
-
-      test('should filter by location when provided', () async {
-        final results = await service.getTopExperts(
+        final results2 = await service.getTopExperts(
           'food',
           location: 'San Francisco',
           maxResults: 5,
         );
+        expect(results2, isA<List<ExpertSearchResult>>());
 
-        expect(results, isA<List<ExpertSearchResult>>());
-      });
-
-      test('should include local level experts (no City minimum)', () async {
-        final results = await service.getTopExperts('food');
-
-        // Results should include local level or higher (no minimum level filter)
-        // getTopExperts uses minLevel: ExpertiseLevel.local (line 85)
-        for (final result in results) {
+        final results3 = await service.getTopExperts('food');
+        for (final result in results3) {
           final level = result.user.getExpertiseLevel('food');
           if (level != null) {
-            // Local level experts should be included (no City minimum)
-            expect(level.index, greaterThanOrEqualTo(ExpertiseLevel.local.index));
+            expect(
+                level.index, greaterThanOrEqualTo(ExpertiseLevel.local.index));
           }
         }
-      });
-
-      test('should not filter out local level experts', () async {
-        // Verify that getTopExperts includes Local level experts
-        // This test ensures Local level is the minimum, not City
-        final results = await service.getTopExperts('food');
-
-        // If any results exist, they should include Local level or higher
-        // The service should not exclude Local level experts
-        if (results.isNotEmpty) {
-          final hasLocalLevel = results.any((result) {
+        if (results3.isNotEmpty) {
+          final hasLocalLevel = results3.any((result) {
             final level = result.user.getExpertiseLevel('food');
             return level == ExpertiseLevel.local;
           });
-          // Local level experts are allowed (not filtered out)
-          // This test verifies Local level is included, not excluded
         }
       });
     });
@@ -148,25 +119,27 @@ void main() {
     });
 
     group('getExpertsByLevel', () {
-      test('should return experts by specific level', () async {
-        final results = await service.getExpertsByLevel(
+      test(
+          'should return experts by specific level and filter by category when provided',
+          () async {
+        // Test business logic: expert retrieval by level with category filtering
+        final results1 = await service.getExpertsByLevel(
           ExpertiseLevel.city,
           category: 'food',
           maxResults: 20,
         );
+        expect(results1, isA<List<ExpertSearchResult>>());
 
-        expect(results, isA<List<ExpertSearchResult>>());
-      });
-
-      test('should filter by category when provided', () async {
-        final results = await service.getExpertsByLevel(
+        final results2 = await service.getExpertsByLevel(
           ExpertiseLevel.regional,
           category: 'food',
         );
-
-        expect(results, isA<List<ExpertSearchResult>>());
+        expect(results2, isA<List<ExpertSearchResult>>());
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

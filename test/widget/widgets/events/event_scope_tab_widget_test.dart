@@ -3,16 +3,20 @@ import 'package:spots/presentation/widgets/events/event_scope_tab_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for EventScopeTabWidget
-/// 
+///
 /// Agent 2: Phase 7, Section 51-52 - Widget Test Coverage
 void main() {
   group('EventScopeTabWidget Widget Tests', () {
-    testWidgets('displays event scope tab widget', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Event scope tab widget tests focus on business logic (scope tab display, user interactions), not property assignment
+
+    testWidgets(
+        'should display event scope tab widget or display with initial scope',
+        (WidgetTester tester) async {
+      // Test business logic: event scope tab widget display and interactions
       bool tabChanged = false;
       EventScope? selectedScope;
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: EventScopeTabWidget(
           onTabChanged: (scope) {
             tabChanged = true;
@@ -20,29 +24,17 @@ void main() {
           },
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(EventScopeTabWidget), findsOneWidget);
-    });
 
-    testWidgets('displays with initial scope', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: EventScopeTabWidget(
           initialScope: EventScope.city,
           onTabChanged: (_) {},
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(EventScopeTabWidget), findsOneWidget);
     });
   });
 }
-

@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:spots/core/models/business_expert_preferences.dart';
 import 'package:spots/core/models/business_patron_preferences.dart';
 import 'package:spots/core/models/business_verification.dart';
+import 'package:spots/core/models/business_member.dart';
 
 /// Business Account Model
 /// Represents a business account that can connect with experts
@@ -14,25 +15,27 @@ class BusinessAccount extends Equatable {
   final String? location;
   final String? phone;
   final String? logoUrl;
-  
+
   // Business type/category
   final String businessType; // e.g., "Restaurant", "Retail", "Service"
   final List<String> categories; // e.g., ["Coffee", "Food", "Dining"]
-  
+
   // Expertise needs - what expertise the business is looking for
   final List<String> requiredExpertise; // Categories of expertise needed
-  final List<String> preferredCommunities; // Community IDs the business wants to connect with
-  
+  final List<String>
+      preferredCommunities; // Community IDs the business wants to connect with
+
   // Expert matching preferences (detailed preferences for AI/ML matching)
   final BusinessExpertPreferences? expertPreferences;
-  
+
   // Patron preferences (what types of customers/patrons the business wants)
   final BusinessPatronPreferences? patronPreferences;
-  
+
   // Legacy connection preferences (kept for backwards compatibility)
   final String? preferredLocation; // Geographic preference for experts
-  final int? minExpertLevel; // Minimum expertise level (0-5, maps to ExpertiseLevel)
-  
+  final int?
+      minExpertLevel; // Minimum expertise level (0-5, maps to ExpertiseLevel)
+
   // Status and metadata
   final bool isActive;
   final bool isVerified; // Legacy field - use verification.status instead
@@ -40,15 +43,22 @@ class BusinessAccount extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String createdBy; // User ID who created this business account
-  
+
   // Payment integration
   final String? stripeConnectAccountId; // Stripe Connect account ID for payouts
-  
+
   // Connected experts
   final List<String> connectedExpertIds;
   final List<String> pendingConnectionIds;
-  
-  const BusinessAccount({
+
+  // Multi-user support
+  final List<BusinessMember> members; // All users in the business
+  final String ownerId; // Primary owner (from createdBy)
+
+  // Shared AI agent
+  final String? sharedAgentId; // AI agent ID for the business
+
+  BusinessAccount({
     required this.id,
     required this.name,
     required this.email,
@@ -74,7 +84,10 @@ class BusinessAccount extends Equatable {
     this.connectedExpertIds = const [],
     this.pendingConnectionIds = const [],
     this.stripeConnectAccountId,
-  });
+    this.members = const [],
+    String? ownerId,
+    this.sharedAgentId,
+  }) : ownerId = ownerId ?? createdBy; // Owner is the creator by default
 
   factory BusinessAccount.fromJson(Map<String, dynamic> json) {
     return BusinessAccount(
@@ -89,26 +102,37 @@ class BusinessAccount extends Equatable {
       businessType: json['businessType'] as String,
       categories: List<String>.from(json['categories'] ?? []),
       requiredExpertise: List<String>.from(json['requiredExpertise'] ?? []),
-      preferredCommunities: List<String>.from(json['preferredCommunities'] ?? []),
+      preferredCommunities:
+          List<String>.from(json['preferredCommunities'] ?? []),
       expertPreferences: json['expertPreferences'] != null
-          ? BusinessExpertPreferences.fromJson(json['expertPreferences'] as Map<String, dynamic>)
+          ? BusinessExpertPreferences.fromJson(
+              json['expertPreferences'] as Map<String, dynamic>)
           : null,
       patronPreferences: json['patronPreferences'] != null
-          ? BusinessPatronPreferences.fromJson(json['patronPreferences'] as Map<String, dynamic>)
+          ? BusinessPatronPreferences.fromJson(
+              json['patronPreferences'] as Map<String, dynamic>)
           : null,
       preferredLocation: json['preferredLocation'] as String?,
       minExpertLevel: json['minExpertLevel'] as int?,
       isActive: json['isActive'] as bool? ?? true,
       isVerified: json['isVerified'] as bool? ?? false,
       verification: json['verification'] != null
-          ? BusinessVerification.fromJson(json['verification'] as Map<String, dynamic>)
+          ? BusinessVerification.fromJson(
+              json['verification'] as Map<String, dynamic>)
           : null,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       createdBy: json['createdBy'] as String,
       connectedExpertIds: List<String>.from(json['connectedExpertIds'] ?? []),
-      pendingConnectionIds: List<String>.from(json['pendingConnectionIds'] ?? []),
+      pendingConnectionIds:
+          List<String>.from(json['pendingConnectionIds'] ?? []),
       stripeConnectAccountId: json['stripeConnectAccountId'] as String?,
+      members: (json['members'] as List<dynamic>?)
+              ?.map((m) => BusinessMember.fromJson(m as Map<String, dynamic>))
+              .toList() ??
+          [],
+      ownerId: json['ownerId'] as String? ?? json['createdBy'] as String,
+      sharedAgentId: json['sharedAgentId'] as String?,
     );
   }
 
@@ -139,6 +163,9 @@ class BusinessAccount extends Equatable {
       'connectedExpertIds': connectedExpertIds,
       'pendingConnectionIds': pendingConnectionIds,
       'stripeConnectAccountId': stripeConnectAccountId,
+      'members': members.map((m) => m.toJson()).toList(),
+      'ownerId': ownerId,
+      'sharedAgentId': sharedAgentId,
     };
   }
 
@@ -168,6 +195,9 @@ class BusinessAccount extends Equatable {
     List<String>? connectedExpertIds,
     List<String>? pendingConnectionIds,
     String? stripeConnectAccountId,
+    List<BusinessMember>? members,
+    String? ownerId,
+    String? sharedAgentId,
   }) {
     return BusinessAccount(
       id: id ?? this.id,
@@ -194,7 +224,11 @@ class BusinessAccount extends Equatable {
       createdBy: createdBy ?? this.createdBy,
       connectedExpertIds: connectedExpertIds ?? this.connectedExpertIds,
       pendingConnectionIds: pendingConnectionIds ?? this.pendingConnectionIds,
-      stripeConnectAccountId: stripeConnectAccountId ?? this.stripeConnectAccountId,
+      stripeConnectAccountId:
+          stripeConnectAccountId ?? this.stripeConnectAccountId,
+      members: members ?? this.members,
+      ownerId: ownerId ?? this.ownerId,
+      sharedAgentId: sharedAgentId ?? this.sharedAgentId,
     );
   }
 
@@ -225,6 +259,8 @@ class BusinessAccount extends Equatable {
         connectedExpertIds,
         pendingConnectionIds,
         stripeConnectAccountId,
+        members,
+        ownerId,
+        sharedAgentId,
       ];
 }
-

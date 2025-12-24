@@ -9,8 +9,13 @@ import '../../../helpers/test_helpers.dart';
 /// Tests business-user compatibility display
 void main() {
   group('BusinessCompatibilityWidget Widget Tests', () {
-    testWidgets('displays loading state initially', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Business compatibility widget tests focus on business logic (loading state, compatibility score, preferences, error state), not property assignment
+
+    testWidgets(
+        'should display loading state initially, display compatibility score, display business preferences when available, or display error state on failure',
+        (WidgetTester tester) async {
+      // Test business logic: Business compatibility widget state management and display
       final business = BusinessAccount(
         id: 'business-123',
         name: 'Test Business',
@@ -20,108 +25,21 @@ void main() {
         updatedAt: TestHelpers.createTestDateTime(),
         createdBy: 'user-123',
       );
-
       final user = WidgetTestHelpers.createTestUser();
-
       final widget = WidgetTestHelpers.createTestableWidget(
         child: BusinessCompatibilityWidget(
           business: business,
           user: user,
         ),
       );
-
-      // Act
       await tester.pumpWidget(widget);
-      await tester.pump(); // Don't settle, check loading state
-
-      // Assert - Should show loading indicator initially
+      await tester.pump();
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
-
-    testWidgets('displays compatibility score', (WidgetTester tester) async {
-      // Arrange
-      final business = BusinessAccount(
-        id: 'business-123',
-        name: 'Test Business',
-        email: 'business@test.com',
-        businessType: 'Restaurant',
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-        createdBy: 'user-123',
-      );
-
-      final user = WidgetTestHelpers.createTestUser();
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: BusinessCompatibilityWidget(
-          business: business,
-          user: user,
-        ),
-      );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should display compatibility widget
       expect(find.byType(BusinessCompatibilityWidget), findsOneWidget);
       expect(find.text('Your Compatibility'), findsOneWidget);
-    });
-
-    testWidgets('displays business preferences when available', (WidgetTester tester) async {
-      // Arrange
-      final business = BusinessAccount(
-        id: 'business-123',
-        name: 'Test Business',
-        email: 'business@test.com',
-        businessType: 'Restaurant',
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-        createdBy: 'user-123',
-      );
-
-      final user = WidgetTestHelpers.createTestUser();
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: BusinessCompatibilityWidget(
-          business: business,
-          user: user,
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show sections for preferences
       expect(find.textContaining('What'), findsWidgets);
       expect(find.textContaining('How You Match'), findsWidgets);
-    });
-
-    testWidgets('displays error state on failure', (WidgetTester tester) async {
-      // Arrange
-      final business = BusinessAccount(
-        id: 'business-123',
-        name: 'Test Business',
-        email: 'business@test.com',
-        businessType: 'Restaurant',
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-        createdBy: 'user-123',
-      );
-
-      final user = WidgetTestHelpers.createTestUser();
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: BusinessCompatibilityWidget(
-          business: business,
-          user: user,
-        ),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should handle errors gracefully
-      expect(find.byType(BusinessCompatibilityWidget), findsOneWidget);
     });
   });
 }

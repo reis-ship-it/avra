@@ -9,118 +9,99 @@ import '../../../helpers/test_helpers.dart';
 /// Tests expertise event display
 void main() {
   group('ExpertiseEventWidget Widget Tests', () {
-    testWidgets('displays event information', (WidgetTester tester) async {
-      // Arrange
-      final host = WidgetTestHelpers.createTestUser();
-      final testDate = TestHelpers.createTestDateTime();
-      final event = ExpertiseEvent(
+    // Removed: Property assignment tests
+    // Expertise event widget tests focus on business logic (event display, registration, user interactions), not property assignment
+
+    testWidgets(
+        'should display event information, display register button when user can register, display cancel button when user is registered, display event list widget, or display empty state when no events',
+        (WidgetTester tester) async {
+      // Test business logic: expertise event widget display and interactions
+      final host1 = WidgetTestHelpers.createTestUser();
+      final testDate1 = TestHelpers.createTestDateTime();
+      final event1 = ExpertiseEvent(
         id: 'event-123',
         title: 'Coffee Tasting Event',
         description: 'Join us for a coffee tasting',
         category: 'Coffee',
         eventType: ExpertiseEventType.workshop,
-        host: host,
-        startTime: testDate.add(const Duration(days: 7)),
-        endTime: testDate.add(const Duration(days: 7, hours: 2)),
+        host: host1,
+        startTime: testDate1.add(const Duration(days: 7)),
+        endTime: testDate1.add(const Duration(days: 7, hours: 2)),
         maxAttendees: 20,
         status: EventStatus.upcoming,
         attendeeIds: [],
         spots: [],
-        createdAt: testDate,
-        updatedAt: testDate,
+        createdAt: testDate1,
+        updatedAt: testDate1,
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ExpertiseEventWidget(event: event),
+      final widget1 = WidgetTestHelpers.createTestableWidget(
+        child: ExpertiseEventWidget(event: event1),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(ExpertiseEventWidget), findsOneWidget);
       expect(find.text('Coffee Tasting Event'), findsOneWidget);
       expect(find.textContaining('Hosted by'), findsOneWidget);
-    });
 
-    testWidgets('displays register button when user can register', (WidgetTester tester) async {
-      // Arrange
-      final host = WidgetTestHelpers.createTestUser();
-      final currentUser = WidgetTestHelpers.createTestUser(id: 'user-456');
-      final testDate = TestHelpers.createTestDateTime();
-      final event = ExpertiseEvent(
+      final host2 = WidgetTestHelpers.createTestUser();
+      final currentUser1 = WidgetTestHelpers.createTestUser(id: 'user-456');
+      final testDate2 = TestHelpers.createTestDateTime();
+      final event2 = ExpertiseEvent(
         id: 'event-123',
         title: 'Coffee Tasting',
         description: 'Join us',
         category: 'Coffee',
         eventType: ExpertiseEventType.workshop,
-        host: host,
-        startTime: testDate.add(const Duration(days: 7)),
-        endTime: testDate.add(const Duration(days: 7, hours: 2)),
+        host: host2,
+        startTime: testDate2.add(const Duration(days: 7)),
+        endTime: testDate2.add(const Duration(days: 7, hours: 2)),
         maxAttendees: 20,
         status: EventStatus.upcoming,
         attendeeIds: [],
         spots: [],
-        createdAt: testDate,
-        updatedAt: testDate,
+        createdAt: testDate2,
+        updatedAt: testDate2,
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: ExpertiseEventWidget(
-          event: event,
-          currentUser: currentUser,
+          event: event2,
+          currentUser: currentUser1,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Register'), findsOneWidget);
       expect(find.byIcon(Icons.event_available), findsOneWidget);
-    });
 
-    testWidgets('displays cancel button when user is registered', (WidgetTester tester) async {
-      // Arrange
-      final host = WidgetTestHelpers.createTestUser();
-      final currentUser = WidgetTestHelpers.createTestUser(id: 'user-456');
-      final testDate = TestHelpers.createTestDateTime();
-      final event = ExpertiseEvent(
+      final host3 = WidgetTestHelpers.createTestUser();
+      final currentUser2 = WidgetTestHelpers.createTestUser(id: 'user-456');
+      final testDate3 = TestHelpers.createTestDateTime();
+      final event3 = ExpertiseEvent(
         id: 'event-123',
         title: 'Coffee Tasting',
         description: 'Join us',
         category: 'Coffee',
         eventType: ExpertiseEventType.workshop,
-        host: host,
-        startTime: testDate.add(const Duration(days: 7)),
-        endTime: testDate.add(const Duration(days: 7, hours: 2)),
+        host: host3,
+        startTime: testDate3.add(const Duration(days: 7)),
+        endTime: testDate3.add(const Duration(days: 7, hours: 2)),
         maxAttendees: 20,
         status: EventStatus.upcoming,
         attendeeIds: ['user-456'],
         spots: [],
-        createdAt: testDate,
-        updatedAt: testDate,
+        createdAt: testDate3,
+        updatedAt: testDate3,
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: ExpertiseEventWidget(
-          event: event,
-          currentUser: currentUser,
+          event: event3,
+          currentUser: currentUser2,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Cancel Registration'), findsOneWidget);
       expect(find.byIcon(Icons.cancel), findsOneWidget);
-    });
 
-    testWidgets('displays event list widget', (WidgetTester tester) async {
-      // Arrange
-      final host = WidgetTestHelpers.createTestUser();
-      final testDate = TestHelpers.createTestDateTime();
+      final host4 = WidgetTestHelpers.createTestUser();
+      final testDate4 = TestHelpers.createTestDateTime();
       final events = [
         ExpertiseEvent(
           id: 'event-1',
@@ -128,43 +109,30 @@ void main() {
           description: 'Description 1',
           category: 'Coffee',
           eventType: ExpertiseEventType.workshop,
-          host: host,
-          startTime: testDate.add(const Duration(days: 7)),
-          endTime: testDate.add(const Duration(days: 7, hours: 2)),
+          host: host4,
+          startTime: testDate4.add(const Duration(days: 7)),
+          endTime: testDate4.add(const Duration(days: 7, hours: 2)),
           maxAttendees: 20,
           status: EventStatus.upcoming,
           attendeeIds: [],
           spots: [],
-          createdAt: testDate,
-          updatedAt: testDate,
+          createdAt: testDate4,
+          updatedAt: testDate4,
         ),
       ];
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget4 = WidgetTestHelpers.createTestableWidget(
         child: ExpertiseEventListWidget(events: events),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.byType(ExpertiseEventListWidget), findsOneWidget);
       expect(find.text('Event 1'), findsOneWidget);
-    });
 
-    testWidgets('displays empty state when no events', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget5 = WidgetTestHelpers.createTestableWidget(
         child: const ExpertiseEventListWidget(events: []),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
       expect(find.text('No events found'), findsOneWidget);
       expect(find.byIcon(Icons.event_busy), findsOneWidget);
     });
   });
 }
-

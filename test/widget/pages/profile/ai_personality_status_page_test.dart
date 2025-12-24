@@ -15,75 +15,24 @@ void main() {
       mockAuthBloc = MockAuthBloc();
     });
 
-    testWidgets('displays loading state initially', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // AI personality status page tests focus on business logic (loading state, app bar, refresh button, personality overview card, pull to refresh), not property assignment
+
+    testWidgets(
+        'should display loading state initially, display app bar with title, display refresh button in app bar, display personality overview card when loaded, or support pull to refresh',
+        (WidgetTester tester) async {
+      // Test business logic: AI personality status page display and functionality
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const AIPersonalityStatusPage(),
         authBloc: mockAuthBloc,
       );
-
-      // Act
       await tester.pumpWidget(widget);
-      await tester.pump(); // Don't settle, check loading state
-
-      // Assert - Should show loading indicator initially
+      await tester.pump();
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
-
-    testWidgets('displays app bar with title', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const AIPersonalityStatusPage(),
-        authBloc: mockAuthBloc,
-      );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
       expect(find.byType(AIPersonalityStatusPage), findsOneWidget);
       expect(find.text('AI Personality Status'), findsOneWidget);
-    });
-
-    testWidgets('displays refresh button in app bar', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const AIPersonalityStatusPage(),
-        authBloc: mockAuthBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
       expect(find.byIcon(Icons.refresh), findsOneWidget);
-    });
-
-    testWidgets('displays personality overview card when loaded', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const AIPersonalityStatusPage(),
-        authBloc: mockAuthBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Widget should be present (cards will show when data loads)
-      expect(find.byType(AIPersonalityStatusPage), findsOneWidget);
-    });
-
-    testWidgets('supports pull to refresh', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const AIPersonalityStatusPage(),
-        authBloc: mockAuthBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should have RefreshIndicator
       expect(find.byType(RefreshIndicator), findsOneWidget);
     });
   });

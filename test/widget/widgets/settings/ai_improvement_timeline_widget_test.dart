@@ -1,7 +1,7 @@
 /// SPOTS AIImprovementTimelineWidget Widget Tests
 /// Date: November 21, 2025
 /// Purpose: Test AIImprovementTimelineWidget functionality and UI behavior
-/// 
+///
 /// Test Coverage:
 /// - Loading State: Loading indicator display
 /// - Empty State: Display when no milestones
@@ -10,7 +10,7 @@
 /// - Milestone Details: From/to scores, improvement percentage, descriptions
 /// - Visual Indicators: Color coding by improvement level, icons
 /// - Time Formatting: Relative time display
-/// 
+///
 /// Dependencies:
 /// - AIImprovementTrackingService: For milestone data
 
@@ -25,11 +25,11 @@ import '../../helpers/widget_test_helpers.dart';
 void main() {
   group('AIImprovementTimelineWidget Widget Tests', () {
     late MockAIImprovementTrackingService mockService;
-    
+
     setUp(() {
       mockService = MockAIImprovementTrackingService();
     });
-    
+
     /// Helper to create scrollable test widget with larger viewport
     Widget createScrollableTestWidget({required Widget child}) {
       return WidgetTestHelpers.createTestableWidget(
@@ -43,154 +43,105 @@ void main() {
     }
 
     group('Loading State', () {
-      testWidgets('displays loading indicator initially', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Loading state tests focus on business logic (loading indicator display), not property assignment
+
+      testWidgets('should display loading indicator initially',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement timeline widget loading state
         mockService.setLoadingDelay(const Duration(milliseconds: 100));
         mockService.setMilestones(_createMockMilestones(count: 3));
-        
         final widget = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
         await tester.pumpWidget(widget);
         await tester.pump();
-
-        // Assert - widget renders (loading is inline, so just verify the widget exists)
         expect(find.byType(AIImprovementTimelineWidget), findsOneWidget);
-        
-        // Clean up - wait for async to complete
         await tester.pumpAndSettle();
       });
     });
 
     group('Empty State', () {
-      testWidgets('displays empty state when no milestones', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Empty state tests focus on business logic (empty state display), not property assignment
+
+      testWidgets(
+          'should display empty state when no milestones or display helpful message in empty state',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement timeline widget empty state
         mockService.setMilestones([]);
-        
         final widget = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
         await tester.pumpWidget(widget);
         await tester.pump();
-
-        // Assert
         expect(find.text('No Milestones Yet'), findsOneWidget);
         expect(find.byIcon(Icons.history), findsOneWidget);
-      });
-
-      testWidgets('displays helpful message in empty state', (WidgetTester tester) async {
-        // Arrange
-        mockService.setMilestones([]);
-        
-        final widget = createScrollableTestWidget(
-          child: AIImprovementTimelineWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pump();
-
-        // Assert
         expect(find.textContaining('Your AI will track'), findsOneWidget);
       });
     });
 
     group('Header Display', () {
-      testWidgets('displays header with title and icon', (WidgetTester tester) async {
-        // Arrange
-        final milestones = _createMockMilestones(count: 3);
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+      // Removed: Property assignment tests
+      // Header display tests focus on business logic (header display, milestone count), not property assignment
+
+      testWidgets(
+          'should display header with title and icon or display milestone count in header',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement timeline widget header display
+        final milestones1 = _createMockMilestones(count: 3);
+        mockService.setMilestones(milestones1);
+        final widget1 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget1);
         await tester.pump();
-
-        // Assert
         expect(find.text('Improvement History'), findsOneWidget);
         expect(find.byIcon(Icons.timeline), findsOneWidget);
-      });
 
-      testWidgets('displays milestone count in header', (WidgetTester tester) async {
-        // Arrange
-        final milestones = _createMockMilestones(count: 5);
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        final milestones2 = _createMockMilestones(count: 5);
+        mockService.setMilestones(milestones2);
+        final widget2 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget2);
         await tester.pump();
-
-        // Assert
         expect(find.text('5 milestones achieved'), findsOneWidget);
       });
     });
 
     group('Timeline Display', () {
-      testWidgets('displays timeline items for each milestone', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Timeline display tests focus on business logic (timeline items, visual indicators), not property assignment
+
+      testWidgets(
+          'should display timeline items for each milestone or display visual timeline indicators',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement timeline widget timeline display
         final milestones = _createMockMilestones(count: 3);
         mockService.setMilestones(milestones);
-        
         final widget = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
         await tester.pumpWidget(widget);
         await tester.pump();
-
-        // Assert
-        // Each milestone should have its description visible
-        expect(find.text('Significant improvement in accuracy'), findsAtLeastNWidgets(1));
-      });
-
-      testWidgets('displays visual timeline indicators', (WidgetTester tester) async {
-        // Arrange
-        final milestones = _createMockMilestones(count: 3);
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
-          child: AIImprovementTimelineWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pump();
-
-        // Assert
-        // Should have timeline containers (circles for indicators)
+        expect(find.text('Significant improvement in accuracy'),
+            findsAtLeastNWidgets(1));
         final containers = find.descendant(
           of: find.byType(Row),
           matching: find.byType(Container),
@@ -200,310 +151,223 @@ void main() {
     });
 
     group('Milestone Details', () {
-      testWidgets('displays milestone description', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
+      // Removed: Property assignment tests
+      // Milestone details tests focus on business logic (milestone description, improvement percentage, dimension name, scores, time), not property assignment
+
+      testWidgets(
+          'should display milestone description, display improvement percentage, display dimension name, display from and to scores, or display relative time ago',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement timeline widget milestone details
+        final milestones1 = [
           _createMockMilestone(
             description: 'Breakthrough in recommendation accuracy',
             improvement: 0.15,
           ),
         ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setMilestones(milestones1);
+        final widget1 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget1);
         await tester.pump();
-
-        // Assert
-        expect(find.text('Breakthrough in recommendation accuracy'), findsOneWidget);
-      });
-
-      testWidgets('displays improvement percentage', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
-          _createMockMilestone(improvement: 0.15),
-        ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
-          child: AIImprovementTimelineWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pump();
-
-        // Assert
+        expect(find.text('Breakthrough in recommendation accuracy'),
+            findsOneWidget);
         expect(find.text('+15%'), findsOneWidget);
-      });
 
-      testWidgets('displays dimension name', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
+        final milestones2 = [
           _createMockMilestone(dimension: 'recommendation_quality'),
         ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setMilestones(milestones2);
+        final widget2 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget2);
         await tester.pump();
-
-        // Assert
         expect(find.text('Recommendation Quality'), findsOneWidget);
-      });
 
-      testWidgets('displays from and to scores', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
+        final milestones3 = [
           _createMockMilestone(
             fromScore: 0.70,
             toScore: 0.85,
           ),
         ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setMilestones(milestones3);
+        final widget3 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget3);
         await tester.pump();
-
-        // Assert
         expect(find.text('70%'), findsOneWidget);
         expect(find.text('85%'), findsOneWidget);
         expect(find.byIcon(Icons.arrow_forward), findsOneWidget);
-      });
 
-      testWidgets('displays relative time ago', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
+        final milestones4 = [
           _createMockMilestone(
             timestamp: DateTime.now().subtract(const Duration(hours: 2)),
           ),
         ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setMilestones(milestones4);
+        final widget4 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget4);
         await tester.pump();
-
-        // Assert
         expect(find.textContaining('ago'), findsOneWidget);
       });
     });
 
     group('Visual Indicators', () {
-      testWidgets('uses success color for high improvement (>=0.15)', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
+      // Removed: Property assignment tests
+      // Visual indicators tests focus on business logic (icon selection based on improvement level), not property assignment
+
+      testWidgets(
+          'should use success color for high improvement (>=0.15), use arrow up icon for medium improvement (>=0.10), or use trending up icon for lower improvement',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement timeline widget visual indicators
+        final milestones1 = [
           _createMockMilestone(improvement: 0.18),
         ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setMilestones(milestones1);
+        final widget1 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget1);
         await tester.pump();
-
-        // Assert
-        // Star icon indicates high improvement
         expect(find.byIcon(Icons.star), findsOneWidget);
-      });
 
-      testWidgets('uses arrow up icon for medium improvement (>=0.10)', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
+        final milestones2 = [
           _createMockMilestone(improvement: 0.12),
         ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setMilestones(milestones2);
+        final widget2 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget2);
         await tester.pump();
-
-        // Assert
         expect(find.byIcon(Icons.arrow_upward), findsWidgets);
-      });
 
-      testWidgets('uses trending up icon for lower improvement', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
+        final milestones3 = [
           _createMockMilestone(improvement: 0.08),
         ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setMilestones(milestones3);
+        final widget3 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget3);
         await tester.pump();
-
-        // Assert
         expect(find.byIcon(Icons.trending_up), findsWidgets);
       });
     });
 
     group('Time Formatting', () {
-      testWidgets('formats minutes correctly', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
+      // Removed: Property assignment tests
+      // Time formatting tests focus on business logic (time formatting for minutes/hours/days), not property assignment
+
+      testWidgets(
+          'should format minutes correctly, format hours correctly, or format days correctly',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement timeline widget time formatting
+        final milestones1 = [
           _createMockMilestone(
             timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
           ),
         ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setMilestones(milestones1);
+        final widget1 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget1);
         await tester.pump();
-
-        // Assert
         expect(find.textContaining('m ago'), findsOneWidget);
-      });
 
-      testWidgets('formats hours correctly', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
+        final milestones2 = [
           _createMockMilestone(
             timestamp: DateTime.now().subtract(const Duration(hours: 5)),
           ),
         ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setMilestones(milestones2);
+        final widget2 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget2);
         await tester.pump();
-
-        // Assert
         expect(find.textContaining('h ago'), findsOneWidget);
-      });
 
-      testWidgets('formats days correctly', (WidgetTester tester) async {
-        // Arrange
-        final milestones = [
+        final milestones3 = [
           _createMockMilestone(
             timestamp: DateTime.now().subtract(const Duration(days: 3)),
           ),
         ];
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setMilestones(milestones3);
+        final widget3 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget3);
         await tester.pump();
-
-        // Assert
         expect(find.textContaining('d ago'), findsOneWidget);
       });
     });
 
     group('Edge Cases', () {
-      testWidgets('handles single milestone', (WidgetTester tester) async {
-        // Arrange
-        final milestones = _createMockMilestones(count: 1);
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+      // Removed: Property assignment tests
+      // Edge cases tests focus on business logic (single milestone, many milestones), not property assignment
+
+      testWidgets('should handle single milestone or handle many milestones',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement timeline widget edge cases
+        final milestones1 = _createMockMilestones(count: 1);
+        mockService.setMilestones(milestones1);
+        final widget1 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget1);
         await tester.pump();
-
-        // Assert
         expect(find.text('1 milestones achieved'), findsOneWidget);
-      });
 
-      testWidgets('handles many milestones', (WidgetTester tester) async {
-        // Arrange
-        final milestones = _createMockMilestones(count: 20);
-        mockService.setMilestones(milestones);
-        
-        final widget = createScrollableTestWidget(
+        final milestones2 = _createMockMilestones(count: 20);
+        mockService.setMilestones(milestones2);
+        final widget2 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget2);
         await tester.pump();
-
-        // Assert
         expect(find.text('20 milestones achieved'), findsOneWidget);
-        // Should display all milestones (scrollable)
       });
     });
   });
@@ -537,21 +401,21 @@ ImprovementMilestone _createMockMilestone({
 class MockAIImprovementTrackingService implements AIImprovementTrackingService {
   List<ImprovementMilestone> _milestones = [];
   Duration _loadingDelay = Duration.zero;
-  
+
   void setMilestones(List<ImprovementMilestone> milestones) {
     _milestones = milestones;
   }
-  
+
   void setLoadingDelay(Duration delay) {
     _loadingDelay = delay;
   }
-  
+
   @override
   Future<void> initialize() async {}
-  
+
   @override
   void dispose() {}
-  
+
   @override
   List<ImprovementMilestone> getMilestones(String userId) {
     if (_loadingDelay > Duration.zero) {
@@ -560,31 +424,31 @@ class MockAIImprovementTrackingService implements AIImprovementTrackingService {
     }
     return _milestones;
   }
-  
+
   // Other required overrides (not used in these tests)
   @override
   Future<AIImprovementMetrics> getCurrentMetrics(String userId) async {
     throw UnimplementedError();
   }
-  
+
   @override
   Future<AccuracyMetrics> getAccuracyMetrics(String userId) async {
     throw UnimplementedError();
   }
-  
+
   @override
   Stream<AIImprovementMetrics> get metricsStream => Stream.empty();
-  
+
   @override
   List<AIImprovementSnapshot> getHistory({
     required String userId,
     Duration? timeWindow,
-  }) => [];
-  
-  @override
+  }) =>
+      [];
+
+  // Note: startTracking and stopTracking are not part of AIImprovementTrackingService
+  // These methods are kept for compatibility with tests that may reference them
   void startTracking(String userId) {}
-  
-  @override
+
   void stopTracking() {}
 }
-

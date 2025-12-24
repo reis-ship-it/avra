@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/payment.dart';
+import 'package:spots/core/models/payment_status.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/payment_service.dart';
 import 'package:spots/core/services/expertise_calculation_service.dart';
@@ -352,8 +352,8 @@ void main() {
         expect(event.host.id, equals(host.id));
         
         // Event active → contributes more
-        final activeEvent = event.copyWith(status: EventStatus.active);
-        expect(activeEvent.status, equals(EventStatus.active));
+        final activeEvent = event.copyWith(status: EventStatus.ongoing);
+        expect(activeEvent.status, equals(EventStatus.ongoing));
         
         // Event completed → final contribution
         final completedEvent = event.copyWith(status: EventStatus.completed);

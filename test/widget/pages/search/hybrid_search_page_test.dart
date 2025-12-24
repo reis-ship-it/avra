@@ -13,33 +13,19 @@ void main() {
       mockHybridSearchBloc = MockHybridSearchBloc();
     });
 
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Hybrid search page tests focus on business logic (UI display, search field), not property assignment
+
+    testWidgets(
+        'should display all required UI elements or display search field',
+        (WidgetTester tester) async {
+      // Test business logic: Hybrid search page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const HybridSearchPage(),
         hybridSearchBloc: mockHybridSearchBloc,
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify search UI is present
-      expect(find.byType(HybridSearchPage), findsOneWidget);
-    });
-
-    testWidgets('displays search field', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const HybridSearchPage(),
-        hybridSearchBloc: mockHybridSearchBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Search field should be present
       expect(find.byType(HybridSearchPage), findsOneWidget);
     });
   });
 }
-

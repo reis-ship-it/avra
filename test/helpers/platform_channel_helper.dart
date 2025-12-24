@@ -38,28 +38,49 @@ import 'dart:async';
 /// 
 /// For services that use SharedPreferencesCompat.getInstance(storage: mockStorage),
 /// this sets up the mock storage properly.
+/// 
+/// For services that use StorageService.instance, this initializes StorageService
+/// with mock storage instances.
 Future<void> setupTestStorage() async {
-  // Use runZoned to catch MissingPluginException during setup
-  // This prevents the exception from failing the test setup
-  await runZoned(() async {
-    try {
-      final mockStorage = MockGetStorage.getInstance();
-      if (mockStorage != null) {
-        await SharedPreferencesCompat.getInstance(storage: mockStorage);
-      }
-    } catch (e) {
-      // MissingPluginException expected in unit tests
-      // Tests will handle this gracefully using runTestWithPlatformChannelHandling
-    }
-  }, onError: (error, stackTrace) {
-    // Silently handle MissingPluginException during setup
-    if (error.toString().contains('MissingPluginException') ||
-        error.toString().contains('getApplicationDocumentsDirectory')) {
-      return;
-    }
-    // Re-throw other errors
-    throw error;
-  });
+  // Create in-memory storage instances that don't require platform channels
+  try {
+    final mockStorage = getTestStorage();
+    // Pre-initialize SharedPreferencesCompat with mock storage
+    await SharedPreferencesCompat.getInstance(storage: mockStorage);
+    
+    // Initialize StorageService with mock storage for all boxes
+    // This prevents "StorageService not initialized" errors in tests
+    await initializeStorageServiceForTests();
+  } catch (e) {
+    // If initialization fails, that's OK - tests will handle it
+    // This is expected in some test environments
+  }
+}
+
+/// Initialize StorageService with mock storage instances for testing
+/// This sets up all required storage boxes with in-memory storage
+/// Uses the test-only initForTesting() method to bypass platform channel requirements
+Future<void> initializeStorageServiceForTests() async {
+  try {
+    // Get mock storage instances for all StorageService boxes
+    final defaultStorage = MockGetStorage.getInstance(boxName: 'spots_default');
+    final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+    final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+    final analyticsStorage = MockGetStorage.getInstance(boxName: 'spots_analytics');
+    
+    // Initialize StorageService with mock storage using test-only method
+    // This bypasses platform channel requirements
+    await StorageService.instance.initForTesting(
+      defaultStorage: defaultStorage,
+      userStorage: userStorage,
+      aiStorage: aiStorage,
+      analyticsStorage: analyticsStorage,
+    );
+  } catch (e) {
+    // If initialization fails, log but don't throw
+    // Some tests may handle storage setup individually
+    print('Warning: Failed to initialize StorageService for tests: $e');
+  }
 }
 
 /// Clean up test storage environment
@@ -72,14 +93,15 @@ Future<void> cleanupTestStorage() async {
 }
 
 /// Get a test storage instance
-/// Returns a GetStorage instance that works in unit tests
+/// Returns a GetStorage-compatible instance that works in unit tests
 /// 
-/// This tries to create GetStorage with initialData first, which should
-/// work without platform channels. If that fails, returns MockGetStorage.
-GetStorage? getTestStorage({String? boxName}) {
+/// Returns InMemoryGetStorage which has the same interface as GetStorage
+/// but doesn't require platform channels. Can be used where GetStorage is expected.
+GetStorage getTestStorage({String? boxName}) {
   // Always use MockGetStorage in tests to avoid platform channel issues
-  // MockGetStorage provides the same interface without requiring platform channels
-  return MockGetStorage.getInstance(boxName: boxName ?? 'test_box');
+  // InMemoryGetStorage provides the same interface without requiring platform channels
+  // Cast to GetStorage to allow use where GetStorage is expected
+  return MockGetStorage.getInstance(boxName: boxName ?? 'test_box') as dynamic;
 }
 
 /// Run test with platform channel error handling

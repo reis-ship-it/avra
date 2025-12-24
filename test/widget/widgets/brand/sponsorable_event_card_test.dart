@@ -4,13 +4,18 @@ import 'package:spots/core/models/brand_discovery.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for SponsorableEventCard
-/// 
+///
 /// Agent 2: Phase 7, Section 51-52 - Widget Test Coverage
 void main() {
   group('SponsorableEventCard Widget Tests', () {
-    testWidgets('displays sponsorable event card', (WidgetTester tester) async {
-      // Arrange
-      final brandMatch = BrandMatch(
+    // Removed: Property assignment tests
+    // Sponsorable event card tests focus on business logic (card display, user interactions), not property assignment
+
+    testWidgets(
+        'should display sponsorable event card, display recommended badge when meets threshold, or call onTap callback when card is tapped',
+        (WidgetTester tester) async {
+      // Test business logic: sponsorable event card display and interactions
+      final brandMatch1 = BrandMatch(
         brandId: 'brand-123',
         brandName: 'Test Brand',
         compatibilityScore: 85.0,
@@ -27,23 +32,15 @@ void main() {
           'eventDate': '2025-12-15',
         },
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: SponsorableEventCard(brandMatch: brandMatch),
+      final widget1 = WidgetTestHelpers.createTestableWidget(
+        child: SponsorableEventCard(brandMatch: brandMatch1),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(SponsorableEventCard), findsOneWidget);
-    });
 
-    testWidgets('displays recommended badge when meets threshold', (WidgetTester tester) async {
-      // Arrange
-      final brandMatch = BrandMatch(
-        brandId: 'brand-123',
-        brandName: 'Test Brand',
+      final brandMatch2 = BrandMatch(
+        brandId: 'brand-124',
+        brandName: 'Test Brand 2',
         compatibilityScore: 85.0,
         vibeCompatibility: VibeCompatibility(
           overallScore: 85,
@@ -57,24 +54,16 @@ void main() {
           'eventTitle': 'Community Coffee Meetup',
         },
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: SponsorableEventCard(brandMatch: brandMatch),
+      final widget2 = WidgetTestHelpers.createTestableWidget(
+        child: SponsorableEventCard(brandMatch: brandMatch2),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Recommended'), findsOneWidget);
-    });
 
-    testWidgets('calls onTap callback when card is tapped', (WidgetTester tester) async {
-      // Arrange
       bool wasTapped = false;
-      final brandMatch = BrandMatch(
-        brandId: 'brand-123',
-        brandName: 'Test Brand',
+      final brandMatch3 = BrandMatch(
+        brandId: 'brand-125',
+        brandName: 'Test Brand 3',
         compatibilityScore: 85.0,
         vibeCompatibility: VibeCompatibility(
           overallScore: 85,
@@ -88,22 +77,16 @@ void main() {
           'eventTitle': 'Community Coffee Meetup',
         },
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: SponsorableEventCard(
-          brandMatch: brandMatch,
+          brandMatch: brandMatch3,
           onTap: () => wasTapped = true,
         ),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       await tester.tap(find.byType(SponsorableEventCard));
       await tester.pump();
-
-      // Assert
       expect(wasTapped, isTrue);
     });
   });
 }
-

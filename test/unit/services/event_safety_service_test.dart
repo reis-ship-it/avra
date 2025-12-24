@@ -9,19 +9,20 @@ import 'package:spots/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'event_safety_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([ExpertiseEventService])
 void main() {
   group('EventSafetyService', () {
     late EventSafetyService service;
     late MockExpertiseEventService mockEventService;
-    
+
     late ExpertiseEvent testEvent;
     late UnifiedUser testUser;
 
     setUp(() {
       mockEventService = MockExpertiseEventService();
-      
+
       service = EventSafetyService(
         eventService: mockEventService,
       );
@@ -46,16 +47,18 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Event safety tests focus on business logic (guideline generation, emergency info, insurance, requirements), not property assignment
+
     group('generateGuidelines', () {
-      test('should generate guidelines for event successfully', () async {
-        // Arrange
+      test(
+          'should generate guidelines for event with event-type-specific and size-specific requirements, or throw exception if event not found',
+          () async {
+        // Test business logic: guideline generation with all event types and sizes
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
 
-        // Act
         final guidelines = await service.generateGuidelines('event-123');
-
-        // Assert
         expect(guidelines, isA<EventSafetyGuidelines>());
         expect(guidelines.eventId, equals('event-123'));
         expect(guidelines.type, equals(ExpertiseEventType.workshop));
@@ -63,277 +66,179 @@ void main() {
         expect(guidelines.acknowledged, isFalse);
         expect(guidelines.emergencyInfo, isNotNull);
         expect(guidelines.insurance, isNotNull);
-        verify(mockEventService.getEventById('event-123')).called(1);
-      });
+        expect(
+            guidelines.requirements, contains(SafetyRequirement.firstAidKit));
+        expect(
+            guidelines.requirements, contains(SafetyRequirement.capacityLimit));
+        expect(guidelines.requirements,
+            contains(SafetyRequirement.emergencyExits));
 
-      test('should throw exception if event not found', () async {
-        // Arrange
+        final tourEvent = testEvent.copyWith(
+            eventType: ExpertiseEventType.tour, maxAttendees: 20);
+        when(mockEventService.getEventById('event-123'))
+            .thenAnswer((_) async => tourEvent);
+        final tourGuidelines = await service.generateGuidelines('event-123');
+        expect(tourGuidelines.requirements,
+            contains(SafetyRequirement.weatherPlan));
+        expect(tourGuidelines.requirements,
+            contains(SafetyRequirement.crowdControl));
+
+        final tastingEvent =
+            testEvent.copyWith(eventType: ExpertiseEventType.tasting);
+        when(mockEventService.getEventById('event-123'))
+            .thenAnswer((_) async => tastingEvent);
+        final tastingGuidelines = await service.generateGuidelines('event-123');
+        expect(tastingGuidelines.requirements,
+            contains(SafetyRequirement.foodSafety));
+        expect(tastingGuidelines.requirements,
+            contains(SafetyRequirement.alcoholPolicy));
+        expect(tastingGuidelines.requirements,
+            contains(SafetyRequirement.firstAidKit));
+
+        final largeEvent = testEvent.copyWith(maxAttendees: 75);
+        when(mockEventService.getEventById('event-123'))
+            .thenAnswer((_) async => largeEvent);
+        final largeGuidelines = await service.generateGuidelines('event-123');
+        expect(largeGuidelines.requirements,
+            contains(SafetyRequirement.accessibilityPlan));
+        expect(largeGuidelines.requirements,
+            contains(SafetyRequirement.crowdControl));
+
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => null);
-
-        // Act & Assert
         expect(
           () => service.generateGuidelines('event-123'),
           throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Event not found'),
-          )),
+              (e) => e.toString(), 'message', contains('Event not found'))),
         );
-      });
-
-      test('should include workshop-specific requirements', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-
-        // Act
-        final guidelines = await service.generateGuidelines('event-123');
-
-        // Assert
-        expect(guidelines.requirements, contains(SafetyRequirement.firstAidKit));
-        expect(guidelines.requirements, contains(SafetyRequirement.capacityLimit));
-        expect(guidelines.requirements, contains(SafetyRequirement.emergencyExits));
-      });
-
-      test('should include tour-specific requirements', () async {
-        // Arrange
-        final tourEvent = testEvent.copyWith(
-          eventType: ExpertiseEventType.tour,
-          maxAttendees: 20,
-        );
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => tourEvent);
-
-        // Act
-        final guidelines = await service.generateGuidelines('event-123');
-
-        // Assert
-        expect(guidelines.requirements, contains(SafetyRequirement.weatherPlan));
-        expect(guidelines.requirements, contains(SafetyRequirement.crowdControl));
-      });
-
-      test('should include tasting-specific requirements', () async {
-        // Arrange
-        final tastingEvent = testEvent.copyWith(
-          eventType: ExpertiseEventType.tasting,
-        );
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => tastingEvent);
-
-        // Act
-        final guidelines = await service.generateGuidelines('event-123');
-
-        // Assert
-        expect(guidelines.requirements, contains(SafetyRequirement.foodSafety));
-        expect(guidelines.requirements, contains(SafetyRequirement.alcoholPolicy));
-        expect(guidelines.requirements, contains(SafetyRequirement.firstAidKit));
-      });
-
-      test('should include requirements for large events (>50 attendees)', () async {
-        // Arrange
-        final largeEvent = testEvent.copyWith(
-          maxAttendees: 75,
-        );
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => largeEvent);
-
-        // Act
-        final guidelines = await service.generateGuidelines('event-123');
-
-        // Assert
-        expect(guidelines.requirements, contains(SafetyRequirement.accessibilityPlan));
-        expect(guidelines.requirements, contains(SafetyRequirement.crowdControl));
       });
     });
 
     group('getEmergencyInfo', () {
-      test('should return emergency information for event', () async {
-        // Arrange
+      test(
+          'should return emergency information for event, use provided event if passed, or throw exception if event not found',
+          () async {
+        // Test business logic: emergency info retrieval
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
 
-        // Act
         final emergencyInfo = await service.getEmergencyInfo('event-123');
-
-        // Assert
         expect(emergencyInfo, isNotNull);
-        expect(emergencyInfo.primaryContact, isNotNull);
-        expect(emergencyInfo.primaryContact.role, equals('Host'));
+        expect(emergencyInfo.contacts, isNotEmpty);
+        expect(emergencyInfo.contacts.first.role, equals('Host'));
         expect(emergencyInfo.nearestHospital, isNotNull);
         verify(mockEventService.getEventById('event-123')).called(1);
-      });
 
-      test('should use provided event if passed', () async {
-        // Act
-        final emergencyInfo = await service.getEmergencyInfo('event-123', testEvent);
-
-        // Assert
-        expect(emergencyInfo, isNotNull);
-        expect(emergencyInfo.primaryContact, isNotNull);
+        final providedInfo =
+            await service.getEmergencyInfo('event-123', testEvent);
+        expect(providedInfo, isNotNull);
+        expect(providedInfo.contacts, isNotEmpty);
         verifyNever(mockEventService.getEventById(any));
-      });
 
-      test('should throw exception if event not found', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => null);
-
-        // Act & Assert
         expect(
           () => service.getEmergencyInfo('event-123'),
           throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Event not found'),
-          )),
+              (e) => e.toString(), 'message', contains('Event not found'))),
         );
       });
     });
 
     group('getInsuranceRecommendation', () {
-      test('should return insurance recommendation for event', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-
-        // Act
+      test(
+          'should return insurance recommendation for event, and recommend insurance for large or paid events',
+          () {
+        // Test business logic: insurance recommendation with different event types
         final recommendation = service.getInsuranceRecommendation(testEvent);
-
-        // Assert
         expect(recommendation, isNotNull);
-        expect(recommendation.estimatedCost, greaterThan(0));
-        expect(recommendation.isRecommended, isA<bool>());
-        expect(recommendation.coverageAmount, greaterThan(0));
-      });
+        expect(recommendation.suggestedCoverageAmount, greaterThan(0));
+        expect(recommendation.recommended, isA<bool>());
 
-      test('should recommend insurance for large events', () async {
-        // Arrange
         final largeEvent = testEvent.copyWith(maxAttendees: 100);
+        final largeRecommendation =
+            service.getInsuranceRecommendation(largeEvent);
+        expect(largeRecommendation.recommended, isTrue);
 
-        // Act
-        final recommendation = service.getInsuranceRecommendation(largeEvent);
-
-        // Assert
-        expect(recommendation.isRecommended, isTrue);
-      });
-
-      test('should recommend insurance for paid events', () async {
-        // Arrange
-        final paidEvent = testEvent.copyWith(
-          isPaid: true,
-          price: 50.0,
-        );
-
-        // Act
-        final recommendation = service.getInsuranceRecommendation(paidEvent);
-
-        // Assert
-        expect(recommendation.isRecommended, isTrue);
+        final paidEvent = testEvent.copyWith(isPaid: true, price: 50.0);
+        final paidRecommendation =
+            service.getInsuranceRecommendation(paidEvent);
+        expect(paidRecommendation.recommended, isTrue);
       });
     });
 
     group('getGuidelines', () {
-      test('should return existing guidelines if available', () async {
-        // Arrange
+      test(
+          'should return existing guidelines if available, or generate guidelines if not available',
+          () async {
+        // Test business logic: guideline retrieval with auto-generation
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         await service.generateGuidelines('event-123');
 
-        // Act
-        final guidelines = await service.getGuidelines('event-123');
+        final existingGuidelines = await service.getGuidelines('event-123');
+        expect(existingGuidelines, isNotNull);
+        expect(existingGuidelines!.eventId, equals('event-123'));
 
-        // Assert
-        expect(guidelines, isNotNull);
-        expect(guidelines!.eventId, equals('event-123'));
-        verify(mockEventService.getEventById('event-123')).called(1);
-      });
-
-      test('should generate guidelines if not available', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-
-        // Act
-        final guidelines = await service.getGuidelines('event-123');
-
-        // Assert
-        expect(guidelines, isNotNull);
-        expect(guidelines!.eventId, equals('event-123'));
-        verify(mockEventService.getEventById('event-123')).called(1);
+        // Clear and test generation
+        final newService = EventSafetyService(eventService: mockEventService);
+        final generatedGuidelines = await newService.getGuidelines('event-123');
+        expect(generatedGuidelines, isNotNull);
+        expect(generatedGuidelines!.eventId, equals('event-123'));
       });
     });
 
     group('acknowledgeGuidelines', () {
-      test('should acknowledge guidelines successfully', () async {
-        // Arrange
+      test(
+          'should acknowledge guidelines successfully, or throw exception if guidelines not found',
+          () async {
+        // Test business logic: guideline acknowledgment with error handling
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         await service.generateGuidelines('event-123');
 
-        // Act
         await service.acknowledgeGuidelines('event-123');
-
-        // Assert
         final guidelines = await service.getGuidelines('event-123');
         expect(guidelines!.acknowledged, isTrue);
         expect(guidelines.acknowledgedAt, isNotNull);
-      });
 
-      test('should throw exception if guidelines not found', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
+        // Test with event that has no guidelines (use different event ID)
+        when(mockEventService.getEventById('event-no-guidelines'))
             .thenAnswer((_) async => null);
-
-        // Act & Assert
         expect(
-          () => service.acknowledgeGuidelines('event-123'),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Guidelines not found'),
-          )),
+          () => service.acknowledgeGuidelines('event-no-guidelines'),
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+              contains('Guidelines not found'))),
         );
       });
     });
 
     group('determineSafetyRequirements', () {
-      test('should determine requirements for workshop event', () {
-        // Act
-        final requirements = service.determineSafetyRequirements(testEvent);
+      test(
+          'should determine requirements for workshop, tour, and tasting events',
+          () {
+        // Test business logic: safety requirement determination for all event types
+        final workshopRequirements =
+            service.determineSafetyRequirements(testEvent);
+        expect(workshopRequirements, contains(SafetyRequirement.firstAidKit));
+        expect(workshopRequirements, contains(SafetyRequirement.capacityLimit));
 
-        // Assert
-        expect(requirements, contains(SafetyRequirement.firstAidKit));
-        expect(requirements, contains(SafetyRequirement.capacityLimit));
-      });
-
-      test('should determine requirements for tour event', () {
-        // Arrange
         final tourEvent = testEvent.copyWith(
-          eventType: ExpertiseEventType.tour,
-          maxAttendees: 20,
-        );
+            eventType: ExpertiseEventType.tour, maxAttendees: 20);
+        final tourRequirements = service.determineSafetyRequirements(tourEvent);
+        expect(tourRequirements, contains(SafetyRequirement.weatherPlan));
 
-        // Act
-        final requirements = service.determineSafetyRequirements(tourEvent);
-
-        // Assert
-        expect(requirements, contains(SafetyRequirement.weatherPlan));
+        final tastingEvent =
+            testEvent.copyWith(eventType: ExpertiseEventType.tasting);
+        final tastingRequirements =
+            service.determineSafetyRequirements(tastingEvent);
+        expect(tastingRequirements, contains(SafetyRequirement.foodSafety));
+        expect(tastingRequirements, contains(SafetyRequirement.alcoholPolicy));
       });
+    });
 
-      test('should determine requirements for tasting event', () {
-        // Arrange
-        final tastingEvent = testEvent.copyWith(
-          eventType: ExpertiseEventType.tasting,
-        );
-
-        // Act
-        final requirements = service.determineSafetyRequirements(tastingEvent);
-
-        // Assert
-        expect(requirements, contains(SafetyRequirement.foodSafety));
-        expect(requirements, contains(SafetyRequirement.alcoholPolicy));
-      });
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }

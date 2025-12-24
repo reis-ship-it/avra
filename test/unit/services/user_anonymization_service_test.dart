@@ -2,8 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/user_anonymization_service.dart';
 import 'package:spots/core/models/personality_profile.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 void main() {
+
+  setUpAll(() async {
+    await setupTestStorage();
+  });
   group('UserAnonymizationService', () {
     late UserAnonymizationService service;
 
@@ -21,15 +26,15 @@ void main() {
         updatedAt: DateTime.now(),
       );
 
-      final personality = PersonalityProfile.initial(agentId: 'agent-123');
+      final personality = PersonalityProfile.initial('agent_123');
 
       final anonymousUser = await service.anonymizeUser(
         user,
-        'agent-123',
+        'agent_123',
         personality,
       );
 
-      expect(anonymousUser.agentId, 'agent-123');
+      expect(anonymousUser.agentId, 'agent_123');
       expect(anonymousUser.personalityDimensions, personality);
       // Should not contain personal data
       expect(anonymousUser.toJson().containsKey('email'), false);
@@ -61,7 +66,7 @@ void main() {
 
       final anonymousUser = await service.anonymizeUser(
         user,
-        'agent-123',
+        'agent_123',
         null,
       );
 
@@ -80,7 +85,7 @@ void main() {
 
       final anonymousUser = await service.anonymizeUser(
         user,
-        'agent-123',
+        'agent_123',
         null,
       );
 
@@ -88,5 +93,9 @@ void main() {
       expect(anonymousUser.location, isNotNull);
       expect(anonymousUser.location!.city, isNotEmpty);
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }

@@ -14,9 +14,9 @@ import 'package:spots/core/services/geographic_scope_service.dart';
 
 /// Event Creation Form Page
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.8)
-/// 
+///
 /// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
-/// 
+///
 /// Features:
 /// - Simple event creation form
 /// - Form validation
@@ -33,7 +33,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   final _formKey = GlobalKey<FormState>();
   final _eventService = ExpertiseEventService();
   final _geographicScopeService = GeographicScopeService();
-  
+
   // Form fields
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -46,7 +46,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   int _maxAttendees = 20;
   double? _price;
   bool _isPublic = true;
-  
+
   // State
   bool _isLoading = false;
   String? _error;
@@ -54,10 +54,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
   String? _geographicScopeError; // Geographic scope validation error
   UnifiedUser? _currentUser;
   Map<String, ExpertiseLevel>? _userExpertise;
-  
+
   // Available categories (from user's expertise)
   List<String> _availableCategories = [];
-  
+
   // Event types
   final List<ExpertiseEventType> _eventTypes = ExpertiseEventType.values;
 
@@ -85,7 +85,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
     }
 
     final user = authState.user;
-    
+
     // Convert User to UnifiedUser
     _currentUser = UnifiedUser(
       id: user.id,
@@ -99,7 +99,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
     // Check if user can host events
     if (!_currentUser!.canHostEvents()) {
       setState(() {
-        _expertiseError = 'You need Local level or higher expertise to host events.\nBuild your expertise first!';
+        _expertiseError =
+            'You need Local level or higher expertise to host events.\nBuild your expertise first!';
       });
       return;
     }
@@ -107,7 +108,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
     // Get user's expertise categories
     setState(() {
       _availableCategories = _currentUser!.getExpertiseCategories();
-      
+
       // Build expertise map
       _userExpertise = {};
       for (final category in _availableCategories) {
@@ -116,10 +117,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
           _userExpertise![category] = level;
         }
       }
-      
+
       // Filter categories to only those with Local level+
       _availableCategories = _userExpertise!.keys.toList();
-      
+
       // Pre-select first category if available
       if (_availableCategories.isNotEmpty) {
         _selectedCategory = _availableCategories.first;
@@ -146,11 +147,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
         );
       },
     );
-    
+
     if (picked != null) {
       final time = await showTimePicker(
         context: context,
-        initialTime: TimeOfDay.fromDateTime(_startTime ?? DateTime.now().add(const Duration(hours: 1))),
+        initialTime: TimeOfDay.fromDateTime(
+            _startTime ?? DateTime.now().add(const Duration(hours: 1))),
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
@@ -163,7 +165,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
           );
         },
       );
-      
+
       if (time != null) {
         setState(() {
           _startTime = DateTime(
@@ -173,7 +175,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
             time.hour,
             time.minute,
           );
-          
+
           // Auto-set end time to 2 hours after start if not set
           if (_endTime == null || _endTime!.isBefore(_startTime!)) {
             _endTime = _startTime!.add(const Duration(hours: 2));
@@ -211,11 +213,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
         );
       },
     );
-    
+
     if (picked != null) {
       final time = await showTimePicker(
         context: context,
-        initialTime: TimeOfDay.fromDateTime(_endTime ?? _startTime!.add(const Duration(hours: 2))),
+        initialTime: TimeOfDay.fromDateTime(
+            _endTime ?? _startTime!.add(const Duration(hours: 2))),
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
@@ -228,7 +231,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
           );
         },
       );
-      
+
       if (time != null) {
         final selectedEnd = DateTime(
           picked.year,
@@ -237,7 +240,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
           time.hour,
           time.minute,
         );
-        
+
         if (selectedEnd.isBefore(_startTime!)) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -247,7 +250,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
           );
           return;
         }
-        
+
         setState(() {
           _endTime = selectedEnd;
         });
@@ -255,6 +258,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
     }
   }
 
+  /// Create event directly (bypassing review page)
+  ///
+  /// Note: Currently unused - event creation happens in EventReviewPage.
+  /// Kept for potential future use (e.g., quick create without review).
+  // ignore: unused_element
   Future<void> _createEvent() async {
     setState(() {
       _isLoading = true;
@@ -289,7 +297,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
             duration: const Duration(seconds: 3),
           ),
         );
-        
+
         // Navigate back
         Navigator.pop(context, event);
       }
@@ -298,7 +306,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         _error = 'Failed to create event: $e';
         _isLoading = false;
       });
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -309,7 +317,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
       }
     }
   }
-
 
   /// Validate geographic scope using GeographicScopeService
   bool _validateGeographicScope() {
@@ -352,9 +359,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
     }
 
     // Check expertise
-    if (_selectedCategory == null || !_currentUser!.hasExpertiseIn(_selectedCategory!)) {
+    if (_selectedCategory == null ||
+        !_currentUser!.hasExpertiseIn(_selectedCategory!)) {
       setState(() {
-        _expertiseError = 'You must have expertise in the selected category to host events.';
+        _expertiseError =
+            'You must have expertise in the selected category to host events.';
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -367,13 +376,16 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
     // Check expertise level
     final expertiseLevel = _currentUser!.getExpertiseLevel(_selectedCategory!);
-    if (expertiseLevel == null || expertiseLevel.index < ExpertiseLevel.local.index) {
+    if (expertiseLevel == null ||
+        expertiseLevel.index < ExpertiseLevel.local.index) {
       setState(() {
-        _expertiseError = 'You need Local level or higher expertise in $_selectedCategory to host events.';
+        _expertiseError =
+            'You need Local level or higher expertise in $_selectedCategory to host events.';
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('You need Local level+ expertise in $_selectedCategory to host events'),
+          content: Text(
+              'You need Local level+ expertise in $_selectedCategory to host events'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -384,7 +396,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
     if (!_validateGeographicScope()) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_geographicScopeError ?? 'Geographic scope validation failed'),
+          content: Text(
+              _geographicScopeError ?? 'Geographic scope validation failed'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -509,7 +522,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.check_circle, color: AppColors.electricGreen, size: 20),
+                      Icon(Icons.check_circle,
+                          color: AppColors.electricGreen, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -596,9 +610,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
                         if (level != null) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppColors.electricGreen.withValues(alpha: 0.1),
+                              color: AppColors.electricGreen
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -708,7 +724,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
                         ? '${_formatDate(_startTime!)} at ${_formatTime(_startTime!)}'
                         : 'Select start time',
                     style: TextStyle(
-                      color: _startTime != null ? AppColors.textPrimary : AppColors.textHint,
+                      color: _startTime != null
+                          ? AppColors.textPrimary
+                          : AppColors.textHint,
                     ),
                   ),
                 ),
@@ -733,7 +751,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
                         ? '${_formatDate(_endTime!)} at ${_formatTime(_endTime!)}'
                         : 'Select end time',
                     style: TextStyle(
-                      color: _endTime != null ? AppColors.textPrimary : AppColors.textHint,
+                      color: _endTime != null
+                          ? AppColors.textPrimary
+                          : AppColors.textHint,
                     ),
                   ),
                 ),
@@ -803,7 +823,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   prefixText: '\$ ',
                 ),
                 style: TextStyle(color: AppColors.textPrimary),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
                 onChanged: (value) {
                   final parsed = double.tryParse(value);
                   if (parsed != null && parsed >= 0) {
@@ -918,4 +939,3 @@ class _CreateEventPageState extends State<CreateEventPage> {
     return '$hour:${dateTime.minute.toString().padLeft(2, '0')} $period';
   }
 }
-

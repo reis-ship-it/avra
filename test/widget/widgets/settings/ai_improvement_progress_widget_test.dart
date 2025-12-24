@@ -1,7 +1,7 @@
 /// SPOTS AIImprovementProgressWidget Widget Tests
 /// Date: November 21, 2025
 /// Purpose: Test AIImprovementProgressWidget functionality and UI behavior
-/// 
+///
 /// Test Coverage:
 /// - Empty State: Display when no progress data
 /// - Header Display: Title, icon, time window display
@@ -9,10 +9,11 @@
 /// - Progress Chart: Custom chart rendering with data points
 /// - Trend Summary: Trend calculation and display
 /// - Data Calculations: Data point generation, trend calculation
-/// 
+///
 /// Dependencies:
 /// - AIImprovementTrackingService: For history data
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/settings/ai_improvement_progress_widget.dart';
@@ -24,11 +25,11 @@ import '../../helpers/widget_test_helpers.dart';
 void main() {
   group('AIImprovementProgressWidget Widget Tests', () {
     late MockAIImprovementTrackingService mockService;
-    
+
     setUp(() {
       mockService = MockAIImprovementTrackingService();
     });
-    
+
     /// Helper to create scrollable test widget with larger viewport
     Widget createScrollableTestWidget({required Widget child}) {
       return WidgetTestHelpers.createTestableWidget(
@@ -42,204 +43,131 @@ void main() {
     }
 
     group('Empty State', () {
-      testWidgets('displays empty state when no history data', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Empty state tests focus on business logic (empty state display), not property assignment
+
+      testWidgets(
+          'should display empty state when no history data or display helpful message in empty state',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement progress widget empty state
         mockService.setHistory([]);
-        
         final widget = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
         await tester.pumpWidget(widget);
         await tester.pump();
-
-        // Assert
         expect(find.text('No Progress Data Yet'), findsOneWidget);
         expect(find.byIcon(Icons.show_chart), findsWidgets);
-      });
-
-      testWidgets('displays helpful message in empty state', (WidgetTester tester) async {
-        // Arrange
-        mockService.setHistory([]);
-        
-        final widget = createScrollableTestWidget(
-          child: AIImprovementProgressWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pump();
-
-        // Assert
-        expect(find.textContaining('Your AI will start tracking'), findsOneWidget);
+        expect(
+            find.textContaining('Your AI will start tracking'), findsOneWidget);
       });
     });
 
     group('Header Display', () {
-      testWidgets('displays header with title', (WidgetTester tester) async {
-        // Arrange
+      // Removed: Property assignment tests
+      // Header display tests focus on business logic (header display, time window), not property assignment
+
+      testWidgets(
+          'should display header with title, display time window in header, or display custom time window',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement progress widget header display
         final history = _createMockHistory(count: 5);
         mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+        final widget1 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget1);
         await tester.pump();
-
-        // Assert
         expect(find.text('Progress Visualization'), findsOneWidget);
         expect(find.byIcon(Icons.show_chart), findsWidgets);
-      });
 
-      testWidgets('displays time window in header', (WidgetTester tester) async {
-        // Arrange
-        final history = _createMockHistory(count: 5);
-        mockService.setHistory(history);
-        
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget2 = WidgetTestHelpers.createTestableWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
             timeWindow: const Duration(days: 30),
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget2);
         await tester.pump();
-
-        // Assert
         expect(find.text('Last 30 days'), findsOneWidget);
-      });
 
-      testWidgets('displays custom time window', (WidgetTester tester) async {
-        // Arrange
-        final history = _createMockHistory(count: 5);
-        mockService.setHistory(history);
-        
-        final widget = WidgetTestHelpers.createTestableWidget(
+        final widget3 = WidgetTestHelpers.createTestableWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
             timeWindow: const Duration(days: 7),
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget3);
         await tester.pump();
-
-        // Assert
         expect(find.text('Last 7 days'), findsOneWidget);
       });
     });
 
     group('Dimension Selector', () {
-      testWidgets('displays dimension selector with choices', (WidgetTester tester) async {
-        // Arrange
-        final history = _createMockHistory(count: 5);
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+      // Removed: Property assignment tests
+      // Dimension selector tests focus on business logic (dimension selector display, selection), not property assignment
+
+      testWidgets(
+          'should display dimension selector with choices, display available dimensions from history, select overall dimension by default, or change selected dimension when chip is tapped',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement progress widget dimension selector
+        final history1 = _createMockHistory(count: 5);
+        mockService.setHistory(history1);
+        final widget1 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget1);
         await tester.pump();
-
-        // Assert
         expect(find.byType(ChoiceChip), findsWidgets);
         expect(find.text('Overall'), findsOneWidget);
-      });
-
-      testWidgets('displays available dimensions from history', (WidgetTester tester) async {
-        // Arrange
-        final history = _createMockHistory(
-          count: 5,
-          dimensions: {'accuracy': 0.85, 'speed': 0.88, 'creativity': 0.80},
-        );
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
-          child: AIImprovementProgressWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pump();
-
-        // Assert
-        expect(find.text('Accuracy'), findsOneWidget);
-        expect(find.text('Speed'), findsOneWidget);
-        expect(find.text('Creativity'), findsOneWidget);
-      });
-
-      testWidgets('selects overall dimension by default', (WidgetTester tester) async {
-        // Arrange
-        final history = _createMockHistory(count: 5);
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
-          child: AIImprovementProgressWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pump();
-
-        // Assert
         final overallChip = tester.widget<ChoiceChip>(
           find.widgetWithText(ChoiceChip, 'Overall'),
         );
         expect(overallChip.selected, isTrue);
-      });
 
-      testWidgets('changes selected dimension when chip is tapped', (WidgetTester tester) async {
-        // Arrange
-        final history = _createMockHistory(
+        final history2 = _createMockHistory(
           count: 5,
-          dimensions: {'accuracy': 0.85},
+          dimensions: {'accuracy': 0.85, 'speed': 0.88, 'creativity': 0.80},
         );
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setHistory(history2);
+        final widget2 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget2);
         await tester.pump();
-        
+        expect(find.text('Accuracy'), findsOneWidget);
+        expect(find.text('Speed'), findsOneWidget);
+        expect(find.text('Creativity'), findsOneWidget);
+
+        final history3 = _createMockHistory(
+          count: 5,
+          dimensions: {'accuracy': 0.85},
+        );
+        mockService.setHistory(history3);
+        final widget3 = createScrollableTestWidget(
+          child: AIImprovementProgressWidget(
+            userId: 'test_user',
+            trackingService: mockService,
+          ),
+        );
+        await tester.pumpWidget(widget3);
+        await tester.pump();
         await tester.tap(find.text('Accuracy'));
         await tester.pump();
-
-        // Assert
         final accuracyChip = tester.widget<ChoiceChip>(
           find.widgetWithText(ChoiceChip, 'Accuracy'),
         );
@@ -248,206 +176,143 @@ void main() {
     });
 
     group('Progress Chart', () {
-      testWidgets('displays progress chart with data', (WidgetTester tester) async {
-        // Arrange
-        final history = _createMockHistory(count: 10);
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+      // Removed: Property assignment tests
+      // Progress chart tests focus on business logic (progress chart display, dimension label), not property assignment
+
+      testWidgets(
+          'should display progress chart with data, display dimension label on chart, or display no data message when dimension has no data',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement progress widget progress chart
+        final history1 = _createMockHistory(count: 10);
+        mockService.setHistory(history1);
+        final widget1 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget1);
         await tester.pump();
+        expect(find.byType(CustomPaint), findsWidgets);
 
-        // Assert
-        expect(find.byType(CustomPaint), findsWidgets); // Multiple CustomPaint widgets in UI
-      });
-
-      testWidgets('displays dimension label on chart', (WidgetTester tester) async {
-        // Arrange
-        final history = _createMockHistory(count: 5);
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+        final history2 = _createMockHistory(count: 5);
+        mockService.setHistory(history2);
+        final widget2 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget2);
         await tester.pump();
-
-        // Assert
         expect(find.text('Overall Performance'), findsOneWidget);
-      });
 
-      testWidgets('displays no data message when dimension has no data', (WidgetTester tester) async {
-        // Arrange
-        final history = _createMockHistory(
+        final history3 = _createMockHistory(
           count: 5,
           dimensions: {},
         );
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+        mockService.setHistory(history3);
+        final widget3 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget3);
         await tester.pump();
-        
-        // Tap non-overall dimension (if any exist)
         final accuracyChip = find.text('Accuracy');
         if (accuracyChip.evaluate().isNotEmpty) {
           await tester.tap(accuracyChip);
           await tester.pump();
         }
-
-        // Assert - might show no data for dimensions with no values
-        // This depends on the actual mock data, so check cautiously
-        expect(find.byType(CustomPaint), findsWidgets); // Multiple CustomPaint widgets in UI
+        expect(find.byType(CustomPaint), findsWidgets);
       });
     });
 
     group('Trend Summary', () {
-      testWidgets('displays improving trend for positive change', (WidgetTester tester) async {
-        // Arrange
-        final history = _createImprovingHistory();
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+      // Removed: Property assignment tests
+      // Trend summary tests focus on business logic (trend display, percentage change), not property assignment
+
+      testWidgets(
+          'should display improving trend for positive change, display declining trend for negative change, display stable performance for no change, or display percentage change in trend',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement progress widget trend summary
+        final history1 = _createImprovingHistory();
+        mockService.setHistory(history1);
+        final widget1 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget1);
         await tester.pumpAndSettle();
-
-        // Assert
         expect(find.textContaining('Improving:'), findsWidgets);
         expect(find.byIcon(Icons.arrow_upward), findsWidgets);
-      });
+        expect(find.textContaining('%'), findsWidgets);
 
-      testWidgets('displays declining trend for negative change', (WidgetTester tester) async {
-        // Arrange
-        final history = _createDecliningHistory();
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+        final history2 = _createDecliningHistory();
+        mockService.setHistory(history2);
+        final widget2 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget2);
         await tester.pumpAndSettle();
-
-        // Assert
         expect(find.textContaining('Declining:'), findsWidgets);
         expect(find.byIcon(Icons.arrow_downward), findsWidgets);
-      });
 
-      testWidgets('displays stable performance for no change', (WidgetTester tester) async {
-        // Arrange
-        final history = _createStableHistory();
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+        final history3 = _createStableHistory();
+        mockService.setHistory(history3);
+        final widget3 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget3);
         await tester.pump();
-
-        // Assert
         expect(find.text('Stable performance'), findsOneWidget);
         expect(find.byIcon(Icons.remove), findsOneWidget);
-      });
-
-      testWidgets('displays percentage change in trend', (WidgetTester tester) async {
-        // Arrange
-        final history = _createImprovingHistory();
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
-          child: AIImprovementProgressWidget(
-            userId: 'test_user',
-            trackingService: mockService,
-          ),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-        await tester.pump();
-
-        // Assert
-        expect(find.textContaining('%'), findsWidgets);
       });
     });
 
     group('Edge Cases', () {
-      testWidgets('handles single data point', (WidgetTester tester) async {
-        // Arrange
-        final history = _createMockHistory(count: 1);
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+      // Removed: Property assignment tests
+      // Edge cases tests focus on business logic (single data point, dimension selector limit), not property assignment
+
+      testWidgets(
+          'should handle single data point or limit dimension selector to 6 items',
+          (WidgetTester tester) async {
+        // Test business logic: AI improvement progress widget edge cases
+        final history1 = _createMockHistory(count: 1);
+        mockService.setHistory(history1);
+        final widget1 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget1);
         await tester.pumpAndSettle();
-
-        // Assert
-        expect(find.byType(CustomPaint), findsWidgets); // Multiple CustomPaint widgets in UI
+        expect(find.byType(CustomPaint), findsWidgets);
         expect(find.text('Stable performance'), findsWidgets);
-      });
 
-      testWidgets('limits dimension selector to 6 items', (WidgetTester tester) async {
-        // Arrange
         final dimensions = {
           for (var i = 0; i < 10; i++) 'dimension_$i': 0.80,
         };
-        final history = _createMockHistory(count: 5, dimensions: dimensions);
-        mockService.setHistory(history);
-        
-        final widget = createScrollableTestWidget(
+        final history2 = _createMockHistory(count: 5, dimensions: dimensions);
+        mockService.setHistory(history2);
+        final widget2 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
             userId: 'test_user',
             trackingService: mockService,
           ),
         );
-
-        // Act
-        await tester.pumpWidget(widget);
+        await tester.pumpWidget(widget2);
         await tester.pump();
-
-        // Assert
-        // Should have Overall + 5 dimensions = 6 total
         expect(find.byType(ChoiceChip), findsNWidgets(6));
       });
     });
@@ -461,19 +326,20 @@ List<AIImprovementSnapshot> _createMockHistory({
 }) {
   final now = DateTime.now();
   final List<AIImprovementSnapshot> history = [];
-  
+
   for (int i = 0; i < count; i++) {
     history.add(AIImprovementSnapshot(
       userId: 'test_user',
-      dimensions: dimensions ?? {
-        'accuracy': 0.75 + (i * 0.02),
-        'speed': 0.80 + (i * 0.01),
-      },
+      dimensions: dimensions ??
+          {
+            'accuracy': 0.75 + (i * 0.02),
+            'speed': 0.80 + (i * 0.01),
+          },
       overallScore: 0.75 + (i * 0.02),
       timestamp: now.subtract(Duration(days: count - i)),
     ));
   }
-  
+
   return history;
 }
 
@@ -517,49 +383,96 @@ List<AIImprovementSnapshot> _createStableHistory() {
       .toList();
 }
 
-/// Mock service for testing
+/// Real fake implementation with actual tracking behavior for testing
 class MockAIImprovementTrackingService implements AIImprovementTrackingService {
-  List<AIImprovementSnapshot> _history = [];
-  
+  final Map<String, List<AIImprovementSnapshot>> _history = {};
+  final Map<String, AIImprovementMetrics> _metrics = {};
+  final Map<String, List<ImprovementMilestone>> _milestones = {};
+  final StreamController<AIImprovementMetrics> _metricsController = 
+      StreamController<AIImprovementMetrics>.broadcast();
+  bool _isInitialized = false;
+  String? _trackingUserId;
+
+  /// Set history for a user (for testing)
   void setHistory(List<AIImprovementSnapshot> history) {
-    _history = history;
+    if (history.isNotEmpty) {
+      _history[history.first.userId] = history;
+    }
   }
   
-  @override
-  Future<void> initialize() async {}
+  /// Set history for a specific user (for testing)
+  void setHistoryForUser(String userId, List<AIImprovementSnapshot> history) {
+    _history[userId] = history;
+  }
   
-  @override
-  void dispose() {}
+  /// Set metrics for a user (for testing)
+  void setMetrics(String userId, AIImprovementMetrics metrics) {
+    _metrics[userId] = metrics;
+    _metricsController.add(metrics);
+  }
   
+  /// Set milestones for a user (for testing)
+  void setMilestones(String userId, List<ImprovementMilestone> milestones) {
+    _milestones[userId] = milestones;
+  }
+
+  @override
+  Future<void> initialize() async {
+    _isInitialized = true;
+  }
+
+  @override
+  void dispose() {
+    _metricsController.close();
+    _isInitialized = false;
+  }
+
   @override
   List<AIImprovementSnapshot> getHistory({
     required String userId,
     Duration? timeWindow,
   }) {
-    return _history;
+    final history = _history[userId] ?? [];
+    if (timeWindow != null) {
+      final cutoff = DateTime.now().subtract(timeWindow);
+      return history.where((s) => s.timestamp.isAfter(cutoff)).toList();
+    }
+    return history;
   }
-  
-  // Other required overrides (not used in these tests)
+
   @override
   Future<AIImprovementMetrics> getCurrentMetrics(String userId) async {
-    throw UnimplementedError();
+    return _metrics[userId] ?? AIImprovementMetrics.empty(userId);
   }
-  
+
   @override
   Future<AccuracyMetrics> getAccuracyMetrics(String userId) async {
-    throw UnimplementedError();
+    return AccuracyMetrics(
+      recommendationAcceptanceRate: 0.75,
+      predictionAccuracy: 0.80,
+      userSatisfactionScore: 0.78,
+      averageConfidence: 0.85,
+      totalRecommendations: 100,
+      acceptedRecommendations: 75,
+      timestamp: DateTime.now(),
+    );
   }
-  
-  @override
-  Stream<AIImprovementMetrics> get metricsStream => Stream.empty();
-  
-  @override
-  List<ImprovementMilestone> getMilestones(String userId) => [];
-  
-  @override
-  void startTracking(String userId) {}
-  
-  @override
-  void stopTracking() {}
-}
 
+  @override
+  Stream<AIImprovementMetrics> get metricsStream => _metricsController.stream;
+
+  @override
+  List<ImprovementMilestone> getMilestones(String userId) {
+    return _milestones[userId] ?? [];
+  }
+
+  /// Helper method for testing (not part of interface)
+  void startTracking(String userId) {
+    _trackingUserId = userId;
+  }
+
+  /// Helper method for testing (not part of interface)
+  void stopTracking() {
+    _trackingUserId = null;
+  }
+}

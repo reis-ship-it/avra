@@ -33,8 +33,8 @@ void main() {
       // Verify indicator is shown
       expect(find.byType(AIThinkingIndicator), findsOneWidget);
       
-      // Verify stage text is displayed
-      expect(find.textContaining('Generating'), findsOneWidget);
+      // Verify stage text is displayed (widget shows "AI is thinking..." for generatingResponse stage)
+      expect(find.textContaining('thinking'), findsOneWidget);
       
       // Verify progress indicator
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
@@ -51,11 +51,12 @@ void main() {
         ),
       );
 
-      // Verify offline message is shown
-      expect(find.text('Offline Mode'), findsOneWidget);
+      // Verify offline message is shown (widget shows "Limited Functionality" and "You're offline...")
+      expect(find.textContaining('Limited Functionality'), findsOneWidget);
+      expect(find.textContaining('offline'), findsWidgets);
       
-      // Verify offline icon
-      expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+      // Verify offline icon (widget uses Icons.cloud_off, not wifi_off)
+      expect(find.byIcon(Icons.cloud_off), findsOneWidget);
       
       // Verify feature availability info
       expect(find.textContaining('available'), findsWidgets);
@@ -75,16 +76,20 @@ void main() {
       // Verify banner is shown
       expect(find.byType(OfflineBanner), findsOneWidget);
       
-      // Verify offline text
-      expect(find.text('Offline Mode'), findsOneWidget);
+      // Verify offline text (widget shows "Offline mode • Limited functionality")
+      expect(find.textContaining('Offline mode'), findsOneWidget);
     });
 
     testWidgets('Action Success Widget displays correctly', (tester) async {
-      final mockResult = ActionResult(
-        success: true,
-        intent: CreateListIntent(listName: 'Test List'),
+      final mockResult = ActionResult.success(
         message: 'List created successfully!',
         data: {'id': 'test-id'},
+        intent: CreateListIntent(
+          title: 'Test List',
+          description: 'Test description',
+          userId: 'test-user',
+          confidence: 0.8,
+        ),
       );
 
       await tester.pumpWidget(
@@ -179,15 +184,22 @@ void main() {
     });
 
     test('Action Result data model works correctly', () {
-      final result = ActionResult(
-        success: true,
-        intent: CreateSpotIntent(spotName: 'Test Spot'),
+      final result = ActionResult.success(
         message: 'Spot created',
         data: {'id': '123'},
+        intent: CreateSpotIntent(
+          name: 'Test Spot',
+          description: 'Test description',
+          latitude: 40.7128,
+          longitude: -73.9352,
+          category: 'restaurant',
+          userId: 'test-user',
+          confidence: 0.8,
+        ),
       );
 
       expect(result.success, isTrue);
-      expect(result.message, equals('Spot created'));
+      expect(result.successMessage, equals('Spot created'));
       expect(result.data['id'], equals('123'));
       expect(result.intent, isA<CreateSpotIntent>());
     });

@@ -4,45 +4,43 @@ import 'package:spots/core/models/revenue_split.dart';
 import 'package:spots/presentation/widgets/partnerships/revenue_split_display.dart';
 
 /// Revenue Split Display Widget Tests
-/// 
+///
 /// Agent 2: Payment UI, Revenue Display UI (Week 7)
-/// 
+///
 /// Tests the revenue split display widget for partnerships.
 void main() {
   group('RevenueSplitDisplay Widget Tests', () {
-    testWidgets('should display solo event revenue split', (WidgetTester tester) async {
-      // Arrange
-      final revenueSplit = RevenueSplit.calculate(
+    // Removed: Property assignment tests
+    // Revenue split display tests focus on business logic (revenue split display, lock status, details visibility), not property assignment
+
+    testWidgets(
+        'should display solo event revenue split, display N-way partnership revenue split, show locked status when split is locked, show warning when split is not locked, or hide details when showDetails is false',
+        (WidgetTester tester) async {
+      // Test business logic: revenue split display widget display and interactions
+      final revenueSplit1 = RevenueSplit.calculate(
         eventId: 'event-123',
         totalAmount: 100.00,
         ticketsSold: 1,
       );
-
-      // Act
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: RevenueSplitDisplay(
-              split: revenueSplit,
+              split: revenueSplit1,
               showDetails: true,
               showLockStatus: true,
             ),
           ),
         ),
       );
-
-      // Assert
       expect(find.text('Revenue Breakdown'), findsOneWidget);
       expect(find.text('Total Revenue'), findsOneWidget);
       expect(find.text('\$100.00'), findsWidgets);
       expect(find.text('Platform Fee'), findsOneWidget);
       expect(find.text('Processing Fee'), findsOneWidget);
       expect(find.text('Host Payout'), findsOneWidget);
-    });
 
-    testWidgets('should display N-way partnership revenue split', (WidgetTester tester) async {
-      // Arrange
-      final revenueSplit = RevenueSplit.nWay(
+      final revenueSplit2 = RevenueSplit.nWay(
         id: 'split-123',
         eventId: 'event-456',
         totalAmount: 1000.00,
@@ -71,21 +69,17 @@ void main() {
           ),
         ],
       );
-
-      // Act
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: RevenueSplitDisplay(
-              split: revenueSplit,
+              split: revenueSplit2,
               showDetails: true,
               showLockStatus: true,
             ),
           ),
         ),
       );
-
-      // Assert
       expect(find.text('Revenue Breakdown'), findsOneWidget);
       expect(find.text('Total Revenue'), findsOneWidget);
       expect(find.text('\$1,000.00'), findsWidgets);
@@ -93,86 +87,65 @@ void main() {
       expect(find.text('John Doe'), findsOneWidget);
       expect(find.text('Coffee Shop'), findsOneWidget);
       expect(find.text('Tech Corp'), findsOneWidget);
-    });
 
-    testWidgets('should show locked status when split is locked', (WidgetTester tester) async {
-      // Arrange
-      final revenueSplit = RevenueSplit.calculate(
+      final revenueSplit3 = RevenueSplit.calculate(
         eventId: 'event-123',
         totalAmount: 100.00,
         ticketsSold: 1,
       ).lock(lockedBy: 'user-1');
-
-      // Act
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: RevenueSplitDisplay(
-              split: revenueSplit,
+              split: revenueSplit3,
               showDetails: true,
               showLockStatus: true,
             ),
           ),
         ),
       );
-
-      // Assert
       expect(find.text('Locked'), findsOneWidget);
       expect(find.byIcon(Icons.lock), findsOneWidget);
-    });
 
-    testWidgets('should show warning when split is not locked', (WidgetTester tester) async {
-      // Arrange
-      final revenueSplit = RevenueSplit.calculate(
+      final revenueSplit4 = RevenueSplit.calculate(
         eventId: 'event-123',
         totalAmount: 100.00,
         ticketsSold: 1,
       );
-
-      // Act
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: RevenueSplitDisplay(
-              split: revenueSplit,
+              split: revenueSplit4,
               showDetails: true,
               showLockStatus: true,
             ),
           ),
         ),
       );
-
-      // Assert
-      expect(find.text('Revenue split must be locked before event starts'), findsOneWidget);
+      expect(find.text('Revenue split must be locked before event starts'),
+          findsOneWidget);
       expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
-    });
 
-    testWidgets('should hide details when showDetails is false', (WidgetTester tester) async {
-      // Arrange
-      final revenueSplit = RevenueSplit.calculate(
+      final revenueSplit5 = RevenueSplit.calculate(
         eventId: 'event-123',
         totalAmount: 100.00,
         ticketsSold: 1,
       );
-
-      // Act
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: RevenueSplitDisplay(
-              split: revenueSplit,
+              split: revenueSplit5,
               showDetails: false,
               showLockStatus: true,
             ),
           ),
         ),
       );
-
-      // Assert
       expect(find.text('Platform Fee'), findsNothing);
       expect(find.text('Processing Fee'), findsNothing);
-      expect(find.text('Total Revenue'), findsOneWidget); // Still shows total
+      expect(find.text('Total Revenue'), findsOneWidget);
     });
   });
 }
-

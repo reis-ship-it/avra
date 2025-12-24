@@ -9,26 +9,24 @@ import '../../../helpers/test_helpers.dart';
 /// Tests display of active AI2AI connections list
 void main() {
   group('ConnectionsList Widget Tests', () {
-    testWidgets('displays empty state when no connections', (WidgetTester tester) async {
-      // Arrange
-      final overview = ActiveConnectionsOverview.empty();
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ConnectionsList(overview: overview),
+    // Removed: Property assignment tests
+    // Connections list tests focus on business logic (connections list display, user interactions, navigation), not property assignment
+
+    testWidgets(
+        'should display empty state when no connections, display top performing connections, display connections needing attention, display aggregate metrics, or navigate to connection detail on tap',
+        (WidgetTester tester) async {
+      // Test business logic: connections list widget display and interactions
+      final overview1 = ActiveConnectionsOverview.empty();
+      final widget1 = WidgetTestHelpers.createTestableWidget(
+        child: ConnectionsList(overview: overview1),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(ConnectionsList), findsOneWidget);
       expect(find.text('Active Connections'), findsOneWidget);
       expect(find.text('0'), findsOneWidget);
       expect(find.text('No active connections'), findsOneWidget);
-    });
 
-    testWidgets('displays top performing connections', (WidgetTester tester) async {
-      // Arrange
-      final overview = ActiveConnectionsOverview(
+      final overview2 = ActiveConnectionsOverview(
         totalActiveConnections: 3,
         aggregateMetrics: AggregateConnectionMetrics(0.8),
         topPerformingConnections: ['conn-1', 'conn-2'],
@@ -39,23 +37,15 @@ void main() {
         totalAlertsGenerated: 0,
         generatedAt: TestHelpers.createTestDateTime(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ConnectionsList(overview: overview),
+      final widget2 = WidgetTestHelpers.createTestableWidget(
+        child: ConnectionsList(overview: overview2),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Top Performing'), findsOneWidget);
       expect(find.text('High performance connection'), findsWidgets);
       expect(find.byIcon(Icons.trending_up), findsWidgets);
-    });
 
-    testWidgets('displays connections needing attention', (WidgetTester tester) async {
-      // Arrange
-      final overview = ActiveConnectionsOverview(
+      final overview3 = ActiveConnectionsOverview(
         totalActiveConnections: 2,
         aggregateMetrics: AggregateConnectionMetrics(0.5),
         topPerformingConnections: [],
@@ -66,23 +56,15 @@ void main() {
         totalAlertsGenerated: 2,
         generatedAt: TestHelpers.createTestDateTime(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ConnectionsList(overview: overview),
+      final widget3 = WidgetTestHelpers.createTestableWidget(
+        child: ConnectionsList(overview: overview3),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Needs Attention'), findsOneWidget);
       expect(find.text('May need optimization'), findsWidgets);
       expect(find.byIcon(Icons.warning), findsWidgets);
-    });
 
-    testWidgets('displays aggregate metrics', (WidgetTester tester) async {
-      // Arrange
-      final overview = ActiveConnectionsOverview(
+      final overview4 = ActiveConnectionsOverview(
         totalActiveConnections: 2,
         aggregateMetrics: AggregateConnectionMetrics(0.75),
         topPerformingConnections: ['conn-1'],
@@ -93,15 +75,10 @@ void main() {
         totalAlertsGenerated: 1,
         generatedAt: TestHelpers.createTestDateTime(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ConnectionsList(overview: overview),
+      final widget4 = WidgetTestHelpers.createTestableWidget(
+        child: ConnectionsList(overview: overview4),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.text('Aggregate Metrics'), findsOneWidget);
       expect(find.text('Avg Compatibility'), findsOneWidget);
       expect(find.text('75%'), findsOneWidget);
@@ -109,11 +86,8 @@ void main() {
       expect(find.text('15min'), findsOneWidget);
       expect(find.text('Total Alerts'), findsOneWidget);
       expect(find.text('1'), findsOneWidget);
-    });
 
-    testWidgets('navigates to connection detail on tap', (WidgetTester tester) async {
-      // Arrange
-      final overview = ActiveConnectionsOverview(
+      final overview5 = ActiveConnectionsOverview(
         totalActiveConnections: 1,
         aggregateMetrics: AggregateConnectionMetrics(0.8),
         topPerformingConnections: ['connection-12345'],
@@ -124,22 +98,14 @@ void main() {
         totalAlertsGenerated: 0,
         generatedAt: TestHelpers.createTestDateTime(),
       );
-
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: ConnectionsList(overview: overview),
+      final widget5 = WidgetTestHelpers.createTestableWidget(
+        child: ConnectionsList(overview: overview5),
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      
-      // Tap on a connection tile
+      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
       final connectionTile = find.byType(ListTile).first;
       await tester.tap(connectionTile);
       await tester.pumpAndSettle();
-
-      // Assert - Navigation should occur (checking for navigation icon)
       expect(find.byIcon(Icons.chevron_right), findsWidgets);
     });
   });
 }
-

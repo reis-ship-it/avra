@@ -1,17 +1,27 @@
 /// Tests for Tax Compliance Placeholder Methods
 /// Phase 7, Section 41 (7.4.3): Backend Completion
 ///
-/// Tests the following methods (tested through public API):
-/// - _getUserEarnings() - Tested via needsTaxDocuments and generate1099
-/// - _getUsersWithEarningsAbove600() - Tested via generateAll1099sForYear
+/// **NOTE: These tests verify placeholder behavior.**
+/// The following methods are currently placeholders that return default values:
+/// - `_getUserEarnings()` - Returns 0.0 (tested via `needsTaxDocuments` and `generate1099`)
+/// - `_getUsersWithEarningsAbove600()` - Returns empty list (tested via `generateAll1099sForYear`)
+///
+/// When these methods are fully implemented, these tests should be updated to test real behavior
+/// with mocked payment data.
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:spots/core/services/tax_compliance_service.dart';
 import 'package:spots/core/services/payment_service.dart';
 import 'package:spots/core/services/stripe_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/cross_locality_connection_service.dart';
 import 'package:spots/core/config/stripe_config.dart';
 import 'package:spots/core/models/tax_document.dart';
+
+// Mock to break circular dependency
+class MockCrossLocalityConnectionService extends Mock
+    implements CrossLocalityConnectionService {}
 
 void main() {
   group('Tax Compliance Placeholder Methods Tests', () {
@@ -22,7 +32,12 @@ void main() {
       // Create real PaymentService instances (placeholder methods don't use them)
       final stripeConfig = StripeConfig.test();
       final stripeService = StripeService(stripeConfig);
-      final eventService = ExpertiseEventService();
+      // Break circular dependency: ExpertiseEventService <-> CrossLocalityConnectionService
+      // Use a mock CrossLocalityConnectionService to break the cycle
+      final mockCrossLocalityService = MockCrossLocalityConnectionService();
+      final eventService = ExpertiseEventService(
+        crossLocalityService: mockCrossLocalityService,
+      );
       paymentService = PaymentService(
         stripeService,
         eventService,

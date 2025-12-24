@@ -7,13 +7,16 @@ import 'package:spots/core/models/revenue_split.dart';
 import 'package:spots/core/models/payment.dart';
 import 'package:spots/core/models/event_partnership.dart';
 import 'package:spots/core/models/sponsorship_integration.dart';
+import 'package:spots/core/models/unified_user.dart';
+import 'package:spots/core/models/business_account.dart';
+import 'package:spots/core/models/payment_status.dart';
 import '../../helpers/test_helpers.dart';
 import '../../fixtures/model_factories.dart';
 
 /// Sponsorship Model Relationships Verification Tests
-/// 
+///
 /// Agent 3: Models & Testing (Week 11)
-/// 
+///
 /// Verifies all model relationships work correctly with payment/revenue:
 /// - Sponsorship ↔ Payment relationships
 /// - Sponsorship ↔ RevenueSplit relationships
@@ -59,8 +62,9 @@ void main() {
     });
 
     group('Payment Relationships', () {
-      test('should link payment to sponsored event correctly', () {
-        // Arrange
+      test('should correctly link and aggregate payments for sponsored events',
+          () {
+        // Test business logic: payment-sponsorship relationship and aggregation
         final sponsorship = Sponsorship(
           id: 'sponsor-123',
           eventId: 'event-456',
@@ -71,58 +75,34 @@ void main() {
           updatedAt: testDate,
         );
 
-        final payment = Payment(
-          id: 'payment-123',
-          eventId: 'event-456',
-          userId: 'user-789',
-          amount: 75.00,
-          status: PaymentStatus.completed,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
+        final payments = List.generate(
+            3,
+            (i) => Payment(
+                  id: 'payment-$i',
+                  eventId: 'event-456',
+                  userId: 'user-$i',
+                  amount: 75.00,
+                  status: PaymentStatus.completed,
+                  createdAt: testDate,
+                  updatedAt: testDate,
+                ));
 
-        // Act & Assert
-        expect(payment.eventId, equals(sponsorship.eventId),
-            reason: 'Payment should reference same event as sponsorship');
-        expect(payment.isSuccessful, isTrue,
-            reason: 'Payment should be successful for active sponsorship');
-      });
-
-      test('should aggregate payments for sponsored event', () {
-        // Arrange
-        final sponsorship = Sponsorship(
-          id: 'sponsor-123',
-          eventId: 'event-456',
-          brandId: 'brand-123',
-          type: SponsorshipType.financial,
-          status: SponsorshipStatus.active,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final payments = List.generate(5, (i) => Payment(
-          id: 'payment-$i',
-          eventId: 'event-456',
-          userId: 'user-$i',
-          amount: 75.00,
-          status: PaymentStatus.completed,
-          createdAt: testDate,
-          updatedAt: testDate,
-        ));
-
-        // Act
+        // Test business logic: payment aggregation
         final totalRevenue = payments
             .where((p) => p.eventId == sponsorship.eventId && p.isSuccessful)
             .fold<double>(0.0, (sum, p) => sum + p.totalAmount);
 
-        // Assert
-        expect(totalRevenue, equals(375.00));
+        expect(payments.first.eventId, equals(sponsorship.eventId));
+        expect(payments.first.isSuccessful, isTrue);
+        expect(totalRevenue, equals(225.00));
       });
     });
 
     group('Revenue Split Relationships', () {
-      test('should link revenue split to sponsorship correctly', () {
-        // Arrange
+      test(
+          'should correctly link revenue split to sponsorship with proper party configuration',
+          () {
+        // Test business logic: revenue split-sponsorship relationship
         final sponsorship = Sponsorship(
           id: 'sponsor-123',
           eventId: 'event-456',
@@ -158,8 +138,9 @@ void main() {
           ],
         );
 
-        // Act
-        final includesSponsors = SponsorshipIntegration.revenueSplitIncludesSponsorships(
+        // Test business logic: sponsorship integration
+        final includesSponsors =
+            SponsorshipIntegration.revenueSplitIncludesSponsorships(
           revenueSplit,
           [sponsorship],
         );
@@ -167,21 +148,18 @@ void main() {
           (p) => p.partyId == sponsorship.brandId,
         );
 
-        // Assert
-        expect(includesSponsors, isTrue,
-            reason: 'Revenue split should include sponsorships');
-        expect(sponsorParty.type, equals(SplitPartyType.sponsor),
-            reason: 'Sponsor should be marked as sponsor type');
-        expect(sponsorParty.percentage, equals(20.0),
-            reason: 'Sponsor percentage should match sponsorship');
-        expect(revenueSplit.isValid, isTrue,
-            reason: 'Revenue split should be valid');
+        expect(includesSponsors, isTrue);
+        expect(sponsorParty.type, equals(SplitPartyType.sponsor));
+        expect(sponsorParty.percentage, equals(20.0));
+        expect(revenueSplit.isValid, isTrue);
       });
     });
 
     group('Product Tracking Relationships', () {
-      test('should link product tracking to sponsorship and revenue', () {
-        // Arrange
+      test(
+          'should correctly link product tracking to sponsorship with revenue distribution',
+          () {
+        // Test business logic: product tracking-sponsorship relationship
         final sponsorship = Sponsorship(
           id: 'sponsor-123',
           eventId: 'event-456',
@@ -211,19 +189,20 @@ void main() {
           updatedAt: testDate,
         );
 
-        // Act & Assert
-        expect(productTracking.sponsorshipId, equals(sponsorship.id),
-            reason: 'Product tracking should reference sponsorship');
-        expect(productTracking.totalSales, equals(375.00),
-            reason: 'Product tracking should track total sales');
-        expect(productTracking.revenueDistribution.containsKey('brand-123'), isTrue,
-            reason: 'Revenue distribution should include brand');
+        // Test business logic: relationship and revenue tracking
+        expect(productTracking.sponsorshipId, equals(sponsorship.id));
+        expect(productTracking.totalSales, equals(375.00));
+        expect(productTracking.revenueDistribution.containsKey('brand-123'),
+            isTrue);
+        expect(productTracking.netRevenue, closeTo(337.50, 0.01));
       });
     });
 
     group('Multi-Party Relationships', () {
-      test('should verify multi-party sponsorship relationships', () {
-        // Arrange
+      test(
+          'should correctly verify multi-party sponsorship relationships and validation',
+          () {
+        // Test business logic: multi-party sponsorship integration
         final sponsorship1 = Sponsorship(
           id: 'sponsor-1',
           eventId: 'event-456',
@@ -257,30 +236,20 @@ void main() {
           updatedAt: testDate,
         );
 
-        // Act
-        final isPartOf1 = SponsorshipIntegration.isPartOfMultiParty(
-          sponsorship1,
-          multiParty,
-        );
-        final isPartOf2 = SponsorshipIntegration.isPartOfMultiParty(
-          sponsorship2,
-          multiParty,
-        );
-        final isValid = multiParty.isRevenueSplitValid;
-
-        // Assert
-        expect(isPartOf1, isTrue,
-            reason: 'Sponsorship 1 should be part of multi-party');
-        expect(isPartOf2, isTrue,
-            reason: 'Sponsorship 2 should be part of multi-party');
-        expect(isValid, isTrue,
-            reason: 'Multi-party revenue split should be valid');
+        // Test business logic: multi-party integration
+        expect(
+            SponsorshipIntegration.isPartOfMultiParty(sponsorship1, multiParty),
+            isTrue);
+        expect(
+            SponsorshipIntegration.isPartOfMultiParty(sponsorship2, multiParty),
+            isTrue);
+        expect(multiParty.isRevenueSplitValid, isTrue);
       });
     });
 
     group('Brand Account Relationships', () {
-      test('should verify brand account can sponsor events', () {
-        // Arrange
+      test('should correctly verify brand account sponsorship eligibility', () {
+        // Test business logic: brand-sponsorship relationship and eligibility
         final brand = BrandAccount(
           id: 'brand-123',
           name: 'Premium Oil Co.',
@@ -301,19 +270,18 @@ void main() {
           updatedAt: testDate,
         );
 
-        // Act & Assert
-        expect(sponsorship.brandId, equals(brand.id),
-            reason: 'Sponsorship should reference brand account');
-        expect(brand.isVerified, isTrue,
-            reason: 'Brand should be verified');
-        expect(brand.canSponsor, isTrue,
-            reason: 'Verified brand should be able to sponsor');
+        // Test business logic: sponsorship eligibility
+        expect(sponsorship.brandId, equals(brand.id));
+        expect(brand.isVerified, isTrue);
+        expect(brand.canSponsor, isTrue);
       });
     });
 
     group('Complete Payment/Revenue Flow', () {
-      test('should verify complete payment to revenue split flow', () {
-        // Arrange
+      test(
+          'should correctly verify end-to-end payment to revenue split flow with sponsorships',
+          () {
+        // Test business logic: complete payment-revenue flow
         final partnership = EventPartnership(
           id: 'partnership-123',
           eventId: 'event-456',
@@ -384,23 +352,19 @@ void main() {
           ],
         );
 
-        // Act
-        final hasSponsors = partnership.hasSponsorships([sponsorship]);
-        final includesSponsors = SponsorshipIntegration.revenueSplitIncludesSponsorships(
-          revenueSplit,
-          [sponsorship],
-        );
-        final sponsorAmount = revenueSplit.parties
-            .firstWhere((p) => p.partyId == 'brand-123')
-            .amount ?? 0.0;
-
-        // Assert
-        expect(hasSponsors, isTrue);
-        expect(includesSponsors, isTrue);
+        // Test business logic: complete flow validation
+        expect(partnership.hasSponsorships([sponsorship]), isTrue);
+        expect(
+            SponsorshipIntegration.revenueSplitIncludesSponsorships(
+                revenueSplit, [sponsorship]),
+            isTrue);
         expect(revenueSplit.isValid, isTrue);
+        final sponsorAmount = revenueSplit.parties
+                .firstWhere((p) => p.partyId == 'brand-123')
+                .amount ??
+            0.0;
         expect(sponsorAmount, greaterThan(0));
       });
     });
   });
 }
-

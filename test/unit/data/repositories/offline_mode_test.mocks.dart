@@ -488,6 +488,23 @@ class MockAuthRemoteDataSource extends _i1.Mock
         ),
         returnValue: _i5.Future<_i11.User?>.value(),
       ) as _i5.Future<_i11.User?>);
+
+  @override
+  _i5.Future<void> updatePassword(
+    String? currentPassword,
+    String? newPassword,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updatePassword,
+          [
+            currentPassword,
+            newPassword,
+          ],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 }
 
 /// A class which mocks [Connectivity].

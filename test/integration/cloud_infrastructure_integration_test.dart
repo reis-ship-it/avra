@@ -10,7 +10,7 @@ void main() {
     late RealTimeSyncManager syncManager;
 
     setUp(() {
-      microservicesManager = MicroservicesManager(clusterId: "test_cluster", encryptionEnabled: true, healthCheckInterval: Duration(seconds: 30), region: "us-east-1", );
+      microservicesManager = MicroservicesManager();
       syncManager = RealTimeSyncManager();
     });
 

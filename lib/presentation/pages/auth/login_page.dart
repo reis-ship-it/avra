@@ -6,6 +6,7 @@ import 'package:spots/core/theme/colors.dart';
 import 'package:spots/presentation/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spots/presentation/pages/admin/god_mode_login_page.dart';
+import 'package:spots/presentation/pages/business/business_login_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -200,8 +201,27 @@ class _LoginPageState extends State<LoginPage> {
                         },
                         child: const Text('🧪 Demo Login'),
                       ),
-                      
+
                       const SizedBox(height: 16),
+
+                      // Business Login Button
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const BusinessLoginPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.business, size: 18),
+                        label: const Text('Business Login'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.textSecondary,
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
 
                       // Admin Login Button
                       OutlinedButton.icon(

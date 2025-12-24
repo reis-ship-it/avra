@@ -74,16 +74,37 @@ class ExpertiseEventService {
       // Validate geographic scope if location is provided
       if (location != null && location.isNotEmpty) {
         try {
-          // Extract locality from location string
-          // Location format: "Locality, City, State, Country" or "Locality, City"
-          final locality = location.split(',').first.trim();
+          // Validate event location based on expertise level
+          // Location format: "Locality, City, State, Country" or "Locality, City" or "City"
+          final locationParts = location.split(',').map((s) => s.trim()).toList();
+          final expertiseLevel = host.getExpertiseLevel(category);
           
-          _geographicScopeService.validateEventLocation(
-            userId: host.id,
-            user: host,
-            category: category,
-            eventLocality: locality,
-          );
+          if (locationParts.length == 1 && expertiseLevel == ExpertiseLevel.city) {
+            // If location is just a city name (no comma) and user is city expert,
+            // validate using city instead of locality
+            final city = locationParts[0];
+            if (!_geographicScopeService.canHostInCity(
+              userId: host.id,
+              user: host,
+              category: category,
+              city: city,
+            )) {
+              throw Exception(
+                'City experts can only host events in their city. '
+                'Event city $city is outside your city.',
+              );
+            }
+          } else {
+            // Extract locality from location string for local experts or when location has comma
+            final locality = locationParts.first;
+            
+            _geographicScopeService.validateEventLocation(
+              userId: host.id,
+              user: host,
+              category: category,
+              eventLocality: locality,
+            );
+          }
         } catch (e) {
           // Re-throw with more context if it's a geographic scope error
           if (e is Exception) {

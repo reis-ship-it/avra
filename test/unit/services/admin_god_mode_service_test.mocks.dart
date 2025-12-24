@@ -483,6 +483,8 @@ class MockBusinessAccountService extends _i1.Mock
     _i14.BusinessPatronPreferences? patronPreferences,
     String? preferredLocation,
     int? minExpertLevel,
+    bool? isVerified,
+    bool? isActive,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -502,6 +504,8 @@ class MockBusinessAccountService extends _i1.Mock
             #patronPreferences: patronPreferences,
             #preferredLocation: preferredLocation,
             #minExpertLevel: minExpertLevel,
+            #isVerified: isVerified,
+            #isActive: isActive,
           },
         ),
         returnValue:
@@ -524,6 +528,8 @@ class MockBusinessAccountService extends _i1.Mock
               #patronPreferences: patronPreferences,
               #preferredLocation: preferredLocation,
               #minExpertLevel: minExpertLevel,
+              #isVerified: isVerified,
+              #isActive: isActive,
             },
           ),
         )),
@@ -905,6 +911,25 @@ class MockConnectionMonitor extends _i1.Mock implements _i6.ConnectionMonitor {
         returnValue: _i10.Future<List<_i6.ConnectionAnomaly>>.value(
             <_i6.ConnectionAnomaly>[]),
       ) as _i10.Future<List<_i6.ConnectionAnomaly>>);
+
+  @override
+  _i10.Stream<_i6.ActiveConnectionsOverview> streamActiveConnections() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #streamActiveConnections,
+          [],
+        ),
+        returnValue: _i10.Stream<_i6.ActiveConnectionsOverview>.empty(),
+      ) as _i10.Stream<_i6.ActiveConnectionsOverview>);
+
+  @override
+  void disposeStreams() => super.noSuchMethod(
+        Invocation.method(
+          #disposeStreams,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
 }
 
 /// A class which mocks [AI2AIChatAnalyzer].

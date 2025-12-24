@@ -7,9 +7,14 @@ import '../../mocks/mock_blocs.dart';
 
 void main() {
   group('ProfilePartnershipCard', () {
-    testWidgets('displays partnership information', (WidgetTester tester) async {
-      // Arrange
-      final partnership = UserPartnership(
+    // Removed: Property assignment tests
+    // Partnership card tests focus on business logic (partnership card display, badges, user interactions), not property assignment
+
+    testWidgets(
+        'should display partnership information, display status badge, display type badge, or call onTap when tapped',
+        (WidgetTester tester) async {
+      // Test business logic: partnership card display and interactions
+      final partnership1 = UserPartnership(
         id: '1',
         type: ProfilePartnershipType.business,
         partnerId: 'b1',
@@ -18,107 +23,60 @@ void main() {
         eventCount: 5,
         startDate: DateTime(2024, 1, 1),
       );
-
-      const widget = ProfilePartnershipCard(
-        partnership: partnership,
+      final widget1 = ProfilePartnershipCard(
+        partnership: partnership1,
       );
-
-      // Act
-      final testableWidget = WidgetTestHelpers.createTestableWidget(
-        child: widget,
+      final testableWidget1 = WidgetTestHelpers.createTestableWidget(
+        child: widget1,
         authBloc: MockAuthBloc(),
       );
-      await tester.pumpWidget(testableWidget);
+      await tester.pumpWidget(testableWidget1);
       await tester.pumpAndSettle();
-
-      // Assert
       expect(find.text('Test Business'), findsOneWidget);
       expect(find.text('5 events'), findsOneWidget);
-    });
-
-    testWidgets('displays status badge', (WidgetTester tester) async {
-      // Arrange
-      final partnership = UserPartnership(
-        id: '1',
-        type: ProfilePartnershipType.business,
-        partnerId: 'b1',
-        partnerName: 'Test Business',
-        status: PartnershipStatus.active,
-      );
-
-      const widget = ProfilePartnershipCard(
-        partnership: partnership,
-      );
-
-      // Act
-      final testableWidget = WidgetTestHelpers.createTestableWidget(
-        child: widget,
-        authBloc: MockAuthBloc(),
-      );
-      await tester.pumpWidget(testableWidget);
-      await tester.pumpAndSettle();
-
-      // Assert
       expect(find.text('Active'), findsOneWidget);
-    });
 
-    testWidgets('displays type badge', (WidgetTester tester) async {
-      // Arrange
-      final partnership = UserPartnership(
+      final partnership2 = UserPartnership(
         id: '1',
         type: ProfilePartnershipType.brand,
         partnerId: 'br1',
         partnerName: 'Test Brand',
         status: PartnershipStatus.active,
       );
-
-      const widget = ProfilePartnershipCard(
-        partnership: partnership,
+      final widget2 = ProfilePartnershipCard(
+        partnership: partnership2,
       );
-
-      // Act
-      final testableWidget = WidgetTestHelpers.createTestableWidget(
-        child: widget,
+      final testableWidget2 = WidgetTestHelpers.createTestableWidget(
+        child: widget2,
         authBloc: MockAuthBloc(),
       );
-      await tester.pumpWidget(testableWidget);
+      await tester.pumpWidget(testableWidget2);
       await tester.pumpAndSettle();
-
-      // Assert
       expect(find.text('Brand Partnership'), findsOneWidget);
-    });
 
-    testWidgets('calls onTap when tapped', (WidgetTester tester) async {
-      // Arrange
       var tapped = false;
-      final partnership = UserPartnership(
+      final partnership3 = UserPartnership(
         id: '1',
         type: ProfilePartnershipType.business,
         partnerId: 'b1',
         partnerName: 'Test Business',
         status: PartnershipStatus.active,
       );
-
-      final widget = ProfilePartnershipCard(
-        partnership: partnership,
+      final widget3 = ProfilePartnershipCard(
+        partnership: partnership3,
         onTap: () {
           tapped = true;
         },
       );
-
-      // Act
-      final testableWidget = WidgetTestHelpers.createTestableWidget(
-        child: widget,
+      final testableWidget3 = WidgetTestHelpers.createTestableWidget(
+        child: widget3,
         authBloc: MockAuthBloc(),
       );
-      await tester.pumpWidget(testableWidget);
+      await tester.pumpWidget(testableWidget3);
       await tester.pumpAndSettle();
       await tester.tap(find.byType(ProfilePartnershipCard));
       await tester.pumpAndSettle();
-
-      // Assert
       expect(tapped, isTrue);
     });
   });
 }
-

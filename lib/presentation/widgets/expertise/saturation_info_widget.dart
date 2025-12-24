@@ -235,7 +235,7 @@ class SaturationInfoWidget extends StatelessWidget {
                 value: value.clamp(0.0, 1.0),
                 minHeight: 4,
                 backgroundColor: AppColors.grey200,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryBlue),
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
               ),
             ),
           ),
@@ -261,7 +261,7 @@ class SaturationInfoWidget extends StatelessWidget {
       case SaturationRecommendation.decrease:
         return AppColors.electricGreen;
       case SaturationRecommendation.maintain:
-        return AppColors.primaryBlue;
+        return AppColors.primary;
       case SaturationRecommendation.increase:
         return AppColors.warning;
       case SaturationRecommendation.significantIncrease:

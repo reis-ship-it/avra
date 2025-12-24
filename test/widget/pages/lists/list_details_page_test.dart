@@ -26,22 +26,19 @@ void main() {
       );
     });
 
-    testWidgets('displays list title in app bar', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
+    // Removed: Property assignment tests
+    // List details page tests focus on business logic (list title display, list details display), not property assignment
+
+    testWidgets('should display list title in app bar or display list details',
+        (WidgetTester tester) async {
+      // Test business logic: List details page display
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: ListDetailsPage(list: testList),
         listsBloc: mockListsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show list title
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Test List'), findsOneWidget);
-    });
 
-    testWidgets('displays list details', (WidgetTester tester) async {
-      // Arrange
       final detailedList = SpotList(
         id: 'list-456',
         title: 'Detailed List',
@@ -52,17 +49,12 @@ void main() {
         isPublic: true,
         spotIds: const [],
       );
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: ListDetailsPage(list: detailedList),
         listsBloc: mockListsBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show list details
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Detailed List'), findsOneWidget);
     });
   });
 }
-

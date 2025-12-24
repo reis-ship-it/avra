@@ -12,19 +12,6 @@ class ConnectionsList extends StatelessWidget {
     required this.overview,
   });
 
-  Color _getQualityColor(double quality) {
-    if (quality >= 0.8) return AppColors.success;
-    if (quality >= 0.6) return AppColors.warning;
-    return AppColors.error;
-  }
-
-  String _getQualityLabel(double quality) {
-    if (quality >= 0.8) return 'Excellent';
-    if (quality >= 0.6) return 'Good';
-    if (quality >= 0.4) return 'Fair';
-    return 'Poor';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -71,11 +58,12 @@ class ConnectionsList extends StatelessWidget {
                       ),
                 ),
                 const SizedBox(height: 8),
-                ...overview.topPerformingConnections.map((connectionId) => _buildConnectionTile(
-                      context,
-                      connectionId,
-                      isPerforming: true,
-                    )),
+                ...overview.topPerformingConnections
+                    .map((connectionId) => _buildConnectionTile(
+                          context,
+                          connectionId,
+                          isPerforming: true,
+                        )),
                 const SizedBox(height: 16),
               ],
               if (overview.connectionsNeedingAttention.isNotEmpty) ...[
@@ -87,11 +75,12 @@ class ConnectionsList extends StatelessWidget {
                       ),
                 ),
                 const SizedBox(height: 8),
-                ...overview.connectionsNeedingAttention.map((connectionId) => _buildConnectionTile(
-                      context,
-                      connectionId,
-                      isPerforming: false,
-                    )),
+                ...overview.connectionsNeedingAttention
+                    .map((connectionId) => _buildConnectionTile(
+                          context,
+                          connectionId,
+                          isPerforming: false,
+                        )),
                 const SizedBox(height: 16),
               ],
               const Divider(),
@@ -147,7 +136,8 @@ class ConnectionsList extends StatelessWidget {
     );
   }
 
-  Widget _buildAggregateMetrics(BuildContext context, AggregateConnectionMetrics metrics) {
+  Widget _buildAggregateMetrics(
+      BuildContext context, AggregateConnectionMetrics metrics) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -202,4 +192,3 @@ class ConnectionsList extends StatelessWidget {
     );
   }
 }
-

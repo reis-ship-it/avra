@@ -6,8 +6,9 @@ import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/category_colors.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/presentation/pages/spots/edit_spot_page.dart';
 import 'package:spots/presentation/widgets/validation/community_validation_widget.dart';
+import 'package:go_router/go_router.dart';
+import 'package:spots/presentation/widgets/common/source_indicator_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
@@ -95,13 +96,19 @@ class SpotDetailsPage extends StatelessWidget {
                     ),
                     if (spot.description.isNotEmpty) ...[
                       const SizedBox(height: 8),
-                           Text(
+                      Text(
                         spot.description,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                               color: AppColors.grey600,
+                              color: AppColors.grey600,
                             ),
                       ),
                     ],
+                    const SizedBox(height: 12),
+                    SourceIndicatorWidget(
+                      indicator: spot.getSourceIndicator(),
+                      showWarning: true,
+                      compact: false,
+                    ),
                   ],
                 ),
               ),
@@ -139,11 +146,13 @@ class SpotDetailsPage extends StatelessWidget {
                     ],
                     Text(
                       'Latitude: ${spot.latitude.toStringAsFixed(6)}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: const TextStyle(
+                          fontSize: 12, color: AppColors.textSecondary),
                     ),
                     Text(
                       'Longitude: ${spot.longitude.toStringAsFixed(6)}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: const TextStyle(
+                          fontSize: 12, color: AppColors.textSecondary),
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
@@ -224,13 +233,14 @@ class SpotDetailsPage extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Community Validation (Phase 3: For external data spots)
-                CommunityValidationWidget(
+            CommunityValidationWidget(
               spot: spot,
               onValidationComplete: () {
                 // Optionally refresh spot data or show confirmation
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Thank you for helping validate community data!'),
+                    content: const Text(
+                        'Thank you for helping validate community data!'),
                     backgroundColor: AppTheme.successColor,
                   ),
                 );
@@ -242,21 +252,18 @@ class SpotDetailsPage extends StatelessWidget {
     );
   }
 
-  void _navigateToEdit(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditSpotPage(spot: spot),
-      ),
-    );
+  void _navigateToEdit(BuildContext context) {
+    context.go('/spot/${spot.id}/edit');
+  }
 
-    // If spot was updated, the result will contain the updated spot
-    if (result != null && result is Spot) {
+  // Note: Edit result handling moved to EditSpotPage navigation
+  void _handleEditResult(BuildContext context, Spot? updatedSpot) {
+    if (updatedSpot != null) {
       // The spot details will be automatically updated via BLoC
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Spot updated successfully'),
-        backgroundColor: AppTheme.successColor,
+          backgroundColor: AppTheme.successColor,
         ),
       );
     }
@@ -322,8 +329,9 @@ Shared from SPOTS - know you belong.''';
 
   void _copySpotLink(BuildContext context) {
     // Generate a shareable link (this would normally be a deep link to the app)
-    final spotLink = 'https://spots.app/spot/${spot.id}?lat=${spot.latitude}&lng=${spot.longitude}';
-    
+    final spotLink =
+        'https://spots.app/spot/${spot.id}?lat=${spot.latitude}&lng=${spot.longitude}';
+
     Clipboard.setData(ClipboardData(text: spotLink));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -387,9 +395,10 @@ Shared from SPOTS''';
   }
 
   Future<void> _openGoogleMaps(Spot spot) async {
-    final url = 'https://www.google.com/maps/search/?api=1&query=${spot.latitude},${spot.longitude}';
+    final url =
+        'https://www.google.com/maps/search/?api=1&query=${spot.latitude},${spot.longitude}';
     final uri = Uri.parse(url);
-    
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
@@ -401,7 +410,7 @@ Shared from SPOTS''';
   Future<void> _openAppleMaps(Spot spot) async {
     final url = 'https://maps.apple.com/?q=${spot.latitude},${spot.longitude}';
     final uri = Uri.parse(url);
-    
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
@@ -411,9 +420,10 @@ Shared from SPOTS''';
   }
 
   Future<void> _openInBrowser(Spot spot) async {
-    final url = 'https://www.google.com/maps/search/?api=1&query=${spot.latitude},${spot.longitude}';
+    final url =
+        'https://www.google.com/maps/search/?api=1&query=${spot.latitude},${spot.longitude}';
     final uri = Uri.parse(url);
-    
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.inAppWebView);
     }

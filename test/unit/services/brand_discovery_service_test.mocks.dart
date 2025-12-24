@@ -226,6 +226,7 @@ class MockExpertiseEventService extends _i1.Mock
     DateTime? startDate,
     DateTime? endDate,
     int? maxResults = 20,
+    bool? includeCommunityEvents = true,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -238,6 +239,7 @@ class MockExpertiseEventService extends _i1.Mock
             #startDate: startDate,
             #endDate: endDate,
             #maxResults: maxResults,
+            #includeCommunityEvents: includeCommunityEvents,
           },
         ),
         returnValue:
@@ -254,6 +256,36 @@ class MockExpertiseEventService extends _i1.Mock
           #getUpcomingEventsInCategory,
           [category],
           {#maxResults: maxResults},
+        ),
+        returnValue:
+            _i5.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i5.Future<List<_i2.ExpertiseEvent>>);
+
+  @override
+  _i5.Future<List<_i2.ExpertiseEvent>> searchEventsWithConnectedLocalities({
+    required _i6.UnifiedUser? user,
+    String? category,
+    String? location,
+    _i2.ExpertiseEventType? eventType,
+    DateTime? startDate,
+    DateTime? endDate,
+    int? maxResults = 20,
+    bool? includeConnectedLocalities = true,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #searchEventsWithConnectedLocalities,
+          [],
+          {
+            #user: user,
+            #category: category,
+            #location: location,
+            #eventType: eventType,
+            #startDate: startDate,
+            #endDate: endDate,
+            #maxResults: maxResults,
+            #includeConnectedLocalities: includeConnectedLocalities,
+          },
         ),
         returnValue:
             _i5.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
@@ -334,6 +366,17 @@ class MockSponsorshipService extends _i1.Mock
         Invocation.method(
           #getSponsorshipsForEvent,
           [eventId],
+        ),
+        returnValue:
+            _i5.Future<List<_i3.Sponsorship>>.value(<_i3.Sponsorship>[]),
+      ) as _i5.Future<List<_i3.Sponsorship>>);
+
+  @override
+  _i5.Future<List<_i3.Sponsorship>> getSponsorshipsForBrand(String? brandId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getSponsorshipsForBrand,
+          [brandId],
         ),
         returnValue:
             _i5.Future<List<_i3.Sponsorship>>.value(<_i3.Sponsorship>[]),

@@ -4,6 +4,7 @@ import 'package:spots/core/models/business_verification.dart';
 import 'package:spots/core/services/business_service.dart';
 import 'package:spots/core/services/business_account_service.dart';
 import '../helpers/integration_test_helpers.dart';
+import '../fixtures/model_factories.dart';
 
 // Mock dependencies
 class MockBusinessAccountService extends Mock implements BusinessAccountService {}
@@ -33,6 +34,9 @@ void main() {
       businessService = BusinessService(
         accountService: mockAccountService,
       );
+      
+      // Register fallback values for mocktail
+      registerFallbackValue(ModelFactories.createTestUser());
     });
     
     tearDown(() {
@@ -110,7 +114,6 @@ void main() {
         final business = IntegrationTestHelpers.createTestBusinessAccount(
           id: 'business-1',
           isVerified: true,
-          isActive: true,
         );
         
         when(() => mockAccountService.getBusinessAccount(any()))
@@ -128,7 +131,6 @@ void main() {
         final business = IntegrationTestHelpers.createTestBusinessAccount(
           id: 'business-1',
           isVerified: false, // Not verified
-          isActive: true,
         );
         
         when(() => mockAccountService.getBusinessAccount(any()))
@@ -146,8 +148,8 @@ void main() {
         final business = IntegrationTestHelpers.createTestBusinessAccount(
           id: 'business-1',
           isVerified: true,
-          isActive: false, // Not active
-        );
+          // isActive parameter not available, defaults to true
+        ).copyWith(isActive: false); // Set isActive to false after creation
         
         when(() => mockAccountService.getBusinessAccount(any()))
             .thenAnswer((_) async => business);

@@ -4,6 +4,7 @@ import 'package:spots/core/models/business_account.dart';
 import 'package:spots/core/models/business_patron_preferences.dart';
 import 'package:spots/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// User Business Matching Service Tests
 /// Tests user-business matching functionality
@@ -18,7 +19,7 @@ void main() {
         id: 'user-123',
         tags: ['food', 'travel'],
       ).copyWith(
-        location: 'San Francisco',
+
         expertiseMap: {'food': 'city', 'travel': 'local'},
       );
     });
@@ -154,6 +155,10 @@ void main() {
         expect(score.summary, isNotEmpty);
       });
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }
 

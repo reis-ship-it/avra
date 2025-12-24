@@ -18,7 +18,7 @@ class UserPredictionsViewerPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.psychology, size: 64, color: AppColors.grey500,
+          Icon(Icons.psychology, size: 64, color: AppColors.grey500),
           const SizedBox(height: 16),
           Text(
             'User Predictions Viewer',

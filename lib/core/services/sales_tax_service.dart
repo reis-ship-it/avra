@@ -73,6 +73,8 @@ class SalesTaxService {
   final Uuid _uuid = const Uuid();
 
   final ExpertiseEventService _eventService;
+  // PaymentService reserved for future use (e.g., tax filing integration)
+  // ignore: unused_field
   final PaymentService? _paymentService;
 
   // Tax-exempt event types (varies by jurisdiction)
@@ -166,6 +168,77 @@ class SalesTaxService {
       return calculation;
     } catch (e) {
       _logger.error('Error calculating sales tax', error: e, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Calculate sales tax from event details (without requiring eventId)
+  ///
+  /// **Use case:** Calculate tax before event is created (e.g., in review page)
+  ///
+  /// **Parameters:**
+  /// - `ticketPrice`: Ticket price
+  /// - `eventType`: Event type
+  /// - `location`: Location string (e.g., "123 Main St, City, State, ZIP")
+  ///
+  /// **Returns:**
+  /// SalesTaxCalculation with tax details
+  Future<SalesTaxCalculation> calculateSalesTaxFromDetails({
+    required double ticketPrice,
+    required ExpertiseEventType eventType,
+    required String location,
+  }) async {
+    try {
+      _logger.info(
+          'Calculating sales tax from details: price=\$${ticketPrice.toStringAsFixed(2)}, type=$eventType, location=$location',
+          tag: _logName);
+
+      // Check if event type is tax-exempt
+      if (_taxExemptEventTypes.contains(eventType)) {
+        return SalesTaxCalculation(
+          taxableAmount: ticketPrice,
+          taxRate: 0.0,
+          taxAmount: 0.0,
+          totalAmount: ticketPrice,
+          isTaxExempt: true,
+          exemptionReason: 'Event type is tax-exempt',
+        );
+      }
+
+      // Extract location components from location string
+      final locationParts = location.split(',');
+      final state = locationParts.length >= 3 ? locationParts[2].trim() : null;
+      final city = locationParts.length >= 2 ? locationParts[1].trim() : null;
+      final zipCode =
+          locationParts.length >= 4 ? locationParts[3].trim() : null;
+
+      final taxRate = await getTaxRateForLocation(
+        state: state,
+        city: city,
+        zipCode: zipCode,
+      );
+
+      // Calculate tax amount
+      final taxAmount = ticketPrice * (taxRate / 100.0);
+      final totalAmount = ticketPrice + taxAmount;
+
+      final calculation = SalesTaxCalculation(
+        taxableAmount: ticketPrice,
+        taxRate: taxRate,
+        taxAmount: taxAmount,
+        totalAmount: totalAmount,
+        jurisdiction: state ?? 'Unknown',
+        isTaxExempt: false,
+      );
+
+      _logger.info(
+          'Sales tax calculated from details: rate=${taxRate.toStringAsFixed(2)}%, tax=\$${taxAmount.toStringAsFixed(2)}',
+          tag: _logName);
+
+      return calculation;
+    } catch (e) {
+      _logger.error('Error calculating sales tax from details',
+          error: e, tag: _logName);
       rethrow;
     }
   }

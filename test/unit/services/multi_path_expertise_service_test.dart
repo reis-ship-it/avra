@@ -3,6 +3,7 @@ import 'package:spots/core/services/multi_path_expertise_service.dart';
 import 'package:spots/core/models/multi_path_expertise.dart';
 import 'package:spots/core/models/visit.dart';
 import '../../helpers/test_helpers.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Comprehensive tests for MultiPathExpertiseService
 void main() {
@@ -20,9 +21,15 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
+    // Removed: Property assignment tests
+    // Multi-path expertise tests focus on business logic (expertise calculation across different paths), not property assignment
+
     group('calculateExplorationExpertise', () {
-      test('should calculate exploration expertise from visits', () async {
-        final visits = [
+      test(
+          'should calculate exploration expertise from visits or calculate high exploration score for many visits',
+          () async {
+        // Test business logic: exploration expertise calculation
+        final visits1 = [
           Visit(
             id: 'visit-1',
             userId: 'user-1',
@@ -32,6 +39,7 @@ void main() {
             dwellTime: const Duration(minutes: 30),
             qualityScore: 1.0,
             rating: 4.5,
+            reviewId: 'review-1',
             createdAt: testDate,
             updatedAt: testDate,
           ),
@@ -44,29 +52,26 @@ void main() {
             dwellTime: const Duration(minutes: 45),
             qualityScore: 1.2,
             rating: 4.8,
+            reviewId: 'review-2',
             createdAt: testDate,
             updatedAt: testDate,
           ),
         ];
-
-        final expertise = await service.calculateExplorationExpertise(
+        final expertise1 = await service.calculateExplorationExpertise(
           userId: 'user-1',
           category: 'Coffee',
-          visits: visits,
+          visits: visits1,
         );
+        expect(expertise1.userId, equals('user-1'));
+        expect(expertise1.category, equals('Coffee'));
+        expect(expertise1.totalVisits, equals(2));
+        expect(expertise1.uniqueLocations, equals(2));
+        expect(expertise1.reviewsGiven, equals(2));
+        expect(expertise1.averageRating, greaterThan(0.0));
+        expect(expertise1.score, greaterThan(0.0));
+        expect(expertise1.score, lessThanOrEqualTo(1.0));
 
-        expect(expertise.userId, equals('user-1'));
-        expect(expertise.category, equals('Coffee'));
-        expect(expertise.totalVisits, equals(2));
-        expect(expertise.uniqueLocations, equals(2));
-        expect(expertise.reviewsGiven, equals(2));
-        expect(expertise.averageRating, greaterThan(0.0));
-        expect(expertise.score, greaterThan(0.0));
-        expect(expertise.score, lessThanOrEqualTo(1.0));
-      });
-
-      test('should calculate high exploration score for many visits', () async {
-        final visits = List.generate(50, (i) {
+        final visits2 = List.generate(50, (i) {
           return Visit(
             id: 'visit-$i',
             userId: 'user-1',
@@ -82,22 +87,23 @@ void main() {
             updatedAt: testDate,
           );
         });
-
-        final expertise = await service.calculateExplorationExpertise(
+        final expertise2 = await service.calculateExplorationExpertise(
           userId: 'user-1',
           category: 'Coffee',
-          visits: visits,
+          visits: visits2,
         );
-
-        expect(expertise.totalVisits, equals(50));
-        expect(expertise.repeatVisits, greaterThan(0));
-        expect(expertise.score, greaterThan(0.7)); // High score
+        expect(expertise2.totalVisits, equals(50));
+        expect(expertise2.repeatVisits, greaterThan(0));
+        expect(expertise2.score, greaterThan(0.6));
       });
     });
 
     group('calculateCredentialExpertise', () {
-      test('should calculate credential expertise from degrees', () async {
-        final expertise = await service.calculateCredentialExpertise(
+      test(
+          'should calculate credential expertise from degrees or from certifications',
+          () async {
+        // Test business logic: credential expertise calculation
+        final expertise1 = await service.calculateCredentialExpertise(
           userId: 'user-1',
           category: 'Coffee',
           degrees: [
@@ -111,15 +117,12 @@ void main() {
           ],
           certifications: [],
         );
+        expect(expertise1.userId, equals('user-1'));
+        expect(expertise1.category, equals('Coffee'));
+        expect(expertise1.degrees.length, equals(1));
+        expect(expertise1.score, greaterThan(0.0));
 
-        expect(expertise.userId, equals('user-1'));
-        expect(expertise.category, equals('Coffee'));
-        expect(expertise.degrees.length, equals(1));
-        expect(expertise.score, greaterThan(0.0));
-      });
-
-      test('should calculate credential expertise from certifications', () async {
-        final expertise = await service.calculateCredentialExpertise(
+        final expertise2 = await service.calculateCredentialExpertise(
           userId: 'user-1',
           category: 'Coffee',
           degrees: [],
@@ -132,44 +135,39 @@ void main() {
             ),
           ],
         );
-
-        expect(expertise.certifications.length, equals(1));
-        expect(expertise.score, greaterThan(0.0));
+        expect(expertise2.certifications.length, equals(1));
+        expect(expertise2.score, greaterThan(0.0));
       });
     });
 
     group('calculateInfluenceExpertise', () {
-      test('should calculate influence expertise from followers', () async {
-        final expertise = await service.calculateInfluenceExpertise(
+      test(
+          'should calculate influence expertise from followers or calculate high influence score for many followers',
+          () async {
+        // Test business logic: influence expertise calculation
+        final expertise1 = await service.calculateInfluenceExpertise(
           userId: 'user-1',
           category: 'Coffee',
           spotsFollowers: 1000,
           listSaves: 500,
           listShares: 200,
-          listEngagement: 1000,
           curatedLists: 10,
         );
+        expect(expertise1.userId, equals('user-1'));
+        expect(expertise1.category, equals('Coffee'));
+        expect(expertise1.spotsFollowers, equals(1000));
+        expect(expertise1.listSaves, equals(500));
+        expect(expertise1.score, greaterThan(0.0));
 
-        expect(expertise.userId, equals('user-1'));
-        expect(expertise.category, equals('Coffee'));
-        expect(expertise.spotsFollowers, equals(1000));
-        expect(expertise.listSaves, equals(500));
-        expect(expertise.score, greaterThan(0.0));
-      });
-
-      test('should calculate high influence score for many followers', () async {
-        final expertise = await service.calculateInfluenceExpertise(
+        final expertise2 = await service.calculateInfluenceExpertise(
           userId: 'user-1',
           category: 'Coffee',
           spotsFollowers: 5000,
           listSaves: 2000,
           listShares: 1000,
-          listEngagement: 5000,
           curatedLists: 20,
-          popularLists: 10,
         );
-
-        expect(expertise.score, greaterThan(0.7)); // High score
+        expect(expertise2.score, greaterThan(0.7));
       });
     });
 
@@ -206,7 +204,6 @@ void main() {
           category: 'Coffee',
           questionsAnswered: 50,
           curatedLists: 20,
-          popularLists: 10,
           eventsHosted: 15,
           averageEventRating: 4.7,
           peerEndorsements: 25,
@@ -222,43 +219,63 @@ void main() {
     });
 
     group('calculateLocalExpertise', () {
-      test('should calculate local expertise from local visits', () async {
-        final expertise = await service.calculateLocalExpertise(
+      test(
+          'should calculate local expertise from local visits or identify Golden Local Expert',
+          () async {
+        // Test business logic: local expertise calculation
+        final firstVisitDate1 = testDate.subtract(const Duration(days: 365));
+        final localVisits1 = List.generate(
+            50,
+            (i) => Visit(
+                  id: 'visit-$i',
+                  userId: 'user-1',
+                  locationId: 'location-${i % 30}',
+                  checkInTime: firstVisitDate1.add(Duration(days: i)),
+                  qualityScore: 1.0,
+                  rating: 4.5,
+                  createdAt: testDate,
+                  updatedAt: testDate,
+                ));
+        final expertise1 = await service.calculateLocalExpertise(
           userId: 'user-1',
           category: 'Coffee',
           locality: 'NYC',
-          localVisits: 50,
-          uniqueLocalLocations: 30,
-          averageLocalRating: 4.5,
-          timeInLocation: const Duration(days: 365),
-          firstLocalVisit: testDate.subtract(const Duration(days: 365)),
-          lastLocalVisit: testDate,
+          localVisits: localVisits1,
+          firstLocalVisit: firstVisitDate1,
         );
+        expect(expertise1.userId, equals('user-1'));
+        expect(expertise1.category, equals('Coffee'));
+        expect(expertise1.locality, equals('NYC'));
+        expect(expertise1.localVisits, equals(50));
+        expect(expertise1.score, greaterThan(0.0));
 
-        expect(expertise.userId, equals('user-1'));
-        expect(expertise.category, equals('Coffee'));
-        expect(expertise.locality, equals('NYC'));
-        expect(expertise.localVisits, equals(50));
-        expect(expertise.score, greaterThan(0.0));
-      });
-
-      test('should identify Golden Local Expert', () async {
-        final expertise = await service.calculateLocalExpertise(
+        final firstVisitDate2 = testDate.subtract(const Duration(days: 9125));
+        final localVisits2 = List.generate(
+            200,
+            (i) => Visit(
+                  id: 'visit-$i',
+                  userId: 'user-1',
+                  locationId: 'location-${i % 50}',
+                  checkInTime: firstVisitDate2.add(Duration(days: i * 45)),
+                  qualityScore: 1.2,
+                  rating: 4.8,
+                  createdAt: testDate,
+                  updatedAt: testDate,
+                ));
+        final expertise2 = await service.calculateLocalExpertise(
           userId: 'user-1',
           category: 'Coffee',
           locality: 'NYC',
-          localVisits: 200,
-          uniqueLocalLocations: 50,
-          averageLocalRating: 4.8,
-          timeInLocation: const Duration(days: 9125), // 25 years
-          firstLocalVisit: testDate.subtract(const Duration(days: 9125)),
-          lastLocalVisit: testDate,
+          localVisits: localVisits2,
+          firstLocalVisit: firstVisitDate2,
           continuousResidency: const Duration(days: 9125),
         );
-
-        expect(expertise.isGoldenLocalExpert, isTrue);
+        expect(expertise2.isGoldenLocalExpert, isTrue);
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

@@ -6,31 +6,18 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests user data viewer UI and search functionality
 void main() {
   group('UserDataViewerPage Widget Tests', () {
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // User data viewer page tests focus on business logic (UI display, search functionality), not property assignment
+
+    testWidgets(
+        'should display all required UI elements or display search functionality',
+        (WidgetTester tester) async {
+      // Test business logic: User data viewer page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const UserDataViewerPage(),
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify viewer UI is present
-      expect(find.byType(UserDataViewerPage), findsOneWidget);
-    });
-
-    testWidgets('displays search functionality', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const UserDataViewerPage(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show search UI
       expect(find.byType(UserDataViewerPage), findsOneWidget);
     });
   });
 }
-

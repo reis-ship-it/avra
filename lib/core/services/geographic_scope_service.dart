@@ -162,7 +162,11 @@ class GeographicScopeService {
         return false;
       }
 
-      final userCity = _extractCity(userLocation);
+      // Extract city from user location
+      // If location has no comma, treat entire string as city name
+      final userCity = userLocation.contains(',')
+          ? _extractCity(userLocation)
+          : userLocation.trim();
 
       // Check based on expertise level
       switch (expertiseLevel) {

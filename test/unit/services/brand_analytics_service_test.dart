@@ -9,6 +9,7 @@ import 'package:spots/core/services/revenue_split_service.dart';
 import 'package:spots/core/models/sponsorship.dart';
 
 import 'brand_analytics_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([
   SponsorshipService,
@@ -26,10 +27,26 @@ void main() {
     late Sponsorship testSponsorship;
 
     setUp(() {
+      // Create fresh mocks for each test to avoid conflicts
       mockSponsorshipService = MockSponsorshipService();
       mockProductTrackingService = MockProductTrackingService();
       mockProductSalesService = MockProductSalesService();
       mockRevenueSplitService = MockRevenueSplitService();
+
+      // Mock getSponsorshipsForBrand and getSponsorshipsForEvent to return empty list by default
+      // Tests can override this if they need specific sponsorships
+      when(mockSponsorshipService.getSponsorshipsForBrand(any))
+          .thenAnswer((_) async => <Sponsorship>[]);
+      when(mockSponsorshipService.getSponsorshipsForEvent(any))
+          .thenAnswer((_) async => <Sponsorship>[]);
+      
+      // Mock trackEarnings to return 0.0 by default
+      // Tests can override this if they need specific earnings
+      when(mockRevenueSplitService.trackEarnings(
+        partyId: anyNamed('partyId'),
+        startDate: anyNamed('startDate'),
+        endDate: anyNamed('endDate'),
+      )).thenAnswer((_) async => 0.0);
 
       service = BrandAnalyticsService(
         sponsorshipService: mockSponsorshipService,
@@ -52,7 +69,9 @@ void main() {
 
     group('calculateBrandROI', () {
       test('should calculate brand ROI', () async {
-        // Arrange
+        // Arrange - Set up all mocks BEFORE any service calls
+        when(mockSponsorshipService.getSponsorshipsForBrand('brand-123'))
+            .thenAnswer((_) async => <Sponsorship>[]);
         when(mockRevenueSplitService.trackEarnings(
           partyId: 'brand-123',
           startDate: anyNamed('startDate'),
@@ -72,10 +91,12 @@ void main() {
       });
 
       test('should calculate ROI percentage correctly', () async {
-        // Arrange
+        // Arrange - Set up all mocks BEFORE any service calls
         // Investment: 500.00 (from sponsorship contributionAmount)
         // Revenue: 600.00
         // ROI = ((600 - 500) / 500) * 100 = 20%
+        when(mockSponsorshipService.getSponsorshipsForBrand('brand-123'))
+            .thenAnswer((_) async => <Sponsorship>[testSponsorship]);
         when(mockRevenueSplitService.trackEarnings(
           partyId: 'brand-123',
           startDate: anyNamed('startDate'),
@@ -88,15 +109,19 @@ void main() {
         );
 
         // Assert
+        expect(roi.totalInvestment, equals(500.00));
+        expect(roi.totalRevenue, equals(600.00));
         expect(roi.netProfit, equals(100.00)); // 600 - 500
-        // ROI calculation depends on totalInvestment which needs to be calculated from sponsorships
+        expect(roi.roiPercentage, equals(20.0)); // ((600 - 500) / 500) * 100
       });
 
       test('should filter ROI by date range', () async {
-        // Arrange
+        // Arrange - Set up all mocks BEFORE any service calls
         final startDate = DateTime.now().subtract(const Duration(days: 30));
         final endDate = DateTime.now();
 
+        when(mockSponsorshipService.getSponsorshipsForBrand('brand-123'))
+            .thenAnswer((_) async => <Sponsorship>[]);
         when(mockRevenueSplitService.trackEarnings(
           partyId: 'brand-123',
           startDate: startDate,
@@ -148,9 +173,9 @@ void main() {
 
     group('getEventPerformance', () {
       test('should return event performance metrics', () async {
-        // Arrange
+        // Arrange - Set up all mocks BEFORE any service calls
         when(mockSponsorshipService.getSponsorshipsForEvent('event-123'))
-            .thenAnswer((_) async => [testSponsorship]);
+            .thenAnswer((_) async => <Sponsorship>[testSponsorship]);
 
         // Act
         final performance = await service.getEventPerformance(
@@ -164,6 +189,9 @@ void main() {
         expect(performance.totalSponsorshipValue, equals(500.00));
       });
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }
-

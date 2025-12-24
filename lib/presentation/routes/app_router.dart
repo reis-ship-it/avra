@@ -13,6 +13,9 @@ import 'package:spots/presentation/pages/lists/lists_page.dart';
 import 'package:spots/presentation/pages/map/map_page.dart';
 import 'package:spots/presentation/pages/profile/profile_page.dart';
 import 'package:spots/presentation/pages/profile/ai_personality_status_page.dart';
+import 'package:spots/presentation/pages/chat/unified_chat_page.dart';
+import 'package:spots/presentation/pages/chat/friend_chat_view.dart';
+import 'package:spots/presentation/pages/chat/community_chat_view.dart';
 import 'package:spots/presentation/pages/expertise/expertise_dashboard_page.dart';
 import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -25,6 +28,7 @@ import 'package:spots/presentation/pages/admin/review_fraud_review_page.dart';
 import 'package:spots/presentation/pages/admin/user_detail_page.dart';
 import 'package:spots/presentation/pages/admin/connection_communication_detail_page.dart';
 import 'package:spots/presentation/pages/admin/club_detail_page.dart';
+import 'package:spots/presentation/pages/business/business_signup_page.dart';
 import 'package:spots/presentation/pages/business/business_login_page.dart';
 import 'package:spots/presentation/pages/business/business_dashboard_page.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
@@ -75,7 +79,7 @@ class AppRouter {
     const bool autoDriveSupabase =
         bool.fromEnvironment('AUTO_DRIVE_SUPABASE_TEST');
     const bool isIntegrationTest = bool.fromEnvironment('FLUTTER_TEST');
-    
+
     // Safely get Firebase Analytics - may be null if Firebase isn't initialized
     FirebaseAnalytics? analytics;
     try {
@@ -84,7 +88,7 @@ class AppRouter {
       developer.log('Firebase Analytics not available: $e', name: 'AppRouter');
       analytics = null;
     }
-    
+
     return GoRouter(
       initialLocation: goToSupabaseTest
           ? (autoDriveSupabase ? '/supabase-test?auto=1' : '/supabase-test')
@@ -116,12 +120,12 @@ class AppRouter {
             if (isLoggingIn || isRoot) return '/home';
             return null;
           }
-          
+
           // Allow ai-loading page to proceed without redirect
           if (state.matchedLocation == '/ai-loading') {
             return null;
           }
-          
+
           // If authenticated, ensure onboarding completed for this specific user
           // Add a small delay to allow database writes to complete (especially on web IndexedDB)
           // The cache should prevent race conditions, but a small delay ensures consistency
@@ -149,18 +153,18 @@ class AppRouter {
             // Onboarding is completed - allow user to proceed to home
             // Don't redirect back to onboarding just because permissions aren't granted
             // Permissions can be requested later or user can proceed without them
-            
+
             // If on root, login, or signup pages, redirect to home
             if (isRoot || isLoggingIn || state.matchedLocation == '/signup') {
               return '/home';
             }
-            
+
             // If on onboarding page but onboarding is done, redirect to home
             if (isOnboarding) {
               return '/home';
             }
           }
-          
+
           // Allow navigation to other pages (home, spots, lists, etc.)
           return null;
         }
@@ -326,11 +330,33 @@ class AppRouter {
             GoRoute(path: 'profile', builder: (c, s) => const ProfilePage()),
             GoRoute(
               path: 'settings',
-              builder: (c, s) => const ProfilePage(), // Settings is part of ProfilePage
+              builder: (c, s) =>
+                  const ProfilePage(), // Settings is part of ProfilePage
             ),
             GoRoute(
               path: 'profile/ai-status',
               builder: (c, s) => const AIPersonalityStatusPage(),
+            ),
+            // Phase 3: Unified Chat
+            GoRoute(
+              path: 'chat',
+              builder: (c, s) => const UnifiedChatPage(),
+              routes: [
+                GoRoute(
+                  path: 'friend/:friendId',
+                  builder: (c, s) {
+                    final friendId = s.pathParameters['friendId']!;
+                    return FriendChatView(friendId: friendId);
+                  },
+                ),
+                GoRoute(
+                  path: 'community/:communityId',
+                  builder: (c, s) {
+                    final communityId = s.pathParameters['communityId']!;
+                    return CommunityChatView(communityId: communityId);
+                  },
+                ),
+              ],
             ),
             GoRoute(
               path: 'profile/expertise-dashboard',
@@ -360,18 +386,18 @@ class AppRouter {
               path: 'admin/ai2ai',
               redirect: (context, state) async {
                 final authState = authBloc.state;
-                
+
                 // Check authentication
                 if (authState is! Authenticated) {
                   return '/login';
                 }
-                
+
                 // Check admin role
                 if (authState.user.role != UserRole.admin) {
                   // Redirect non-admin users to home
                   return '/home';
                 }
-                
+
                 return null;
               },
               builder: (c, s) => const AI2AIAdminDashboard(),
@@ -380,17 +406,17 @@ class AppRouter {
               path: 'admin/fraud-review/:eventId',
               redirect: (context, state) async {
                 final authState = authBloc.state;
-                
+
                 // Check authentication
                 if (authState is! Authenticated) {
                   return '/login';
                 }
-                
+
                 // Check admin role
                 if (authState.user.role != UserRole.admin) {
                   return '/home';
                 }
-                
+
                 return null;
               },
               builder: (c, s) {
@@ -402,17 +428,17 @@ class AppRouter {
               path: 'admin/fraud-review/:eventId/review',
               redirect: (context, state) async {
                 final authState = authBloc.state;
-                
+
                 // Check authentication
                 if (authState is! Authenticated) {
                   return '/login';
                 }
-                
+
                 // Check admin role
                 if (authState.user.role != UserRole.admin) {
                   return '/home';
                 }
-                
+
                 return null;
               },
               builder: (c, s) {
@@ -424,17 +450,17 @@ class AppRouter {
               path: 'admin/user/:id',
               redirect: (context, state) async {
                 final authState = authBloc.state;
-                
+
                 // Check authentication
                 if (authState is! Authenticated) {
                   return '/login';
                 }
-                
+
                 // Check admin role
                 if (authState.user.role != UserRole.admin) {
                   return '/home';
                 }
-                
+
                 return null;
               },
               builder: (c, s) {
@@ -446,39 +472,40 @@ class AppRouter {
               path: 'admin/communication/:id',
               redirect: (context, state) async {
                 final authState = authBloc.state;
-                
+
                 // Check authentication
                 if (authState is! Authenticated) {
                   return '/login';
                 }
-                
+
                 // Check admin role
                 if (authState.user.role != UserRole.admin) {
                   return '/home';
                 }
-                
+
                 return null;
               },
               builder: (c, s) {
                 final connectionId = s.pathParameters['id']!;
-                return ConnectionCommunicationDetailPage(connectionId: connectionId);
+                return ConnectionCommunicationDetailPage(
+                    connectionId: connectionId);
               },
             ),
             GoRoute(
               path: 'admin/club/:id',
               redirect: (context, state) async {
                 final authState = authBloc.state;
-                
+
                 // Check authentication
                 if (authState is! Authenticated) {
                   return '/login';
                 }
-                
+
                 // Check admin role
                 if (authState.user.role != UserRole.admin) {
                   return '/home';
                 }
-                
+
                 return null;
               },
               builder: (c, s) {
@@ -487,6 +514,10 @@ class AppRouter {
               },
             ),
             // Business Routes
+            GoRoute(
+              path: 'business/signup',
+              builder: (c, s) => const BusinessSignupPage(),
+            ),
             GoRoute(
               path: 'business/login',
               builder: (c, s) => const BusinessLoginPage(),

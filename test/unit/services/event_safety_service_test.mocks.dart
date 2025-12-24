@@ -213,6 +213,7 @@ class MockExpertiseEventService extends _i1.Mock
     DateTime? startDate,
     DateTime? endDate,
     int? maxResults = 20,
+    bool? includeCommunityEvents = true,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -225,6 +226,7 @@ class MockExpertiseEventService extends _i1.Mock
             #startDate: startDate,
             #endDate: endDate,
             #maxResults: maxResults,
+            #includeCommunityEvents: includeCommunityEvents,
           },
         ),
         returnValue:
@@ -241,6 +243,36 @@ class MockExpertiseEventService extends _i1.Mock
           #getUpcomingEventsInCategory,
           [category],
           {#maxResults: maxResults},
+        ),
+        returnValue:
+            _i4.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i4.Future<List<_i2.ExpertiseEvent>>);
+
+  @override
+  _i4.Future<List<_i2.ExpertiseEvent>> searchEventsWithConnectedLocalities({
+    required _i5.UnifiedUser? user,
+    String? category,
+    String? location,
+    _i2.ExpertiseEventType? eventType,
+    DateTime? startDate,
+    DateTime? endDate,
+    int? maxResults = 20,
+    bool? includeConnectedLocalities = true,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #searchEventsWithConnectedLocalities,
+          [],
+          {
+            #user: user,
+            #category: category,
+            #location: location,
+            #eventType: eventType,
+            #startDate: startDate,
+            #endDate: endDate,
+            #maxResults: maxResults,
+            #includeConnectedLocalities: includeConnectedLocalities,
+          },
         ),
         returnValue:
             _i4.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),

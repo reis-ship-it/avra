@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/theme/category_colors.dart';
 import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
 import 'package:spots/presentation/pages/spots/create_spot_page.dart';
-import 'package:spots/presentation/pages/spots/spot_details_page.dart';
 import 'package:spots/presentation/widgets/spots/spot_card.dart';
+import 'package:go_router/go_router.dart';
 import 'package:spots/presentation/widgets/common/offline_indicator.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -100,9 +99,10 @@ class _SpotsPageState extends State<SpotsPage> {
 
         if (state is SpotsLoaded) {
           // Use filtered spots if search query exists, otherwise use all spots
-          final spotsToShow = state.searchQuery != null && state.searchQuery!.isNotEmpty
-              ? state.filteredSpots
-              : [...state.spots, ...state.respectedSpots];
+          final spotsToShow =
+              state.searchQuery != null && state.searchQuery!.isNotEmpty
+                  ? state.filteredSpots
+                  : [...state.spots, ...state.respectedSpots];
 
           if (spotsToShow.isEmpty) {
             return Center(
@@ -123,7 +123,8 @@ class _SpotsPageState extends State<SpotsPage> {
                         : 'No spots yet. Create your first spot!',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  if (state.searchQuery != null && state.searchQuery!.isNotEmpty) ...[
+                  if (state.searchQuery != null &&
+                      state.searchQuery!.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     TextButton(
                       onPressed: () {
@@ -144,12 +145,7 @@ class _SpotsPageState extends State<SpotsPage> {
               return SpotCard(
                 spot: spot,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SpotDetailsPage(spot: spot),
-                    ),
-                  );
+                  context.go('/spot/${spot.id}');
                 },
               );
             },
@@ -180,8 +176,4 @@ class _SpotsPageState extends State<SpotsPage> {
       },
     );
   }
-
-  Color _getCategoryColor(String category) => CategoryStyles.colorFor(category);
-
-  IconData _getCategoryIcon(String category) => CategoryStyles.iconFor(category);
 }

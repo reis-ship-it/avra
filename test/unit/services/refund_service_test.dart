@@ -9,6 +9,7 @@ import 'package:spots/core/models/refund_distribution.dart';
 import 'package:spots/core/models/payment_status.dart';
 
 import 'refund_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([
   StripeService,
@@ -184,6 +185,10 @@ void main() {
         expect(results[0].completedAt, isNotNull);
       });
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }
 

@@ -193,4 +193,21 @@ class MockTaxComplianceService extends _i1.Mock
         returnValue:
             _i5.Future<List<_i2.TaxDocument>>.value(<_i2.TaxDocument>[]),
       ) as _i5.Future<List<_i2.TaxDocument>>);
+
+  @override
+  _i5.Future<Map<String, dynamic>> getTaxStatus(
+    String? userId,
+    int? year,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getTaxStatus,
+          [
+            userId,
+            year,
+          ],
+        ),
+        returnValue:
+            _i5.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i5.Future<Map<String, dynamic>>);
 }

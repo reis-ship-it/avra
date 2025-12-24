@@ -300,6 +300,35 @@ class MockPersonalityLearning extends _i1.Mock
       ) as _i5.Future<_i2.PersonalityProfile>);
 
   @override
+  _i5.Future<_i2.PersonalityProfile> initializePersonalityFromOnboarding(
+    String? userId, {
+    Map<String, dynamic>? onboardingData,
+    Map<String, dynamic>? socialMediaData,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #initializePersonalityFromOnboarding,
+          [userId],
+          {
+            #onboardingData: onboardingData,
+            #socialMediaData: socialMediaData,
+          },
+        ),
+        returnValue:
+            _i5.Future<_i2.PersonalityProfile>.value(_FakePersonalityProfile_0(
+          this,
+          Invocation.method(
+            #initializePersonalityFromOnboarding,
+            [userId],
+            {
+              #onboardingData: onboardingData,
+              #socialMediaData: socialMediaData,
+            },
+          ),
+        )),
+      ) as _i5.Future<_i2.PersonalityProfile>);
+
+  @override
   _i5.Future<_i2.PersonalityProfile> evolveFromUserAction(
     String? userId,
     _i3.UserAction? action, {

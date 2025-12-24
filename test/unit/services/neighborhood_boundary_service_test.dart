@@ -2,12 +2,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/neighborhood_boundary_service.dart';
 import 'package:spots/core/models/neighborhood_boundary.dart';
 import '../../helpers/test_helpers.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Comprehensive tests for NeighborhoodBoundaryService
 ///
 /// **Philosophy:** Neighborhood boundaries reflect actual community connections,
 /// not just geographic lines. Borders evolve based on user behavior.
 void main() {
+  setUpAll(() async {
+    await setupTestStorage();
+  });
   group('NeighborhoodBoundaryService Tests', () {
     late NeighborhoodBoundaryService service;
     late DateTime testDate;
@@ -28,24 +32,22 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
+    // Removed: Property assignment tests
+    // Boundary loading tests focus on business logic (loading, empty cases, error handling), not property assignment
+
     group('Boundary Loading', () {
-      test('should load boundaries from Google Maps for city', () async {
-        // Note: This will use mock data initially
-        final boundaries =
+      test(
+          'should load boundaries from Google Maps for city, return empty list for cities with no boundaries, and handle errors',
+          () async {
+        // Test business logic: boundary loading with various scenarios
+        final boundaries1 =
             await service.loadBoundariesFromGoogleMaps('Brooklyn');
+        expect(boundaries1, isA<List<NeighborhoodBoundary>>());
 
-        expect(boundaries, isA<List<NeighborhoodBoundary>>());
-        // In real implementation, would verify boundaries are loaded
-      });
-
-      test('should return empty list for city with no boundaries', () async {
-        final boundaries =
+        final boundaries2 =
             await service.loadBoundariesFromGoogleMaps('Smalltown');
+        expect(boundaries2, isEmpty);
 
-        expect(boundaries, isEmpty);
-      });
-
-      test('should handle errors when loading boundaries', () async {
         // Test error handling for invalid city names or API failures
         expect(
           () => service.loadBoundariesFromGoogleMaps(''),
@@ -55,8 +57,10 @@ void main() {
     });
 
     group('Get Boundary', () {
-      test('should get boundary between two localities', () async {
-        // First, save a boundary
+      test(
+          'should get boundary between two localities regardless of order, or return null if not found',
+          () async {
+        // Test business logic: boundary retrieval with order independence and existence checking
         final boundary = NeighborhoodBoundary(
           id: 'boundary-123',
           locality1: 'Greenpoint',
@@ -70,50 +74,27 @@ void main() {
 
         await service.saveBoundary(boundary);
 
-        final retrieved =
-            await service.getBoundary('Greenpoint', 'Williamsburg');
-
-        expect(retrieved, isNotNull);
-        expect(retrieved?.id, equals('boundary-123'));
-        expect(retrieved?.locality1, equals('Greenpoint'));
-        expect(retrieved?.locality2, equals('Williamsburg'));
-      });
-
-      test('should return null for non-existent boundary', () async {
-        final boundary =
-            await service.getBoundary('NonExistent1', 'NonExistent2');
-
-        expect(boundary, isNull);
-      });
-
-      test('should get boundary regardless of locality order', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Greenpoint',
-          locality2: 'Williamsburg',
-          boundaryType: BoundaryType.hardBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        await service.saveBoundary(boundary);
-
-        // Try both orders
+        // Test order independence
         final retrieved1 =
             await service.getBoundary('Greenpoint', 'Williamsburg');
         final retrieved2 =
             await service.getBoundary('Williamsburg', 'Greenpoint');
-
         expect(retrieved1, isNotNull);
         expect(retrieved2, isNotNull);
         expect(retrieved1?.id, equals(retrieved2?.id));
+
+        // Test non-existent boundary
+        final notFound =
+            await service.getBoundary('NonExistent1', 'NonExistent2');
+        expect(notFound, isNull);
       });
     });
 
     group('Get Boundaries for Locality', () {
-      test('should get all boundaries for a locality', () async {
+      test(
+          'should get all boundaries for a locality, or return empty list if none exist',
+          () async {
+        // Test business logic: boundary retrieval for locality with empty case handling
         final boundary1 = NeighborhoodBoundary(
           id: 'boundary-1',
           locality1: 'Greenpoint',
@@ -140,24 +121,21 @@ void main() {
         await service.saveBoundary(boundary2);
 
         final boundaries = await service.getBoundariesForLocality('Greenpoint');
-
         expect(boundaries, hasLength(2));
         expect(boundaries.any((b) => b.id == 'boundary-1'), isTrue);
         expect(boundaries.any((b) => b.id == 'boundary-2'), isTrue);
-      });
 
-      test('should return empty list for locality with no boundaries',
-          () async {
-        final boundaries =
-            await service.getBoundariesForLocality('NonExistent');
-
-        expect(boundaries, isEmpty);
+        final empty = await service.getBoundariesForLocality('NonExistent');
+        expect(empty, isEmpty);
       });
     });
 
     group('Hard Border Detection', () {
-      test('should detect hard border', () async {
-        final boundary = NeighborhoodBoundary(
+      test(
+          'should detect hard borders correctly, return false for soft borders, and get all hard borders for city',
+          () async {
+        // Test business logic: hard border detection and filtering
+        final hardBorderTest = NeighborhoodBoundary(
           id: 'boundary-123',
           locality1: 'NoHo',
           locality2: 'SoHo',
@@ -168,16 +146,8 @@ void main() {
           updatedAt: testDate,
         );
 
-        await service.saveBoundary(boundary);
-
-        final isHard = await service.isHardBorder('NoHo', 'SoHo');
-
-        expect(isHard, isTrue);
-      });
-
-      test('should return false for soft border', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
+        final softBorderTest = NeighborhoodBoundary(
+          id: 'boundary-456',
           locality1: 'Nolita',
           locality2: 'East Village',
           boundaryType: BoundaryType.softBorder,
@@ -187,14 +157,13 @@ void main() {
           updatedAt: testDate,
         );
 
-        await service.saveBoundary(boundary);
+        await service.saveBoundary(hardBorderTest);
+        await service.saveBoundary(softBorderTest);
 
-        final isHard = await service.isHardBorder('Nolita', 'East Village');
+        expect(await service.isHardBorder('NoHo', 'SoHo'), isTrue);
+        expect(await service.isHardBorder('Nolita', 'East Village'), isFalse);
 
-        expect(isHard, isFalse);
-      });
-
-      test('should get all hard borders for city', () async {
+        // Test getting all hard borders
         final hardBorder1 = NeighborhoodBoundary(
           id: 'boundary-1',
           locality1: 'NoHo',
@@ -233,7 +202,6 @@ void main() {
         await service.saveBoundary(softBorder);
 
         final hardBorders = await service.getHardBorders('Brooklyn');
-
         expect(hardBorders, hasLength(2));
         expect(
             hardBorders.every((b) => b.boundaryType == BoundaryType.hardBorder),
@@ -242,8 +210,11 @@ void main() {
     });
 
     group('Soft Border Detection', () {
-      test('should detect soft border', () async {
-        final boundary = NeighborhoodBoundary(
+      test(
+          'should detect soft borders correctly, return false for hard borders, and get all soft borders for city',
+          () async {
+        // Test business logic: soft border detection and filtering
+        final softBorderTest = NeighborhoodBoundary(
           id: 'boundary-123',
           locality1: 'Nolita',
           locality2: 'East Village',
@@ -254,16 +225,8 @@ void main() {
           updatedAt: testDate,
         );
 
-        await service.saveBoundary(boundary);
-
-        final isSoft = await service.isSoftBorder('Nolita', 'East Village');
-
-        expect(isSoft, isTrue);
-      });
-
-      test('should return false for hard border', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
+        final hardBorderTest = NeighborhoodBoundary(
+          id: 'boundary-456',
           locality1: 'NoHo',
           locality2: 'SoHo',
           boundaryType: BoundaryType.hardBorder,
@@ -273,14 +236,13 @@ void main() {
           updatedAt: testDate,
         );
 
-        await service.saveBoundary(boundary);
+        await service.saveBoundary(softBorderTest);
+        await service.saveBoundary(hardBorderTest);
 
-        final isSoft = await service.isSoftBorder('NoHo', 'SoHo');
+        expect(await service.isSoftBorder('Nolita', 'East Village'), isTrue);
+        expect(await service.isSoftBorder('NoHo', 'SoHo'), isFalse);
 
-        expect(isSoft, isFalse);
-      });
-
-      test('should get all soft borders for city', () async {
+        // Test getting all soft borders
         final softBorder1 = NeighborhoodBoundary(
           id: 'boundary-1',
           locality1: 'Nolita',
@@ -303,7 +265,7 @@ void main() {
           updatedAt: testDate,
         );
 
-        final hardBorder = NeighborhoodBoundary(
+        final hardBorderForFilter = NeighborhoodBoundary(
           id: 'boundary-3',
           locality1: 'NoHo',
           locality2: 'SoHo',
@@ -316,7 +278,7 @@ void main() {
 
         await service.saveBoundary(softBorder1);
         await service.saveBoundary(softBorder2);
-        await service.saveBoundary(hardBorder);
+        await service.saveBoundary(hardBorderForFilter);
 
         final softBorders = await service.getSoftBorders('Brooklyn');
 
@@ -328,7 +290,10 @@ void main() {
     });
 
     group('Soft Border Spot Tracking', () {
-      test('should add spot to soft border', () async {
+      test(
+          'should add spot to soft border, get soft border spots, and check if spot is in soft border',
+          () async {
+        // Test business logic: soft border spot tracking operations
         final boundary = NeighborhoodBoundary(
           id: 'boundary-123',
           locality1: 'Nolita',
@@ -339,17 +304,13 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
         await service.saveBoundary(boundary);
         await service.addSoftBorderSpot('spot-1', 'Nolita', 'East Village');
+        final updated1 = await service.getBoundary('Nolita', 'East Village');
+        expect(updated1?.softBorderSpots, contains('spot-1'));
 
-        final updated = await service.getBoundary('Nolita', 'East Village');
-        expect(updated?.softBorderSpots, contains('spot-1'));
-      });
-
-      test('should get soft border spots', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
+        final boundary2 = NeighborhoodBoundary(
+          id: 'boundary-456',
           locality1: 'Nolita',
           locality2: 'East Village',
           boundaryType: BoundaryType.softBorder,
@@ -359,40 +320,25 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        await service.saveBoundary(boundary);
-
+        await service.saveBoundary(boundary2);
         final spots =
             await service.getSoftBorderSpots('Nolita', 'East Village');
-
         expect(spots, hasLength(2));
         expect(spots, contains('spot-1'));
         expect(spots, contains('spot-2'));
-      });
 
-      test('should check if spot is in soft border', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        await service.saveBoundary(boundary);
-
+        // Both spots are in soft border (boundary2 includes both)
         expect(await service.isSpotInSoftBorder('spot-1'), isTrue);
-        expect(await service.isSpotInSoftBorder('spot-2'), isFalse);
+        expect(await service.isSpotInSoftBorder('spot-2'), isTrue);
       });
     });
 
     group('User Visit Tracking', () {
-      test('should track user visit to spot', () async {
-        final boundary = NeighborhoodBoundary(
+      test(
+          'should track user visit to spot, increment visit count for multiple visits, get visit counts for spot, and get dominant locality for spot',
+          () async {
+        // Test business logic: user visit tracking and analysis
+        final boundary1 = NeighborhoodBoundary(
           id: 'boundary-123',
           locality1: 'Nolita',
           locality2: 'East Village',
@@ -403,40 +349,19 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        await service.saveBoundary(boundary);
+        await service.saveBoundary(boundary1);
         await service.trackSpotVisit('spot-1', 'Nolita');
-
-        final updated = await service.getBoundary('Nolita', 'East Village');
-        expect(updated?.userVisitCounts['spot-1']?['Nolita'], equals(1));
-      });
-
-      test('should increment visit count for multiple visits', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        await service.saveBoundary(boundary);
+        final updated1 = await service.getBoundary('Nolita', 'East Village');
+        expect(updated1?.userVisitCounts['spot-1']?['Nolita'], equals(1));
 
         await service.trackSpotVisit('spot-1', 'Nolita');
         await service.trackSpotVisit('spot-1', 'Nolita');
         await service.trackSpotVisit('spot-1', 'Nolita');
+        final updated2 = await service.getBoundary('Nolita', 'East Village');
+        expect(updated2?.userVisitCounts['spot-1']?['Nolita'], equals(4));
 
-        final updated = await service.getBoundary('Nolita', 'East Village');
-        expect(updated?.userVisitCounts['spot-1']?['Nolita'], equals(3));
-      });
-
-      test('should get visit counts for spot', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
+        final boundary2 = NeighborhoodBoundary(
+          id: 'boundary-456',
           locality1: 'Nolita',
           locality2: 'East Village',
           boundaryType: BoundaryType.softBorder,
@@ -449,42 +374,22 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        await service.saveBoundary(boundary);
-
+        await service.saveBoundary(boundary2);
         final visitCounts = await service.getSpotVisitCounts('spot-1');
-
         expect(visitCounts['Nolita'], equals(15));
         expect(visitCounts['East Village'], equals(8));
-      });
-
-      test('should get dominant locality for spot', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
-            'spot-1': {'Nolita': 15, 'East Village': 8},
-          },
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        await service.saveBoundary(boundary);
 
         final dominant = await service.getDominantLocality('spot-1');
-
         expect(dominant, equals('Nolita'));
       });
     });
 
     group('Border Refinement', () {
-      test('should check if border should be refined', () async {
-        final boundary = NeighborhoodBoundary(
+      test(
+          'should check if border should be refined, not refine border with insufficient data, calculate border refinement, and refine soft border',
+          () async {
+        // Test business logic: border refinement operations
+        final boundary1 = NeighborhoodBoundary(
           id: 'boundary-123',
           locality1: 'Nolita',
           locality2: 'East Village',
@@ -493,26 +398,18 @@ void main() {
           source: 'Google Maps',
           softBorderSpots: ['spot-1'],
           userVisitCounts: {
-            'spot-1': {
-              'Nolita': 20,
-              'East Village': 5
-            }, // Significant difference
+            'spot-1': {'Nolita': 20, 'East Village': 5},
           },
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        await service.saveBoundary(boundary);
-
-        final shouldRefine =
+        await service.saveBoundary(boundary1);
+        final shouldRefine1 =
             await service.shouldRefineBorder('Nolita', 'East Village');
+        expect(shouldRefine1, isTrue);
 
-        expect(shouldRefine, isTrue);
-      });
-
-      test('should not refine border with insufficient data', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
+        final boundary2 = NeighborhoodBoundary(
+          id: 'boundary-456',
           locality1: 'Nolita',
           locality2: 'East Village',
           boundaryType: BoundaryType.softBorder,
@@ -520,23 +417,18 @@ void main() {
           source: 'Google Maps',
           softBorderSpots: ['spot-1'],
           userVisitCounts: {
-            'spot-1': {'Nolita': 3, 'East Village': 2}, // Not enough data
+            'spot-1': {'Nolita': 3, 'East Village': 2},
           },
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        await service.saveBoundary(boundary);
-
-        final shouldRefine =
+        await service.saveBoundary(boundary2);
+        final shouldRefine2 =
             await service.shouldRefineBorder('Nolita', 'East Village');
+        expect(shouldRefine2, isFalse);
 
-        expect(shouldRefine, isFalse);
-      });
-
-      test('should calculate border refinement', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
+        final boundary3 = NeighborhoodBoundary(
+          id: 'boundary-789',
           locality1: 'Nolita',
           locality2: 'East Village',
           boundaryType: BoundaryType.softBorder,
@@ -550,37 +442,14 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        await service.saveBoundary(boundary);
-
+        await service.saveBoundary(boundary3);
         final refinement =
             await service.calculateBorderRefinement('Nolita', 'East Village');
-
         expect(refinement, isNotNull);
         expect(refinement, isA<Map<String, dynamic>>());
         expect(refinement.isNotEmpty, isTrue);
-      });
-
-      test('should refine soft border', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
-            'spot-1': {'Nolita': 20, 'East Village': 5},
-          },
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        await service.saveBoundary(boundary);
 
         await service.refineSoftBorder('Nolita', 'East Village');
-
         final updated = await service.getBoundary('Nolita', 'East Village');
         expect(updated?.refinementHistory, isNotEmpty);
         expect(updated?.lastRefinedAt, isNotNull);
@@ -588,44 +457,31 @@ void main() {
     });
 
     group('Dynamic Border Updates', () {
-      test('should track user movement', () async {
+      test(
+          'should track user movement, get user movement patterns for locality, analyze movement patterns between localities, associate spot with locality, update spot locality association based on visits, update boundary from behavior, calculate boundary changes, and apply boundary refinement',
+          () async {
+        // Test business logic: dynamic border updates based on user behavior
         await service.trackUserMovement('user-1', 'spot-1', 'Nolita');
-
-        // Verify movement was tracked (implementation dependent)
         expect(await service.getUserMovementPatterns('Nolita'), isA<Map>());
-      });
 
-      test('should get user movement patterns for locality', () async {
         await service.trackUserMovement('user-1', 'spot-1', 'Nolita');
         await service.trackUserMovement('user-2', 'spot-1', 'Nolita');
         await service.trackUserMovement('user-1', 'spot-2', 'Nolita');
-
         final patterns = await service.getUserMovementPatterns('Nolita');
-
         expect(patterns, isNotEmpty);
-      });
 
-      test('should analyze movement patterns between localities', () async {
         await service.trackUserMovement('user-1', 'spot-1', 'Nolita');
         await service.trackUserMovement('user-2', 'spot-1', 'East Village');
         await service.trackUserMovement('user-3', 'spot-1', 'Nolita');
-
         final analysis =
             await service.analyzeMovementPatterns('Nolita', 'East Village');
-
         expect(analysis, isNotNull);
-      });
 
-      test('should associate spot with locality', () async {
         await service.associateSpotWithLocality('spot-1', 'Nolita');
+        final association1 = await service.getSpotLocalityAssociation('spot-1');
+        expect(association1, equals('Nolita'));
 
-        final association = await service.getSpotLocalityAssociation('spot-1');
-
-        expect(association, equals('Nolita'));
-      });
-
-      test('should update spot locality association based on visits', () async {
-        final boundary = NeighborhoodBoundary(
+        final boundary1 = NeighborhoodBoundary(
           id: 'boundary-123',
           locality1: 'Nolita',
           locality2: 'East Village',
@@ -639,102 +495,38 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
-        await service.saveBoundary(boundary);
-
+        await service.saveBoundary(boundary1);
         await service.updateSpotLocalityAssociation('spot-1');
-
-        final association = await service.getSpotLocalityAssociation('spot-1');
-        expect(association, equals('Nolita'));
-      });
-
-      test('should update boundary from behavior', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
-            'spot-1': {'Nolita': 20, 'East Village': 5},
-          },
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        await service.saveBoundary(boundary);
+        final association2 = await service.getSpotLocalityAssociation('spot-1');
+        expect(association2, equals('Nolita'));
 
         await service.updateBoundaryFromBehavior('Nolita', 'East Village');
-
-        final updated = await service.getBoundary('Nolita', 'East Village');
-        expect(updated?.refinementHistory, isNotEmpty);
-      });
-
-      test('should calculate boundary changes', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
-            'spot-1': {'Nolita': 20, 'East Village': 5},
-          },
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        await service.saveBoundary(boundary);
+        final updated1 = await service.getBoundary('Nolita', 'East Village');
+        expect(updated1?.refinementHistory, isNotEmpty);
 
         final changes =
             await service.calculateBoundaryChanges('Nolita', 'East Village');
-
         expect(changes, isNotNull);
         expect(changes.isNotEmpty, isTrue);
-      });
-
-      test('should apply boundary refinement', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Nolita',
-          locality2: 'East Village',
-          boundaryType: BoundaryType.softBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
-            'spot-1': {'Nolita': 20, 'East Village': 5},
-          },
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        await service.saveBoundary(boundary);
 
         final refinement =
             await service.calculateBorderRefinement('Nolita', 'East Village');
         await service.applyBoundaryRefinement(
             'Nolita', 'East Village', refinement);
-
-        final updated = await service.getBoundary('Nolita', 'East Village');
-        expect(updated?.refinementHistory, isNotEmpty);
-        expect(updated?.lastRefinedAt, isNotNull);
+        final updated2 = await service.getBoundary('Nolita', 'East Village');
+        expect(updated2?.refinementHistory, isNotEmpty);
+        expect(updated2?.lastRefinedAt, isNotNull);
       });
     });
 
     group('Geographic Hierarchy Integration', () {
-      test('should integrate with geographic hierarchy', () async {
+      test(
+          'should integrate with geographic hierarchy and update geographic hierarchy based on boundaries',
+          () async {
+        // Test business logic: geographic hierarchy integration
         await service.integrateWithGeographicHierarchy('Nolita');
-
-        // Verify integration (implementation dependent)
         expect(await service.getBoundariesForLocality('Nolita'), isA<List>());
-      });
 
-      test('should update geographic hierarchy based on boundaries', () async {
         final boundary = NeighborhoodBoundary(
           id: 'boundary-123',
           locality1: 'Nolita',
@@ -745,18 +537,15 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
         );
-
         await service.saveBoundary(boundary);
-
         await service.updateGeographicHierarchy('Nolita');
-
-        // Verify hierarchy was updated (implementation dependent)
         expect(await service.getBoundariesForLocality('Nolita'), isNotEmpty);
       });
     });
 
     group('Save and Update Boundary', () {
-      test('should save boundary', () async {
+      test('should save and update boundary correctly', () async {
+        // Test business logic: boundary persistence and updates
         final boundary = NeighborhoodBoundary(
           id: 'boundary-123',
           locality1: 'Greenpoint',
@@ -769,39 +558,26 @@ void main() {
         );
 
         await service.saveBoundary(boundary);
-
-        final retrieved =
+        final retrieved1 =
             await service.getBoundary('Greenpoint', 'Williamsburg');
-        expect(retrieved, isNotNull);
-        expect(retrieved?.id, equals('boundary-123'));
-      });
-
-      test('should update boundary', () async {
-        final boundary = NeighborhoodBoundary(
-          id: 'boundary-123',
-          locality1: 'Greenpoint',
-          locality2: 'Williamsburg',
-          boundaryType: BoundaryType.hardBorder,
-          coordinates: testCoordinates,
-          source: 'Google Maps',
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        await service.saveBoundary(boundary);
+        expect(retrieved1, isNotNull);
+        expect(retrieved1?.id, equals('boundary-123'));
 
         final updated = boundary.copyWith(
           boundaryType: BoundaryType.softBorder,
           softBorderSpots: ['spot-1'],
         );
-
         await service.updateBoundary(updated);
 
-        final retrieved =
+        final retrieved2 =
             await service.getBoundary('Greenpoint', 'Williamsburg');
-        expect(retrieved?.boundaryType, equals(BoundaryType.softBorder));
-        expect(retrieved?.softBorderSpots, contains('spot-1'));
+        expect(retrieved2?.boundaryType, equals(BoundaryType.softBorder));
+        expect(retrieved2?.softBorderSpots, contains('spot-1'));
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }

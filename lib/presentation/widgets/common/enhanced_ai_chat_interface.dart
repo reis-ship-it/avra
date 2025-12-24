@@ -36,7 +36,7 @@ class EnhancedAIChatInterface extends StatefulWidget {
 }
 
 class _EnhancedAIChatInterfaceState extends State<EnhancedAIChatInterface> {
-  final List<ChatBubble> _messages = [];
+  final List<Widget> _messages = [];
   bool _isProcessing = false;
   AIThinkingStage _currentStage = AIThinkingStage.loadingContext;
   
@@ -196,8 +196,13 @@ class _EnhancedAIChatInterfaceState extends State<EnhancedAIChatInterface> {
       // Create a mock action result for demonstration
       final mockResult = ActionResult(
         success: true,
-        intent: CreateListIntent(listName: 'Example List'), // Mock intent
-        message: response,
+        intent: CreateListIntent(
+          title: 'Example List',
+          description: 'Example list created',
+          userId: widget.userId,
+          confidence: 0.9,
+        ),
+        successMessage: response,
         data: {'id': 'mock-id'},
       );
       

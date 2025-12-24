@@ -7,6 +7,7 @@ import 'package:spots/presentation/widgets/settings/continuous_learning_controls
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/ai/continuous_learning_system.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 /// Continuous Learning Page
 /// 
@@ -18,7 +19,13 @@ import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 /// 3. Data Collection Status (status of all 10 data sources)
 /// 4. Learning Controls (start/stop, parameters, privacy settings)
 class ContinuousLearningPage extends StatefulWidget {
-  const ContinuousLearningPage({super.key});
+  /// Optional learningSystem for testing. If not provided, uses GetIt instance.
+  final ContinuousLearningSystem? learningSystem;
+  
+  const ContinuousLearningPage({
+    super.key,
+    this.learningSystem,
+  });
 
   @override
   State<ContinuousLearningPage> createState() => _ContinuousLearningPageState();
@@ -42,12 +49,15 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
         _errorMessage = null;
       });
 
-      final system = ContinuousLearningSystem();
-      await system.initialize();
+      // Use injected instance (for testing) or get from DI (for production)
+      // This ensures single instance across app, not per-page
+      _learningSystem = widget.learningSystem ?? GetIt.instance<ContinuousLearningSystem>();
+      
+      // Initialize if not already initialized (idempotent operation)
+      await _learningSystem!.initialize();
 
       if (mounted) {
         setState(() {
-          _learningSystem = system;
           _isInitializing = false;
         });
       }
@@ -63,10 +73,10 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
 
   @override
   void dispose() {
-    // Clean up learning system if it was started
-    if (_learningSystem != null && _learningSystem!.isLearningActive) {
-      _learningSystem!.stopContinuousLearning();
-    }
+    // DON'T stop learning here - service is shared across app
+    // Service lifecycle is managed at app level, not page level
+    // Other pages/widgets may be using the same instance
+    // Only stop if explicitly needed (which should be rare)
     super.dispose();
   }
 

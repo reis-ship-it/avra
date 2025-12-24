@@ -21,9 +21,10 @@ class AccessibilityTestHelpers {
   /// Calculates the relative luminance of a color (0-1)
   /// Based on WCAG 2.1 formula
   static double getRelativeLuminance(Color color) {
-    final r = color.red / 255.0;
-    final g = color.green / 255.0;
-    final b = color.blue / 255.0;
+    // color.r, color.g, color.b already return values in range 0.0-1.0
+    final r = color.r;
+    final g = color.g;
+    final b = color.b;
 
     // Apply gamma correction
     final rLinear = r <= 0.03928 ? r / 12.92 : math.pow((r + 0.055) / 1.055, 2.4).toDouble();
@@ -174,7 +175,9 @@ class AccessibilityTestHelpers {
 
     for (final textColor in textColors) {
       for (final bgColor in backgroundColors) {
-        final key = '${textColor.value.toRadixString(16)}_on_${bgColor.value.toRadixString(16)}';
+        final textColorValue = textColor.toARGB32().toRadixString(16);
+        final bgColorValue = bgColor.toARGB32().toRadixString(16);
+        final key = '${textColorValue}_on_${bgColorValue}';
         
         // Normal text
         final normalPass = verifyContrastRatio(textColor, bgColor, isLargeText: false);
@@ -202,7 +205,9 @@ class AccessibilityTestHelpers {
 
     for (final uiColor in uiColors) {
       for (final bgColor in backgroundColors) {
-        final key = '${uiColor.value.toRadixString(16)}_on_${bgColor.value.toRadixString(16)}';
+        final uiColorValue = uiColor.toARGB32().toRadixString(16);
+        final bgColorValue = bgColor.toARGB32().toRadixString(16);
+        final key = '${uiColorValue}_on_${bgColorValue}';
         final uiPass = verifyContrastRatio(uiColor, bgColor, isUIComponent: true);
         results['uiComponents'][key] = uiPass;
         if (!uiPass) {

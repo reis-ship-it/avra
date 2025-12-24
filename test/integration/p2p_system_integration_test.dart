@@ -18,7 +18,7 @@ void main() {
       // Test P2P node initialization for direct device-to-device communication
       final node = await nodeManager.initializeNode(
         NetworkType.university,
-        'test_university_123',
+        'test_university_123.edu',
         NodeCapabilities(
           canShareData: true,
           canReceiveData: true,
@@ -31,7 +31,7 @@ void main() {
 
       expect(node, isNotNull);
       expect(node.nodeId, isA<String>());
-      expect(node.organizationId, equals('test_university_123'));
+      expect(node.organizationId, equals('test_university_123.edu'));
       expect(node.networkType, equals(NetworkType.university));
       expect(node.encryptionKeys, isNotNull);
       expect(node.dataPolicy, isNotNull);
@@ -45,7 +45,7 @@ void main() {
       // First initialize a node
       final localNode = await nodeManager.initializeNode(
         NetworkType.university,
-        'test_university_123',
+        'test_university_123.edu',
         NodeCapabilities(
           canShareData: true,
           canReceiveData: true,
@@ -73,7 +73,7 @@ void main() {
       // First initialize a node
       final node = await nodeManager.initializeNode(
         NetworkType.university,
-        'test_university_123',
+        'test_university_123.edu',
         NodeCapabilities(
           canShareData: true,
           canReceiveData: true,
@@ -97,7 +97,7 @@ void main() {
       );
 
       expect(dataSilo, isNotNull);
-      expect(dataSilo.organizationId, equals('test_university_123'));
+      expect(dataSilo.organizationId, equals('test_university_123.edu'));
       expect(dataSilo.policy.requireAuthentication, isTrue);
       
       // OUR_GUTS.md: "Encrypted data silos with verified member authentication"
@@ -113,14 +113,14 @@ void main() {
         parameters: {'privacy_budget': 1.0},
       );
       final learningRound = await federatedSystem.initializeLearningRound(
-        'test_university_123',
+        'test_university_123.edu',
         objective,
         ['node_1', 'node_2', 'node_3'], // Minimum 3 participants
       );
 
       expect(learningRound, isNotNull);
       expect(learningRound.roundId, isA<String>());
-      expect(learningRound.organizationId, equals('test_university_123'));
+      expect(learningRound.organizationId, equals('test_university_123.edu'));
       expect(learningRound.participantNodeIds.length, greaterThanOrEqualTo(3));
       expect(learningRound.status, equals(RoundStatus.training));
       expect(learningRound.privacyMetrics, isNotNull);
@@ -138,7 +138,7 @@ void main() {
         parameters: {'privacy_budget': 1.0},
       );
       final round = await federatedSystem.initializeLearningRound(
-        'test_university_123',
+        'test_university_123.edu',
         objective,
         ['test_node_1', 'node_2', 'node_3'],
       );
@@ -177,7 +177,7 @@ void main() {
         parameters: {'privacy_budget': 1.0},
       );
       final round = await federatedSystem.initializeLearningRound(
-        'test_university_123',
+        'test_university_123.edu',
         objective,
         ['test_node_1', 'node_2', 'node_3'],
       );
@@ -212,7 +212,7 @@ void main() {
       // privacy preservation through node and silo operations
       final node = await nodeManager.initializeNode(
         NetworkType.university,
-        'test_university_123',
+        'test_university_123.edu',
         NodeCapabilities(
           canShareData: true,
           canReceiveData: true,
@@ -236,7 +236,7 @@ void main() {
 
       expect(node, isNotNull);
       expect(dataSilo, isNotNull);
-      expect(dataSilo.organizationId, equals('test_university_123'));
+      expect(dataSilo.organizationId, equals('test_university_123.edu'));
       expect(dataSilo.policy.requireAuthentication, isTrue);
       expect(dataSilo.encryptionKeys, isNotNull);
       
@@ -296,7 +296,7 @@ void main() {
     test('should comply with OUR_GUTS.md principles in P2P operations', () async {
       final node = await nodeManager.initializeNode(
         NetworkType.university,
-        'guts_compliance_test',
+        'guts_compliance_test.edu',
         NodeCapabilities(
           canShareData: true,
           canReceiveData: true,
@@ -309,7 +309,7 @@ void main() {
 
       final dataSilo = await nodeManager.createEncryptedSilo(
         node,
-        'guts_compliance_test',
+        'guts_compliance_test.edu',
         DataSiloPolicy(
           requireAuthentication: true,
           allowedRoles: ['admin', 'verified'],

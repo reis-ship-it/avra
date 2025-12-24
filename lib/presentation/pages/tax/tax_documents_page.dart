@@ -354,7 +354,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
             const SizedBox(height: 8),
             Text(
               _currentYearEarnings < 600.0
-                  ? 'Earnings are below the $600 threshold. No tax documents required.'
+                  ? 'Earnings are below the \$600 threshold. No tax documents required.'
                   : 'Tax documents will be generated after W-9 submission.',
               style: TextStyle(
                 fontSize: 14,

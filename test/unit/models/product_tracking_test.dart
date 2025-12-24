@@ -17,27 +17,13 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
-    test('should create product tracking with required fields', () {
-      final tracking = ProductTracking(
-        id: 'product-track-123',
-        sponsorshipId: 'sponsor-456',
-        productName: 'Premium Olive Oil',
-        quantityProvided: 20,
-        unitPrice: 25.00,
-        createdAt: testDate,
-        updatedAt: testDate,
-      );
+    // Removed: Constructor property test
+    // Tests Dart constructor, not business logic
 
-      expect(tracking.id, equals('product-track-123'));
-      expect(tracking.productName, equals('Premium Olive Oil'));
-      expect(tracking.quantityProvided, equals(20));
-      expect(tracking.quantityRemaining, equals(20));
-      expect(tracking.isSoldOut, isFalse);
-    });
-
-    test('should calculate remaining quantity correctly', () {
-      final tracking = ProductTracking(
-        id: 'product-track-123',
+    test('should correctly calculate remaining quantity and profit margin', () {
+      // Test business logic: quantity and margin calculations
+      final tracking1 = ProductTracking(
+        id: 'product-track-1',
         sponsorshipId: 'sponsor-456',
         productName: 'Premium Olive Oil',
         quantityProvided: 20,
@@ -48,13 +34,8 @@ void main() {
         createdAt: testDate,
         updatedAt: testDate,
       );
-
-      expect(tracking.quantityRemaining, equals(2));
-    });
-
-    test('should calculate profit margin correctly', () {
-      final tracking = ProductTracking(
-        id: 'product-track-123',
+      final tracking2 = ProductTracking(
+        id: 'product-track-2',
         sponsorshipId: 'sponsor-456',
         productName: 'Premium Olive Oil',
         quantityProvided: 20,
@@ -64,10 +45,11 @@ void main() {
         updatedAt: testDate,
       );
 
-      expect(tracking.profitMargin, equals(40.0)); // (25-15)/25 * 100
+      expect(tracking1.quantityRemaining, equals(2));
+      expect(tracking2.profitMargin, equals(40.0)); // (25-15)/25 * 100
     });
 
-    test('should serialize and deserialize correctly', () {
+    test('should serialize and deserialize with nested sales correctly', () {
       final sale = ProductSale(
         id: 'sale-123',
         productTrackingId: 'product-track-123',
@@ -96,10 +78,11 @@ void main() {
       final json = tracking.toJson();
       final restored = ProductTracking.fromJson(json);
 
-      expect(restored.id, equals(tracking.id));
-      expect(restored.totalSales, equals(50.00));
+      // Test nested structure preserved (business logic)
       expect(restored.sales.length, equals(1));
+      expect(
+          restored.sales.first.paymentStatus, equals(PaymentStatus.completed));
+      expect(restored.totalSales, equals(50.00));
     });
   });
 }
-

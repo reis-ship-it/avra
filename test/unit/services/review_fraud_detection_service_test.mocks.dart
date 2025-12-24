@@ -3,11 +3,12 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:spots/core/models/event_feedback.dart' as _i2;
-import 'package:spots/core/services/post_event_feedback_service.dart' as _i3;
+import 'package:spots/core/models/partner_rating.dart' as _i3;
+import 'package:spots/core/services/post_event_feedback_service.dart' as _i4;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -43,43 +44,53 @@ class _FakeEventFeedback_1 extends _i1.SmartFake implements _i2.EventFeedback {
         );
 }
 
+class _FakePartnerRating_2 extends _i1.SmartFake implements _i3.PartnerRating {
+  _FakePartnerRating_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [PostEventFeedbackService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockPostEventFeedbackService extends _i1.Mock
-    implements _i3.PostEventFeedbackService {
+    implements _i4.PostEventFeedbackService {
   MockPostEventFeedbackService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<DateTime> scheduleFeedbackCollection(String? eventId) =>
+  _i5.Future<DateTime> scheduleFeedbackCollection(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #scheduleFeedbackCollection,
           [eventId],
         ),
-        returnValue: _i4.Future<DateTime>.value(_FakeDateTime_0(
+        returnValue: _i5.Future<DateTime>.value(_FakeDateTime_0(
           this,
           Invocation.method(
             #scheduleFeedbackCollection,
             [eventId],
           ),
         )),
-      ) as _i4.Future<DateTime>);
+      ) as _i5.Future<DateTime>);
 
   @override
-  _i4.Future<void> sendFeedbackRequests(String? eventId) => (super.noSuchMethod(
+  _i5.Future<void> sendFeedbackRequests(String? eventId) => (super.noSuchMethod(
         Invocation.method(
           #sendFeedbackRequests,
           [eventId],
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i4.Future<_i2.EventFeedback> submitFeedback({
+  _i5.Future<_i2.EventFeedback> submitFeedback({
     required String? eventId,
     required String? userId,
     required double? overallRating,
@@ -106,7 +117,7 @@ class MockPostEventFeedbackService extends _i1.Mock
             #wouldRecommend: wouldRecommend,
           },
         ),
-        returnValue: _i4.Future<_i2.EventFeedback>.value(_FakeEventFeedback_1(
+        returnValue: _i5.Future<_i2.EventFeedback>.value(_FakeEventFeedback_1(
           this,
           Invocation.method(
             #submitFeedback,
@@ -124,10 +135,10 @@ class MockPostEventFeedbackService extends _i1.Mock
             },
           ),
         )),
-      ) as _i4.Future<_i2.EventFeedback>);
+      ) as _i5.Future<_i2.EventFeedback>);
 
   @override
-  _i4.Future<dynamic> submitPartnerRating({
+  _i5.Future<_i3.PartnerRating> submitPartnerRating({
     required String? eventId,
     required String? raterId,
     required String? ratedId,
@@ -158,48 +169,70 @@ class MockPostEventFeedbackService extends _i1.Mock
             #improvements: improvements,
           },
         ),
-        returnValue: _i4.Future<dynamic>.value(),
-      ) as _i4.Future<dynamic>);
+        returnValue: _i5.Future<_i3.PartnerRating>.value(_FakePartnerRating_2(
+          this,
+          Invocation.method(
+            #submitPartnerRating,
+            [],
+            {
+              #eventId: eventId,
+              #raterId: raterId,
+              #ratedId: ratedId,
+              #partnershipRole: partnershipRole,
+              #overallRating: overallRating,
+              #professionalism: professionalism,
+              #communication: communication,
+              #reliability: reliability,
+              #wouldPartnerAgain: wouldPartnerAgain,
+              #positives: positives,
+              #improvements: improvements,
+            },
+          ),
+        )),
+      ) as _i5.Future<_i3.PartnerRating>);
 
   @override
-  _i4.Future<List<_i2.EventFeedback>> getFeedbackForEvent(String? eventId) =>
+  _i5.Future<List<_i2.EventFeedback>> getFeedbackForEvent(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getFeedbackForEvent,
           [eventId],
         ),
         returnValue:
-            _i4.Future<List<_i2.EventFeedback>>.value(<_i2.EventFeedback>[]),
-      ) as _i4.Future<List<_i2.EventFeedback>>);
+            _i5.Future<List<_i2.EventFeedback>>.value(<_i2.EventFeedback>[]),
+      ) as _i5.Future<List<_i2.EventFeedback>>);
 
   @override
-  _i4.Future<List<_i2.EventFeedback>> getEventFeedback(String? eventId) =>
+  _i5.Future<List<_i2.EventFeedback>> getEventFeedback(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventFeedback,
           [eventId],
         ),
         returnValue:
-            _i4.Future<List<_i2.EventFeedback>>.value(<_i2.EventFeedback>[]),
-      ) as _i4.Future<List<_i2.EventFeedback>>);
+            _i5.Future<List<_i2.EventFeedback>>.value(<_i2.EventFeedback>[]),
+      ) as _i5.Future<List<_i2.EventFeedback>>);
 
   @override
-  _i4.Future<List<dynamic>> getPartnerRatingsForEvent(String? eventId) =>
+  _i5.Future<List<_i3.PartnerRating>> getPartnerRatingsForEvent(
+          String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getPartnerRatingsForEvent,
           [eventId],
         ),
-        returnValue: _i4.Future<List<dynamic>>.value(<dynamic>[]),
-      ) as _i4.Future<List<dynamic>>);
+        returnValue:
+            _i5.Future<List<_i3.PartnerRating>>.value(<_i3.PartnerRating>[]),
+      ) as _i5.Future<List<_i3.PartnerRating>>);
 
   @override
-  _i4.Future<List<dynamic>> getEventPartnerRatings(String? eventId) =>
+  _i5.Future<List<_i3.PartnerRating>> getEventPartnerRatings(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventPartnerRatings,
           [eventId],
         ),
-        returnValue: _i4.Future<List<dynamic>>.value(<dynamic>[]),
-      ) as _i4.Future<List<dynamic>>);
+        returnValue:
+            _i5.Future<List<_i3.PartnerRating>>.value(<_i3.PartnerRating>[]),
+      ) as _i5.Future<List<_i3.PartnerRating>>);
 }

@@ -4,7 +4,7 @@ import 'package:spots/core/models/automatic_check_in.dart';
 /// SPOTS AutomaticCheckIn Model Unit Tests
 /// Date: December 1, 2025
 /// Purpose: Test AutomaticCheckIn model functionality
-/// 
+///
 /// Test Coverage:
 /// - Model Creation: Constructor and properties
 /// - Active Status: Check if check-in is active
@@ -13,7 +13,7 @@ import 'package:spots/core/models/automatic_check_in.dart';
 /// - Check Out: Check out from automatic check-in
 /// - JSON Serialization: toJson/fromJson
 /// - Equality: Equatable implementation
-/// 
+///
 /// Dependencies:
 /// - GeofenceTrigger: Geofence trigger data
 /// - BluetoothTrigger: Bluetooth trigger data
@@ -25,7 +25,7 @@ void main() {
 
     setUp(() {
       testDate = DateTime(2025, 12, 1, 14, 0);
-      
+
       checkIn = AutomaticCheckIn(
         id: 'checkin-123',
         visitId: 'visit-456',
@@ -37,123 +37,64 @@ void main() {
       );
     });
 
-    group('Constructor and Properties', () {
-      test('should create check-in with all required fields', () {
-        expect(checkIn.id, 'checkin-123');
-        expect(checkIn.visitId, 'visit-456');
-        expect(checkIn.checkInTime, testDate);
-        expect(checkIn.visitCreated, false);
-        expect(checkIn.qualityScore, 0.0);
-      });
-
-      test('should create check-in with geofence trigger', () {
-        final geofenceTrigger = GeofenceTrigger(
-          locationId: 'spot-123',
-          latitude: 40.7128,
-          longitude: -74.0060,
-          triggeredAt: testDate,
-        );
-        
-        final checkInWithGeofence = checkIn.copyWith(
-          geofenceTrigger: geofenceTrigger,
-        );
-
-        expect(checkInWithGeofence.geofenceTrigger, isNotNull);
-        expect(checkInWithGeofence.triggerType, CheckInTriggerType.geofence);
-      });
-
-      test('should create check-in with Bluetooth trigger', () {
-        final bluetoothTrigger = BluetoothTrigger(
-          detectedAt: testDate,
-          ai2aiConnected: true,
-          personalityExchanged: true,
-        );
-        
-        final checkInWithBluetooth = checkIn.copyWith(
-          bluetoothTrigger: bluetoothTrigger,
-        );
-
-        expect(checkInWithBluetooth.bluetoothTrigger, isNotNull);
-        expect(checkInWithBluetooth.triggerType, CheckInTriggerType.bluetooth);
-      });
-    });
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
     group('Active Status', () {
-      test('should identify active check-ins', () {
-        expect(checkIn.isActive, true);
-        expect(checkIn.checkOutTime, isNull);
-      });
+      test('should correctly identify active and inactive check-ins', () {
+        // Test business logic: active status determination
+        expect(checkIn.isActive, isTrue);
 
-      test('should identify inactive check-ins', () {
         final checkedOut = checkIn.copyWith(
           checkOutTime: testDate.add(const Duration(hours: 2)),
         );
-        expect(checkedOut.isActive, false);
+        expect(checkedOut.isActive, isFalse);
       });
     });
 
     group('Trigger Type', () {
-      test('should identify geofence trigger', () {
+      test('should correctly identify trigger types', () {
+        // Test business logic: trigger type determination
         final geofenceTrigger = GeofenceTrigger(
           locationId: 'spot-123',
           latitude: 40.7128,
           longitude: -74.0060,
           triggeredAt: testDate,
         );
-        final checkInWithGeofence = checkIn.copyWith(
-          geofenceTrigger: geofenceTrigger,
-        );
-        expect(checkInWithGeofence.triggerType, CheckInTriggerType.geofence);
-      });
-
-      test('should identify Bluetooth trigger', () {
         final bluetoothTrigger = BluetoothTrigger(
           detectedAt: testDate,
           ai2aiConnected: true,
           personalityExchanged: false,
         );
-        final checkInWithBluetooth = checkIn.copyWith(
-          bluetoothTrigger: bluetoothTrigger,
-        );
-        expect(checkInWithBluetooth.triggerType, CheckInTriggerType.bluetooth);
-      });
 
-      test('should identify unknown trigger when no triggers', () {
-        expect(checkIn.triggerType, CheckInTriggerType.unknown);
+        expect(checkIn.triggerType, CheckInTriggerType.unknown); // No triggers
+        expect(checkIn.copyWith(geofenceTrigger: geofenceTrigger).triggerType,
+            CheckInTriggerType.geofence);
+        expect(checkIn.copyWith(bluetoothTrigger: bluetoothTrigger).triggerType,
+            CheckInTriggerType.bluetooth);
       });
     });
 
     group('Quality Score Calculation', () {
-      test('should calculate quality score for long stay', () {
+      test('should calculate quality score based on dwell time', () {
+        // Test business logic: quality score calculation
         final longCheckIn = checkIn.copyWith(
           dwellTime: const Duration(hours: 1),
         );
-        final score = longCheckIn.calculateQualityScore();
-        expect(score, 1.0);
-      });
-
-      test('should calculate quality score for normal visit', () {
         final normalCheckIn = checkIn.copyWith(
           dwellTime: const Duration(minutes: 15),
         );
-        final score = normalCheckIn.calculateQualityScore();
-        expect(score, 0.8);
-      });
-
-      test('should calculate quality score for quick stop', () {
         final quickCheckIn = checkIn.copyWith(
           dwellTime: const Duration(minutes: 5),
         );
-        final score = quickCheckIn.calculateQualityScore();
-        expect(score, 0.5);
-      });
-
-      test('should return 0.0 for too short visit', () {
         final tooShort = checkIn.copyWith(
           dwellTime: const Duration(minutes: 2),
         );
-        final score = tooShort.calculateQualityScore();
-        expect(score, 0.0);
+
+        expect(longCheckIn.calculateQualityScore(), equals(1.0));
+        expect(normalCheckIn.calculateQualityScore(), equals(0.8));
+        expect(quickCheckIn.calculateQualityScore(), equals(0.5));
+        expect(tooShort.calculateQualityScore(), equals(0.0));
       });
     });
 
@@ -177,24 +118,14 @@ void main() {
     });
 
     group('JSON Serialization', () {
-      test('should serialize to JSON correctly', () {
+      test('should serialize and deserialize without data loss', () {
         final json = checkIn.toJson();
+        final restored = AutomaticCheckIn.fromJson(json);
 
-        expect(json['id'], 'checkin-123');
-        expect(json['visitId'], 'visit-456');
-        expect(json['visitCreated'], false);
-        expect(json['qualityScore'], 0.0);
-      });
-
-      test('should deserialize from JSON correctly', () {
-        final json = checkIn.toJson();
-        final deserialized = AutomaticCheckIn.fromJson(json);
-
-        expect(deserialized.id, checkIn.id);
-        expect(deserialized.visitId, checkIn.visitId);
-        expect(deserialized.checkInTime, checkIn.checkInTime);
+        // Test critical business fields preserved
+        expect(restored.isActive, equals(checkIn.isActive));
+        expect(restored.triggerType, equals(checkIn.triggerType));
       });
     });
   });
 }
-

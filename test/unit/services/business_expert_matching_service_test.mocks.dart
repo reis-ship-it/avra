@@ -3,17 +3,19 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
+import 'dart:async' as _i7;
 
 import 'package:connectivity_plus/connectivity_plus.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i11;
+import 'package:mockito/src/dummies.dart' as _i12;
+import 'package:spots/core/models/event_partnership.dart' as _i5;
 import 'package:spots/core/models/expertise_community.dart' as _i2;
-import 'package:spots/core/models/expertise_level.dart' as _i9;
-import 'package:spots/core/models/unified_user.dart' as _i7;
-import 'package:spots/core/services/expertise_community_service.dart' as _i8;
-import 'package:spots/core/services/expertise_matching_service.dart' as _i5;
-import 'package:spots/core/services/llm_service.dart' as _i10;
+import 'package:spots/core/models/expertise_level.dart' as _i10;
+import 'package:spots/core/models/unified_user.dart' as _i8;
+import 'package:spots/core/services/expertise_community_service.dart' as _i9;
+import 'package:spots/core/services/expertise_matching_service.dart' as _i6;
+import 'package:spots/core/services/llm_service.dart' as _i11;
+import 'package:spots/core/services/partnership_service.dart' as _i13;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i3;
 
 // ignore_for_file: type=lint
@@ -62,18 +64,29 @@ class _FakeConnectivity_2 extends _i1.SmartFake implements _i4.Connectivity {
         );
 }
 
+class _FakeEventPartnership_3 extends _i1.SmartFake
+    implements _i5.EventPartnership {
+  _FakeEventPartnership_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [ExpertiseMatchingService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockExpertiseMatchingService extends _i1.Mock
-    implements _i5.ExpertiseMatchingService {
+    implements _i6.ExpertiseMatchingService {
   MockExpertiseMatchingService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<List<_i5.ExpertMatch>> findSimilarExperts(
-    _i7.UnifiedUser? user,
+  _i7.Future<List<_i6.ExpertMatch>> findSimilarExperts(
+    _i8.UnifiedUser? user,
     String? category, {
     String? location,
     int? maxResults = 10,
@@ -91,12 +104,12 @@ class MockExpertiseMatchingService extends _i1.Mock
           },
         ),
         returnValue:
-            _i6.Future<List<_i5.ExpertMatch>>.value(<_i5.ExpertMatch>[]),
-      ) as _i6.Future<List<_i5.ExpertMatch>>);
+            _i7.Future<List<_i6.ExpertMatch>>.value(<_i6.ExpertMatch>[]),
+      ) as _i7.Future<List<_i6.ExpertMatch>>);
 
   @override
-  _i6.Future<List<_i5.ExpertMatch>> findComplementaryExperts(
-    _i7.UnifiedUser? user, {
+  _i7.Future<List<_i6.ExpertMatch>> findComplementaryExperts(
+    _i8.UnifiedUser? user, {
     int? maxResults = 10,
   }) =>
       (super.noSuchMethod(
@@ -106,12 +119,12 @@ class MockExpertiseMatchingService extends _i1.Mock
           {#maxResults: maxResults},
         ),
         returnValue:
-            _i6.Future<List<_i5.ExpertMatch>>.value(<_i5.ExpertMatch>[]),
-      ) as _i6.Future<List<_i5.ExpertMatch>>);
+            _i7.Future<List<_i6.ExpertMatch>>.value(<_i6.ExpertMatch>[]),
+      ) as _i7.Future<List<_i6.ExpertMatch>>);
 
   @override
-  _i6.Future<List<_i5.ExpertMatch>> findMentors(
-    _i7.UnifiedUser? user,
+  _i7.Future<List<_i6.ExpertMatch>> findMentors(
+    _i8.UnifiedUser? user,
     String? category, {
     int? maxResults = 5,
   }) =>
@@ -125,12 +138,12 @@ class MockExpertiseMatchingService extends _i1.Mock
           {#maxResults: maxResults},
         ),
         returnValue:
-            _i6.Future<List<_i5.ExpertMatch>>.value(<_i5.ExpertMatch>[]),
-      ) as _i6.Future<List<_i5.ExpertMatch>>);
+            _i7.Future<List<_i6.ExpertMatch>>.value(<_i6.ExpertMatch>[]),
+      ) as _i7.Future<List<_i6.ExpertMatch>>);
 
   @override
-  _i6.Future<List<_i5.ExpertMatch>> findMentees(
-    _i7.UnifiedUser? user,
+  _i7.Future<List<_i6.ExpertMatch>> findMentees(
+    _i8.UnifiedUser? user,
     String? category, {
     int? maxResults = 10,
   }) =>
@@ -144,26 +157,26 @@ class MockExpertiseMatchingService extends _i1.Mock
           {#maxResults: maxResults},
         ),
         returnValue:
-            _i6.Future<List<_i5.ExpertMatch>>.value(<_i5.ExpertMatch>[]),
-      ) as _i6.Future<List<_i5.ExpertMatch>>);
+            _i7.Future<List<_i6.ExpertMatch>>.value(<_i6.ExpertMatch>[]),
+      ) as _i7.Future<List<_i6.ExpertMatch>>);
 }
 
 /// A class which mocks [ExpertiseCommunityService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockExpertiseCommunityService extends _i1.Mock
-    implements _i8.ExpertiseCommunityService {
+    implements _i9.ExpertiseCommunityService {
   MockExpertiseCommunityService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<_i2.ExpertiseCommunity> createCommunity({
-    required _i7.UnifiedUser? creator,
+  _i7.Future<_i2.ExpertiseCommunity> createCommunity({
+    required _i8.UnifiedUser? creator,
     required String? category,
     String? location,
     String? description,
-    _i9.ExpertiseLevel? minLevel,
+    _i10.ExpertiseLevel? minLevel,
     bool? isPublic = true,
   }) =>
       (super.noSuchMethod(
@@ -180,7 +193,7 @@ class MockExpertiseCommunityService extends _i1.Mock
           },
         ),
         returnValue:
-            _i6.Future<_i2.ExpertiseCommunity>.value(_FakeExpertiseCommunity_0(
+            _i7.Future<_i2.ExpertiseCommunity>.value(_FakeExpertiseCommunity_0(
           this,
           Invocation.method(
             #createCommunity,
@@ -195,12 +208,12 @@ class MockExpertiseCommunityService extends _i1.Mock
             },
           ),
         )),
-      ) as _i6.Future<_i2.ExpertiseCommunity>);
+      ) as _i7.Future<_i2.ExpertiseCommunity>);
 
   @override
-  _i6.Future<void> joinCommunity(
+  _i7.Future<void> joinCommunity(
     _i2.ExpertiseCommunity? community,
-    _i7.UnifiedUser? user,
+    _i8.UnifiedUser? user,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -210,14 +223,14 @@ class MockExpertiseCommunityService extends _i1.Mock
             user,
           ],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i6.Future<void> leaveCommunity(
+  _i7.Future<void> leaveCommunity(
     _i2.ExpertiseCommunity? community,
-    _i7.UnifiedUser? user,
+    _i8.UnifiedUser? user,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -227,24 +240,24 @@ class MockExpertiseCommunityService extends _i1.Mock
             user,
           ],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i6.Future<List<_i2.ExpertiseCommunity>> findCommunitiesForUser(
-          _i7.UnifiedUser? user) =>
+  _i7.Future<List<_i2.ExpertiseCommunity>> findCommunitiesForUser(
+          _i8.UnifiedUser? user) =>
       (super.noSuchMethod(
         Invocation.method(
           #findCommunitiesForUser,
           [user],
         ),
-        returnValue: _i6.Future<List<_i2.ExpertiseCommunity>>.value(
+        returnValue: _i7.Future<List<_i2.ExpertiseCommunity>>.value(
             <_i2.ExpertiseCommunity>[]),
-      ) as _i6.Future<List<_i2.ExpertiseCommunity>>);
+      ) as _i7.Future<List<_i2.ExpertiseCommunity>>);
 
   @override
-  _i6.Future<List<_i2.ExpertiseCommunity>> searchCommunities({
+  _i7.Future<List<_i2.ExpertiseCommunity>> searchCommunities({
     String? category,
     String? location,
     int? maxResults = 20,
@@ -259,12 +272,12 @@ class MockExpertiseCommunityService extends _i1.Mock
             #maxResults: maxResults,
           },
         ),
-        returnValue: _i6.Future<List<_i2.ExpertiseCommunity>>.value(
+        returnValue: _i7.Future<List<_i2.ExpertiseCommunity>>.value(
             <_i2.ExpertiseCommunity>[]),
-      ) as _i6.Future<List<_i2.ExpertiseCommunity>>);
+      ) as _i7.Future<List<_i2.ExpertiseCommunity>>);
 
   @override
-  _i6.Future<List<_i7.UnifiedUser>> getCommunityMembers(
+  _i7.Future<List<_i8.UnifiedUser>> getCommunityMembers(
           _i2.ExpertiseCommunity? community) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -272,14 +285,21 @@ class MockExpertiseCommunityService extends _i1.Mock
           [community],
         ),
         returnValue:
-            _i6.Future<List<_i7.UnifiedUser>>.value(<_i7.UnifiedUser>[]),
-      ) as _i6.Future<List<_i7.UnifiedUser>>);
+            _i7.Future<List<_i8.UnifiedUser>>.value(<_i8.UnifiedUser>[]),
+      ) as _i7.Future<List<_i8.UnifiedUser>>);
+
+  @override
+  _i2.ExpertiseCommunity? getCommunityById(String? id) =>
+      (super.noSuchMethod(Invocation.method(
+        #getCommunityById,
+        [id],
+      )) as _i2.ExpertiseCommunity?);
 }
 
 /// A class which mocks [LLMService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLLMService extends _i1.Mock implements _i10.LLMService {
+class MockLLMService extends _i1.Mock implements _i11.LLMService {
   MockLLMService() {
     _i1.throwOnMissingStub(this);
   }
@@ -303,11 +323,12 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
       ) as _i4.Connectivity);
 
   @override
-  _i6.Future<String> chat({
-    required List<_i10.ChatMessage>? messages,
-    _i10.LLMContext? context,
+  _i7.Future<String> chat({
+    required List<_i11.ChatMessage>? messages,
+    _i11.LLMContext? context,
     double? temperature = 0.7,
     int? maxTokens = 500,
+    Duration? timeout,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -318,9 +339,10 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
             #context: context,
             #temperature: temperature,
             #maxTokens: maxTokens,
+            #timeout: timeout,
           },
         ),
-        returnValue: _i6.Future<String>.value(_i11.dummyValue<String>(
+        returnValue: _i7.Future<String>.value(_i12.dummyValue<String>(
           this,
           Invocation.method(
             #chat,
@@ -330,15 +352,16 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
               #context: context,
               #temperature: temperature,
               #maxTokens: maxTokens,
+              #timeout: timeout,
             },
           ),
         )),
-      ) as _i6.Future<String>);
+      ) as _i7.Future<String>);
 
   @override
-  _i6.Future<String> generateRecommendation({
+  _i7.Future<String> generateRecommendation({
     required String? userQuery,
-    _i10.LLMContext? userContext,
+    _i11.LLMContext? userContext,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -349,7 +372,7 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
             #userContext: userContext,
           },
         ),
-        returnValue: _i6.Future<String>.value(_i11.dummyValue<String>(
+        returnValue: _i7.Future<String>.value(_i12.dummyValue<String>(
           this,
           Invocation.method(
             #generateRecommendation,
@@ -360,13 +383,13 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
             },
           ),
         )),
-      ) as _i6.Future<String>);
+      ) as _i7.Future<String>);
 
   @override
-  _i6.Future<String> continueConversation({
-    required List<_i10.ChatMessage>? conversationHistory,
+  _i7.Future<String> continueConversation({
+    required List<_i11.ChatMessage>? conversationHistory,
     required String? userMessage,
-    _i10.LLMContext? context,
+    _i11.LLMContext? context,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -378,7 +401,7 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
             #context: context,
           },
         ),
-        returnValue: _i6.Future<String>.value(_i11.dummyValue<String>(
+        returnValue: _i7.Future<String>.value(_i12.dummyValue<String>(
           this,
           Invocation.method(
             #continueConversation,
@@ -390,12 +413,12 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
             },
           ),
         )),
-      ) as _i6.Future<String>);
+      ) as _i7.Future<String>);
 
   @override
-  _i6.Future<List<String>> suggestListNames({
+  _i7.Future<List<String>> suggestListNames({
     required String? userIntent,
-    _i10.LLMContext? context,
+    _i11.LLMContext? context,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -406,13 +429,13 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
             #context: context,
           },
         ),
-        returnValue: _i6.Future<List<String>>.value(<String>[]),
-      ) as _i6.Future<List<String>>);
+        returnValue: _i7.Future<List<String>>.value(<String>[]),
+      ) as _i7.Future<List<String>>);
 
   @override
-  _i6.Future<String> generateSpotRecommendations({
+  _i7.Future<String> generateSpotRecommendations({
     required String? query,
-    _i10.LLMContext? context,
+    _i11.LLMContext? context,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -423,7 +446,7 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
             #context: context,
           },
         ),
-        returnValue: _i6.Future<String>.value(_i11.dummyValue<String>(
+        returnValue: _i7.Future<String>.value(_i12.dummyValue<String>(
           this,
           Invocation.method(
             #generateSpotRecommendations,
@@ -434,15 +457,16 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
             },
           ),
         )),
-      ) as _i6.Future<String>);
+      ) as _i7.Future<String>);
 
   @override
-  _i6.Stream<String> chatStream({
-    required List<_i10.ChatMessage>? messages,
-    _i10.LLMContext? context,
+  _i7.Stream<String> chatStream({
+    required List<_i11.ChatMessage>? messages,
+    _i11.LLMContext? context,
     double? temperature = 0.7,
     int? maxTokens = 500,
     bool? useRealSSE = true,
+    bool? autoFallback = true,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -454,8 +478,179 @@ class MockLLMService extends _i1.Mock implements _i10.LLMService {
             #temperature: temperature,
             #maxTokens: maxTokens,
             #useRealSSE: useRealSSE,
+            #autoFallback: autoFallback,
           },
         ),
-        returnValue: _i6.Stream<String>.empty(),
-      ) as _i6.Stream<String>);
+        returnValue: _i7.Stream<String>.empty(),
+      ) as _i7.Stream<String>);
+}
+
+/// A class which mocks [PartnershipService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockPartnershipService extends _i1.Mock
+    implements _i13.PartnershipService {
+  MockPartnershipService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i7.Future<_i5.EventPartnership> createPartnership({
+    required String? eventId,
+    required String? userId,
+    required String? businessId,
+    _i5.PartnershipAgreement? agreement,
+    _i5.PartnershipType? type = _i5.PartnershipType.eventBased,
+    List<String>? sharedResponsibilities,
+    String? venueLocation,
+    double? vibeCompatibilityScore,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #createPartnership,
+          [],
+          {
+            #eventId: eventId,
+            #userId: userId,
+            #businessId: businessId,
+            #agreement: agreement,
+            #type: type,
+            #sharedResponsibilities: sharedResponsibilities,
+            #venueLocation: venueLocation,
+            #vibeCompatibilityScore: vibeCompatibilityScore,
+          },
+        ),
+        returnValue:
+            _i7.Future<_i5.EventPartnership>.value(_FakeEventPartnership_3(
+          this,
+          Invocation.method(
+            #createPartnership,
+            [],
+            {
+              #eventId: eventId,
+              #userId: userId,
+              #businessId: businessId,
+              #agreement: agreement,
+              #type: type,
+              #sharedResponsibilities: sharedResponsibilities,
+              #venueLocation: venueLocation,
+              #vibeCompatibilityScore: vibeCompatibilityScore,
+            },
+          ),
+        )),
+      ) as _i7.Future<_i5.EventPartnership>);
+
+  @override
+  _i7.Future<List<_i5.EventPartnership>> getPartnershipsForEvent(
+          String? eventId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPartnershipsForEvent,
+          [eventId],
+        ),
+        returnValue: _i7.Future<List<_i5.EventPartnership>>.value(
+            <_i5.EventPartnership>[]),
+      ) as _i7.Future<List<_i5.EventPartnership>>);
+
+  @override
+  _i7.Future<_i5.EventPartnership?> getPartnershipById(String? partnershipId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPartnershipById,
+          [partnershipId],
+        ),
+        returnValue: _i7.Future<_i5.EventPartnership?>.value(),
+      ) as _i7.Future<_i5.EventPartnership?>);
+
+  @override
+  _i7.Future<_i5.EventPartnership> updatePartnershipStatus({
+    required String? partnershipId,
+    required _i5.PartnershipStatus? status,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updatePartnershipStatus,
+          [],
+          {
+            #partnershipId: partnershipId,
+            #status: status,
+          },
+        ),
+        returnValue:
+            _i7.Future<_i5.EventPartnership>.value(_FakeEventPartnership_3(
+          this,
+          Invocation.method(
+            #updatePartnershipStatus,
+            [],
+            {
+              #partnershipId: partnershipId,
+              #status: status,
+            },
+          ),
+        )),
+      ) as _i7.Future<_i5.EventPartnership>);
+
+  @override
+  _i7.Future<_i5.EventPartnership> approvePartnership({
+    required String? partnershipId,
+    required String? approvedBy,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #approvePartnership,
+          [],
+          {
+            #partnershipId: partnershipId,
+            #approvedBy: approvedBy,
+          },
+        ),
+        returnValue:
+            _i7.Future<_i5.EventPartnership>.value(_FakeEventPartnership_3(
+          this,
+          Invocation.method(
+            #approvePartnership,
+            [],
+            {
+              #partnershipId: partnershipId,
+              #approvedBy: approvedBy,
+            },
+          ),
+        )),
+      ) as _i7.Future<_i5.EventPartnership>);
+
+  @override
+  _i7.Future<bool> checkPartnershipEligibility({
+    required String? userId,
+    required String? businessId,
+    required String? eventId,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #checkPartnershipEligibility,
+          [],
+          {
+            #userId: userId,
+            #businessId: businessId,
+            #eventId: eventId,
+          },
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
+  _i7.Future<double> calculateVibeCompatibility({
+    required String? userId,
+    required String? businessId,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #calculateVibeCompatibility,
+          [],
+          {
+            #userId: userId,
+            #businessId: businessId,
+          },
+        ),
+        returnValue: _i7.Future<double>.value(0.0),
+      ) as _i7.Future<double>);
 }

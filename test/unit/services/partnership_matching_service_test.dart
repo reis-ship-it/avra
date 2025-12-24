@@ -10,6 +10,7 @@ import 'package:spots/core/models/business_account.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'partnership_matching_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([PartnershipService, BusinessService, ExpertiseEventService])
 void main() {
@@ -278,6 +279,10 @@ void main() {
         expect(compatibility, lessThanOrEqualTo(1.0));
       });
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }
 

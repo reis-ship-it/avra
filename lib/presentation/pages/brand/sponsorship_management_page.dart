@@ -6,7 +6,7 @@ import 'package:spots/core/models/product_tracking.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
 import 'package:spots/presentation/widgets/brand/sponsorship_card.dart';
 import 'package:spots/presentation/pages/brand/brand_discovery_page.dart';
 import 'package:get_it/get_it.dart';
@@ -54,7 +54,8 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
   }
   
   Future<void> _loadBrandAccount() async {
-    final userId = context.read<AuthBloc>().state.user?.id;
+    final authState = context.read<AuthBloc>().state;
+    final userId = authState is Authenticated ? authState.user.id : null;
     if (userId == null) return;
     
     // TODO: Get brand account when service available

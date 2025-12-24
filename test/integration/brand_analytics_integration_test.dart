@@ -12,7 +12,7 @@ import 'package:spots/core/models/sponsorship.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/brand_account.dart';
 import 'package:spots/core/models/unified_user.dart';
-import '../../fixtures/model_factories.dart';
+import '../fixtures/model_factories.dart';
 
 /// Integration tests for brand-analytics flow
 /// 
@@ -103,11 +103,25 @@ void main() {
     });
 
     test('brand ROI calculation flow', () async {
-      // Step 1: Create sponsorship
+      // Step 1: Create event in service
+      final createdEvent = await eventService.createEvent(
+        host: testEvent.host,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+        maxAttendees: testEvent.maxAttendees,
+        price: testEvent.price,
+      );
+      
+      // Step 2: Register brand and create sponsorship
       await sponsorshipService.registerBrand(testBrand);
 
       testSponsorship = await sponsorshipService.createSponsorship(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         brandId: testBrand.id,
         type: SponsorshipType.financial,
         contributionAmount: 500.00,
@@ -127,11 +141,25 @@ void main() {
     });
 
     test('brand performance metrics flow', () async {
-      // Step 1: Create sponsorship
+      // Step 1: Create event in service
+      final createdEvent = await eventService.createEvent(
+        host: testEvent.host,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+        maxAttendees: testEvent.maxAttendees,
+        price: testEvent.price,
+      );
+      
+      // Step 2: Register brand and create sponsorship
       await sponsorshipService.registerBrand(testBrand);
 
       testSponsorship = await sponsorshipService.createSponsorship(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         brandId: testBrand.id,
         type: SponsorshipType.financial,
         contributionAmount: 500.00,
@@ -150,11 +178,25 @@ void main() {
     });
 
     test('brand exposure analytics flow', () async {
-      // Step 1: Create sponsorship
+      // Step 1: Create event in service
+      final createdEvent = await eventService.createEvent(
+        host: testEvent.host,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+        maxAttendees: testEvent.maxAttendees,
+        price: testEvent.price,
+      );
+      
+      // Step 2: Register brand and create sponsorship
       await sponsorshipService.registerBrand(testBrand);
 
       testSponsorship = await sponsorshipService.createSponsorship(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         brandId: testBrand.id,
         type: SponsorshipType.financial,
         contributionAmount: 500.00,
@@ -164,21 +206,35 @@ void main() {
       // Step 2: Analyze brand exposure
       final exposure = await analyticsService.analyzeBrandExposure(
         brandId: testBrand.id,
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
       );
 
       // Assert
       expect(exposure, isA<BrandExposure>());
       expect(exposure.brandId, equals(testBrand.id));
-      expect(exposure.eventId, equals(testEvent.id));
+      expect(exposure.eventId, equals(createdEvent.id));
     });
 
     test('event performance tracking flow', () async {
-      // Step 1: Create sponsorship
+      // Step 1: Create event in service
+      final createdEvent = await eventService.createEvent(
+        host: testEvent.host,
+        title: testEvent.title,
+        description: testEvent.description,
+        category: testEvent.category,
+        eventType: testEvent.eventType,
+        startTime: testEvent.startTime,
+        endTime: testEvent.endTime,
+        location: testEvent.location,
+        maxAttendees: testEvent.maxAttendees,
+        price: testEvent.price,
+      );
+      
+      // Step 2: Register brand and create sponsorship
       await sponsorshipService.registerBrand(testBrand);
 
       testSponsorship = await sponsorshipService.createSponsorship(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
         brandId: testBrand.id,
         type: SponsorshipType.financial,
         contributionAmount: 500.00,
@@ -187,12 +243,12 @@ void main() {
 
       // Step 2: Get event performance
       final performance = await analyticsService.getEventPerformance(
-        eventId: testEvent.id,
+        eventId: createdEvent.id,
       );
 
       // Assert
       expect(performance, isA<EventPerformance>());
-      expect(performance.eventId, equals(testEvent.id));
+      expect(performance.eventId, equals(createdEvent.id));
       expect(performance.totalSponsorships, greaterThanOrEqualTo(1));
       expect(performance.totalSponsorshipValue, greaterThanOrEqualTo(500.00));
     });

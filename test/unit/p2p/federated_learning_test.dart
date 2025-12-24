@@ -9,13 +9,8 @@ void main() {
     setUp(() {
       // Use mock storage for testing
       final mockStorage = MockGetStorage.getInstance();
-      if (mockStorage != null) {
-        system = FederatedLearningSystem(storage: mockStorage);
-      } else {
-        // Fallback if mock storage fails (shouldn't happen)
-        system = FederatedLearningSystem();
-      }
-    });
+      system = FederatedLearningSystem(storage: mockStorage);
+        });
 
     test('initializeLearningRound creates privacy-preserving round', () async {
       // OUR_GUTS.md: "Local model training with global model aggregation"
@@ -117,12 +112,15 @@ void main() {
         ['node1', 'node2', 'node3'],
       );
 
+      // Create gradients that match the global model parameter structure
+      // _initializeModelParameters creates 'weights' with 10 elements and 'biases' with 5 elements
       final localUpdates = [
         LocalModelUpdate(
           nodeId: 'node1',
           roundId: round.roundId,
           gradients: {
-            'weights': [0.1, 0.2, 0.3]
+            'weights': List.generate(10, (i) => 0.1 + i * 0.01), // 10 elements to match global model
+            'biases': List.generate(5, (i) => 0.05), // 5 elements to match global model
           },
           trainingMetrics: TrainingMetrics(
             samplesUsed: 100,
@@ -137,7 +135,8 @@ void main() {
           nodeId: 'node2',
           roundId: round.roundId,
           gradients: {
-            'weights': [0.2, 0.1, 0.4]
+            'weights': List.generate(10, (i) => 0.2 + i * 0.01), // 10 elements to match global model
+            'biases': List.generate(5, (i) => 0.1), // 5 elements to match global model
           },
           trainingMetrics: TrainingMetrics(
             samplesUsed: 80,

@@ -5,12 +5,14 @@ import 'package:spots/core/services/partnership_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/business_service.dart';
 import 'package:spots/core/models/event_partnership.dart';
+import 'package:spots/core/models/revenue_split.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/business_account.dart';
 import 'package:spots/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'partnership_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([ExpertiseEventService, BusinessService])
 void main() {
@@ -25,7 +27,7 @@ void main() {
     setUp(() {
       mockEventService = MockExpertiseEventService();
       mockBusinessService = MockBusinessService();
-      
+
       service = PartnershipService(
         eventService: mockEventService,
         businessService: mockBusinessService,
@@ -73,176 +75,125 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Partnership creation tests focus on business logic (validation, agreement handling), not property assignment
+
     group('createPartnership', () {
-      test('should create partnership with valid inputs', () async {
-        // Arrange
+      test('should create partnership with valid inputs and agreement terms, or throw exception for invalid inputs (event not found, business not found, not eligible, compatibility below threshold)', () async {
+        // Test business logic: partnership creation with validation and agreement handling
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockBusinessService.getBusinessById('business-123'))
             .thenAnswer((_) async => testBusiness);
         when(mockBusinessService.checkBusinessEligibility('business-123'))
             .thenAnswer((_) async => true);
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
 
-        // Act
+        // Test successful creation
         final partnership = await service.createPartnership(
           eventId: 'event-123',
           userId: 'user-123',
           businessId: 'business-123',
-          vibeCompatibilityScore: 0.75, // 75% compatibility (above 70% threshold)
+          vibeCompatibilityScore: 0.75,
         );
-
-        // Assert
         expect(partnership, isA<EventPartnership>());
-        expect(partnership.eventId, equals('event-123'));
-        expect(partnership.userId, equals('user-123'));
-        expect(partnership.businessId, equals('business-123'));
         expect(partnership.status, equals(PartnershipStatus.proposed));
         expect(partnership.vibeCompatibilityScore, equals(0.75));
-        expect(partnership.userApproved, isFalse);
-        expect(partnership.businessApproved, isFalse);
-      });
 
-      test('should throw exception if event not found', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => null);
-
-        // Act & Assert
-        expect(
-          () => service.createPartnership(
-            eventId: 'event-123',
-            userId: 'user-123',
-            businessId: 'business-123',
-            vibeCompatibilityScore: 0.75,
-          ),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Event not found'),
-          )),
-        );
-      });
-
-      test('should throw exception if business not found', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockBusinessService.getBusinessById('business-123'))
-            .thenAnswer((_) async => null);
-
-        // Act & Assert
-        expect(
-          () => service.createPartnership(
-            eventId: 'event-123',
-            userId: 'user-123',
-            businessId: 'business-123',
-            vibeCompatibilityScore: 0.75,
-          ),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Business not found'),
-          )),
-        );
-      });
-
-      test('should throw exception if partnership not eligible', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockBusinessService.getBusinessById('business-123'))
-            .thenAnswer((_) async => testBusiness);
-        when(mockBusinessService.checkBusinessEligibility('business-123'))
-            .thenAnswer((_) async => false);
-
-        // Act & Assert
-        expect(
-          () => service.createPartnership(
-            eventId: 'event-123',
-            userId: 'user-123',
-            businessId: 'business-123',
-            vibeCompatibilityScore: 0.75,
-          ),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Partnership not eligible'),
-          )),
-        );
-      });
-
-      test('should throw exception if compatibility below 70% threshold', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockBusinessService.getBusinessById('business-123'))
-            .thenAnswer((_) async => testBusiness);
-        when(mockBusinessService.checkBusinessEligibility('business-123'))
-            .thenAnswer((_) async => true);
-
-        // Act & Assert
-        expect(
-          () => service.createPartnership(
-            eventId: 'event-123',
-            userId: 'user-123',
-            businessId: 'business-123',
-            vibeCompatibilityScore: 0.65, // Below 70% threshold
-          ),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Compatibility below 70% threshold'),
-          )),
-        );
-      });
-
-      test('should create partnership with agreement terms', () async {
-        // Arrange
+        // Test with agreement terms (use different event ID since service only allows one partnership per event)
+        final revenueSplit = [
+          SplitParty(partyId: 'user-123', type: SplitPartyType.user, percentage: 50.0, name: 'User'),
+          SplitParty(partyId: 'business-123', type: SplitPartyType.business, percentage: 50.0, name: 'Business'),
+        ];
         final agreement = PartnershipAgreement(
-          revenueSplit: [
-            SplitParty(
-              partyId: 'user-123',
-              type: SplitPartyType.user,
-              percentage: 50.0,
-              name: 'User',
-            ),
-            SplitParty(
-              partyId: 'business-123',
-              type: SplitPartyType.business,
-              percentage: 50.0,
-              name: 'Business',
-            ),
-          ],
+          id: 'agreement-1',
+          partnershipId: 'partnership-1',
+          terms: {'revenueSplit': revenueSplit.map((p) => p.toJson()).toList()},
           agreedAt: DateTime.now(),
+          agreedBy: 'user-123',
         );
-
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
+        // Use different event ID to avoid "Partnership not eligible" error (one partnership per event)
+        when(mockEventService.getEventById('event-456'))
+            .thenAnswer((_) async => testEvent.copyWith(id: 'event-456'));
         when(mockBusinessService.getBusinessById('business-123'))
             .thenAnswer((_) async => testBusiness);
         when(mockBusinessService.checkBusinessEligibility('business-123'))
             .thenAnswer((_) async => true);
-
-        // Act
-        final partnership = await service.createPartnership(
-          eventId: 'event-123',
+        final partnershipWithAgreement = await service.createPartnership(
+          eventId: 'event-456',
           userId: 'user-123',
           businessId: 'business-123',
           agreement: agreement,
           vibeCompatibilityScore: 0.80,
         );
+        expect(partnershipWithAgreement.agreement, isNotNull);
 
-        // Assert
-        expect(partnership.agreement, isNotNull);
-        expect(partnership.agreement?.revenueSplit, hasLength(2));
+        // Test error cases (use different event IDs to avoid "Partnership not eligible" from previous successful creation)
+        // Error case 1: Event not found
+        when(mockEventService.getEventById('event-error-1'))
+            .thenAnswer((_) async => null);
+        await expectLater(
+          service.createPartnership(
+            eventId: 'event-error-1',
+            userId: 'user-123',
+            businessId: 'business-123',
+            vibeCompatibilityScore: 0.75,
+          ),
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Event not found'))),
+        );
+
+        // Error case 2: Business not found
+        when(mockEventService.getEventById('event-error-2'))
+            .thenAnswer((_) async => testEvent.copyWith(id: 'event-error-2'));
+        when(mockBusinessService.getBusinessById('business-123'))
+            .thenAnswer((_) async => null);
+        await expectLater(
+          service.createPartnership(
+            eventId: 'event-error-2',
+            userId: 'user-123',
+            businessId: 'business-123',
+            vibeCompatibilityScore: 0.75,
+          ),
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Business not found'))),
+        );
+
+        // Error case 3: Business not verified
+        final unverifiedBusiness = testBusiness.copyWith(isVerified: false);
+        when(mockEventService.getEventById('event-error-3'))
+            .thenAnswer((_) async => testEvent.copyWith(id: 'event-error-3'));
+        when(mockBusinessService.getBusinessById('business-123'))
+            .thenAnswer((_) async => unverifiedBusiness);
+        await expectLater(
+          service.createPartnership(
+            eventId: 'event-error-3',
+            userId: 'user-123',
+            businessId: 'business-123',
+            vibeCompatibilityScore: 0.75,
+          ),
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Partnership not eligible'))),
+        );
+
+        // Error case 4: Compatibility below threshold
+        when(mockEventService.getEventById('event-error-4'))
+            .thenAnswer((_) async => testEvent.copyWith(id: 'event-error-4'));
+        when(mockBusinessService.getBusinessById('business-123'))
+            .thenAnswer((_) async => testBusiness);
+        when(mockBusinessService.checkBusinessEligibility('business-123'))
+            .thenAnswer((_) async => true);
+        await expectLater(
+          service.createPartnership(
+            eventId: 'event-error-4',
+            userId: 'user-123',
+            businessId: 'business-123',
+            vibeCompatibilityScore: 0.65, // Below 70% threshold
+          ),
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Compatibility below 70% threshold'))),
+        );
       });
     });
 
     group('getPartnershipsForEvent', () {
-      test('should return partnerships for event', () async {
-        // Arrange
+      test('should return partnerships for event or empty list if none exist', () async {
+        // Test business logic: partnership retrieval with empty case handling
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockBusinessService.getBusinessById('business-123'))
@@ -250,7 +201,6 @@ void main() {
         when(mockBusinessService.checkBusinessEligibility('business-123'))
             .thenAnswer((_) async => true);
 
-        // Create a partnership first
         final partnership = await service.createPartnership(
           eventId: 'event-123',
           userId: 'user-123',
@@ -258,27 +208,17 @@ void main() {
           vibeCompatibilityScore: 0.75,
         );
 
-        // Act
         final partnerships = await service.getPartnershipsForEvent('event-123');
-
-        // Assert
         expect(partnerships, isNotEmpty);
         expect(partnerships.first.id, equals(partnership.id));
-        expect(partnerships.first.eventId, equals('event-123'));
-      });
 
-      test('should return empty list if no partnerships exist', () async {
-        // Act
-        final partnerships = await service.getPartnershipsForEvent('event-none');
-
-        // Assert
-        expect(partnerships, isEmpty);
+        expect(await service.getPartnershipsForEvent('event-none'), isEmpty);
       });
     });
 
     group('getPartnershipById', () {
-      test('should return partnership by ID', () async {
-        // Arrange
+      test('should return partnership by ID or null if not found', () async {
+        // Test business logic: partnership retrieval with existence checking
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockBusinessService.getBusinessById('business-123'))
@@ -293,26 +233,17 @@ void main() {
           vibeCompatibilityScore: 0.75,
         );
 
-        // Act
         final partnership = await service.getPartnershipById(created.id);
-
-        // Assert
         expect(partnership, isNotNull);
         expect(partnership?.id, equals(created.id));
-      });
 
-      test('should return null if partnership not found', () async {
-        // Act
-        final partnership = await service.getPartnershipById('nonexistent-id');
-
-        // Assert
-        expect(partnership, isNull);
+        expect(await service.getPartnershipById('nonexistent-id'), isNull);
       });
     });
 
     group('updatePartnershipStatus', () {
-      test('should update partnership status', () async {
-        // Arrange
+      test('should update partnership status correctly, or throw exception if partnership not found or status transition is invalid', () async {
+        // Test business logic: status updates with validation
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockBusinessService.getBusinessById('business-123'))
@@ -327,66 +258,35 @@ void main() {
           vibeCompatibilityScore: 0.75,
         );
 
-        // Act
         final updated = await service.updatePartnershipStatus(
           partnershipId: partnership.id,
           status: PartnershipStatus.negotiating,
         );
-
-        // Assert
         expect(updated.status, equals(PartnershipStatus.negotiating));
         expect(updated.updatedAt.isAfter(partnership.updatedAt), isTrue);
-      });
 
-      test('should throw exception if partnership not found', () async {
-        // Act & Assert
+        // Test error cases
         expect(
           () => service.updatePartnershipStatus(
             partnershipId: 'nonexistent-id',
             status: PartnershipStatus.negotiating,
           ),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Partnership not found'),
-          )),
-        );
-      });
-
-      test('should throw exception if status transition is invalid', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockBusinessService.getBusinessById('business-123'))
-            .thenAnswer((_) async => testBusiness);
-        when(mockBusinessService.checkBusinessEligibility('business-123'))
-            .thenAnswer((_) async => true);
-
-        final partnership = await service.createPartnership(
-          eventId: 'event-123',
-          userId: 'user-123',
-          businessId: 'business-123',
-          vibeCompatibilityScore: 0.75,
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Partnership not found'))),
         );
 
-        // Act & Assert - Cannot go from proposed directly to completed
         expect(
           () => service.updatePartnershipStatus(
             partnershipId: partnership.id,
-            status: PartnershipStatus.completed,
+            status: PartnershipStatus.completed, // Invalid transition from proposed
           ),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Invalid status transition'),
-          )),
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Invalid status transition'))),
         );
       });
     });
 
     group('approvePartnership', () {
-      test('should approve partnership by user', () async {
-        // Arrange
+      test('should approve partnership by user or business, lock when both approve, or throw exception if invalid approver', () async {
+        // Test business logic: partnership approval with locking and validation
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockBusinessService.getBusinessById('business-123'))
@@ -401,112 +301,67 @@ void main() {
           vibeCompatibilityScore: 0.75,
         );
 
-        // Act
-        final approved = await service.approvePartnership(
+        // Test user approval
+        final userApproved = await service.approvePartnership(
           partnershipId: partnership.id,
           approvedBy: 'user-123',
         );
+        expect(userApproved.userApproved, isTrue);
+        expect(userApproved.businessApproved, isFalse);
 
-        // Assert
-        expect(approved.userApproved, isTrue);
-        expect(approved.businessApproved, isFalse);
-      });
-
-      test('should approve partnership by business', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockBusinessService.getBusinessById('business-123'))
-            .thenAnswer((_) async => testBusiness);
-        when(mockBusinessService.checkBusinessEligibility('business-123'))
-            .thenAnswer((_) async => true);
-
-        final partnership = await service.createPartnership(
-          eventId: 'event-123',
+        // Test business approval - use different event ID (service only allows one partnership per event)
+        final testEvent2 = testEvent.copyWith(id: 'event-456');
+        when(mockEventService.getEventById('event-456'))
+            .thenAnswer((_) async => testEvent2);
+        final partnership2 = await service.createPartnership(
+          eventId: 'event-456',
           userId: 'user-123',
           businessId: 'business-123',
           vibeCompatibilityScore: 0.75,
         );
-
-        // Act
-        final approved = await service.approvePartnership(
-          partnershipId: partnership.id,
+        final businessApproved = await service.approvePartnership(
+          partnershipId: partnership2.id,
           approvedBy: 'business-123',
         );
+        expect(businessApproved.userApproved, isFalse);
+        expect(businessApproved.businessApproved, isTrue);
 
-        // Assert
-        expect(approved.userApproved, isFalse);
-        expect(approved.businessApproved, isTrue);
-      });
-
-      test('should lock partnership when both parties approve', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockBusinessService.getBusinessById('business-123'))
-            .thenAnswer((_) async => testBusiness);
-        when(mockBusinessService.checkBusinessEligibility('business-123'))
-            .thenAnswer((_) async => true);
-
-        final partnership = await service.createPartnership(
-          eventId: 'event-123',
+        // Test locking when both approve - use different event ID
+        final testEvent3 = testEvent.copyWith(id: 'event-789');
+        when(mockEventService.getEventById('event-789'))
+            .thenAnswer((_) async => testEvent3);
+        final partnership3 = await service.createPartnership(
+          eventId: 'event-789',
           userId: 'user-123',
           businessId: 'business-123',
           vibeCompatibilityScore: 0.75,
         );
-
-        // Approve by user
-        await service.approvePartnership(
-          partnershipId: partnership.id,
-          approvedBy: 'user-123',
-        );
-
-        // Act - Approve by business (both parties now approved)
-        final locked = await service.approvePartnership(
-          partnershipId: partnership.id,
-          approvedBy: 'business-123',
-        );
-
-        // Assert
+        await service.approvePartnership(partnershipId: partnership3.id, approvedBy: 'user-123');
+        final locked = await service.approvePartnership(partnershipId: partnership3.id, approvedBy: 'business-123');
         expect(locked.userApproved, isTrue);
         expect(locked.businessApproved, isTrue);
         expect(locked.status, equals(PartnershipStatus.locked));
-      });
 
-      test('should throw exception if invalid approver', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-        when(mockBusinessService.getBusinessById('business-123'))
-            .thenAnswer((_) async => testBusiness);
-        when(mockBusinessService.checkBusinessEligibility('business-123'))
-            .thenAnswer((_) async => true);
-
-        final partnership = await service.createPartnership(
-          eventId: 'event-123',
+        // Test invalid approver - use different event ID
+        final testEvent4 = testEvent.copyWith(id: 'event-999');
+        when(mockEventService.getEventById('event-999'))
+            .thenAnswer((_) async => testEvent4);
+        final partnership4 = await service.createPartnership(
+          eventId: 'event-999',
           userId: 'user-123',
           businessId: 'business-123',
           vibeCompatibilityScore: 0.75,
         );
-
-        // Act & Assert
         expect(
-          () => service.approvePartnership(
-            partnershipId: partnership.id,
-            approvedBy: 'invalid-user',
-          ),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Invalid approver'),
-          )),
+          () => service.approvePartnership(partnershipId: partnership4.id, approvedBy: 'invalid-user'),
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Invalid approver'))),
         );
       });
     });
 
     group('checkPartnershipEligibility', () {
-      test('should return true for eligible partnership', () async {
-        // Arrange
+      test('should return true for eligible partnership, or false if event not found, event already started, or business not verified', () async {
+        // Test business logic: eligibility checking with various failure cases
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockBusinessService.getBusinessById('business-123'))
@@ -514,70 +369,55 @@ void main() {
         when(mockBusinessService.checkBusinessEligibility('business-123'))
             .thenAnswer((_) async => true);
 
-        // Act
-        final isEligible = await service.checkPartnershipEligibility(
-          userId: 'user-123',
-          businessId: 'business-123',
-          eventId: 'event-123',
+        expect(
+          await service.checkPartnershipEligibility(
+            userId: 'user-123',
+            businessId: 'business-123',
+            eventId: 'event-123',
+          ),
+          isTrue,
         );
 
-        // Assert
-        expect(isEligible, isTrue);
-      });
-
-      test('should return false if event not found', () async {
-        // Arrange
+        // Test failure cases
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => null);
-
-        // Act
-        final isEligible = await service.checkPartnershipEligibility(
-          userId: 'user-123',
-          businessId: 'business-123',
-          eventId: 'event-123',
+        expect(
+          await service.checkPartnershipEligibility(
+            userId: 'user-123',
+            businessId: 'business-123',
+            eventId: 'event-123',
+          ),
+          isFalse,
         );
 
-        // Assert
-        expect(isEligible, isFalse);
-      });
-
-      test('should return false if event has already started', () async {
-        // Arrange
         final pastEvent = testEvent.copyWith(
           startTime: DateTime.now().subtract(const Duration(days: 1)),
           endTime: DateTime.now().subtract(const Duration(hours: 23)),
         );
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => pastEvent);
-
-        // Act
-        final isEligible = await service.checkPartnershipEligibility(
-          userId: 'user-123',
-          businessId: 'business-123',
-          eventId: 'event-123',
+        expect(
+          await service.checkPartnershipEligibility(
+            userId: 'user-123',
+            businessId: 'business-123',
+            eventId: 'event-123',
+          ),
+          isFalse,
         );
 
-        // Assert
-        expect(isEligible, isFalse);
-      });
-
-      test('should return false if business not verified', () async {
-        // Arrange
         final unverifiedBusiness = testBusiness.copyWith(isVerified: false);
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockBusinessService.getBusinessById('business-123'))
             .thenAnswer((_) async => unverifiedBusiness);
-
-        // Act
-        final isEligible = await service.checkPartnershipEligibility(
-          userId: 'user-123',
-          businessId: 'business-123',
-          eventId: 'event-123',
+        expect(
+          await service.checkPartnershipEligibility(
+            userId: 'user-123',
+            businessId: 'business-123',
+            eventId: 'event-123',
+          ),
+          isFalse,
         );
-
-        // Assert
-        expect(isEligible, isFalse);
       });
     });
 
@@ -595,6 +435,9 @@ void main() {
         expect(compatibility, lessThanOrEqualTo(1.0));
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

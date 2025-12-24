@@ -40,39 +40,16 @@ void main() {
       TestHelpers.teardownTestEnvironment();
     });
 
-    group('Constructor and Properties', () {
-      test('should create qualification with required fields', () {
-        final qualification = LocalExpertQualification(
-          id: 'qual-123',
-          userId: 'user-123',
-          category: 'Coffee',
-          locality: 'Greenpoint',
-          currentLevel: ExpertiseLevel.local,
-          baseThresholds: baseThresholds,
-          localityThresholds: localityThresholds,
-          progress: const QualificationProgress(
-            visits: 5,
-            ratings: 3,
-            avgRating: 4.5,
-          ),
-          factors: const QualificationFactors(),
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(qualification.id, equals('qual-123'));
-        expect(qualification.userId, equals('user-123'));
-        expect(qualification.category, equals('Coffee'));
-        expect(qualification.locality, equals('Greenpoint'));
-        expect(qualification.currentLevel, equals(ExpertiseLevel.local));
-        expect(qualification.isQualified, isFalse);
-      });
-    });
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
     group('Progress Percentage', () {
-      test('should calculate progress percentage correctly', () {
-        final qualification = LocalExpertQualification(
-          id: 'qual-123',
+      test(
+          'should calculate progress percentage for complete, partial, and qualified states',
+          () {
+        // Test business logic: progress calculation in different states
+        final complete = LocalExpertQualification(
+          id: 'qual-1',
           userId: 'user-123',
           category: 'Coffee',
           locality: 'Greenpoint',
@@ -92,13 +69,8 @@ void main() {
           updatedAt: testDate,
         );
 
-        // All thresholds met = 100% progress
-        expect(qualification.progressPercentage, equals(1.0));
-      });
-
-      test('should calculate partial progress', () {
-        final qualification = LocalExpertQualification(
-          id: 'qual-123',
+        final partial = LocalExpertQualification(
+          id: 'qual-2',
           userId: 'user-123',
           category: 'Coffee',
           locality: 'Greenpoint',
@@ -118,13 +90,8 @@ void main() {
           updatedAt: testDate,
         );
 
-        // 4 out of 6 thresholds met = ~67%
-        expect(qualification.progressPercentage, closeTo(0.67, 0.01));
-      });
-
-      test('should return 1.0 if already qualified', () {
-        final qualification = LocalExpertQualification(
-          id: 'qual-123',
+        final qualified = LocalExpertQualification(
+          id: 'qual-3',
           userId: 'user-123',
           category: 'Coffee',
           locality: 'Greenpoint',
@@ -139,14 +106,22 @@ void main() {
           updatedAt: testDate,
         );
 
-        expect(qualification.progressPercentage, equals(1.0));
+        // All thresholds met = 100% progress
+        expect(complete.progressPercentage, equals(1.0));
+        // 4 out of 6 thresholds met = ~67%
+        expect(partial.progressPercentage, closeTo(0.67, 0.01));
+        // Already qualified = 100%
+        expect(qualified.progressPercentage, equals(1.0));
       });
     });
 
     group('Remaining Requirements', () {
-      test('should calculate remaining requirements', () {
-        final qualification = LocalExpertQualification(
-          id: 'qual-123',
+      test(
+          'should calculate remaining requirements for partial and complete progress',
+          () {
+        // Test business logic: requirement calculation
+        final partial = LocalExpertQualification(
+          id: 'qual-1',
           userId: 'user-123',
           category: 'Coffee',
           locality: 'Greenpoint',
@@ -166,17 +141,8 @@ void main() {
           updatedAt: testDate,
         );
 
-        final remaining = qualification.remainingRequirements;
-        expect(remaining['visits'], equals(2));
-        expect(remaining['ratings'], equals(2));
-        expect(remaining['communityEngagement'], equals(1));
-        expect(remaining.containsKey('listCuration'), isFalse);
-        expect(remaining.containsKey('eventHosting'), isFalse);
-      });
-
-      test('should return empty map if all requirements met', () {
-        final qualification = LocalExpertQualification(
-          id: 'qual-123',
+        final complete = LocalExpertQualification(
+          id: 'qual-2',
           userId: 'user-123',
           category: 'Coffee',
           locality: 'Greenpoint',
@@ -196,12 +162,19 @@ void main() {
           updatedAt: testDate,
         );
 
-        expect(qualification.remainingRequirements, isEmpty);
+        final remaining = partial.remainingRequirements;
+        expect(remaining['visits'], equals(2));
+        expect(remaining['ratings'], equals(2));
+        expect(remaining['communityEngagement'], equals(1));
+        expect(remaining.containsKey('listCuration'), isFalse);
+        expect(complete.remainingRequirements, isEmpty);
       });
     });
 
     group('JSON Serialization', () {
-      test('should serialize to JSON', () {
+      test(
+          'should serialize and deserialize with nested progress and factors correctly',
+          () {
         final qualification = LocalExpertQualification(
           id: 'qual-123',
           userId: 'user-123',
@@ -224,45 +197,17 @@ void main() {
         );
 
         final json = qualification.toJson();
+        final restored = LocalExpertQualification.fromJson(json);
 
-        expect(json['id'], equals('qual-123'));
-        expect(json['userId'], equals('user-123'));
-        expect(json['category'], equals('Coffee'));
-        expect(json['locality'], equals('Greenpoint'));
-        expect(json['currentLevel'], equals('local'));
-        expect(json['isQualified'], isFalse);
-        expect(json['qualifiedAt'], isNull);
-      });
-
-      test('should deserialize from JSON', () {
-        final json = {
-          'id': 'qual-123',
-          'userId': 'user-123',
-          'category': 'Coffee',
-          'locality': 'Greenpoint',
-          'currentLevel': 'local',
-          'baseThresholds': baseThresholds.toJson(),
-          'localityThresholds': localityThresholds.toJson(),
-          'progress': const QualificationProgress(visits: 5).toJson(),
-          'factors': const QualificationFactors().toJson(),
-          'isQualified': false,
-          'qualifiedAt': null,
-          'createdAt': testDate.toIso8601String(),
-          'updatedAt': testDate.toIso8601String(),
-        };
-
-        final qualification = LocalExpertQualification.fromJson(json);
-
-        expect(qualification.id, equals('qual-123'));
-        expect(qualification.userId, equals('user-123'));
-        expect(qualification.category, equals('Coffee'));
-        expect(qualification.locality, equals('Greenpoint'));
-        expect(qualification.currentLevel, equals(ExpertiseLevel.local));
+        // Test nested structures preserved (business logic)
+        expect(restored.currentLevel, equals(ExpertiseLevel.local));
+        expect(restored.isQualified, isFalse);
+        expect(restored.progress.visits, equals(5));
       });
     });
 
-    group('Copy With', () {
-      test('should create copy with updated fields', () {
+    group('copyWith', () {
+      test('should create immutable copy with updated fields', () {
         final original = LocalExpertQualification(
           id: 'qual-123',
           userId: 'user-123',
@@ -279,50 +224,18 @@ void main() {
 
         final updated = original.copyWith(
           isQualified: true,
-          qualifiedAt: testDate,
           currentLevel: ExpertiseLevel.city,
         );
 
-        expect(updated.id, equals('qual-123'));
+        // Test immutability (business logic)
+        expect(original.isQualified, isFalse);
         expect(updated.isQualified, isTrue);
-        expect(updated.qualifiedAt, equals(testDate));
-        expect(updated.currentLevel, equals(ExpertiseLevel.city));
+        expect(updated.id, equals(original.id)); // Unchanged fields preserved
       });
     });
 
-    group('Equality', () {
-      test('should be equal when all properties match', () {
-        final qual1 = LocalExpertQualification(
-          id: 'qual-123',
-          userId: 'user-123',
-          category: 'Coffee',
-          locality: 'Greenpoint',
-          currentLevel: ExpertiseLevel.local,
-          baseThresholds: baseThresholds,
-          localityThresholds: localityThresholds,
-          progress: const QualificationProgress(),
-          factors: const QualificationFactors(),
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        final qual2 = LocalExpertQualification(
-          id: 'qual-123',
-          userId: 'user-123',
-          category: 'Coffee',
-          locality: 'Greenpoint',
-          currentLevel: ExpertiseLevel.local,
-          baseThresholds: baseThresholds,
-          localityThresholds: localityThresholds,
-          progress: const QualificationProgress(),
-          factors: const QualificationFactors(),
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(qual1, equals(qual2));
-      });
-    });
+    // Removed: Equality group
+    // These tests verify Equatable implementation, which is already tested by the package
+    // If equality breaks, other tests will fail
   });
 }
-

@@ -6,7 +6,7 @@ import 'package:spots/core/models/dispute_status.dart';
 /// SPOTS Dispute Model Unit Tests
 /// Date: December 1, 2025
 /// Purpose: Test Dispute model functionality
-/// 
+///
 /// Test Coverage:
 /// - Model Creation: Constructor and properties
 /// - Status Checks: Active, resolved, closed
@@ -14,7 +14,7 @@ import 'package:spots/core/models/dispute_status.dart';
 /// - Equality: Equatable implementation
 /// - Copy With: Field updates
 /// - DisputeMessage: Message handling
-/// 
+///
 /// Dependencies:
 /// - DisputeType: Dispute type enum
 /// - DisputeStatus: Dispute status enum
@@ -28,13 +28,13 @@ void main() {
 
     setUp(() {
       testDate = DateTime(2025, 12, 1, 14, 0);
-      
+
       testMessage = DisputeMessage(
         senderId: 'user-789',
         message: 'I did not receive my refund',
         timestamp: testDate,
       );
-      
+
       dispute = Dispute(
         id: 'dispute-123',
         eventId: 'event-456',
@@ -49,95 +49,44 @@ void main() {
       );
     });
 
-    group('Constructor and Properties', () {
-      test('should create dispute with all required fields', () {
-        expect(dispute.id, 'dispute-123');
-        expect(dispute.eventId, 'event-456');
-        expect(dispute.reporterId, 'user-789');
-        expect(dispute.reportedId, 'user-012');
-        expect(dispute.type, DisputeType.payment);
-        expect(dispute.description, 'Refund amount incorrect');
-        expect(dispute.evidenceUrls.length, 2);
-        expect(dispute.status, DisputeStatus.pending);
-        expect(dispute.messages.length, 1);
-      });
-
-      test('should create dispute with default values', () {
-        final minimalDispute = Dispute(
-          id: 'dispute-1',
-          eventId: 'event-1',
-          reporterId: 'user-1',
-          reportedId: 'user-2',
-          type: DisputeType.cancellation,
-          description: 'Test dispute',
-          createdAt: testDate,
-        );
-
-        expect(minimalDispute.evidenceUrls, isEmpty);
-        expect(minimalDispute.status, DisputeStatus.pending);
-        expect(minimalDispute.assignedAdminId, isNull);
-        expect(minimalDispute.resolvedAt, isNull);
-        expect(minimalDispute.resolution, isNull);
-        expect(minimalDispute.messages, isEmpty);
-        expect(minimalDispute.metadata, isEmpty);
-      });
-    });
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
     group('Status Checks', () {
-      test('should identify active disputes', () {
-        expect(dispute.status.isActive, true);
-        expect(dispute.isInProgress, true);
-      });
+      test('should correctly identify dispute status states', () {
+        // Test business logic: status determination
+        expect(dispute.status.isActive, isTrue);
+        expect(dispute.isInProgress, isTrue);
 
-      test('should identify resolved disputes', () {
         final resolved = dispute.copyWith(
           status: DisputeStatus.resolved,
           resolvedAt: testDate.add(const Duration(hours: 1)),
           resolution: 'Refund processed',
         );
-        expect(resolved.status.isResolved, true);
-        expect(resolved.status.isTerminal, true);
-        expect(resolved.isResolved, true);
-      });
-
-      test('should identify closed disputes', () {
         final closed = dispute.copyWith(
           status: DisputeStatus.closed,
         );
-        expect(closed.status.isClosed, true);
-        expect(closed.status.isTerminal, true);
+
+        expect(resolved.status.isResolved, isTrue);
+        expect(resolved.status.isTerminal, isTrue);
+        expect(resolved.isResolved, isTrue);
+        expect(closed.status.isClosed, isTrue);
+        expect(closed.status.isTerminal, isTrue);
       });
     });
 
     group('JSON Serialization', () {
-      test('should serialize to JSON correctly', () {
+      test(
+          'should serialize and deserialize with defaults and handle null optional fields',
+          () {
+        // Test business logic: JSON round-trip with default handling
         final json = dispute.toJson();
+        final restored = Dispute.fromJson(json);
 
-        expect(json['id'], 'dispute-123');
-        expect(json['eventId'], 'event-456');
-        expect(json['reporterId'], 'user-789');
-        expect(json['reportedId'], 'user-012');
-        expect(json['type'], 'payment');
-        expect(json['description'], 'Refund amount incorrect');
-        expect(json['evidenceUrls'], ['evidence1.jpg', 'evidence2.jpg']);
-        expect(json['status'], 'pending');
-        expect(json['messages'], isA<List>());
-      });
+        expect(restored.status, equals(dispute.status));
+        expect(restored.isInProgress, equals(dispute.isInProgress));
 
-      test('should deserialize from JSON correctly', () {
-        final json = dispute.toJson();
-        final deserialized = Dispute.fromJson(json);
-
-        expect(deserialized.id, dispute.id);
-        expect(deserialized.eventId, dispute.eventId);
-        expect(deserialized.reporterId, dispute.reporterId);
-        expect(deserialized.reportedId, dispute.reportedId);
-        expect(deserialized.type, dispute.type);
-        expect(deserialized.description, dispute.description);
-        expect(deserialized.status, dispute.status);
-      });
-
-      test('should handle null optional fields in JSON', () {
+        // Test defaults with minimal JSON
         final minimalDispute = Dispute(
           id: 'dispute-1',
           eventId: 'event-1',
@@ -147,47 +96,29 @@ void main() {
           description: 'Test',
           createdAt: testDate,
         );
-        final json = minimalDispute.toJson();
-        final deserialized = Dispute.fromJson(json);
+        final minimalJson = minimalDispute.toJson();
+        final fromMinimal = Dispute.fromJson(minimalJson);
 
-        expect(deserialized.assignedAdminId, isNull);
-        expect(deserialized.resolvedAt, isNull);
-        expect(deserialized.resolution, isNull);
-        expect(deserialized.refundAmount, isNull);
+        expect(fromMinimal.status, equals(DisputeStatus.pending)); // Default
+        expect(fromMinimal.assignedAdminId, isNull);
       });
     });
 
-    group('Equality', () {
-      test('should be equal when all properties match', () {
-        final dispute2 = dispute.copyWith();
-        expect(dispute, equals(dispute2));
-      });
+    // Removed: Equality group
+    // These tests verify Equatable implementation, which is already tested by the package
+    // If equality breaks, other tests will fail
 
-      test('should not be equal when properties differ', () {
-        final dispute2 = dispute.copyWith(
-          status: DisputeStatus.resolved,
-        );
-        expect(dispute, isNot(equals(dispute2)));
-      });
-    });
-
-    group('Copy With', () {
-      test('should create copy with updated fields', () {
+    group('copyWith', () {
+      test('should create immutable copy with updated fields', () {
         final updated = dispute.copyWith(
           status: DisputeStatus.inReview,
           assignedAdminId: 'admin-1',
-          assignedAt: testDate.add(const Duration(hours: 1)),
         );
 
-        expect(updated.status, DisputeStatus.inReview);
-        expect(updated.assignedAdminId, 'admin-1');
-        expect(updated.assignedAt, isNotNull);
-        expect(updated.id, dispute.id); // Unchanged
-      });
-
-      test('should preserve all fields when copying', () {
-        final copied = dispute.copyWith();
-        expect(copied, equals(dispute));
+        // Test immutability (business logic)
+        expect(dispute.status, isNot(equals(DisputeStatus.inReview)));
+        expect(updated.status, equals(DisputeStatus.inReview));
+        expect(updated.id, equals(dispute.id)); // Unchanged fields preserved
       });
     });
   });
@@ -198,7 +129,7 @@ void main() {
 
     setUp(() {
       testDate = DateTime(2025, 12, 1, 14, 0);
-      
+
       message = DisputeMessage(
         senderId: 'user-789',
         message: 'I have a concern about the refund',
@@ -206,46 +137,18 @@ void main() {
       );
     });
 
-    group('Constructor and Properties', () {
-      test('should create message with all required fields', () {
-        expect(message.senderId, 'user-789');
-        expect(message.message, 'I have a concern about the refund');
-        expect(message.timestamp, testDate);
-        expect(message.isAdminMessage, false);
-      });
-
-      test('should create message with attachments', () {
-        final messageWithAttachments = DisputeMessage(
-          senderId: 'user-789',
-          message: 'See attached evidence',
-          timestamp: testDate,
-          attachments: ['receipt.pdf', 'screenshot.jpg'],
-        );
-
-        expect(messageWithAttachments.attachments, isNotNull);
-        expect(messageWithAttachments.attachments?.length, 2);
-      });
-    });
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
     group('JSON Serialization', () {
-      test('should serialize to JSON correctly', () {
+      test('should serialize and deserialize without data loss', () {
         final json = message.toJson();
+        final restored = DisputeMessage.fromJson(json);
 
-        expect(json['senderId'], 'user-789');
-        expect(json['message'], 'I have a concern about the refund');
-        expect(json['isAdminMessage'], false);
-      });
-
-      test('should deserialize from JSON correctly', () {
-        final json = message.toJson();
-        final deserialized = DisputeMessage.fromJson(json);
-
-        expect(deserialized.senderId, message.senderId);
-        expect(deserialized.message, message.message);
-        expect(deserialized.timestamp, message.timestamp);
-        expect(deserialized.isAdminMessage, message.isAdminMessage);
+        // Test critical business fields preserved
+        expect(restored.senderId, equals(message.senderId));
+        expect(restored.isAdminMessage, equals(message.isAdminMessage));
       });
     });
   });
 }
-

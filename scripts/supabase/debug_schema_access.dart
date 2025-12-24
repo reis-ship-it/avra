@@ -1,3 +1,3 @@
-export '../../debug_schema_access.dart';
-
+// Placeholder file - implementation would go here
+// This file is meant to be a standalone script for debugging Supabase schema access
 

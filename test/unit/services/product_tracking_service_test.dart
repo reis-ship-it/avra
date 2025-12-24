@@ -8,6 +8,7 @@ import 'package:spots/core/models/product_tracking.dart';
 import 'package:spots/core/models/sponsorship.dart';
 
 import 'product_tracking_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([SponsorshipService, RevenueSplitService])
 void main() {
@@ -38,36 +39,33 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Product tracking tests focus on business logic (product contribution, sales, revenue attribution), not property assignment
+
     group('recordProductContribution', () {
-      test('should record product contribution for product sponsorship', () async {
-        // Arrange
+      test(
+          'should record product contribution for product sponsorship, throw exception if sponsorship not found, or throw exception if sponsorship type does not support products',
+          () async {
+        // Test business logic: product contribution recording
         when(mockSponsorshipService.getSponsorshipById('sponsorship-123'))
             .thenAnswer((_) async => testSponsorship);
 
-        // Act
-        final tracking = await service.recordProductContribution(
+        final tracking1 = await service.recordProductContribution(
           sponsorshipId: 'sponsorship-123',
           productName: 'Coffee Beans',
           quantityProvided: 100,
           unitPrice: 15.00,
           description: 'Premium coffee beans',
         );
+        expect(tracking1, isA<ProductTracking>());
+        expect(tracking1.sponsorshipId, equals('sponsorship-123'));
+        expect(tracking1.productName, equals('Coffee Beans'));
+        expect(tracking1.quantityProvided, equals(100));
+        expect(tracking1.unitPrice, equals(15.00));
+        expect(tracking1.quantityRemaining, equals(100));
 
-        // Assert
-        expect(tracking, isA<ProductTracking>());
-        expect(tracking.sponsorshipId, equals('sponsorship-123'));
-        expect(tracking.productName, equals('Coffee Beans'));
-        expect(tracking.quantityProvided, equals(100));
-        expect(tracking.unitPrice, equals(15.00));
-        expect(tracking.quantityRemaining, equals(100));
-      });
-
-      test('should throw exception if sponsorship not found', () async {
-        // Arrange
         when(mockSponsorshipService.getSponsorshipById('sponsorship-123'))
             .thenAnswer((_) async => null);
-
-        // Act & Assert
         expect(
           () => service.recordProductContribution(
             sponsorshipId: 'sponsorship-123',
@@ -81,18 +79,13 @@ void main() {
             contains('Sponsorship not found'),
           )),
         );
-      });
 
-      test('should throw exception if sponsorship type does not support products', () async {
-        // Arrange
         final financialSponsorship = testSponsorship.copyWith(
           type: SponsorshipType.financial,
           productValue: null,
         );
         when(mockSponsorshipService.getSponsorshipById('sponsorship-123'))
             .thenAnswer((_) async => financialSponsorship);
-
-        // Act & Assert
         expect(
           () => service.recordProductContribution(
             sponsorshipId: 'sponsorship-123',
@@ -110,51 +103,41 @@ void main() {
     });
 
     group('recordProductSale', () {
-      test('should record product sale and update quantity', () async {
-        // Arrange
+      test(
+          'should record product sale and update quantity or throw exception if insufficient quantity available',
+          () async {
+        // Test business logic: product sale recording
         when(mockSponsorshipService.getSponsorshipById('sponsorship-123'))
             .thenAnswer((_) async => testSponsorship);
 
-        final tracking = await service.recordProductContribution(
+        final tracking1 = await service.recordProductContribution(
           sponsorshipId: 'sponsorship-123',
           productName: 'Coffee Beans',
           quantityProvided: 100,
           unitPrice: 15.00,
         );
-
-        // Act
-        final updated = await service.recordProductSale(
-          productTrackingId: tracking.id,
+        final updated1 = await service.recordProductSale(
+          productTrackingId: tracking1.id,
           quantity: 10,
           buyerId: 'user-456',
           salePrice: 15.00,
         );
+        expect(updated1.quantitySold, equals(10));
+        expect(updated1.quantityRemaining, equals(90));
+        expect(updated1.sales, hasLength(1));
+        expect(updated1.sales[0].quantity, equals(10));
+        expect(updated1.sales[0].buyerId, equals('user-456'));
 
-        // Assert
-        expect(updated.quantitySold, equals(10));
-        expect(updated.quantityRemaining, equals(90));
-        expect(updated.sales, hasLength(1));
-        expect(updated.sales[0].quantity, equals(10));
-        expect(updated.sales[0].buyerId, equals('user-456'));
-      });
-
-      test('should throw exception if insufficient quantity available', () async {
-        // Arrange
-        when(mockSponsorshipService.getSponsorshipById('sponsorship-123'))
-            .thenAnswer((_) async => testSponsorship);
-
-        final tracking = await service.recordProductContribution(
+        final tracking2 = await service.recordProductContribution(
           sponsorshipId: 'sponsorship-123',
           productName: 'Coffee Beans',
           quantityProvided: 10,
           unitPrice: 15.00,
         );
-
-        // Act & Assert
         expect(
           () => service.recordProductSale(
-            productTrackingId: tracking.id,
-            quantity: 20, // More than available
+            productTrackingId: tracking2.id,
+            quantity: 20,
             buyerId: 'user-456',
             salePrice: 15.00,
           ),
@@ -188,13 +171,20 @@ void main() {
         );
 
         // Act
-        final updated = await service.calculateRevenueAttribution(
+        final revenueDistribution = await service.calculateRevenueAttribution(
           productTrackingId: tracking.id,
         );
 
+        // Get updated tracking to verify
+        final updatedTracking =
+            await service.getProductTrackingById(tracking.id);
+
         // Assert
-        expect(updated.totalRevenue, equals(150.00)); // 10 * 15.00
-        expect(updated.revenueAttributed, isNotNull);
+        expect(revenueDistribution, isA<Map<String, double>>());
+        expect(revenueDistribution, isNotEmpty);
+        expect(updatedTracking, isNotNull);
+        expect(updatedTracking!.totalSales, equals(150.00)); // 10 * 15.00
+        expect(updatedTracking.revenueDistribution, isNotEmpty);
       });
     });
 
@@ -232,8 +222,10 @@ void main() {
     });
 
     group('getProductTrackingById', () {
-      test('should return product tracking by ID', () async {
-        // Arrange
+      test(
+          'should return product tracking by ID or return null if product tracking not found',
+          () async {
+        // Test business logic: product tracking retrieval
         when(mockSponsorshipService.getSponsorshipById('sponsorship-123'))
             .thenAnswer((_) async => testSponsorship);
 
@@ -243,23 +235,18 @@ void main() {
           quantityProvided: 100,
           unitPrice: 15.00,
         );
+        final tracking1 = await service.getProductTrackingById(created.id);
+        expect(tracking1, isNotNull);
+        expect(tracking1?.id, equals(created.id));
 
-        // Act
-        final tracking = await service.getProductTrackingById(created.id);
-
-        // Assert
-        expect(tracking, isNotNull);
-        expect(tracking?.id, equals(created.id));
+        final tracking2 =
+            await service.getProductTrackingById('nonexistent-id');
+        expect(tracking2, isNull);
       });
+    });
 
-      test('should return null if product tracking not found', () async {
-        // Act
-        final tracking = await service.getProductTrackingById('nonexistent-id');
-
-        // Assert
-        expect(tracking, isNull);
-      });
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

@@ -8,4 +8,5 @@ abstract class AuthRepository {
   Future<User?> updateCurrentUser(User user);
   Future<bool> isOfflineMode();
   Future<void> updateUser(User user);
+  Future<void> updatePassword(String currentPassword, String newPassword);
 }

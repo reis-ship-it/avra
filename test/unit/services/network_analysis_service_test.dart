@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/network_analysis_service.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// SPOTS Network Analysis Service Tests
 /// Date: November 20, 2025
@@ -136,5 +137,9 @@ void main() {
         expect(instance, isA<NetworkAnalysisService>());
       });
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }

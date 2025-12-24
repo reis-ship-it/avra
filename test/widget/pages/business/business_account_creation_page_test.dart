@@ -14,31 +14,18 @@ void main() {
       testUser = ModelFactories.createTestUser();
     });
 
-    testWidgets('displays all required form fields', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Business account creation page tests focus on business logic (form fields display, business account creation title display), not property assignment
+
+    testWidgets(
+        'should display all required form fields or display business account creation title',
+        (WidgetTester tester) async {
+      // Test business logic: Business account creation page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: BusinessAccountCreationPage(user: testUser),
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify form is present
-      expect(find.byType(BusinessAccountCreationPage), findsOneWidget);
-    });
-
-    testWidgets('displays business account creation title', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: BusinessAccountCreationPage(user: testUser),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show business account creation UI
       expect(find.byType(BusinessAccountCreationPage), findsOneWidget);
     });
   });
 }
-

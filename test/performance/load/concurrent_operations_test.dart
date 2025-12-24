@@ -738,21 +738,47 @@ Future<void> _forceGarbageCollection() async {
 }
 
 // Mock repository creators (implement based on actual interfaces)
-// Minimal in-file fakes for repository and connectivity
+// Real fake implementations with actual behavior (not stubs)
 class _FakeConnectivity implements Connectivity {
+  ConnectivityResult _currentResult = ConnectivityResult.wifi;
+  
+  /// Set the connectivity state for testing
+  void setConnectivity(ConnectivityResult result) {
+    _currentResult = result;
+  }
+  
   @override
-  Future<List<ConnectivityResult>> checkConnectivity() async => [ConnectivityResult.wifi];
+  Future<List<ConnectivityResult>> checkConnectivity() async => [_currentResult];
 
-  // Satisfy interface with stubs
   @override
-  // ignore: no_logic_in_create_state
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  Stream<List<ConnectivityResult>> get onConnectivityChanged {
+    return Stream.value([_currentResult]);
 }
+}
+
+/// Real fake implementation with in-memory storage for remote data source
 class _FakeSpotsRemote implements SpotsRemoteDataSource {
-  Future<List<Spot>> getSpots() async => [];
-  Future<Spot> createSpot(Spot spot) async => spot;
-  Future<Spot> updateSpot(Spot spot) async => spot;
-  Future<void> deleteSpot(String id) async {}
+  final Map<String, Spot> _storage = {};
+  
+  @override
+  Future<List<Spot>> getSpots() async => _storage.values.toList();
+  
+  @override
+  Future<Spot> createSpot(Spot spot) async {
+    _storage[spot.id] = spot;
+    return spot;
+  }
+  
+  @override
+  Future<Spot> updateSpot(Spot spot) async {
+    _storage[spot.id] = spot;
+    return spot;
+  }
+  
+  @override
+  Future<void> deleteSpot(String id) async {
+    _storage.remove(id);
+  }
 }
 class _FakeSpotsLocal implements SpotsLocalDataSource {
   final Map<String, Spot> _db = {};
@@ -808,9 +834,16 @@ HybridSearchBloc _createMockHybridSearchBloc() {
   );
 }
 
+/// Real fake implementation with actual learning and suggestion behavior
 class _FakeAISearchSuggestionsService implements AISearchSuggestionsService {
+  final Map<String, int> _searchPatterns = {};
+  final List<String> _recentSearches = [];
+  final Map<String, List<String>> _learnedPatterns = {};
+  
   @override
-  Map<String, dynamic> getSearchPatterns() => {};
+  Map<String, dynamic> getSearchPatterns() {
+    return Map<String, dynamic>.from(_searchPatterns);
+  }
 
   @override
   Future<List<SearchSuggestion>> generateSuggestions({
@@ -818,17 +851,91 @@ class _FakeAISearchSuggestionsService implements AISearchSuggestionsService {
     Position? userLocation,
     List<Spot>? recentSpots,
     Map<String, int>? communityTrends,
-  }) async => [];
+  }) async {
+    final suggestions = <SearchSuggestion>[];
+    
+    // Generate basic suggestions based on query
+    if (query.isNotEmpty) {
+      // Query completion suggestions
+      final normalizedQuery = query.toLowerCase();
+      for (final pattern in _learnedPatterns.keys) {
+        if (pattern.toLowerCase().contains(normalizedQuery) || 
+            normalizedQuery.contains(pattern.toLowerCase())) {
+          for (final suggestion in _learnedPatterns[pattern]!) {
+            suggestions.add(SearchSuggestion(
+              text: suggestion,
+              type: SuggestionType.completion,
+              confidence: 0.7,
+              icon: 'search',
+            ));
+          }
+        }
+      }
+      
+      // Recent search suggestions
+      for (final recent in _recentSearches) {
+        if (recent.toLowerCase().contains(normalizedQuery)) {
+          suggestions.add(SearchSuggestion(
+            text: recent,
+            type: SuggestionType.recent,
+            confidence: 0.8,
+            icon: 'history',
+          ));
+        }
+      }
+    }
+    
+    // Community trend suggestions
+    if (communityTrends != null && communityTrends.isNotEmpty) {
+      final topTrend = communityTrends.entries
+          .reduce((a, b) => a.value > b.value ? a : b);
+      suggestions.add(SearchSuggestion(
+        text: topTrend.key,
+        type: SuggestionType.trending,
+        confidence: 0.9,
+        icon: 'trending_up',
+      ));
+    }
+    
+    return suggestions.take(8).toList();
+  }
 
   @override
   void learnFromSearch({
     required String query,
     required List<Spot> results,
     String? selectedSpotId,
-  }) {}
+  }) {
+    // Track search patterns
+    final normalizedQuery = query.toLowerCase();
+    _searchPatterns[normalizedQuery] = (_searchPatterns[normalizedQuery] ?? 0) + 1;
+    
+    // Store recent searches
+    _recentSearches.insert(0, query);
+    if (_recentSearches.length > 20) {
+      _recentSearches.removeLast();
+    }
+    
+    // Learn from results
+    if (results.isNotEmpty) {
+      final categories = results.map((s) => s.category).whereType<String>().toSet();
+      for (final category in categories) {
+        if (!_learnedPatterns.containsKey(normalizedQuery)) {
+          _learnedPatterns[normalizedQuery] = [];
+        }
+        if (!_learnedPatterns[normalizedQuery]!.contains(category)) {
+          _learnedPatterns[normalizedQuery]!.add(category);
+        }
+      }
+    }
+  }
 
   @override
-  void clearLearningData() {}
+  void clearLearningData() {
+    _searchPatterns.clear();
+    _recentSearches.clear();
+    _learnedPatterns.clear();
+  }
 }
 
 // Mock use cases

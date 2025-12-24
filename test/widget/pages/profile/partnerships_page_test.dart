@@ -11,34 +11,20 @@ void main() {
       mockAuthBloc = MockAuthBloc();
     });
 
-    testWidgets('displays partnerships page', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Partnerships page tests focus on business logic (page display, empty state), not property assignment
+
+    testWidgets(
+        'should display partnerships page or display empty state when no partnerships',
+        (WidgetTester tester) async {
+      // Test business logic: Partnerships page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const PartnershipsPage(),
         authBloc: mockAuthBloc,
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
       expect(find.byType(PartnershipsPage), findsOneWidget);
       expect(find.text('Your Partnerships'), findsOneWidget);
     });
-
-    testWidgets('displays empty state when no partnerships', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const PartnershipsPage(),
-        authBloc: mockAuthBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert
-      expect(find.byType(PartnershipsPage), findsOneWidget);
-    });
   });
 }
-

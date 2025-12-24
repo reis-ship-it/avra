@@ -18,6 +18,7 @@ import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/presentation/widgets/boundaries/border_visualization_widget.dart';
+import 'package:spots/presentation/widgets/chat/chat_button_with_badge.dart';
 import 'dart:developer' as developer;
 
 class MapView extends StatefulWidget {
@@ -457,6 +458,7 @@ class _MapViewState extends State<MapView> {
               },
             ),
             actions: [
+              const ChatButtonWithBadge(),
               IconButton(
                 icon:
                     Icon(_selectedList == null ? Icons.list : Icons.checklist),

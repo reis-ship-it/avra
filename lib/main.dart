@@ -4,27 +4,32 @@ import 'package:spots/app.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_seeder.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/data/datasources/local/auth_sembast_datasource.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:spots/core/services/storage_health_checker.dart';
 import 'package:spots/core/services/logger.dart';
+import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const logger = AppLogger(defaultTag: 'MAIN', minimumLevel: LogLevel.debug);
 
+  logger.info('🚀 [MAIN] App starting...');
+
   // Initialize Firebase (mobile and desktop; web via options)
   try {
+    logger.info('🔥 [MAIN] Initializing Firebase...');
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    logger.info('Firebase initialized');
-  } catch (e) {
-    logger.warn('Firebase init skipped or failed: $e');
+    logger.info('✅ [MAIN] Firebase initialized successfully');
+  } catch (e, stackTrace) {
+    logger.error('❌ [MAIN] Firebase init failed', error: e);
+    logger.debug('Stack trace: $stackTrace');
+    // Continue - Firebase is optional for some features
   }
-  
+
   // Helper function to check if data already exists
   Future<bool> _checkIfDataExists() async {
     try {
@@ -37,70 +42,87 @@ void main() async {
       return false;
     }
   }
-  
+
   try {
     // Initialize DI and backend (spots_network creates Supabase backend under the hood)
-    logger.info('Initializing dependency injection...');
+    logger.info('🔧 [MAIN] Initializing dependency injection...');
     await di.init();
-    logger.info('Dependency injection initialized.');
+    logger.info('✅ [MAIN] Dependency injection initialized.');
 
     // Storage health check (non-fatal)
     try {
-      final client = Supabase.instance.client;
-      final storageHealth = StorageHealthChecker(client);
-      final results = await storageHealth.checkAllBuckets([
-        'user-avatars',
-        'spot-images',
-        'list-images',
-      ]);
-      logger.info('Storage health: ' + results.entries
-          .map((e) => '${e.key}=${e.value ? 'OK' : 'FAIL'}')
-          .join(', '));
-    } catch (e) {
-      logger.warn('Storage health check error: $e');
-    }
-    
-    // Initialize Sembast database (works on both web and mobile now)
-    logger.info('Initializing Sembast database...');
-    final database = await SembastDatabase.database;
-    logger.info('Sembast database initialized.');
-    
-    // Check if data already exists before seeding
-    final hasData = await _checkIfDataExists();
-    if (!hasData) {
-      logger.info('Seeding demo data...');
-      await SembastSeeder.seedDatabase();
-      logger.info('Demo data seeded.');
-    } else {
-      logger.info('Data already exists, skipping seeding.');
-    }
-    
-    // Debug: Check database contents
-    await AuthSembastDataSource.debugDatabaseContents();
-    
-    // Also check if demo user exists specifically
-    try {
-      final db = await SembastDatabase.database;
-      final finder = Finder(filter: Filter.equals('email', 'demo@spots.com'));
-      final records = await SembastDatabase.usersStore.find(db, finder: finder);
-      logger.debug('Found ${records.length} demo users in database');
-      for (final record in records) {
-        logger.debug('Demo user record: ${record.value}');
+      logger.info('📦 [MAIN] Checking storage health...');
+      // Only check storage if Supabase is initialized
+      try {
+        final client = Supabase.instance.client;
+        final storageHealth = StorageHealthChecker(client);
+        final results = await storageHealth.checkAllBuckets([
+          'user-avatars',
+          'spot-images',
+          'list-images',
+        ]);
+        logger.info('✅ [MAIN] Storage health: ' +
+            results.entries
+                .map((e) => '${e.key}=${e.value ? 'OK' : 'FAIL'}')
+                .join(', '));
+      } catch (e) {
+        logger.warn('⚠️ [MAIN] Supabase not initialized, skipping storage health check: $e');
       }
-      
-      // Test the auth data source directly
-      final authDataSource = AuthSembastDataSource();
-      final testUser = await authDataSource.signIn('demo@spots.com', 'password123');
-      logger.debug('Direct auth test result: ${testUser?.email ?? 'null'}');
     } catch (e) {
-      logger.warn('Error checking demo user: $e');
+      logger.warn('⚠️ [MAIN] Storage health check error: $e');
     }
 
-    logger.info('Running app...');
+    // Initialize Sembast database (works on both web and mobile now)
+    logger.info('💾 [MAIN] Initializing Sembast database...');
+    await SembastDatabase.database;
+    logger.info('✅ [MAIN] Sembast database initialized.');
+
+    // Clear demo user cache and onboarding data to prevent crashes
+    try {
+      logger.info('🧹 [MAIN] Clearing demo user cache and data...');
+      OnboardingCompletionService.clearAllCache();
+      await OnboardingCompletionService.resetOnboardingCompletion('demo-user-1');
+      
+      // Delete demo user from database
+      final db = await SembastDatabase.database;
+      await SembastDatabase.usersStore.record('demo-user-1').delete(db);
+      await SembastDatabase.preferencesStore.record('currentUser').delete(db);
+      
+      logger.info('✅ [MAIN] Demo user cache and data cleared.');
+    } catch (e) {
+      logger.warn('⚠️ [MAIN] Error clearing demo user cache: $e');
+    }
+
+    // Delete demo user from database
+    try {
+      logger.info('🗑️ [MAIN] Deleting demo user from database...');
+      final db = await SembastDatabase.database;
+      await SembastDatabase.usersStore.record('demo-user-1').delete(db);
+      await SembastDatabase.preferencesStore.record('currentUser').delete(db);
+      logger.info('✅ [MAIN] Demo user deleted.');
+    } catch (e) {
+      logger.warn('⚠️ [MAIN] Error deleting demo user: $e');
+    }
+
+    // Check if data already exists before seeding
+    logger.info('🔍 [MAIN] Checking if data exists...');
+    final hasData = await _checkIfDataExists();
+    if (!hasData) {
+      logger.info('🌱 [MAIN] Seeding demo data...');
+      await SembastSeeder.seedDatabase();
+      logger.info('✅ [MAIN] Demo data seeded.');
+    } else {
+      logger.info('ℹ️ [MAIN] Data already exists, skipping seeding.');
+    }
+
+    logger.info('🎬 [MAIN] Running app...');
     runApp(const SpotsApp());
-  } catch (e) {
-    logger.error('Error during app initialization', error: e);
+    logger.info('✅ [MAIN] App started successfully');
+  } catch (e, stackTrace) {
+    logger.error('❌ [MAIN] Error during app initialization', error: e);
+    logger.debug('Stack trace: $stackTrace');
     // Still run the app even if there are errors
+    logger.info('🔄 [MAIN] Attempting to run app despite errors...');
     runApp(const SpotsApp());
   }
 }

@@ -10,6 +10,7 @@ import 'package:spots/core/models/revenue_split.dart';
 import 'package:spots/core/models/payment_status.dart';
 
 import 'product_sales_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([
   ProductTrackingService,
@@ -50,9 +51,14 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Product sales tests focus on business logic (product sale processing, revenue calculation, revenue split), not property assignment
+
     group('processProductSale', () {
-      test('should process product sale successfully', () async {
-        // Arrange
+      test(
+          'should process product sale successfully, throw exception if product tracking not found, throw exception if insufficient quantity available, or use unitPrice if salePrice not provided',
+          () async {
+        // Test business logic: product sale processing
         when(mockProductTrackingService.getProductTrackingById('tracking-123'))
             .thenAnswer((_) async => testProductTracking);
         when(mockProductTrackingService.recordProductSale(
@@ -62,46 +68,37 @@ void main() {
           salePrice: 15.00,
           paymentMethod: anyNamed('paymentMethod'),
         )).thenAnswer((_) async => testProductTracking.copyWith(
-          quantitySold: 10,
-          totalSales: 150.00,
-          sales: [
-            ProductSale(
-              id: 'sale-1',
-              productTrackingId: 'tracking-123',
-              buyerId: 'user-456',
-              quantity: 10,
-              unitPrice: 15.00,
-              totalAmount: 150.00,
-              soldAt: DateTime.now(),
-              paymentStatus: PaymentStatus.completed,
-            ),
-          ],
-        ));
+              quantitySold: 10,
+              totalSales: 150.00,
+              sales: [
+                ProductSale(
+                  id: 'sale-1',
+                  productTrackingId: 'tracking-123',
+                  buyerId: 'user-456',
+                  quantity: 10,
+                  unitPrice: 15.00,
+                  totalAmount: 150.00,
+                  soldAt: DateTime.now(),
+                  paymentStatus: PaymentStatus.completed,
+                ),
+              ],
+            ));
         when(mockProductTrackingService.calculateRevenueAttribution(
           productTrackingId: 'tracking-123',
         )).thenAnswer((_) async => {'brand-123': 135.00});
-
-        // Act
-        final sale = await service.processProductSale(
+        final sale1 = await service.processProductSale(
           productTrackingId: 'tracking-123',
           quantity: 10,
           buyerId: 'user-456',
           salePrice: 15.00,
         );
+        expect(sale1, isA<ProductSale>());
+        expect(sale1.quantity, equals(10));
+        expect(sale1.buyerId, equals('user-456'));
+        expect(sale1.totalAmount, equals(150.00));
 
-        // Assert
-        expect(sale, isA<ProductSale>());
-        expect(sale.quantity, equals(10));
-        expect(sale.buyerId, equals('user-456'));
-        expect(sale.totalAmount, equals(150.00));
-      });
-
-      test('should throw exception if product tracking not found', () async {
-        // Arrange
         when(mockProductTrackingService.getProductTrackingById('tracking-123'))
             .thenAnswer((_) async => null);
-
-        // Act & Assert
         expect(
           () => service.processProductSale(
             productTrackingId: 'tracking-123',
@@ -114,21 +111,16 @@ void main() {
             contains('Product tracking not found'),
           )),
         );
-      });
 
-      test('should throw exception if insufficient quantity available', () async {
-        // Arrange
         final lowStockTracking = testProductTracking.copyWith(
           quantityProvided: 5,
         );
         when(mockProductTrackingService.getProductTrackingById('tracking-123'))
             .thenAnswer((_) async => lowStockTracking);
-
-        // Act & Assert
         expect(
           () => service.processProductSale(
             productTrackingId: 'tracking-123',
-            quantity: 10, // More than available
+            quantity: 10,
             buyerId: 'user-456',
           ),
           throwsA(isA<Exception>().having(
@@ -137,54 +129,48 @@ void main() {
             contains('Insufficient quantity available'),
           )),
         );
-      });
 
-      test('should use unitPrice if salePrice not provided', () async {
-        // Arrange
         when(mockProductTrackingService.getProductTrackingById('tracking-123'))
             .thenAnswer((_) async => testProductTracking);
         when(mockProductTrackingService.recordProductSale(
           productTrackingId: 'tracking-123',
           quantity: 10,
           buyerId: 'user-456',
-          salePrice: 15.00, // Uses unitPrice
+          salePrice: 15.00,
           paymentMethod: anyNamed('paymentMethod'),
         )).thenAnswer((_) async => testProductTracking.copyWith(
-          quantitySold: 10,
-          totalSales: 150.00,
-          sales: [
-            ProductSale(
-              id: 'sale-1',
-              productTrackingId: 'tracking-123',
-              buyerId: 'user-456',
-              quantity: 10,
-              unitPrice: 15.00,
-              totalAmount: 150.00,
-              soldAt: DateTime.now(),
-              paymentStatus: PaymentStatus.completed,
-            ),
-          ],
-        ));
+              quantitySold: 10,
+              totalSales: 150.00,
+              sales: [
+                ProductSale(
+                  id: 'sale-1',
+                  productTrackingId: 'tracking-123',
+                  buyerId: 'user-456',
+                  quantity: 10,
+                  unitPrice: 15.00,
+                  totalAmount: 150.00,
+                  soldAt: DateTime.now(),
+                  paymentStatus: PaymentStatus.completed,
+                ),
+              ],
+            ));
         when(mockProductTrackingService.calculateRevenueAttribution(
           productTrackingId: 'tracking-123',
         )).thenAnswer((_) async => {'brand-123': 135.00});
-
-        // Act
-        final sale = await service.processProductSale(
+        final sale2 = await service.processProductSale(
           productTrackingId: 'tracking-123',
           quantity: 10,
           buyerId: 'user-456',
-          // salePrice not provided, should use unitPrice
         );
-
-        // Assert
-        expect(sale.unitPrice, equals(15.00));
+        expect(sale2.unitPrice, equals(15.00));
       });
     });
 
     group('calculateProductRevenue', () {
-      test('should calculate total product revenue for sponsorship', () async {
-        // Arrange
+      test(
+          'should calculate total product revenue for sponsorship or filter revenue by date range',
+          () async {
+        // Test business logic: product revenue calculation
         final tracking1 = testProductTracking.copyWith(
           id: 'tracking-1',
           totalSales: 150.00,
@@ -193,48 +179,35 @@ void main() {
           id: 'tracking-2',
           totalSales: 200.00,
         );
-
-        when(mockProductTrackingService.getProductTrackingForSponsorship('sponsorship-123'))
+        when(mockProductTrackingService
+                .getProductTrackingForSponsorship('sponsorship-123'))
             .thenAnswer((_) async => [tracking1, tracking2]);
-
-        // Act
-        final revenue = await service.calculateProductRevenue(
+        final revenue1 = await service.calculateProductRevenue(
           sponsorshipId: 'sponsorship-123',
         );
+        expect(revenue1, equals(350.00));
 
-        // Assert
-        expect(revenue, equals(350.00)); // 150.00 + 200.00
-      });
-
-      test('should filter revenue by date range', () async {
-        // Arrange
-        final tracking1 = testProductTracking.copyWith(
+        final tracking3 = testProductTracking.copyWith(
           id: 'tracking-1',
           totalSales: 150.00,
           createdAt: DateTime.now().subtract(const Duration(days: 5)),
         );
-        final tracking2 = testProductTracking.copyWith(
+        final tracking4 = testProductTracking.copyWith(
           id: 'tracking-2',
           totalSales: 200.00,
           createdAt: DateTime.now().add(const Duration(days: 5)),
         );
-
-        when(mockProductTrackingService.getProductTrackingForSponsorship('sponsorship-123'))
-            .thenAnswer((_) async => [tracking1, tracking2]);
-
+        when(mockProductTrackingService
+                .getProductTrackingForSponsorship('sponsorship-123'))
+            .thenAnswer((_) async => [tracking3, tracking4]);
         final startDate = DateTime.now().subtract(const Duration(days: 10));
         final endDate = DateTime.now();
-
-        // Act
-        final revenue = await service.calculateProductRevenue(
+        final revenue2 = await service.calculateProductRevenue(
           sponsorshipId: 'sponsorship-123',
           startDate: startDate,
           endDate: endDate,
         );
-
-        // Assert
-        // Should only include tracking1 (within date range)
-        expect(revenue, equals(150.00));
+        expect(revenue2, equals(150.00));
       });
     });
 
@@ -292,6 +265,9 @@ void main() {
         expect(report.eventId, equals('event-123'));
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

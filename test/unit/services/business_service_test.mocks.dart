@@ -132,6 +132,8 @@ class MockBusinessAccountService extends _i1.Mock
     _i7.BusinessPatronPreferences? patronPreferences,
     String? preferredLocation,
     int? minExpertLevel,
+    bool? isVerified,
+    bool? isActive,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -151,6 +153,8 @@ class MockBusinessAccountService extends _i1.Mock
             #patronPreferences: patronPreferences,
             #preferredLocation: preferredLocation,
             #minExpertLevel: minExpertLevel,
+            #isVerified: isVerified,
+            #isActive: isActive,
           },
         ),
         returnValue:
@@ -173,6 +177,8 @@ class MockBusinessAccountService extends _i1.Mock
               #patronPreferences: patronPreferences,
               #preferredLocation: preferredLocation,
               #minExpertLevel: minExpertLevel,
+              #isVerified: isVerified,
+              #isActive: isActive,
             },
           ),
         )),

@@ -9,8 +9,10 @@ import 'package:spots/core/models/revenue_split.dart';
 import 'package:spots/core/models/sponsorship_integration.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/business_account.dart';
-import '../../helpers/test_helpers.dart';
-import '../../fixtures/model_factories.dart';
+import 'package:spots/core/models/payment.dart';
+import 'package:spots/core/models/payment_status.dart';
+import '../helpers/test_helpers.dart';
+import '../fixtures/model_factories.dart';
 
 /// Sponsorship Model Integration Tests
 /// 
@@ -351,7 +353,7 @@ void main() {
             SplitParty(
               partyId: 'user-123',
               type: SplitPartyType.user,
-              percentage: 40.0,
+              percentage: 50.0,
             ),
             SplitParty(
               partyId: 'business-123',

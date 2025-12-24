@@ -13,33 +13,19 @@ void main() {
       mockAuthBloc = MockAuthBloc();
     });
 
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Profile page tests focus on business logic (UI display, profile information), not property assignment
+
+    testWidgets(
+        'should display all required UI elements or display profile information',
+        (WidgetTester tester) async {
+      // Test business logic: Profile page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const ProfilePage(),
         authBloc: mockAuthBloc,
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify profile UI is present
-      expect(find.byType(ProfilePage), findsOneWidget);
-    });
-
-    testWidgets('displays profile information', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const ProfilePage(),
-        authBloc: mockAuthBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show profile content
       expect(find.byType(ProfilePage), findsOneWidget);
     });
   });
 }
-

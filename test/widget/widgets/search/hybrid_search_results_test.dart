@@ -8,60 +8,47 @@ import '../../mocks/mock_blocs.dart';
 /// Tests search results display and BLoC integration
 void main() {
   group('HybridSearchResults Widget Tests', () {
+    // Removed: Property assignment tests
+    // Hybrid search results tests focus on business logic (search results display, state management), not property assignment
+
     late MockHybridSearchBloc mockHybridSearchBloc;
 
     setUp(() {
       mockHybridSearchBloc = MockHybridSearchBloc();
     });
 
-    testWidgets('displays initial state message', (WidgetTester tester) async {
-      // Arrange
+    testWidgets(
+        'should display initial state message, display loading state, or display error state',
+        (WidgetTester tester) async {
+      // Test business logic: hybrid search results display and state management
       mockHybridSearchBloc.setState(HybridSearchInitial());
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const HybridSearchResults(),
         hybridSearchBloc: mockHybridSearchBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show initial message
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Search for spots'), findsOneWidget);
-      expect(find.text('Find community spots and external places'), findsOneWidget);
-    });
+      expect(find.text('Find community spots and external places'),
+          findsOneWidget);
 
-    testWidgets('displays loading state', (WidgetTester tester) async {
-      // Arrange
       mockHybridSearchBloc.setState(HybridSearchLoading());
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget2 = WidgetTestHelpers.createTestableWidget(
         child: const HybridSearchResults(),
         hybridSearchBloc: mockHybridSearchBloc,
       );
-
-      // Act
-      // Don't use pumpAndSettle here: indeterminate progress animations keep scheduling frames.
-      await tester.pumpWidget(widget);
+      await tester.pumpWidget(widget2);
       await tester.pump();
+      expect(find.text('Searching community and external sources...'),
+          findsOneWidget);
 
-      // Assert - Should show loading indicator
-      expect(find.text('Searching community and external sources...'), findsOneWidget);
-    });
-
-    testWidgets('displays error state', (WidgetTester tester) async {
-      // Arrange
       mockHybridSearchBloc.setState(HybridSearchError('Test error'));
-      final widget = WidgetTestHelpers.createTestableWidget(
+      final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const HybridSearchResults(),
         hybridSearchBloc: mockHybridSearchBloc,
       );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show error message
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Test error'), findsOneWidget);
       expect(find.text('Try Again'), findsOneWidget);
     });
   });
 }
-

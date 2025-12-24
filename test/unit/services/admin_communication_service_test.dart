@@ -6,6 +6,7 @@ import 'package:spots/core/monitoring/connection_monitor.dart';
 import 'package:spots/core/ai/ai2ai_learning.dart';
 
 import 'admin_communication_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([ConnectionMonitor, AI2AIChatAnalyzer])
 void main() {
@@ -119,6 +120,10 @@ void main() {
         expect(logs, isA<List<ConnectionCommunicationLog>>());
       });
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }
 

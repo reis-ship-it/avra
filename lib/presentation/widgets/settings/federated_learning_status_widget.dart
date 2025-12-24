@@ -91,9 +91,11 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
             Row(
               children: [
                 Container(
@@ -139,7 +141,8 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
               _buildNoActiveRoundsMessage()
             else
               ..._activeRounds.map((round) => _buildRoundCard(round)),
-          ],
+            ],
+          ),
         ),
       ),
     );

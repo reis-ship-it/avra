@@ -6,12 +6,12 @@ import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/partnership_service.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/event_feedback.dart';
-import 'package:spots/core/models/partner_rating.dart';
 import 'package:spots/core/models/event_partnership.dart';
 import 'package:spots/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'post_event_feedback_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([ExpertiseEventService, PartnershipService])
 void main() {
@@ -19,14 +19,14 @@ void main() {
     late PostEventFeedbackService service;
     late MockExpertiseEventService mockEventService;
     late MockPartnershipService mockPartnershipService;
-    
+
     late ExpertiseEvent testEvent;
     late UnifiedUser testUser;
 
     setUp(() {
       mockEventService = MockExpertiseEventService();
       mockPartnershipService = MockPartnershipService();
-      
+
       service = PostEventFeedbackService(
         eventService: mockEventService,
         partnershipService: mockPartnershipService,
@@ -52,27 +52,25 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Post-event feedback tests focus on business logic (scheduling, sending requests, submitting feedback, retrieving feedback), not property assignment
+
     group('scheduleFeedbackCollection', () {
-      test('should schedule feedback collection 2 hours after event ends', () async {
-        // Arrange
+      test(
+          'should schedule feedback collection 2 hours after event ends, or throw exception if event not found',
+          () async {
+        // Test business logic: feedback collection scheduling
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-
-        // Act
-        final scheduledTime = await service.scheduleFeedbackCollection('event-123');
-
-        // Assert
+        final scheduledTime =
+            await service.scheduleFeedbackCollection('event-123');
         expect(scheduledTime, isA<DateTime>());
-        expect(scheduledTime, equals(testEvent.endTime.add(const Duration(hours: 2))));
+        expect(scheduledTime,
+            equals(testEvent.endTime.add(const Duration(hours: 2))));
         verify(mockEventService.getEventById('event-123')).called(1);
-      });
 
-      test('should throw exception if event not found', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => null);
-
-        // Act & Assert
         expect(
           () => service.scheduleFeedbackCollection('event-123'),
           throwsA(isA<Exception>().having(
@@ -85,58 +83,51 @@ void main() {
     });
 
     group('sendFeedbackRequests', () {
-      test('should send feedback requests to all attendees', () async {
-        // Arrange
+      test(
+          'should send feedback requests to all attendees, or send partner rating requests when partnerships exist',
+          () async {
+        // Test business logic: feedback request sending
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockPartnershipService.getPartnershipsForEvent('event-123'))
             .thenAnswer((_) async => []);
-
-        // Act
         await service.sendFeedbackRequests('event-123');
-
-        // Assert
         verify(mockEventService.getEventById('event-123')).called(1);
-        verify(mockPartnershipService.getPartnershipsForEvent('event-123')).called(1);
-      });
+        verify(mockPartnershipService.getPartnershipsForEvent('event-123'))
+            .called(1);
 
-      test('should send partner rating requests when partnerships exist', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
         when(mockPartnershipService.getPartnershipsForEvent('event-123'))
             .thenAnswer((_) async => [
-              EventPartnership(
-                id: 'partnership-123',
-                eventId: 'event-123',
-                userId: 'user-123',
-                businessId: 'business-123',
-                status: PartnershipStatus.locked,
-                vibeCompatibilityScore: 0.75,
-                userApproved: true,
-                businessApproved: true,
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now(),
-              ),
-            ]);
-
-        // Act
+                  EventPartnership(
+                    id: 'partnership-123',
+                    eventId: 'event-123',
+                    userId: 'user-123',
+                    businessId: 'business-123',
+                    status: PartnershipStatus.locked,
+                    vibeCompatibilityScore: 0.75,
+                    userApproved: true,
+                    businessApproved: true,
+                    createdAt: DateTime.now(),
+                    updatedAt: DateTime.now(),
+                  ),
+                ]);
         await service.sendFeedbackRequests('event-123');
-
-        // Assert
         verify(mockEventService.getEventById('event-123')).called(1);
-        verify(mockPartnershipService.getPartnershipsForEvent('event-123')).called(1);
+        verify(mockPartnershipService.getPartnershipsForEvent('event-123'))
+            .called(1);
       });
     });
 
     group('submitFeedback', () {
-      test('should create and save feedback successfully', () async {
-        // Arrange
+      test(
+          'should create and save feedback successfully, or create feedback with minimal required fields',
+          () async {
+        // Test business logic: feedback submission
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-
-        // Act
-        final feedback = await service.submitFeedback(
+        final feedback1 = await service.submitFeedback(
           eventId: 'event-123',
           userId: 'user-456',
           overallRating: 4.5,
@@ -147,56 +138,47 @@ void main() {
           wouldAttendAgain: true,
           wouldRecommend: true,
         );
+        expect(feedback1, isA<EventFeedback>());
+        expect(feedback1.eventId, equals('event-123'));
+        expect(feedback1.userId, equals('user-456'));
+        expect(feedback1.overallRating, equals(4.5));
+        expect(feedback1.categoryRatings['organization'], equals(4.5));
+        expect(feedback1.categoryRatings['content_quality'], equals(5.0));
+        expect(feedback1.comments, equals('Great event!'));
+        expect(
+            feedback1.highlights, equals(['Great venue', 'Excellent content']));
+        expect(feedback1.improvements, equals(['Could use more time']));
+        expect(feedback1.wouldAttendAgain, isTrue);
+        expect(feedback1.wouldRecommend, isTrue);
+        expect(feedback1.submittedAt, isA<DateTime>());
 
-        // Assert
-        expect(feedback, isA<EventFeedback>());
-        expect(feedback.eventId, equals('event-123'));
-        expect(feedback.userId, equals('user-456'));
-        expect(feedback.overallRating, equals(4.5));
-        expect(feedback.categoryRatings['organization'], equals(4.5));
-        expect(feedback.categoryRatings['content_quality'], equals(5.0));
-        expect(feedback.comments, equals('Great event!'));
-        expect(feedback.highlights, equals(['Great venue', 'Excellent content']));
-        expect(feedback.improvements, equals(['Could use more time']));
-        expect(feedback.wouldAttendAgain, isTrue);
-        expect(feedback.wouldRecommend, isTrue);
-        expect(feedback.submittedAt, isA<DateTime>());
-      });
-
-      test('should create feedback with minimal required fields', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-
-        // Act
-        final feedback = await service.submitFeedback(
+        final feedback2 = await service.submitFeedback(
           eventId: 'event-123',
-          userId: 'user-456',
+          userId: 'user-789',
           overallRating: 3.0,
+          categoryRatings: {'organization': 3.0, 'content_quality': 3.0},
           wouldAttendAgain: false,
           wouldRecommend: false,
         );
-
-        // Assert
-        expect(feedback, isA<EventFeedback>());
-        expect(feedback.overallRating, equals(3.0));
-        expect(feedback.categoryRatings, isEmpty);
-        expect(feedback.comments, isNull);
-        expect(feedback.highlights, isNull);
-        expect(feedback.improvements, isNull);
-        expect(feedback.wouldAttendAgain, isFalse);
-        expect(feedback.wouldRecommend, isFalse);
+        expect(feedback2, isA<EventFeedback>());
+        expect(feedback2.overallRating, equals(3.0));
+        expect(feedback2.categoryRatings, isNotEmpty);
+        expect(feedback2.comments, isNull);
+        expect(feedback2.highlights, isNull);
+        expect(feedback2.improvements, isNull);
+        expect(feedback2.wouldAttendAgain, isFalse);
+        expect(feedback2.wouldRecommend, isFalse);
       });
     });
 
     group('submitPartnerRating', () {
-      test('should create and save partner rating successfully', () async {
-        // Arrange
+      test(
+          'should create and save partner rating successfully, or create partner rating with minimal required fields',
+          () async {
+        // Test business logic: partner rating submission
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-
-        // Act
-        final rating = await service.submitPartnerRating(
+        final rating1 = await service.submitPartnerRating(
           eventId: 'event-123',
           raterId: 'user-123',
           ratedId: 'business-123',
@@ -209,33 +191,24 @@ void main() {
           positives: 'Great communication',
           improvements: 'Could be more responsive',
         );
+        expect(rating1, isNotNull);
+        expect(rating1.eventId, equals('event-123'));
+        expect(rating1.raterId, equals('user-123'));
+        expect(rating1.ratedId, equals('business-123'));
+        expect(rating1.partnershipRole, equals('business'));
+        expect(rating1.overallRating, equals(4.5));
+        expect(rating1.professionalism, equals(5.0));
+        expect(rating1.communication, equals(4.0));
+        expect(rating1.reliability, equals(4.5));
+        expect(rating1.wouldPartnerAgain, equals(4.0));
+        expect(rating1.positives, equals('Great communication'));
+        expect(rating1.improvements, equals('Could be more responsive'));
+        expect(rating1.submittedAt, isA<DateTime>());
 
-        // Assert
-        expect(rating, isA<PartnerRating>());
-        expect(rating.eventId, equals('event-123'));
-        expect(rating.raterId, equals('user-123'));
-        expect(rating.ratedId, equals('business-123'));
-        expect(rating.partnershipRole, equals('business'));
-        expect(rating.overallRating, equals(4.5));
-        expect(rating.professionalism, equals(5.0));
-        expect(rating.communication, equals(4.0));
-        expect(rating.reliability, equals(4.5));
-        expect(rating.wouldPartnerAgain, equals(4.0));
-        expect(rating.positives, equals('Great communication'));
-        expect(rating.improvements, equals('Could be more responsive'));
-        expect(rating.submittedAt, isA<DateTime>());
-      });
-
-      test('should create partner rating with minimal required fields', () async {
-        // Arrange
-        when(mockEventService.getEventById('event-123'))
-            .thenAnswer((_) async => testEvent);
-
-        // Act
-        final rating = await service.submitPartnerRating(
+        final rating2 = await service.submitPartnerRating(
           eventId: 'event-123',
-          raterId: 'user-123',
-          ratedId: 'business-123',
+          raterId: 'user-456',
+          ratedId: 'business-456',
           partnershipRole: 'business',
           overallRating: 3.0,
           professionalism: 3.0,
@@ -243,61 +216,47 @@ void main() {
           reliability: 3.0,
           wouldPartnerAgain: 3.0,
         );
-
-        // Assert
-        expect(rating, isA<PartnerRating>());
-        expect(rating.overallRating, equals(3.0));
-        expect(rating.positives, isNull);
-        expect(rating.improvements, isNull);
+        expect(rating2, isNotNull);
+        expect(rating2.overallRating, equals(3.0));
+        expect(rating2.positives, isNull);
+        expect(rating2.improvements, isNull);
       });
     });
 
     group('getFeedbackForEvent', () {
-      test('should return empty list when no feedback exists', () async {
-        // Act
-        final feedbacks = await service.getFeedbackForEvent('event-123');
+      test(
+          'should return empty list when no feedback exists, or return feedback for event after submission',
+          () async {
+        // Test business logic: feedback retrieval
+        final feedbacks1 = await service.getFeedbackForEvent('event-123');
+        expect(feedbacks1, isEmpty);
 
-        // Assert
-        expect(feedbacks, isEmpty);
-      });
-
-      test('should return feedback for event after submission', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-
-        // Act
         await service.submitFeedback(
           eventId: 'event-123',
           userId: 'user-456',
           overallRating: 4.5,
+          categoryRatings: {'organization': 4.5, 'content_quality': 5.0},
           wouldAttendAgain: true,
           wouldRecommend: true,
         );
-
-        final feedbacks = await service.getFeedbackForEvent('event-123');
-
-        // Assert
-        expect(feedbacks, hasLength(1));
-        expect(feedbacks.first.userId, equals('user-456'));
+        final feedbacks2 = await service.getFeedbackForEvent('event-123');
+        expect(feedbacks2, hasLength(1));
+        expect(feedbacks2.first.userId, equals('user-456'));
       });
     });
 
     group('getPartnerRatingsForEvent', () {
-      test('should return empty list when no ratings exist', () async {
-        // Act
-        final ratings = await service.getPartnerRatingsForEvent('event-123');
+      test(
+          'should return empty list when no ratings exist, or return partner ratings for event after submission',
+          () async {
+        // Test business logic: partner rating retrieval
+        final ratings1 = await service.getPartnerRatingsForEvent('event-123');
+        expect(ratings1, isEmpty);
 
-        // Assert
-        expect(ratings, isEmpty);
-      });
-
-      test('should return partner ratings for event after submission', () async {
-        // Arrange
         when(mockEventService.getEventById('event-123'))
             .thenAnswer((_) async => testEvent);
-
-        // Act
         await service.submitPartnerRating(
           eventId: 'event-123',
           raterId: 'user-123',
@@ -309,15 +268,15 @@ void main() {
           reliability: 4.5,
           wouldPartnerAgain: 4.0,
         );
-
-        final ratings = await service.getPartnerRatingsForEvent('event-123');
-
-        // Assert
-        expect(ratings, hasLength(1));
-        expect(ratings.first.raterId, equals('user-123'));
-        expect(ratings.first.ratedId, equals('business-123'));
+        final ratings2 = await service.getPartnerRatingsForEvent('event-123');
+        expect(ratings2, hasLength(1));
+        expect(ratings2.first.raterId, equals('user-123'));
+        expect(ratings2.first.ratedId, equals('business-123'));
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

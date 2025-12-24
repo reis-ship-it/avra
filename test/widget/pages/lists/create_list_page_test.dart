@@ -13,33 +13,19 @@ void main() {
       mockListsBloc = MockListsBloc();
     });
 
-    testWidgets('displays all required form fields', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Create list page tests focus on business logic (form fields display, create list title display), not property assignment
+
+    testWidgets(
+        'should display all required form fields or display create list title',
+        (WidgetTester tester) async {
+      // Test business logic: Create list page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const CreateListPage(),
         listsBloc: mockListsBloc,
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify form is present
-      expect(find.byType(CreateListPage), findsOneWidget);
-    });
-
-    testWidgets('displays create list title', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const CreateListPage(),
-        listsBloc: mockListsBloc,
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show create list UI
       expect(find.byType(CreateListPage), findsOneWidget);
     });
   });
 }
-

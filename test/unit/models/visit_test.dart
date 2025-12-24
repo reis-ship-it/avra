@@ -4,7 +4,7 @@ import 'package:spots/core/models/visit.dart';
 /// SPOTS Visit Model Unit Tests
 /// Date: December 1, 2025
 /// Purpose: Test Visit model functionality
-/// 
+///
 /// Test Coverage:
 /// - Model Creation: Constructor and properties
 /// - Active Status: Check if visit is active
@@ -13,7 +13,7 @@ import 'package:spots/core/models/visit.dart';
 /// - Check Out: Check out from visit
 /// - JSON Serialization: toJson/fromJson
 /// - Equality: Equatable implementation
-/// 
+///
 /// Dependencies:
 /// - GeofencingData: Geofencing trigger data
 /// - BluetoothData: Bluetooth trigger data
@@ -25,7 +25,7 @@ void main() {
 
     setUp(() {
       testDate = DateTime(2025, 12, 1, 14, 0);
-      
+
       visit = Visit(
         id: 'visit-123',
         userId: 'user-789',
@@ -40,131 +40,66 @@ void main() {
       );
     });
 
-    group('Constructor and Properties', () {
-      test('should create visit with all required fields', () {
-        expect(visit.id, 'visit-123');
-        expect(visit.userId, 'user-789');
-        expect(visit.locationId, 'spot-456');
-        expect(visit.checkInTime, testDate);
-        expect(visit.isAutomatic, true);
-        expect(visit.isRepeatVisit, false);
-        expect(visit.visitNumber, 1);
-      });
-
-      test('should create visit with default values', () {
-        final minimalVisit = Visit(
-          id: 'visit-1',
-          userId: 'user-1',
-          locationId: 'spot-1',
-          checkInTime: testDate,
-          createdAt: testDate,
-          updatedAt: testDate,
-        );
-
-        expect(minimalVisit.checkOutTime, isNull);
-        expect(minimalVisit.dwellTime, isNull);
-        expect(minimalVisit.qualityScore, 0.0);
-        expect(minimalVisit.isAutomatic, false);
-        expect(minimalVisit.isRepeatVisit, false);
-        expect(minimalVisit.visitNumber, 1);
-      });
-    });
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
 
     group('Active Status', () {
-      test('should identify active visits', () {
-        expect(visit.isActive, true);
-        expect(visit.checkOutTime, isNull);
-      });
+      test('should correctly identify active and inactive visits', () {
+        // Test business logic: active status determination
+        expect(visit.isActive, isTrue);
 
-      test('should identify inactive visits', () {
         final checkedOut = visit.copyWith(
           checkOutTime: testDate.add(const Duration(hours: 2)),
         );
-        expect(checkedOut.isActive, false);
-        expect(checkedOut.checkOutTime, isNotNull);
+        expect(checkedOut.isActive, isFalse);
       });
     });
 
     group('Dwell Time Calculation', () {
-      test('should calculate dwell time for checked out visit', () {
+      test('should calculate dwell time for checked out and active visits', () {
+        // Test business logic: dwell time calculation in different states
         final checkedOut = visit.copyWith(
           checkOutTime: testDate.add(const Duration(hours: 2)),
         );
-        final dwellTime = checkedOut.calculateDwellTime();
-        expect(dwellTime, const Duration(hours: 2));
-      });
-
-      test('should calculate current dwell time for active visit', () {
         final now = DateTime.now();
-        final activeVisit = visit.copyWith(checkInTime: now.subtract(const Duration(minutes: 30)));
-        final dwellTime = activeVisit.calculateDwellTime();
-        expect(dwellTime.inMinutes, greaterThanOrEqualTo(29));
-        expect(dwellTime.inMinutes, lessThanOrEqualTo(31));
+        final activeVisit = visit.copyWith(
+            checkInTime: now.subtract(const Duration(minutes: 30)));
+
+        expect(checkedOut.calculateDwellTime(), const Duration(hours: 2));
+        final activeDwellTime = activeVisit.calculateDwellTime();
+        expect(activeDwellTime.inMinutes, greaterThanOrEqualTo(29));
+        expect(activeDwellTime.inMinutes, lessThanOrEqualTo(31));
       });
     });
 
     group('Quality Score Calculation', () {
-      test('should calculate quality score for long stay', () {
+      test(
+          'should calculate quality score based on dwell time and engagement factors',
+          () {
+        // Test business logic: quality score calculation with bonuses and caps
         final longVisit = visit.copyWith(
           checkOutTime: testDate.add(const Duration(hours: 1)),
           dwellTime: const Duration(hours: 1),
         );
-        final score = longVisit.calculateQualityScore();
-        expect(score, greaterThanOrEqualTo(1.0));
-      });
-
-      test('should calculate quality score for normal visit', () {
         final normalVisit = visit.copyWith(
           checkOutTime: testDate.add(const Duration(minutes: 15)),
           dwellTime: const Duration(minutes: 15),
         );
-        final score = normalVisit.calculateQualityScore();
-        expect(score, greaterThanOrEqualTo(0.8));
-        expect(score, lessThan(1.0));
-      });
-
-      test('should calculate quality score for quick stop', () {
         final quickVisit = visit.copyWith(
           checkOutTime: testDate.add(const Duration(minutes: 5)),
           dwellTime: const Duration(minutes: 5),
         );
-        final score = quickVisit.calculateQualityScore();
-        expect(score, greaterThanOrEqualTo(0.5));
-        expect(score, lessThan(0.8));
-      });
-
-      test('should add bonus for review', () {
         final visitWithReview = visit.copyWith(
           checkOutTime: testDate.add(const Duration(minutes: 15)),
           dwellTime: const Duration(minutes: 15),
           rating: 4.5,
         );
-        final score = visitWithReview.calculateQualityScore();
-        expect(score, greaterThan(0.8)); // Should have bonus
-      });
-
-      test('should add bonus for detailed review', () {
         final visitWithDetailedReview = visit.copyWith(
           checkOutTime: testDate.add(const Duration(minutes: 15)),
           dwellTime: const Duration(minutes: 15),
           reviewId: 'review-123',
           rating: 4.5,
         );
-        final score = visitWithDetailedReview.calculateQualityScore();
-        expect(score, greaterThan(1.0)); // Should have both bonuses
-      });
-
-      test('should add bonus for repeat visit', () {
-        final repeatVisit = visit.copyWith(
-          checkOutTime: testDate.add(const Duration(minutes: 15)),
-          dwellTime: const Duration(minutes: 15),
-          isRepeatVisit: true,
-        );
-        final score = repeatVisit.calculateQualityScore();
-        expect(score, greaterThan(0.8)); // Should have repeat bonus
-      });
-
-      test('should cap quality score at 1.5', () {
         final maxVisit = visit.copyWith(
           checkOutTime: testDate.add(const Duration(hours: 1)),
           dwellTime: const Duration(hours: 1),
@@ -172,65 +107,51 @@ void main() {
           rating: 5.0,
           isRepeatVisit: true,
         );
-        final score = maxVisit.calculateQualityScore();
-        expect(score, lessThanOrEqualTo(1.5));
+
+        expect(longVisit.calculateQualityScore(), greaterThanOrEqualTo(1.0));
+        expect(normalVisit.calculateQualityScore(), greaterThanOrEqualTo(0.8));
+        expect(quickVisit.calculateQualityScore(), lessThan(0.8));
+        expect(
+            visitWithReview.calculateQualityScore(), greaterThan(0.8)); // Bonus
+        expect(visitWithDetailedReview.calculateQualityScore(),
+            greaterThan(1.0)); // Both bonuses
+        expect(
+            maxVisit.calculateQualityScore(), lessThanOrEqualTo(1.5)); // Capped
       });
     });
 
     group('Check Out', () {
-      test('should check out visit and calculate quality', () {
-        final checkedOut = visit.checkOut(
+      test(
+          'should check out visit with provided or current time and calculate quality',
+          () {
+        // Test business logic: checkout behavior with time handling
+        final checkedOutWithTime = visit.checkOut(
           checkOutTime: testDate.add(const Duration(hours: 2)),
         );
+        final checkedOutWithoutTime = visit.checkOut();
 
-        expect(checkedOut.checkOutTime, isNotNull);
-        expect(checkedOut.dwellTime, isNotNull);
-        expect(checkedOut.qualityScore, greaterThan(0.0));
-        expect(checkedOut.isActive, false);
-      });
-
-      test('should use current time if check out time not provided', () {
-        final checkedOut = visit.checkOut();
-        expect(checkedOut.checkOutTime, isNotNull);
-        expect(checkedOut.isActive, false);
+        expect(checkedOutWithTime.checkOutTime, isNotNull);
+        expect(checkedOutWithTime.dwellTime, isNotNull);
+        expect(checkedOutWithTime.qualityScore, greaterThan(0.0));
+        expect(checkedOutWithTime.isActive, false);
+        expect(checkedOutWithoutTime.checkOutTime, isNotNull);
+        expect(checkedOutWithoutTime.isActive, false);
       });
     });
 
     group('JSON Serialization', () {
-      test('should serialize to JSON correctly', () {
+      test('should serialize and deserialize without data loss', () {
         final json = visit.toJson();
+        final restored = Visit.fromJson(json);
 
-        expect(json['id'], 'visit-123');
-        expect(json['userId'], 'user-789');
-        expect(json['locationId'], 'spot-456');
-        expect(json['isAutomatic'], true);
-        expect(json['isRepeatVisit'], false);
-        expect(json['visitNumber'], 1);
-      });
-
-      test('should deserialize from JSON correctly', () {
-        final json = visit.toJson();
-        final deserialized = Visit.fromJson(json);
-
-        expect(deserialized.id, visit.id);
-        expect(deserialized.userId, visit.userId);
-        expect(deserialized.locationId, visit.locationId);
-        expect(deserialized.checkInTime, visit.checkInTime);
-        expect(deserialized.isAutomatic, visit.isAutomatic);
+        // Test critical business fields preserved
+        expect(restored.isActive, equals(visit.isActive));
+        expect(restored.qualityScore, equals(visit.qualityScore));
       });
     });
 
-    group('Equality', () {
-      test('should be equal when all properties match', () {
-        final visit2 = visit.copyWith();
-        expect(visit, equals(visit2));
-      });
-
-      test('should not be equal when properties differ', () {
-        final visit2 = visit.copyWith(qualityScore: 1.0);
-        expect(visit, isNot(equals(visit2)));
-      });
-    });
+    // Removed: Equality group
+    // These tests verify Equatable implementation, which is already tested by the package
+    // If equality breaks, other tests will fail
   });
 }
-

@@ -6,31 +6,18 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests admin dashboard UI and data display
 void main() {
   group('GodModeDashboardPage Widget Tests', () {
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // God mode dashboard page tests focus on business logic (UI display, dashboard content), not property assignment
+
+    testWidgets(
+        'should display all required UI elements or display dashboard content',
+        (WidgetTester tester) async {
+      // Test business logic: God mode dashboard page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const GodModeDashboardPage(),
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify dashboard UI is present
-      expect(find.byType(GodModeDashboardPage), findsOneWidget);
-    });
-
-    testWidgets('displays dashboard content', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const GodModeDashboardPage(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show dashboard content
       expect(find.byType(GodModeDashboardPage), findsOneWidget);
     });
   });
 }
-

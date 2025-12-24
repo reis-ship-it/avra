@@ -6,26 +6,8 @@ Comprehensive test suite for verifying all backend connections and integrations 
 
 ## Files Created
 
-### 1. Standalone Test Script
-**Location**: `scripts/test_admin_backend_connections.dart`
-
-A standalone Dart script that can be run directly to test backend connections.
-
-**Usage**:
-```bash
-dart run scripts/test_admin_backend_connections.dart
-```
-
-**Features**:
-- Tests Supabase initialization and connection
-- Verifies all admin services initialize correctly
-- Tests database queries (users, spots, lists, respects, business_accounts)
-- Verifies admin god-mode service methods
-- Tests privacy filtering
-- Tests AI data streams infrastructure
-
-### 2. Flutter Integration Tests
-**Location**: `test/integration/admin_backend_connections_test.dart`
+### Flutter Integration Tests
+**Location**: `test/integration/admin_backend_connections_integration_test.dart`
 
 Flutter test suite that can be run with `flutter test`.
 
@@ -84,16 +66,17 @@ Complete documentation with:
 
 ## Running the Tests
 
-### Quick Test (Standalone)
+### Flutter Integration Tests
 ```bash
 cd /Users/reisgordon/SPOTS
-dart run scripts/test_admin_backend_connections.dart
+flutter test test/integration/admin_backend_connections_integration_test.dart
 ```
 
-### Full Test Suite (Flutter)
+### With Real Supabase Connection
 ```bash
-cd /Users/reisgordon/SPOTS
-flutter test test/integration/admin_backend_connections_test.dart
+flutter test test/integration/admin_backend_connections_integration_test.dart \
+  --dart-define=SUPABASE_URL=... \
+  --dart-define=SUPABASE_ANON_KEY=...
 ```
 
 ### All Integration Tests
@@ -128,14 +111,17 @@ flutter test test/integration/
 ### Before Committing
 ```bash
 # Run backend connection tests
-dart run scripts/test_admin_backend_connections.dart
+flutter test test/integration/admin_backend_connections_integration_test.dart
 ```
 
 ### In CI/CD Pipeline
 Add to your CI/CD configuration:
 ```yaml
 - name: Test Admin Backend
-  run: dart run scripts/test_admin_backend_connections.dart
+  run: flutter test test/integration/admin_backend_connections_integration_test.dart
+  env:
+    SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+    SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 ```
 
 ### During Development

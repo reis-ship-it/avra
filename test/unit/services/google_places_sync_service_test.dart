@@ -11,6 +11,7 @@ import 'package:spots/core/models/spot.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'google_places_sync_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([
   GooglePlaceIdFinderServiceNew,
@@ -49,35 +50,32 @@ void main() {
       );
     });
 
+    // Removed: Property assignment tests
+    // Google Places sync tests focus on business logic (spot syncing, batch syncing, cache retrieval), not property assignment
+
     group('syncSpot', () {
-      test('should return spot unchanged when already synced and not stale', () async {
+      test(
+          'should return spot unchanged when already synced and not stale, return spot unchanged when offline, sync spot when online and not synced, or return original spot when no place ID found',
+          () async {
+        // Test business logic: single spot syncing
         final syncedSpot = spot.copyWith(
           googlePlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
           googlePlaceIdSyncedAt: DateTime.now(),
         );
-
-        final result = await service.syncSpot(syncedSpot);
-
-        expect(result, equals(syncedSpot));
+        final result1 = await service.syncSpot(syncedSpot);
+        expect(result1, equals(syncedSpot));
         verifyNever(mockPlaceIdFinder.findPlaceId(any));
-      });
 
-      test('should return spot unchanged when offline', () async {
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
-
-        final result = await service.syncSpot(spot);
-
-        expect(result, equals(spot));
+        final result2 = await service.syncSpot(spot);
+        expect(result2, equals(spot));
         verifyNever(mockPlaceIdFinder.findPlaceId(any));
-      });
 
-      test('should sync spot when online and not synced', () async {
         const placeId = 'ChIJN1t_tDeuEmsRUsoyG83frY4';
         final googlePlace = ModelFactories.createTestSpot(
           name: 'Google Place',
         ).copyWith(googlePlaceId: placeId);
-
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(mockPlaceIdFinder.findPlaceId(any))
@@ -86,121 +84,87 @@ void main() {
             .thenAnswer((_) async => googlePlace);
         when(mockSpotsLocalDataSource.updateSpot(any))
             .thenAnswer((_) async => Future.value());
-
-        final result = await service.syncSpot(spot);
-
-        expect(result, isNotNull);
+        final result3 = await service.syncSpot(spot);
+        expect(result3, isNotNull);
         verify(mockPlaceIdFinder.findPlaceId(spot)).called(1);
         verify(mockGooglePlacesDataSource.getPlaceDetails(placeId)).called(1);
         verify(mockCacheService.cachePlace(googlePlace)).called(1);
         verify(mockSpotsLocalDataSource.updateSpot(any)).called(1);
-      });
 
-      test('should return original spot when no place ID found', () async {
-        when(mockConnectivity.checkConnectivity())
-            .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(mockPlaceIdFinder.findPlaceId(any))
-            .thenAnswer((_) async => null);
-
-        final result = await service.syncSpot(spot);
-
-        expect(result, equals(spot));
+        when(mockPlaceIdFinder.findPlaceId(any)).thenAnswer((_) async => null);
+        final result4 = await service.syncSpot(spot);
+        expect(result4, equals(spot));
         verifyNever(mockGooglePlacesDataSource.getPlaceDetails(any));
       });
     });
 
     group('syncSpots', () {
-      test('should sync multiple spots', () async {
-        final spots = [
+      test('should sync multiple spots, or respect batchSize parameter',
+          () async {
+        // Test business logic: batch spot syncing
+        final spots1 = [
           ModelFactories.createTestSpot(name: 'Spot 1'),
           ModelFactories.createTestSpot(name: 'Spot 2'),
         ];
-
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(mockPlaceIdFinder.findPlaceId(any))
-            .thenAnswer((_) async => null);
+        when(mockPlaceIdFinder.findPlaceId(any)).thenAnswer((_) async => null);
+        final result1 = await service.syncSpots(spots1, batchSize: 10);
+        expect(result1, isA<SyncResult>());
+        expect(result1.total, equals(spots1.length));
 
-        final result = await service.syncSpots(spots, batchSize: 10);
-
-        expect(result, isA<SyncResult>());
-        expect(result.total, equals(spots.length));
-      });
-
-      test('should respect batchSize parameter', () async {
-        final spots = List.generate(
+        final spots2 = List.generate(
           25,
           (index) => ModelFactories.createTestSpot(name: 'Spot $index'),
         );
-
-        when(mockConnectivity.checkConnectivity())
-            .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(mockPlaceIdFinder.findPlaceId(any))
-            .thenAnswer((_) async => null);
-
-        final result = await service.syncSpots(spots, batchSize: 10);
-
-        expect(result, isA<SyncResult>());
+        final result2 = await service.syncSpots(spots2, batchSize: 10);
+        expect(result2, isA<SyncResult>());
       });
     });
 
     group('syncSpotsNeedingSync', () {
-      test('should sync spots that need syncing', () async {
+      test('should sync spots that need syncing, or respect limit parameter',
+          () async {
+        // Test business logic: syncing spots needing sync
         final spotsNeedingSync = [
           ModelFactories.createTestSpot(name: 'Spot 1'),
         ];
-
         when(mockSpotsLocalDataSource.getAllSpots())
             .thenAnswer((_) async => spotsNeedingSync);
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(mockPlaceIdFinder.findPlaceId(any))
-            .thenAnswer((_) async => null);
-
-        final result = await service.syncSpotsNeedingSync(limit: 50);
-
-        expect(result, isA<SyncResult>());
+        when(mockPlaceIdFinder.findPlaceId(any)).thenAnswer((_) async => null);
+        final result1 = await service.syncSpotsNeedingSync(limit: 50);
+        expect(result1, isA<SyncResult>());
         verify(mockSpotsLocalDataSource.getAllSpots()).called(1);
-      });
 
-      test('should respect limit parameter', () async {
         final allSpots = List.generate(
           100,
           (index) => ModelFactories.createTestSpot(name: 'Spot $index'),
         );
-
         when(mockSpotsLocalDataSource.getAllSpots())
             .thenAnswer((_) async => allSpots);
-        when(mockConnectivity.checkConnectivity())
-            .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(mockPlaceIdFinder.findPlaceId(any))
-            .thenAnswer((_) async => null);
-
-        final result = await service.syncSpotsNeedingSync(limit: 50);
-
-        expect(result, isA<SyncResult>());
+        final result2 = await service.syncSpotsNeedingSync(limit: 50);
+        expect(result2, isA<SyncResult>());
       });
     });
 
     group('getCachedPlaces', () {
-      test('should return cached places for query', () async {
+      test(
+          'should return cached places for query, or return empty list when query is empty',
+          () async {
+        // Test business logic: cached place retrieval
         final cachedSpots = [
           ModelFactories.createTestSpot(name: 'Cached Spot'),
         ];
-
         when(mockCacheService.searchCachedPlaces('coffee'))
             .thenAnswer((_) async => cachedSpots);
-
-        final result = await service.getCachedPlaces(query: 'coffee');
-
-        expect(result, equals(cachedSpots));
+        final result1 = await service.getCachedPlaces(query: 'coffee');
+        expect(result1, equals(cachedSpots));
         verify(mockCacheService.searchCachedPlaces('coffee')).called(1);
-      });
 
-      test('should return empty list when query is empty', () async {
-        final result = await service.getCachedPlaces(query: '');
-
-        expect(result, isEmpty);
+        final result2 = await service.getCachedPlaces(query: '');
+        expect(result2, isEmpty);
         verifyNever(mockCacheService.searchCachedPlaces(any));
       });
     });
@@ -231,6 +195,9 @@ void main() {
         )).called(1);
       });
     });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+    });
   });
 }
-

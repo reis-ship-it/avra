@@ -6,14 +6,14 @@ import 'backends/supabase/supabase_module.dart';
 /// Supports Firebase, Supabase, and Custom backends
 class BackendFactory {
   static BackendInterface? _instance;
-  
+
   /// Get the current backend instance
   static BackendInterface? get instance => _instance;
-  
+
   /// Create and initialize a backend
   static Future<BackendInterface> create(BackendConfig config) async {
     BackendInterface backend;
-    
+
     switch (config.type) {
       case BackendType.firebase:
         backend = await _createFirebaseBackend(config);
@@ -25,14 +25,17 @@ class BackendFactory {
         backend = await _createCustomBackend(config);
         break;
     }
-    
-    await backend.initialize(config.toJson());
+
+    // Pass the config map directly, not the serialized BackendConfig object
+    await backend.initialize(config.config);
     _instance = backend;
     return backend;
   }
-  
+
   /// Create Firebase backend
-  static Future<BackendInterface> _createFirebaseBackend(BackendConfig config) async {
+  static Future<BackendInterface> _createFirebaseBackend(
+    BackendConfig config,
+  ) async {
     // Import Firebase backend implementation
     try {
       // Dynamic import to avoid dependency issues when not using Firebase
@@ -45,9 +48,11 @@ class BackendFactory {
       );
     }
   }
-  
+
   /// Create Supabase backend
-  static Future<BackendInterface> _createSupabaseBackend(BackendConfig config) async {
+  static Future<BackendInterface> _createSupabaseBackend(
+    BackendConfig config,
+  ) async {
     try {
       final module = await _loadSupabaseModule();
       return module.createSupabaseBackend();
@@ -58,9 +63,11 @@ class BackendFactory {
       );
     }
   }
-  
+
   /// Create Custom backend
-  static Future<BackendInterface> _createCustomBackend(BackendConfig config) async {
+  static Future<BackendInterface> _createCustomBackend(
+    BackendConfig config,
+  ) async {
     try {
       final module = await _loadCustomModule();
       return module.createCustomBackend();
@@ -71,7 +78,7 @@ class BackendFactory {
       );
     }
   }
-  
+
   /// Switch to a different backend
   static Future<BackendInterface> switchBackend(BackendConfig newConfig) async {
     // Dispose current backend
@@ -79,11 +86,11 @@ class BackendFactory {
       await _instance!.dispose();
       _instance = null;
     }
-    
+
     // Create new backend
     return await create(newConfig);
   }
-  
+
   /// Dispose current backend
   static Future<void> dispose() async {
     if (_instance != null) {
@@ -91,17 +98,17 @@ class BackendFactory {
       _instance = null;
     }
   }
-  
+
   /// Reset factory state (for testing)
   static void reset() {
     _instance = null;
   }
-  
+
   // Dynamic module loading
   static Future<FirebaseModule> _loadFirebaseModule() async {
     throw UnimplementedError('Firebase module not yet implemented');
   }
-  
+
   static Future<SupabaseModule> _loadSupabaseModule() async {
     try {
       // Import Supabase module
@@ -114,7 +121,7 @@ class BackendFactory {
       );
     }
   }
-  
+
   static Future<CustomModule> _loadCustomModule() async {
     throw UnimplementedError('Custom module not yet implemented');
   }
@@ -124,7 +131,7 @@ class BackendFactory {
 class BackendInitializationException implements Exception {
   final String message;
   const BackendInitializationException(this.message);
-  
+
   @override
   String toString() => 'BackendInitializationException: $message';
 }

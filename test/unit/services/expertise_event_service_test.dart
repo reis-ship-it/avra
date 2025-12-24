@@ -1,20 +1,57 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/geographic_scope_service.dart';
+import 'package:spots/core/services/cross_locality_connection_service.dart';
+import 'package:spots/core/services/community_event_service.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/spot.dart';
 import '../../fixtures/model_factories.dart';
+
+import 'expertise_event_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
+
+@GenerateMocks([
+  GeographicScopeService,
+  CrossLocalityConnectionService,
+  CommunityEventService,
+])
 
 /// Expertise Event Service Tests
 /// Tests expert-led event management functionality
 void main() {
   group('ExpertiseEventService Tests', () {
     late ExpertiseEventService service;
+    late MockGeographicScopeService mockGeographicScopeService;
+    late MockCrossLocalityConnectionService mockCrossLocalityService;
+    late MockCommunityEventService mockCommunityEventService;
     late UnifiedUser host;
     late List<Spot> spots;
 
     setUp(() {
-      service = ExpertiseEventService();
+      mockGeographicScopeService = MockGeographicScopeService();
+      mockCrossLocalityService = MockCrossLocalityConnectionService();
+      mockCommunityEventService = MockCommunityEventService();
+
+      // Mock getCommunityEvents to return empty list by default
+      // Tests can override this if they need specific community events
+      when(mockCommunityEventService.getCommunityEvents(
+        category: anyNamed('category'),
+        location: anyNamed('location'),
+        eventType: anyNamed('eventType'),
+        startDate: anyNamed('startDate'),
+        endDate: anyNamed('endDate'),
+        maxResults: anyNamed('maxResults'),
+      )).thenAnswer((_) async => []);
+
+      // Use mocked dependencies to break circular dependency
+      service = ExpertiseEventService(
+        geographicScopeService: mockGeographicScopeService,
+        crossLocalityService: mockCrossLocalityService,
+        communityEventService: mockCommunityEventService,
+      );
       host = ModelFactories.createTestUser(
         id: 'host-123',
         tags: ['food'],
@@ -27,8 +64,14 @@ void main() {
       ];
     });
 
+    // Removed: Property assignment tests
+    // Expertise event tests focus on business logic (event creation, registration, search), not property assignment
+
     group('createEvent', () {
-      test('should create event when host has local level expertise', () async {
+      test(
+          'should create event when host has local level expertise, set isPaid when price provided, include spots when provided, or throw exception when host lacks expertise or expertise in category',
+          () async {
+        // Test business logic: event creation with validation
         final startTime = DateTime.now().add(const Duration(days: 7));
         final endTime = startTime.add(const Duration(hours: 2));
 
@@ -41,23 +84,39 @@ void main() {
           startTime: startTime,
           endTime: endTime,
         );
-
         expect(event, isA<ExpertiseEvent>());
         expect(event.title, equals('Food Tour'));
         expect(event.category, equals('food'));
         expect(event.host.id, equals(host.id));
         expect(event.status, equals(EventStatus.upcoming));
-      });
 
-      test('should throw exception when host lacks local level expertise', () async {
-        final userWithoutExpertise = ModelFactories.createTestUser(
-          id: 'host-456',
+        final paidEvent = await service.createEvent(
+          host: host,
+          title: 'Paid Workshop',
+          description: 'A paid workshop',
+          category: 'food',
+          eventType: ExpertiseEventType.workshop,
+          startTime: startTime,
+          endTime: endTime,
+          price: 50.0,
         );
-        // No expertise - cannot host events
+        expect(paidEvent.isPaid, isTrue);
+        expect(paidEvent.price, equals(50.0));
 
-        final startTime = DateTime.now().add(const Duration(days: 7));
-        final endTime = startTime.add(const Duration(hours: 2));
+        final spotEvent = await service.createEvent(
+          host: host,
+          title: 'Spot Tour',
+          description: 'Tour of spots',
+          category: 'food',
+          eventType: ExpertiseEventType.tour,
+          startTime: startTime,
+          endTime: endTime,
+          spots: spots,
+        );
+        expect(spotEvent.spots.length, equals(spots.length));
 
+        final userWithoutExpertise =
+            ModelFactories.createTestUser(id: 'host-456');
         expect(
           () => service.createEvent(
             host: userWithoutExpertise,
@@ -70,18 +129,10 @@ void main() {
           ),
           throwsA(isA<Exception>()),
         );
-      });
 
-      test('should throw exception when host lacks expertise in category', () async {
-        final hostWithoutCategory = ModelFactories.createTestUser(
-          id: 'host-789',
-        ).copyWith(
-          expertiseMap: {'coffee': 'city'},
-        );
-
-        final startTime = DateTime.now().add(const Duration(days: 7));
-        final endTime = startTime.add(const Duration(hours: 2));
-
+        final hostWithoutCategory =
+            ModelFactories.createTestUser(id: 'host-789')
+                .copyWith(expertiseMap: {'coffee': 'city'});
         expect(
           () => service.createEvent(
             host: hostWithoutCategory,
@@ -95,47 +146,13 @@ void main() {
           throwsException,
         );
       });
-
-      test('should set isPaid when price is provided', () async {
-        final startTime = DateTime.now().add(const Duration(days: 7));
-        final endTime = startTime.add(const Duration(hours: 2));
-
-        final event = await service.createEvent(
-          host: host,
-          title: 'Paid Workshop',
-          description: 'A paid workshop',
-          category: 'food',
-          eventType: ExpertiseEventType.workshop,
-          startTime: startTime,
-          endTime: endTime,
-          price: 50.0,
-        );
-
-        expect(event.isPaid, isTrue);
-        expect(event.price, equals(50.0));
-      });
-
-      test('should include spots when provided', () async {
-        final startTime = DateTime.now().add(const Duration(days: 7));
-        final endTime = startTime.add(const Duration(hours: 2));
-
-        final event = await service.createEvent(
-          host: host,
-          title: 'Spot Tour',
-          description: 'Tour of spots',
-          category: 'food',
-          eventType: ExpertiseEventType.tour,
-          startTime: startTime,
-          endTime: endTime,
-          spots: spots,
-        );
-
-        expect(event.spots.length, equals(spots.length));
-      });
     });
 
     group('registerForEvent', () {
-      test('should register user for event', () async {
+      test(
+          'should register user for event, or throw exception when event is full',
+          () async {
+        // Test business logic: event registration with capacity checking
         final startTime = DateTime.now().add(const Duration(days: 7));
         final endTime = startTime.add(const Duration(hours: 2));
 
@@ -148,20 +165,11 @@ void main() {
           startTime: startTime,
           endTime: endTime,
         );
-
         final attendee = ModelFactories.createTestUser(id: 'attendee-123');
-
         await service.registerForEvent(event, attendee);
-
-        // Verify registration (in production, would fetch updated event)
         expect(event.canUserAttend(attendee.id), isTrue);
-      });
 
-      test('should throw exception when event is full', () async {
-        final startTime = DateTime.now().add(const Duration(days: 7));
-        final endTime = startTime.add(const Duration(hours: 2));
-
-        final event = await service.createEvent(
+        final fullEvent = await service.createEvent(
           host: host,
           title: 'Full Event',
           description: 'Event at capacity',
@@ -171,21 +179,22 @@ void main() {
           endTime: endTime,
           maxAttendees: 1,
         );
-
         final attendee1 = ModelFactories.createTestUser(id: 'attendee-1');
         final attendee2 = ModelFactories.createTestUser(id: 'attendee-2');
-
-        await service.registerForEvent(event, attendee1);
-
+        await service.registerForEvent(fullEvent, attendee1);
+        final updatedEvent = await service.getEventById(fullEvent.id);
         expect(
-          () => service.registerForEvent(event, attendee2),
+          () => service.registerForEvent(updatedEvent!, attendee2),
           throwsException,
         );
       });
     });
 
     group('cancelRegistration', () {
-      test('should cancel user registration', () async {
+      test(
+          'should cancel user registration, or throw exception when user is not registered',
+          () async {
+        // Test business logic: registration cancellation with validation
         final startTime = DateTime.now().add(const Duration(days: 7));
         final endTime = startTime.add(const Duration(hours: 2));
 
@@ -198,32 +207,14 @@ void main() {
           startTime: startTime,
           endTime: endTime,
         );
-
         final attendee = ModelFactories.createTestUser(id: 'attendee-123');
-
         await service.registerForEvent(event, attendee);
-        await service.cancelRegistration(event, attendee);
-
-        // Verify cancellation (in production, would fetch updated event)
-        expect(event.canUserAttend(attendee.id), isTrue);
-      });
-
-      test('should throw exception when user is not registered', () async {
-        final startTime = DateTime.now().add(const Duration(days: 7));
-        final endTime = startTime.add(const Duration(hours: 2));
-
-        final event = await service.createEvent(
-          host: host,
-          title: 'Food Tour',
-          description: 'A guided food tour',
-          category: 'food',
-          eventType: ExpertiseEventType.tour,
-          startTime: startTime,
-          endTime: endTime,
-        );
+        final registeredEvent = await service.getEventById(event.id);
+        await service.cancelRegistration(registeredEvent!, attendee);
+        final cancelledEvent = await service.getEventById(event.id);
+        expect(cancelledEvent!.canUserAttend(attendee.id), isTrue);
 
         final nonAttendee = ModelFactories.createTestUser(id: 'non-attendee');
-
         expect(
           () => service.cancelRegistration(event, nonAttendee),
           throwsException,
@@ -233,63 +224,50 @@ void main() {
 
     group('getEventsByHost', () {
       test('should return events hosted by expert', () async {
+        // Test business logic: event retrieval by host
         final events = await service.getEventsByHost(host);
-
         expect(events, isA<List<ExpertiseEvent>>());
       });
     });
 
     group('getEventsByAttendee', () {
       test('should return events user is attending', () async {
+        // Test business logic: event retrieval by attendee
         final user = ModelFactories.createTestUser(id: 'user-123');
         final events = await service.getEventsByAttendee(user);
-
         expect(events, isA<List<ExpertiseEvent>>());
       });
     });
 
     group('searchEvents', () {
-      test('should search events by category', () async {
-        final events = await service.searchEvents(
-          category: 'food',
-        );
+      test(
+          'should search events by category, filter by location and event type, and respect maxResults parameter',
+          () async {
+        // Test business logic: event search with various filters
+        final categoryEvents = await service.searchEvents(category: 'food');
+        expect(categoryEvents, isA<List<ExpertiseEvent>>());
 
-        expect(events, isA<List<ExpertiseEvent>>());
-      });
+        final locationEvents =
+            await service.searchEvents(location: 'San Francisco');
+        expect(locationEvents, isA<List<ExpertiseEvent>>());
 
-      test('should filter by location', () async {
-        final events = await service.searchEvents(
-          location: 'San Francisco',
-        );
+        final typeEvents =
+            await service.searchEvents(eventType: ExpertiseEventType.tour);
+        expect(typeEvents, isA<List<ExpertiseEvent>>());
 
-        expect(events, isA<List<ExpertiseEvent>>());
-      });
-
-      test('should filter by event type', () async {
-        final events = await service.searchEvents(
-          eventType: ExpertiseEventType.tour,
-        );
-
-        expect(events, isA<List<ExpertiseEvent>>());
-      });
-
-      test('should respect maxResults parameter', () async {
-        final events = await service.searchEvents(
-          category: 'food',
-          maxResults: 10,
-        );
-
-        expect(events.length, lessThanOrEqualTo(10));
+        final limitedEvents =
+            await service.searchEvents(category: 'food', maxResults: 10);
+        expect(limitedEvents.length, lessThanOrEqualTo(10));
       });
     });
 
     group('getUpcomingEventsInCategory', () {
       test('should return upcoming events in category', () async {
+        // Test business logic: upcoming events retrieval
         final events = await service.getUpcomingEventsInCategory(
           'food',
           maxResults: 10,
         );
-
         expect(events, isA<List<ExpertiseEvent>>());
         expect(events.length, lessThanOrEqualTo(10));
       });
@@ -297,9 +275,9 @@ void main() {
 
     group('updateEventStatus', () {
       test('should update event status', () async {
+        // Test business logic: event status update
         final startTime = DateTime.now().add(const Duration(days: 7));
         final endTime = startTime.add(const Duration(hours: 2));
-
         final event = await service.createEvent(
           host: host,
           title: 'Food Tour',
@@ -309,13 +287,14 @@ void main() {
           startTime: startTime,
           endTime: endTime,
         );
-
         await service.updateEventStatus(event, EventStatus.completed);
-
-        // Verify status update (in production, would fetch updated event)
-        expect(event.status, equals(EventStatus.completed));
+        final updatedEvent = await service.getEventById(event.id);
+        expect(updatedEvent!.status, equals(EventStatus.completed));
       });
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
   });
 }
-

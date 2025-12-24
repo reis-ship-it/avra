@@ -1,14 +1,14 @@
 /// SPOTS AI2AIConnectionView Widget Tests
 /// Date: November 20, 2025
 /// Purpose: Test AI2AIConnectionView functionality and UI behavior
-/// 
+///
 /// Test Coverage:
 /// - Rendering: Page displays correctly with connection list
 /// - Empty State: Shows empty state when no connections
 /// - Connection Cards: Displays connection information correctly
 /// - User Interactions: View details, disconnect connections
 /// - Status Indicators: Shows connection status and quality ratings
-/// 
+///
 /// Dependencies:
 /// - ConnectionMetrics: For connection data
 /// - VibeConnectionOrchestrator: For connection management
@@ -23,246 +23,109 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests page rendering, connection display, and user interactions
 void main() {
   group('AI2AIConnectionView Widget Tests', () {
-    group('Rendering', () {
-      testWidgets('displays page with app bar', (WidgetTester tester) async {
-        // Arrange
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: const AI2AIConnectionView(),
-        );
+    // Removed: Property assignment tests
+    // AI2AI connection view tests focus on business logic (page rendering, connection display, user interactions, status indicators), not property assignment
 
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        expect(find.byType(AI2AIConnectionView), findsOneWidget);
-        expect(find.byType(AppBar), findsOneWidget);
-        expect(find.descendant(
-          of: find.byType(AppBar),
-          matching: find.text('AI2AI Connections'),
-        ), findsOneWidget);
-      });
-
-      testWidgets('displays empty state when no connections', (WidgetTester tester) async {
-        // Arrange
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: const AI2AIConnectionView(),
-        );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        expect(find.text('No active connections'), findsOneWidget);
-        expect(find.byIcon(Icons.link_off), findsOneWidget);
-      });
-
-      testWidgets('displays connection list when connections exist', (WidgetTester tester) async {
-        // Arrange
-        final connections = [
-          ConnectionMetrics.initial(
-            localAISignature: 'local-sig-1',
-            remoteAISignature: 'remote-sig-1',
-            compatibility: 0.85,
+    testWidgets(
+        'should display page with app bar, display empty state when no connections, display connection list when connections exist, display connection compatibility score, display connection status, display connection quality rating, display connection duration, show view details button for each connection, show disconnect button for active connections, call onConnectionTap when connection card is tapped, or show status indicator for each connection',
+        (WidgetTester tester) async {
+      // Test business logic: AI2AI connection view display, interactions, and status indicators
+      final widget1 = WidgetTestHelpers.createTestableWidget(
+        child: const AI2AIConnectionView(),
+      );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
+      expect(find.byType(AI2AIConnectionView), findsOneWidget);
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(
+          find.descendant(
+            of: find.byType(AppBar),
+            matching: find.text('AI2AI Connections'),
           ),
-          ConnectionMetrics.initial(
-            localAISignature: 'local-sig-2',
-            remoteAISignature: 'remote-sig-2',
-            compatibility: 0.72,
-          ),
-        ];
+          findsOneWidget);
+      expect(find.text('No active connections'), findsOneWidget);
+      expect(find.byIcon(Icons.link_off), findsOneWidget);
 
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AIConnectionView(connections: connections),
-        );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        expect(find.text('Active Connections'), findsOneWidget);
-        expect(find.byType(Card), findsWidgets);
-      });
-    });
-
-    group('Connection Display', () {
-      testWidgets('displays connection compatibility score', (WidgetTester tester) async {
-        // Arrange
-        final connection = ConnectionMetrics.initial(
-          localAISignature: 'local-sig',
-          remoteAISignature: 'remote-sig',
+      final connections = [
+        ConnectionMetrics.initial(
+          localAISignature: 'local-sig-1',
+          remoteAISignature: 'remote-sig-1',
           compatibility: 0.85,
-        );
+        ),
+        ConnectionMetrics.initial(
+          localAISignature: 'local-sig-2',
+          remoteAISignature: 'remote-sig-2',
+          compatibility: 0.72,
+        ),
+      ];
+      final widget2 = WidgetTestHelpers.createTestableWidget(
+        child: AI2AIConnectionView(connections: connections),
+      );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget2);
+      expect(find.text('Active Connections'), findsOneWidget);
+      expect(find.byType(Card), findsWidgets);
 
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AIConnectionView(connections: [connection]),
-        );
+      final connection1 = ConnectionMetrics.initial(
+        localAISignature: 'local-sig',
+        remoteAISignature: 'remote-sig',
+        compatibility: 0.85,
+      );
+      final widget3 = WidgetTestHelpers.createTestableWidget(
+        child: AI2AIConnectionView(connections: [connection1]),
+      );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
+      expect(find.text('85%'), findsOneWidget);
+      expect(find.textContaining('Establishing'), findsOneWidget);
+      final hasDuration = find.textContaining('0m').evaluate().isNotEmpty ||
+          find.textContaining('min').evaluate().isNotEmpty ||
+          find.textContaining('s').evaluate().isNotEmpty;
+      expect(hasDuration, isTrue);
+      expect(find.text('View Details'), findsOneWidget);
+      expect(find.text('Disconnect'), findsOneWidget);
+      final hasStatusIndicator = find
+          .byWidgetPredicate(
+            (widget) =>
+                widget is Container &&
+                widget.decoration is BoxDecoration &&
+                (widget.decoration as BoxDecoration).shape == BoxShape.circle,
+          )
+          .evaluate()
+          .isNotEmpty;
+      expect(hasStatusIndicator, isTrue);
 
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      final connection2 = ConnectionMetrics.initial(
+        localAISignature: 'local-sig',
+        remoteAISignature: 'remote-sig',
+        compatibility: 0.90,
+      );
+      final widget4 = WidgetTestHelpers.createTestableWidget(
+        child: AI2AIConnectionView(connections: [connection2]),
+      );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget4);
+      final hasQualityRating =
+          find.textContaining('EXCELLENT').evaluate().isNotEmpty ||
+              find.textContaining('GOOD').evaluate().isNotEmpty ||
+              find.textContaining('FAIR').evaluate().isNotEmpty ||
+              find.textContaining('POOR').evaluate().isNotEmpty;
+      expect(hasQualityRating, isTrue);
 
-        // Assert
-        expect(find.text('85%'), findsOneWidget);
-      });
-
-      testWidgets('displays connection status', (WidgetTester tester) async {
-        // Arrange
-        final connection = ConnectionMetrics.initial(
-          localAISignature: 'local-sig',
-          remoteAISignature: 'remote-sig',
-          compatibility: 0.75,
-        );
-
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AIConnectionView(connections: [connection]),
-        );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        expect(find.textContaining('Establishing'), findsOneWidget);
-      });
-
-      testWidgets('displays connection quality rating', (WidgetTester tester) async {
-        // Arrange
-        final connection = ConnectionMetrics.initial(
-          localAISignature: 'local-sig',
-          remoteAISignature: 'remote-sig',
-          compatibility: 0.90,
-        );
-
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AIConnectionView(connections: [connection]),
-        );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        // Quality rating should be displayed (excellent, good, fair, or poor)
-        final hasQualityRating = find.textContaining('EXCELLENT').evaluate().isNotEmpty ||
-            find.textContaining('GOOD').evaluate().isNotEmpty ||
-            find.textContaining('FAIR').evaluate().isNotEmpty ||
-            find.textContaining('POOR').evaluate().isNotEmpty;
-        expect(hasQualityRating, isTrue);
-      });
-
-      testWidgets('displays connection duration', (WidgetTester tester) async {
-        // Arrange
-        final connection = ConnectionMetrics.initial(
-          localAISignature: 'local-sig',
-          remoteAISignature: 'remote-sig',
-          compatibility: 0.75,
-        );
-
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AIConnectionView(connections: [connection]),
-        );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        final hasDuration = find.textContaining('0m').evaluate().isNotEmpty ||
-            find.textContaining('min').evaluate().isNotEmpty ||
-            find.textContaining('s').evaluate().isNotEmpty;
-        expect(hasDuration, isTrue);
-      });
-    });
-
-    group('User Interactions', () {
-      testWidgets('shows view details button for each connection', (WidgetTester tester) async {
-        // Arrange
-        final connection = ConnectionMetrics.initial(
-          localAISignature: 'local-sig',
-          remoteAISignature: 'remote-sig',
-          compatibility: 0.75,
-        );
-
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AIConnectionView(connections: [connection]),
-        );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        expect(find.text('View Details'), findsOneWidget);
-      });
-
-      testWidgets('shows disconnect button for active connections', (WidgetTester tester) async {
-        // Arrange
-        final connection = ConnectionMetrics.initial(
-          localAISignature: 'local-sig',
-          remoteAISignature: 'remote-sig',
-          compatibility: 0.75,
-        );
-
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AIConnectionView(connections: [connection]),
-        );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        expect(find.text('Disconnect'), findsOneWidget);
-      });
-
-      testWidgets('calls onConnectionTap when connection card is tapped', (WidgetTester tester) async {
-        // Arrange
-        String? tappedConnectionId;
-        final connection = ConnectionMetrics.initial(
-          localAISignature: 'local-sig',
-          remoteAISignature: 'remote-sig',
-          compatibility: 0.75,
-        );
-
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AIConnectionView(
-            connections: [connection],
-            onConnectionTap: (connectionId) {
-              tappedConnectionId = connectionId;
-            },
-          ),
-        );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-        await tester.tap(find.text('View Details'));
-        await tester.pumpAndSettle();
-
-        // Assert
-        expect(tappedConnectionId, equals(connection.connectionId));
-      });
-    });
-
-    group('Status Indicators', () {
-      testWidgets('shows status indicator for each connection', (WidgetTester tester) async {
-        // Arrange
-        final connection = ConnectionMetrics.initial(
-          localAISignature: 'local-sig',
-          remoteAISignature: 'remote-sig',
-          compatibility: 0.75,
-        );
-
-        final widget = WidgetTestHelpers.createTestableWidget(
-          child: AI2AIConnectionView(connections: [connection]),
-        );
-
-        // Act
-        await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-        // Assert
-        // Status indicator should be visible (colored dot or icon)
-        final hasStatusIndicator = find.byWidgetPredicate(
-          (widget) => widget is Container &&
-              widget.decoration is BoxDecoration &&
-              (widget.decoration as BoxDecoration).shape == BoxShape.circle,
-        ).evaluate().isNotEmpty;
-        expect(hasStatusIndicator, isTrue);
-      });
+      String? tappedConnectionId;
+      final connection3 = ConnectionMetrics.initial(
+        localAISignature: 'local-sig',
+        remoteAISignature: 'remote-sig',
+        compatibility: 0.75,
+      );
+      final widget5 = WidgetTestHelpers.createTestableWidget(
+        child: AI2AIConnectionView(
+          connections: [connection3],
+          onConnectionTap: (connectionId) {
+            tappedConnectionId = connectionId;
+          },
+        ),
+      );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
+      await tester.tap(find.text('View Details'));
+      await tester.pumpAndSettle();
+      expect(tappedConnectionId, equals(connection3.connectionId));
     });
   });
 }
-

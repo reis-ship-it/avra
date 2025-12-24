@@ -99,7 +99,7 @@ class _UserDataViewerPageState extends State<UserDataViewerPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.search, size: 64, color: AppColors.grey500,
+                      Icon(Icons.search, size: 64, color: AppColors.grey500),
                       const SizedBox(height: 16),
                       Text(
                         'Search for users to view their data',
@@ -158,7 +158,7 @@ class _UserDataViewerPageState extends State<UserDataViewerPage> {
                       ),
                       trailing: result.isActive
                           ? const Icon(Icons.check_circle, color: AppColors.electricGreen)
-                          : const Icon(Icons.cancel, color: AppColors.grey500,
+                          : const Icon(Icons.cancel, color: AppColors.grey500),
                       onTap: () {
                         Navigator.push(
                           context,

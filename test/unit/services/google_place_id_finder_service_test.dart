@@ -8,6 +8,7 @@ import 'package:spots/core/models/spot.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'google_place_id_finder_service_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([http.Client])
 void main() {
@@ -141,6 +142,10 @@ void main() {
         expect(placeId, isNull);
       });
     });
+
+  tearDownAll(() async {
+    await cleanupTestStorage();
+  });
   });
 }
 

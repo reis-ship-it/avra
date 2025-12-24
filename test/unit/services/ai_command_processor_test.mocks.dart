@@ -128,6 +128,7 @@ class MockLLMService extends _i1.Mock implements _i6.LLMService {
     _i6.LLMContext? context,
     double? temperature = 0.7,
     int? maxTokens = 500,
+    Duration? timeout,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -138,6 +139,7 @@ class MockLLMService extends _i1.Mock implements _i6.LLMService {
             #context: context,
             #temperature: temperature,
             #maxTokens: maxTokens,
+            #timeout: timeout,
           },
         ),
         returnValue: _i7.Future<String>.value(_i8.dummyValue<String>(
@@ -150,6 +152,7 @@ class MockLLMService extends _i1.Mock implements _i6.LLMService {
               #context: context,
               #temperature: temperature,
               #maxTokens: maxTokens,
+              #timeout: timeout,
             },
           ),
         )),
@@ -263,6 +266,7 @@ class MockLLMService extends _i1.Mock implements _i6.LLMService {
     double? temperature = 0.7,
     int? maxTokens = 500,
     bool? useRealSSE = true,
+    bool? autoFallback = true,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -274,6 +278,7 @@ class MockLLMService extends _i1.Mock implements _i6.LLMService {
             #temperature: temperature,
             #maxTokens: maxTokens,
             #useRealSSE: useRealSSE,
+            #autoFallback: autoFallback,
           },
         ),
         returnValue: _i7.Stream<String>.empty(),

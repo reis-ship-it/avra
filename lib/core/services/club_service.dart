@@ -116,7 +116,13 @@ class ClubService {
     try {
       _logger.info('Adding leader $userId to club ${club.id}', tag: _logName);
 
-      if (club.leaders.contains(userId)) {
+      // Retrieve latest club from storage to ensure we have the correct state
+      final latestClub = await getClubById(club.id);
+      if (latestClub == null) {
+        throw Exception('Club not found: ${club.id}');
+      }
+
+      if (latestClub.leaders.contains(userId)) {
         _logger.warning(
           'User $userId is already a leader of club ${club.id}',
           tag: _logName,
@@ -125,22 +131,22 @@ class ClubService {
       }
 
       // User must be a member
-      if (!club.isMember(userId)) {
+      if (!latestClub.isMember(userId)) {
         throw Exception('User must be a member to become a leader');
       }
 
       // Remove from admin team if present
-      List<String> updatedAdminTeam = club.adminTeam;
+      List<String> updatedAdminTeam = latestClub.adminTeam;
       if (updatedAdminTeam.contains(userId)) {
         updatedAdminTeam = updatedAdminTeam.where((id) => id != userId).toList();
       }
 
       // Remove from member roles if present
-      Map<String, ClubRole> updatedMemberRoles = Map.from(club.memberRoles);
+      Map<String, ClubRole> updatedMemberRoles = Map.from(latestClub.memberRoles);
       updatedMemberRoles.remove(userId);
 
-      final updated = club.copyWith(
-        leaders: [...club.leaders, userId],
+      final updated = latestClub.copyWith(
+        leaders: [...latestClub.leaders, userId],
         adminTeam: updatedAdminTeam,
         memberRoles: updatedMemberRoles,
         updatedAt: DateTime.now(),
@@ -196,11 +202,19 @@ class ClubService {
   }
 
   /// Add admin to club
+  /// 
+  /// **Note:** Retrieves latest club from storage to ensure correct state
   Future<void> addAdmin(Club club, String userId) async {
     try {
       _logger.info('Adding admin $userId to club ${club.id}', tag: _logName);
 
-      if (club.adminTeam.contains(userId)) {
+      // Retrieve latest club from storage to ensure we have the correct state
+      final latestClub = await getClubById(club.id);
+      if (latestClub == null) {
+        throw Exception('Club not found: ${club.id}');
+      }
+
+      if (latestClub.adminTeam.contains(userId)) {
         _logger.warning(
           'User $userId is already an admin of club ${club.id}',
           tag: _logName,
@@ -209,21 +223,21 @@ class ClubService {
       }
 
       // User must be a member
-      if (!club.isMember(userId)) {
+      if (!latestClub.isMember(userId)) {
         throw Exception('User must be a member to become an admin');
       }
 
       // Cannot add if already a leader
-      if (club.isLeader(userId)) {
+      if (latestClub.isLeader(userId)) {
         throw Exception('User is already a leader');
       }
 
       // Remove from member roles if present
-      Map<String, ClubRole> updatedMemberRoles = Map.from(club.memberRoles);
+      Map<String, ClubRole> updatedMemberRoles = Map.from(latestClub.memberRoles);
       updatedMemberRoles.remove(userId);
 
-      final updated = club.copyWith(
-        adminTeam: [...club.adminTeam, userId],
+      final updated = latestClub.copyWith(
+        adminTeam: [...latestClub.adminTeam, userId],
         memberRoles: updatedMemberRoles,
         updatedAt: DateTime.now(),
       );
@@ -273,6 +287,8 @@ class ClubService {
   }
 
   /// Assign role to member
+  /// 
+  /// **Note:** Retrieves latest club from storage to ensure correct state
   Future<void> assignRole(
     Club club,
     String userId,
@@ -284,8 +300,14 @@ class ClubService {
         tag: _logName,
       );
 
+      // Retrieve latest club from storage to ensure we have the correct state
+      final latestClub = await getClubById(club.id);
+      if (latestClub == null) {
+        throw Exception('Club not found: ${club.id}');
+      }
+
       // User must be a member
-      if (!club.isMember(userId)) {
+      if (!latestClub.isMember(userId)) {
         throw Exception('User must be a member to assign a role');
       }
 
@@ -298,8 +320,8 @@ class ClubService {
       }
 
       // Remove from leaders/admins if present
-      List<String> updatedLeaders = club.leaders;
-      List<String> updatedAdminTeam = club.adminTeam;
+      List<String> updatedLeaders = latestClub.leaders;
+      List<String> updatedAdminTeam = latestClub.adminTeam;
       if (updatedLeaders.contains(userId)) {
         updatedLeaders = updatedLeaders.where((id) => id != userId).toList();
       }
@@ -308,14 +330,14 @@ class ClubService {
       }
 
       // Update member roles
-      Map<String, ClubRole> updatedMemberRoles = Map.from(club.memberRoles);
+      Map<String, ClubRole> updatedMemberRoles = Map.from(latestClub.memberRoles);
       if (role == ClubRole.member) {
         updatedMemberRoles.remove(userId); // Default role, no need to store
       } else {
         updatedMemberRoles[userId] = role;
       }
 
-      final updated = club.copyWith(
+      final updated = latestClub.copyWith(
         leaders: updatedLeaders,
         adminTeam: updatedAdminTeam,
         memberRoles: updatedMemberRoles,

@@ -6,33 +6,21 @@ import '../../helpers/widget_test_helpers.dart';
 /// Tests privacy settings UI and controls
 void main() {
   group('PrivacySettingsPage Widget Tests', () {
-    testWidgets('displays all required UI elements', (WidgetTester tester) async {
-      // Arrange
+    // Removed: Property assignment tests
+    // Privacy settings page tests focus on business logic (UI display, privacy preference controls), not property assignment
+
+    testWidgets(
+        'should display all required UI elements or display privacy preference controls',
+        (WidgetTester tester) async {
+      // Test business logic: Privacy settings page display
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const PrivacySettingsPage(),
       );
-
-      // Act
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Verify all UI elements are present
       expect(find.text('Privacy Settings'), findsOneWidget);
       expect(find.text('OUR_GUTS.md Commitment'), findsOneWidget);
       expect(find.text('Core Privacy Controls'), findsOneWidget);
-    });
-
-    testWidgets('displays privacy preference controls', (WidgetTester tester) async {
-      // Arrange
-      final widget = WidgetTestHelpers.createTestableWidget(
-        child: const PrivacySettingsPage(),
-      );
-
-      // Act
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
-
-      // Assert - Should show privacy controls
       expect(find.byType(PrivacySettingsPage), findsOneWidget);
     });
   });
 }
-
