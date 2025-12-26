@@ -158,12 +158,13 @@ class LifePhase extends Equatable {
   });
   
   /// Create initial life phase
+  /// Phase 8.3: Uses agentId for privacy protection
   factory LifePhase.initial({
-    required String userId,
+    required String userId, // Can be agentId or userId (for backward compatibility)
     required Map<String, double> initialPersonality,
   }) {
     return LifePhase(
-      phaseId: '${userId}_phase_1',
+      phaseId: '${userId}_phase_1', // Uses provided identifier (agentId or userId)
       name: 'Initial Phase',
       corePersonality: initialPersonality,
       authenticity: 0.5,

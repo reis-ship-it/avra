@@ -387,8 +387,8 @@ class AI2AIProtocol {
   ) async {
     try {
       // Compile UserVibe for both profiles
-      final localVibe = await analyzer.compileUserVibe(local.userId, local);
-      final remoteVibe = await analyzer.compileUserVibe(remote.userId, remote);
+      final localVibe = await analyzer.compileUserVibe(local.agentId, local);
+      final remoteVibe = await analyzer.compileUserVibe(remote.agentId, remote);
       
       // Calculate compatibility using existing algorithm
       final compatibility = await analyzer.analyzeVibeCompatibility(
@@ -472,7 +472,8 @@ class AI2AIProtocol {
   /// Replaces insecure XOR encryption with proper cryptographic encryption.
   /// Returns encrypted data with format: IV (12 bytes) + ciphertext + tag (16 bytes)
   Uint8List _encrypt(Uint8List data) {
-    if (_encryptionKey == null) {
+    final encryptionKey = _encryptionKey;
+    if (encryptionKey == null) {
       developer.log('Warning: No encryption key set, returning unencrypted data', name: _logName);
       return data;
     }
@@ -486,7 +487,7 @@ class AI2AIProtocol {
         ..init(
           true, // encrypt
           AEADParameters(
-            KeyParameter(_encryptionKey!),
+            KeyParameter(encryptionKey),
             128, // MAC length (128 bits)
             iv,
             Uint8List(0), // Additional authenticated data (none)
@@ -518,7 +519,8 @@ class AI2AIProtocol {
   ///
   /// Verifies authentication tag to ensure message integrity and authenticity.
   Uint8List _decrypt(Uint8List encrypted) {
-    if (_encryptionKey == null) {
+    final encryptionKey = _encryptionKey;
+    if (encryptionKey == null) {
       developer.log('Warning: No encryption key set, returning data as-is', name: _logName);
       return encrypted;
     }
@@ -537,7 +539,7 @@ class AI2AIProtocol {
       // Create AES-256-GCM cipher
       final cipher = GCMBlockCipher(AESEngine());
       final params = AEADParameters(
-        KeyParameter(_encryptionKey!),
+        KeyParameter(encryptionKey),
         128, // MAC length
         iv,
         Uint8List(0), // Additional authenticated data

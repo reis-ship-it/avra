@@ -128,7 +128,9 @@ void main() {
 Future<List<PersonalityProfile>> _createTestPersonalityProfiles() async {
   return [
     // Explorer archetype
+    // Phase 8.3: Use agentId for privacy protection
     PersonalityProfile(
+      agentId: 'agent_test_user_explorer',
       userId: 'test_user_explorer',
       dimensions: {
         'exploration_eagerness': 0.9,
@@ -150,7 +152,9 @@ Future<List<PersonalityProfile>> _createTestPersonalityProfiles() async {
     ),
     
     // Community-oriented archetype
+    // Phase 8.3: Use agentId for privacy protection
     PersonalityProfile(
+      agentId: 'agent_test_user_community',
       userId: 'test_user_community',
       dimensions: {
         'exploration_eagerness': 0.5,
@@ -172,7 +176,9 @@ Future<List<PersonalityProfile>> _createTestPersonalityProfiles() async {
     ),
     
     // Curator archetype
+    // Phase 8.3: Use agentId for privacy protection
     PersonalityProfile(
+      agentId: 'agent_test_user_curator',
       userId: 'test_user_curator',
       dimensions: {
         'exploration_eagerness': 0.6,
@@ -232,7 +238,8 @@ Future<void> _testPersonalityEvolution(PersonalityProfile profile, List<String> 
   // Apply learning events
   PersonalityProfile evolvedProfile = profile;
   for (final action in userActions) {
-    evolvedProfile = await personalityLearning.evolveFromUserAction(profile.userId, action);
+    // Phase 8.3: Use agentId for privacy protection
+    evolvedProfile = await personalityLearning.evolveFromUserAction(profile.userId ?? profile.agentId, action);
     
     // Privacy check: No personal data in learning events
     final source = action.metadata['source'] as String? ?? '';
@@ -294,8 +301,9 @@ Future<List<AIPersonalityNode>> _testAI2AIDiscovery(
   final testProfile = profiles.first;
   
   // Test discovery process
+  // Phase 8.3: Use agentId for privacy protection
   final discoveredNodes = await orchestrator.discoverNearbyAIPersonalities(
-    testProfile.userId,
+    testProfile.userId ?? testProfile.agentId,
     testProfile,
   );
   
@@ -341,8 +349,9 @@ Future<void> _testConnectionLearning(
   final targetNode = discoveredNodes.first;
   
   // Test connection establishment
+  // Phase 8.3: Use agentId for privacy protection
   final connection = await orchestrator.establishAI2AIConnection(
-    testProfile.userId,
+    testProfile.userId ?? testProfile.agentId,
     testProfile,
     targetNode,
   );
@@ -351,7 +360,9 @@ Future<void> _testConnectionLearning(
   expect(connection!.connectionId, isNotEmpty);
   
   // Privacy validation: Connection data should be anonymized
-  if (connection.connectionId.contains(testProfile.userId)) {
+  // Phase 8.3: Check agentId instead of userId
+  if (connection.connectionId.contains(testProfile.agentId) || 
+      (testProfile.userId != null && connection.connectionId.contains(testProfile.userId!))) {
     privacyViolations.add('Connection ID contains user identifier');
   }
   
@@ -473,7 +484,8 @@ Future<void> _testNetworkEffects(
   // Simulate ecosystem self-improvement cycle by discovering more connections
   // This simulates network optimization through natural discovery
   for (final profile in profiles.take(2)) {
-    await orchestrator.discoverNearbyAIPersonalities(profile.userId, profile);
+    // Phase 8.3: Use agentId for privacy protection
+    await orchestrator.discoverNearbyAIPersonalities(profile.userId ?? profile.agentId, profile);
   }
   
   // Test ecosystem metrics after optimization
@@ -498,7 +510,8 @@ Future<EcosystemMetrics> _calculateEcosystemMetrics(
   // Calculate connection count by discovering connections for each profile
   int connectionCount = 0;
   for (final profile in profiles.take(3)) {
-    final connections = await orchestrator.discoverNearbyAIPersonalities(profile.userId, profile);
+    // Phase 8.3: Use agentId for privacy protection
+    final connections = await orchestrator.discoverNearbyAIPersonalities(profile.userId ?? profile.agentId, profile);
     connectionCount += connections.length;
   }
   
@@ -532,7 +545,9 @@ Future<void> _testPrivacyUnderLoad(
   for (int i = 0; i < 10; i++) {
     futures.add(Future(() async {
       // Create test profile
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_load_test_user_$i',
         userId: 'load_test_user_$i',
         dimensions: _generateRandomDimensions(),
         dimensionConfidence: {},
@@ -545,8 +560,9 @@ Future<void> _testPrivacyUnderLoad(
       );
       
       // Test discovery under load
+      // Phase 8.3: Use agentId for privacy protection
       final nodes = await orchestrator.discoverNearbyAIPersonalities(
-        profile.userId,
+        profile.userId ?? profile.agentId,
         profile,
       );
       
@@ -625,7 +641,9 @@ Future<void> _testAuthenticityValidation(
   VibeConnectionOrchestrator orchestrator,
 ) async {
   // Create profile with authentic behavior patterns
+  // Phase 8.3: Use agentId for privacy protection
   final authenticProfile = PersonalityProfile(
+    agentId: 'agent_authentic_user',
     userId: 'authentic_user',
     dimensions: _generateAuthenticDimensions(),
     dimensionConfidence: {},
@@ -675,7 +693,9 @@ Map<String, double> _generateAuthenticDimensions() {
 }
 
 PersonalityProfile _createManipulatedProfile() {
+  // Phase 8.3: Use agentId for privacy protection
   return PersonalityProfile(
+    agentId: 'agent_manipulated_user',
     userId: 'manipulated_user',
     dimensions: {
       'exploration_eagerness': 1.0, // Unrealistically high

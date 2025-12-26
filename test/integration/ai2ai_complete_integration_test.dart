@@ -9,7 +9,7 @@ import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferences, SharedPreferencesCompat;
+import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
 import '../mocks/mock_storage_service.dart';
 
 // Phase 2: AI2AI Connection System
@@ -136,7 +136,9 @@ void main() {
         final userId = 'integration_test_user_lifecycle_${DateTime.now().millisecondsSinceEpoch}';
         
         // Step 1: Initialize personality profile
-        final initialProfile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final initialProfile = PersonalityProfile.initial(agentId, userId: userId);
         expect(initialProfile.userId, equals(userId));
         expect(initialProfile.dimensions, hasLength(12));
         expect(initialProfile.authenticity, greaterThan(0.0));
@@ -191,8 +193,9 @@ void main() {
         const remoteUserId = 'integration_remote_user';
         
         // Step 1: Create personality profiles for both users
-        final localProfile = PersonalityProfile.initial(localUserId);
-        final remoteProfile = PersonalityProfile.initial(remoteUserId);
+        // Phase 8.3: Use agentId for privacy protection
+        final localProfile = PersonalityProfile.initial('agent_$localUserId', userId: localUserId);
+        final remoteProfile = PersonalityProfile.initial('agent_$remoteUserId', userId: remoteUserId);
         
         // Step 2: Generate vibes for both users
         final localVibe = await vibeAnalyzer.compileUserVibe(localUserId, localProfile);
@@ -227,7 +230,9 @@ void main() {
         const connectionId = 'dynamic_connection_001';
         
         // Setup: Create personality and connection metrics
-        final personality = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final personality = PersonalityProfile.initial(agentId, userId: userId);
         final connectionMetrics = ConnectionMetrics(
           connectionId: connectionId,
           localAISignature: 'local_ai_test',
@@ -346,7 +351,9 @@ void main() {
         const userId = 'privacy_test_user';
         
         // Test 1: Personality profile privacy
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
         final anonymizedProfile = await PrivacyProtection.anonymizePersonalityProfile(
           profile,
           privacyLevel: 'MAXIMUM_ANONYMIZATION',
@@ -390,7 +397,9 @@ void main() {
         const userId = 'guts_privacy_user';
         
         // All personality data should be locally controlled
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
         expect(profile.userId, equals(userId)); // User maintains identity control
         
         // All anonymization should be user-controlled
@@ -411,7 +420,9 @@ void main() {
         const userId = 'guts_authenticity_user';
         
         // Personality should reflect authentic user preferences
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
         expect(profile.authenticity, greaterThanOrEqualTo(0.5)); // Initial authenticity baseline (0.5)
         
         // AI2AI connections should preserve authentic matching
@@ -435,7 +446,9 @@ void main() {
         const userId = 'guts_community_user';
         
         // AI2AI connections should build community
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
         final vibe = await vibeAnalyzer.compileUserVibe(userId, profile);
         
         // Community orientation should be a core dimension
@@ -508,7 +521,8 @@ void main() {
         expect(profiles, hasLength(userCount));
         // Verify all profiles are created with correct user IDs
         // Note: Due to concurrent execution, profiles may not be in the same order as userIds
-        final profileUserIds = profiles.map((p) => p.userId).toSet();
+        // Phase 8.3: Handle nullable userId (use agentId as fallback)
+        final profileUserIds = profiles.map((p) => p.userId ?? p.agentId).toSet();
         final expectedUserIds = userIds.toSet();
         expect(profileUserIds, equals(expectedUserIds));
         // Verify all profiles have valid authenticity scores
@@ -517,8 +531,9 @@ void main() {
         }
         
         // Generate vibes concurrently
+        // Phase 8.3: Use agentId for privacy protection (userId may be null)
         final vibes = await Future.wait(
-          profiles.map((profile) => vibeAnalyzer.compileUserVibe(profile.userId, profile)),
+          profiles.map((profile) => vibeAnalyzer.compileUserVibe(profile.userId ?? profile.agentId, profile)),
         );
         
         expect(vibes, hasLength(userCount));

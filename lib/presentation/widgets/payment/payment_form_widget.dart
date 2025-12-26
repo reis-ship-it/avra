@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/services/payment_service.dart';
+import 'package:spots/core/controllers/payment_processing_controller.dart';
+import 'package:spots/core/models/expertise_event.dart';
+import 'package:spots/core/models/unified_user.dart';
+import 'package:spots/core/models/user.dart' as user_model;
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -22,8 +25,8 @@ import 'package:get_it/get_it.dart';
 class PaymentFormWidget extends StatefulWidget {
   final double amount;
   final int quantity;
-  final String eventId;
-  final Function(String paymentId, String paymentIntentId) onPaymentSuccess;
+  final ExpertiseEvent event;
+  final Function(String paymentId, String? paymentIntentId) onPaymentSuccess;
   final Function(String errorMessage, String? errorCode) onPaymentFailure;
   final bool isProcessing;
   final Function(bool) onProcessingChange;
@@ -32,7 +35,7 @@ class PaymentFormWidget extends StatefulWidget {
     super.key,
     required this.amount,
     required this.quantity,
-    required this.eventId,
+    required this.event,
     required this.onPaymentSuccess,
     required this.onPaymentFailure,
     this.isProcessing = false,
@@ -49,7 +52,7 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
   final _expiryController = TextEditingController();
   final _cvvController = TextEditingController();
   final _cardholderNameController = TextEditingController();
-  final _paymentService = GetIt.instance<PaymentService>();
+  final _paymentController = GetIt.instance<PaymentProcessingController>();
   String? _error;
 
   @override
@@ -78,47 +81,37 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
         throw Exception('User must be signed in to make a payment');
       }
 
-      final userId = authState.user.id;
-      final ticketPrice = widget.amount / widget.quantity;
+      final buyer = _convertUserToUnifiedUser(authState.user);
 
-      // Step 1: Create payment intent (purchaseEventTicket)
-      final result = await _paymentService.purchaseEventTicket(
-        eventId: widget.eventId,
-        userId: userId,
-        ticketPrice: ticketPrice,
+      // Process payment using PaymentProcessingController
+      // This handles: validation, tax calculation, payment processing, and event registration
+      final result = await _paymentController.processEventPayment(
+        event: widget.event,
+        buyer: buyer,
         quantity: widget.quantity,
       );
 
       if (!result.isSuccess) {
-        throw Exception(result.errorMessage ?? 'Payment failed');
+        // Handle validation errors
+        if (result.validationErrors != null && result.validationErrors!.isNotEmpty) {
+          final errorMessages = result.validationErrors!.values.join(', ');
+          throw Exception(errorMessages);
+        }
+        throw Exception(result.error ?? 'Payment failed');
       }
 
-      if (result.payment == null || result.paymentIntent == null) {
-        throw Exception('Payment intent creation failed');
+      if (result.payment == null) {
+        // Free events might not have payment
+        if (widget.event.isPaid) {
+          throw Exception('Payment record not found');
+        }
       }
 
-      final payment = result.payment!;
-      final paymentIntent = result.paymentIntent!;
-
-      // Step 2: Confirm payment
-      // Note: In production, this would use Stripe's confirmCardPayment with the payment method
-      // For MVP, we simulate payment confirmation
-      try {
-        await _paymentService.confirmPayment(
-          paymentId: payment.id,
-          paymentIntentId: paymentIntent.id,
-        );
-
-        // Step 3: Success - call callback
-        widget.onPaymentSuccess(payment.id, paymentIntent.id);
-      } catch (e) {
-        // Payment confirmation failed
-        await _paymentService.handlePaymentFailure(
-          paymentId: payment.id,
-          errorMessage: e.toString(),
-        );
-        throw e;
-      }
+      // Payment successful - call callback
+      // Note: PaymentIntent may be null for free events or if not yet created
+      final paymentId = result.payment?.id ?? 'free_event_${widget.event.id}';
+      final paymentIntentId = result.paymentIntent?.id;
+      widget.onPaymentSuccess(paymentId, paymentIntentId);
     } catch (e) {
       setState(() {
         _error = e.toString();
@@ -383,6 +376,35 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
         ],
       ),
       ),
+    );
+  }
+
+  /// Convert User to UnifiedUser for service compatibility
+  UnifiedUser _convertUserToUnifiedUser(user_model.User user) {
+    return UnifiedUser(
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName ?? user.name,
+      photoUrl: null, // User model doesn't have photoUrl
+      location: null, // User model doesn't have location
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isOnline: user.isOnline ?? false,
+      hasCompletedOnboarding: true, // Assume completed if authenticated
+      hasReceivedStarterLists: false,
+      expertise: null,
+      locations: null,
+      hostedEventsCount: null,
+      differentSpotsCount: null,
+      tags: const [],
+      expertiseMap: const {},
+      friends: const [],
+      curatedLists: user.curatedLists,
+      collaboratedLists: user.collaboratedLists,
+      followedLists: user.followedLists,
+      primaryRole: UserRole.follower, // Default role
+      isAgeVerified: false,
+      ageVerificationDate: null,
     );
   }
 }

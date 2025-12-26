@@ -12,7 +12,9 @@ void main() {
   group('EvolutionTimelineWidget Widget Tests', () {
     testWidgets('should display empty state when no milestones', (WidgetTester tester) async {
       // Arrange: Profile with no milestones
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -47,7 +49,9 @@ void main() {
 
     testWidgets('should display statistics correctly', (WidgetTester tester) async {
       // Arrange: Profile with statistics
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -85,7 +89,9 @@ void main() {
         TestHelpers.createTestDateTime().subtract(const Duration(days: 5)),
         TestHelpers.createTestDateTime().subtract(const Duration(days: 1)),
       ];
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -116,7 +122,9 @@ void main() {
       final milestones = List<DateTime>.generate(15, (index) => 
         TestHelpers.createTestDateTime().subtract(Duration(days: 15 - index))
       );
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -147,7 +155,9 @@ void main() {
       final milestones = List<DateTime>.generate(10, (index) => 
         TestHelpers.createTestDateTime().subtract(Duration(days: 10 - index))
       );
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -181,7 +191,9 @@ void main() {
         now.subtract(const Duration(days: 5)),  // Middle
         now.subtract(const Duration(days: 1)),   // Most recent
       ];
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -217,7 +229,9 @@ void main() {
         now.subtract(const Duration(days: 5)),
         now.subtract(const Duration(days: 1)), // Latest
       ];
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -267,7 +281,9 @@ void main() {
     testWidgets('should format date as "Today" when milestone is today', (WidgetTester tester) async {
       // Arrange: Profile with milestone from today
       final now = DateTime.now();
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -297,7 +313,9 @@ void main() {
       // Arrange: Profile with milestone from yesterday
       final now = DateTime.now();
       final yesterday = now.subtract(const Duration(days: 1));
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -327,7 +345,9 @@ void main() {
       // Arrange: Profile with milestone from 3 days ago
       final now = DateTime.now();
       final threeDaysAgo = now.subtract(const Duration(days: 3));
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -357,7 +377,9 @@ void main() {
       // Arrange: Profile with milestone from 10 days ago
       final now = DateTime.now();
       final tenDaysAgo = now.subtract(const Duration(days: 10));
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -389,7 +411,9 @@ void main() {
       // Arrange: Profile with specific dates
       final createdAt = TestHelpers.createTestDateTime(2025, 1, 1);
       final updatedAt = TestHelpers.createTestDateTime(2025, 1, 15);
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},
@@ -420,7 +444,9 @@ void main() {
 
     testWidgets('should display card with elevation', (WidgetTester tester) async {
       // Arrange: Profile
+      // Phase 8.3: Use agentId for privacy protection
       final profile = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},

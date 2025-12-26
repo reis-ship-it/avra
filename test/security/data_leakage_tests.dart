@@ -119,7 +119,8 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
-        final personality = PersonalityProfile.initial('user-leak-3');
+        // Phase 8.3: Use agentId for privacy protection
+        final personality = PersonalityProfile.initial('agent_user-leak-3', userId: 'user-leak-3');
 
         final anonymousUser = await anonymizationService.anonymizeUser(
           unifiedUser,
@@ -424,7 +425,8 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
-        final personality = PersonalityProfile.initial('user-comprehensive-1');
+        // Phase 8.3: Use agentId for privacy protection
+        final personality = PersonalityProfile.initial('agent_user-comprehensive-1', userId: 'user-comprehensive-1');
 
         // Step 1: Anonymize user
         final anonymousUser = await anonymizationService.anonymizeUser(
@@ -472,7 +474,8 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
-        final personality = PersonalityProfile.initial('user-comprehensive-2');
+        // Phase 8.3: Use agentId for privacy protection
+        final personality = PersonalityProfile.initial('agent_user-comprehensive-2', userId: 'user-comprehensive-2');
 
         final anonymousUser = await anonymizationService.anonymizeUser(
           unifiedUser,

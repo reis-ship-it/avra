@@ -28,7 +28,9 @@ void main() {
     group('Cloud Contribution', () {
       test('should contribute anonymous patterns without errors', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
         final context = {'source': 'test'};
 
         when(mockPrefs.getString(any)).thenReturn(null);
@@ -48,7 +50,9 @@ void main() {
 
       test('should handle contribution errors gracefully', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         when(mockPrefs.getString(any)).thenThrow(Exception('Storage error'));
 
@@ -66,7 +70,9 @@ void main() {
     group('Cloud Learning', () {
       test('should learn from cloud patterns without errors', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         when(mockPrefs.getString(any)).thenReturn(null);
         when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
@@ -82,7 +88,9 @@ void main() {
 
       test('should handle empty cloud patterns', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         when(mockPrefs.getString(any)).thenReturn(null);
 
@@ -111,7 +119,9 @@ void main() {
     group('Cloud Recommendations', () {
       test('should generate cloud recommendations without errors', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         when(mockPrefs.getString(any)).thenReturn(null);
 

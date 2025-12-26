@@ -43,7 +43,7 @@ void main() {
         encryptionType: EncryptionType.aes256gcm,
       ),
     );
-    registerFallbackValue(PersonalityProfile.initial('test_user'));
+    registerFallbackValue(PersonalityProfile.initial('agent_test_user', userId: 'test_user'));
     registerFallbackValue(HybridSearchResult(
       spots: [],
       communityCount: 0,
@@ -113,7 +113,7 @@ void main() {
           .thenAnswer((_) async => '');
       
       when(() => mockPersonalityLearning.getCurrentPersonality(any()))
-          .thenAnswer((_) async => PersonalityProfile.initial(testUserId));
+          .thenAnswer((_) async => PersonalityProfile.initial('agent_$testUserId', userId: testUserId));
       
       when(() => mockLLMService.chat(
         messages: any(named: 'messages'),

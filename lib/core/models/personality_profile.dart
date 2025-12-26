@@ -5,8 +5,10 @@ import 'package:spots/core/models/contextual_personality.dart';
 /// Represents a complete AI personality profile with 12 core dimensions and evolution tracking
 /// Phase 2: Expanded from 8 to 12 dimensions for more precise matching
 /// Phase 3: Added contextual personality system (core + contexts + timeline)
+/// Phase 8.3: Migrated to use agentId for privacy protection
 class PersonalityProfile {
-  final String userId;
+  final String agentId; // Privacy-protected identifier (primary key)
+  final String? userId; // Optional, for backward compatibility during migration
   final Map<String, double> dimensions; // Current active dimensions
   final Map<String, double> dimensionConfidence;
   final String archetype;
@@ -26,7 +28,8 @@ class PersonalityProfile {
   final TransitionMetrics? activeTransition; // Active transition metrics
 
   PersonalityProfile({
-    required this.userId,
+    required this.agentId,
+    this.userId, // Optional for backward compatibility
     required this.dimensions,
     required this.dimensionConfidence,
     required this.archetype,
@@ -47,7 +50,8 @@ class PersonalityProfile {
 
   /// Create initial personality profile with default values
   /// Phase 3: Now includes core personality and initial life phase
-  factory PersonalityProfile.initial(String userId) {
+  /// Phase 8.3: Uses agentId for privacy protection
+  factory PersonalityProfile.initial(String agentId, {String? userId}) {
     final initialDimensions = <String, double>{};
     final initialConfidence = <String, double>{};
 
@@ -56,14 +60,15 @@ class PersonalityProfile {
       initialConfidence[dimension] = 0.0; // No confidence initially
     }
 
-    // Create initial life phase
+    // Create initial life phase (uses agentId for privacy)
     final initialPhase = LifePhase.initial(
-      userId: userId,
+      userId: agentId, // Use agentId for privacy
       initialPersonality: Map<String, double>.from(initialDimensions),
     );
 
     return PersonalityProfile(
-      userId: userId,
+      agentId: agentId,
+      userId: userId, // Optional for backward compatibility
       dimensions: initialDimensions,
       dimensionConfidence: initialConfidence,
       archetype: 'developing', // Not yet classified
@@ -133,7 +138,8 @@ class PersonalityProfile {
         .add(DateTime.now());
 
     return PersonalityProfile(
-      userId: userId,
+      agentId: agentId,
+      userId: userId, // Preserve userId if provided
       dimensions: updatedDimensions,
       dimensionConfidence: updatedConfidence,
       archetype: newArchetype ?? _determineArchetype(updatedDimensions),
@@ -238,7 +244,8 @@ class PersonalityProfile {
     }
 
     return PersonalityProfile(
-      userId: userId,
+      agentId: agentId,
+      userId: userId, // Preserve userId if provided
       dimensions: dimensions,
       dimensionConfidence: dimensionConfidence,
       archetype: archetype,
@@ -400,7 +407,8 @@ class PersonalityProfile {
     });
 
     return {
-      'user_id': userId,
+      'agent_id': agentId,
+      'user_id': userId, // Keep for backward compatibility
       'dimensions': dimensions,
       'dimension_confidence': dimensionConfidence,
       'archetype': archetype,
@@ -429,8 +437,13 @@ class PersonalityProfile {
       }
     });
 
+    // Support both agentId (new) and userId (legacy) for migration
+    final agentId = json['agent_id'] as String? ?? json['user_id'] as String;
+    final userId = json['user_id'] as String?;
+    
     return PersonalityProfile(
-      userId: json['user_id'] as String,
+      agentId: agentId,
+      userId: userId,
       dimensions: Map<String, double>.from(json['dimensions']),
       dimensionConfidence:
           Map<String, double>.from(json['dimension_confidence']),
@@ -448,15 +461,15 @@ class PersonalityProfile {
       identical(this, other) ||
       other is PersonalityProfile &&
           runtimeType == other.runtimeType &&
-          userId == other.userId &&
+          agentId == other.agentId &&
           evolutionGeneration == other.evolutionGeneration;
 
   @override
-  int get hashCode => userId.hashCode ^ evolutionGeneration.hashCode;
+  int get hashCode => agentId.hashCode ^ evolutionGeneration.hashCode;
 
   @override
   String toString() {
-    return 'PersonalityProfile(userId: $userId, archetype: $archetype, '
+    return 'PersonalityProfile(agentId: ${agentId.substring(0, 10)}..., archetype: $archetype, '
         'generation: $evolutionGeneration, authenticity: ${authenticity.toStringAsFixed(2)})';
   }
 }
@@ -489,7 +502,8 @@ class UserPersonality {
     this.metadata = const {},
   });
   static UserPersonality defaultPersonality() {
-    final profile = PersonalityProfile.initial('user_default');
+    // Phase 8.3: Use agentId for privacy protection
+    final profile = PersonalityProfile.initial('agent_user_default', userId: 'user_default');
     return UserPersonality(userId: 'user_default', profile: profile);
   }
 }

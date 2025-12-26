@@ -95,7 +95,8 @@ Match the user's style gradually - do not copy exactly, but adapt naturally.''';
       test('should include language style alongside other context', () {
         // Arrange
         const languageStyle = 'User\'s Communication Style:\n- Vocabulary: cool';
-        final personality = PersonalityProfile.initial('user_123');
+        // Phase 8.3: Use agentId for privacy protection
+        final personality = PersonalityProfile.initial('agent_user_123', userId: 'user_123');
         
         // Act
         final context = LLMContext(

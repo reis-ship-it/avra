@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
+import 'package:spots/core/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/list.dart';
+import 'package:spots/core/controllers/list_creation_controller.dart';
+import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class CreateListPage extends StatefulWidget {
   const CreateListPage({super.key});
@@ -17,6 +21,10 @@ class _CreateListPageState extends State<CreateListPage> {
   final _descriptionController = TextEditingController();
   String _selectedCategory = 'General';
   bool _isPublic = true;
+  bool _isCreating = false;
+  String? _error;
+
+  late ListCreationController _listCreationController;
 
   final List<String> _categories = [
     'General',
@@ -30,27 +38,115 @@ class _CreateListPageState extends State<CreateListPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _listCreationController = GetIt.instance<ListCreationController>();
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
 
-  void _createList() {
-    if (_formKey.currentState!.validate()) {
-      final list = SpotList(
-        id: '', // Will be set by the repository
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        spots: const [],
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        isPublic: _isPublic,
-        spotIds: const [],
+  Future<void> _createList() async {
+    if (!_formKey.currentState!.validate() || _isCreating) return;
+
+    setState(() {
+      _isCreating = true;
+      _error = null;
+    });
+
+    try {
+      // Get current user from AuthBloc
+      final authState = context.read<AuthBloc>().state;
+      if (authState is! Authenticated) {
+        setState(() {
+          _error = 'Please sign in to create lists';
+          _isCreating = false;
+        });
+        return;
+      }
+
+      final authUser = authState.user;
+      final unifiedUser = UnifiedUser(
+        id: authUser.id,
+        email: authUser.email,
+        displayName: authUser.displayName ?? authUser.name,
+        createdAt: authUser.createdAt,
+        updatedAt: authUser.updatedAt,
+        isOnline: authUser.isOnline ?? false,
       );
 
-      context.read<ListsBloc>().add(CreateList(list));
-      Navigator.pop(context);
+      // Prepare form data
+      final data = ListFormData(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        category: _selectedCategory,
+        isPublic: _isPublic,
+        curator: unifiedUser,
+      );
+
+      // Create list via controller
+      final result = await _listCreationController.createList(
+        data: data,
+        curator: unifiedUser,
+      );
+
+      if (!result.success) {
+        setState(() {
+          _error = result.error ?? 'Failed to create list';
+          _isCreating = false;
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(_error!),
+              backgroundColor: AppTheme.errorColor,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Show warning if present (partial success)
+      if (result.warning != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.warning!),
+            backgroundColor: AppTheme.warningColor,
+          ),
+        );
+      }
+
+      // Refresh lists via BLoC
+      if (mounted) {
+        context.read<ListsBloc>().add(LoadLists());
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('List "${result.list?.title ?? ''}" created successfully!'),
+            backgroundColor: AppTheme.successColor,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'Error: $e';
+        _isCreating = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_error!),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
     }
   }
 
@@ -62,13 +158,23 @@ class _CreateListPageState extends State<CreateListPage> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         actions: [
-          TextButton(
-            onPressed: _createList,
-            child: const Text(
-              'Create',
-              style: TextStyle(color: AppColors.white),
+          if (_isCreating)
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            TextButton(
+              onPressed: _createList,
+              child: const Text(
+                'Create',
+                style: TextStyle(color: AppColors.white),
+              ),
             ),
-          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -150,6 +256,36 @@ class _CreateListPageState extends State<CreateListPage> {
                   },
                 ),
               ),
+
+              if (_error != null) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.errorColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppTheme.errorColor.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.error_outline, color: AppTheme.errorColor),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _error!,
+                          style: TextStyle(
+                            color: AppTheme.errorColor,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
               const SizedBox(height: 24),
 
               // Info Card

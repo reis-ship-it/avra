@@ -49,10 +49,9 @@ void main() {
         prefs = compatPrefs;
         personalityLearning = PersonalityLearning.withPrefs(compatPrefs);
         
-        // Use real SharedPreferences for AI2AILearning.create() (expects real type)
-        final realPrefs = await real_prefs.SharedPreferences.getInstance();
+        // Use SharedPreferencesCompat for AI2AILearning.create() (expects SharedPreferencesCompat)
         service = AI2AILearning.create(
-          prefs: realPrefs,
+          prefs: compatPrefs,
           personalityLearning: personalityLearning!,
         );
       } catch (e) {
@@ -88,10 +87,9 @@ void main() {
           expect(true, isTrue, reason: 'Service creation requires platform channels');
           return;
         }
-        // Use real SharedPreferences for AI2AILearning.create()
-        final realPrefs = await real_prefs.SharedPreferences.getInstance();
+        // Use SharedPreferencesCompat for AI2AILearning.create()
         final factoryService = AI2AILearning.create(
-          prefs: realPrefs,
+          prefs: prefs!,
           personalityLearning: personalityLearning!,
         );
         
@@ -104,10 +102,9 @@ void main() {
           expect(true, isTrue, reason: 'Service creation requires platform channels');
           return;
         }
-        // Use real SharedPreferences for AI2AILearning.create()
-        final realPrefs = await real_prefs.SharedPreferences.getInstance();
+        // Use SharedPreferencesCompat for AI2AILearning.create()
         final factoryService = AI2AILearning.create(
-          prefs: realPrefs,
+          prefs: prefs!,
           personalityLearning: personalityLearning!,
         );
         
@@ -137,10 +134,9 @@ void main() {
         }
         const userId = 'user_with_history';
         
-        // Create chat analyzer for this test - use real SharedPreferences
-        final realPrefs = await real_prefs.SharedPreferences.getInstance();
+        // Create chat analyzer for this test - use SharedPreferencesCompat
         final chatAnalyzer = AI2AIChatAnalyzer(
-          prefs: realPrefs,
+          prefs: prefs!,
           personalityLearning: personalityLearning!,
         );
         
@@ -457,10 +453,9 @@ void main() {
         }
         const userId = 'data_flow_test';
         
-        // Create chat analyzer for this test - use real SharedPreferences
-        final realPrefs = await real_prefs.SharedPreferences.getInstance();
+        // Create chat analyzer for this test - use SharedPreferencesCompat
         final chatAnalyzer = AI2AIChatAnalyzer(
-          prefs: realPrefs,
+          prefs: prefs!,
           personalityLearning: personalityLearning!,
         );
         

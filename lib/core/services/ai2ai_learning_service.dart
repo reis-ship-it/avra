@@ -5,6 +5,7 @@ import 'package:spots/core/ai/ai2ai_learning.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/models/personality_profile.dart';
 import 'package:spots/core/services/logger.dart';
+import 'package:spots/core/services/agent_id_service.dart';
 
 /// AI2AI Learning Service
 /// 
@@ -120,9 +121,15 @@ class AI2AILearning {
       );
       _logger.info('Getting learning recommendations for user: $userId', tag: _logName);
       
-      // Get current personality profile (simplified - would need PersonalityLearning service)
-      // For now, create a default profile
-      final currentPersonality = PersonalityProfile.initial(userId);
+      // Get current personality profile using PersonalityLearning service
+      // Phase 8.3: Use agentId for privacy protection
+      final agentIdService = AgentIdService();
+      final agentId = await agentIdService.getUserAgentId(userId);
+      
+      // Try to get existing profile, otherwise create default
+      // Note: We need access to PersonalityLearning, but it's encapsulated in _chatAnalyzer
+      // For now, create a default profile with agentId
+      final currentPersonality = PersonalityProfile.initial(agentId, userId: userId);
       
       final recommendations = await _chatAnalyzer.generateLearningRecommendations(
         userId,

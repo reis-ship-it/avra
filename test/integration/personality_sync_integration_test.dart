@@ -137,7 +137,9 @@ void main() {
         final localUpdated = localProfile.lastUpdated;
 
         // Simulate cloud profile that's newer
-        final cloudProfile = PersonalityProfile.initial(userId).evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final cloudProfile = PersonalityProfile.initial(agentId, userId: userId).evolve(
           newDimensions: {'adventure': 0.9},
           additionalLearning: {'cloud_key': 'cloud_value'},
         );

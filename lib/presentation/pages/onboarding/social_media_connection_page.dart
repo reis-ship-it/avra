@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/social_media_connection_service.dart';
+import 'package:spots/injection_container.dart' as di;
 
 /// Social Media Connection Page for Onboarding
 /// Allows users to optionally connect their social media accounts
 /// This enhances AI personality learning and enables friend discovery
 class SocialMediaConnectionPage extends StatefulWidget {
-  const SocialMediaConnectionPage({super.key});
+  final Map<String, bool> connectedPlatforms;
+  final Function(Map<String, bool>) onConnectionsChanged;
+
+  const SocialMediaConnectionPage({
+    super.key,
+    required this.connectedPlatforms,
+    required this.onConnectionsChanged,
+  });
 
   @override
   State<SocialMediaConnectionPage> createState() =>
@@ -14,16 +26,17 @@ class SocialMediaConnectionPage extends StatefulWidget {
 }
 
 class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
-  final Map<String, bool> _connectedPlatforms = {
-    'Instagram': false,
-    'Facebook': false,
-    'Twitter': false,
-    'TikTok': false,
-    'LinkedIn': false,
-  };
+  late Map<String, bool> _connectedPlatforms;
 
   bool _isConnecting = false;
   String? _connectingPlatform;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize from parent
+    _connectedPlatforms = Map<String, bool>.from(widget.connectedPlatforms);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,9 +149,26 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
     });
 
     try {
-      // TODO: Implement actual OAuth connection when Phase 12 backend is ready
-      // For now, this is a placeholder UI
-      await Future.delayed(const Duration(seconds: 1));
+      // Get current user
+      final authBloc = context.read<AuthBloc>();
+      final authState = authBloc.state;
+      if (authState is! Authenticated) {
+        throw Exception('User not authenticated');
+      }
+
+      final userId = authState.user.id;
+
+      // Get agentId for privacy
+      final agentIdService = di.sl<AgentIdService>();
+      final agentId = await agentIdService.getUserAgentId(userId);
+
+      // Call service to run OAuth flow and store tokens
+      final socialMediaService = di.sl<SocialMediaConnectionService>();
+      await socialMediaService.connectPlatform(
+        platform: platform.toLowerCase(), // 'instagram', 'facebook', etc.
+        agentId: agentId, // Use agentId for privacy
+        userId: userId, // For service lookup
+      );
 
       if (mounted) {
         setState(() {
@@ -146,6 +176,9 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
           _isConnecting = false;
           _connectingPlatform = null;
         });
+
+        // Report changes to parent with real connection status
+        widget.onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -194,17 +227,49 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
     );
 
     if (confirmed == true && mounted) {
-      setState(() {
-        _connectedPlatforms[platform] = false;
-      });
+      try {
+        // Get current user
+        final authBloc = context.read<AuthBloc>();
+        final authState = authBloc.state;
+        if (authState is! Authenticated) {
+          throw Exception('User not authenticated');
+        }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$platform disconnected'),
-          backgroundColor: Colors.orange,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+        final userId = authState.user.id;
+
+        // Get agentId for privacy
+        final agentIdService = di.sl<AgentIdService>();
+        final agentId = await agentIdService.getUserAgentId(userId);
+
+        // Call service to disconnect and remove tokens
+        final socialMediaService = di.sl<SocialMediaConnectionService>();
+        await socialMediaService.disconnectPlatform(
+          platform: platform.toLowerCase(),
+          agentId: agentId,
+        );
+
+        setState(() {
+          _connectedPlatforms[platform] = false;
+        });
+
+        // Report changes to parent
+        widget.onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$platform disconnected'),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to disconnect $platform: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
     }
   }
 }

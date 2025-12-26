@@ -50,11 +50,9 @@ void main() {
           final learning = PersonalityLearning.withPrefs(compatPrefs);
           personalityLearning = learning;
           
-          // AI2AIChatAnalyzer expects real SharedPreferences from the package
-          // Get real SharedPreferences instance (mocked via setMockInitialValues)
-          final realPrefs = await real_prefs.SharedPreferences.getInstance();
+          // AI2AIChatAnalyzer expects SharedPreferencesCompat (not real SharedPreferences)
           analyzer = AI2AIChatAnalyzer(
-            prefs: realPrefs,
+            prefs: compatPrefs,
             personalityLearning: learning,
           );
         } catch (e) {

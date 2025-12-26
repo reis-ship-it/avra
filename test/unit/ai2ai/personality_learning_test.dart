@@ -77,8 +77,10 @@ void main() {
           return;
         }
         // Test personality initialization
+        // Phase 8.3: initializePersonality uses agentId internally
         final profile = await personalityLearning!.initializePersonality('test_user_1');
         
+        expect(profile.agentId, startsWith('agent_'));
         expect(profile.userId, equals('test_user_1'));
         expect(profile.dimensions.length, equals(VibeConstants.coreDimensions.length));
         expect(profile.evolutionGeneration, equals(1));
@@ -126,7 +128,7 @@ void main() {
       test('should compile user vibe with privacy protection', () async {
         if (vibeAnalyzer == null) return;
         // Create test personality
-        final personality = PersonalityProfile.initial('test_user_1');
+        final personality = PersonalityProfile.initial('agent_test_user_1', userId: 'test_user_1');
         final evolvedPersonality = personality.evolve(
           newDimensions: {
             'exploration_eagerness': 0.8,
@@ -157,7 +159,7 @@ void main() {
       
       test('should apply privacy protection correctly', () async {
         // Create test personality profile
-        final personality = PersonalityProfile.initial('test_user_1');
+        final personality = PersonalityProfile.initial('agent_test_user_1', userId: 'test_user_1');
         
         // Anonymize personality profile
         final anonymizedProfile = await PrivacyProtection.anonymizePersonalityProfile(personality);
@@ -170,14 +172,15 @@ void main() {
         expect(anonymizedProfile.isExpired, isFalse);
         
         // Verify no direct personal data exposure
-        expect(anonymizedProfile.fingerprint.contains(personality.userId), isFalse);
+        expect(anonymizedProfile.fingerprint.contains(personality.agentId), isFalse);
+        expect(anonymizedProfile.fingerprint.contains(personality.userId ?? ''), isFalse);
         expect(anonymizedProfile.archetypeHash.contains(personality.archetype), isFalse);
       });
       
       test('should calculate personality readiness for AI2AI connections', () async {
         if (personalityLearning == null) return;
         // Create well-developed personality
-        final personality = PersonalityProfile.initial('test_user_1');
+        final personality = PersonalityProfile.initial('agent_test_user_1', userId: 'test_user_1');
         final wellDevelopedPersonality = personality.evolve(
           newConfidence: {
             'exploration_eagerness': 0.8,
@@ -209,7 +212,7 @@ void main() {
       test('should discover AI personalities', () async {
         if (connectionOrchestrator == null) return;
         // Create test personality
-        final personality = PersonalityProfile.initial('test_user_1');
+        final personality = PersonalityProfile.initial('agent_test_user_1', userId: 'test_user_1');
         
         // Discover AI personalities
         final discoveredNodes = await connectionOrchestrator!.discoverNearbyAIPersonalities(
@@ -272,7 +275,7 @@ void main() {
       test('should establish AI2AI connection successfully', () async {
         if (connectionOrchestrator == null) return;
         // Create test personality and node
-        final personality = PersonalityProfile.initial('test_user_1');
+        final personality = PersonalityProfile.initial('agent_test_user_1', userId: 'test_user_1');
         final testNode = AIPersonalityNode(
           nodeId: 'test_node_1',
           vibe: UserVibe.fromPersonalityProfile('test_remote_user', {
@@ -344,7 +347,7 @@ void main() {
       test('should maintain connection state correctly', () async {
         if (connectionOrchestrator == null) return;
         // Initialize orchestration
-        final personality = PersonalityProfile.initial('test_user_1');
+        final personality = PersonalityProfile.initial('agent_test_user_1', userId: 'test_user_1');
         await connectionOrchestrator!.initializeOrchestration('test_user_1', personality);
         
         // Get connection summaries
@@ -364,7 +367,7 @@ void main() {
     group('Privacy Protection Validation', () {
       test('should ensure zero personal data exposure', () async {
         if (vibeAnalyzer == null) return;
-        final personality = PersonalityProfile.initial('test_user_sensitive_123');
+        final personality = PersonalityProfile.initial('agent_test_user_sensitive_123', userId: 'test_user_sensitive_123');
         final userVibe = await vibeAnalyzer!.compileUserVibe('test_user_sensitive_123', personality);
         
         // Anonymize vibe
@@ -453,7 +456,7 @@ void main() {
       
       test('should maintain "Privacy and Control Are Non-Negotiable"', () async {
         if (vibeAnalyzer == null) return;
-        final personality = PersonalityProfile.initial('privacy_test_user');
+        final personality = PersonalityProfile.initial('agent_privacy_test_user', userId: 'privacy_test_user');
         final userVibe = await vibeAnalyzer!.compileUserVibe('privacy_test_user', personality);
         
         // Test privacy protection
@@ -471,7 +474,7 @@ void main() {
       test('should enable "Community Not Just Places" through AI2AI learning', () async {
         if (personalityLearning == null) return;
         // Create community-oriented personality
-        final communityPersonality = PersonalityProfile.initial('community_user').evolve(
+        final communityPersonality = PersonalityProfile.initial('agent_community_user', userId: 'community_user').evolve(
           newDimensions: {
             'community_orientation': 0.9,
             'social_discovery_style': 0.8,

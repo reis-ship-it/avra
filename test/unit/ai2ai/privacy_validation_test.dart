@@ -53,7 +53,8 @@ void main() {
 
     group('Zero User Data Exposure Validation', () {
       test('should validate PersonalityProfile contains no user-identifying data', () {
-        final profile = PersonalityProfile.initial('anonymous-user-123');
+        // Phase 8.3: Use agentId for privacy protection
+        final profile = PersonalityProfile.initial('agent_anonymous-user-123', userId: 'anonymous-user-123');
         final evolved = profile.evolve(
           newDimensions: {
             'exploration_eagerness': 0.8,
@@ -204,8 +205,10 @@ void main() {
 
       test('should validate AI2AI connections preserve privacy end-to-end', () async {
         // Create anonymous personality profiles
-        final profile1 = PersonalityProfile.initial('anon-ai-001');
-        final profile2 = PersonalityProfile.initial('anon-ai-002');
+        // Phase 8.3: Use agentId for privacy protection
+        final profile1 = PersonalityProfile.initial('agent_anon-ai-001', userId: 'anon-ai-001');
+        // Phase 8.3: Use agentId for privacy protection
+        final profile2 = PersonalityProfile.initial('agent_anon-ai-002', userId: 'anon-ai-002');
 
         // Test compatibility calculation doesn't expose user data
         final compatibility = profile1.calculateCompatibility(profile2);
@@ -273,7 +276,8 @@ void main() {
       });
 
       test('should validate differential privacy noise application', () async {
-        final originalProfile = PersonalityProfile.initial('privacy-test-user');
+        // Phase 8.3: Use agentId for privacy protection
+        final originalProfile = PersonalityProfile.initial('agent_privacy-test-user', userId: 'privacy-test-user');
         
         // Apply privacy protection multiple times
         final protectedDimensions = <Map<String, double>>[];
@@ -313,7 +317,7 @@ void main() {
 
       test('should validate entropy requirements for personality fingerprints', () async {
         final profiles = List.generate(100, (i) => 
-          PersonalityProfile.initial('entropy-test-$i').evolve(
+          PersonalityProfile.initial('agent_entropy-test-$i', userId: 'entropy-test-$i').evolve(
             newDimensions: {
               // Ensure high diversity across 100 profiles (avoid repeating 10-value cycles)
               'exploration_eagerness': i / 100.0,
@@ -476,8 +480,9 @@ void main() {
 
       test('should validate learning propagation maintains privacy boundaries', () async {
         // Test AI2AI learning doesn't propagate user data
-        final sourceProfile = PersonalityProfile.initial('learning-source');
-        final targetProfile = PersonalityProfile.initial('learning-target');
+        // Phase 8.3: Use agentId for privacy protection
+        final sourceProfile = PersonalityProfile.initial('agent_learning-source', userId: 'learning-source');
+        final targetProfile = PersonalityProfile.initial('agent_learning-target', userId: 'learning-target');
 
         // Simulate learning transfer
         final learningData = {
@@ -526,7 +531,8 @@ void main() {
     group('Compliance and Audit Validation', () {
       test('should validate GDPR compliance for AI2AI data processing', () {
         // Test data minimization principle
-        final minimalProfile = PersonalityProfile.initial('gdpr-test-user');
+        // Phase 8.3: Use agentId for privacy protection
+        final minimalProfile = PersonalityProfile.initial('agent_gdpr-test-user', userId: 'gdpr-test-user');
         final profileData = minimalProfile.toJson();
 
         // Should only contain necessary AI learning data
@@ -547,7 +553,8 @@ void main() {
 
       test('should validate data retention compliance', () async {
         // Test automatic data expiration
-        final oldProfile = PersonalityProfile.initial('retention-test').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final oldProfile = PersonalityProfile.initial('agent_retention-test', userId: 'retention-test').evolve(
           additionalLearning: {
             'data_created': DateTime.now().subtract(Duration(days: 400)).toIso8601String(),
           },

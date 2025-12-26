@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/sales_tax_service.dart';
+import 'package:spots/core/controllers/event_creation_controller.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
@@ -51,8 +51,8 @@ class EventReviewPage extends StatefulWidget {
 }
 
 class _EventReviewPageState extends State<EventReviewPage> {
-  final _eventService = ExpertiseEventService();
   final _salesTaxService = GetIt.instance<SalesTaxService>();
+  final _eventCreationController = GetIt.instance<EventCreationController>();
   bool _isLoading = false;
   String? _error;
   UnifiedUser? _currentUser;
@@ -165,8 +165,13 @@ class _EventReviewPageState extends State<EventReviewPage> {
     });
 
     try {
-      final event = await _eventService.createEvent(
-        host: _currentUser!,
+      // Extract locality from location string (format: "Locality, City, State" or "Locality, City")
+      final locality = widget.location.contains(',')
+          ? widget.location.split(',').first.trim()
+          : widget.location.trim();
+
+      // Use EventCreationController for event creation
+      final formData = EventFormData(
         title: widget.title,
         description: widget.description,
         category: widget.category,
@@ -174,21 +179,46 @@ class _EventReviewPageState extends State<EventReviewPage> {
         startTime: widget.startTime,
         endTime: widget.endTime,
         location: widget.location,
+        locality: locality,
         maxAttendees: widget.maxAttendees,
         price: widget.price,
         isPublic: widget.isPublic,
+      );
+
+      final result = await _eventCreationController.createEvent(
+        formData: formData,
+        host: _currentUser!,
       );
 
       setState(() {
         _isLoading = false;
       });
 
-      if (mounted) {
+      if (!result.isSuccess) {
+        // Handle controller validation errors
+        final errorMessage = result.error ?? 'Failed to create event';
+        setState(() {
+          _error = errorMessage;
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Event created successfully
+      if (mounted && result.event != null) {
         // Navigate to success page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => EventPublishedPage(event: event),
+            builder: (context) => EventPublishedPage(event: result.event!),
           ),
         );
       }

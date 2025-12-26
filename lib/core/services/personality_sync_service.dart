@@ -388,6 +388,7 @@ class PersonalitySyncService {
 
     // Create merged profile
     return PersonalityProfile(
+      agentId: baseProfile.agentId,
       userId: baseProfile.userId,
       dimensions: mergedDimensions,
       dimensionConfidence: mergedConfidence,

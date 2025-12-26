@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:spots/core/models/business_account.dart';
+import 'package:spots/core/controllers/business_onboarding_controller.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/presentation/pages/business/business_dashboard_page.dart';
+import 'package:spots/injection_container.dart' as di;
 
 /// Business Onboarding Page
 ///
@@ -29,6 +31,9 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
   Map<String, dynamic> _patronPreferences = {};
   List<String> _teamMembers = [];
   bool _setupSharedAgent = true;
+  bool _isCompleting = false;
+
+  late BusinessOnboardingController _onboardingController;
 
   final List<OnboardingStep> _steps = [
     OnboardingStep(
@@ -56,6 +61,12 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
       description: 'You\'re all set!',
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _onboardingController = di.sl<BusinessOnboardingController>();
+  }
 
   @override
   void dispose() {
@@ -90,17 +101,74 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
   }
 
   Future<void> _completeOnboarding() async {
-    // TODO: Save onboarding data
-    // TODO: Initialize shared business AI agent if _setupSharedAgent is true
-    // TODO: Create business credentials if not already created
+    if (_isCompleting) return; // Prevent duplicate submissions
 
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const BusinessDashboardPage(),
-        ),
+    setState(() {
+      _isCompleting = true;
+    });
+
+    try {
+      // Prepare onboarding data
+      // Note: Currently _expertPreferences and _patronPreferences are Maps
+      // In a full implementation, these would be converted to BusinessExpertPreferences
+      // and BusinessPatronPreferences objects
+      final data = BusinessOnboardingData(
+        expertPreferences: null, // TODO: Convert _expertPreferences to BusinessExpertPreferences
+        patronPreferences: null, // TODO: Convert _patronPreferences to BusinessPatronPreferences
+        teamMembers: _teamMembers.isEmpty ? null : _teamMembers,
+        setupSharedAgent: _setupSharedAgent,
       );
+
+      // Complete onboarding via controller
+      final result = await _onboardingController.completeBusinessOnboarding(
+        businessId: widget.businessAccount.id,
+        data: data,
+      );
+
+      if (mounted) {
+        if (result.success) {
+          // Show success message if there's a warning (partial success)
+          if (result.warning != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(result.warning!),
+                backgroundColor: AppTheme.warningColor,
+              ),
+            );
+          }
+
+          // Navigate to dashboard
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const BusinessDashboardPage(),
+            ),
+          );
+        } else {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error completing onboarding: ${result.error}'),
+              backgroundColor: AppTheme.errorColor,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isCompleting = false;
+        });
+      }
     }
   }
 
@@ -182,14 +250,20 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
                 else
                   const SizedBox.shrink(),
                 ElevatedButton(
-                  onPressed: _nextStep,
+                  onPressed: (_currentStep == _steps.length - 1 && _isCompleting) ? null : _nextStep,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: AppColors.white,
                   ),
-                  child: Text(
-                    _currentStep == _steps.length - 1 ? 'Complete' : 'Next',
-                  ),
+                  child: _currentStep == _steps.length - 1 && _isCompleting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          _currentStep == _steps.length - 1 ? 'Complete' : 'Next',
+                        ),
                 ),
               ],
             ),

@@ -11,7 +11,9 @@ void main() {
     group('Personality Profile Anonymization', () {
       test('should anonymize personality profile without errors', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         final anonymized = await PrivacyProtection.anonymizePersonalityProfile(
           profile,
@@ -27,7 +29,9 @@ void main() {
 
       test('should ensure anonymized data contains no personal identifiers', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         final anonymized = await PrivacyProtection.anonymizePersonalityProfile(
           profile,
@@ -44,7 +48,9 @@ void main() {
 
       test('should handle different privacy levels', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
         final privacyLevels = [
           'MAXIMUM_ANONYMIZATION',
           'HIGH_ANONYMIZATION',

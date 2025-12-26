@@ -4,10 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/cancellation.dart';
 import 'package:spots/core/models/refund_status.dart';
-import 'package:spots/core/services/cancellation_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/refund_service.dart';
+import 'package:spots/core/controllers/event_cancellation_controller.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
@@ -40,11 +37,7 @@ class CancellationFlowPage extends StatefulWidget {
 }
 
 class _CancellationFlowPageState extends State<CancellationFlowPage> {
-  final CancellationService _cancellationService = CancellationService(
-    paymentService: GetIt.instance<PaymentService>(),
-    eventService: GetIt.instance<ExpertiseEventService>(),
-    refundService: GetIt.instance<RefundService>(),
-  );
+  late EventCancellationController _cancellationController;
 
   int _currentStep = 0;
   String? _selectedReason;
@@ -52,6 +45,13 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
   Cancellation? _cancellation;
   bool _isProcessing = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _cancellationController = GetIt.instance<EventCancellationController>();
+    _calculateRefundPreview();
+  }
 
   // Cancellation reasons
   final List<String> _attendeeReasons = [
@@ -70,12 +70,6 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
     'Other',
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _calculateRefundPreview();
-  }
-
   Future<void> _calculateRefundPreview() async {
     if (widget.isHost) {
       // Host cancellation - full refunds for all attendees
@@ -85,40 +79,21 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
       return;
     }
 
-    // Attendee cancellation - calculate refund
+    // Attendee cancellation - calculate refund using controller
     try {
       final authState = context.read<AuthBloc>().state;
       if (authState is! Authenticated) return;
 
-      final paymentService = GetIt.instance<PaymentService>();
-      final payments = await paymentService.getPaymentsForEvent(widget.event.id);
-      final userPayment = payments.firstWhere(
-        (p) => p.userId == authState.user.id,
-        orElse: () => payments.first,
+      final calculation = await _cancellationController.calculateRefund(
+        eventId: widget.event.id,
+        userId: authState.user.id,
       );
 
-      final timeUntilEvent = widget.event.startTime.difference(DateTime.now());
-      final hoursUntilEvent = timeUntilEvent.inHours.toDouble();
-      
-      // Use standard refund policy
-      final platformFee = userPayment.amount * 0.10;
-      final refundableAmount = userPayment.amount - platformFee;
-      
-      // Simple calculation (matches CancellationService logic)
-      double refundAmount = 0.0;
-      if (hoursUntilEvent > 48) {
-        refundAmount = refundableAmount; // Full refund
-      } else if (hoursUntilEvent > 24) {
-        refundAmount = refundableAmount * 0.5; // 50% refund
-      } else {
-        refundAmount = 0.0; // No refund
-      }
-
       setState(() {
-        _refundAmount = refundAmount;
+        _refundAmount = calculation.refundAmount;
       });
-        } catch (e) {
-      // Ignore errors in preview
+    } catch (e) {
+      // Ignore errors in preview - will show "Calculating..." message
     }
   }
 
@@ -137,25 +112,21 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
       }
 
       final userId = authState.user.id;
-      Cancellation cancellation;
 
-      if (widget.isHost) {
-        // Host cancellation
-        cancellation = await _cancellationService.hostCancelEvent(
-          eventId: widget.event.id,
-          hostId: userId,
-          reason: _selectedReason!,
-        );
-      } else {
-        // Attendee cancellation
-        cancellation = await _cancellationService.attendeeCancelTicket(
-          eventId: widget.event.id,
-          attendeeId: userId,
-        );
+      // Use controller for cancellation
+      final result = await _cancellationController.cancelEvent(
+        eventId: widget.event.id,
+        userId: userId,
+        reason: _selectedReason!,
+        isHost: widget.isHost,
+      );
+
+      if (!result.success) {
+        throw Exception(result.error ?? 'Cancellation failed');
       }
 
       setState(() {
-        _cancellation = cancellation;
+        _cancellation = result.cancellation;
         _currentStep = 4; // Success step
         _isProcessing = false;
       });

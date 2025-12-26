@@ -42,7 +42,8 @@ void main() {
       
       // Register mock PersonalityLearning in GetIt
       final mockPersonalityLearning = MockPersonalityLearning();
-      final testProfile = PersonalityProfile.initial('test-user-123');
+      // Phase 8.3: Use agentId for privacy protection
+      final testProfile = PersonalityProfile.initial('agent_test-user-123', userId: 'test-user-123');
       when(() => mockPersonalityLearning.initializePersonality(any(), password: any(named: 'password'))).thenAnswer((_) async => testProfile);
       when(() => mockPersonalityLearning.initializePersonality(any())).thenAnswer((_) async => testProfile);
       if (di.sl.isRegistered<PersonalityLearning>()) {

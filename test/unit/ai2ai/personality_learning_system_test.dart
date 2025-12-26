@@ -15,7 +15,8 @@ void main() {
     const String testUserId = 'test-user-123';
 
     setUp(() {
-      profile = PersonalityProfile.initial(testUserId);
+      // Phase 8.3: Use agentId for privacy protection
+      profile = PersonalityProfile.initial('agent_$testUserId', userId: testUserId);
     });
 
     group('Initialization and Validation', () {
@@ -124,7 +125,8 @@ void main() {
 
     group('Compatibility Calculations', () {
       test('should calculate compatibility between similar personalities', () {
-        final profile1 = PersonalityProfile.initial('user1').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final profile1 = PersonalityProfile.initial('agent_user1', userId: 'user1').evolve(
           newDimensions: {
             'exploration_eagerness': 0.8,
             'community_orientation': 0.7,
@@ -137,7 +139,8 @@ void main() {
           },
         );
         
-        final profile2 = PersonalityProfile.initial('user2').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final profile2 = PersonalityProfile.initial('agent_user2', userId: 'user2').evolve(
           newDimensions: {
             'exploration_eagerness': 0.75,
             'community_orientation': 0.8,
@@ -155,7 +158,8 @@ void main() {
       });
 
       test('should calculate compatibility between dissimilar personalities', () {
-        final profile1 = PersonalityProfile.initial('user1').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final profile1 = PersonalityProfile.initial('agent_user1', userId: 'user1').evolve(
           newDimensions: {
             'exploration_eagerness': 0.9,
             'community_orientation': 0.1,
@@ -166,7 +170,8 @@ void main() {
           },
         );
         
-        final profile2 = PersonalityProfile.initial('user2').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final profile2 = PersonalityProfile.initial('agent_user2', userId: 'user2').evolve(
           newDimensions: {
             'exploration_eagerness': 0.1,
             'community_orientation': 0.9,
@@ -197,7 +202,8 @@ void main() {
           ),
         );
 
-        final compatibleProfile = PersonalityProfile.initial('compatible').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final compatibleProfile = PersonalityProfile.initial('agent_compatible', userId: 'compatible').evolve(
           newDimensions: Map<String, double>.from(profile.dimensions),
           newConfidence: Map<String, double>.from(profile.dimensions)
               .map((key, _) => MapEntry(key, 1.0)),
@@ -208,7 +214,8 @@ void main() {
       });
 
       test('should calculate minimal learning potential for incompatible personalities', () {
-        final incompatibleProfile = PersonalityProfile.initial('incompatible').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final incompatibleProfile = PersonalityProfile.initial('agent_incompatible', userId: 'incompatible').evolve(
           newDimensions: {
             'exploration_eagerness': 1.0,
             'community_orientation': 0.0,
@@ -222,7 +229,8 @@ void main() {
       });
 
       test('should ensure minimum learning potential for any personality pair', () {
-        final randomProfile = PersonalityProfile.initial('random').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final randomProfile = PersonalityProfile.initial('agent_random', userId: 'random').evolve(
           newDimensions: {
             'exploration_eagerness': 0.1,
             'community_orientation': 0.9,
@@ -385,8 +393,10 @@ void main() {
       });
 
       test('should maintain consistent hash for same profile state', () {
-        final profile1 = PersonalityProfile.initial(testUserId);
-        final profile2 = PersonalityProfile.initial(testUserId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$testUserId';
+        final profile1 = PersonalityProfile.initial(agentId, userId: testUserId);
+        final profile2 = PersonalityProfile.initial(agentId, userId: testUserId);
         
         expect(profile1.hashCode, equals(profile2.hashCode));
         expect(profile1, equals(profile2));
@@ -405,7 +415,8 @@ void main() {
   group('AI2AI Learning Network Integration', () {
     test('should support network effect calculations without exposing user data', () {
       final profiles = List.generate(5, (i) => 
-        PersonalityProfile.initial('anonymous-$i').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        PersonalityProfile.initial('agent_anonymous-$i', userId: 'anonymous-$i').evolve(
           newDimensions: {
             'exploration_eagerness': 0.2 * (i + 1),
             'community_orientation': 0.8 - (0.1 * i),
@@ -441,7 +452,8 @@ void main() {
     });
 
     test('should support ecosystem evolution tracking', () {
-      final baseProfile = PersonalityProfile.initial('ecosystem-node');
+      // Phase 8.3: Use agentId for privacy protection
+      final baseProfile = PersonalityProfile.initial('agent_ecosystem-node', userId: 'ecosystem-node');
       final generations = <PersonalityProfile>[];
       
       // Simulate ecosystem evolution over multiple generations
@@ -476,7 +488,8 @@ void main() {
   group('Performance and Optimization Tests', () {
     test('should handle large-scale compatibility calculations efficiently', () {
       final stopwatch = Stopwatch()..start();
-      final profiles = List.generate(100, (i) => PersonalityProfile.initial('perf-test-$i'));
+      // Phase 8.3: Use agentId for privacy protection
+      final profiles = List.generate(100, (i) => PersonalityProfile.initial('agent_perf-test-$i', userId: 'perf-test-$i'));
       
       // Calculate all pairwise compatibilities
       var totalCompatibility = 0.0;
@@ -494,7 +507,8 @@ void main() {
     });
 
     test('should maintain memory efficiency during evolution chains', () {
-      var current = PersonalityProfile.initial('memory-test');
+      // Phase 8.3: Use agentId for privacy protection
+      var current = PersonalityProfile.initial('agent_memory-test', userId: 'memory-test');
       
       // Create long evolution chain
       for (int i = 0; i < 1000; i++) {
@@ -513,7 +527,8 @@ void main() {
         -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, double.infinity, double.negativeInfinity
       ];
       
-      final testProfile = PersonalityProfile.initial('test-user-bounds');
+      // Phase 8.3: Use agentId for privacy protection
+      final testProfile = PersonalityProfile.initial('agent_test-user-bounds', userId: 'test-user-bounds');
       for (final value in testCases) {
         final evolved = testProfile.evolve(
           newDimensions: {'exploration_eagerness': value},

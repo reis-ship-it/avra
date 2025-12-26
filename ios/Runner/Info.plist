@@ -73,5 +73,20 @@
 	<!-- Google Maps API Key (used by google_maps_flutter on iOS) -->
 	<key>GMSApiKey</key>
 	<string>AIzaSyBruEqo9VBO82RYUtRzbS00_t97taO2T2Y</string>
+	
+	<!-- OAuth Deep Link URL Scheme -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.spots.app.oauth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>spots</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

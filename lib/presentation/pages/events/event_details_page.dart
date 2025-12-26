@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/controllers/event_attendance_controller.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
@@ -46,6 +47,7 @@ class EventDetailsPage extends StatefulWidget {
 
 class _EventDetailsPageState extends State<EventDetailsPage> {
   final ExpertiseEventService _eventService = ExpertiseEventService();
+  final EventAttendanceController _attendanceController = GetIt.instance<EventAttendanceController>();
   final PartnershipService _partnershipService = GetIt.instance<PartnershipService>();
   final FraudDetectionService _fraudService = FraudDetectionService(
     eventService: ExpertiseEventService(),
@@ -132,16 +134,20 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         isOnline: user.isOnline ?? false,
       );
 
-      await _eventService.registerForEvent(_currentEvent!, unifiedUser);
-      
-      // Reload event to get updated attendee count
-      final updatedEvent = _currentEvent!.copyWith(
-        attendeeIds: [..._currentEvent!.attendeeIds, user.id],
-        attendeeCount: _currentEvent!.attendeeCount + 1,
+      // Register via EventAttendanceController (handles validation, availability, preferences, etc.)
+      final result = await _attendanceController.registerForEvent(
+        event: _currentEvent!,
+        attendee: unifiedUser,
+        quantity: 1,
       );
-      
+
+      if (!result.success) {
+        throw Exception(result.error ?? 'Registration failed');
+      }
+
+      // Update with result event (has updated attendee count)
       setState(() {
-        _currentEvent = updatedEvent;
+        _currentEvent = result.event ?? _currentEvent;
         _isRegistered = true;
         _isLoading = false;
       });

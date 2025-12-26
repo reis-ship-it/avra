@@ -1,23 +1,21 @@
 import 'dart:developer' as developer;
 import 'package:spots/core/models/spot.dart';
+import 'package:spots/data/datasources/remote/google_places_datasource.dart';
 
 /// OnboardingPlaceListGenerator
 /// 
 /// Generates personalized place lists using Google Maps Places API
 /// based on onboarding data (homebase, preferences, favorite places).
 /// 
-/// Note: Google Maps API integration can be added later.
-/// This service provides the structure and can work with mock data initially.
+/// Phase 8.5: Integrated with Google Places API (New) for real place data.
 class OnboardingPlaceListGenerator {
   static const String _logName = 'OnboardingPlaceListGenerator';
   
-  // Google Maps Places API key (reserved for future use)
-  // ignore: unused_field
-  final String? _apiKey;
+  final GooglePlacesDataSource _placesDataSource;
   
   OnboardingPlaceListGenerator({
-    String? apiKey,
-  }) : _apiKey = apiKey;
+    required GooglePlacesDataSource placesDataSource,
+  }) : _placesDataSource = placesDataSource;
   
   /// Generate personalized place lists based on onboarding data
   /// 
@@ -156,8 +154,7 @@ class OnboardingPlaceListGenerator {
   
   /// Search places using Google Maps Places API
   /// 
-  /// Note: This is a placeholder implementation.
-  /// Can be enhanced with actual Google Maps Places API integration.
+  /// Phase 8.5: Integrated with Google Places API (New) for real place data.
   /// 
   /// [category] - Category name
   /// [query] - Search query
@@ -175,16 +172,37 @@ class OnboardingPlaceListGenerator {
     int radius = 5000,
     String? type,
   }) async {
-    // TODO: Integrate Google Maps Places API
-    // For now, return empty list
-    // This can be implemented when Google Maps API is configured
-    
-    developer.log(
-      'Place search not yet implemented (Google Maps API integration pending)',
-      name: _logName,
-    );
-    
-    return [];
+    try {
+      developer.log(
+        'Searching places for category: $category, query: $query',
+        name: _logName,
+      );
+      
+      // Use Google Places API to search for places
+      final places = await _placesDataSource.searchPlaces(
+        query: query,
+        latitude: latitude,
+        longitude: longitude,
+        radius: radius,
+        type: type,
+      );
+      
+      developer.log(
+        'Found ${places.length} places for category: $category',
+        name: _logName,
+      );
+      
+      return places;
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error searching places for category $category: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+      // Return empty list on error (graceful fallback)
+      return [];
+    }
   }
   
   /// Extract categories from preferences

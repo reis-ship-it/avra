@@ -54,7 +54,8 @@ class LocalityPersonalityService {
       }
 
       // Create initial locality personality
-      final initialProfile = PersonalityProfile.initial('locality_$locality');
+      // Phase 8.3: Use agentId for privacy protection
+      final initialProfile = PersonalityProfile.initial('agent_locality_$locality', userId: 'locality_$locality');
       _localityPersonalities[locality] = initialProfile;
       
       _logger.info(
@@ -70,7 +71,8 @@ class LocalityPersonalityService {
         tag: _logName,
       );
       // Return initial profile on error
-      return PersonalityProfile.initial('locality_$locality');
+      // Phase 8.3: Use agentId for privacy protection
+      return PersonalityProfile.initial('agent_locality_$locality', userId: 'locality_$locality');
     }
   }
 

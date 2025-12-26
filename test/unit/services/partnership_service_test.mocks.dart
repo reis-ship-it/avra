@@ -27,6 +27,7 @@ import 'package:spots/core/services/expertise_event_service.dart' as _i5;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
+// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeExpertiseEvent_0 extends _i1.SmartFake
     implements _i2.ExpertiseEvent {

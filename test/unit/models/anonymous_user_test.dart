@@ -16,7 +16,8 @@ void main() {
       test(
           'should serialize and deserialize with nested personality profile correctly',
           () {
-        final personalityProfile = PersonalityProfile.initial('user-789');
+        // Phase 8.3: Use agentId for privacy protection
+        final personalityProfile = PersonalityProfile.initial('agent_user-789', userId: 'user-789');
         final anonymousUser = AnonymousUser(
           agentId: 'agent_789',
           personalityDimensions: personalityProfile,

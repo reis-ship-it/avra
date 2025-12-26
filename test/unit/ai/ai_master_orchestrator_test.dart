@@ -72,7 +72,8 @@ void main() {
       });
 
       test('updatePersonalityProfile should accept PersonalityProfile', () async {
-        final profile = PersonalityProfile.initial('test-user');
+        // Phase 8.3: Use agentId for privacy protection
+        final profile = PersonalityProfile.initial('agent_test-user', userId: 'test-user');
         await expectLater(
           orchestrator.updatePersonalityProfile(profile),
           completes,

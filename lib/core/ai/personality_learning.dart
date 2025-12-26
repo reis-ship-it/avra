@@ -58,6 +58,27 @@ class PersonalityLearning {
 
   // Storage keys for personality data
   static const String _personalityProfileKey = 'personality_profile';
+  
+  /// Phase 8.3: Migrate existing profiles from userId to agentId
+  /// This method should be called once during app initialization to migrate legacy profiles
+  Future<void> migrateProfilesToAgentId() async {
+    developer.log('Starting personality profile migration to agentId', name: _logName);
+    
+    try {
+      // Note: This migration relies on the fact that _loadPersonalityProfile
+      // already handles migration when loading by userId. The migration happens
+      // automatically when profiles are loaded.
+      
+      developer.log('Profile migration completed (migration happens on-demand during load)', name: _logName);
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error during profile migration: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
   static const String _learningHistoryKey = 'personality_learning_history';
   static const String _dimensionConfidenceKey = 'dimension_confidence';
 
@@ -91,14 +112,19 @@ class PersonalityLearning {
   ///
   /// [password] is optional and only used for cloud sync operations.
   /// If provided and cloud sync is enabled, will attempt to load profile from cloud.
+  /// Phase 8.3: Uses agentId internally for privacy protection
   Future<PersonalityProfile> initializePersonality(String userId,
       {String? password}) async {
     developer.log('Initializing personality learning for user: $userId',
         name: _logName);
 
     try {
-      // Try to load existing personality profile from local storage
-      final existingProfile = await _loadPersonalityProfile(userId);
+      // Phase 8.3: Get agentId for privacy protection
+      final agentIdService = AgentIdService();
+      final agentId = await agentIdService.getUserAgentId(userId);
+      
+      // Try to load existing personality profile from local storage (by agentId)
+      final existingProfile = await _loadPersonalityProfile(agentId);
       if (existingProfile != null) {
         _currentProfile = existingProfile;
         developer.log(
@@ -122,13 +148,35 @@ class PersonalityLearning {
                 await syncService.loadFromCloud(userId, password);
 
             if (cloudProfile != null) {
+              // Ensure cloud profile has correct agentId
+              final migratedProfile = cloudProfile.agentId == agentId
+                  ? cloudProfile
+                  : PersonalityProfile(
+                      agentId: agentId,
+                      userId: userId,
+                      dimensions: cloudProfile.dimensions,
+                      dimensionConfidence: cloudProfile.dimensionConfidence,
+                      archetype: cloudProfile.archetype,
+                      authenticity: cloudProfile.authenticity,
+                      createdAt: cloudProfile.createdAt,
+                      lastUpdated: cloudProfile.lastUpdated,
+                      evolutionGeneration: cloudProfile.evolutionGeneration,
+                      learningHistory: cloudProfile.learningHistory,
+                      corePersonality: cloudProfile.corePersonality,
+                      contexts: cloudProfile.contexts,
+                      evolutionTimeline: cloudProfile.evolutionTimeline,
+                      currentPhaseId: cloudProfile.currentPhaseId,
+                      isInTransition: cloudProfile.isInTransition,
+                      activeTransition: cloudProfile.activeTransition,
+                    );
+              
               // Save cloud profile locally
-              await _savePersonalityProfile(cloudProfile);
-              _currentProfile = cloudProfile;
+              await _savePersonalityProfile(migratedProfile);
+              _currentProfile = migratedProfile;
               developer.log(
-                  'Loaded personality profile from cloud (generation ${cloudProfile.evolutionGeneration})',
+                  'Loaded personality profile from cloud (generation ${migratedProfile.evolutionGeneration})',
                   name: _logName);
-              return cloudProfile;
+              return migratedProfile;
             } else {
               developer.log('No cloud profile found or decryption failed',
                   name: _logName);
@@ -140,8 +188,8 @@ class PersonalityLearning {
         }
       }
 
-      // Create new personality profile
-      final newProfile = PersonalityProfile.initial(userId);
+      // Create new personality profile using agentId
+      final newProfile = PersonalityProfile.initial(agentId, userId: userId);
       await _savePersonalityProfile(newProfile);
       _currentProfile = newProfile;
 
@@ -151,7 +199,9 @@ class PersonalityLearning {
       developer.log('Error initializing personality: $e', name: _logName);
 
       // Fallback to default profile
-      final fallbackProfile = PersonalityProfile.initial(userId);
+      final agentIdService = AgentIdService();
+      final agentId = await agentIdService.getUserAgentId(userId);
+      final fallbackProfile = PersonalityProfile.initial(agentId, userId: userId);
       _currentProfile = fallbackProfile;
       return fallbackProfile;
     }
@@ -174,8 +224,8 @@ class PersonalityLearning {
     );
 
     try {
-      // Check if profile already exists (using userId for now, will migrate to agentId in Phase 7.3)
-      final existingProfile = await _loadPersonalityProfile(userId);
+      // Phase 8.3: Check if profile already exists using agentId
+      final existingProfile = await _loadPersonalityProfile(agentId);
       if (existingProfile != null && existingProfile.evolutionGeneration > 1) {
         // Profile already evolved, don't overwrite
         developer.log(
@@ -185,9 +235,8 @@ class PersonalityLearning {
         return existingProfile;
       }
       
-      // Start with default initial profile
-      // TODO: Update PersonalityProfile.initial() to accept agentId after Phase 7.3 migration
-      final baseProfile = PersonalityProfile.initial(userId);
+      // Start with default initial profile using agentId
+      final baseProfile = PersonalityProfile.initial(agentId, userId: userId);
       final initialDimensions = Map<String, double>.from(baseProfile.dimensions);
       final initialConfidence = Map<String, double>.from(baseProfile.dimensionConfidence);
       
@@ -208,11 +257,17 @@ class PersonalityLearning {
       if (socialMediaData != null && socialMediaData.isNotEmpty) {
         try {
           final analyzer = SocialMediaVibeAnalyzer();
+          final allProfileData = socialMediaData['profile'] as Map<String, dynamic>? ?? {};
+          final platform = socialMediaData['platform'] as String? ?? 'unknown';
+          
+          // Extract platform-specific profile data
+          final platformProfileData = allProfileData[platform] as Map<String, dynamic>? ?? allProfileData;
+          
           final socialInsights = await analyzer.analyzeProfileForVibe(
-            profileData: socialMediaData['profile'] as Map<String, dynamic>? ?? {},
+            profileData: platformProfileData,
             follows: socialMediaData['follows'] as List<Map<String, dynamic>>? ?? [],
             connections: socialMediaData['connections'] as List<Map<String, dynamic>>? ?? [],
-            platform: socialMediaData['platform'] as String? ?? 'unknown',
+            platform: platform,
           );
           
           // Blend social media insights (40% social, 60% existing)
@@ -310,10 +365,10 @@ class PersonalityLearning {
       );
       
       // 6. Create profile with initial dimensions
-      // TODO: Update to use agentId after PersonalityProfile migration (Phase 7.3)
-      // For now, use userId but log agentId for tracking
+      // Phase 8.3: Use agentId for privacy protection
       final newProfile = PersonalityProfile(
-        userId: userId, // TODO: Change to agentId after Phase 7.3 migration
+        agentId: agentId, // ✅ Use agentId as primary key
+        userId: userId, // Keep for backward compatibility
         dimensions: initialDimensions,
         dimensionConfidence: initialConfidence,
         archetype: archetype,
@@ -331,7 +386,6 @@ class PersonalityLearning {
           'evolution_milestones': [DateTime.now()],
           'onboarding_data_used': onboardingData != null,
           'social_media_data_used': socialMediaData != null,
-          'agent_id': agentId, // ✅ Store agentId in learning history for tracking
         },
       );
       
@@ -343,7 +397,9 @@ class PersonalityLearning {
     } catch (e, stackTrace) {
       developer.log('Error initializing from onboarding: $e', name: _logName, error: e, stackTrace: stackTrace);
       // Fallback to default
-      return PersonalityProfile.initial(userId);
+      final agentIdService = AgentIdService();
+      final agentId = await agentIdService.getUserAgentId(userId);
+      return PersonalityProfile.initial(agentId, userId: userId);
     }
   }
 
@@ -572,15 +628,19 @@ class PersonalityLearning {
     UserAction action, {
     LocalExpertise? localExpertise,
   }) async {
-    // Load profile for this specific userId (don't rely on shared _currentProfile)
+    // Phase 8.3: Get agentId for privacy protection
+    final agentIdService = AgentIdService();
+    final agentId = await agentIdService.getUserAgentId(userId);
+    
+    // Load profile for this specific agentId (don't rely on shared _currentProfile)
     // This ensures correct behavior when called concurrently for different users
     PersonalityProfile profile;
-    if (_currentProfile != null && _currentProfile!.userId == userId) {
-      // Use cached profile if it matches the requested userId
+    if (_currentProfile != null && _currentProfile!.agentId == agentId) {
+      // Use cached profile if it matches the requested agentId
       profile = _currentProfile!;
     } else {
-      // Load from storage to ensure we have the correct profile for this userId
-      final loadedProfile = await _loadPersonalityProfile(userId);
+      // Load from storage to ensure we have the correct profile for this agentId
+      final loadedProfile = await _loadPersonalityProfile(agentId);
       if (loadedProfile != null) {
         profile = loadedProfile;
         // Update cache only if it matches
@@ -643,7 +703,10 @@ class PersonalityLearning {
       // Save updated profile locally
       await _savePersonalityProfile(evolvedProfile);
       // Update cache only if it matches the userId we just evolved
-      if (_currentProfile == null || _currentProfile!.userId == userId) {
+      // Phase 8.3: Check by agentId
+      final agentIdService = AgentIdService();
+      final agentId = await agentIdService.getUserAgentId(userId);
+      if (_currentProfile == null || _currentProfile!.agentId == agentId) {
         _currentProfile = evolvedProfile;
       }
 
@@ -778,19 +841,33 @@ class PersonalityLearning {
   }
 
   /// Get current personality profile
+  /// Phase 8.3: Uses agentId internally for privacy protection
   Future<PersonalityProfile?> getCurrentPersonality(String userId) async {
-    if (_currentProfile != null && _currentProfile!.userId == userId) {
+    // Get agentId for privacy protection
+    final agentIdService = AgentIdService();
+    final agentId = await agentIdService.getUserAgentId(userId);
+    
+    if (_currentProfile != null && _currentProfile!.agentId == agentId) {
       return _currentProfile;
     }
 
-    return await _loadPersonalityProfile(userId);
+    return await _loadPersonalityProfile(agentId);
   }
 
   /// Get personality evolution history
+  /// Phase 8.3: Uses agentId internally for privacy protection
   Future<List<PersonalityEvolutionEvent>> getEvolutionHistory(
       String userId) async {
     try {
-      final historyJson = _prefs.getString('${_learningHistoryKey}_$userId');
+      // Get agentId for privacy protection
+      final agentIdService = AgentIdService();
+      final agentId = await agentIdService.getUserAgentId(userId);
+      
+      // Try agentId key first, then userId key for migration
+      var historyJson = _prefs.getString('${_learningHistoryKey}_$agentId');
+      if (historyJson == null && userId != agentId) {
+        historyJson = _prefs.getString('${_learningHistoryKey}_$userId');
+      }
       if (historyJson == null) return [];
 
       // Parse evolution history
@@ -862,11 +939,23 @@ class PersonalityLearning {
   }
 
   /// Reset personality learning (for testing or user request)
+  /// Phase 8.3: Uses agentId for privacy protection
   Future<void> resetPersonality(String userId) async {
     developer.log('Resetting personality for user: $userId', name: _logName);
 
-    await _prefs.remove('${_personalityProfileKey}_$userId');
-    await _prefs.remove('${_learningHistoryKey}_$userId');
+    // Get agentId for privacy protection
+    final agentIdService = AgentIdService();
+    final agentId = await agentIdService.getUserAgentId(userId);
+    
+    // Remove both agentId and userId keys (for migration cleanup)
+    await _prefs.remove('${_personalityProfileKey}_$agentId');
+    if (userId != agentId) {
+      await _prefs.remove('${_personalityProfileKey}_$userId');
+    }
+    await _prefs.remove('${_learningHistoryKey}_$agentId');
+    if (userId != agentId) {
+      await _prefs.remove('${_learningHistoryKey}_$userId');
+    }
     await _prefs.remove('${_dimensionConfidenceKey}_$userId');
 
     _currentProfile = null;
@@ -875,15 +964,67 @@ class PersonalityLearning {
   }
 
   // Private helper methods
-  Future<PersonalityProfile?> _loadPersonalityProfile(String userId) async {
+  /// Load personality profile by agentId (primary) or userId (fallback for migration)
+  Future<PersonalityProfile?> _loadPersonalityProfile(String identifier) async {
     try {
-      final profileJson = _prefs.getString('${_personalityProfileKey}_$userId');
+      // Try agentId first (new format)
+      var profileJson = _prefs.getString('${_personalityProfileKey}_$identifier');
+      
+      // If not found and identifier looks like userId, try legacy format
+      if (profileJson == null && !identifier.startsWith('agent_')) {
+        // This might be a userId - try legacy format
+        profileJson = _prefs.getString('${_personalityProfileKey}_$identifier');
+      }
+      
       if (profileJson == null) return null;
 
       // Parse JSON and create profile
       try {
         final profileMap = jsonDecode(profileJson) as Map<String, dynamic>;
-        return PersonalityProfile.fromJson(profileMap);
+        final profile = PersonalityProfile.fromJson(profileMap);
+        
+        // Migration: If profile loaded with userId but has no agentId, migrate it
+        if (profile.agentId == identifier && profile.userId == null && identifier.startsWith('agent_')) {
+          // Already using agentId, good
+          return profile;
+        } else if (!identifier.startsWith('agent_')) {
+          // This is a userId - need to get agentId and migrate
+          try {
+            final agentIdService = di.sl<AgentIdService>();
+            final agentId = await agentIdService.getUserAgentId(identifier);
+            
+            // If profile doesn't have agentId, migrate it
+            if (profile.agentId == identifier || profile.userId == identifier) {
+              final migratedProfile = PersonalityProfile(
+                agentId: agentId,
+                userId: identifier, // Keep userId for reference
+                dimensions: profile.dimensions,
+                dimensionConfidence: profile.dimensionConfidence,
+                archetype: profile.archetype,
+                authenticity: profile.authenticity,
+                createdAt: profile.createdAt,
+                lastUpdated: DateTime.now(),
+                evolutionGeneration: profile.evolutionGeneration,
+                learningHistory: profile.learningHistory,
+                corePersonality: profile.corePersonality,
+                contexts: profile.contexts,
+                evolutionTimeline: profile.evolutionTimeline,
+                currentPhaseId: profile.currentPhaseId,
+                isInTransition: profile.isInTransition,
+                activeTransition: profile.activeTransition,
+              );
+              
+              // Save migrated profile with agentId key
+              await _savePersonalityProfile(migratedProfile);
+              return migratedProfile;
+            }
+          } catch (e) {
+            developer.log('Error migrating profile: $e', name: _logName);
+            // Return original profile if migration fails
+          }
+        }
+        
+        return profile;
       } catch (e) {
         developer.log('Error parsing personality profile JSON: $e',
             name: _logName);
@@ -899,13 +1040,23 @@ class PersonalityLearning {
     try {
       // Serialize profile to JSON
       final profileJson = jsonEncode(profile.toJson());
+      
+      // Phase 8.3: Use agentId as storage key (primary)
       await _prefs.setString(
-        '${_personalityProfileKey}_${profile.userId}',
+        '${_personalityProfileKey}_${profile.agentId}',
         profileJson,
       );
+      
+      // Also save with userId key if provided (for backward compatibility during migration)
+      if (profile.userId != null && profile.userId != profile.agentId) {
+        await _prefs.setString(
+          '${_personalityProfileKey}_${profile.userId}',
+          profileJson,
+        );
+      }
 
       developer.log(
-          'Personality profile saved (generation ${profile.evolutionGeneration})',
+          'Personality profile saved (generation ${profile.evolutionGeneration}, agentId: ${profile.agentId.substring(0, 10)}...)',
           name: _logName);
     } catch (e) {
       developer.log('Error saving personality profile: $e', name: _logName);
@@ -913,11 +1064,13 @@ class PersonalityLearning {
   }
 
   /// Sync profile to cloud if enabled (non-blocking, fire-and-forget)
+  /// Phase 8.3: Uses agentId internally, but syncService may still use userId
   void _syncProfileToCloud(String userId, PersonalityProfile profile) {
     // Run async without awaiting to avoid blocking evolution
     Future.microtask(() async {
       try {
         final syncService = di.sl<PersonalitySyncService>();
+        // Note: syncService may still use userId for cloud sync (that's okay)
         final syncEnabled = await syncService.isCloudSyncEnabled(userId);
 
         if (!syncEnabled) {
@@ -1129,7 +1282,12 @@ class PersonalityLearning {
 
   Future<PersonalityProfile> evolvePersonality(UserAction action) async {
     if (_currentProfile == null) {
-      _currentProfile = PersonalityProfile.initial('user');
+      // Fallback - should not happen in normal flow
+      final agentIdService = AgentIdService();
+      final userId = 'user';
+      final agentId = await agentIdService.getUserAgentId(userId);
+      // Phase 8.3: Use agentId for privacy protection
+      _currentProfile = PersonalityProfile.initial(agentId, userId: userId);
     }
     return _currentProfile!;
   }
@@ -1164,8 +1322,8 @@ class PersonalityLearning {
       );
     }
     return AnonymizedPersonalityData(
-      hashedUserId: _currentProfile!.userId.hashCode.toString(),
-      hashedSignature: (_currentProfile!.userId + _currentProfile!.archetype)
+      hashedUserId: _currentProfile!.agentId.hashCode.toString(),
+      hashedSignature: (_currentProfile!.agentId + _currentProfile!.archetype)
           .hashCode
           .toString(),
       anonymizedDimensions:

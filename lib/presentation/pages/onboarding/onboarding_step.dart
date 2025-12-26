@@ -773,26 +773,3 @@ class _PermissionItem extends StatelessWidget {
     );
   }
 }
-
-enum OnboardingStepType {
-  homebase,
-  favoritePlaces,
-  preferences,
-  baselineLists,
-  friends,
-  socialMedia,
-}
-
-class OnboardingStep {
-  final OnboardingStepType type;
-  final String title;
-  final String description;
-  final Widget page;
-
-  const OnboardingStep({
-    required this.type,
-    required this.title,
-    required this.description,
-    required this.page,
-  });
-}

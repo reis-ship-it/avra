@@ -28,8 +28,12 @@ void main() {
     group('Initial Personality Profile Factory', () {
       test('should create initial profile with correct business defaults', () {
         // Test business logic: factory method behavior
-        final profile = PersonalityProfile.initial('user-123');
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_test_123';
+        final profile = PersonalityProfile.initial(agentId, userId: 'user-123');
 
+        expect(profile.agentId, equals(agentId));
+        expect(profile.userId, equals('user-123'));
         expect(profile.archetype, equals('developing'));
         expect(profile.authenticity, equals(0.5));
         expect(profile.evolutionGeneration, equals(1));
@@ -101,7 +105,7 @@ void main() {
         // Test confidence threshold
         final profile1 = ModelFactories.createTestPersonalityProfile();
         final profile2 =
-            ModelFactories.createTestPersonalityProfile(userId: 'user-2');
+            ModelFactories.createTestPersonalityProfile(userId: 'user-2', agentId: 'agent_user-2');
 
         final lowConfidenceProfile1 = profile1.evolve(
           newConfidence: profile1.dimensions.map((k, v) => MapEntry(k, 0.1)),
@@ -118,7 +122,7 @@ void main() {
           () {
         // Test business logic: trait analysis and learning potential
         final wellDeveloped = ModelFactories.createTestPersonalityProfile();
-        final underdeveloped = PersonalityProfile.initial('user-123');
+        final underdeveloped = PersonalityProfile.initial('agent_test_123', userId: 'user-123');
         final lowConfidence = wellDeveloped.evolve(
           newConfidence: {
             'exploration_eagerness': 0.3, // Below threshold
@@ -178,6 +182,7 @@ void main() {
         final profile = ModelFactories.createTestPersonalityProfile();
         final json = profile.toJson();
 
+        expect(json['agent_id'], equals(profile.agentId));
         expect(json['user_id'], equals(profile.userId));
         expect(json.containsKey('email'), isFalse);
         expect(json.containsKey('name'), isFalse);
@@ -188,6 +193,7 @@ void main() {
       test('should handle empty dimensions and invalid data gracefully', () {
         // Test business logic: error handling
         final emptyProfile = PersonalityProfile(
+          agentId: 'agent_test_123',
           userId: 'user-123',
           dimensions: {},
           dimensionConfidence: {},
@@ -199,6 +205,7 @@ void main() {
           learningHistory: {},
         );
         final invalidHistory = PersonalityProfile(
+          agentId: 'agent_test_123',
           userId: 'user-123',
           dimensions: {'exploration_eagerness': 0.5},
           dimensionConfidence: {'exploration_eagerness': 0.5},

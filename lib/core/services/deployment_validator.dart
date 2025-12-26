@@ -248,7 +248,8 @@ class DeploymentValidator {
         // Test anonymization quality
         final testData = {'test': 'data'};
         // Create a minimal test profile for validation
-        final testProfile = PersonalityProfile.initial('test_user');
+        // Phase 8.3: Use agentId for privacy protection
+        final testProfile = PersonalityProfile.initial('agent_test_user', userId: 'test_user');
         final anonymized = await PrivacyProtection.anonymizePersonalityProfile(
           testProfile,
           privacyLevel: 'MAXIMUM_ANONYMIZATION',

@@ -39,7 +39,8 @@ void main() {
         updatedAt: DateTime.now(),
       );
 
-      final personality = PersonalityProfile.initial('agent_123');
+      // Phase 8.3: Use agentId for privacy protection
+      final personality = PersonalityProfile.initial('agent_123', userId: 'user_123');
 
       // Step 1: Anonymize user
       final anonymousUser = await anonymizationService.anonymizeUser(

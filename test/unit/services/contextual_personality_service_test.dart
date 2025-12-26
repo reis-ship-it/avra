@@ -34,7 +34,7 @@ void main() {
           'should classify small changes as context when context active, classify small changes as core when no context, resist large AI2AI changes, allow user actions to update core, update context for user actions in specific context, and resist on error',
           () async {
         // Test business logic: change classification based on context, magnitude, and source
-        final currentProfile = PersonalityProfile.initial('user-1');
+        final currentProfile = PersonalityProfile.initial('agent_user-1', userId: 'user-1');
         final proposedChanges1 = {'energy_preference': 0.05};
         final classification1 = await service.classifyChange(
           currentProfile: currentProfile,
@@ -94,7 +94,7 @@ void main() {
           'should return null for insufficient data, or detect transition with sufficient data',
           () async {
         // Test business logic: transition detection based on data availability
-        final profile = PersonalityProfile.initial('user-1');
+        final profile = PersonalityProfile.initial('agent_user-1', userId: 'user-1');
         final recentChanges1 = <Map<String, double>>[];
         final transition1 = await service.detectTransition(
           profile: profile,
@@ -120,7 +120,7 @@ void main() {
 
     group('Privacy Validation', () {
       test('should not expose user data in change classification', () async {
-        final currentProfile = PersonalityProfile.initial('user-1');
+        final currentProfile = PersonalityProfile.initial('agent_user-1', userId: 'user-1');
         final proposedChanges = {'energy_preference': 0.1};
 
         final classification = await service.classifyChange(
@@ -141,7 +141,7 @@ void main() {
           'should handle empty proposed changes, very large changes, and null active context',
           () async {
         // Test business logic: edge case handling for change classification
-        final currentProfile = PersonalityProfile.initial('user-1');
+        final currentProfile = PersonalityProfile.initial('agent_user-1', userId: 'user-1');
         final proposedChanges1 = <String, double>{};
         final classification1 = await service.classifyChange(
           currentProfile: currentProfile,

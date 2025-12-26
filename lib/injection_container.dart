@@ -110,6 +110,7 @@ import 'package:spots/core/p2p/federated_learning.dart';
 import 'package:spots/core/p2p/node_manager.dart';
 import 'package:spots/core/services/large_city_detection_service.dart';
 import 'package:spots/core/services/neighborhood_boundary_service.dart';
+import 'package:spots/core/services/geographic_scope_service.dart';
 // Business Chat Services (AI2AI routing)
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/message_encryption_service.dart';
@@ -122,8 +123,31 @@ import 'package:spots/core/services/business_shared_agent_service.dart';
 // Onboarding & Agent Creation Services (Phase 1: Foundation)
 import 'package:spots/core/services/onboarding_data_service.dart';
 import 'package:spots/core/services/social_media_vibe_analyzer.dart';
+import 'package:spots/core/services/social_media_connection_service.dart';
+import 'package:spots/core/services/oauth_deep_link_handler.dart';
 import 'package:spots/core/services/onboarding_place_list_generator.dart';
 import 'package:spots/core/services/onboarding_recommendation_service.dart';
+import 'package:spots/core/services/preferences_profile_service.dart';
+import 'package:spots/core/services/event_recommendation_service.dart' as event_rec_service;
+// Controllers (Phase 8.11)
+import 'package:spots/core/controllers/onboarding_flow_controller.dart';
+import 'package:spots/core/controllers/agent_initialization_controller.dart';
+import 'package:spots/core/controllers/event_creation_controller.dart';
+import 'package:spots/core/controllers/social_media_data_collection_controller.dart';
+import 'package:spots/core/controllers/payment_processing_controller.dart';
+import 'package:spots/core/controllers/ai_recommendation_controller.dart';
+import 'package:spots/core/controllers/business_onboarding_controller.dart';
+import 'package:spots/core/controllers/event_attendance_controller.dart';
+import 'package:spots/core/controllers/list_creation_controller.dart';
+import 'package:spots/core/controllers/checkout_controller.dart';
+import 'package:spots/core/controllers/event_cancellation_controller.dart';
+import 'package:spots/core/controllers/partnership_checkout_controller.dart';
+import 'package:spots/core/controllers/partnership_proposal_controller.dart';
+import 'package:spots/core/controllers/profile_update_controller.dart';
+import 'package:spots/core/controllers/sponsorship_checkout_controller.dart';
+import 'package:spots/core/services/cancellation_service.dart';
+import 'package:spots/core/services/refund_service.dart';
+import 'package:spots/core/controllers/sync_controller.dart';
 import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
 import 'package:http/http.dart' as http;
 import 'package:spots/core/services/logger.dart';
@@ -357,6 +381,10 @@ Future<void> init() async {
   // Geographic Services (Phase 6: Local Expert System Redesign)
   sl.registerLazySingleton<LargeCityDetectionService>(
       () => LargeCityDetectionService());
+  sl.registerLazySingleton<GeographicScopeService>(
+      () => GeographicScopeService(
+            largeCityService: sl<LargeCityDetectionService>(),
+          ));
   sl.registerLazySingleton<NeighborhoodBoundaryService>(
       () => NeighborhoodBoundaryService(
             largeCityService: sl<LargeCityDetectionService>(),
@@ -434,10 +462,157 @@ Future<void> init() async {
         agentIdService: sl<AgentIdService>(),
       ));
   sl.registerLazySingleton(() => SocialMediaVibeAnalyzer());
-  sl.registerLazySingleton(() => OnboardingPlaceListGenerator());
+  // Phase 8.5: Onboarding Place List Generator (integrated with Google Places API)
+  sl.registerLazySingleton<OnboardingPlaceListGenerator>(
+    () => OnboardingPlaceListGenerator(
+      placesDataSource: sl<GooglePlacesDataSource>(),
+    ),
+  );
+  // Controllers (Phase 8.11)
+  sl.registerLazySingleton(() => OnboardingFlowController(
+    onboardingDataService: sl<OnboardingDataService>(),
+    agentIdService: sl<AgentIdService>(),
+    legalDocumentService: sl<LegalDocumentService>(),
+  ));
+
+  // Agent Initialization Controller (Phase 8.11)
+  sl.registerLazySingleton(() => AgentInitializationController(
+    socialMediaDataController: sl<SocialMediaDataCollectionController>(),
+    personalityLearning: sl<PersonalityLearning>(),
+    preferencesService: sl<PreferencesProfileService>(),
+    placeListGenerator: sl<OnboardingPlaceListGenerator>(),
+    recommendationService: sl<OnboardingRecommendationService>(),
+    syncService: sl<PersonalitySyncService>(),
+    agentIdService: sl<AgentIdService>(),
+  ));
+
+  // Event Creation Controller (Phase 8.11)
+  sl.registerLazySingleton(() => EventCreationController(
+    eventService: sl<ExpertiseEventService>(),
+    geographicScopeService: sl<GeographicScopeService>(),
+  ));
+
+  // Social Media Data Collection Controller (Phase 8.11)
+  sl.registerLazySingleton(() => SocialMediaDataCollectionController(
+    socialMediaService: sl<SocialMediaConnectionService>(),
+  ));
+
+  // Payment Processing Controller (Phase 8.11)
+  sl.registerLazySingleton(() => PaymentProcessingController(
+    salesTaxService: sl<SalesTaxService>(),
+    paymentEventService: sl<PaymentEventService>(),
+  ));
+
+  // AI Recommendation Controller (Phase 8.11)
+  sl.registerLazySingleton(() => AIRecommendationController(
+        personalityLearning: sl<PersonalityLearning>(),
+        preferencesProfileService: sl<PreferencesProfileService>(),
+        eventRecommendationService: sl<event_rec_service.EventRecommendationService>(),
+        agentIdService: sl<AgentIdService>(),
+      ));
+
+  // Sync Controller (Phase 8.11)
+  // Register BusinessOnboardingController (Phase 8.11)
+  sl.registerLazySingleton(() => BusinessOnboardingController(
+        businessAccountService: sl<BusinessAccountService>(),
+        sharedAgentService: sl<BusinessSharedAgentService>(),
+      ));
+
+  // Register EventAttendanceController (Phase 8.11)
+  sl.registerLazySingleton(() => EventAttendanceController(
+        eventService: sl<ExpertiseEventService>(),
+        paymentController: sl<PaymentProcessingController>(),
+        preferencesService: sl<PreferencesProfileService>(),
+        agentIdService: sl<AgentIdService>(),
+      ));
+
+  // Register ListCreationController (Phase 8.11)
+  sl.registerLazySingleton(() => ListCreationController(
+        listsRepository: sl<ListsRepository>(),
+        atomicClock: sl<AtomicClockService>(),
+      ));
+
+  // Register ProfileUpdateController (Phase 8.11)
+  sl.registerLazySingleton(() => ProfileUpdateController(
+        authRepository: sl<AuthRepository>(),
+        atomicClock: sl<AtomicClockService>(),
+      ));
+
+  // Register EventCancellationController (Phase 8.11)
+  sl.registerLazySingleton(() => EventCancellationController(
+        cancellationService: sl<CancellationService>(),
+        eventService: sl<ExpertiseEventService>(),
+        paymentService: sl<PaymentService>(),
+      ));
+
+  // Register PartnershipProposalController (Phase 8.11)
+  sl.registerLazySingleton(() => PartnershipProposalController(
+        partnershipService: sl<PartnershipService>(),
+        businessService: sl<BusinessService>(),
+      ));
+
+  // Register CheckoutController (Phase 8.11)
+  sl.registerLazySingleton(() => CheckoutController(
+        paymentController: sl<PaymentProcessingController>(),
+        salesTaxService: sl<SalesTaxService>(),
+        legalService: LegalDocumentService(
+          eventService: sl<ExpertiseEventService>(),
+        ),
+        eventService: sl<ExpertiseEventService>(),
+      ));
+
+  // Register PartnershipCheckoutController (Phase 8.11)
+  sl.registerLazySingleton(() => PartnershipCheckoutController(
+        paymentController: sl<PaymentProcessingController>(),
+        revenueSplitService: sl<RevenueSplitService>(),
+        partnershipService: sl<PartnershipService>(),
+        eventService: sl<ExpertiseEventService>(),
+        salesTaxService: sl<SalesTaxService>(),
+      ));
+
+  // Register SponsorshipCheckoutController (Phase 8.11)
+  sl.registerLazySingleton(() => SponsorshipCheckoutController(
+        sponsorshipService: sl<SponsorshipService>(),
+        eventService: sl<ExpertiseEventService>(),
+        productTrackingService: sl<ProductTrackingService>(),
+      ));
+
+  sl.registerLazySingleton(() => SyncController(
+        connectivityService: sl<EnhancedConnectivityService>(),
+        personalitySyncService: sl<PersonalitySyncService>(),
+        personalityLearning: sl<PersonalityLearning>(),
+      ));
+
   sl.registerLazySingleton(() => OnboardingRecommendationService(
         agentIdService: sl<AgentIdService>(),
       ));
+  // Phase 8.8: PreferencesProfile Service (for preference learning and quantum recommendations)
+  sl.registerLazySingleton<PreferencesProfileService>(() => PreferencesProfileService(
+    storage: sl<StorageService>(),
+  ));
+
+  // Event Recommendation Service (for AI recommendations)
+  // Note: EventRecommendationService has optional dependencies with defaults
+  // It can be instantiated without explicit dependencies, but we register with DI for consistency
+  sl.registerLazySingleton<event_rec_service.EventRecommendationService>(
+    () => event_rec_service.EventRecommendationService(
+      eventService: sl<ExpertiseEventService>(),
+    ),
+  );
+  
+  // OAuth Deep Link Handler (Phase 8.2: OAuth Implementation)
+  sl.registerLazySingleton<OAuthDeepLinkHandler>(
+    () => OAuthDeepLinkHandler(),
+  );
+
+  // Social Media Connection Service (Phase 8.2: Social Media Data Collection)
+  sl.registerLazySingleton<SocialMediaConnectionService>(
+    () => SocialMediaConnectionService(
+      sl<StorageService>(),
+      sl<AgentIdService>(),
+      sl<OAuthDeepLinkHandler>(),
+    ),
+  );
 
   // Quantum Vibe Engine (Phase 4: Quantum Analysis)
   // Enhanced with Decoherence Tracking (Phase 2.1)
@@ -623,6 +798,19 @@ Future<void> init() async {
   // Register PayoutService
   sl.registerLazySingleton<PayoutService>(() => PayoutService(
         revenueSplitService: sl<RevenueSplitService>(),
+      ));
+
+  // Register RefundService (required by CancellationService)
+  sl.registerLazySingleton<RefundService>(() => RefundService(
+        paymentService: sl<PaymentService>(),
+        stripeService: sl<StripeService>(),
+      ));
+
+  // Register CancellationService (required by EventCancellationController)
+  sl.registerLazySingleton<CancellationService>(() => CancellationService(
+        paymentService: sl<PaymentService>(),
+        eventService: sl<ExpertiseEventService>(),
+        refundService: sl<RefundService>(),
       ));
 
   // Product Tracking & Sales Services (required by BrandAnalyticsService)

@@ -10,17 +10,17 @@ import 'package:spots/presentation/pages/onboarding/friends_respect_page.dart';
 import 'package:spots/presentation/pages/onboarding/social_media_connection_page.dart';
 import 'package:spots/presentation/pages/onboarding/homebase_selection_page.dart';
 import 'package:spots/presentation/pages/onboarding/preference_survey_page.dart';
+import 'package:spots/presentation/pages/onboarding/baseline_lists_page.dart';
 import 'package:spots/presentation/pages/onboarding/onboarding_step.dart';
 import 'package:spots/presentation/pages/onboarding/legal_acceptance_dialog.dart';
 import 'package:spots/core/services/legal_document_service.dart';
-import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spots/presentation/pages/onboarding/age_collection_page.dart';
 import 'package:spots/presentation/pages/onboarding/welcome_page.dart';
 import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
 import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/social_media_connection_service.dart';
+import 'package:spots/core/controllers/onboarding_flow_controller.dart';
 import 'package:spots/injection_container.dart' as di;
 
 enum OnboardingStepType {
@@ -28,6 +28,7 @@ enum OnboardingStepType {
   homebase,
   favoritePlaces,
   preferences,
+  baselineLists, // Add baseline lists step after preferences
   friends,
   permissions, // Includes age and legal
   socialMedia,
@@ -92,6 +93,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
       page: OnboardingStepType.preferences,
       title: 'What do you love?',
       description: 'Set your preferences for vibe matching and spot recommendations',
+    ),
+    OnboardingStep(
+      page: OnboardingStepType.baselineLists,
+      title: 'Your Lists',
+      description: 'Create your starting lists (optional)',
     ),
     OnboardingStep(
       page: OnboardingStepType.socialMedia,
@@ -257,6 +263,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
           },
           preferences: _preferences,
         );
+      case OnboardingStepType.baselineLists:
+        return BaselineListsPage(
+          baselineLists: _baselineLists,
+          onBaselineListsChanged: (lists) {
+            setState(() {
+              _baselineLists = lists;
+            });
+          },
+          userName: _getUserName(),
+          userPreferences: _preferences,
+          userFavoritePlaces: _favoritePlaces,
+        );
       case OnboardingStepType.friends:
         return FriendsRespectPage(
           onRespectedListsChanged: (friends) {
@@ -276,7 +294,43 @@ class _OnboardingPageState extends State<OnboardingPage> {
           },
         );
       case OnboardingStepType.socialMedia:
-        return const SocialMediaConnectionPage();
+        return SocialMediaConnectionPage(
+          connectedPlatforms: _connectedSocialPlatforms,
+          onConnectionsChanged: (connections) async {
+            setState(() {
+              _connectedSocialPlatforms = connections;
+            });
+
+            // Optionally: Verify connections exist in service
+            // This ensures OnboardingData reflects real connections
+            try {
+              final authBloc = context.read<AuthBloc>();
+              final authState = authBloc.state;
+              if (authState is Authenticated) {
+                final userId = authState.user.id;
+                final socialMediaService = di.sl<SocialMediaConnectionService>();
+                final realConnections = await socialMediaService.getActiveConnections(userId);
+
+                // Update map to reflect only real connections
+                final realPlatforms = <String, bool>{};
+                for (final conn in realConnections) {
+                  // Map platform names: 'instagram' -> 'Instagram'
+                  final displayName = conn.platform[0].toUpperCase() + conn.platform.substring(1);
+                  realPlatforms[displayName] = true;
+                }
+
+                if (mounted) {
+                  setState(() {
+                    _connectedSocialPlatforms = realPlatforms;
+                  });
+                }
+              }
+            } catch (e) {
+              // Continue with UI state if service check fails
+              _logger.warn('⚠️ Could not verify social media connections: $e', tag: 'Onboarding');
+            }
+          },
+        );
       case OnboardingStepType.connectAndDiscover:
         return _ConnectAndDiscoverPage();
     }
@@ -319,6 +373,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
+  String _getUserName() {
+    final authState = context.read<AuthBloc>().state;
+    return authState is Authenticated ? authState.user.name : 'User';
+  }
+
   bool _canProceedToNextStep() {
     if (_currentPage >= _steps.length) {
       _logger.debug('Cannot proceed: currentPage >= steps.length', tag: 'Onboarding');
@@ -346,6 +405,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
         break;
       case OnboardingStepType.preferences:
         canProceed = _preferences.isNotEmpty;
+        break;
+      case OnboardingStepType.baselineLists:
+        canProceed = true; // Optional step - users can skip or create lists
         break;
       case OnboardingStepType.friends:
         canProceed = true; // Optional step
@@ -396,66 +458,42 @@ class _OnboardingPageState extends State<OnboardingPage> {
       _logger.debug('  Favorite Places: $_favoritePlaces', tag: 'Onboarding');
       _logger.debug('  Preferences: $_preferences', tag: 'Onboarding');
 
+      // Get authenticated user
+      final authState = context.read<AuthBloc>().state;
+      if (authState is! Authenticated) {
+        _logger.error('❌ [ONBOARDING_PAGE] User not authenticated', tag: 'Onboarding');
+        _isCompleting = false;
+        return;
+      }
+      final userId = authState.user.id;
+
       const bool isIntegrationTest = bool.fromEnvironment('FLUTTER_TEST');
 
+      // Show legal acceptance dialog if needed (UI responsibility)
       if (!isIntegrationTest) {
-        // Check if user has accepted Terms and Privacy Policy
         final legalService = GetIt.instance<LegalDocumentService>();
-        final authState = context.read<AuthBloc>().state;
+        final hasAcceptedTerms = await legalService.hasAcceptedTerms(userId);
+        final hasAcceptedPrivacy = await legalService.hasAcceptedPrivacyPolicy(userId);
 
-        if (authState is Authenticated) {
-          final hasAcceptedTerms =
-              await legalService.hasAcceptedTerms(authState.user.id);
-          final hasAcceptedPrivacy =
-              await legalService.hasAcceptedPrivacyPolicy(authState.user.id);
-
-          if (!hasAcceptedTerms || !hasAcceptedPrivacy) {
-            // Show legal acceptance dialog
-            final accepted = await showDialog<bool>(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => LegalAcceptanceDialog(
-                requireTerms: !hasAcceptedTerms,
-                requirePrivacy: !hasAcceptedPrivacy,
-              ),
-            );
-
-            if (accepted != true) {
-              // User must accept to continue
-              return;
-            }
+        if (!hasAcceptedTerms || !hasAcceptedPrivacy) {
+          // Check mounted before using context
+          if (!mounted) {
+            _isCompleting = false;
+            return;
           }
+          
+          final accepted = await showDialog<bool>(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => LegalAcceptanceDialog(
+              requireTerms: !hasAcceptedTerms,
+              requirePrivacy: !hasAcceptedPrivacy,
+            ),
+          );
 
-          // Mark onboarding as completed immediately after legal acceptance
-          // This prevents the app from restarting onboarding if navigation fails or app restarts
-          try {
-            _logger.info(
-                '📝 [ONBOARDING_PAGE] Marking onboarding as completed before navigation for user ${authState.user.id}...',
-                tag: 'Onboarding');
-
-            final startTime = DateTime.now();
-            final success =
-                await OnboardingCompletionService.markOnboardingCompleted(
-                    authState.user.id);
-            final elapsed = DateTime.now().difference(startTime).inMilliseconds;
-
-            if (success) {
-              _logger.info(
-                  '✅ [ONBOARDING_PAGE] Onboarding marked as completed and fully verified for user ${authState.user.id} (took ${elapsed}ms)',
-                  tag: 'Onboarding');
-            } else {
-              _logger.warn(
-                  '⚠️ [ONBOARDING_PAGE] Onboarding marked but verification incomplete for user ${authState.user.id} (took ${elapsed}ms). Will retry in AILoadingPage.',
-                  tag: 'Onboarding');
-              // Continue anyway - cache is set, and AILoadingPage will also try to mark it
-            }
-          } catch (e, stackTrace) {
-            _logger.error(
-                '❌ [ONBOARDING_PAGE] Failed to mark onboarding as completed for user ${authState.user.id}',
-                error: e,
-                tag: 'Onboarding');
-            _logger.debug('Stack trace: $stackTrace', tag: 'Onboarding');
-            // Continue anyway - AILoadingPage will also try to mark it
+          if (accepted != true) {
+            _isCompleting = false;
+            return;
           }
         }
       }
@@ -472,38 +510,61 @@ class _OnboardingPageState extends State<OnboardingPage> {
         }
       }
 
-      // Save onboarding data using OnboardingDataService
-      final authState = context.read<AuthBloc>().state;
-      if (authState is Authenticated) {
-        final userId = authState.user.id;
+      // Build onboarding data (agentId will be set by controller)
+      final onboardingData = OnboardingData(
+        agentId: '', // Will be set by controller
+        age: age,
+        birthday: _selectedBirthday,
+        homebase: _selectedHomebase,
+        favoritePlaces: _favoritePlaces,
+        preferences: _preferences,
+        baselineLists: _baselineLists,
+        respectedFriends: _respectedFriends,
+        socialMediaConnected: _connectedSocialPlatforms,
+        completedAt: DateTime.now(),
+      );
+
+      // Use OnboardingFlowController to complete workflow
+      final controller = di.sl<OnboardingFlowController>();
+      final result = await controller.completeOnboarding(
+        data: onboardingData,
+        userId: userId,
+        context: context,
+      );
+
+      // Handle controller result
+      if (!result.isSuccess) {
+        _logger.error('❌ [ONBOARDING_PAGE] Onboarding completion failed: ${result.error}',
+            tag: 'Onboarding');
         
-        try {
-          // Get agentId for onboarding data
-          final agentIdService = di.sl<AgentIdService>();
-          final agentId = await agentIdService.getUserAgentId(userId);
-          
-          final onboardingData = OnboardingData(
-            agentId: agentId, // ✅ Use agentId (privacy-protected)
-            age: age,
-            birthday: _selectedBirthday,
-            homebase: _selectedHomebase,
-            favoritePlaces: _favoritePlaces,
-            preferences: _preferences,
-            baselineLists: _baselineLists,
-            respectedFriends: _respectedFriends,
-            socialMediaConnected: _connectedSocialPlatforms,
-            completedAt: DateTime.now(),
-          );
-          
-          final onboardingService = di.sl<OnboardingDataService>();
-          // Service accepts userId but converts to agentId internally
-          await onboardingService.saveOnboardingData(userId, onboardingData);
-          _logger.info('✅ Saved onboarding data (agentId: ${agentId.substring(0, 10)}...)', tag: 'Onboarding');
-        } catch (e) {
-          _logger.error('❌ Failed to save onboarding data: $e', error: e, tag: 'Onboarding');
-          // Continue anyway - data will be passed via router extra as fallback
+        // Show error to user if needed
+        if (result.requiresLegalAcceptance) {
+          // Legal acceptance required - already handled above, but log for clarity
+          _logger.warn('⚠️ [ONBOARDING_PAGE] Legal acceptance required', tag: 'Onboarding');
         }
+        
+        _isCompleting = false;
+        
+        // In integration tests, surface the root cause
+        if (isIntegrationTest) {
+          throw Exception('Onboarding completion failed: ${result.error}');
+        }
+        
+        // Show error dialog to user
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result.error ?? 'Failed to complete onboarding'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
       }
+
+      // Success - log and continue to navigation
+      _logger.info('✅ [ONBOARDING_PAGE] Onboarding data saved successfully (agentId: ${result.agentId?.substring(0, 10)}...)',
+          tag: 'Onboarding');
 
       // Ensure widget is still mounted before navigation
       if (!mounted) {
@@ -523,22 +584,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
       // This ensures all rendering operations are finished
       await SchedulerBinding.instance.endOfFrame;
       
-      // Dispose PageController immediately to stop all rendering
-      // This is critical to prevent graphics thread from accessing disposed memory
-      try {
-        if (_pageController.hasClients) {
-          _pageController.dispose();
-        }
-      } catch (e) {
-        _logger.debug('PageController disposal note: $e', tag: 'Onboarding');
-      }
-      
-      // Wait for an additional frame to ensure disposal is complete
-      await SchedulerBinding.instance.endOfFrame;
-      
-      // Add a longer delay to ensure all graphics operations are complete
-      // The graphics thread needs time to finish any pending operations
-      await Future.delayed(const Duration(milliseconds: 300));
+      // Note: PageController disposal is handled by dispose() method in normal widget lifecycle
+      // Do NOT dispose here - disposing before navigation can cause graphics thread crashes
+      // The controller will be properly disposed after navigation completes
 
       // Double-check mounted after delays
       if (!mounted) {
@@ -566,23 +614,26 @@ class _OnboardingPageState extends State<OnboardingPage> {
               print('TEST: OnboardingPage -> /ai-loading');
             }
             
-            // TEMPORARY WORKAROUND: Navigate directly to home to avoid graphics crash
-            // The crash appears to be related to the transition or AI loading page rendering
-            // TODO: Investigate and fix the root cause of the graphics thread crash
-            _logger.info('⚠️ [ONBOARDING_PAGE] Using workaround: navigating directly to /home to avoid crash',
-                tag: 'Onboarding');
-            router.go('/home');
+            // Get user name from auth state
+            final authState = context.read<AuthBloc>().state;
+            final userName = authState is Authenticated 
+                ? authState.user.name
+                : 'User';
             
-            // Original navigation (commented out until crash is fixed):
-            // router.go('/ai-loading', extra: {
-            //   'userName': "User",
-            //   'birthday': _selectedBirthday?.toIso8601String(),
-            //   'age': age,
-            //   'homebase': _selectedHomebase,
-            //   'favoritePlaces': _favoritePlaces,
-            //   'preferences': _preferences,
-            //   'baselineLists': _baselineLists,
-            // });
+            // Navigate to AI loading page with all onboarding data
+            _logger.info('🚀 [ONBOARDING_PAGE] Navigating to /ai-loading with onboarding data',
+                tag: 'Onboarding');
+            router.go('/ai-loading', extra: {
+              'userName': userName,
+              'birthday': _selectedBirthday?.toIso8601String(),
+              'age': age,
+              'homebase': _selectedHomebase,
+              'favoritePlaces': _favoritePlaces,
+              'preferences': _preferences,
+              'baselineLists': _baselineLists,
+              'respectedFriends': _respectedFriends,
+              'socialMediaConnected': _connectedSocialPlatforms,
+            });
           } catch (navigationError) {
             _logger.error('❌ [ONBOARDING_PAGE] Navigation error in postFrameCallback',
                 error: navigationError, tag: 'Onboarding');

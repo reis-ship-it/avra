@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/sales_tax_service.dart';
+import 'package:spots/core/controllers/checkout_controller.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
@@ -38,7 +38,7 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  final _salesTaxService = GetIt.instance<SalesTaxService>();
+  final _checkoutController = GetIt.instance<CheckoutController>();
   final _legalService = LegalDocumentService(
     eventService: GetIt.instance<ExpertiseEventService>(),
   );
@@ -112,23 +112,24 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _calculateSalesTax() async {
-    if (widget.event.price == null || widget.event.price == 0.0) return;
-
     setState(() {
       _isLoadingTax = true;
     });
 
     try {
-      final calculation = await _salesTaxService.calculateSalesTax(
-        eventId: widget.event.id,
-        ticketPrice: widget.event.price!,
+      // Use CheckoutController to calculate totals (includes tax calculation)
+      final totals = await _checkoutController.calculateTotals(
+        event: widget.event,
+        quantity: _quantity,
       );
 
       setState(() {
-        _salesTax = calculation.taxAmount * _quantity;
-        _taxRate = calculation.taxRate;
-        _isTaxExempt = calculation.isTaxExempt;
-        _exemptionReason = calculation.exemptionReason;
+        _salesTax = totals.taxAmount;
+        _taxRate = totals.taxAmount > 0 && totals.subtotal > 0
+            ? (totals.taxAmount / totals.subtotal) * 100
+            : 0.0;
+        _isTaxExempt = totals.taxAmount == 0.0 && widget.event.isPaid;
+        _exemptionReason = _isTaxExempt ? 'Event is tax-exempt' : null;
         _isLoadingTax = false;
       });
     } catch (e) {
@@ -593,7 +594,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 child: PaymentFormWidget(
                   amount: totalAmount,
                   quantity: _quantity,
-                  eventId: widget.event.id,
+                  event: widget.event,
                   onPaymentSuccess: _handlePaymentSuccess,
                   onPaymentFailure: _handlePaymentFailure,
                   isProcessing: _isProcessing,
@@ -673,7 +674,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return '$weekday, $month ${dateTime.day} at $hour:${dateTime.minute.toString().padLeft(2, '0')} $ampm';
   }
 
-  void _handlePaymentSuccess(String paymentId, String paymentIntentId) {
+  void _handlePaymentSuccess(String paymentId, String? paymentIntentId) {
     Navigator.pushReplacement(
       context,
       PageTransitions.scaleAndFade(

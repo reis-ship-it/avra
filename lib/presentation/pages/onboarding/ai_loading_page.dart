@@ -11,12 +11,10 @@ import 'package:go_router/go_router.dart';
 import 'package:spots/core/ai/list_generator_service.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/domain/usecases/lists/create_list_usecase.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/onboarding_place_list_generator.dart';
-import 'package:spots/core/services/onboarding_recommendation_service.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:spots/core/models/onboarding_data.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/controllers/agent_initialization_controller.dart';
 import 'dart:async';
 
 class AILoadingPage extends StatefulWidget {
@@ -250,7 +248,7 @@ class _AILoadingPageState extends State<AILoadingPage>
         await Future.delayed(const Duration(seconds: 1));
       }
 
-      // Initialize personalized agent/personality for user
+      // Initialize personalized agent/personality for user using controller
       try {
         final authBloc = context.read<AuthBloc>();
         final authState = authBloc.state;
@@ -260,200 +258,117 @@ class _AILoadingPageState extends State<AILoadingPage>
               tag: 'AILoadingPage');
 
           // Load onboarding data from service (fallback to widget data)
-          Map<String, dynamic> onboardingDataMap;
+          OnboardingData? onboardingData;
           try {
             final onboardingService = di.sl<OnboardingDataService>();
-            final onboardingData = await onboardingService.getOnboardingData(userId);
+            onboardingData = await onboardingService.getOnboardingData(userId);
             
             if (onboardingData != null) {
-              onboardingDataMap = {
-                'age': onboardingData.age,
-                'birthday': onboardingData.birthday?.toIso8601String(),
-                'homebase': onboardingData.homebase,
-                'favoritePlaces': onboardingData.favoritePlaces,
-                'preferences': onboardingData.preferences,
-                'baselineLists': onboardingData.baselineLists,
-                'respectedFriends': onboardingData.respectedFriends,
-                'socialMediaConnected': onboardingData.socialMediaConnected,
-              };
               _logger.info('✅ Loaded onboarding data from service', tag: 'AILoadingPage');
             } else {
               // Fallback: Use data from widget
-              onboardingDataMap = {
-                'age': widget.age,
-                'birthday': widget.birthday?.toIso8601String(),
-                'homebase': widget.homebase,
-                'favoritePlaces': widget.favoritePlaces,
-                'preferences': widget.preferences,
-                'baselineLists': widget.baselineLists,
-              };
+              final agentIdService = di.sl<AgentIdService>();
+              final agentId = await agentIdService.getUserAgentId(userId);
+              onboardingData = OnboardingData(
+                agentId: agentId,
+                age: widget.age,
+                birthday: widget.birthday,
+                homebase: widget.homebase,
+                favoritePlaces: widget.favoritePlaces,
+                preferences: widget.preferences,
+                baselineLists: widget.baselineLists,
+                respectedFriends: [],
+                socialMediaConnected: {},
+                completedAt: DateTime.now(),
+              );
               _logger.warn('⚠️ Using fallback onboarding data from widget', tag: 'AILoadingPage');
             }
           } catch (e) {
             _logger.warn('⚠️ Could not load onboarding data: $e', tag: 'AILoadingPage');
             // Fallback to widget data
-            onboardingDataMap = {
-              'age': widget.age,
-              'birthday': widget.birthday?.toIso8601String(),
-              'homebase': widget.homebase,
-              'favoritePlaces': widget.favoritePlaces,
-              'preferences': widget.preferences,
-              'baselineLists': widget.baselineLists,
-            };
+            try {
+              final agentIdService = di.sl<AgentIdService>();
+              final agentId = await agentIdService.getUserAgentId(userId);
+              onboardingData = OnboardingData(
+                agentId: agentId,
+                age: widget.age,
+                birthday: widget.birthday,
+                homebase: widget.homebase,
+                favoritePlaces: widget.favoritePlaces,
+                preferences: widget.preferences,
+                baselineLists: widget.baselineLists,
+                respectedFriends: [],
+                socialMediaConnected: {},
+                completedAt: DateTime.now(),
+              );
+            } catch (e2) {
+              _logger.error('❌ Could not create fallback onboarding data: $e2', tag: 'AILoadingPage');
+              // Continue without onboarding data - controller will handle gracefully
+            }
           }
-          
-          // Collect social media data if connected
-          // Note: For now, we'll use placeholder data. Phase 12 will implement full social media integration
-          Map<String, dynamic>? socialMediaData;
-          try {
-            // TODO: Phase 12 - Implement actual social media data collection
-            // For now, check if any platforms were connected during onboarding
-            final socialMediaConnected = onboardingDataMap['socialMediaConnected'];
-            if (socialMediaConnected != null) {
-                final connected = socialMediaConnected as Map<String, bool>;
-                if (connected.isNotEmpty && connected.values.any((v) => v == true)) {
-                  // Placeholder: Create minimal social media data structure
-                  // Phase 12 will fetch actual profile, follows, connections
-                  socialMediaData = {
-                    'profile': {},
-                    'follows': [],
-                    'connections': [],
-                    'platform': 'unknown', // Will be determined in Phase 12
-                  };
-                  _logger.info('📱 Social media connected (placeholder data)', tag: 'AILoadingPage');
+
+          // Use controller to initialize agent
+          if (onboardingData != null) {
+            try {
+              final controller = di.sl<AgentInitializationController>();
+              final result = await controller.initializeAgent(
+                userId: userId,
+                onboardingData: onboardingData,
+                generatePlaceLists: true,
+                getRecommendations: true,
+                attemptCloudSync: true,
+              );
+
+              if (result.isSuccess) {
+                _logger.info(
+                  '✅ Agent initialization completed successfully',
+                  tag: 'AILoadingPage',
+                );
+                if (result.personalityProfile != null) {
+                  _logger.debug(
+                    '  Personality: ${result.personalityProfile!.archetype} (generation ${result.personalityProfile!.evolutionGeneration})',
+                    tag: 'AILoadingPage',
+                  );
                 }
-              }
-          } catch (e) {
-            _logger.warn('⚠️ Could not collect social media data: $e', tag: 'AILoadingPage');
-            // Continue without social media data
-          }
-
-          final personalityLearning = di.sl<PersonalityLearning>();
-          final personalityProfile = await personalityLearning.initializePersonalityFromOnboarding(
-            userId,
-            onboardingData: onboardingDataMap,
-            socialMediaData: socialMediaData,
-          );
-
-          _logger.info(
-              '✅ Personalized agent initialized (generation ${personalityProfile.evolutionGeneration})',
-              tag: 'AILoadingPage');
-          _logger.debug('  Archetype: ${personalityProfile.archetype}',
-              tag: 'AILoadingPage');
-          _logger.debug('  Authenticity: ${personalityProfile.authenticity}',
-              tag: 'AILoadingPage');
-
-          // Generate place lists from Google Maps Places API (optional enhancement)
-          try {
-            final placeListGenerator = di.sl<OnboardingPlaceListGenerator>();
-            final homebaseForPlaces = onboardingDataMap['homebase'] as String? ?? widget.homebase ?? '';
-            
-            if (homebaseForPlaces.isNotEmpty) {
-              // TODO: Get latitude/longitude from location service or geocoding
-              final generatedPlaceLists = await placeListGenerator.generatePlaceLists(
-                onboardingData: onboardingDataMap,
-                homebase: homebaseForPlaces,
-                latitude: null, // TODO: Get from location service
-                longitude: null, // TODO: Get from location service
-                maxLists: 5,
-              );
-              
-              _logger.info('📍 Generated ${generatedPlaceLists.length} place lists from onboarding',
-                  tag: 'AILoadingPage');
-              
-              // Log generated lists for debugging
-              for (final list in generatedPlaceLists) {
-                _logger.debug('  List: ${list.name} (${list.places.length} places, relevance: ${list.relevanceScore})',
-                    tag: 'AILoadingPage');
-              }
-              
-              // TODO: Save generated place lists to user's lists using ListService
-              // For now, we'll just log them
-            }
-          } catch (e) {
-            _logger.warn('⚠️ Could not generate place lists: $e', tag: 'AILoadingPage');
-            // Continue without place lists - not critical for onboarding
-          }
-          
-          // Get recommendations for lists and accounts to follow (optional enhancement)
-          try {
-            final recommendationService = di.sl<OnboardingRecommendationService>();
-            
-            final recommendedLists = await recommendationService.getRecommendedLists(
-              userId: userId,
-              onboardingData: onboardingDataMap,
-              personalityDimensions: personalityProfile.dimensions,
-              maxRecommendations: 10,
-            );
-            
-            final recommendedAccounts = await recommendationService.getRecommendedAccounts(
-              userId: userId,
-              onboardingData: onboardingDataMap,
-              personalityDimensions: personalityProfile.dimensions,
-              maxRecommendations: 10,
-            );
-            
-            _logger.info(
-              '💡 Found ${recommendedLists.length} list recommendations and ${recommendedAccounts.length} account recommendations',
-              tag: 'AILoadingPage',
-            );
-            
-            // Log recommendations for debugging
-            for (final listRec in recommendedLists) {
-              _logger.debug('  List: ${listRec.listName} (compatibility: ${listRec.compatibilityScore})',
-                  tag: 'AILoadingPage');
-            }
-            for (final accountRec in recommendedAccounts) {
-              _logger.debug('  Account: ${accountRec.accountName} (compatibility: ${accountRec.compatibilityScore})',
-                  tag: 'AILoadingPage');
-            }
-            
-            // TODO: Display recommendations to user after onboarding completes
-            // Store recommendations for later display in a recommendations service or state
-          } catch (e) {
-            _logger.warn('⚠️ Could not get recommendations: $e', tag: 'AILoadingPage');
-            // Continue without recommendations - not critical for onboarding
-          }
-
-          // Attempt cloud sync if enabled (password may not be available during onboarding)
-          try {
-            final syncService = di.sl<PersonalitySyncService>();
-            final syncEnabled = await syncService.isCloudSyncEnabled(userId);
-
-            if (syncEnabled) {
-              _logger.info(
-                  '☁️ Cloud sync enabled, attempting to sync profile...',
-                  tag: 'AILoadingPage');
-
-              // Try to get password from secure storage (stored during login/signup)
-              const secureStorage = FlutterSecureStorage();
-              final passwordHash = await secureStorage.read(
-                key: 'user_password_hash_$userId',
-              );
-
-              if (passwordHash != null && passwordHash.isNotEmpty) {
-                // Password hash is stored, attempt sync
-                // Note: In production, we'd need to store the actual password temporarily
-                // or use a different approach. For now, we'll skip sync during onboarding
-                // and let user enable it later in settings where they can re-enter password
-                _logger.debug(
-                    '⚠️ Password hash found but sync requires actual password. '
-                    'User can enable sync in settings.',
-                    tag: 'AILoadingPage');
+                if (result.preferencesProfile != null) {
+                  _logger.debug(
+                    '  Preferences: ${result.preferencesProfile!.categoryPreferences.length} categories, ${result.preferencesProfile!.localityPreferences.length} localities',
+                    tag: 'AILoadingPage',
+                  );
+                }
+                if (result.generatedPlaceLists != null && result.generatedPlaceLists!.isNotEmpty) {
+                  _logger.info(
+                    '📍 Generated ${result.generatedPlaceLists!.length} place lists',
+                    tag: 'AILoadingPage',
+                  );
+                }
+                if (result.recommendations != null) {
+                  final listCount = result.recommendations!['lists']?.length ?? 0;
+                  final accountCount = result.recommendations!['accounts']?.length ?? 0;
+                  _logger.info(
+                    '💡 Found $listCount list recommendations and $accountCount account recommendations',
+                    tag: 'AILoadingPage',
+                  );
+                }
               } else {
-                _logger.debug(
-                    '⚠️ Password not available during onboarding. '
-                    'User can enable sync in settings.',
-                    tag: 'AILoadingPage');
+                _logger.error(
+                  '❌ Agent initialization failed: ${result.error}',
+                  tag: 'AILoadingPage',
+                );
+                // Continue anyway - don't block onboarding completion
               }
-            } else {
-              _logger.debug('ℹ️ Cloud sync disabled for user',
-                  tag: 'AILoadingPage');
+            } catch (e, stackTrace) {
+              _logger.error(
+                '❌ Error calling agent initialization controller: $e',
+                error: e,
+                stackTrace: stackTrace,
+                tag: 'AILoadingPage',
+              );
+              // Continue anyway - don't block onboarding completion
             }
-          } catch (e) {
-            _logger.warn('⚠️ Error checking cloud sync status: $e',
+          } else {
+            _logger.warn('⚠️ No onboarding data available, skipping agent initialization',
                 tag: 'AILoadingPage');
-            // Don't block onboarding if sync check fails
           }
         } else {
           _logger.warn('⚠️ Could not initialize agent - user not authenticated',

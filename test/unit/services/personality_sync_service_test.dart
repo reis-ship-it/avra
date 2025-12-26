@@ -101,7 +101,9 @@ void main() {
         // Test business logic: encryption/decryption
         const userId = 'test_user_1';
         const password = 'test_password';
-        final profile1 = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile1 = PersonalityProfile.initial(agentId, userId: userId);
         final key1 = await syncService.deriveKeyFromPassword(password, userId);
         final encrypted1 =
             await syncService.encryptProfileForCloud(profile1, key1);
@@ -110,11 +112,14 @@ void main() {
         final decrypted1 =
             await syncService.decryptProfileFromCloud(encrypted1, key1);
         expect(decrypted1, isNotNull);
-        expect(decrypted1!.userId, equals(profile1.userId));
+        expect(decrypted1!.agentId, equals(profile1.agentId));
+        expect(decrypted1.userId, equals(profile1.userId));
         expect(decrypted1.evolutionGeneration,
             equals(profile1.evolutionGeneration));
 
-        final profile2 = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId2 = 'agent_$userId';
+        final profile2 = PersonalityProfile.initial(agentId2, userId: userId);
         final correctKey =
             await syncService.deriveKeyFromPassword('correct', userId);
         final wrongKey =
@@ -132,14 +137,14 @@ void main() {
           'should correctly identify newer profile by timestamp, or handle equal timestamps',
           () {
         // Test business logic: merge strategy
-        final localProfile = PersonalityProfile.initial('user1');
+        final localProfile = PersonalityProfile.initial('agent_user1', userId: 'user1');
         final localUpdated = localProfile.lastUpdated;
         final cloudUpdated = localUpdated.add(const Duration(hours: 1));
         expect(cloudUpdated.isAfter(localUpdated), isTrue);
         expect(localUpdated.isBefore(cloudUpdated), isTrue);
 
-        final profile1 = PersonalityProfile.initial('user1');
-        final profile2 = PersonalityProfile.initial('user2');
+        final profile1 = PersonalityProfile.initial('agent_user1', userId: 'user1');
+        final profile2 = PersonalityProfile.initial('agent_user2', userId: 'user2');
         expect(
           profile1.lastUpdated.difference(profile2.lastUpdated).inSeconds.abs(),
           lessThan(2),
@@ -163,7 +168,9 @@ void main() {
         expect(oldKey.length, equals(32));
         expect(newKey.length, equals(32));
 
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
         final encryptedWithOld =
             await syncService.encryptProfileForCloud(profile, oldKey);
         final encryptedWithNew =
@@ -175,7 +182,8 @@ void main() {
             await syncService.decryptProfileFromCloud(encryptedWithNew, newKey);
         expect(decryptedOld, isNotNull);
         expect(decryptedNew, isNotNull);
-        expect(decryptedOld!.userId, equals(decryptedNew!.userId));
+        expect(decryptedOld!.agentId, equals(decryptedNew!.agentId));
+        expect(decryptedOld.userId, equals(decryptedNew.userId));
       });
     });
 
@@ -186,7 +194,9 @@ void main() {
         // Test business logic: error handling
         const userId = 'test_user_1';
         const password = 'test_password';
-        final profile1 = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId1 = 'agent_$userId';
+        final profile1 = PersonalityProfile.initial(agentId1, userId: userId);
         
         // Disable cloud sync - this should not call Supabase
         await syncService.setCloudSyncEnabled(userId, false);
@@ -196,7 +206,8 @@ void main() {
         // Assert - Operation completed without throwing (test passes if we reach here)
 
         const wrongPassword = 'wrong_password';
-        final profile2 = PersonalityProfile.initial(userId);
+        final agentId2 = 'agent_$userId';
+        final profile2 = PersonalityProfile.initial(agentId2, userId: userId);
         final correctKey =
             await syncService.deriveKeyFromPassword(password, userId);
         final wrongKey =

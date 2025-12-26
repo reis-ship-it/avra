@@ -186,7 +186,7 @@ SPOTS/
 ├── assets/                   # Static assets
 │   └── models/              # ML models (ONNX)
 ├── docs/                     # Documentation
-│   ├── patents/             # Patent portfolio (29 patents)
+│   ├── patents/             # Patent portfolio (30 patents)
 │   ├── plans/               # Implementation plans
 │   └── architecture/        # Architecture documentation
 ├── test/                     # Test suites
@@ -311,7 +311,7 @@ We welcome contributions! Please follow these guidelines:
 - **Backend:** Supabase + Firebase
 - **Payment:** Stripe integration complete
 - **AI/ML:** Quantum-inspired algorithms + ONNX models
-- **Patents:** 29 innovations documented, 5 ready for filing
+- **Patents:** 30 innovations documented, 6 ready for filing
 
 ---
 

@@ -55,7 +55,9 @@ class _AIPersonalityStatusPageState extends State<AIPersonalityStatusPage> {
         // Try to get existing personality profile
         // Note: PersonalityLearning doesn't expose a direct getter, so we'll create initial for now
         // In a real implementation, you'd load from storage or get from a service
-        _personalityProfile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        _personalityProfile = PersonalityProfile.initial(agentId, userId: userId);
 
         // Get connections overview - ConnectionMonitor expects SharedPreferencesCompat
         final sharedPrefs = GetIt.instance<SharedPreferencesCompat>();

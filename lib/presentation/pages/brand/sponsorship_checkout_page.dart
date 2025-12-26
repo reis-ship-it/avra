@@ -1,11 +1,11 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spots/core/controllers/sponsorship_checkout_controller.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/sponsorship.dart';
 import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/services/payment_service.dart';
-// TODO: Import SponsorshipService when available (Agent 1, Week 11)
-// import 'package:spots/core/services/sponsorship_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
@@ -47,9 +47,7 @@ class SponsorshipCheckoutPage extends StatefulWidget {
 }
 
 class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
-  final _paymentService = GetIt.instance<PaymentService>();
-  // TODO: Get SponsorshipService when available (Agent 1, Week 11)
-  // final _sponsorshipService = GetIt.instance<SponsorshipService>();
+  final _sponsorshipCheckoutController = GetIt.instance<SponsorshipCheckoutController>();
   
   SponsorshipType _contributionType = SponsorshipType.financial;
   double? _cashAmount;
@@ -87,26 +85,26 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
       final totalContribution = (_cashAmount ?? 0.0) + (_productValue ?? 0.0);
       
       if (totalContribution > 0) {
-        // TODO: Integrate with SponsorshipService when available (Agent 1, Week 11)
-        // Get existing revenue split for event
-        // final existingSplit = await _sponsorshipService.getEventRevenueSplit(
-        //   widget.event.id,
-        // );
-        // 
-        // if (existingSplit != null) {
-        //   _revenueSplit = await _sponsorshipService.calculateSponsorshipRevenueSplit(
-        //     eventId: widget.event.id,
-        //     sponsorshipContribution: totalContribution,
-        //     existingSplit: existingSplit,
-        //   );
-        // }
-        
-        // For now, create placeholder revenue split
-        // This will be replaced with actual service call
+        // Use SponsorshipCheckoutController to calculate revenue split
+        final revenueSplit = await _sponsorshipCheckoutController.calculateSponsorshipRevenueSplit(
+          event: widget.event,
+          totalContribution: totalContribution,
+          existingSplit: null, // Could pass existing split if available
+        );
+
+        if (revenueSplit != null) {
+          setState(() {
+            _revenueSplit = revenueSplit;
+          });
+        }
       }
-    } catch (e) {
-      // Handle error
-      debugPrint('Error calculating revenue split: $e');
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error calculating revenue split: $e',
+        name: 'SponsorshipCheckoutPage',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
   }
   
@@ -387,7 +385,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                 child: PaymentFormWidget(
                   amount: _cashAmount!,
                   quantity: 1,
-                  eventId: widget.event.id,
+                  event: widget.event,
                   onPaymentSuccess: _handlePaymentSuccess,
                   onPaymentFailure: _handlePaymentFailure,
                   isProcessing: _isProcessing,
@@ -613,38 +611,32 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
       }
       
       // TODO: Get brand account for user (when BrandAccountService is available)
-      // final brandAccount = await GetIt.instance<BrandAccountService>().getBrandAccountByUserId(userId);
-      // if (brandAccount == null) {
-      //   throw Exception('Brand account not found');
-      // }
+      // For now, use userId as brandId placeholder
+      final brandId = 'brand_$userId'; // Placeholder - should come from BrandAccountService
       
-      // TODO: Integrate with SponsorshipService when available (Agent 1, Week 11)
-      // if (widget.sponsorship != null) {
-      //   await _sponsorshipService.updateSponsorship(
-      //     widget.sponsorship!.id,
-      //     contributionAmount: _cashAmount,
-      //     productValue: _productValue,
-      //   );
-      // } else {
-      //   await _sponsorshipService.createSponsorship(
-      //     eventId: widget.event.id,
-      //     brandId: brandAccount.id,
-      //     type: _contributionType,
-      //     contributionAmount: _cashAmount,
-      //     productValue: _productValue,
-      //   );
-      // }
-      
-      // For now, simulate success
-      await Future.delayed(const Duration(seconds: 1));
-      
+      // Use SponsorshipCheckoutController to process sponsorship checkout
+      final result = await _sponsorshipCheckoutController.processSponsorshipCheckout(
+        event: widget.event,
+        brandId: brandId,
+        type: _contributionType,
+        contributionAmount: _cashAmount,
+        productValue: _productValue,
+        productName: _productName,
+        productQuantity: _productQuantity,
+        existingSponsorship: widget.sponsorship,
+      );
+
+      if (!result.success) {
+        throw Exception(result.error ?? 'Failed to submit sponsorship');
+      }
+
       // Navigate to success page
       Navigator.pushReplacement(
         context,
         PageTransitions.scaleAndFade(
           PaymentSuccessPage(
             event: widget.event,
-            paymentId: 'sponsorship-${DateTime.now().millisecondsSinceEpoch}',
+            paymentId: result.payment?.id ?? 'sponsorship-${DateTime.now().millisecondsSinceEpoch}',
             quantity: 1,
           ),
         ),
@@ -657,7 +649,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
     }
   }
   
-  void _handlePaymentSuccess(String paymentId, String paymentIntentId) {
+  void _handlePaymentSuccess(String paymentId, String? paymentIntentId) {
     // Payment successful, now submit sponsorship
     _submitSponsorship();
   }

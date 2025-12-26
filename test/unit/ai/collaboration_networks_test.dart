@@ -15,7 +15,8 @@ void main() {
 
     group('AI Agent Clustering', () {
       test('should cluster similar AIs without errors', () async {
-        final profile = PersonalityProfile.initial('test-user');
+        // Phase 8.3: Use agentId for privacy protection
+        final profile = PersonalityProfile.initial('agent_test-user', userId: 'test-user');
         final personality = UserPersonality(
           userId: 'test-user',
           profile: profile,
@@ -27,7 +28,8 @@ void main() {
       });
 
       test('should handle initial personality profile', () async {
-        final profile = PersonalityProfile.initial('test-user');
+        // Phase 8.3: Use agentId for privacy protection
+        final profile = PersonalityProfile.initial('agent_test-user', userId: 'test-user');
         final personality = UserPersonality(
           userId: 'test-user',
           profile: profile,

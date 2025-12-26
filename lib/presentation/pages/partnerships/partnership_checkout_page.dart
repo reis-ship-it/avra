@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:spots/core/controllers/partnership_checkout_controller.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/event_partnership.dart';
 import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/payment_event_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/widgets/payment/payment_form_widget.dart';
@@ -41,8 +40,7 @@ class PartnershipCheckoutPage extends StatefulWidget {
 }
 
 class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
-  final _paymentService = GetIt.instance<PaymentService>();
-  final _paymentEventService = GetIt.instance<PaymentEventService>();
+  final _partnershipCheckoutController = GetIt.instance<PartnershipCheckoutController>();
   int _quantity = 1;
   bool _isProcessing = false;
   String? _error;
@@ -54,21 +52,22 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
     _calculateRevenueSplit();
   }
 
-  void _calculateRevenueSplit() {
+  Future<void> _calculateRevenueSplit() async {
     if (widget.event.price == null) return;
 
-    final totalAmount = widget.event.price! * _quantity;
-    
-    if (widget.partnership != null && widget.partnership!.revenueSplit != null) {
-      // Use existing revenue split from partnership
-      _revenueSplit = widget.partnership!.revenueSplit;
-    } else {
-      // Calculate new revenue split
-      _revenueSplit = _paymentService.calculateRevenueSplit(
-        totalAmount: totalAmount,
-        ticketsSold: _quantity,
-        eventId: widget.event.id,
+    try {
+      // Use PartnershipCheckoutController to calculate revenue split
+      final revenueSplit = await _partnershipCheckoutController.calculateRevenueSplit(
+        event: widget.event,
+        quantity: _quantity,
+        partnership: widget.partnership,
       );
+
+      setState(() {
+        _revenueSplit = revenueSplit;
+      });
+    } catch (e) {
+      // Don't show error, just proceed without revenue split display
     }
   }
 
@@ -342,7 +341,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
               child: PaymentFormWidget(
                 amount: totalAmount,
                 quantity: _quantity,
-                eventId: widget.event.id,
+                event: widget.event,
                 onPaymentSuccess: _handlePaymentSuccess,
                 onPaymentFailure: _handlePaymentFailure,
                 isProcessing: _isProcessing,
@@ -422,7 +421,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
     return '$weekday, $month ${dateTime.day} at $hour:${dateTime.minute.toString().padLeft(2, '0')} $ampm';
   }
 
-  void _handlePaymentSuccess(String paymentId, String paymentIntentId) {
+  void _handlePaymentSuccess(String paymentId, String? paymentIntentId) {
     Navigator.pushReplacement(
       context,
       PageTransitions.scaleAndFade(

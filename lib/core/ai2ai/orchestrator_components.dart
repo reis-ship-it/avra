@@ -188,7 +188,7 @@ class ConnectionManager {
       
       // Step 5: Create connection metrics
       final localVibe = await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
-      final remoteVibe = await vibeAnalyzer.compileUserVibe(remoteProfile.userId, remoteProfile);
+      final remoteVibe = await vibeAnalyzer.compileUserVibe(remoteProfile.agentId, remoteProfile);
       
       final anonLocal = await PrivacyProtection.anonymizeUserVibe(localVibe);
       final anonRemote = await PrivacyProtection.anonymizeUserVibe(remoteVibe);

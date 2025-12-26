@@ -16,7 +16,9 @@ void main() {
         'should display personality overview with all dimensions, display dimension bars with correct values, display authenticity progress bar, or handle empty dimensions gracefully',
         (WidgetTester tester) async {
       // Test business logic: Personality overview card display and functionality
+      // Phase 8.3: Use agentId for privacy protection
       final profile1 = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {
           'adventure': 0.7,
@@ -48,7 +50,9 @@ void main() {
       expect(find.text('Evolution Generation'), findsOneWidget);
       expect(find.text('3'), findsOneWidget);
 
+      // Phase 8.3: Use agentId for privacy protection
       final profile2 = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {
           'adventure': 0.7,
@@ -73,7 +77,9 @@ void main() {
       expect(find.text('80%'), findsWidgets);
       expect(find.byType(LinearProgressIndicator), findsWidgets);
 
+      // Phase 8.3: Use agentId for privacy protection
       final profile3 = PersonalityProfile(
+        agentId: 'agent_test-user-id',
         userId: 'test-user-id',
         dimensions: {},
         dimensionConfidence: {},

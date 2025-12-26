@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots/core/controllers/sync_controller.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/injection_container.dart' as di;
 
@@ -26,7 +28,9 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   // Removed unused _dataExportEnabled field
 
   late PersonalitySyncService _syncService;
+  late SyncController _syncController;
   String? _currentUserId;
+  bool _isSyncing = false;
 
   String _profileVisibility = 'Friends Only';
   String _locationSharing = 'Precise';
@@ -51,6 +55,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   void initState() {
     super.initState();
     _syncService = di.sl<PersonalitySyncService>();
+    _syncController = di.sl<SyncController>();
     _loadCloudSyncSetting();
   }
 
@@ -135,6 +140,119 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
         );
       }
     }
+  }
+
+  Future<void> _handleSyncNow() async {
+    if (_currentUserId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please sign in to sync your data'),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+      return;
+    }
+
+    // Try to get password from secure storage (stored during login)
+    String? password;
+    try {
+      const secureStorage = FlutterSecureStorage();
+      password = await secureStorage.read(
+        key: 'user_password_session_$_currentUserId',
+      );
+    } catch (e) {
+      // Password not available in secure storage
+      debugPrint('Password not available in secure storage: $e');
+    }
+
+    // If password is not available, prompt user
+    if (password == null || password.isEmpty) {
+      password = await _promptForPassword();
+      if (password == null || password.isEmpty) {
+        return; // User cancelled
+      }
+    }
+
+    setState(() {
+      _isSyncing = true;
+    });
+
+    try {
+      final result = await _syncController.syncUserData(
+        userId: _currentUserId!,
+        password: password,
+        scope: SyncScope.personality,
+      );
+
+      if (mounted) {
+        setState(() {
+          _isSyncing = false;
+        });
+
+        if (result.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Sync completed successfully'),
+              backgroundColor: AppTheme.successColor,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Sync failed: ${result.error ?? "Unknown error"}'),
+              backgroundColor: AppTheme.errorColor,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSyncing = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error syncing: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<String?> _promptForPassword() async {
+    final passwordController = TextEditingController();
+    
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enter Password'),
+        content: TextField(
+          controller: passwordController,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: 'Password',
+            hintText: 'Enter your password to sync',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (passwordController.text.isNotEmpty) {
+                Navigator.pop(context, passwordController.text);
+              }
+            },
+            child: const Text('Sync'),
+          ),
+        ],
+      ),
+    );
+
+    return result;
   }
 
   @override
@@ -258,6 +376,28 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               _handleCloudSyncToggle,
               Icons.cloud_sync,
             ),
+
+            // Sync Now button (only show if sync is enabled)
+            if (_cloudSyncEnabled)
+              Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  leading: Icon(Icons.sync, color: AppTheme.primaryColor),
+                  title: const Text('Sync Now'),
+                  subtitle: _isSyncing
+                      ? const Text('Syncing...')
+                      : const Text(
+                          'Manually sync your AI personality profile to the cloud'),
+                  trailing: _isSyncing
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.arrow_forward_ios),
+                  onTap: _isSyncing ? null : _handleSyncNow,
+                ),
+              ),
 
             const SizedBox(height: 24),
 

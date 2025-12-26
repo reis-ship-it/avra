@@ -160,7 +160,7 @@ class ContextualPersonalityService {
         final currentPhase = profile.getCurrentPhase();
         
         return TransitionMetrics(
-          transitionId: '${profile.userId}_trans_${DateTime.now().millisecondsSinceEpoch}',
+          transitionId: '${profile.agentId}_trans_${DateTime.now().millisecondsSinceEpoch}',
           startDate: DateTime.now().subtract(effectiveWindow),
           fromPhaseId: currentPhase?.phaseId ?? 'unknown',
           dimensionChanges: aggregateChanges,
@@ -198,6 +198,7 @@ class ContextualPersonalityService {
     
     // Create new profile with transition active
     return PersonalityProfile(
+      agentId: profile.agentId,
       userId: profile.userId,
       dimensions: profile.dimensions,
       dimensionConfidence: profile.dimensionConfidence,
@@ -245,7 +246,7 @@ class ContextualPersonalityService {
     
     // Create new phase
     final newPhase = LifePhase(
-      phaseId: '${profile.userId}_phase_${profile.evolutionTimeline.length + 1}',
+      phaseId: '${profile.agentId}_phase_${profile.evolutionTimeline.length + 1}',
       name: newPhaseName,
       corePersonality: newCorePersonality,
       authenticity: profile.authenticity,
@@ -276,6 +277,7 @@ class ContextualPersonalityService {
     );
     
     return PersonalityProfile(
+      agentId: profile.agentId,
       userId: profile.userId,
       dimensions: newCorePersonality, // New dimensions
       dimensionConfidence: profile.dimensionConfidence,

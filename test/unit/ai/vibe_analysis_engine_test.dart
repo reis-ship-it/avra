@@ -30,7 +30,9 @@ void main() {
     group('Vibe Compilation', () {
       test('should compile user vibe without errors', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         final vibe = await analyzer.compileUserVibe(userId, profile);
 
@@ -41,7 +43,9 @@ void main() {
 
       test('should handle different personality profiles', () async {
         const userId = 'test-user-123';
-        final profile1 = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile1 = PersonalityProfile.initial(agentId, userId: userId);
         final profile2 = profile1.evolve(
           newDimensions: {'exploration_eagerness': 0.8},
           newConfidence: {'exploration_eagerness': 0.8},
@@ -94,7 +98,9 @@ void main() {
     group('Privacy Validation', () {
       test('should ensure vibe compilation preserves privacy', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         final vibe = await analyzer.compileUserVibe(userId, profile);
 

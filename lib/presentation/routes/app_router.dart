@@ -618,6 +618,9 @@ class AppRouter {
                   baselineLists: (extra?['baselineLists'] as List<dynamic>?)
                           ?.cast<String>() ??
                       const [],
+                  // Note: respectedFriends and socialMediaConnected are passed via extras
+                  // but AILoadingPage loads data from OnboardingDataService, so these are
+                  // primarily for fallback/verification. The page will use saved onboarding data.
                   onLoadingComplete: () {
                     // Mark onboarding as completed and navigate to home
                     c.go('/home');

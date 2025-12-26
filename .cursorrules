@@ -108,6 +108,7 @@ Then synthesize comprehensive answer.
 - **Master Plan:** `docs/MASTER_PLAN.md` (THE execution plan - single source of truth)
 - **Master Plan Tracker:** `docs/MASTER_PLAN_TRACKER.md` (registry of all plans)
 - **Master Plan System:** `.cursorrules_master_plan` (automated workflow for new features)
+- **Integration Optimization:** `.cursorrules_integration_optimization` (phase-to-phase integration optimization)
 - **SPOTS Philosophy:** `docs/plans/philosophy_implementation/SPOTS_PHILOSOPHY_AND_ARCHITECTURE.md` (CRITICAL - all work must align)
 - **Development Guide:** `README_DEVELOPMENT.md`
 - **Documentation Protocol:** `docs/agents/REFACTORING_PROTOCOL.md` (MANDATORY for all documentation)
@@ -129,6 +130,36 @@ Then synthesize comprehensive answer.
 6. Update execution sequence
 
 **See:** `.cursorrules_master_plan` for complete automated workflow
+
+---
+
+## 🔗 Integration Optimization System
+
+**When completing or starting a phase:**
+
+**Follow the integration optimization rules in:** `.cursorrules_integration_optimization`
+
+**Key Requirements:**
+1. **Before completing a phase:**
+   - Create output contracts document
+   - Create breaking changes document (if applicable)
+   - Update service registry
+   - Write integration tests
+
+2. **Before starting a phase:**
+   - Create input requirements document
+   - Verify all dependencies are available
+   - Check service registry for locks
+   - Complete integration checklist
+
+3. **Before modifying a service:**
+   - Check service registry for locks
+   - Announce breaking changes (2 weeks before)
+   - Lock service during modification
+   - Update integration tests
+
+**See:** `.cursorrules_integration_optimization` for complete integration optimization workflow  
+**Reference:** `docs/INTEGRATION_OPTIMIZATION_PLAN.md` for complete guide
 
 ---
 
@@ -436,6 +467,93 @@ Then synthesize comprehensive answer.
 - [ ] Imports organized correctly
 - [ ] File placed in correct architecture layer
 - [ ] Naming conventions followed
+
+### Feature Integration Workflow (MANDATORY)
+**CRITICAL:** All new features/services/widgets/controllers MUST follow this integration workflow.
+
+**Integration Sequence (MANDATORY ORDER):**
+
+1. **Unit Tests First** ✅
+   - Write unit tests for the new feature/service/widget/controller
+   - All unit tests MUST pass before proceeding
+   - Tests must cover core functionality, error handling, and edge cases
+   - **DO NOT proceed to integration until unit tests pass**
+
+2. **Integration Implementation** ✅
+   - After unit tests pass, integrate the feature into the system
+   - Register in dependency injection (if service/controller)
+   - Wire into UI/other components (if widget/feature)
+   - Update navigation/routing (if page/feature)
+   - Replace old implementation with new one (if refactoring)
+
+3. **Integration Tests** ✅
+   - Write integration tests that verify the feature works in the system
+   - Test integration points (service → UI, controller → service, etc.)
+   - Test end-to-end workflows (if applicable)
+   - All integration tests MUST pass before marking complete
+
+4. **Verification** ✅
+   - Run full test suite: `flutter test`
+   - Verify no regressions introduced
+   - Verify feature is accessible to users (if user-facing)
+   - Check that all dependencies are satisfied
+
+5. **Mark Complete** ✅
+   - Only after steps 1-4 are complete
+   - Update documentation
+   - Update plan documents
+   - Mark feature as complete
+
+**Why This Order Matters:**
+- ✅ Unit tests verify the feature works in isolation
+- ✅ Integration verifies the feature works in the system
+- ✅ Integration tests catch integration issues early
+- ✅ Prevents broken features from being marked complete
+- ✅ Ensures users can actually access the feature
+
+**Examples:**
+
+❌ **WRONG:**
+```dart
+// 1. Create controller
+class MyController { ... }
+
+// 2. Integrate into UI immediately
+onboardingPage.useController(MyController());
+
+// 3. Write tests later (or never)
+// Tests never written or fail
+```
+
+✅ **RIGHT:**
+```dart
+// 1. Create controller
+class MyController { ... }
+
+// 2. Write unit tests
+test('MyController validates input correctly', () { ... });
+test('MyController handles errors gracefully', () { ... });
+// ✅ All unit tests pass
+
+// 3. Integrate into system
+sl.registerLazySingleton(() => MyController());
+onboardingPage.useController(sl<MyController>());
+
+// 4. Write integration tests
+test('OnboardingPage uses MyController correctly', () { ... });
+// ✅ All integration tests pass
+
+// 5. Mark complete
+```
+
+**Exception:**
+- If integrating an existing, well-tested feature into a new context, you may skip unit tests (they already exist)
+- Integration tests are still required for the new integration point
+
+**Enforcement:**
+- Code review will verify this workflow was followed
+- Integration tests must exist and pass before feature completion
+- Missing integration tests will block feature completion
 
 ### Quick Fixes Reference
 **Common Issues & Solutions:**

@@ -57,7 +57,9 @@ void main() {
     group('Advertising Lifecycle', () {
       test('should start advertising without errors', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         // Mock vibe compilation - create a test UserVibe
         final testVibe = UserVibe.fromPersonalityProfile(
@@ -79,7 +81,9 @@ void main() {
 
       test('should handle multiple start calls gracefully', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
         
         final testVibe = UserVibe.fromPersonalityProfile(
           userId,
@@ -108,7 +112,9 @@ void main() {
     group('Privacy Validation', () {
       test('should ensure advertised data contains no user data', () async {
         const userId = 'test-user-123';
-        final profile = PersonalityProfile.initial(userId);
+        // Phase 8.3: Use agentId for privacy protection
+        final agentId = 'agent_$userId';
+        final profile = PersonalityProfile.initial(agentId, userId: userId);
         
         final testVibe = UserVibe.fromPersonalityProfile(
           userId,

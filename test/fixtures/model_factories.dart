@@ -182,16 +182,22 @@ class ModelFactories {
   // ======= PersonalityProfile Factories =======
 
   /// Create a basic personality profile
+  /// Phase 8.3: Uses agentId for privacy protection
   static PersonalityProfile createTestPersonalityProfile({
     String? userId,
+    String? agentId,
     Map<String, double>? dimensions,
     String? archetype,
     double? authenticity,
     int? evolutionGeneration,
   }) {
+    final testUserId = userId ?? TestConstants.testUserId;
+    // Phase 8.3: Generate agentId if not provided (for tests, use deterministic format)
+    final testAgentId = agentId ?? 'agent_$testUserId';
     final testDimensions = dimensions ?? _createTestDimensions();
     return PersonalityProfile(
-      userId: userId ?? TestConstants.testUserId,
+      agentId: testAgentId,
+      userId: testUserId,
       dimensions: testDimensions,
       dimensionConfidence: _createTestConfidence(testDimensions),
       archetype: archetype ?? 'balanced',
@@ -204,9 +210,10 @@ class ModelFactories {
   }
 
   /// Create adventurous explorer personality
-  static PersonalityProfile createAdventurousExplorerProfile({String? userId}) {
+  static PersonalityProfile createAdventurousExplorerProfile({String? userId, String? agentId}) {
     return createTestPersonalityProfile(
       userId: userId,
+      agentId: agentId,
       dimensions: {
         'exploration_eagerness': 0.9,
         'location_adventurousness': 0.8,
@@ -222,9 +229,10 @@ class ModelFactories {
   }
 
   /// Create community curator personality
-  static PersonalityProfile createCommunityCuratorProfile({String? userId}) {
+  static PersonalityProfile createCommunityCuratorProfile({String? userId, String? agentId}) {
     return createTestPersonalityProfile(
       userId: userId,
+      agentId: agentId,
       dimensions: {
         'community_orientation': 0.9,
         'curation_tendency': 0.8,

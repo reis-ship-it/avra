@@ -9,8 +9,10 @@ import 'package:spots/core/ai/privacy_protection.dart';
 void main() {
   group('Basic AI2AI Personality Learning Tests', () {
     test('should create personality profile with correct structure', () {
-      final profile = PersonalityProfile.initial('test_user');
+      // Phase 8.3: Use agentId for privacy protection
+      final profile = PersonalityProfile.initial('agent_test_user', userId: 'test_user');
       
+      expect(profile.agentId, equals('agent_test_user'));
       expect(profile.userId, equals('test_user'));
       expect(profile.dimensions.length, equals(VibeConstants.coreDimensions.length));
       expect(profile.evolutionGeneration, equals(1));
@@ -23,7 +25,8 @@ void main() {
     });
     
     test('should evolve personality correctly', () {
-      final initialProfile = PersonalityProfile.initial('test_user');
+      // Phase 8.3: Use agentId for privacy protection
+      final initialProfile = PersonalityProfile.initial('agent_test_user', userId: 'test_user');
       
       final evolvedProfile = initialProfile.evolve(
         newDimensions: {
@@ -44,7 +47,8 @@ void main() {
     });
     
     test('should calculate personality compatibility', () {
-      final profile1 = PersonalityProfile.initial('user1').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final profile1 = PersonalityProfile.initial('agent_user1', userId: 'user1').evolve(
         newDimensions: {
           'exploration_eagerness': 0.8,
           'community_orientation': 0.7,
@@ -55,7 +59,8 @@ void main() {
         },
       );
       
-      final profile2 = PersonalityProfile.initial('user2').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final profile2 = PersonalityProfile.initial('agent_user2', userId: 'user2').evolve(
         newDimensions: {
           'exploration_eagerness': 0.7,
           'community_orientation': 0.8,
@@ -175,7 +180,8 @@ void main() {
     
     test('should determine personality archetype correctly', () {
       // Test adventurous explorer archetype
-      final explorerProfile = PersonalityProfile.initial('explorer').evolve(
+        // Phase 8.3: Use agentId for privacy protection
+        final explorerProfile = PersonalityProfile.initial('agent_explorer', userId: 'explorer').evolve(
         newDimensions: {
           'exploration_eagerness': 0.9,
           'location_adventurousness': 0.8,

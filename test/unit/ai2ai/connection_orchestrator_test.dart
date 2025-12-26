@@ -32,7 +32,8 @@ void main() {
         connectivity: mockConnectivity,
       );
       
-      testPersonality = PersonalityProfile.initial(testUserId).evolve(
+      // Phase 8.3: Use agentId for privacy protection
+      testPersonality = PersonalityProfile.initial('agent_$testUserId', userId: testUserId).evolve(
         newDimensions: {
           'exploration_eagerness': 0.8,
           'community_orientation': 0.7,

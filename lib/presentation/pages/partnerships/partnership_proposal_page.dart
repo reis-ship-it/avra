@@ -1,9 +1,11 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/business_account.dart';
 import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/services/partnership_service.dart';
+import 'package:spots/core/controllers/partnership_proposal_controller.dart';
 import 'package:spots/core/services/partnership_matching_service.dart';
 import 'package:spots/core/services/business_service.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -31,7 +33,6 @@ class PartnershipProposalPage extends StatefulWidget {
 }
 
 class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
-  final _partnershipService = GetIt.instance<PartnershipService>();
   final _matchingService = GetIt.instance<PartnershipMatchingService>();
   final _businessService = GetIt.instance<BusinessService>();
   
@@ -78,7 +79,14 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
         _suggestions = suggestions;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error loading partnership suggestions: $e',
+        name: 'PartnershipProposalPage',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      
       setState(() {
         _isLoading = false;
       });
@@ -117,7 +125,14 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
         _searchResults = results;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error searching businesses: $e',
+        name: 'PartnershipProposalPage',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      
       setState(() {
         _isLoading = false;
       });
@@ -430,7 +445,7 @@ class PartnershipProposalFormPage extends StatefulWidget {
 }
 
 class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPage> {
-  final _partnershipService = GetIt.instance<PartnershipService>();
+  final _partnershipController = GetIt.instance<PartnershipProposalController>();
   final _formKey = GlobalKey<FormState>();
   
   PartnershipType _partnershipType = PartnershipType.eventBased;
@@ -487,29 +502,53 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
         agreedBy: authState.user.id,
       );
 
-      // Create partnership
-      await _partnershipService.createPartnership(
-        eventId: widget.event.id,
-        userId: authState.user.id,
-        businessId: widget.business.id,
+      // Create partnership proposal using controller
+      final proposalData = PartnershipProposalData(
         agreement: agreement,
         type: _partnershipType,
         sharedResponsibilities: _selectedResponsibilities,
         vibeCompatibilityScore: widget.compatibility,
       );
 
+      final result = await _partnershipController.createProposal(
+        eventId: widget.event.id,
+        proposerId: authState.user.id,
+        businessId: widget.business.id,
+        data: proposalData,
+      );
+
       if (mounted) {
-        Navigator.pop(context); // Close form
-        Navigator.pop(context); // Close proposal page
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Partnership proposal sent to ${widget.business.name}!'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
+        setState(() {
+          _isSubmitting = false;
+        });
+
+        if (result.success) {
+          Navigator.pop(context); // Close form
+          Navigator.pop(context); // Close proposal page
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Partnership proposal sent to ${widget.business.name}!'),
+              backgroundColor: AppColors.electricGreen,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error sending proposal: ${result.error}'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error sending partnership proposal: $e',
+        name: 'PartnershipProposalFormPage',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      
       setState(() {
         _isSubmitting = false;
       });

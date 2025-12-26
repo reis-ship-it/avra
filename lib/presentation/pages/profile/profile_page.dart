@@ -20,6 +20,7 @@ import 'package:spots/presentation/widgets/profile/partnership_display_widget.da
 import 'package:spots/core/models/user_partnership.dart';
 // Admin: God Mode Access
 import 'package:spots/presentation/pages/admin/god_mode_login_page.dart';
+import 'package:spots/presentation/pages/profile/edit_profile_page.dart';
 import 'package:spots/core/models/user.dart' show UserRole;
 
 class ProfilePage extends StatelessWidget {
@@ -113,6 +114,23 @@ class ProfilePage extends StatelessWidget {
                                     ),
                                   ],
                                 ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditProfilePage(
+                                        user: state.user,
+                                      ),
+                                    ),
+                                  ).then((_) {
+                                    // Refresh auth state to get updated user
+                                    context.read<AuthBloc>().add(AuthCheckRequested());
+                                  });
+                                },
+                                tooltip: 'Edit Profile',
                               ),
                             ],
                           ),
