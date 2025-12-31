@@ -154,7 +154,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                           children: [
                             Text(
                               widget.event.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -163,7 +163,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                             const SizedBox(height: 4),
                             Text(
                               widget.event.getEventTypeDisplayName(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
                               ),
@@ -193,7 +193,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Contribution Type',
                         style: TextStyle(
                           fontSize: 18,
@@ -241,7 +241,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Financial Contribution',
                           style: TextStyle(
                             fontSize: 18,
@@ -261,7 +261,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          keyboardType: TextInputType.numberWithOptions(decimal: true),
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
                           onChanged: (value) {
                             setState(() {
                               _cashAmount = double.tryParse(value);
@@ -330,7 +330,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Contribution Summary',
                           style: TextStyle(
                             fontSize: 18,
@@ -344,12 +344,12 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                         if (_productValue != null && _productValue! > 0)
                           _buildSummaryRow('Product Value', _productValue!),
                         const SizedBox(height: 12),
-                        Divider(color: AppColors.grey300),
+                        const Divider(color: AppColors.grey300),
                         const SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Total Contribution',
                               style: TextStyle(
                                 fontSize: 20,
@@ -359,7 +359,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                             ),
                             Text(
                               '\$${totalContribution.toStringAsFixed(2)}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: AppTheme.primaryColor,
@@ -442,12 +442,12 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: AppColors.error),
+                      const Icon(Icons.error_outline, color: AppColors.error),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontSize: 14,
                           ),
@@ -510,7 +510,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -519,7 +519,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -528,7 +528,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
               ),
             ),
             if (isSelected)
-              Icon(
+              const Icon(
                 Icons.check_circle,
                 color: AppTheme.primaryColor,
               ),
@@ -548,7 +548,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textPrimary,
               ),
@@ -567,14 +567,14 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textPrimary,
             ),
           ),
           Text(
             '\$${amount.toStringAsFixed(2)}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: AppColors.textPrimary,

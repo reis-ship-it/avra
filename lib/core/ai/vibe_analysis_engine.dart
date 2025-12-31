@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/storage_service.dart';
@@ -539,11 +539,11 @@ class UserVibeAnalyzer {
   
   Duration _calculateRecommendedDuration(double compatibility) {
     if (compatibility >= VibeConstants.highCompatibilityThreshold) {
-      return Duration(seconds: VibeConstants.maxInteractionDurationSeconds);
+      return const Duration(seconds: VibeConstants.maxInteractionDurationSeconds);
     } else if (compatibility >= VibeConstants.mediumCompatibilityThreshold) {
       return Duration(seconds: (VibeConstants.maxInteractionDurationSeconds * 0.7).round());
     } else {
-      return Duration(seconds: VibeConstants.minInteractionDurationSeconds);
+      return const Duration(seconds: VibeConstants.minInteractionDurationSeconds);
     }
   }
   
@@ -785,7 +785,7 @@ class UserVibeAnalyzer {
       }
       
       // Vibes older than expiration period are inconsistent
-      final maxAge = Duration(days: VibeConstants.vibeSignatureExpiryDays);
+      const maxAge = Duration(days: VibeConstants.vibeSignatureExpiryDays);
       if (age > maxAge) {
         return 0.0; // Too old
       }
@@ -934,7 +934,7 @@ class VibeCompatibilityResult {
       connectionStrength: 0.5,
       interactionStyle: AI2AIInteractionStyle.lightInteraction,
       trustBuildingPotential: 0.5,
-      recommendedConnectionDuration: Duration(seconds: VibeConstants.minInteractionDurationSeconds),
+      recommendedConnectionDuration: const Duration(seconds: VibeConstants.minInteractionDurationSeconds),
       connectionPriority: ConnectionPriority.low,
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/anonymous_user.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 
 /// Tests for AnonymousUser model
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"
@@ -21,7 +21,7 @@ void main() {
         final anonymousUser = AnonymousUser(
           agentId: 'agent_789',
           personalityDimensions: personalityProfile,
-          preferences: {'pref1': 'value1'},
+          preferences: const {'pref1': 'value1'},
           expertise: 'expertise1',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
@@ -92,7 +92,7 @@ void main() {
           country: 'USA',
           latitude: 37.7749, // City-level, not exact
           longitude: -122.4194,
-          expiresAt: DateTime.now().add(Duration(hours: 24)),
+          expiresAt: DateTime.now().add(const Duration(hours: 24)),
         );
         final userWithLocation = AnonymousUser(
           agentId: 'agent_loc',

@@ -12,6 +12,7 @@
 /// - Reduced motion support
 /// 
 /// Uses AppColors for 100% design token adherence.
+library;
 
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -83,8 +84,8 @@ class _FloatingTextWidgetState extends State<FloatingTextWidget>
       if (letters[i] == ' ') {
         _entranceControllers.add(AnimationController(vsync: this));
         _floatControllers.add(AnimationController(vsync: this));
-        _entranceAnimations.add(AlwaysStoppedAnimation(1.0));
-        _floatAnimations.add(AlwaysStoppedAnimation(0.0));
+        _entranceAnimations.add(const AlwaysStoppedAnimation(1.0));
+        _floatAnimations.add(const AlwaysStoppedAnimation(0.0));
         continue;
       }
       
@@ -163,7 +164,7 @@ class _FloatingTextWidgetState extends State<FloatingTextWidget>
   @override
   Widget build(BuildContext context) {
     final letters = widget.text.split('');
-    final defaultStyle = TextStyle(
+    const defaultStyle = TextStyle(
       fontSize: 42,
       fontWeight: FontWeight.w600,
       color: AppColors.textPrimary,
@@ -263,7 +264,7 @@ class _PulsingHintWidgetState extends State<PulsingHintWidget>
   
   @override
   Widget build(BuildContext context) {
-    final defaultStyle = TextStyle(
+    const defaultStyle = TextStyle(
       fontSize: 16,
       color: AppColors.textSecondary,
       fontWeight: FontWeight.w400,

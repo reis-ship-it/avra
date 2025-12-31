@@ -14,6 +14,7 @@
 /// - FederatedLearningPage: Main page
 /// - All federated learning widgets
 /// - Backend services (mocked for testing)
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -98,8 +99,8 @@ void main() {
       testWidgets('should display participation toggle', (WidgetTester tester) async {
         // Arrange
         final widget = WidgetTestHelpers.createTestableWidget(
-          child: Scaffold(
-            body: const FederatedLearningSettingsSection(),
+          child: const Scaffold(
+            body: FederatedLearningSettingsSection(),
           ),
         );
 
@@ -114,8 +115,8 @@ void main() {
       testWidgets('should toggle participation when switch is tapped', (WidgetTester tester) async {
         // Arrange
         final widget = WidgetTestHelpers.createTestableWidget(
-          child: Scaffold(
-            body: const FederatedLearningSettingsSection(),
+          child: const Scaffold(
+            body: FederatedLearningSettingsSection(),
           ),
         );
 

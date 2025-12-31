@@ -15,7 +15,7 @@ void main() {
         'should display sponsorable event card, display recommended badge when meets threshold, or call onTap callback when card is tapped',
         (WidgetTester tester) async {
       // Test business logic: sponsorable event card display and interactions
-      final brandMatch1 = BrandMatch(
+      const brandMatch1 = BrandMatch(
         brandId: 'brand-123',
         brandName: 'Test Brand',
         compatibilityScore: 85.0,
@@ -33,12 +33,12 @@ void main() {
         },
       );
       final widget1 = WidgetTestHelpers.createTestableWidget(
-        child: SponsorableEventCard(brandMatch: brandMatch1),
+        child: const SponsorableEventCard(brandMatch: brandMatch1),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(SponsorableEventCard), findsOneWidget);
 
-      final brandMatch2 = BrandMatch(
+      const brandMatch2 = BrandMatch(
         brandId: 'brand-124',
         brandName: 'Test Brand 2',
         compatibilityScore: 85.0,
@@ -55,13 +55,13 @@ void main() {
         },
       );
       final widget2 = WidgetTestHelpers.createTestableWidget(
-        child: SponsorableEventCard(brandMatch: brandMatch2),
+        child: const SponsorableEventCard(brandMatch: brandMatch2),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Recommended'), findsOneWidget);
 
       bool wasTapped = false;
-      final brandMatch3 = BrandMatch(
+      const brandMatch3 = BrandMatch(
         brandId: 'brand-125',
         brandName: 'Test Brand 3',
         compatibilityScore: 85.0,

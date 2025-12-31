@@ -31,7 +31,7 @@ void main() {
     group('StreamBuilder Integration', () {
       testWidgets('dashboard displays initial data', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),
@@ -58,7 +58,7 @@ void main() {
 
       testWidgets('dashboard updates on stream emissions', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),
@@ -82,7 +82,7 @@ void main() {
 
       testWidgets('widgets rebuild correctly on stream updates', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),
@@ -106,10 +106,10 @@ void main() {
 
     group('Stream Cleanup', () {
       testWidgets('streams are disposed on page dispose', (tester) async {
-        final widget = AI2AIAdminDashboard();
+        const widget = AI2AIAdminDashboard();
         
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: widget,
             ),
@@ -140,7 +140,7 @@ void main() {
         // Create and dispose multiple dashboard instances
         for (int i = 0; i < 3; i++) {
           await tester.pumpWidget(
-            MaterialApp(
+            const MaterialApp(
               home: Scaffold(
                 body: AI2AIAdminDashboard(),
               ),
@@ -170,7 +170,7 @@ void main() {
     group('Error Handling', () {
       testWidgets('error messages display on stream failures', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),
@@ -191,7 +191,7 @@ void main() {
 
       testWidgets('retry mechanism works', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),
@@ -223,7 +223,7 @@ void main() {
     group('Manual Refresh', () {
       testWidgets('refresh button still works', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),
@@ -260,7 +260,7 @@ void main() {
 
       testWidgets('refresh triggers stream update', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),
@@ -295,7 +295,7 @@ void main() {
     group('Widget Stream Tests', () {
       testWidgets('widgets display stream data correctly', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),
@@ -313,7 +313,7 @@ void main() {
 
       testWidgets('widgets rebuild on stream updates', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),
@@ -334,7 +334,7 @@ void main() {
 
       testWidgets('loading states show during stream initialization', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),
@@ -358,7 +358,7 @@ void main() {
 
       testWidgets('error states show on stream failures', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: AI2AIAdminDashboard(),
             ),

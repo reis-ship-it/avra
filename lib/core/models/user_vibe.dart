@@ -72,7 +72,7 @@ class UserVibe {
       socialPreference: socialPreference,
       explorationTendency: explorationTendency,
       createdAt: now,
-      expiresAt: now.add(Duration(days: VibeConstants.vibeSignatureExpiryDays)),
+      expiresAt: now.add(const Duration(days: VibeConstants.vibeSignatureExpiryDays)),
       privacyLevel: VibeConstants.minAnonymizationLevel,
       temporalContext: _getTemporalContext(now),
     );

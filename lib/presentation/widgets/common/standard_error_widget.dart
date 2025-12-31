@@ -7,6 +7,7 @@
 /// Standardizes error message format, error state displays, and retry mechanisms.
 /// 
 /// Uses AppColors and AppTheme for 100% design token compliance.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -48,7 +49,7 @@ class StandardErrorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // Log error display for monitoring and debugging
     _logger.error(
-      'Error displayed: ${message.length > 100 ? message.substring(0, 100) + "..." : message}',
+      'Error displayed: ${message.length > 100 ? "${message.substring(0, 100)}..." : message}',
       tag: _logName,
     );
     
@@ -130,7 +131,7 @@ class StandardErrorWidget extends StatelessWidget {
       child: Row(
         children: [
           if (showIcon) ...[
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 16,
               color: AppColors.error,
@@ -140,7 +141,7 @@ class StandardErrorWidget extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.error,
               ),

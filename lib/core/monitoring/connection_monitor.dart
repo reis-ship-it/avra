@@ -255,7 +255,7 @@ class ConnectionMonitor {
       final recentAlerts = session.alertsGenerated
           .where((alert) =>
               DateTime.now().difference(alert.timestamp) <
-              Duration(minutes: 15))
+              const Duration(minutes: 15))
           .toList();
 
       // Predict connection trajectory
@@ -477,7 +477,7 @@ class ConnectionMonitor {
   void _ensureMonitoringTimerRunning() {
     if (_monitoringTimer == null || !_monitoringTimer!.isActive) {
       _monitoringTimer = Timer.periodic(
-          Duration(seconds: 30), (_) => _performPeriodicMonitoring());
+          const Duration(seconds: 30), (_) => _performPeriodicMonitoring());
       developer.log('Connection monitoring timer started', name: _logName);
     }
   }
@@ -529,7 +529,7 @@ class ConnectionMonitor {
     ConnectionMonitoringSession session,
     ConnectionMetrics updatedMetrics,
   ) async {
-    final progressSince = Duration(minutes: 5); // Look at last 5 minutes
+    const progressSince = Duration(minutes: 5); // Look at last 5 minutes
     final cutoffTime = DateTime.now().subtract(progressSince);
 
     final recentHistory = session.learningProgressHistory
@@ -878,7 +878,7 @@ class ConnectionMonitor {
   // Periodic monitoring helper methods
   Future<void> _checkConnectionTimeout(
       String connectionId, ConnectionMonitoringSession session) async {
-    final maxDuration = Duration(hours: 5); // Maximum connection duration
+    const maxDuration = Duration(hours: 5); // Maximum connection duration
     if (DateTime.now().difference(session.startTime) > maxDuration) {
       developer.log('Connection timeout detected: $connectionId',
           name: _logName);
@@ -909,7 +909,7 @@ class ConnectionMonitor {
           .skip(max(0, session.learningProgressHistory.length - 10))
           .map((l) => l.learningEffectiveness)
           .toList();
-      final stagnationThreshold = 0.02; // Less than 2% change
+      const stagnationThreshold = 0.02; // Less than 2% change
       final maxChange = recentLearning.reduce(max) - recentLearning.reduce(min);
       if (maxChange < stagnationThreshold) {
         developer.log('Learning stagnation detected: $connectionId',

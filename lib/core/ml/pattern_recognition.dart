@@ -321,7 +321,7 @@ class PatternRecognitionSystem {
     for (final list in lists) {
       for (final _ in list.spotIds) {
         // Analyze without accessing individual user data
-        final category = 'general'; // Would be derived from spot data
+        const category = 'general'; // Would be derived from spot data
         categoryCount[category] = (categoryCount[category] ?? 0) + 1;
       }
     }
@@ -400,7 +400,7 @@ class PatternRecognitionSystem {
     // Anonymize location to cluster level
     final lat = (location.latitude * 100).round() / 100;
     final lng = (location.longitude * 100).round() / 100;
-    return '${lat}_${lng}';
+    return '${lat}_$lng';
   }
 }
 

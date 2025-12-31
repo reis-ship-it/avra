@@ -84,7 +84,7 @@ void main() {
             'eventType': 'dinner',
             'dateRange': {
               'start': testDate.toIso8601String(),
-              'end': testDate.add(Duration(days: 30)).toIso8601String(),
+              'end': testDate.add(const Duration(days: 30)).toIso8601String(),
             },
           },
           createdAt: testDate,
@@ -103,7 +103,7 @@ void main() {
           BrandDiscovery(
             id: 'discovery-1',
             eventId: 'event-1',
-            searchCriteria: {
+            searchCriteria: const {
               'category': 'Food & Beverage',
               'minAttendees': 20,
             },
@@ -113,7 +113,7 @@ void main() {
           BrandDiscovery(
             id: 'discovery-2',
             eventId: 'event-2',
-            searchCriteria: {
+            searchCriteria: const {
               'category': 'Technology',
               'minAttendees': 50,
             },
@@ -136,7 +136,7 @@ void main() {
     group('Scenario 2: Vibe Matching and Filtering', () {
       test('should match brands with 70%+ compatibility', () {
         // Arrange
-        final highMatch = BrandMatch(
+        const highMatch = BrandMatch(
           brandId: 'brand-1',
           brandName: 'Premium Oil Co.',
           compatibilityScore: 85.0,
@@ -150,7 +150,7 @@ void main() {
           matchReasons: ['Value alignment', 'Quality focus'],
         );
 
-        final lowMatch = BrandMatch(
+        const lowMatch = BrandMatch(
           brandId: 'brand-2',
           brandName: 'Generic Brand',
           compatibilityScore: 65.0,
@@ -166,8 +166,8 @@ void main() {
         final discovery = BrandDiscovery(
           id: 'discovery-123',
           eventId: 'event-456',
-          searchCriteria: {'category': 'Food & Beverage'},
-          matchingResults: [highMatch, lowMatch],
+          searchCriteria: const {'category': 'Food & Beverage'},
+          matchingResults: const [highMatch, lowMatch],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -185,7 +185,7 @@ void main() {
       test('should filter out matches below 70% threshold', () {
         // Arrange
         final matches = [
-          BrandMatch(
+          const BrandMatch(
             brandId: 'brand-1',
             brandName: 'Brand 1',
             compatibilityScore: 75.0,
@@ -197,7 +197,7 @@ void main() {
               audienceAlignment: 75.0,
             ),
           ),
-          BrandMatch(
+          const BrandMatch(
             brandId: 'brand-2',
             brandName: 'Brand 2',
             compatibilityScore: 65.0,
@@ -209,7 +209,7 @@ void main() {
               audienceAlignment: 65.0,
             ),
           ),
-          BrandMatch(
+          const BrandMatch(
             brandId: 'brand-3',
             brandName: 'Brand 3',
             compatibilityScore: 55.0,
@@ -226,7 +226,7 @@ void main() {
         final discovery = BrandDiscovery(
           id: 'discovery-123',
           eventId: 'event-456',
-          searchCriteria: {'category': 'Food & Beverage'},
+          searchCriteria: const {'category': 'Food & Beverage'},
           matchingResults: matches,
           createdAt: testDate,
           updatedAt: testDate,
@@ -246,7 +246,7 @@ void main() {
     group('Scenario 3: Compatibility Scoring', () {
       test('should calculate comprehensive compatibility scores', () {
         // Arrange
-        final vibeCompatibility = VibeCompatibility(
+        const vibeCompatibility = VibeCompatibility(
           overallScore: 85.0,
           valueAlignment: 90.0,
           styleCompatibility: 80.0,
@@ -261,7 +261,7 @@ void main() {
           },
         );
 
-        final match = BrandMatch(
+        const match = BrandMatch(
           brandId: 'brand-123',
           brandName: 'Premium Oil Co.',
           compatibilityScore: 85.0,
@@ -284,7 +284,7 @@ void main() {
       test('should rank matches by compatibility score', () {
         // Arrange
         final matches = [
-          BrandMatch(
+          const BrandMatch(
             brandId: 'brand-1',
             brandName: 'Brand 1',
             compatibilityScore: 75.0,
@@ -296,7 +296,7 @@ void main() {
               audienceAlignment: 75.0,
             ),
           ),
-          BrandMatch(
+          const BrandMatch(
             brandId: 'brand-2',
             brandName: 'Brand 2',
             compatibilityScore: 90.0,
@@ -308,7 +308,7 @@ void main() {
               audienceAlignment: 90.0,
             ),
           ),
-          BrandMatch(
+          const BrandMatch(
             brandId: 'brand-3',
             brandName: 'Brand 3',
             compatibilityScore: 80.0,
@@ -325,7 +325,7 @@ void main() {
         final discovery = BrandDiscovery(
           id: 'discovery-123',
           eventId: 'event-456',
-          searchCriteria: {'category': 'Food & Beverage'},
+          searchCriteria: const {'category': 'Food & Beverage'},
           matchingResults: matches,
           createdAt: testDate,
           updatedAt: testDate,
@@ -345,7 +345,7 @@ void main() {
     group('Scenario 4: Match Ranking and Selection', () {
       test('should get discovery for event with viable matches', () {
         // Arrange
-        final match = BrandMatch(
+        const match = BrandMatch(
           brandId: 'brand-123',
           brandName: 'Premium Oil Co.',
           compatibilityScore: 85.0,
@@ -361,8 +361,8 @@ void main() {
         final discovery = BrandDiscovery(
           id: 'discovery-123',
           eventId: 'event-456',
-          searchCriteria: {'category': 'Food & Beverage'},
-          matchingResults: [match],
+          searchCriteria: const {'category': 'Food & Beverage'},
+          matchingResults: const [match],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -391,7 +391,7 @@ void main() {
 
       test('should handle events with no viable matches', () {
         // Arrange
-        final lowMatch = BrandMatch(
+        const lowMatch = BrandMatch(
           brandId: 'brand-123',
           brandName: 'Brand',
           compatibilityScore: 65.0,
@@ -407,8 +407,8 @@ void main() {
         final discovery = BrandDiscovery(
           id: 'discovery-123',
           eventId: 'event-456',
-          searchCriteria: {'category': 'Food & Beverage'},
-          matchingResults: [lowMatch],
+          searchCriteria: const {'category': 'Food & Beverage'},
+          matchingResults: const [lowMatch],
           createdAt: testDate,
           updatedAt: testDate,
         );

@@ -63,7 +63,7 @@ void main() {
         createdBy: 'user-123',
         isVerified: true,
         isActive: true,
-        categories: ['Coffee'],
+        categories: const ['Coffee'],
         location: 'San Francisco',
       );
 
@@ -77,7 +77,7 @@ void main() {
         createdBy: 'user-123',
         isVerified: true,
         isActive: true,
-        categories: ['Coffee'],
+        categories: const ['Coffee'],
         location: 'San Francisco',
       );
     });

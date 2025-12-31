@@ -263,14 +263,14 @@ class _PartnershipManagementPageState extends State<PartnershipManagementPage> w
             const SizedBox(height: 16),
             Text(
               'No $statusLabel.toLowerCase() partnerships',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               'Create a partnership to get started',
               style: TextStyle(
                 fontSize: 14,
@@ -355,7 +355,7 @@ class PartnershipDetailsPage extends StatelessWidget {
                                   fit: BoxFit.cover,
                                 ),
                               )
-                            : Icon(
+                            : const Icon(
                                 Icons.business,
                                 color: AppTheme.primaryColor,
                                 size: 32,
@@ -368,7 +368,7 @@ class PartnershipDetailsPage extends StatelessWidget {
                           children: [
                             Text(
                               partnership.business?.name ?? 'Business',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -397,7 +397,7 @@ class PartnershipDetailsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Partnership Status',
                         style: TextStyle(
                           fontSize: 18,
@@ -408,7 +408,7 @@ class PartnershipDetailsPage extends StatelessWidget {
                       const SizedBox(height: 12),
                       Text(
                         partnership.status.displayName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
@@ -428,7 +428,7 @@ class PartnershipDetailsPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Partnership Terms',
                           style: TextStyle(
                             fontSize: 18,
@@ -440,7 +440,7 @@ class PartnershipDetailsPage extends StatelessWidget {
                         if (partnership.agreement!.terms['revenueSplit'] != null) ...[
                           Text(
                             'Revenue Split: ${partnership.agreement!.terms['revenueSplit']['userPercentage'].toStringAsFixed(0)}% / ${partnership.agreement!.terms['revenueSplit']['businessPercentage'].toStringAsFixed(0)}%',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textPrimary,
                             ),
@@ -448,7 +448,7 @@ class PartnershipDetailsPage extends StatelessWidget {
                           const SizedBox(height: 8),
                         ],
                         if (partnership.sharedResponsibilities.isNotEmpty) ...[
-                          Text(
+                          const Text(
                             'Responsibilities:',
                             style: TextStyle(
                               fontSize: 14,
@@ -461,11 +461,11 @@ class PartnershipDetailsPage extends StatelessWidget {
                                 padding: const EdgeInsets.only(left: 8, bottom: 4),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.check, size: 16, color: AppColors.electricGreen),
+                                    const Icon(Icons.check, size: 16, color: AppColors.electricGreen),
                                     const SizedBox(width: 8),
                                     Text(
                                       resp,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         color: AppColors.textPrimary,
                                       ),
@@ -530,7 +530,7 @@ class PartnershipManagementSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Manage Partnership',
             style: TextStyle(
               fontSize: 20,
@@ -540,7 +540,7 @@ class PartnershipManagementSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ListTile(
-            leading: Icon(Icons.edit, color: AppTheme.primaryColor),
+            leading: const Icon(Icons.edit, color: AppTheme.primaryColor),
             title: const Text('Update Agreement'),
             onTap: () {
               Navigator.pop(context);
@@ -548,7 +548,7 @@ class PartnershipManagementSheet extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.cancel, color: AppColors.error),
+            leading: const Icon(Icons.cancel, color: AppColors.error),
             title: const Text('Cancel Partnership'),
             onTap: () async {
               final confirmed = await showDialog<bool>(

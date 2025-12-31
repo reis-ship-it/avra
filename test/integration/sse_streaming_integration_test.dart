@@ -13,6 +13,7 @@
 /// Dependencies:
 /// - LLMService: SSE streaming implementation
 /// - Supabase Edge Function: llm-chat-stream endpoint
+library;
 
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
@@ -91,7 +92,7 @@ void main() {
         // SSE format: "data: {json}\n\n"
         
         // Arrange
-        final sseChunk = 'data: {"text": "Hello", "done": false}\n\n';
+        const sseChunk = 'data: {"text": "Hello", "done": false}\n\n';
         
         // Act - Parse SSE chunk (simulating what LLMService does)
         final dataStart = sseChunk.indexOf('data: ');
@@ -143,7 +144,7 @@ void main() {
       test('should handle completion event', () async {
         // Test business logic: Completion event ("done": true) is detected
         // Arrange
-        final completionChunk = 'data: {"done": true}\n\n';
+        const completionChunk = 'data: {"done": true}\n\n';
         
         // Act - Parse completion event
         final jsonData = completionChunk.substring(6).trim();
@@ -156,7 +157,7 @@ void main() {
       test('should handle error events', () async {
         // Test business logic: Error events are detected and handled
         // Arrange
-        final errorChunk = 'data: {"error": "Timeout error"}\n\n';
+        const errorChunk = 'data: {"error": "Timeout error"}\n\n';
         
         // Act - Parse error event
         final jsonData = errorChunk.substring(6).trim();
@@ -230,7 +231,7 @@ void main() {
       test('should fallback on 4xx errors immediately', () async {
         // Test business logic: 4xx errors trigger immediate fallback (no retry)
         // Arrange
-        final statusCode = 400;
+        const statusCode = 400;
         bool shouldFallback = false;
         
         // Act - Simulate error handling logic from LLMService
@@ -247,7 +248,7 @@ void main() {
       test('should retry on 5xx errors before fallback', () async {
         // Test business logic: 5xx errors retry before falling back
         // Arrange
-        final statusCode = 500;
+        const statusCode = 500;
         int retryCount = 0;
         const maxRetries = 3;
         
@@ -269,7 +270,7 @@ void main() {
       test('should fallback on timeout errors', () async {
         // Test business logic: Timeout errors trigger fallback
         // Arrange
-        final errorMessage = 'SSE stream timeout';
+        const errorMessage = 'SSE stream timeout';
         bool shouldFallback = false;
         
         // Act - Simulate timeout error handling from LLMService
@@ -288,7 +289,7 @@ void main() {
       test('should fallback on safety/blocked errors', () async {
         // Test business logic: Safety/blocked errors trigger immediate fallback
         // Arrange
-        final errorMessage = 'safety filter blocked';
+        const errorMessage = 'safety filter blocked';
         bool shouldFallback = false;
         
         // Act - Simulate safety error handling from LLMService

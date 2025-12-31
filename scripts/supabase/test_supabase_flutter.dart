@@ -66,14 +66,14 @@ Future<void> testStorageOperations(SupabaseClient client) async {
 Future<void> testRealtime(SupabaseClient client) async {
   try {
     final channel = client.channel('test-channel');
-    await channel.subscribe((status, [error]) {
+    channel.subscribe((status, [error]) {
       if (status == 'SUBSCRIBED') {
         print('✅ Realtime subscription successful');
       } else if (status == 'CHANNEL_ERROR') {
         stderr.writeln('❌ Realtime subscription failed: $error');
       }
     });
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     await channel.unsubscribe();
     print('✅ Realtime unsubscribe successful');
   } catch (e) {

@@ -9,6 +9,7 @@
 /// - Visual indicators (progress bars, charts)
 /// 
 /// Uses AppColors/AppTheme for 100% design token compliance.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -96,7 +97,7 @@ class _AI2AILearningEffectivenessWidgetState extends State<AI2AILearningEffectiv
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.error_outline,
                   color: AppColors.error,
                   size: 32,
@@ -104,7 +105,7 @@ class _AI2AILearningEffectivenessWidgetState extends State<AI2AILearningEffectiv
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.error,
                     fontSize: 14,
                   ),
@@ -226,7 +227,7 @@ class _AI2AILearningEffectivenessWidgetState extends State<AI2AILearningEffectiv
       ),
       child: Column(
         children: [
-          Text(
+          const Text(
             'Overall Effectiveness',
             style: TextStyle(
               fontSize: 14,
@@ -275,7 +276,7 @@ class _AI2AILearningEffectivenessWidgetState extends State<AI2AILearningEffectiv
                 children: [
                   Text(
                     label,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w500,
@@ -349,7 +350,7 @@ class _AI2AILearningEffectivenessWidgetState extends State<AI2AILearningEffectiv
         const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -358,7 +359,7 @@ class _AI2AILearningEffectivenessWidgetState extends State<AI2AILearningEffectiv
         const SizedBox(height: 2),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color: AppColors.textSecondary,
           ),

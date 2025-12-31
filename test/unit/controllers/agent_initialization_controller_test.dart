@@ -2,13 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/controllers/agent_initialization_controller.dart';
 import 'package:spots/core/controllers/social_media_data_collection_controller.dart';
 import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/preferences_profile.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
 import 'package:spots/core/services/onboarding_place_list_generator.dart';
 import 'package:spots/core/services/onboarding_recommendation_service.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -101,11 +101,11 @@ void main() {
 
       final PreferencesProfile mockPreferencesProfile = PreferencesProfile(
         agentId: agentId,
-        categoryPreferences: {
+        categoryPreferences: const {
           'Food & Drink': 0.8,
           'Activities': 0.7,
         },
-        localityPreferences: {
+        localityPreferences: const {
           'New York': 0.9,
         },
         source: 'onboarding',
@@ -118,8 +118,8 @@ void main() {
             .thenAnswer((_) async => agentId);
         when(mockSocialMediaDataController.collectAllData(userId: anyNamed('userId')))
             .thenAnswer((_) async => SocialMediaDataResult.success(
-              profileData: {},
-              follows: [],
+              profileData: const {},
+              follows: const [],
               primaryPlatform: null,
             ));
         when(mockPersonalityLearning.initializePersonalityFromOnboarding(
@@ -200,8 +200,8 @@ void main() {
             .thenAnswer((_) async => agentId);
         when(mockSocialMediaDataController.collectAllData(userId: anyNamed('userId')))
             .thenAnswer((_) async => SocialMediaDataResult.success(
-              profileData: {},
-              follows: [],
+              profileData: const {},
+              follows: const [],
               primaryPlatform: null,
             ));
         when(mockPersonalityLearning.initializePersonalityFromOnboarding(
@@ -287,8 +287,8 @@ void main() {
             .thenAnswer((_) async => agentId);
         when(mockSocialMediaDataController.collectAllData(userId: anyNamed('userId')))
             .thenAnswer((_) async => SocialMediaDataResult.success(
-              profileData: {},
-              follows: [],
+              profileData: const {},
+              follows: const [],
               primaryPlatform: null,
             ));
         when(mockPersonalityLearning.initializePersonalityFromOnboarding(
@@ -338,8 +338,8 @@ void main() {
             .thenAnswer((_) async => agentId);
         when(mockSocialMediaDataController.collectAllData(userId: anyNamed('userId')))
             .thenAnswer((_) async => SocialMediaDataResult.success(
-              profileData: {},
-              follows: [],
+              profileData: const {},
+              follows: const [],
               primaryPlatform: null,
             ));
         when(mockPersonalityLearning.initializePersonalityFromOnboarding(

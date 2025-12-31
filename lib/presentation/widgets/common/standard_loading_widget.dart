@@ -7,6 +7,7 @@
 /// Standardizes loading indicators, loading messages, and loading placement.
 /// 
 /// Uses AppColors and AppTheme for 100% design token compliance.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -77,9 +78,9 @@ class StandardLoadingWidget extends StatelessWidget {
         SizedBox(
           width: size,
           height: size,
-          child: CircularProgressIndicator(
+          child: const CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: const AlwaysStoppedAnimation<Color>(
+            valueColor: AlwaysStoppedAnimation<Color>(
               AppTheme.primaryColor,
             ),
           ),

@@ -9,11 +9,12 @@
 ///
 /// These tests use realistic mocks and test the full integration
 /// between PersonalitySyncService, PersonalityLearning, and AuthBloc.
+library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
 import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
 import 'package:spots/core/services/storage_service.dart';

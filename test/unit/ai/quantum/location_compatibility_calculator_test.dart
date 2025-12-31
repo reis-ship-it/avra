@@ -15,7 +15,7 @@ void main() {
 
     group('calculateLocationCompatibility', () {
       test('should calculate high compatibility for identical locations', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
@@ -32,12 +32,12 @@ void main() {
       });
 
       test('should calculate high compatibility for nearby locations', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130, // Very close
           longitude: -74.0062,
         );
@@ -54,12 +54,12 @@ void main() {
       });
 
       test('should calculate lower compatibility for distant locations', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128, // New York
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 34.0522, // Los Angeles
           longitude: -118.2437,
         );
@@ -76,12 +76,12 @@ void main() {
       });
 
       test('should use provided location types when available', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130,
           longitude: -74.0062,
         );
@@ -100,12 +100,12 @@ void main() {
       });
 
       test('should use provided accessibility scores when available', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130,
           longitude: -74.0062,
         );
@@ -123,12 +123,12 @@ void main() {
       });
 
       test('should use provided vibe location matches when available', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130,
           longitude: -74.0062,
         );
@@ -148,7 +148,7 @@ void main() {
       test('should handle errors gracefully and return neutral fallback', () {
         // Test with invalid locations (null coordinates would cause error)
         // The method should catch errors and return 0.5 (neutral fallback)
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
@@ -243,12 +243,12 @@ void main() {
 
     group('calculateDistanceCompatibility', () {
       test('should calculate high compatibility for very close locations', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130, // Very close (~100m)
           longitude: -74.0062,
         );
@@ -266,12 +266,12 @@ void main() {
       });
 
       test('should calculate lower compatibility for distant locations', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128, // New York
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 34.0522, // Los Angeles (~3944 km)
           longitude: -118.2437,
         );
@@ -289,12 +289,12 @@ void main() {
       });
 
       test('should use custom decay distance parameter', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130,
           longitude: -74.0062,
         );
@@ -319,12 +319,12 @@ void main() {
       });
 
       test('should handle errors gracefully and return neutral fallback', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130,
           longitude: -74.0062,
         );
@@ -342,12 +342,12 @@ void main() {
 
     group('Edge Cases', () {
       test('should handle locations at poles', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 90.0, // North pole
           longitude: 0.0,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 90.0,
           longitude: 0.0,
         );
@@ -363,12 +363,12 @@ void main() {
       });
 
       test('should handle locations at equator', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 0.0,
           longitude: 0.0,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 0.0,
           longitude: 0.0,
         );
@@ -384,12 +384,12 @@ void main() {
       });
 
       test('should handle negative coordinates', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: -40.7128, // Southern hemisphere
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: -40.7130,
           longitude: -74.0062,
         );

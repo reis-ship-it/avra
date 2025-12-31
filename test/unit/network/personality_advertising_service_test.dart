@@ -12,6 +12,7 @@
 /// - Mock SharedPreferences: Simulates local storage
 /// 
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -20,7 +21,7 @@ import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
 import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
 import '../../mocks/mock_storage_service.dart';
 import 'package:spots/core/network/personality_advertising_service.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 
@@ -58,7 +59,7 @@ void main() {
       test('should start advertising without errors', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         // Mock vibe compilation - create a test UserVibe
@@ -82,7 +83,7 @@ void main() {
       test('should handle multiple start calls gracefully', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
         
         final testVibe = UserVibe.fromPersonalityProfile(
@@ -113,7 +114,7 @@ void main() {
       test('should ensure advertised data contains no user data', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
         
         final testVibe = UserVibe.fromPersonalityProfile(

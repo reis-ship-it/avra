@@ -21,7 +21,7 @@ class OfflineIndicator extends StatelessWidget {
                 width: 1,
               ),
             ),
-            child: Row(
+            child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
@@ -29,7 +29,7 @@ class OfflineIndicator extends StatelessWidget {
                   size: 14,
                   color: AppTheme.offlineColor,
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Text(
                   'Offline',
                   style: TextStyle(

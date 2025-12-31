@@ -23,7 +23,7 @@ void main() {
         'should filter viable matches above 70% threshold and serialize correctly',
         () {
       // Test business logic: match filtering and JSON serialization
-      final match1 = BrandMatch(
+      const match1 = BrandMatch(
         brandId: 'brand-1',
         brandName: 'Brand 1',
         compatibilityScore: 85.0,
@@ -36,7 +36,7 @@ void main() {
         ),
       );
 
-      final match2 = BrandMatch(
+      const match2 = BrandMatch(
         brandId: 'brand-2',
         brandName: 'Brand 2',
         compatibilityScore: 65.0,
@@ -52,8 +52,8 @@ void main() {
       final discovery = BrandDiscovery(
         id: 'discovery-123',
         eventId: 'event-456',
-        searchCriteria: {'category': 'Food & Beverage'},
-        matchingResults: [match1, match2],
+        searchCriteria: const {'category': 'Food & Beverage'},
+        matchingResults: const [match1, match2],
         createdAt: testDate,
         updatedAt: testDate,
       );

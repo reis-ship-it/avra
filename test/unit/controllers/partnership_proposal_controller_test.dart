@@ -8,7 +8,6 @@ import 'package:spots/core/services/business_service.dart';
 import 'package:spots/core/models/event_partnership.dart';
 import 'package:spots/core/models/business_account.dart';
 import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/models/unified_user.dart';
 
 import 'partnership_proposal_controller_test.mocks.dart';
 
@@ -94,7 +93,7 @@ void main() {
           eventId: 'event_123',
           totalAmount: 1000.0,
           ticketsSold: 10,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'user_456',
               type: SplitPartyType.user,

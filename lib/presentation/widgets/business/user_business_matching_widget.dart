@@ -93,19 +93,19 @@ class UserBusinessMatchingWidget extends StatelessWidget {
   }
 
   Widget _buildEmptyState() {
-    return Center(
+    return const Center(
       child: Column(
         children: [
-          const Icon(Icons.store_outlined, size: 64, color: AppColors.textSecondary),
-          const SizedBox(height: 16),
-          const Text(
+          Icon(Icons.store_outlined, size: 64, color: AppColors.textSecondary),
+          SizedBox(height: 16),
+          Text(
             'No matching businesses found',
             style: TextStyle(
               fontSize: 16,
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Complete your profile to find businesses that match your vibe',
             style: TextStyle(
@@ -162,7 +162,7 @@ class UserBusinessMatchingWidget extends StatelessWidget {
                               fit: BoxFit.cover,
                             ),
                           )
-                        : Icon(
+                        : const Icon(
                             Icons.store,
                             color: AppColors.grey600,
                           ),

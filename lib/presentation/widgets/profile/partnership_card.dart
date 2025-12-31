@@ -78,7 +78,7 @@ class ProfilePartnershipCard extends StatelessWidget {
                       children: [
                         Text(
                           partnership.partnerName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -122,7 +122,7 @@ class ProfilePartnershipCard extends StatelessWidget {
               if (partnership.eventCount > 0) ...[
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.event,
                       size: 14,
                       color: AppColors.textSecondary,
@@ -130,7 +130,7 @@ class ProfilePartnershipCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       '${partnership.eventCount} ${partnership.eventCount == 1 ? 'event' : 'events'}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -144,7 +144,7 @@ class ProfilePartnershipCard extends StatelessWidget {
               if (partnership.startDate != null) ...[
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.calendar_today,
                       size: 14,
                       color: AppColors.textSecondary,
@@ -152,7 +152,7 @@ class ProfilePartnershipCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       _formatDateRange(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -166,7 +166,7 @@ class ProfilePartnershipCard extends StatelessWidget {
               if (partnership.vibeCompatibility != null) ...[
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.favorite,
                       size: 14,
                       color: AppColors.textSecondary,
@@ -174,7 +174,7 @@ class ProfilePartnershipCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       '${(partnership.vibeCompatibility! * 100).toStringAsFixed(0)}% match',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),

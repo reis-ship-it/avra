@@ -2,6 +2,7 @@
 ///
 /// Part of Feature Matrix Phase 1: Critical UI/UX
 /// Section 1.2: Device Discovery UI
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,10 +28,10 @@ void main() {
         (tester) async {
       // Test business logic: discovered devices widget display and interactions
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: DiscoveredDevicesWidget(
-              devices: const [],
+              devices: [],
             ),
           ),
         ),

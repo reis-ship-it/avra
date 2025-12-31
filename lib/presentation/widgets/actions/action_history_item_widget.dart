@@ -9,6 +9,7 @@
 /// - Undo button (if undoable)
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/ai/action_history_entry.dart';
@@ -108,7 +109,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
                             ),
                           ),
                           if (entry.isUndone)
-                            Text(
+                            const Text(
                               '(Undone)',
                               style: TextStyle(
                                 fontSize: 12,
@@ -123,7 +124,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
                       // Subtitle
                       Text(
                         subtitle,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textSecondary,
                         ),
@@ -181,7 +182,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
                       // Timestamp
                       Text(
                         timeAgo,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textHint,
                         ),
@@ -218,7 +219,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Details',
           style: TextStyle(
             fontSize: 12,
@@ -229,7 +230,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           'Action ID: ${entry.id}',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 11,
             color: AppColors.textHint,
             fontFamily: 'monospace',
@@ -237,7 +238,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
         ),
         Text(
           'Timestamp: ${entry.timestamp.toIso8601String()}',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 11,
             color: AppColors.textHint,
             fontFamily: 'monospace',
@@ -245,7 +246,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
         ),
         Text(
           'User ID: ${entry.userId}',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 11,
             color: AppColors.textHint,
             fontFamily: 'monospace',
@@ -254,7 +255,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
         if (entry.result.data.isNotEmpty)
           Text(
             'Data: ${entry.result.data.toString()}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 11,
               color: AppColors.textHint,
               fontFamily: 'monospace',

@@ -33,7 +33,7 @@ void main() {
           clubId: 'club-1',
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedLocalities: ['Williamsburg, Brooklyn'],
+          expandedLocalities: const ['Williamsburg, Brooklyn'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -61,15 +61,15 @@ void main() {
           clubId: 'club-1',
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          cityCoverage: {
+          cityCoverage: const {
             'Brooklyn': 0.8, // Above 75%
             'Queens': 0.6, // Below 75%
           },
-          stateCoverage: {
+          stateCoverage: const {
             'New York': 0.8, // Above 75%
             'California': 0.6, // Below 75%
           },
-          nationCoverage: {
+          nationCoverage: const {
             'United States': 0.8, // Above 75%
           },
           createdAt: testDate,
@@ -137,8 +137,8 @@ void main() {
           clubId: 'club-1',
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedLocalities: ['Williamsburg, Brooklyn'],
-          cityCoverage: {
+          expandedLocalities: const ['Williamsburg, Brooklyn'],
+          cityCoverage: const {
             'Brooklyn': 0.8,
           },
           createdAt: testDate,

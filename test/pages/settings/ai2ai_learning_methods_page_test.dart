@@ -14,6 +14,7 @@
 /// - AI2AILearning service: For learning data
 /// - AuthBloc: For user authentication
 /// - All 4 AI2AI learning widgets
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

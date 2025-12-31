@@ -9,6 +9,7 @@
 /// - Recommendation cards
 /// 
 /// Uses AppColors/AppTheme for 100% design token compliance.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -96,7 +97,7 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.error_outline,
                   color: AppColors.error,
                   size: 32,
@@ -104,7 +105,7 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.error,
                     fontSize: 14,
                   ),
@@ -173,7 +174,7 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
                       ),
                       child: Text(
                         '${(_recommendations!.confidenceScore * 100).toStringAsFixed(0)}%',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: AppColors.success,
@@ -222,7 +223,7 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         color: AppColors.textPrimary,
@@ -282,7 +283,7 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
           const SizedBox(width: 8),
           Text(
             '${(partner.compatibility * 100).toStringAsFixed(0)}%',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: AppColors.primary,
@@ -345,7 +346,7 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
           const SizedBox(width: 8),
           Text(
             '${(topic.potential * 100).toStringAsFixed(0)}%',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: AppColors.success,
@@ -408,7 +409,7 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
           const SizedBox(width: 8),
           Text(
             '${(area.priority * 100).toStringAsFixed(0)}%',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: AppColors.warning,
@@ -420,8 +421,8 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
   }
 
   Widget _buildEmptyState() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
       child: Center(
         child: Column(
           children: [
@@ -430,7 +431,7 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
               color: AppColors.textSecondary,
               size: 48,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'No recommendations yet',
               style: TextStyle(
@@ -438,7 +439,7 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               'Start AI2AI connections to get personalized recommendations',
               style: TextStyle(

@@ -43,7 +43,7 @@ class LearningInsightsWidget extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.lightbulb_outline,
                         size: 48,
                         color: AppColors.textSecondary,

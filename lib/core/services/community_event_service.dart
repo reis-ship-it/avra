@@ -325,9 +325,9 @@ class CommunityEventService {
       }
 
       // Check if event meets success criteria
-      final minAttendees = 5;
-      final minRepeatAttendees = 2;
-      final minEngagementScore = 0.6;
+      const minAttendees = 5;
+      const minRepeatAttendees = 2;
+      const minEngagementScore = 0.6;
 
       final meetsAttendeeCriteria = event.attendeeCount >= minAttendees;
       final meetsRepeatAttendeeCriteria =

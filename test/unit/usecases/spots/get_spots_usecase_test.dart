@@ -421,7 +421,7 @@ void main() {
 
       test('should handle data parsing error', () async {
         // Arrange
-        final parseError = FormatException('Invalid data format');
+        const parseError = FormatException('Invalid data format');
         when(mockRepository.getSpots())
             .thenThrow(parseError);
 

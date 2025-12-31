@@ -645,12 +645,12 @@ class _PermissionsPageState extends State<PermissionsPage> {
                                         // Show helpful message for simulator limitations
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          SnackBar(
+                                          const SnackBar(
                                             content: Text(
                                               'Some permissions may not be fully supported on iOS Simulator. Test on a real device for complete functionality.',
                                             ),
                                             duration:
-                                                const Duration(seconds: 3),
+                                                Duration(seconds: 3),
                                           ),
                                         );
                                       }

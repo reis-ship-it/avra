@@ -50,7 +50,7 @@ void main() {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         createdBy: 'user-123',
-        requiredExpertise: ['food', 'restaurant'],
+        requiredExpertise: const ['food', 'restaurant'],
       );
     });
 
@@ -77,7 +77,7 @@ void main() {
         );
         expect(matches2.length, lessThanOrEqualTo(10));
 
-        final preferences1 = BusinessExpertPreferences(
+        const preferences1 = BusinessExpertPreferences(
           requiredExpertiseCategories: ['food'],
           preferredExpertiseCategories: ['restaurant'],
         );
@@ -89,7 +89,7 @@ void main() {
         );
         expect(matches3, isA<List<BusinessExpertMatch>>());
 
-        final preferences2 = BusinessExpertPreferences(
+        const preferences2 = BusinessExpertPreferences(
           requiredExpertiseCategories: ['food'],
           minMatchScore: 0.7,
         );
@@ -103,7 +103,7 @@ void main() {
           expect(match.matchScore, greaterThanOrEqualTo(0.7));
         }
 
-        final preferences3 = BusinessExpertPreferences(
+        const preferences3 = BusinessExpertPreferences(
           requiredExpertiseCategories: ['food'],
           preferredCommunities: ['community-1'],
         );

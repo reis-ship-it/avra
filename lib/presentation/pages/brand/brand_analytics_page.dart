@@ -76,7 +76,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
   }
   
   BrandAnalytics _createMockAnalytics() {
-    return BrandAnalytics(
+    return const BrandAnalytics(
       totalInvestment: 3200.0,
       cashInvestment: 2000.0,
       productInvestment: 1200.0,
@@ -84,7 +84,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
       directRevenue: 1847.0,
       estimatedBrandValue: 12400.0,
       roiPercentage: 387.0,
-      topPerformingEvents: const [
+      topPerformingEvents: [
         EventPerformance(
           eventId: 'event-1',
           eventName: 'Farm-to-Table Dinner',
@@ -98,14 +98,14 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
           totalReturns: 320.0,
         ),
       ],
-      exposureMetrics: const BrandExposureMetrics(
+      exposureMetrics: BrandExposureMetrics(
         totalReach: 340000,
         totalImpressions: 450000,
         productSampling: 187,
         emailSignups: 94,
         websiteVisits: 412,
       ),
-      performanceMetrics: const PerformanceMetrics(
+      performanceMetrics: PerformanceMetrics(
         totalEvents: 12,
         activeSponsorships: 3,
         averageROI: 387.0,
@@ -154,7 +154,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
                 color: AppColors.textSecondary.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 'No analytics data available',
                 style: TextStyle(
                   fontSize: 18,
@@ -163,7 +163,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Start sponsoring events to see analytics',
                 style: TextStyle(
                   fontSize: 14,
@@ -231,7 +231,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
               color: AppColors.surface,
               child: Row(
                 children: [
-                  Text(
+                  const Text(
                     'Time Range:',
                     style: TextStyle(
                       fontSize: 16,
@@ -265,8 +265,8 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
             const SizedBox(height: 20),
             
             // ROI Overview
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 '📊 ROI Overview',
                 style: TextStyle(
@@ -291,7 +291,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
                       _buildAnalyticsRow('Products', '\$${_analytics!.productInvestment.toStringAsFixed(0)}', indent: true),
                       
                       const SizedBox(height: 12),
-                      Divider(color: AppColors.grey300),
+                      const Divider(color: AppColors.grey300),
                       const SizedBox(height: 12),
                       
                       // Returns
@@ -300,7 +300,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
                       _buildAnalyticsRow('Brand Value', '\$${_analytics!.estimatedBrandValue.toStringAsFixed(0)}', indent: true),
                       
                       const SizedBox(height: 12),
-                      Divider(color: AppColors.grey300),
+                      const Divider(color: AppColors.grey300),
                       const SizedBox(height: 12),
                       
                       // ROI
@@ -350,8 +350,8 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
             
             // Top Performing Events
             if (_analytics!.topPerformingEvents.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   '🏆 Top Performing Events',
                   style: TextStyle(
@@ -372,27 +372,27 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
                             color: AppTheme.primaryColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.event,
                             color: AppTheme.primaryColor,
                           ),
                         ),
                         title: Text(
                           event.eventName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
                         ),
                         subtitle: Text(
                           'ROI: ${event.roiPercentage.toStringAsFixed(0)}%',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.textSecondary,
                           ),
                         ),
                         trailing: Text(
                           '\$${event.totalReturns.toStringAsFixed(0)}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: AppColors.electricGreen,

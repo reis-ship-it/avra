@@ -276,7 +276,7 @@ class PostEventFeedbackService {
       final rating = PartnerRating(
         id: 'rating_${_uuid.v4()}',
         eventId: eventId,
-        partnershipId: 'partnership_${eventId}_${ratedId}', // Generate partnership ID
+        partnershipId: 'partnership_${eventId}_$ratedId', // Generate partnership ID
         raterId: raterId,
         ratedId: ratedId,
         partnershipRole: partnershipRole,

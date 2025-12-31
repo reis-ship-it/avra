@@ -25,13 +25,13 @@ void main() {
       mockStorage = MockFlutterSecureStorage();
 
       // In-memory storage to track keys
-      final Map<String, String> _keyStorage = {};
+      final Map<String, String> keyStorage = {};
 
       // Set up read to return stored value or null
       when(() => mockStorage.read(key: any(named: 'key')))
           .thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
-        return _keyStorage[key];
+        return keyStorage[key];
       });
 
       // Set up write to store value
@@ -40,14 +40,14 @@ void main() {
           value: any(named: 'value'))).thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
         final value = invocation.namedArguments[#value] as String;
-        _keyStorage[key] = value;
+        keyStorage[key] = value;
       });
 
       // Set up delete to remove key
       when(() => mockStorage.delete(key: any(named: 'key')))
           .thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
-        _keyStorage.remove(key);
+        keyStorage.remove(key);
       });
 
       service = FieldEncryptionService(storage: mockStorage);

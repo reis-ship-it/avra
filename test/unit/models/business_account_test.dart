@@ -34,11 +34,11 @@ void main() {
           submittedAt: testDate,
           updatedAt: testDate,
         );
-        final expertPrefs = BusinessExpertPreferences(
+        const expertPrefs = BusinessExpertPreferences(
           requiredExpertiseCategories: ['Coffee'],
           minExpertLevel: 3,
         );
-        final patronPrefs = BusinessPatronPreferences(
+        const patronPrefs = BusinessPatronPreferences(
           preferredInterests: ['Food'],
         );
 

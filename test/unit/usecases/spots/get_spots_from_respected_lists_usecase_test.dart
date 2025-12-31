@@ -468,7 +468,7 @@ void main() {
 
       test('should handle data corruption in respected lists', () async {
         // Arrange
-        final corruptionError = FormatException('Corrupted data in respected lists');
+        const corruptionError = FormatException('Corrupted data in respected lists');
         when(mockRepository.getSpotsFromRespectedLists())
             .thenThrow(corruptionError);
 

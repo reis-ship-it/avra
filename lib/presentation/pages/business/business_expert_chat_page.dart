@@ -41,7 +41,7 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
   String? _conversationId;
   String? _businessName;
   String? _expertName;
-  MessageSenderType _senderType = MessageSenderType.business; // TODO: Determine from auth state
+  final MessageSenderType _senderType = MessageSenderType.business; // TODO: Determine from auth state
 
   @override
   void initState() {
@@ -219,12 +219,12 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.error_outline,
+                              const Icon(Icons.error_outline,
                                   size: 64, color: AppColors.error),
                               const SizedBox(height: 16),
                               Text(
                                 _errorMessage!,
-                                style: TextStyle(color: AppColors.error),
+                                style: const TextStyle(color: AppColors.error),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 24),
@@ -237,13 +237,13 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                         ),
                       )
                     : _messages.isEmpty
-                        ? Center(
+                        ? const Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.chat_bubble_outline,
                                     size: 64, color: AppColors.textSecondary),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16),
                                 Text(
                                   'No messages yet',
                                   style: TextStyle(
@@ -251,7 +251,7 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                                     fontSize: 16,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                SizedBox(height: 8),
                                 Text(
                                   'Start the conversation!',
                                   style: TextStyle(
@@ -298,7 +298,7 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                           hintText: 'Type a message...',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(color: AppColors.grey300),
+                            borderSide: const BorderSide(color: AppColors.grey300),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -319,7 +319,7 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                               height: 20,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : Icon(
+                          : const Icon(
                               Icons.send,
                               color: AppTheme.primaryColor,
                             ),

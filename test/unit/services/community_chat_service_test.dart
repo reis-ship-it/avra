@@ -11,6 +11,7 @@
 /// - Decryption: Message decryption for display
 /// - Membership Verification: Only members can send messages
 /// - Error Handling: Invalid inputs, encryption errors
+library;
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,7 +42,7 @@ void main() {
     
     const String testUserId = 'user_123';
     const String testCommunityId = 'community_456';
-    final String testChatId = 'community_chat_$testCommunityId';
+    const String testChatId = 'community_chat_$testCommunityId';
     
     late Community testCommunity;
     
@@ -82,7 +83,7 @@ void main() {
         originatingEventId: 'event_123',
         originatingEventType: OriginatingEventType.communityEvent,
         founderId: 'founder_123',
-        memberIds: [testUserId, 'member_2', 'member_3'],
+        memberIds: const [testUserId, 'member_2', 'member_3'],
         memberCount: 3,
         originalLocality: 'San Francisco, CA',
         createdAt: DateTime.now(),
@@ -140,7 +141,7 @@ void main() {
           originatingEventId: 'event_123',
           originatingEventType: OriginatingEventType.communityEvent,
           founderId: 'founder_123',
-          memberIds: ['member_1', 'member_2'], // testUserId not in list
+          memberIds: const ['member_1', 'member_2'], // testUserId not in list
           memberCount: 2,
           originalLocality: 'San Francisco, CA',
           createdAt: DateTime.now(),
@@ -272,7 +273,7 @@ void main() {
           originatingEventId: 'event_123',
           originatingEventType: OriginatingEventType.communityEvent,
           founderId: 'founder_123',
-          memberIds: [testUserId],
+          memberIds: const [testUserId],
           memberCount: 1,
           originalLocality: 'San Francisco, CA',
           createdAt: DateTime.now(),
@@ -300,7 +301,7 @@ void main() {
           originatingEventId: 'event_1',
           originatingEventType: OriginatingEventType.communityEvent,
           founderId: 'founder_1',
-          memberIds: [testUserId],
+          memberIds: const [testUserId],
           memberCount: 1,
           originalLocality: 'San Francisco, CA',
           createdAt: DateTime.now(),
@@ -313,7 +314,7 @@ void main() {
           originatingEventId: 'event_2',
           originatingEventType: OriginatingEventType.communityEvent,
           founderId: 'founder_2',
-          memberIds: [testUserId],
+          memberIds: const [testUserId],
           memberCount: 1,
           originalLocality: 'San Francisco, CA',
           createdAt: DateTime.now(),

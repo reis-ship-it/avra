@@ -91,7 +91,7 @@ void main() {
         // Act
         final result = await controller.generateRecommendations(
           userId: testUser.id,
-          context: RecommendationContext(
+          context: const RecommendationContext(
             category: 'Coffee',
             location: 'Greenpoint',
             maxResults: 10,
@@ -147,7 +147,7 @@ void main() {
         // Act
         final result = await controller.generateRecommendations(
           userId: testUser.id,
-          context: RecommendationContext(
+          context: const RecommendationContext(
             minRelevanceScore: 0.7, // High threshold
             maxResults: 10,
           ),
@@ -204,17 +204,17 @@ void main() {
     group('validate (WorkflowController interface)', () {
       test('should validate input correctly', () {
         // Arrange
-        final validInput = RecommendationInput(
+        const validInput = RecommendationInput(
           userId: 'user_123',
-          context: const RecommendationContext(
+          context: RecommendationContext(
             maxResults: 20,
             explorationRatio: 0.3,
           ),
         );
 
-        final invalidInput = RecommendationInput(
+        const invalidInput = RecommendationInput(
           userId: '',
-          context: const RecommendationContext(),
+          context: RecommendationContext(),
         );
 
         // Act

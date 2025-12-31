@@ -146,7 +146,7 @@ class StripeService {
       final paymentIntent = paymentMethodId != null
           ? await Stripe.instance.confirmPayment(
               paymentIntentClientSecret: clientSecret,
-              data: PaymentMethodParams.card(
+              data: const PaymentMethodParams.card(
                 paymentMethodData: PaymentMethodData(),
               ),
             )

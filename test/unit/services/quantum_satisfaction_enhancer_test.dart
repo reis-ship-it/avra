@@ -42,13 +42,13 @@ void main() {
       final eventTemporalState = QuantumTemporalStateGenerator.generate(timestamp);
 
       final userLocationState = LocationQuantumState.fromLocation(
-        unified_models.UnifiedLocation(
+        const unified_models.UnifiedLocation(
           latitude: 37.7749,
           longitude: -122.4194,
         ),
       );
       final eventLocationState = LocationQuantumState.fromLocation(
-        unified_models.UnifiedLocation(
+        const unified_models.UnifiedLocation(
           latitude: 37.7849,
           longitude: -122.4094,
         ),
@@ -82,7 +82,7 @@ void main() {
       )).thenAnswer((_) async => mockFeatures);
 
       // Enhance satisfaction
-      final baseSatisfaction = 0.5;
+      const baseSatisfaction = 0.5;
       final enhancedSatisfaction = await enhancer.enhanceSatisfaction(
         baseSatisfaction: baseSatisfaction,
         userId: 'user_1',
@@ -139,7 +139,7 @@ void main() {
       final eventTemporalState = QuantumTemporalStateGenerator.generate(timestamp);
 
       // Enhance satisfaction (should return base on error)
-      final baseSatisfaction = 0.5;
+      const baseSatisfaction = 0.5;
       final enhancedSatisfaction = await enhancer.enhanceSatisfaction(
         baseSatisfaction: baseSatisfaction,
         userId: 'user_1',

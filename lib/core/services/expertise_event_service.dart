@@ -191,7 +191,7 @@ class ExpertiseEventService {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         status: EventStatus.upcoming,
-        attendeeIds: [], // Reset attendees
+        attendeeIds: const [], // Reset attendees
         attendeeCount: 0,
       );
       

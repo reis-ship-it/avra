@@ -119,7 +119,7 @@ void main() {
           eventId: 'event-456',
           totalAmount: 1000.00,
           ticketsSold: 20,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'user-123',
               type: SplitPartyType.user,
@@ -180,7 +180,7 @@ void main() {
           unitPrice: 25.00,
           totalSales: 375.00,
           platformFee: 37.50,
-          revenueDistribution: {
+          revenueDistribution: const {
             'brand-123': 202.50,
             'user-123': 84.38,
             'business-123': 50.62,
@@ -226,8 +226,8 @@ void main() {
         final multiParty = MultiPartySponsorship(
           id: 'multi-sponsor-123',
           eventId: 'event-456',
-          brandIds: ['brand-1', 'brand-2'],
-          revenueSplitConfiguration: {
+          brandIds: const ['brand-1', 'brand-2'],
+          revenueSplitConfiguration: const {
             'brand-1': 60.0,
             'brand-2': 40.0,
           },
@@ -333,7 +333,7 @@ void main() {
           eventId: 'event-456',
           totalAmount: totalRevenue,
           ticketsSold: payments.length,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'user-123',
               type: SplitPartyType.user,

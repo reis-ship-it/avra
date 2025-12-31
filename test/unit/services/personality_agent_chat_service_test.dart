@@ -11,6 +11,7 @@
 /// - Encryption: Message encryption and decryption
 /// - Error Handling: Invalid inputs, missing dependencies, storage errors
 /// - Privacy: agentId/userId conversion validation
+library;
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,7 +23,7 @@ import 'package:spots/core/services/language_pattern_learning_service.dart';
 import 'package:spots/core/services/llm_service.dart';
 import 'package:spots/core/ai/personality_learning.dart' as pl;
 import 'package:spots/data/repositories/hybrid_search_repository.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import '../../helpers/test_helpers.dart';
 
@@ -65,7 +66,7 @@ void main() {
     
     const String testUserId = 'user_123';
     const String testAgentId = 'agent_abc123def456ghi789jkl012mno345pqr678';
-    final String testChatId = 'chat_$testAgentId}_$testUserId';
+    const String testChatId = 'chat_$testAgentId}_$testUserId';
     
     setUp(() async {
       TestHelpers.setupTestEnvironment();

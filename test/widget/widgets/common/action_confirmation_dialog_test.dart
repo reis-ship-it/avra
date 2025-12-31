@@ -11,6 +11,7 @@
 /// Dependencies:
 /// - ActionIntent models from core/ai/action_models.dart
 /// - AppTheme for consistent styling
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,7 +30,7 @@ void main() {
         'should display dialog correctly for CreateSpotIntent/CreateListIntent/AddSpotToListIntent, call onConfirm when confirm button is tapped, call onCancel when cancel button is tapped, dismiss dialog when tapping outside, show correct preview for CreateSpotIntent with all fields, show correct preview for CreateListIntent with public setting, handle CreateSpotIntent with minimal fields, or display confidence level when provided',
         (WidgetTester tester) async {
       // Test business logic: action confirmation dialog display, interactions, and preview
-      final intent1 = CreateSpotIntent(
+      const intent1 = CreateSpotIntent(
         name: 'Blue Bottle Coffee',
         description: 'A great coffee shop',
         latitude: 37.7749,
@@ -61,7 +62,7 @@ void main() {
       expect(find.text('Create Spot'), findsOneWidget);
       expect(find.text('Blue Bottle Coffee'), findsOneWidget);
 
-      final intent2 = CreateListIntent(
+      const intent2 = CreateListIntent(
         title: 'My Coffee Shops',
         description: 'Favorite coffee spots',
         userId: 'user123',
@@ -90,7 +91,7 @@ void main() {
       expect(find.text('Create List'), findsOneWidget);
       expect(find.text('My Coffee Shops'), findsOneWidget);
 
-      final intent3 = AddSpotToListIntent(
+      const intent3 = AddSpotToListIntent(
         spotId: 'spot123',
         listId: 'list456',
         userId: 'user123',
@@ -125,7 +126,7 @@ void main() {
       expect(find.text('My Coffee Shops'), findsOneWidget);
 
       bool confirmCalled = false;
-      final intent4 = CreateSpotIntent(
+      const intent4 = CreateSpotIntent(
         name: 'Test Spot',
         description: 'Test',
         latitude: 0.0,
@@ -163,7 +164,7 @@ void main() {
       expect(find.byType(ActionConfirmationDialog), findsNothing);
 
       bool cancelCalled = false;
-      final intent5 = CreateSpotIntent(
+      const intent5 = CreateSpotIntent(
         name: 'Test Spot',
         description: 'Test',
         latitude: 0.0,
@@ -200,7 +201,7 @@ void main() {
       expect(cancelCalled, isTrue);
       expect(find.byType(ActionConfirmationDialog), findsNothing);
 
-      final intent6 = CreateSpotIntent(
+      const intent6 = CreateSpotIntent(
         name: 'Test Spot',
         description: 'Test',
         latitude: 0.0,
@@ -234,7 +235,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(ActionConfirmationDialog), findsNothing);
 
-      final intent7 = CreateSpotIntent(
+      const intent7 = CreateSpotIntent(
         name: 'Blue Bottle Coffee',
         description: 'A great coffee shop',
         latitude: 37.7749,
@@ -267,7 +268,7 @@ void main() {
       expect(find.text('Coffee'), findsOneWidget);
       expect(find.text('123 Main St'), findsOneWidget);
 
-      final intent8 = CreateListIntent(
+      const intent8 = CreateListIntent(
         title: 'My Coffee Shops',
         description: 'Favorite coffee spots',
         category: 'Food & Drink',
@@ -297,7 +298,7 @@ void main() {
       expect(find.text('My Coffee Shops'), findsOneWidget);
       expect(find.text('Public'), findsOneWidget);
 
-      final intent9 = CreateSpotIntent(
+      const intent9 = CreateSpotIntent(
         name: 'Test Spot',
         description: '',
         latitude: 0.0,
@@ -327,7 +328,7 @@ void main() {
       expect(find.byType(ActionConfirmationDialog), findsOneWidget);
       expect(find.text('Test Spot'), findsOneWidget);
 
-      final intent10 = CreateSpotIntent(
+      const intent10 = CreateSpotIntent(
         name: 'Test Spot',
         description: 'Test',
         latitude: 0.0,

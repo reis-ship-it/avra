@@ -63,7 +63,7 @@ class PartnershipCard extends StatelessWidget {
                               fit: BoxFit.cover,
                             ),
                           )
-                        : Icon(
+                        : const Icon(
                             Icons.business,
                             color: AppTheme.primaryColor,
                             size: 24,
@@ -76,7 +76,7 @@ class PartnershipCard extends StatelessWidget {
                       children: [
                         Text(
                           business?.name ?? 'Business',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -86,7 +86,7 @@ class PartnershipCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             business!.categories.join(', '),
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -108,12 +108,12 @@ class PartnershipCard extends StatelessWidget {
               if (event != null) ...[
                 Row(
                   children: [
-                    Icon(Icons.event, size: 16, color: AppColors.textSecondary),
+                    const Icon(Icons.event, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         event!.title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: AppColors.textPrimary,
@@ -125,21 +125,21 @@ class PartnershipCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.calendar_today, size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
                       _formatDate(event!.startTime),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Icon(Icons.confirmation_number, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.confirmation_number, size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
                       '${event!.attendeeCount} / ${event!.maxAttendees} tickets',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -153,11 +153,11 @@ class PartnershipCard extends StatelessWidget {
               if (agreement != null && agreement.terms['revenueSplit'] != null) ...[
                 Row(
                   children: [
-                    Icon(Icons.account_balance_wallet, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.account_balance_wallet, size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
                       'Revenue: ${agreement.terms['revenueSplit']['userPercentage'].toStringAsFixed(0)}% / ${agreement.terms['revenueSplit']['businessPercentage'].toStringAsFixed(0)}% split',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -180,7 +180,7 @@ class PartnershipCard extends StatelessWidget {
                         onPressed: onTap,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.textPrimary,
-                          side: BorderSide(color: AppColors.grey300),
+                          side: const BorderSide(color: AppColors.grey300),
                         ),
                         child: const Text('View Details'),
                       ),

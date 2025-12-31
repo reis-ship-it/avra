@@ -1,18 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/controllers/agent_initialization_controller.dart';
 import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/onboarding_place_list_generator.dart';
-import 'package:spots/core/services/onboarding_recommendation_service.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/onboarding_data_service.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:spots/injection_container.dart' as di;
-import 'package:get_it/get_it.dart';
 
 void main() {
   group('AgentInitializationController Integration Tests', () {

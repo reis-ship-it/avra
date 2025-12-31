@@ -439,7 +439,7 @@ class SponsorshipCheckoutResult extends ControllerResult {
   final Payment? payment;
   final RevenueSplit? revenueSplit;
 
-  SponsorshipCheckoutResult._({
+  const SponsorshipCheckoutResult._({
     required super.success,
     required super.error,
     required super.errorCode,

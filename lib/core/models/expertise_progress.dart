@@ -87,12 +87,12 @@ class ExpertiseProgress extends Equatable {
       currentLevel: ExpertiseLevel.local,
       nextLevel: ExpertiseLevel.city,
       progressPercentage: 0.0,
-      nextSteps: [
+      nextSteps: const [
         'Create your first list in this category',
         'Review spots thoughtfully',
         'Build community trust',
       ],
-      contributionBreakdown: {},
+      contributionBreakdown: const {},
       totalContributions: 0,
       requiredContributions: 10, // Default requirement
       lastUpdated: DateTime.now(),

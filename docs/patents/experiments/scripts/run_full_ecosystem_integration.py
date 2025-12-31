@@ -37,7 +37,7 @@ from shared_data_model import (
     generate_integrated_user_profile, generate_integrated_event,
     generate_integrated_partnership, save_integrated_data, load_integrated_data,
     hybrid_learning_function, create_personality_anchors, is_anchor,
-    calculate_homogenization_rate
+    calculate_homogenization_rate, load_profiles_with_fallback,
 )
 
 # Import individual patent functions (simplified versions for integration)
@@ -67,15 +67,18 @@ def phase_1_setup():
     print("=" * 70)
     print()
     
-    print(f"Creating {NUM_USERS} users with initial 12D profiles...")
-    users = []
-    for i in range(NUM_USERS):
-        user = generate_integrated_user_profile(
-            agent_id=f'user_{i:04d}',
+    print(f"Loading {NUM_USERS} users from Big Five data (with synthetic fallback)...")
+    project_root = Path(__file__).parent.parent.parent.parent.parent
+    users = load_profiles_with_fallback(
+        num_profiles=NUM_USERS,
+        use_big_five=True,
+        project_root=project_root,
+        fallback_generator=lambda agent_id: generate_integrated_user_profile(
+            agent_id=agent_id,
             platform_phase=random.choice(['Early', 'Growth', 'Mature']),
-            random_seed=RANDOM_SEED + i
+            random_seed=RANDOM_SEED + hash(agent_id) % (2**32)
         )
-        users.append(user)
+    )
     
     print(f"Creating {NUM_EVENTS} multi-entity events...")
     events = []

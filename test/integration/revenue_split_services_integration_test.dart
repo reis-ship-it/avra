@@ -151,7 +151,7 @@ void main() {
             totalAmount: 1000.00,
             ticketsSold: 20,
             parties: [
-              SplitParty(
+              const SplitParty(
                 partyId: 'party-1',
                 type: SplitPartyType.user,
                 percentage: 60.0, // Doesn't sum to 100%
@@ -205,17 +205,17 @@ void main() {
       test('should calculate hybrid split (cash + product)', () async {
         // Arrange
         final parties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 50.0,
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 30.0,
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'brand-123',
             type: SplitPartyType.sponsor,
             percentage: 20.0,
@@ -244,12 +244,12 @@ void main() {
       test('should validate that split is valid', () async {
         // Arrange
         final parties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'party-1',
             type: SplitPartyType.user,
             percentage: 50.0,
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'party-2',
             type: SplitPartyType.business,
             percentage: 50.0,
@@ -274,17 +274,17 @@ void main() {
       test('should distribute payments to all parties', () async {
         // Arrange
         final parties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'party-1',
             type: SplitPartyType.user,
             percentage: 50.0,
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'party-2',
             type: SplitPartyType.business,
             percentage: 30.0,
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'party-3',
             type: SplitPartyType.sponsor,
             percentage: 20.0,

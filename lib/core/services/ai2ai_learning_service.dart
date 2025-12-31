@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
 import 'package:spots/core/ai/ai2ai_learning.dart';
 import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/injection_container.dart' as di;
 
 /// AI2AI Learning Service
 /// 
@@ -123,7 +124,7 @@ class AI2AILearning {
       
       // Get current personality profile using PersonalityLearning service
       // Phase 8.3: Use agentId for privacy protection
-      final agentIdService = AgentIdService();
+      final agentIdService = di.sl<AgentIdService>();
       final agentId = await agentIdService.getUserAgentId(userId);
       
       // Try to get existing profile, otherwise create default

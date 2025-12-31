@@ -7,6 +7,7 @@
 /// 
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
+library;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -307,14 +308,14 @@ class _FriendChatViewState extends State<FriendChatView> {
                             _searchQuery.isNotEmpty
                                 ? 'No messages found'
                                 : 'No messages yet',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 16,
                             ),
                           ),
                           if (_searchQuery.isEmpty) ...[
                             const SizedBox(height: 8),
-                            Text(
+                            const Text(
                               'Start the conversation!',
                               style: TextStyle(
                                 color: AppColors.textSecondary,
@@ -378,7 +379,7 @@ class _FriendChatViewState extends State<FriendChatView> {
                           hintText: 'Type a message...',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(color: AppColors.grey300),
+                            borderSide: const BorderSide(color: AppColors.grey300),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -392,7 +393,7 @@ class _FriendChatViewState extends State<FriendChatView> {
                     ),
                     const SizedBox(width: 8),
                     IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.send,
                         color: AppTheme.primaryColor,
                       ),

@@ -17,6 +17,7 @@
 /// - AI2AILearning service: Backend service
 /// - AuthBloc: Authentication
 /// - AppRouter: Route configuration
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

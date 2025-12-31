@@ -8,6 +8,7 @@
 ///
 /// When these methods are fully implemented, these tests should be updated to test real behavior
 /// with mocked payment data.
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

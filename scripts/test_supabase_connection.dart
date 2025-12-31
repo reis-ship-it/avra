@@ -134,7 +134,7 @@ Future<void> testRealtime(SupabaseClient client) async {
     // Test realtime subscription
     final channel = client.channel('test-channel');
     
-    await channel.subscribe((status, [error]) {
+    channel.subscribe((status, [error]) {
       if (status == 'SUBSCRIBED') {
         print('✅ Realtime subscription successful');
       } else if (status == 'CHANNEL_ERROR') {
@@ -143,7 +143,7 @@ Future<void> testRealtime(SupabaseClient client) async {
     });
     
     // Wait a moment for subscription to establish
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     
     // Unsubscribe
     await channel.unsubscribe();

@@ -109,9 +109,9 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
+      return const Scaffold(
         backgroundColor: AppColors.grey50,
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -128,11 +128,11 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.error_outline, size: 64, color: AppColors.error),
+                const Icon(Icons.error_outline, size: 64, color: AppColors.error),
                 const SizedBox(height: 16),
                 Text(
                   _errorMessage!,
-                  style: TextStyle(color: AppColors.error),
+                  style: const TextStyle(color: AppColors.error),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -177,7 +177,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.business, color: AppTheme.primaryColor),
+                            const Icon(Icons.business, color: AppTheme.primaryColor),
                             const SizedBox(width: 8),
                             Text(
                               _businessAccount!.name,
@@ -201,7 +201,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                                       AppColors.success.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: Row(
+                                child: const Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
@@ -209,7 +209,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                                       size: 16,
                                       color: AppColors.success,
                                     ),
-                                    const SizedBox(width: 4),
+                                    SizedBox(width: 4),
                                     Text(
                                       'Verified',
                                       style: TextStyle(

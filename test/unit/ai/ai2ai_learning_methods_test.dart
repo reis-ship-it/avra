@@ -324,16 +324,16 @@ void main() {
       
       test('Learning acceleration pattern detection', () {
         // Early period learning
-        final earlyLearning = 50;
-        final earlyTime = 10; // days
-        final earlyRate = earlyLearning / earlyTime;
+        const earlyLearning = 50;
+        const earlyTime = 10; // days
+        const earlyRate = earlyLearning / earlyTime;
         
         // Late period learning (accelerated)
-        final lateLearning = 100;
-        final lateTime = 10; // days
-        final lateRate = lateLearning / lateTime;
+        const lateLearning = 100;
+        const lateTime = 10; // days
+        const lateRate = lateLearning / lateTime;
         
-        final acceleration = (lateRate / earlyRate - 1.0) / 2.0;
+        const acceleration = (lateRate / earlyRate - 1.0) / 2.0;
         
         expect(lateRate, greaterThan(earlyRate));
         expect(acceleration, greaterThan(0.0));

@@ -87,7 +87,7 @@ void main() {
         partnershipId: 'partnership-123',
         totalAmount: 100.00,
         ticketsSold: 4,
-        parties: [
+        parties: const [
           SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,

@@ -12,7 +12,9 @@
 /// - Stop streaming button
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:spots/core/theme/colors.dart';
@@ -107,7 +109,7 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
         }
       },
       onError: (error) {
-        debugPrint('Stream error: $error');
+        developer.log('Stream error: $error', name: 'StreamingResponseWidget');
         if (mounted) {
           _finishStreaming();
         }
@@ -210,7 +212,7 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
                         ),
                     children: [
                       if (_isStreaming && widget.showCursor && _cursorVisible)
-                        TextSpan(
+                        const TextSpan(
                           text: '▊',
                           style: TextStyle(
                             color: AppColors.electricGreen,
@@ -233,7 +235,7 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
   Widget _buildStopButton() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.surface,
         border: Border(
           top: BorderSide(
@@ -248,7 +250,7 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
         label: const Text('Stop Generating'),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.error,
-          side: BorderSide(color: AppColors.error),
+          side: const BorderSide(color: AppColors.error),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
         ),
       ),
@@ -342,7 +344,7 @@ class _TypingTextWidgetState extends State<TypingTextWidget> {
             ),
         children: [
           if (_isTyping && widget.showCursor && _cursorVisible)
-            TextSpan(
+            const TextSpan(
               text: '▊',
               style: TextStyle(
                 color: AppColors.electricGreen,

@@ -3,7 +3,7 @@
 **Created:** December 10, 2025  
 **Status:** 📋 Ready for Implementation  
 **Priority:** HIGH (P2 Enhancement)  
-**Timeline:** 8-12 weeks  
+**Timeline:** 8-12 weeks (core phases) + ongoing (optional enhancements)  
 **Purpose:** Enhance AI2AI system with neural networks for improved calling score prediction and outcome learning
 
 ---
@@ -259,6 +259,137 @@ This plan outlines the integration of neural networks into the AI2AI system to e
 
 ---
 
+### **Phase 7: Optional Enhancements (Ongoing)**
+
+**Purpose:** Enhance model performance, explainability, and feature completeness
+
+**Note:** These enhancements are optional and can be implemented incrementally as needed. They provide additional value but are not required for core functionality.
+
+#### **Section 7.1: Feature Engineering Enhancements**
+- **Subsection 7.1.1:** Fill placeholder context features
+  - Currently: 6 context features implemented, 4 placeholders (0.5)
+  - Implement remaining 4 context features:
+    - `social_context` - Social setting context (solo, group, date, etc.)
+    - `weather_context` - Weather conditions impact
+    - `event_context` - Special events or occasions
+    - `accessibility_context` - Physical/accessibility considerations
+  - Validate feature importance through analysis
+  - Update feature extraction in all models
+  
+- **Subsection 7.1.2:** Fill placeholder timing feature
+  - Currently: 4 timing features implemented, 1 placeholder (0.5)
+  - Implement 5th timing feature:
+    - `seasonal_timing` - Seasonal patterns and preferences
+  - Validate timing feature importance
+  - Update feature extraction in all models
+  
+- **Subsection 7.1.3:** Feature importance analysis
+  - Analyze which features contribute most to predictions
+  - Remove or optimize low-importance features
+  - Validate feature selection through ablation studies
+  - Document feature importance rankings
+
+#### **Section 7.2: Dynamic Weight Adjustment**
+- **Subsection 7.2.1:** Confidence-based weight calculation
+  - Implement model confidence metrics
+  - Calculate confidence from model output variance or calibration
+  - Adjust hybrid weight based on confidence:
+    - Low confidence: Lower neural network weight (0.1-0.2)
+    - Medium confidence: Standard weight (0.3)
+    - High confidence: Higher weight (0.4-0.5)
+  - Track weight adjustments over time
+  
+- **Subsection 7.2.2:** Gradual weight increase
+  - Start with 0.0 neural network weight (formula-only)
+  - Gradually increase to 0.3 as model performance improves
+  - Monitor performance metrics at each weight level
+  - Automatically adjust based on A/B test results
+  - Cap maximum weight at 0.5 (always keep formula baseline)
+
+#### **Section 7.3: Model Explainability**
+- **Subsection 7.3.1:** Feature attribution
+  - Implement SHAP (SHapley Additive exPlanations) or similar
+  - Calculate feature importance per prediction
+  - Show which features contributed most to calling score
+  - Display top contributing factors to users
+  
+- **Subsection 7.3.2:** Prediction explanations
+  - Generate human-readable explanations for recommendations
+  - Example: "We're calling you because: High vibe match (0.85), Good timing (0.78), Similar users loved this (0.82)"
+  - Integrate explanations into UI
+  - Allow users to see why they're being called
+  - Build trust through transparency
+
+#### **Section 7.4: Advanced A/B Testing & Analysis**
+- **Subsection 7.4.1:** Statistical analysis framework
+  - Implement statistical significance testing
+  - Calculate confidence intervals for metrics
+  - Determine minimum sample sizes for valid conclusions
+  - Automated analysis of A/B test results
+  
+- **Subsection 7.4.2:** Multi-variant testing
+  - Extend beyond 2 groups (formula vs hybrid)
+  - Test different weight combinations (0.2, 0.3, 0.4)
+  - Test different model architectures
+  - Test different feature sets
+  - Automated winner selection based on metrics
+
+#### **Section 7.5: Model Performance Monitoring**
+- **Subsection 7.5.1:** Real-time performance tracking
+  - Track prediction accuracy in real-time
+  - Monitor model drift (performance degradation over time)
+  - Track inference latency and errors
+  - Alert on performance anomalies
+  
+- **Subsection 7.5.2:** Performance dashboards
+  - Create dashboards for model metrics
+  - Visualize performance trends over time
+  - Compare model versions side-by-side
+  - Track A/B test metrics in real-time
+
+#### **Section 7.6: Automated Retraining Pipeline**
+- **Subsection 7.6.1:** Scheduled retraining
+  - Implement automated retraining schedule (weekly/monthly)
+  - Trigger retraining when:
+    - New data threshold reached (e.g., 10K new interactions)
+    - Performance degradation detected
+    - Scheduled time interval reached
+  - Automated model validation before deployment
+  
+- **Subsection 7.6.2:** Continuous learning integration
+  - Integrate online learning techniques
+  - Update models incrementally with new data
+  - Balance online updates with periodic full retraining
+  - Manage model versioning automatically
+
+#### **Section 7.7: History Features Enhancement**
+- **Subsection 7.7.1:** Implement full history features
+  - Currently: Placeholder history features (~6D)
+  - Implement real history features:
+    - `recent_acceptance_rate` - User's recent acceptance rate
+    - `recent_positive_outcome_rate` - Recent positive outcomes
+    - `similar_opportunity_success_rate` - Success with similar opportunities
+    - `time_since_last_acceptance` - Recency of last acceptance
+    - `average_outcome_score` - Average outcome scores
+    - `preferred_vibe_patterns` - Learned vibe preferences
+  - Extract from user's historical data
+  - Update outcome prediction model with real features
+
+#### **Section 7.8: Model Ensemble**
+- **Subsection 7.8.1:** Multi-model ensemble
+  - Train multiple models with different architectures
+  - Combine predictions using weighted average or voting
+  - Improve robustness and accuracy
+  - A/B test ensemble vs single model
+  
+- **Subsection 7.8.2:** Specialized models
+  - Train specialized models for different user segments
+  - Train specialized models for different opportunity types
+  - Route predictions to appropriate specialized model
+  - Improve personalization through specialization
+
+---
+
 ## 📊 **Technical Architecture**
 
 ### **Model Architecture Overview**
@@ -370,6 +501,7 @@ This plan outlines the integration of neural networks into the AI2AI system to e
 - 🔄 **Phase 4:** Trajectory prediction (enhances existing)
 - 🔄 **Phase 5:** Advanced models (new capabilities)
 - 🔄 **Phase 6:** Production deployment (infrastructure)
+- ⏸️ **Phase 7:** Optional enhancements (ongoing improvements)
 
 ### **Hybrid Approach**
 - Keep formula-based system as baseline
@@ -443,6 +575,16 @@ This plan outlines the integration of neural networks into the AI2AI system to e
    - Design and train first model
    - Integrate into existing system
    - A/B test against formula-based
+
+5. **Phase 7: Optional Enhancements (As Needed)**
+   - Implement feature engineering enhancements
+   - Add dynamic weight adjustment
+   - Build model explainability
+   - Enhance A/B testing analysis
+   - Set up performance monitoring
+   - Implement automated retraining
+   - Complete history features
+   - Explore model ensemble approaches
 
 ---
 

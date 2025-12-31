@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/controllers/sync_controller.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
 
 /// Sync Controller Integration Tests
 /// 
@@ -38,7 +38,7 @@ void main() {
       test('should handle sync disabled scenario gracefully', () async {
         // Arrange
         final userId = 'test_user_${DateTime.now().millisecondsSinceEpoch}';
-        final password = 'test_password_123';
+        const password = 'test_password_123';
 
         // Ensure sync is disabled
         await personalitySyncService.setCloudSyncEnabled(userId, false);
@@ -62,13 +62,13 @@ void main() {
 
       test('should validate input correctly', () {
         // Arrange
-        final validInput = SyncInput(
+        const validInput = SyncInput(
           userId: 'user_123',
           password: 'password123',
           scope: SyncScope.personality,
         );
 
-        final invalidInput = SyncInput(
+        const invalidInput = SyncInput(
           userId: '',
           password: 'password123',
         );
@@ -94,7 +94,7 @@ void main() {
       test('should handle sync disabled scenario gracefully', () async {
         // Arrange
         final userId = 'test_user_load_${DateTime.now().millisecondsSinceEpoch}';
-        final password = 'test_password_123';
+        const password = 'test_password_123';
 
         // Ensure sync is disabled
         await personalitySyncService.setCloudSyncEnabled(userId, false);
@@ -128,7 +128,7 @@ void main() {
       test('should execute workflow via execute method', () async {
         // Arrange
         final userId = 'test_user_execute_${DateTime.now().millisecondsSinceEpoch}';
-        final password = 'test_password_123';
+        const password = 'test_password_123';
         
         // Ensure sync is disabled to test validation path
         await personalitySyncService.setCloudSyncEnabled(userId, false);

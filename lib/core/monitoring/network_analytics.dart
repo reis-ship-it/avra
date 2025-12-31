@@ -967,7 +967,7 @@ class NetworkStabilityMetrics {
   });
   
   static NetworkStabilityMetrics unstable() => NetworkStabilityMetrics(
-    uptime: 0.85, reliability: 0.7, errorRate: 0.1, recoveryTime: Duration(minutes: 2), loadBalancing: 0.6);
+    uptime: 0.85, reliability: 0.7, errorRate: 0.1, recoveryTime: const Duration(minutes: 2), loadBalancing: 0.6);
 }
 
 class ResourceUtilizationMetrics {

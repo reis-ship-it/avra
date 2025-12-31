@@ -9,6 +9,10 @@ environment:
 dependencies:
   spots_core:
     path: ../spots_core
+  spots_knot:
+    path: ../spots_knot
+  spots:
+    path: ../..  # Temporary: for core constants and services until moved
   
   # AI/ML dependencies
   equatable: ^2.0.5

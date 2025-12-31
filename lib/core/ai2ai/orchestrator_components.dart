@@ -6,10 +6,10 @@ import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/network/ai2ai_protocol.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/ai2ai/aipersonality_node.dart';
-import 'package:spots/core/services/ai2ai_realtime_service.dart';
+import 'package:spots_ai/services/ai2ai_realtime_service.dart';
 import 'package:spots_network/spots_network.dart';
 
 /// Supports discovery of nearby AI personalities and prioritization
@@ -22,10 +22,12 @@ class DiscoveryManager {
   Future<List<AIPersonalityNode>> discover(
     String userId,
     PersonalityProfile personality,
-    Future<List<AIPersonalityNode>> Function(AnonymizedVibeData) performDiscovery,
+    Future<List<AIPersonalityNode>> Function(AnonymizedVibeData)
+        performDiscovery,
   ) async {
     final connectivityResult = await connectivity.checkConnectivity();
-    final isConnected = connectivityResult.any((c) => c != ConnectivityResult.none);
+    final isConnected =
+        connectivityResult.any((c) => c != ConnectivityResult.none);
     if (!isConnected) {
       return [];
     }
@@ -45,7 +47,8 @@ class DiscoveryManager {
   ) async {
     final result = <String, VibeCompatibilityResult>{};
     for (final node in nodes) {
-      final c = await vibeAnalyzer.analyzeVibeCompatibility(localVibe, node.vibe);
+      final c =
+          await vibeAnalyzer.analyzeVibeCompatibility(localVibe, node.vibe);
       result[node.nodeId] = c;
     }
     return result;
@@ -77,7 +80,8 @@ class DiscoveryManager {
 /// Philosophy: "Always Learning With You" - AI learns alongside you, online and offline
 class ConnectionManager {
   final UserVibeAnalyzer vibeAnalyzer;
-  final PersonalityLearning? personalityLearning; // NEW: For offline AI learning
+  final PersonalityLearning?
+      personalityLearning; // NEW: For offline AI learning
   final AI2AIProtocol? ai2aiProtocol; // NEW: For offline peer exchange
 
   ConnectionManager({
@@ -97,13 +101,16 @@ class ConnectionManager {
       ConnectionMetrics initialMetrics,
     ) performEstablishment,
   ) async {
-    final localVibe = await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
-    final compatibility = await vibeAnalyzer.analyzeVibeCompatibility(localVibe, remoteNode.vibe);
+    final localVibe =
+        await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
+    final compatibility =
+        await vibeAnalyzer.analyzeVibeCompatibility(localVibe, remoteNode.vibe);
 
     if (!_isWorthy(compatibility)) return null;
 
     final anonLocal = await PrivacyProtection.anonymizeUserVibe(localVibe);
-    final anonRemote = await PrivacyProtection.anonymizeUserVibe(remoteNode.vibe);
+    final anonRemote =
+        await PrivacyProtection.anonymizeUserVibe(remoteNode.vibe);
 
     final metrics = ConnectionMetrics.initial(
       localAISignature: anonLocal.vibeSignature,
@@ -115,22 +122,23 @@ class ConnectionManager {
   }
 
   bool _isWorthy(VibeCompatibilityResult c) {
-    return c.basicCompatibility >= VibeConstants.minimumCompatibilityThreshold &&
+    return c.basicCompatibility >=
+            VibeConstants.minimumCompatibilityThreshold &&
         c.aiPleasurePotential >= VibeConstants.minAIPleasureScore &&
         c.learningOpportunities.isNotEmpty;
   }
-  
+
   // ========================================================================
   // OFFLINE PEER CONNECTION (Philosophy Implementation - Phase 1)
   // OUR_GUTS.md: "Always Learning With You"
   // Philosophy: The key works everywhere - offline AI2AI connections via Bluetooth
   // ========================================================================
-  
+
   /// Establish offline peer-to-peer connection (no internet required)
-  /// 
-  /// Philosophy: "Doors appear everywhere (subway, park, street). 
+  ///
+  /// Philosophy: "Doors appear everywhere (subway, park, street).
   /// The key should work anywhere, not just when online."
-  /// 
+  ///
   /// Flow:
   /// 1. Exchange personality profiles via Bluetooth/NSD
   /// 2. Calculate compatibility locally
@@ -145,65 +153,66 @@ class ConnectionManager {
     // Verify we have the required dependencies
     if (personalityLearning == null || ai2aiProtocol == null) {
       throw Exception(
-        'Offline AI2AI requires PersonalityLearning and AI2AIProtocol dependencies'
-      );
+          'Offline AI2AI requires PersonalityLearning and AI2AIProtocol dependencies');
     }
-    
+
     try {
       // Step 1: Exchange personality profiles peer-to-peer
       final remoteProfile = await ai2aiProtocol!.exchangePersonalityProfile(
         remoteDeviceId,
         localPersonality,
       );
-      
+
       if (remoteProfile == null) {
         // Exchange failed (timeout, connection lost, etc.)
         return null;
       }
-      
+
       // Step 2: Calculate compatibility locally (no cloud needed)
       final compatibility = await ai2aiProtocol!.calculateLocalCompatibility(
         localPersonality,
         remoteProfile,
         vibeAnalyzer,
       );
-      
+
       // Check if connection is worthy
       if (!_isWorthy(compatibility)) {
         return null;
       }
-      
+
       // Step 3: Generate learning insights locally
-      final learningInsight = await ai2aiProtocol!.generateLocalLearningInsights(
+      final learningInsight =
+          await ai2aiProtocol!.generateLocalLearningInsights(
         localPersonality,
         remoteProfile,
         compatibility,
       );
-      
+
       // Step 4: Apply learning to local AI immediately (offline learning)
       await personalityLearning!.evolveFromAI2AILearning(
         localUserId,
         learningInsight,
       );
-      
+
       // Step 5: Create connection metrics
-      final localVibe = await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
-      final remoteVibe = await vibeAnalyzer.compileUserVibe(remoteProfile.agentId, remoteProfile);
-      
+      final localVibe =
+          await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
+      final remoteVibe = await vibeAnalyzer.compileUserVibe(
+          remoteProfile.agentId, remoteProfile);
+
       final anonLocal = await PrivacyProtection.anonymizeUserVibe(localVibe);
       final anonRemote = await PrivacyProtection.anonymizeUserVibe(remoteVibe);
-      
+
       final metrics = ConnectionMetrics.initial(
         localAISignature: anonLocal.vibeSignature,
         remoteAISignature: anonRemote.vibeSignature,
         compatibility: compatibility.basicCompatibility,
       );
-      
+
       // TODO: Queue connection log for cloud sync when online
       // This is optional - the AI has already learned offline
-      
+
       return metrics;
-      
     } catch (e) {
       // Log error but don't throw - offline connections can fail gracefully
       return null;
@@ -226,9 +235,11 @@ class RealtimeCoordinator {
     required void Function(RealtimeMessage) onAnonymous,
   }) {
     dispose();
-    personalitySub = realtime.listenToPersonalityDiscovery().listen(onPersonality);
+    personalitySub =
+        realtime.listenToPersonalityDiscovery().listen(onPersonality);
     learningSub = realtime.listenToVibeLearning().listen(onLearning);
-    anonymousSub = realtime.listenToAnonymousCommunication().listen(onAnonymous);
+    anonymousSub =
+        realtime.listenToAnonymousCommunication().listen(onAnonymous);
   }
 
   void dispose() {
@@ -237,5 +248,3 @@ class RealtimeCoordinator {
     anonymousSub?.cancel();
   }
 }
-
-

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
@@ -29,7 +29,7 @@ void main() {
       test('should create initial profile with correct business defaults', () {
         // Test business logic: factory method behavior
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_test_123';
+        const agentId = 'agent_test_123';
         final profile = PersonalityProfile.initial(agentId, userId: 'user-123');
 
         expect(profile.agentId, equals(agentId));

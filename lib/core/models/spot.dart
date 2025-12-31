@@ -153,7 +153,7 @@ class Spot {
     } catch (_) {}
     // #endregion
 
-    double _toDouble(dynamic v) {
+    double toDouble(dynamic v) {
       if (v == null) return 0.0;
       if (v is num) return v.toDouble();
       if (v is String) return double.tryParse(v) ?? 0.0;
@@ -164,10 +164,10 @@ class Spot {
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       description: json['description'] ?? '',
-      latitude: _toDouble(json['latitude']),
-      longitude: _toDouble(json['longitude']),
+      latitude: toDouble(json['latitude']),
+      longitude: toDouble(json['longitude']),
       category: json['category'] ?? '',
-      rating: _toDouble(json['rating']),
+      rating: toDouble(json['rating']),
       createdBy: json['createdBy'] ?? '',
       createdAt:
           DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),

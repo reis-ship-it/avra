@@ -4,7 +4,7 @@ import 'package:spots/core/services/logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spots_network/spots_network.dart';
 import 'package:spots_core/spots_core.dart';
-import 'package:spots/core/services/ai2ai_realtime_service.dart';
+import 'package:spots_ai/services/ai2ai_realtime_service.dart';
 
 /// Test page to verify Supabase integration
 class SupabaseTestPage extends StatefulWidget {
@@ -16,7 +16,8 @@ class SupabaseTestPage extends StatefulWidget {
 }
 
 class _SupabaseTestPageState extends State<SupabaseTestPage> {
-  final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
+  final AppLogger _logger =
+      const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
   late final DataBackend _data;
   late final RealtimeBackend _realtimeBackend;
   late final AuthBackend _auth;
@@ -26,7 +27,7 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
   String _status = 'Ready to test';
   List<Spot> _spots = [];
   List<SpotList> _lists = [];
-  List<Map<String, dynamic>> _messages = [];
+  final List<Map<String, dynamic>> _messages = [];
   List<Map<String, dynamic>> _presence = [];
   StreamSubscription? _sub1;
   StreamSubscription? _sub2;
@@ -71,7 +72,8 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
             await _createTestList();
             await _loadSpots();
             await _loadLists();
-            await _realtime?.sendAnonymousMessage('auto_test', {'note': 'auto-driven'});
+            await _realtime
+                ?.sendAnonymousMessage('auto_test', {'note': 'auto-driven'});
           }
         } catch (_) {}
       });
@@ -86,7 +88,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
         final u = await _auth.signInAnonymously();
         if (mounted) {
           setState(() {
-            _status = u != null ? '✅ Signed in anonymously' : '⚠️ Anonymous sign-in failed';
+            _status = u != null
+                ? '✅ Signed in anonymously'
+                : '⚠️ Anonymous sign-in failed';
           });
         }
       }
@@ -107,14 +111,20 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
     try {
       final email = _emailController.text.trim();
       final pass = _passwordController.text;
-      final u = await _auth.registerWithEmailPassword(email, pass, email.split('@').first);
+      final u = await _auth.registerWithEmailPassword(
+          email, pass, email.split('@').first);
       await _refreshCurrentUser();
       setState(() {
-        _status = u != null ? '✅ Signed up' : '⚠️ Sign up may require email confirmation';
+        _status = u != null
+            ? '✅ Signed up'
+            : '⚠️ Sign up may require email confirmation';
         _isLoading = false;
       });
     } catch (e) {
-      setState(() { _status = '❌ Sign up failed: $e'; _isLoading = false; });
+      setState(() {
+        _status = '❌ Sign up failed: $e';
+        _isLoading = false;
+      });
     }
   }
 
@@ -131,7 +141,10 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
         _isLoading = false;
       });
     } catch (e) {
-      setState(() { _status = '❌ Sign in failed: $e'; _isLoading = false; });
+      setState(() {
+        _status = '❌ Sign in failed: $e';
+        _isLoading = false;
+      });
     }
   }
 
@@ -141,9 +154,15 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
     try {
       await _auth.signOut();
       await _refreshCurrentUser();
-      setState(() { _status = '✅ Signed out'; _isLoading = false; });
+      setState(() {
+        _status = '✅ Signed out';
+        _isLoading = false;
+      });
     } catch (e) {
-      setState(() { _status = '❌ Sign out failed: $e'; _isLoading = false; });
+      setState(() {
+        _status = '❌ Sign out failed: $e';
+        _isLoading = false;
+      });
     }
   }
 
@@ -151,7 +170,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
     if (!_diReady) return;
     final u = _currentUser;
     if (u == null) {
-      setState(() { _status = '❌ Sign in first to create SPOTS account'; });
+      setState(() {
+        _status = '❌ Sign in first to create SPOTS account';
+      });
       return;
     }
     setState(() => _isLoading = true);
@@ -159,8 +180,14 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
       final profile = User(
         id: u.id,
         email: u.email,
-        name: u.name.isNotEmpty ? u.name : (_displayNameController.text.trim().isNotEmpty ? _displayNameController.text.trim() : u.email.split('@').first),
-        displayName: _displayNameController.text.trim().isNotEmpty ? _displayNameController.text.trim() : u.displayName,
+        name: u.name.isNotEmpty
+            ? u.name
+            : (_displayNameController.text.trim().isNotEmpty
+                ? _displayNameController.text.trim()
+                : u.email.split('@').first),
+        displayName: _displayNameController.text.trim().isNotEmpty
+            ? _displayNameController.text.trim()
+            : u.displayName,
         role: UserRole.follower,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -168,11 +195,16 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
       );
       final res = await _data.createUser(profile);
       setState(() {
-        _status = res.success ? '✅ SPOTS account created' : '❌ Create failed: ${res.error ?? 'unknown'}';
+        _status = res.success
+            ? '✅ SPOTS account created'
+            : '❌ Create failed: ${res.error ?? 'unknown'}';
         _isLoading = false;
       });
     } catch (e) {
-      setState(() { _status = '❌ Create SPOTS account error: $e'; _isLoading = false; });
+      setState(() {
+        _status = '❌ Create SPOTS account error: $e';
+        _isLoading = false;
+      });
     }
   }
 
@@ -180,18 +212,25 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
     if (!_diReady) return;
     final u = _currentUser;
     if (u == null) {
-      setState(() { _status = '❌ Sign in first to load SPOTS account'; });
+      setState(() {
+        _status = '❌ Sign in first to load SPOTS account';
+      });
       return;
     }
     setState(() => _isLoading = true);
     try {
       final res = await _data.getUser(u.id);
       setState(() {
-        _status = res.success && res.data != null ? '✅ Loaded SPOTS account for ${res.data!.email}' : '⚠️ No SPOTS account found';
+        _status = res.success && res.data != null
+            ? '✅ Loaded SPOTS account for ${res.data!.email}'
+            : '⚠️ No SPOTS account found';
         _isLoading = false;
       });
     } catch (e) {
-      setState(() { _status = '❌ Load SPOTS account error: $e'; _isLoading = false; });
+      setState(() {
+        _status = '❌ Load SPOTS account error: $e';
+        _isLoading = false;
+      });
     }
   }
 
@@ -220,23 +259,23 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
     if (_realtime == null) return;
     _sub1 = _realtime!.listenToPersonalityDiscovery().listen((m) {
       setState(() => _messages.insert(0, {
-              'type': m.type,
-              'content': m.content,
-              'metadata': m.metadata,
+            'type': m.type,
+            'content': m.content,
+            'metadata': m.metadata,
           }));
     });
     _sub2 = _realtime!.listenToVibeLearning().listen((m) {
       setState(() => _messages.insert(0, {
-              'type': m.type,
-              'content': m.content,
-              'metadata': m.metadata,
+            'type': m.type,
+            'content': m.content,
+            'metadata': m.metadata,
           }));
     });
     _sub3 = _realtime!.listenToAnonymousCommunication().listen((m) {
       setState(() => _messages.insert(0, {
-              'type': m.type,
-              'content': m.content,
-              'metadata': m.metadata,
+            'type': m.type,
+            'content': m.content,
+            'metadata': m.metadata,
           }));
     });
     _refreshPresence();
@@ -247,9 +286,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
       if (!mounted || user == null) return;
       _dmSub = _realtimeBackend
           .subscribeToCollection<Map<String, dynamic>>(
-            'private_messages',
-            (row) => row,
-          )
+        'private_messages',
+        (row) => row,
+      )
           .listen((rows) {
         final mine = rows.where((r) => r['to_user_id'] == user.id).toList();
         if (mine.isEmpty) return;
@@ -342,12 +381,12 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
         tags: const ['test', 'demo'],
       );
       await _data.createSpot(spot);
-      
+
       setState(() {
         _status = '✅ Test spot created!';
         _isLoading = false;
       });
-      
+
       // Reload spots
       await _loadSpots();
     } catch (e) {
@@ -379,12 +418,12 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
         tags: const ['test', 'demo'],
       );
       await _data.createSpotList(list);
-      
+
       setState(() {
         _status = '✅ Test list created!';
         _isLoading = false;
       });
-      
+
       // Reload lists
       await _loadLists();
     } catch (e) {
@@ -417,7 +456,8 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                     Text('Auth', style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 8),
                     if (_currentUser != null)
-                      Text('Current: ${_currentUser!.email} (${_currentUser!.id.substring(0,6)}…)')
+                      Text(
+                          'Current: ${_currentUser!.email} (${_currentUser!.id.substring(0, 6)}…)')
                     else
                       const Text('Current: anonymous or not signed in'),
                     const SizedBox(height: 8),
@@ -430,7 +470,8 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                           width: 260,
                           child: TextField(
                             controller: _emailController,
-                            decoration: const InputDecoration(labelText: 'Email'),
+                            decoration:
+                                const InputDecoration(labelText: 'Email'),
                             keyboardType: TextInputType.emailAddress,
                           ),
                         ),
@@ -438,13 +479,20 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                           width: 200,
                           child: TextField(
                             controller: _passwordController,
-                            decoration: const InputDecoration(labelText: 'Password'),
+                            decoration:
+                                const InputDecoration(labelText: 'Password'),
                             obscureText: true,
                           ),
                         ),
-                        ElevatedButton(onPressed: _isLoading ? null : _signUp, child: const Text('Sign Up')),
-                        ElevatedButton(onPressed: _isLoading ? null : _signIn, child: const Text('Sign In')),
-                        ElevatedButton(onPressed: _isLoading ? null : _signOut, child: const Text('Sign Out')),
+                        ElevatedButton(
+                            onPressed: _isLoading ? null : _signUp,
+                            child: const Text('Sign Up')),
+                        ElevatedButton(
+                            onPressed: _isLoading ? null : _signIn,
+                            child: const Text('Sign In')),
+                        ElevatedButton(
+                            onPressed: _isLoading ? null : _signOut,
+                            child: const Text('Sign Out')),
                       ],
                     ),
                   ],
@@ -459,7 +507,8 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('SPOTS Account', style: Theme.of(context).textTheme.titleLarge),
+                    Text('SPOTS Account',
+                        style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
@@ -470,11 +519,16 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                           width: 260,
                           child: TextField(
                             controller: _displayNameController,
-                            decoration: const InputDecoration(labelText: 'Display name (optional)'),
+                            decoration: const InputDecoration(
+                                labelText: 'Display name (optional)'),
                           ),
                         ),
-                        ElevatedButton(onPressed: _isLoading ? null : _createSpotsAccount, child: const Text('Create SPOTS Account')),
-                        ElevatedButton(onPressed: _isLoading ? null : _loadMySpotsAccount, child: const Text('Load My Account')),
+                        ElevatedButton(
+                            onPressed: _isLoading ? null : _createSpotsAccount,
+                            child: const Text('Create SPOTS Account')),
+                        ElevatedButton(
+                            onPressed: _isLoading ? null : _loadMySpotsAccount,
+                            child: const Text('Load My Account')),
                       ],
                     ),
                   ],
@@ -492,15 +546,15 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                       onPressed: _realtime == null
                           ? null
                           : () async {
-                              await _realtime?.sendAnonymousMessage('test_message', {'content': 'Hello AI2AI'});
+                              await _realtime?.sendAnonymousMessage(
+                                  'test_message', {'content': 'Hello AI2AI'});
                             },
                       child: const Text('Send Test Message'),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: _refreshPresence,
-                      child: Text('Presence: ${_presence.length}')
-                    ),
+                        onPressed: _refreshPresence,
+                        child: Text('Presence: ${_presence.length}')),
                   ],
                 ),
               ),
@@ -555,14 +609,15 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Latest Profile Summary', style: Theme.of(context).textTheme.titleLarge),
+                      Text('Latest Profile Summary',
+                          style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: 8),
                       Text(_lastProfileSummary.toString()),
                     ],
                   ),
                 ),
               ),
-            
+
             const SizedBox(height: 16),
             // Realtime Messages
             Card(
@@ -571,7 +626,8 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Realtime Messages (${_messages.length})', style: Theme.of(context).textTheme.titleLarge),
+                    Text('Realtime Messages (${_messages.length})',
+                        style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 8),
                     if (_messages.isEmpty)
                       const Text('No realtime messages yet')
@@ -582,9 +638,12 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                           itemCount: _messages.length,
                           itemBuilder: (context, index) {
                             final item = _messages[index];
-                            final title = item['event'] ?? item['type'] ?? 'event';
+                            final title =
+                                item['event'] ?? item['type'] ?? 'event';
                             final channel = item['channel'] ?? 'realtime';
-                            final subtitle = item['payload'] ?? item['content'] ?? item['metadata'];
+                            final subtitle = item['payload'] ??
+                                item['content'] ??
+                                item['metadata'];
                             return ListTile(
                               dense: true,
                               title: Text('[$channel] $title'),
@@ -598,7 +657,7 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Spots Section
             Card(
               child: Padding(
@@ -620,7 +679,7 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                      if (_spots.isEmpty)
+                    if (_spots.isEmpty)
                       const Text('No spots found. Create one to test!')
                     else
                       ListView.builder(
@@ -642,9 +701,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Lists Section
             Card(
               child: Padding(
@@ -666,7 +725,7 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                      if (_lists.isEmpty)
+                    if (_lists.isEmpty)
                       const Text('No lists found. Create one to test!')
                     else
                       ListView.builder(

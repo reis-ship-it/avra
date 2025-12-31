@@ -414,7 +414,7 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
           ),
           child: Row(
             children: [
-              Icon(Icons.privacy_tip, color: AppColors.electricGreen, size: 20),
+              const Icon(Icons.privacy_tip, color: AppColors.electricGreen, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(

@@ -68,7 +68,7 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
         id: 'brand-mock-1',
         name: 'Premium Olive Oil Co.',
         brandType: 'Food & Beverage',
-        categories: ['Gourmet', 'Premium Products'],
+        categories: const ['Gourmet', 'Premium Products'],
         contactEmail: 'partnerships@premiumoil.com',
         verificationStatus: BrandVerificationStatus.verified,
         createdAt: DateTime.now(),
@@ -238,7 +238,7 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
             color: AppColors.textSecondary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'No sponsorships',
             style: TextStyle(
               fontSize: 18,
@@ -247,7 +247,7 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Start sponsoring events to see them here',
             style: TextStyle(
               fontSize: 14,

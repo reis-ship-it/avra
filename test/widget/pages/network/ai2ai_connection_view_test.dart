@@ -12,6 +12,7 @@
 /// Dependencies:
 /// - ConnectionMetrics: For connection data
 /// - VibeConnectionOrchestrator: For connection management
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

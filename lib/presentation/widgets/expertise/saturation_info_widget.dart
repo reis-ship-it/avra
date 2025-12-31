@@ -80,7 +80,7 @@ class SaturationInfoWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Saturation Score',
                       style: TextStyle(
                         fontSize: 12,
@@ -103,7 +103,7 @@ class SaturationInfoWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Expert Ratio',
                       style: TextStyle(
                         fontSize: 12,
@@ -194,7 +194,7 @@ class SaturationInfoWidget extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 11,
             color: AppColors.textSecondary,
           ),
@@ -221,7 +221,7 @@ class SaturationInfoWidget extends StatelessWidget {
             flex: 2,
             child: Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),
@@ -235,7 +235,7 @@ class SaturationInfoWidget extends StatelessWidget {
                 value: value.clamp(0.0, 1.0),
                 minHeight: 4,
                 backgroundColor: AppColors.grey200,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
               ),
             ),
           ),
@@ -244,7 +244,7 @@ class SaturationInfoWidget extends StatelessWidget {
             width: 40,
             child: Text(
               '${(weight * 100).toStringAsFixed(0)}%',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 11,
                 color: AppColors.textSecondary,
               ),

@@ -183,13 +183,10 @@ class EventAttendanceController
         // Reload event to get updated attendee count
         try {
           updatedEvent = await _eventService.getEventById(event.id);
-          if (updatedEvent == null) {
-            // Fallback: Create expected updated event
-            updatedEvent = event.copyWith(
+          updatedEvent ??= event.copyWith(
               attendeeIds: [...event.attendeeIds, attendee.id],
               attendeeCount: event.attendeeCount + quantity,
             );
-          }
         } catch (e) {
           developer.log('Error reloading event after payment: $e', name: _logName);
           // Fallback: Create expected updated event
@@ -352,7 +349,7 @@ class AttendanceResult extends ControllerResult {
   final int? quantity;
   final Map<String, String>? validationErrors;
 
-  AttendanceResult._({
+  const AttendanceResult._({
     required super.success,
     required super.error,
     required super.errorCode,

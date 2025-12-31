@@ -501,6 +501,140 @@ class FederatedLearningSystem {
     }
   }
   
+  /// Join a federated learning round
+  /// Adds the node to the round's participant list
+  Future<void> joinRound(String roundId, String nodeId) async {
+    try {
+      developer.log('Node $nodeId joining round $roundId', name: _logName);
+      
+      // Load active rounds
+      final storedRounds = _storage.read<List>(_activeRoundsKey) ?? [];
+      FederatedLearningRound? targetRound;
+      int roundIndex = -1;
+      
+      // Find the round
+      for (int i = 0; i < storedRounds.length; i++) {
+        final roundData = storedRounds[i] as Map<String, dynamic>;
+        if (roundData['roundId'] == roundId) {
+          targetRound = _roundFromJson(roundData);
+          roundIndex = i;
+          break;
+        }
+      }
+      
+      if (targetRound == null) {
+        throw FederatedLearningException('Round not found: $roundId');
+      }
+      
+      // Check if already participating
+      if (targetRound.participantNodeIds.contains(nodeId)) {
+        developer.log('Node $nodeId already participating in round $roundId', name: _logName);
+        return; // Already participating, no error
+      }
+      
+      // Check if round is joinable (not completed or failed)
+      if (targetRound.status == RoundStatus.completed || 
+          targetRound.status == RoundStatus.failed) {
+        throw FederatedLearningException('Cannot join round: round is ${targetRound.status}');
+      }
+      
+      // Add node to participants
+      final updatedParticipants = [...targetRound.participantNodeIds, nodeId];
+      final updatedRound = FederatedLearningRound(
+        roundId: targetRound.roundId,
+        organizationId: targetRound.organizationId,
+        objective: targetRound.objective,
+        participantNodeIds: updatedParticipants,
+        status: targetRound.status,
+        createdAt: targetRound.createdAt,
+        roundNumber: targetRound.roundNumber,
+        globalModel: targetRound.globalModel,
+        participantUpdates: targetRound.participantUpdates,
+        privacyMetrics: targetRound.privacyMetrics,
+      );
+      
+      // Update stored round
+      storedRounds[roundIndex] = _roundToJson(updatedRound);
+      await _storage.write(_activeRoundsKey, storedRounds);
+      
+      developer.log('Node $nodeId successfully joined round $roundId', name: _logName);
+    } catch (e) {
+      developer.log('Error joining round: $e', name: _logName);
+      if (e is FederatedLearningException) {
+        rethrow;
+      }
+      throw FederatedLearningException('Failed to join round: $e');
+    }
+  }
+  
+  /// Leave a federated learning round
+  /// Removes the node from the round's participant list
+  Future<void> leaveRound(String roundId, String nodeId) async {
+    try {
+      developer.log('Node $nodeId leaving round $roundId', name: _logName);
+      
+      // Load active rounds
+      final storedRounds = _storage.read<List>(_activeRoundsKey) ?? [];
+      FederatedLearningRound? targetRound;
+      int roundIndex = -1;
+      
+      // Find the round
+      for (int i = 0; i < storedRounds.length; i++) {
+        final roundData = storedRounds[i] as Map<String, dynamic>;
+        if (roundData['roundId'] == roundId) {
+          targetRound = _roundFromJson(roundData);
+          roundIndex = i;
+          break;
+        }
+      }
+      
+      if (targetRound == null) {
+        throw FederatedLearningException('Round not found: $roundId');
+      }
+      
+      // Check if participating
+      if (!targetRound.participantNodeIds.contains(nodeId)) {
+        developer.log('Node $nodeId not participating in round $roundId', name: _logName);
+        return; // Not participating, no error
+      }
+      
+      // Check minimum participants (can't leave if it would drop below minimum)
+      if (targetRound.participantNodeIds.length <= _minParticipants) {
+        throw FederatedLearningException('Cannot leave: round requires minimum $_minParticipants participants');
+      }
+      
+      // Remove node from participants
+      final updatedParticipants = targetRound.participantNodeIds
+          .where((id) => id != nodeId)
+          .toList();
+      
+      final updatedRound = FederatedLearningRound(
+        roundId: targetRound.roundId,
+        organizationId: targetRound.organizationId,
+        objective: targetRound.objective,
+        participantNodeIds: updatedParticipants,
+        status: targetRound.status,
+        createdAt: targetRound.createdAt,
+        roundNumber: targetRound.roundNumber,
+        globalModel: targetRound.globalModel,
+        participantUpdates: targetRound.participantUpdates,
+        privacyMetrics: targetRound.privacyMetrics,
+      );
+      
+      // Update stored round
+      storedRounds[roundIndex] = _roundToJson(updatedRound);
+      await _storage.write(_activeRoundsKey, storedRounds);
+      
+      developer.log('Node $nodeId successfully left round $roundId', name: _logName);
+    } catch (e) {
+      developer.log('Error leaving round: $e', name: _logName);
+      if (e is FederatedLearningException) {
+        rethrow;
+      }
+      throw FederatedLearningException('Failed to leave round: $e');
+    }
+  }
+  
   /// Get participation history for a specific node
   /// Returns history of rounds the user has participated in
   Future<ParticipationHistory> getParticipationHistory(String nodeId) async {

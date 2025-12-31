@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 
@@ -149,8 +149,8 @@ void main() {
     });
     
     test('should create secure hash with proper entropy', () async {
-      final testData = 'test_personality_data_12345';
-      final salt = 'random_salt_67890';
+      const testData = 'test_personality_data_12345';
+      const salt = 'random_salt_67890';
       
       final hash = await PrivacyProtection.createSecureHash(testData, salt);
       
@@ -160,13 +160,13 @@ void main() {
     });
     
     test('should enforce temporal decay for expired data', () async {
-      final pastTime = DateTime.now().subtract(Duration(days: 35));
-      final futureTime = DateTime.now().add(Duration(days: 25));
+      final pastTime = DateTime.now().subtract(const Duration(days: 35));
+      final futureTime = DateTime.now().add(const Duration(days: 25));
       
       // Test expired data
       final expiredValid = await PrivacyProtection.enforceTemporalDecay(
         pastTime, 
-        pastTime.add(Duration(days: 30))
+        pastTime.add(const Duration(days: 30))
       );
       expect(expiredValid, isFalse);
       

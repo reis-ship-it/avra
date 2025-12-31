@@ -72,7 +72,7 @@ class CommunityEventWidget extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           event.getEventTypeDisplayName(),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
                           ),
@@ -90,7 +90,7 @@ class CommunityEventWidget extends StatelessWidget {
                         color: AppColors.electricGreen.withValues(alpha: 0.5),
                       ),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
@@ -98,7 +98,7 @@ class CommunityEventWidget extends StatelessWidget {
                           size: 12,
                           color: AppColors.electricGreen,
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4),
                         Text(
                           'Community',
                           style: TextStyle(
@@ -126,14 +126,14 @@ class CommunityEventWidget extends StatelessWidget {
                       color: AppTheme.warningColor.withValues(alpha: 0.3),
                     ),
                   ),
-                  child: Row(
+                  child: const Row(
                     children: [
                       Icon(
                         Icons.star,
                         size: 16,
                         color: AppTheme.warningColor,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Eligible for upgrade to Local Expert Event',
@@ -174,7 +174,7 @@ class CommunityEventWidget extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
+                        const Text(
                           'Community Host',
                           style: TextStyle(
                             fontSize: 12,
@@ -192,7 +192,7 @@ class CommunityEventWidget extends StatelessWidget {
               // Description
               Text(
                 event.description,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                 ),
@@ -204,33 +204,33 @@ class CommunityEventWidget extends StatelessWidget {
               // Event Details
               Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     _formatDateTime(event.startTime),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Icon(Icons.people, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.people, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     '${event.attendeeCount}/${event.maxAttendees}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   if (event.location != null) ...[
                     const SizedBox(width: 16),
-                    Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
+                    const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         event.location!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -243,14 +243,14 @@ class CommunityEventWidget extends StatelessWidget {
               
               // Free Event Indicator
               const SizedBox(height: 8),
-              Row(
+              const Row(
                 children: [
                   Icon(
                     Icons.attach_money,
                     size: 16,
                     color: AppColors.electricGreen,
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4),
                   Text(
                     'Free (cash at door OK)',
                     style: TextStyle(
@@ -287,7 +287,7 @@ class CommunityEventWidget extends StatelessWidget {
                 else
                   Text(
                     event.isFull ? 'Event Full' : 'Registration Closed',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                       fontStyle: FontStyle.italic,
@@ -339,11 +339,11 @@ class CommunityEventListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (events.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           children: [
-            const Icon(Icons.event_busy, size: 64, color: AppColors.textSecondary),
-            const SizedBox(height: 16),
+            Icon(Icons.event_busy, size: 64, color: AppColors.textSecondary),
+            SizedBox(height: 16),
             Text(
               'No community events found',
               style: TextStyle(

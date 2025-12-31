@@ -54,7 +54,7 @@ void main() {
         await Future.delayed(const Duration(milliseconds: 50));
         await checkInService.checkOut(userId: user.id);
         
-        final visit = await checkInService.getVisit(checkIn.visitId);
+        final visit = checkInService.getVisit(checkIn.visitId);
         expect(visit, isNotNull);
         
         // Visit contributes to expertise
@@ -75,7 +75,7 @@ void main() {
         final user = ModelFactories.createTestUser(
           id: 'user-2',
         );
-        final category = 'Coffee';
+        const category = 'Coffee';
         
         // Create multiple visits
         final visits = <Visit>[];
@@ -90,7 +90,7 @@ void main() {
           await Future.delayed(const Duration(milliseconds: 50));
           await checkInService.checkOut(userId: user.id);
           
-          final visit = await checkInService.getVisit(checkIn.visitId);
+          final visit = checkInService.getVisit(checkIn.visitId);
           if (visit != null) {
             visits.add(visit);
           }
@@ -297,7 +297,7 @@ void main() {
         final user = ModelFactories.createTestUser(
           id: 'user-3',
         );
-        final category = 'Coffee';
+        const category = 'Coffee';
         
         // Create visits
         final visits = <Visit>[];
@@ -312,7 +312,7 @@ void main() {
           await Future.delayed(const Duration(milliseconds: 50));
           await checkInService.checkOut(userId: user.id);
           
-          final visit = await checkInService.getVisit(checkIn.visitId);
+          final visit = checkInService.getVisit(checkIn.visitId);
           if (visit != null) {
             visits.add(visit);
           }

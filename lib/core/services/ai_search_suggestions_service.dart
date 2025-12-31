@@ -466,8 +466,9 @@ class AISearchSuggestionsService {
       final hour = timestamp.hour;
       String period;
       
-      if (hour < 6) period = 'night';
-      else if (hour < 12) period = 'morning';
+      if (hour < 6) {
+        period = 'night';
+      } else if (hour < 12) period = 'morning';
       else if (hour < 17) period = 'afternoon';
       else if (hour < 21) period = 'evening';
       else period = 'night';

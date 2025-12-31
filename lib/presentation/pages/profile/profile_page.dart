@@ -22,10 +22,96 @@ import 'package:spots/core/models/user_partnership.dart';
 import 'package:spots/presentation/pages/admin/god_mode_login_page.dart';
 import 'package:spots/presentation/pages/profile/edit_profile_page.dart';
 import 'package:spots/core/models/user.dart' show UserRole;
+// Phase 4: Dynamic Knots
+import 'package:get_it/get_it.dart';
+import 'dart:developer' as developer;
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots_knot/services/knot/knot_storage_service.dart';
+import 'package:spots_knot/services/knot/dynamic_knot_service.dart';
+import 'package:spots/core/services/wearable_data_service.dart';
+import 'package:spots_knot/models/dynamic_knot.dart';
+import 'package:spots/presentation/widgets/knot/dynamic_knot_widget.dart';
+import 'package:spots/presentation/pages/knot/knot_meditation_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+  
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
+class _ProfilePageState extends State<ProfilePage> {
+  final _agentIdService = GetIt.instance<AgentIdService>();
+  final _knotStorageService = GetIt.instance<KnotStorageService>();
+  final _dynamicKnotService = GetIt.instance<DynamicKnotService>();
+  final _wearableDataService = GetIt.instance<WearableDataService>();
+  
+  DynamicKnot? _dynamicKnot;
+  bool _isLoadingKnot = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDynamicKnot();
+  }
+  
+  Future<void> _loadDynamicKnot() async {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! Authenticated) return;
+    
+    setState(() {
+      _isLoadingKnot = true;
+    });
+    
+    try {
+      final userId = authState.user.id;
+      final agentId = await _agentIdService.getUserAgentId(userId);
+      
+      // Load knot from storage
+      final knot = await _knotStorageService.loadKnot(agentId);
+      
+      if (knot != null) {
+        // Get mood/energy/stress from wearables, fallback to defaults
+        final mood = await _wearableDataService.getCurrentMood();
+        final energy = await _wearableDataService.getCurrentEnergy();
+        final stress = await _wearableDataService.getCurrentStress();
+        
+        // Create dynamic knot
+        final dynamicKnot = _dynamicKnotService.updateKnotWithCurrentState(
+          baseKnot: knot,
+          mood: mood,
+          energy: energy,
+          stress: stress,
+        );
+        
+        if (mounted) {
+          setState(() {
+            _dynamicKnot = dynamicKnot;
+            _isLoadingKnot = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _isLoadingKnot = false;
+          });
+        }
+      }
+    } catch (e, st) {
+      developer.log(
+        'Error loading dynamic knot',
+        error: e,
+        stackTrace: st,
+        name: 'ProfilePage',
+      );
+      if (mounted) {
+        setState(() {
+          _isLoadingKnot = false;
+        });
+      }
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,23 +135,37 @@ class ProfilePage extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundColor: AppTheme.primaryColor,
-                                child: Text(
-                                  state.user.displayName
-                                          ?.substring(0, 1)
-                                          .toUpperCase() ??
-                                      state.user.email
-                                          .substring(0, 1)
-                                          .toUpperCase(),
-                                  style: const TextStyle(
-                                    color: AppColors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                              // Dynamic Knot Avatar (Phase 4)
+                              if (_isLoadingKnot)
+                                const SizedBox(
+                                  width: 60,
+                                  height: 60,
+                                  child: Center(child: CircularProgressIndicator()),
+                                )
+                              else if (_dynamicKnot != null)
+                                DynamicKnotWidget(
+                                  knot: _dynamicKnot!,
+                                  size: 60.0,
+                                  animated: true,
+                                )
+                              else
+                                CircleAvatar(
+                                  radius: 30,
+                                  backgroundColor: AppTheme.primaryColor,
+                                  child: Text(
+                                    state.user.displayName
+                                            ?.substring(0, 1)
+                                            .toUpperCase() ??
+                                        state.user.email
+                                            .substring(0, 1)
+                                            .toUpperCase(),
+                                    style: const TextStyle(
+                                      color: AppColors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
                               const SizedBox(width: 16),
                               Expanded(
                                 child: Column(
@@ -118,6 +218,7 @@ class ProfilePage extends StatelessWidget {
                               IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {
+                                  final authBloc = context.read<AuthBloc>();
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -127,13 +228,59 @@ class ProfilePage extends StatelessWidget {
                                     ),
                                   ).then((_) {
                                     // Refresh auth state to get updated user
-                                    context.read<AuthBloc>().add(AuthCheckRequested());
+                                    if (mounted) {
+                                      authBloc.add(AuthCheckRequested());
+                                    }
                                   });
                                 },
                                 tooltip: 'Edit Profile',
                               ),
                             ],
                           ),
+                          // Phase 4: Knot Meditation Link
+                          if (_dynamicKnot != null) ...[
+                            const SizedBox(height: 16),
+                            const Divider(),
+                            const SizedBox(height: 8),
+                            InkWell(
+                              onTap: () {
+                                if (!mounted) return;
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const KnotMeditationPage(),
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.self_improvement,
+                                    color: AppTheme.primaryColor,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Knot Meditation',
+                                          style: Theme.of(context).textTheme.titleMedium,
+                                        ),
+                                        Text(
+                                          'Breathe with your personality knot',
+                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                color: AppTheme.offlineColor,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(Icons.arrow_forward_ios, size: 16),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -196,6 +343,16 @@ class ProfilePage extends StatelessWidget {
                           builder: (context) => const SocialMediaSettingsPage(),
                         ),
                       );
+                    },
+                  ),
+                  // Phase 10: Public Profile Analysis
+                  _buildSettingsItem(
+                    context,
+                    icon: Icons.public,
+                    title: 'Public Profile Analysis',
+                    subtitle: 'Analyze public handles (optional)',
+                    onTap: () {
+                      context.go('/settings/public-handles');
                     },
                   ),
                   // Phase 4: Expertise Dashboard Navigation

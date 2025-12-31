@@ -82,7 +82,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Partnership accepted!'),
             backgroundColor: AppColors.electricGreen,
           ),
@@ -194,7 +194,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Partnership Proposal',
                     style: TextStyle(
                       fontSize: 20,
@@ -206,7 +206,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                   if (widget.partnership.user != null)
                     Text(
                       'from ${widget.partnership.user!.displayName}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -232,7 +232,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Event Details',
                         style: TextStyle(
                           fontSize: 18,
@@ -265,7 +265,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Partnership Details',
                         style: TextStyle(
                           fontSize: 18,
@@ -284,7 +284,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                       ],
                       if (widget.partnership.sharedResponsibilities.isNotEmpty) ...[
                         const SizedBox(height: 12),
-                        Text(
+                        const Text(
                           'Responsibilities:',
                           style: TextStyle(
                             fontSize: 14,
@@ -297,11 +297,11 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                               padding: const EdgeInsets.only(left: 8, bottom: 4),
                               child: Row(
                                 children: [
-                                  Icon(Icons.check, size: 16, color: AppColors.electricGreen),
+                                  const Icon(Icons.check, size: 16, color: AppColors.electricGreen),
                                   const SizedBox(width: 8),
                                   Text(
                                     resp,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       color: AppColors.textPrimary,
                                     ),
@@ -312,7 +312,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                       ],
                       if (agreement?.customArrangementDetails != null) ...[
                         const SizedBox(height: 12),
-                        Text(
+                        const Text(
                           'Custom Terms:',
                           style: TextStyle(
                             fontSize: 14,
@@ -323,7 +323,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                         const SizedBox(height: 8),
                         Text(
                           agreement!.customArrangementDetails!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
                           ),
@@ -344,7 +344,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Estimated Revenue Breakdown',
                       style: TextStyle(
                         fontSize: 18,
@@ -360,9 +360,9 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                         showLockStatus: false,
                       )
                     else
-                      Card(
+                      const Card(
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(16),
                           child: Text(
                             'Revenue split will be calculated after event details are finalized',
                             style: TextStyle(
@@ -420,7 +420,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                       onPressed: _isProcessing ? null : _declinePartnership,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textPrimary,
-                        side: BorderSide(color: AppColors.grey300),
+                        side: const BorderSide(color: AppColors.grey300),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -450,7 +450,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textPrimary,
               ),

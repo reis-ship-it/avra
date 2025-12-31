@@ -8,6 +8,7 @@
 /// - Query Building: Building search queries from preferences
 /// - Place Type Mapping: Mapping preferences to Google Places types
 /// - Edge Cases: Empty preferences, missing data, invalid inputs
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/onboarding_place_list_generator.dart';

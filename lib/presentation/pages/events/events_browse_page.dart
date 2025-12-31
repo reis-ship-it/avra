@@ -590,24 +590,24 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
         controller: _searchController,
         decoration: InputDecoration(
           hintText: 'Search events...',
-          hintStyle: TextStyle(color: AppColors.textHint),
-          prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+          hintStyle: const TextStyle(color: AppColors.textHint),
+          prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
           filled: true,
           fillColor: AppColors.grey100,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.grey300),
+            borderSide: const BorderSide(color: AppColors.grey300),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.grey300),
+            borderSide: const BorderSide(color: AppColors.grey300),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+            borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
           ),
         ),
-        style: TextStyle(color: AppColors.textPrimary),
+        style: const TextStyle(color: AppColors.textPrimary),
       ),
     );
   }
@@ -716,7 +716,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Select Category',
               style: TextStyle(
                 fontSize: 18,
@@ -780,16 +780,16 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.background,
-        title: Text(
+        title: const Text(
           'Filter by Location',
           style: TextStyle(color: AppColors.textPrimary),
         ),
         content: TextField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'Enter location...',
             hintStyle: TextStyle(color: AppColors.textHint),
           ),
-          style: TextStyle(color: AppColors.textPrimary),
+          style: const TextStyle(color: AppColors.textPrimary),
           onSubmitted: (value) {
             setState(() {
               _selectedLocation = value.isEmpty ? null : value;
@@ -807,14 +807,14 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
               _loadEvents();
               Navigator.pop(context);
             },
-            child: Text(
+            child: const Text(
               'Clear',
               style: TextStyle(color: AppColors.textSecondary),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               'Cancel',
               style: TextStyle(color: AppColors.textSecondary),
             ),
@@ -834,7 +834,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Filter by Date',
               style: TextStyle(
                 fontSize: 18,
@@ -847,7 +847,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
               return ListTile(
                 title: Text(
                   entry.value,
-                  style: TextStyle(color: AppColors.textPrimary),
+                  style: const TextStyle(color: AppColors.textPrimary),
                 ),
                 selected: _selectedDateFilter == entry.key,
                 onTap: () {
@@ -875,7 +875,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Filter by Price',
               style: TextStyle(
                 fontSize: 18,
@@ -888,7 +888,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
               return ListTile(
                 title: Text(
                   entry.value,
-                  style: TextStyle(color: AppColors.textPrimary),
+                  style: const TextStyle(color: AppColors.textPrimary),
                 ),
                 selected: _selectedPriceFilter == entry.key,
                 onTap: () {
@@ -930,7 +930,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 64,
               color: AppColors.textSecondary,
@@ -938,7 +938,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
             const SizedBox(height: 16),
             Text(
               _error!,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 color: AppColors.textSecondary,
               ),
@@ -959,13 +959,13 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.event_busy,
               size: 64,
               color: AppColors.textSecondary,
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'No events found',
               style: TextStyle(
                 fontSize: 18,
@@ -978,7 +978,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
               _hasActiveFilters() || _searchController.text.isNotEmpty
                   ? 'Try adjusting your filters'
                   : 'Check back later for new events',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -1016,7 +1016,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
@@ -1024,7 +1024,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                       size: 12,
                       color: AppTheme.primaryColor,
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4),
                     Text(
                       'Nearby locality',
                       style: TextStyle(

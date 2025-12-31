@@ -133,7 +133,7 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.error_outline,
                   color: AppColors.error,
                   size: 32,
@@ -141,7 +141,7 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.error,
                     fontSize: 14,
                   ),

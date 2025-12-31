@@ -8,7 +8,7 @@ import 'package:spots/core/services/preferences_profile_service.dart';
 import 'package:spots/core/services/event_recommendation_service.dart' as event_rec_service;
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/preferences_profile.dart';
 import 'package:spots/core/models/expertise_event.dart';
 
@@ -92,9 +92,9 @@ void main() {
     group('validate', () {
       test('should return valid result for valid input', () {
         // Arrange
-        final input = RecommendationInput(
+        const input = RecommendationInput(
           userId: 'user_123',
-          context: const RecommendationContext(
+          context: RecommendationContext(
             category: 'Coffee',
             maxResults: 20,
             explorationRatio: 0.3,
@@ -111,9 +111,9 @@ void main() {
 
       test('should return invalid result for empty userId', () {
         // Arrange
-        final input = RecommendationInput(
+        const input = RecommendationInput(
           userId: '',
-          context: const RecommendationContext(),
+          context: RecommendationContext(),
         );
 
         // Act
@@ -126,9 +126,9 @@ void main() {
 
       test('should return invalid result for maxResults <= 0', () {
         // Arrange
-        final input = RecommendationInput(
+        const input = RecommendationInput(
           userId: 'user_123',
-          context: const RecommendationContext(maxResults: 0),
+          context: RecommendationContext(maxResults: 0),
         );
 
         // Act
@@ -141,9 +141,9 @@ void main() {
 
       test('should return invalid result for maxResults > 100', () {
         // Arrange
-        final input = RecommendationInput(
+        const input = RecommendationInput(
           userId: 'user_123',
-          context: const RecommendationContext(maxResults: 101),
+          context: RecommendationContext(maxResults: 101),
         );
 
         // Act
@@ -156,9 +156,9 @@ void main() {
 
       test('should return invalid result for explorationRatio < 0', () {
         // Arrange
-        final input = RecommendationInput(
+        const input = RecommendationInput(
           userId: 'user_123',
-          context: const RecommendationContext(explorationRatio: -0.1),
+          context: RecommendationContext(explorationRatio: -0.1),
         );
 
         // Act
@@ -172,9 +172,9 @@ void main() {
 
       test('should return invalid result for explorationRatio > 1', () {
         // Arrange
-        final input = RecommendationInput(
+        const input = RecommendationInput(
           userId: 'user_123',
-          context: const RecommendationContext(explorationRatio: 1.1),
+          context: RecommendationContext(explorationRatio: 1.1),
         );
 
         // Act
@@ -188,9 +188,9 @@ void main() {
 
       test('should return invalid result for minRelevanceScore < 0', () {
         // Arrange
-        final input = RecommendationInput(
+        const input = RecommendationInput(
           userId: 'user_123',
-          context: const RecommendationContext(minRelevanceScore: -0.1),
+          context: RecommendationContext(minRelevanceScore: -0.1),
         );
 
         // Act
@@ -204,9 +204,9 @@ void main() {
 
       test('should return invalid result for minRelevanceScore > 1', () {
         // Arrange
-        final input = RecommendationInput(
+        const input = RecommendationInput(
           userId: 'user_123',
-          context: const RecommendationContext(minRelevanceScore: 1.1),
+          context: RecommendationContext(minRelevanceScore: 1.1),
         );
 
         // Act
@@ -443,10 +443,10 @@ void main() {
         // Create preferences profile with category preference
         final preferencesWithCoffee = PreferencesProfile(
           agentId: 'agent_123',
-          categoryPreferences: {'Coffee': 0.8},
-          localityPreferences: {},
-          eventTypePreferences: {},
-          scopePreferences: {},
+          categoryPreferences: const {'Coffee': 0.8},
+          localityPreferences: const {},
+          eventTypePreferences: const {},
+          scopePreferences: const {},
           localExpertPreferenceWeight: 0.5,
           explorationWillingness: 0.3,
           lastUpdated: DateTime.now(),
@@ -514,9 +514,9 @@ void main() {
           explorationRatio: anyNamed('explorationRatio'),
         )).thenAnswer((_) async => [testRecommendation]);
 
-        final input = RecommendationInput(
+        const input = RecommendationInput(
           userId: 'user_123',
-          context: const RecommendationContext(),
+          context: RecommendationContext(),
         );
 
         // Act

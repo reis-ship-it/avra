@@ -85,7 +85,7 @@ void main() {
           category: 'Coffee',
           currentLevel: ExpertiseLevel.local,
           progressPercentage: 50.0,
-          contributionBreakdown: {
+          contributionBreakdown: const {
             'lists': 3,
             'reviews': 5,
             'spots': 2,
@@ -129,8 +129,8 @@ void main() {
           currentLevel: ExpertiseLevel.local,
           nextLevel: ExpertiseLevel.city,
           progressPercentage: 75.5,
-          nextSteps: ['Create 2 more lists'],
-          contributionBreakdown: {'lists': 3},
+          nextSteps: const ['Create 2 more lists'],
+          contributionBreakdown: const {'lists': 3},
           totalContributions: 8,
           requiredContributions: 10,
           lastUpdated: testDate,

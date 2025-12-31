@@ -154,8 +154,8 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Successfully registered for event!'),
+          const SnackBar(
+            content: Text('Successfully registered for event!'),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -215,8 +215,8 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Registration cancelled'),
+          const SnackBar(
+            content: Text('Registration cancelled'),
             backgroundColor: AppColors.textSecondary,
           ),
         );
@@ -368,7 +368,7 @@ SPOTS - know you belong.''';
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Event Details',
           style: TextStyle(color: AppColors.white),
         ),
@@ -414,7 +414,7 @@ SPOTS - know you belong.''';
                           children: [
                             Text(
                               event.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -423,7 +423,7 @@ SPOTS - know you belong.''';
                             const SizedBox(height: 4),
                             Text(
                               event.getEventTypeDisplayName(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
                               ),
@@ -445,10 +445,10 @@ SPOTS - know you belong.''';
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: AppTheme.warningColor.withValues(alpha: 0.3)),
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
                           Icon(Icons.warning, color: AppTheme.warningColor, size: 20),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               'This event has been flagged for review. Please exercise caution.',
@@ -473,7 +473,7 @@ SPOTS - know you belong.''';
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Description
-                  Text(
+                  const Text(
                     'Description',
                     style: TextStyle(
                       fontSize: 18,
@@ -484,7 +484,7 @@ SPOTS - know you belong.''';
                   const SizedBox(height: 8),
                   Text(
                     event.description,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       color: AppColors.textPrimary,
                       height: 1.5,
@@ -537,7 +537,7 @@ SPOTS - know you belong.''';
                   const SizedBox(height: 24),
 
                   // Host Information
-                  Text(
+                  const Text(
                     'Host',
                     style: TextStyle(
                       fontSize: 18,
@@ -555,7 +555,7 @@ SPOTS - know you belong.''';
                             ? Image.network(event.host.photoUrl!)
                             : Text(
                                 (event.host.displayName ?? event.host.email)[0].toUpperCase(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   color: AppColors.textPrimary,
                                 ),
@@ -568,7 +568,7 @@ SPOTS - know you belong.''';
                           children: [
                             Text(
                               event.host.displayName ?? event.host.email,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textPrimary,
@@ -578,7 +578,7 @@ SPOTS - know you belong.''';
                               const SizedBox(height: 4),
                               Text(
                                 '${event.category} Expert',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,
                                   fontWeight: FontWeight.w500,
@@ -594,7 +594,7 @@ SPOTS - know you belong.''';
                   // Spots (if event includes spots)
                   if (event.spots.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    Text(
+                    const Text(
                       'Spots',
                       style: TextStyle(
                         fontSize: 18,
@@ -607,15 +607,15 @@ SPOTS - know you belong.''';
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
-                          leading: Icon(Icons.place, color: AppTheme.primaryColor),
+                          leading: const Icon(Icons.place, color: AppTheme.primaryColor),
                           title: Text(
                             spot.name,
-                            style: TextStyle(color: AppColors.textPrimary),
+                            style: const TextStyle(color: AppColors.textPrimary),
                           ),
                           subtitle: spot.address != null
                               ? Text(
                                   spot.address!,
-                                  style: TextStyle(color: AppColors.textSecondary),
+                                  style: const TextStyle(color: AppColors.textSecondary),
                                 )
                               : null,
                           tileColor: AppColors.grey100,
@@ -649,10 +649,10 @@ SPOTS - know you belong.''';
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    const Row(
                       children: [
                         Icon(Icons.analytics, color: AppTheme.primaryColor),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           'Event Success',
                           style: TextStyle(
@@ -664,7 +664,7 @@ SPOTS - know you belong.''';
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(
+                    const Text(
                       'View detailed success metrics and recommendations for this event',
                       style: TextStyle(
                         fontSize: 14,
@@ -702,10 +702,10 @@ SPOTS - know you belong.''';
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    const Row(
                       children: [
                         Icon(Icons.handshake, color: AppTheme.primaryColor),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           'Partnerships',
                           style: TextStyle(
@@ -718,7 +718,7 @@ SPOTS - know you belong.''';
                     ),
                     const SizedBox(height: 12),
                     if (_hasPartnerships)
-                      Text(
+                      const Text(
                         'This event has partnerships',
                         style: TextStyle(
                           fontSize: 14,
@@ -726,7 +726,7 @@ SPOTS - know you belong.''';
                         ),
                       )
                     else
-                      Text(
+                      const Text(
                         'Partner with businesses to co-host this event',
                         style: TextStyle(
                           fontSize: 14,
@@ -752,7 +752,7 @@ SPOTS - know you belong.''';
                             label: Text(_hasPartnerships ? 'Add Partner' : 'Propose Partnership'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppTheme.primaryColor,
-                              side: BorderSide(color: AppTheme.primaryColor),
+                              side: const BorderSide(color: AppTheme.primaryColor),
                             ),
                           ),
                         ),
@@ -889,7 +889,7 @@ SPOTS - know you belong.''';
                     const SizedBox(height: 16),
                     Text(
                       _error!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.error,
                         fontSize: 14,
                       ),
@@ -942,7 +942,7 @@ SPOTS - know you belong.''';
                       label: const Text('Report an Issue'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
-                        side: BorderSide(color: AppColors.error),
+                        side: const BorderSide(color: AppColors.error),
                         minimumSize: const Size(double.infinity, 48),
                       ),
                     ),
@@ -972,7 +972,7 @@ SPOTS - know you belong.''';
             children: [
               Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.w500,
@@ -981,7 +981,7 @@ SPOTS - know you belong.''';
               const SizedBox(height: 4),
               Text(
                 value,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   color: AppColors.textPrimary,
                 ),

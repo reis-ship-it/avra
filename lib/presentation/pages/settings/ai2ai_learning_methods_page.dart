@@ -98,13 +98,13 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.error_outline,
                       size: 64,
                       color: AppColors.error,
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'Error',
                       style: TextStyle(
                         fontSize: 20,
@@ -116,7 +116,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
                     Text(
                       _errorMessage!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -148,7 +148,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
               // Section 1: Learning Methods Overview
               _buildSectionHeader(context, 'Learning Methods Overview'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'See how your AI learns from other AIs',
                 style: TextStyle(
                   fontSize: 14,
@@ -165,7 +165,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
               // Section 2: Learning Effectiveness
               _buildSectionHeader(context, 'Learning Effectiveness Metrics'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Track how effectively your AI is learning',
                 style: TextStyle(
                   fontSize: 14,
@@ -182,7 +182,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
               // Section 3: Learning Insights
               _buildSectionHeader(context, 'Active Learning Insights'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Recent insights from AI2AI interactions',
                 style: TextStyle(
                   fontSize: 14,
@@ -199,7 +199,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
               // Section 4: Learning Recommendations
               _buildSectionHeader(context, 'Learning Recommendations'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Optimal learning partners and development areas',
                 style: TextStyle(
                   fontSize: 14,
@@ -244,11 +244,11 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'AI2AI Learning Methods',
                   style: TextStyle(
                     fontSize: 18,
@@ -256,7 +256,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'See how your AI learns from other AIs',
                   style: TextStyle(
@@ -290,10 +290,10 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.info_outline,
@@ -311,7 +311,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             'AI2AI learning enables your AI to learn from interactions with other AIs '
             'through secure, privacy-preserving connections. Your AI discovers new '
@@ -324,7 +324,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
               height: 1.5,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Icon(
@@ -332,7 +332,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
                 color: AppColors.success,
                 size: 16,
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Text(
                 'Your data stays on your device',
                 style: TextStyle(

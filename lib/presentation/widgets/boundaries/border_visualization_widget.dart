@@ -228,7 +228,7 @@ class _BorderVisualizationWidgetState
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Center(
+      child: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -237,7 +237,7 @@ class _BorderVisualizationWidgetState
               color: AppColors.grey400,
               size: 48,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'No boundaries available',
               style: TextStyle(
@@ -256,7 +256,7 @@ class _BorderVisualizationWidgetState
     // The actual map rendering is handled by the parent (MapView)
     // This widget provides the polylines and markers to add to the map
     
-    return Container(
+    return SizedBox(
       height: widget.height,
       width: widget.width,
       child: Column(
@@ -347,7 +347,7 @@ class _BorderVisualizationWidgetState
         const SizedBox(width: 4),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color: AppColors.textSecondary,
           ),
@@ -412,7 +412,7 @@ class _BorderVisualizationWidgetState
           ),
         ),
         trailing: widget.showRefinementIndicators && border.isRefined
-            ? Icon(
+            ? const Icon(
                 Icons.trending_up,
                 color: AppTheme.primaryColor,
                 size: 20,
@@ -438,7 +438,7 @@ class _BorderVisualizationWidgetState
           points: border.coordinates,
           color: AppTheme.primaryColor,
           width: 3,
-          patterns: [],
+          patterns: const [],
         ),
       );
     }

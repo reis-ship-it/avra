@@ -3,6 +3,7 @@
 /// Comprehensive testing of SpotsBloc with CRUD operations, search, and optimistic updates
 /// Ensures optimal development stages and deployment optimization
 /// Tests current implementation as-is without modifying production code
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';

@@ -115,7 +115,7 @@ class ReviewFraudDetectionService {
           id: 'review-fraud_${_uuid.v4()}',
           feedbackId: eventId, // Using eventId as feedbackId for aggregate analysis
           riskScore: 0.0,
-          signals: [],
+          signals: const [],
           recommendation: FraudRecommendation.approve,
           calculatedAt: DateTime.now(),
           updatedAt: DateTime.now(),
@@ -227,7 +227,7 @@ class ReviewFraudDetectionService {
         id: 'review-fraud_${_uuid.v4()}',
         feedbackId: userId,
         riskScore: 0.0,
-        signals: [],
+        signals: const [],
         recommendation: FraudRecommendation.approve,
         calculatedAt: DateTime.now(),
         updatedAt: DateTime.now(),

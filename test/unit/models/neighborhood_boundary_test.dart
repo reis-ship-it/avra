@@ -72,7 +72,7 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1', 'spot-2'],
+          softBorderSpots: const ['spot-1', 'spot-2'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -95,8 +95,8 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
+          softBorderSpots: const ['spot-1'],
+          userVisitCounts: const {
             'spot-1': {'Nolita': 15, 'East Village': 8},
           },
           createdAt: testDate,
@@ -109,8 +109,8 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
+          softBorderSpots: const ['spot-1'],
+          userVisitCounts: const {
             'spot-1': {'Nolita': 10, 'East Village': 10},
           },
           createdAt: testDate,
@@ -184,8 +184,8 @@ void main() {
           boundaryType: BoundaryType.hardBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
+          softBorderSpots: const ['spot-1'],
+          userVisitCounts: const {
             'spot-1': {'Greenpoint': 10, 'Williamsburg': 5},
           },
           refinementHistory: [refinement],

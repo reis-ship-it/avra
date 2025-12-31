@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/theme/colors.dart';
 
 /// Widget displaying personality evolution timeline
@@ -64,7 +64,7 @@ class EvolutionTimelineWidget extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.timeline,
                         size: 48,
                         color: AppColors.textSecondary,
@@ -99,7 +99,7 @@ class EvolutionTimelineWidget extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   'Created: ${_formatDate(profile.createdAt)}',
@@ -111,7 +111,7 @@ class EvolutionTimelineWidget extends StatelessWidget {
             ),
             Row(
               children: [
-                Icon(Icons.update, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.update, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   'Last Updated: ${_formatDate(profile.lastUpdated)}',

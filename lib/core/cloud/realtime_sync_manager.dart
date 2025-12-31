@@ -415,7 +415,7 @@ class RealTimeSyncManager {
   
   Future<DateTime> _getLastSyncTimestamp(String channelId) async {
     // Return last sync timestamp for the channel
-    return DateTime.now().subtract(Duration(minutes: 5));
+    return DateTime.now().subtract(const Duration(minutes: 5));
   }
   
   Future<List<DataChange>> _fetchIncrementalChanges(
@@ -519,9 +519,9 @@ class RealTimeSyncManager {
     return ChannelSyncStatus(
       channelId: channelId,
       status: channel?.status ?? SyncChannelStatus.inactive,
-      lastSyncTime: DateTime.now().subtract(Duration(minutes: 2)),
+      lastSyncTime: DateTime.now().subtract(const Duration(minutes: 2)),
       pendingChanges: queue?.pendingChanges.length ?? 0,
-      syncLatency: Duration(milliseconds: 150),
+      syncLatency: const Duration(milliseconds: 150),
       errorRate: 0.001,
       throughput: 45.0,
     );
@@ -690,7 +690,7 @@ class RealTimeSyncManager {
       errorType: error.type,
       severity: ErrorSeverity.medium,
       recoverable: true,
-      estimatedRecoveryTime: Duration(minutes: 5),
+      estimatedRecoveryTime: const Duration(minutes: 5),
     );
   }
   
@@ -736,12 +736,12 @@ class RealTimeSyncManager {
   
   String _generateSystemId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return 'sync_system_${timestamp}';
+    return 'sync_system_$timestamp';
   }
   
   String _generateChangeId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return 'change_${timestamp}';
+    return 'change_$timestamp';
   }
 }
 

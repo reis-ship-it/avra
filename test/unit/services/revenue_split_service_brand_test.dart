@@ -165,7 +165,7 @@ void main() {
           unitPrice: 15.00,
           totalSales: 750.00,
           platformFee: 75.00,
-          sales: [],
+          sales: const [],
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
@@ -209,19 +209,19 @@ void main() {
           () async {
         // Test business logic: hybrid split calculation
         final parties1 = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 40.0,
             name: 'User',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 35.0,
             name: 'Business',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'brand-1',
             type: SplitPartyType.sponsor,
             percentage: 25.0,
@@ -242,13 +242,13 @@ void main() {
         expect(splits1['product']?.totalAmount, equals(500.00));
 
         final parties2 = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 40.0,
             name: 'User',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'brand-1',
             type: SplitPartyType.sponsor,
             percentage: 60.0,

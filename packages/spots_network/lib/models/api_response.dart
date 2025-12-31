@@ -83,7 +83,7 @@ class ApiResponse<T> extends Equatable {
   ApiResponse<R> map<R>(R Function(T) mapper) {
     if (hasData) {
       try {
-        return ApiResponse.success(mapper(data!), metadata: metadata);
+        return ApiResponse.success(mapper(data as T), metadata: metadata);
       } catch (e) {
         return ApiResponse.error(
           'Error transforming data: $e',
@@ -107,7 +107,7 @@ class ApiResponse<T> extends Equatable {
     required R Function() onLoading,
   }) {
     if (hasData) {
-      return onData(data!);
+      return onData(data as T);
     } else if (hasError) {
       return onError(error!);
     } else {

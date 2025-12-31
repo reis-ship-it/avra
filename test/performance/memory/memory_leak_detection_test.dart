@@ -1,11 +1,14 @@
 /// Phase 9: Memory Usage & Leak Detection Tests
 /// Ensures optimal memory management for production deployment
 /// OUR_GUTS.md: "Effortless, Seamless Discovery" - Efficient resource usage
+library;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/core/models/list.dart';
 import 'package:spots/core/ai/ai_master_orchestrator.dart';
 import 'package:spots/core/ai/continuous_learning_system.dart';
+import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/search_cache_service.dart';
 import 'package:spots/data/repositories/hybrid_search_repository.dart';
 import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
@@ -177,18 +180,24 @@ void main() {
 
       test('should prevent memory leaks in continuous learning', () async {
         // Arrange
-        final learningSystem = ContinuousLearningSystem();
+        final learningSystem = ContinuousLearningSystem(
+          agentIdService: AgentIdService(),
+          supabase: null, // No Supabase in performance tests
+        );
         final memoryReadings = <int>[];
 
         // Act - Run learning cycles and monitor memory
         await learningSystem.initialize();
 
         for (int i = 0; i < 50; i++) {
-          await learningSystem.processUserInteraction({
-            'action': 'search',
-            'query': 'test_query_$i',
-            'timestamp': DateTime.now().millisecondsSinceEpoch,
-          });
+          await learningSystem.processUserInteraction(
+            userId: 'test-user-id',
+            payload: {
+              'event_type': 'search_performed',
+              'parameters': {'query': 'test_query_$i'},
+              'context': {},
+            },
+          );
 
           if (i % 10 == 0) {
             await _forceGarbageCollection();
@@ -413,8 +422,9 @@ int _getMemoryUsage() {
 String _formatBytes(int bytes) {
   if (bytes < 1024) return '${bytes}B';
   if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)}KB';
-  if (bytes < 1024 * 1024 * 1024)
+  if (bytes < 1024 * 1024 * 1024) {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
+  }
   return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)}GB';
 }
 
@@ -555,11 +565,11 @@ Future<void> _simulateMemoryIntensiveOperation(int cycle) async {
 
   // Process the data
   var totalLength = 0;
-  tempData.values.forEach((value) {
+  for (var value in tempData.values) {
     if (value is List) {
       totalLength += value.length;
     }
-  });
+  }
 
   // Clear temporary data (should trigger GC)
   tempData.clear();

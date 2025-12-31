@@ -140,11 +140,11 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 64, color: AppColors.error),
+                      const Icon(Icons.error_outline, size: 64, color: AppColors.error),
                       const SizedBox(height: 16),
                       Text(
                         _error ?? 'Failed to load fraud review data',
-                        style: TextStyle(color: AppColors.error),
+                        style: const TextStyle(color: AppColors.error),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
@@ -228,7 +228,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                 ),
                 Text(
                   'Risk Score: ${(score * 100).toStringAsFixed(0)}%',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
@@ -252,7 +252,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Event Details',
             style: TextStyle(
               fontSize: 18,
@@ -282,7 +282,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
             width: 100,
             child: Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,
@@ -292,7 +292,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
           Expanded(
             child: Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textPrimary,
               ),
@@ -312,10 +312,10 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.electricGreen.withValues(alpha: 0.3)),
         ),
-        child: Row(
+        child: const Row(
           children: [
             Icon(Icons.check_circle, color: AppColors.electricGreen),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Text(
               'No fraud signals detected',
               style: TextStyle(
@@ -341,7 +341,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
         children: [
           Text(
             'Fraud Signals (${_fraudScore!.signals.length})',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -354,7 +354,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.warning,
                     color: AppTheme.warningColor,
                     size: 20,
@@ -366,7 +366,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                       children: [
                         Text(
                           signal.displayName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
@@ -375,7 +375,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                         const SizedBox(height: 4),
                         Text(
                           signal.description,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textSecondary,
                           ),
@@ -383,7 +383,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                         const SizedBox(height: 4),
                         Text(
                           'Risk Weight: ${(signal.riskWeight * 100).toStringAsFixed(0)}%',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 11,
                             color: AppColors.textSecondary,
                             fontStyle: FontStyle.italic,
@@ -445,7 +445,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Recommendation',
                   style: TextStyle(
                     fontSize: 14,
@@ -472,7 +472,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Admin Decision',
           style: TextStyle(
             fontSize: 18,
@@ -492,12 +492,12 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
             ),
             child: Row(
               children: [
-                Icon(Icons.error_outline, color: AppColors.error, size: 20),
+                const Icon(Icons.error_outline, color: AppColors.error, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     _error!,
-                    style: TextStyle(color: AppColors.error, fontSize: 12),
+                    style: const TextStyle(color: AppColors.error, fontSize: 12),
                   ),
                 ),
               ],
@@ -513,7 +513,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                 label: const Text('Approve'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.electricGreen,
-                  side: BorderSide(color: AppColors.electricGreen),
+                  side: const BorderSide(color: AppColors.electricGreen),
                   minimumSize: const Size(0, 48),
                 ),
               ),
@@ -526,7 +526,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                 label: const Text('Verify'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.primaryColor,
-                  side: BorderSide(color: AppTheme.primaryColor),
+                  side: const BorderSide(color: AppTheme.primaryColor),
                   minimumSize: const Size(0, 48),
                 ),
               ),
@@ -539,7 +539,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                 label: const Text('Reject'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.error,
-                  side: BorderSide(color: AppColors.error),
+                  side: const BorderSide(color: AppColors.error),
                   minimumSize: const Size(0, 48),
                 ),
               ),
@@ -560,13 +560,13 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
       ),
       child: Row(
         children: [
-          Icon(Icons.check_circle, color: AppColors.electricGreen),
+          const Icon(Icons.check_circle, color: AppColors.electricGreen),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Reviewed',
                   style: TextStyle(
                     fontSize: 16,
@@ -576,7 +576,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                 ),
                 Text(
                   'Decision: ${_fraudScore!.adminDecision?.toUpperCase() ?? 'N/A'}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),
@@ -584,7 +584,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                 if (_fraudScore!.reviewedAt != null)
                   Text(
                     'Reviewed on ${_formatDate(_fraudScore!.reviewedAt!)}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),

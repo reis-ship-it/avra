@@ -509,27 +509,27 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
             const SizedBox(height: 24),
             
             // Info Card
-            Card(
+            const Card(
               color: AppColors.grey100,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline, color: AppColors.textSecondary),
-                    const SizedBox(width: 12),
+                    Icon(Icons.info_outline, color: AppColors.textSecondary),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'How Business Accounts Work',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          const Text(
+                          SizedBox(height: 4),
+                          Text(
                             '1. Create your account with basic business information\n'
                             '2. Set preferences for experts and patrons\n'
                             '3. Verify your business (optional but recommended)\n'

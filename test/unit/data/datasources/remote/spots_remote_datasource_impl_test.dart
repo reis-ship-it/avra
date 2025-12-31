@@ -53,7 +53,7 @@ void main() {
 
       test('should return empty list when backend returns no data', () async {
         when(mockDataBackend.getSpots(limit: anyNamed('limit')))
-            .thenAnswer((_) async => ApiResponse.success(<spots_core.Spot>[]));
+            .thenAnswer((_) async => ApiResponse.success(const <spots_core.Spot>[]));
         final spots = await dataSource.getSpots();
 
         expect(spots, isA<List<Spot>>());

@@ -79,7 +79,7 @@ void main() {
         createdBy: 'user-123',
         isVerified: true,
         isActive: true,
-        categories: ['Coffee'],
+        categories: const ['Coffee'],
         location: 'San Francisco',
         logoUrl: 'https://example.com/logo.png',
       );

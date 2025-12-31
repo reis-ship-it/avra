@@ -392,18 +392,13 @@ class EventCreationResult extends ControllerResult {
   final ValidationResult? validationErrors;
   
   const EventCreationResult({
-    required bool success,
-    String? error,
-    String? errorCode,
-    Map<String, dynamic>? metadata,
+    required super.success,
+    super.error,
+    super.errorCode,
+    super.metadata,
     this.event,
     this.validationErrors,
-  }) : super(
-    success: success,
-    error: error,
-    errorCode: errorCode,
-    metadata: metadata,
-  );
+  });
   
   /// Create a successful result
   factory EventCreationResult.success({

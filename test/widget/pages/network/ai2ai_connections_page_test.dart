@@ -2,6 +2,7 @@
 ///
 /// Part of Feature Matrix Phase 1: Critical UI/UX
 /// Section 1.2: Device Discovery UI - Integration Tests
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,8 +30,8 @@ void main() {
       // Test business logic: AI2AI connections page display and interactions
       _setupMockServices();
       await tester.pumpWidget(
-        MaterialApp(
-          home: const AI2AIConnectionsPage(),
+        const MaterialApp(
+          home: AI2AIConnectionsPage(),
         ),
       );
       await tester.pumpAndSettle();
@@ -78,8 +79,8 @@ void main() {
       GetIt.instance
           .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator);
       await tester.pumpWidget(
-        MaterialApp(
-          home: const AI2AIConnectionsPage(),
+        const MaterialApp(
+          home: AI2AIConnectionsPage(),
         ),
       );
       await tester.pumpAndSettle();
@@ -89,8 +90,8 @@ void main() {
 
       _setupMockServices();
       await tester.pumpWidget(
-        MaterialApp(
-          home: const AI2AIConnectionsPage(),
+        const MaterialApp(
+          home: AI2AIConnectionsPage(),
         ),
       );
       await tester.pumpAndSettle();

@@ -74,7 +74,7 @@ class PredictiveAnalytics {
         authenticity: AuthenticityLevel.high,
         privacyPreserving: true,
         timestamp: DateTime.now(),
-        expiresAt: DateTime.now().add(Duration(hours: 12)),
+        expiresAt: DateTime.now().add(const Duration(hours: 12)),
       );
 
       developer.log('User journey prediction completed', name: _logName);
@@ -192,7 +192,7 @@ class PredictiveAnalytics {
         privacyLevel: PrivacyLevel.maximum,
         encryptionKey: _generateEncryptionKey(),
         timestamp: DateTime.now(),
-        validUntil: DateTime.now().add(Duration(hours: 6)),
+        validUntil: DateTime.now().add(const Duration(hours: 6)),
       );
 
       developer.log('Anonymized predictions generated', name: _logName);
@@ -213,12 +213,15 @@ class PredictiveAnalytics {
     final timeActive = await _getAnonymizedTimeActive(userId);
 
     if (activityCount < 10 && timeActive < 7) return UserStage.newcomer;
-    if (activityCount < 50 && communityEngagement < 0.3)
+    if (activityCount < 50 && communityEngagement < 0.3) {
       return UserStage.explorer;
-    if (communityEngagement >= 0.3 && activityCount >= 50)
+    }
+    if (communityEngagement >= 0.3 && activityCount >= 50) {
       return UserStage.local;
-    if (communityEngagement >= 0.7 && activityCount >= 100)
+    }
+    if (communityEngagement >= 0.7 && activityCount >= 100) {
       return UserStage.communityLeader;
+    }
 
     return UserStage.explorer;
   }
@@ -284,30 +287,30 @@ class PredictiveAnalytics {
     switch (currentStage) {
       case UserStage.newcomer:
         path.addAll([
-          JourneyStep('discover_favorites', Duration(days: 7), 0.9),
-          JourneyStep('join_community', Duration(days: 14), 0.7),
-          JourneyStep('create_content', Duration(days: 30), 0.6),
+          JourneyStep('discover_favorites', const Duration(days: 7), 0.9),
+          JourneyStep('join_community', const Duration(days: 14), 0.7),
+          JourneyStep('create_content', const Duration(days: 30), 0.6),
         ]);
         break;
       case UserStage.explorer:
         path.addAll([
-          JourneyStep('specialize_interests', Duration(days: 14), 0.8),
-          JourneyStep('become_local_expert', Duration(days: 60), 0.6),
-          JourneyStep('guide_others', Duration(days: 90), 0.4),
+          JourneyStep('specialize_interests', const Duration(days: 14), 0.8),
+          JourneyStep('become_local_expert', const Duration(days: 60), 0.6),
+          JourneyStep('guide_others', const Duration(days: 90), 0.4),
         ]);
         break;
       case UserStage.local:
         path.addAll([
-          JourneyStep('build_community', Duration(days: 30), 0.7),
-          JourneyStep('create_unique_experiences', Duration(days: 45), 0.8),
-          JourneyStep('become_community_leader', Duration(days: 120), 0.5),
+          JourneyStep('build_community', const Duration(days: 30), 0.7),
+          JourneyStep('create_unique_experiences', const Duration(days: 45), 0.8),
+          JourneyStep('become_community_leader', const Duration(days: 120), 0.5),
         ]);
         break;
       case UserStage.communityLeader:
         path.addAll([
-          JourneyStep('mentor_community', Duration(days: 0), 0.9),
-          JourneyStep('innovate_discovery', Duration(days: 30), 0.8),
-          JourneyStep('expand_influence', Duration(days: 60), 0.6),
+          JourneyStep('mentor_community', const Duration(days: 0), 0.9),
+          JourneyStep('innovate_discovery', const Duration(days: 30), 0.8),
+          JourneyStep('expand_influence', const Duration(days: 60), 0.6),
         ]);
         break;
     }
@@ -413,7 +416,7 @@ class PredictiveAnalytics {
           change > 0 ? TrendDirection.increasing : TrendDirection.decreasing,
           change.abs(),
           0.8,
-          Duration(days: 30),
+          const Duration(days: 30),
         ));
       }
     }
@@ -566,11 +569,11 @@ class PredictiveAnalytics {
   Future<Map<String, TrendPrediction>> _generateTrendPredictions() async {
     return {
       'community_growth': TrendPrediction('community',
-          TrendDirection.increasing, 0.15, 0.8, Duration(days: 90)),
+          TrendDirection.increasing, 0.15, 0.8, const Duration(days: 90)),
       'content_authenticity': TrendPrediction(
-          'content', TrendDirection.increasing, 0.12, 0.9, Duration(days: 60)),
+          'content', TrendDirection.increasing, 0.12, 0.9, const Duration(days: 60)),
       'local_discovery': TrendPrediction('discovery', TrendDirection.increasing,
-          0.20, 0.85, Duration(days: 45)),
+          0.20, 0.85, const Duration(days: 45)),
     };
   }
 
@@ -704,15 +707,15 @@ class UserJourney {
         PredictedAction('discover_local', 0.7, 'exploration'),
       ],
       journeyPath: [
-        JourneyStep('authentic_discovery', Duration(days: 30), 0.8),
+        JourneyStep('authentic_discovery', const Duration(days: 30), 0.8),
       ],
-      timeframe: Duration(days: 30),
+      timeframe: const Duration(days: 30),
       communityInfluence: 0.7,
       confidence: 0.6,
       authenticity: AuthenticityLevel.high,
       privacyPreserving: true,
       timestamp: DateTime.now(),
-      expiresAt: DateTime.now().add(Duration(hours: 12)),
+      expiresAt: DateTime.now().add(const Duration(hours: 12)),
     );
   }
 }
@@ -872,7 +875,7 @@ class PrivacyPreservingPredictions {
       ],
       trendPredictions: {
         'community': TrendPrediction('community', TrendDirection.increasing,
-            0.1, 0.7, Duration(days: 30))
+            0.1, 0.7, const Duration(days: 30))
       },
       behavioralClusters: [
         BehavioralCluster('explorers', 0.5, {'exploration': 0.8})
@@ -883,7 +886,7 @@ class PrivacyPreservingPredictions {
       privacyLevel: PrivacyLevel.maximum,
       encryptionKey: 'fallback_key',
       timestamp: DateTime.now(),
-      validUntil: DateTime.now().add(Duration(hours: 6)),
+      validUntil: DateTime.now().add(const Duration(hours: 6)),
     );
   }
 }

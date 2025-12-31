@@ -27,6 +27,7 @@
 ///   });
 /// });
 /// ```
+library;
 
 import 'package:get_storage/get_storage.dart';
 import 'package:spots/core/services/storage_service.dart';

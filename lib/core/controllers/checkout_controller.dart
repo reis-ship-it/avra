@@ -414,7 +414,7 @@ class CheckoutResult extends ControllerResult {
   final int quantity;
   final ExpertiseEvent? event;
 
-  CheckoutResult._({
+  const CheckoutResult._({
     required super.success,
     required super.error,
     required super.errorCode,

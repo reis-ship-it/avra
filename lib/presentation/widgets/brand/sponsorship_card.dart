@@ -47,7 +47,7 @@ class SponsorshipCard extends StatelessWidget {
               // Event Title (would need to fetch event)
               Text(
                 'Event: ${sponsorship.eventId}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -66,7 +66,7 @@ class SponsorshipCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Your Contribution:',
                       style: TextStyle(
                         fontSize: 14,
@@ -96,12 +96,12 @@ class SponsorshipCard extends StatelessWidget {
                     
                     // Total
                     const SizedBox(height: 8),
-                    Divider(color: AppColors.grey300),
+                    const Divider(color: AppColors.grey300),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
+                        const Expanded(
                           child: Text(
                             'Total Contribution:',
                             style: TextStyle(
@@ -114,7 +114,7 @@ class SponsorshipCard extends StatelessWidget {
                         ),
                         Text(
                           '\$${sponsorship.totalContributionValue.toStringAsFixed(0)}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.primaryColor,
@@ -143,12 +143,12 @@ class SponsorshipCard extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.trending_up, size: 16, color: AppTheme.primaryColor),
+                      const Icon(Icons.trending_up, size: 16, color: AppTheme.primaryColor),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Revenue Share: ${sponsorship.revenueSharePercentage!.toStringAsFixed(1)}%',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textPrimary,
@@ -170,7 +170,7 @@ class SponsorshipCard extends StatelessWidget {
                       onPressed: onTap,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textPrimary,
-                        side: BorderSide(color: AppColors.grey300),
+                        side: const BorderSide(color: AppColors.grey300),
                       ),
                       child: const Text('View Details'),
                     ),
@@ -250,7 +250,7 @@ class SponsorshipCard extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textPrimary,
               ),
@@ -258,7 +258,7 @@ class SponsorshipCard extends StatelessWidget {
           ),
           Text(
             status,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: AppColors.electricGreen,
               fontWeight: FontWeight.w500,
@@ -281,7 +281,7 @@ class SponsorshipCard extends StatelessWidget {
         children: [
           Text(
             'Product Tracking: ${tracking.productName}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: AppColors.textPrimary,
@@ -297,12 +297,12 @@ class SponsorshipCard extends StatelessWidget {
           _buildTrackingRow('Remaining', tracking.quantityRemaining),
           if (tracking.hasSales) ...[
             const SizedBox(height: 8),
-            Divider(color: AppColors.grey300),
+            const Divider(color: AppColors.grey300),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Total Sales:',
                   style: TextStyle(
                     fontSize: 14,
@@ -312,7 +312,7 @@ class SponsorshipCard extends StatelessWidget {
                 ),
                 Text(
                   '\$${tracking.totalSales.toStringAsFixed(2)}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.electricGreen,
@@ -334,14 +334,14 @@ class SponsorshipCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: AppColors.textSecondary,
             ),
           ),
           Text(
             value.toString(),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
               color: AppColors.textPrimary,

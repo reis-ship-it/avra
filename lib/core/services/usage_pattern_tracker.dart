@@ -82,7 +82,7 @@ class UsagePatternTracker {
     final newLoyalty = (pattern.spotLoyalty + loyaltyShift).clamp(0.0, 1.0);
     
     // Update recommendation focus (spot visits indicate recommendation usage)
-    final focusShift = 0.01;
+    const focusShift = 0.01;
     final newRecommendationFocus = (pattern.recommendationFocus + focusShift).clamp(0.0, 1.0);
     final newCommunityFocus = (pattern.communityFocus - focusShift / 2).clamp(0.0, 1.0);
     
@@ -140,7 +140,7 @@ class UsagePatternTracker {
     final newEngagement = (newEventsAttended / (pattern.daysActive + 1)).clamp(0.0, 1.0);
     
     // Update community focus (events indicate community engagement)
-    final focusShift = 0.02;
+    const focusShift = 0.02;
     final newCommunityFocus = (pattern.communityFocus + focusShift).clamp(0.0, 1.0);
     final newRecommendationFocus = (pattern.recommendationFocus - focusShift / 2).clamp(0.0, 1.0);
     
@@ -194,7 +194,7 @@ class UsagePatternTracker {
     final newCommunitiesJoined = pattern.totalCommunitiesJoined + 1;
     
     // Update community focus (strong signal)
-    final focusShift = 0.03;
+    const focusShift = 0.03;
     final newCommunityFocus = (pattern.communityFocus + focusShift).clamp(0.0, 1.0);
     final newRecommendationFocus = (pattern.recommendationFocus - focusShift / 2).clamp(0.0, 1.0);
     
@@ -231,7 +231,7 @@ class UsagePatternTracker {
     final pattern = await getUsagePattern(userId);
     
     // Update recommendation focus
-    final focusShift = 0.01;
+    const focusShift = 0.01;
     final newRecommendationFocus = (pattern.recommendationFocus + focusShift).clamp(0.0, 1.0);
     final newCommunityFocus = (pattern.communityFocus - focusShift / 2).clamp(0.0, 1.0);
     

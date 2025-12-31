@@ -62,7 +62,7 @@ void main() {
       expect(find.textContaining('Your Contribution'), findsOneWidget);
 
       final sponsorship4 = ModelFactories.createTestSponsorship();
-      final productTracking = ProductTracking(
+      const productTracking = ProductTracking(
         productName: 'Test Product',
         quantity: 10,
         unitValue: 25.0,

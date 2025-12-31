@@ -11,6 +11,7 @@
 /// - Error handling and graceful fallback
 /// 
 /// OUR_GUTS.md: "Community, Not Just Places" - Local community knowledge comes first
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -275,7 +276,7 @@ void main() {
         // Act: Search with filters
         final result = await repository.searchSpots(
           query: 'cafe',
-          filters: SearchFilters(
+          filters: const SearchFilters(
             minRating: 4.0,
             maxDistance: 5000,
           ),
@@ -434,7 +435,7 @@ void main() {
           communityCount: 3,
           externalCount: 2,
           totalCount: 5,
-          searchDuration: Duration(milliseconds: 100),
+          searchDuration: const Duration(milliseconds: 100),
           sources: {'community': 3, 'external': 2},
         );
 
@@ -450,7 +451,7 @@ void main() {
           communityCount: 1,
           externalCount: 4,
           totalCount: 5,
-          searchDuration: Duration(milliseconds: 100),
+          searchDuration: const Duration(milliseconds: 100),
           sources: {'community': 1, 'external': 4},
         );
 

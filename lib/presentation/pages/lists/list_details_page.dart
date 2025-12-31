@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spots/core/services/social_media_sharing_service.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:spots/injection_container.dart' as di;
+import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/models/list.dart';
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
@@ -11,17 +15,96 @@ import 'package:spots/presentation/widgets/common/source_indicator_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:spots/core/theme/app_theme.dart';
+import 'package:spots/core/ai/event_logger.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ListDetailsPage extends StatelessWidget {
+class ListDetailsPage extends StatefulWidget {
   final SpotList list;
 
   const ListDetailsPage({super.key, required this.list});
 
   @override
+  State<ListDetailsPage> createState() => _ListDetailsPageState();
+}
+
+class _ListDetailsPageState extends State<ListDetailsPage> {
+  late EventLogger _eventLogger;
+  DateTime? _viewStartTime;
+  final ScrollController _scrollController = ScrollController();
+  double _maxScrollDepth = 0.0;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeEventLogger();
+    _viewStartTime = DateTime.now();
+    _scrollController.addListener(_onScroll);
+  }
+
+  Future<void> _initializeEventLogger() async {
+    try {
+      _eventLogger = di.sl<EventLogger>();
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser != null) {
+        await _eventLogger.initialize(userId: currentUser.id);
+        _eventLogger.updateScreen('list_details');
+
+        // Log list view started
+        await _eventLogger.logListViewStarted(
+          listId: widget.list.id,
+          category: widget.list.category,
+          source: 'navigation',
+        );
+      }
+      _isInitialized = true;
+    } catch (e) {
+      // Event logging is non-critical, continue without it
+      _isInitialized = false;
+    }
+  }
+
+  void _onScroll() {
+    if (_scrollController.hasClients) {
+      final currentDepth = _scrollController.position.pixels /
+          (_scrollController.position.maxScrollExtent > 0
+              ? _scrollController.position.maxScrollExtent
+              : 1.0);
+      if (currentDepth > _maxScrollDepth) {
+        _maxScrollDepth = currentDepth;
+        // Log scroll depth periodically (every 25% increase)
+        if (_isInitialized && (_maxScrollDepth * 100).round() % 25 == 0) {
+          _eventLogger.logScrollDepth(
+            listId: widget.list.id,
+            depthPercentage: _maxScrollDepth * 100,
+          );
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+
+    // Log list view duration
+    if (_isInitialized && _viewStartTime != null) {
+      final duration = DateTime.now().difference(_viewStartTime!);
+      _eventLogger.logListViewDuration(
+        listId: widget.list.id,
+        durationMs: duration.inMilliseconds,
+      );
+    }
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(list.title),
+        title: Text(widget.list.title),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         leading: IconButton(
@@ -60,7 +143,7 @@ class ListDetailsPage extends StatelessWidget {
                   children: [
                     Icon(Icons.delete,
                         color: Theme.of(context).colorScheme.error),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text('Delete List',
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.error)),
@@ -101,7 +184,7 @@ class ListDetailsPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
-                        list.category ?? 'Uncategorized',
+                        widget.list.category ?? 'Uncategorized',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Theme.of(context)
                                   .colorScheme
@@ -112,7 +195,7 @@ class ListDetailsPage extends StatelessWidget {
                     ),
                     const Spacer(),
                     Icon(
-                      list.isPublic ? Icons.public : Icons.lock,
+                      widget.list.isPublic ? Icons.public : Icons.lock,
                       size: 20,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -120,7 +203,7 @@ class ListDetailsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  list.description,
+                  widget.list.description,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 12),
@@ -133,7 +216,7 @@ class ListDetailsPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${list.spotIds.length} spots',
+                      '${widget.list.spotIds.length} spots',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color:
                                 Theme.of(context).colorScheme.onSurfaceVariant,
@@ -147,7 +230,7 @@ class ListDetailsPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${list.respectCount} respects',
+                      '${widget.list.respectCount} respects',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color:
                                 Theme.of(context).colorScheme.onSurfaceVariant,
@@ -165,7 +248,7 @@ class ListDetailsPage extends StatelessWidget {
               builder: (context, state) {
                 if (state is SpotsLoaded) {
                   final spotsInList = state.spots
-                      .where((spot) => list.spotIds.contains(spot.id))
+                      .where((spot) => widget.list.spotIds.contains(spot.id))
                       .toList();
 
                   if (spotsInList.isEmpty) {
@@ -206,6 +289,7 @@ class ListDetailsPage extends StatelessWidget {
                   }
 
                   return ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(16),
                     itemCount: spotsInList.length,
                     itemBuilder: (context, index) {
@@ -317,6 +401,17 @@ class ListDetailsPage extends StatelessWidget {
                             ],
                           ),
                           onTap: () {
+                            // Log spot tap (navigating to spot details)
+                            if (_isInitialized) {
+                              _eventLogger.logEvent(
+                                eventType: 'spot_tap',
+                                parameters: {
+                                  'spot_id': spot.id,
+                                  'list_id': widget.list.id,
+                                  'source': 'list_details',
+                                },
+                              );
+                            }
                             context.go('/spot/${spot.id}');
                           },
                         ),
@@ -356,8 +451,10 @@ class ListDetailsPage extends StatelessWidget {
     }
   }
 
+  SpotList get list => widget.list;
+
   void _navigateToEdit(BuildContext context) {
-    context.go('/list/${list.id}/edit');
+    context.go('/list/${widget.list.id}/edit');
   }
 
   void _showShareDialog(BuildContext context) {
@@ -365,39 +462,71 @@ class ListDetailsPage extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Share List'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.share),
-              title: const Text('Share via...'),
-              subtitle: const Text('Share to other apps'),
-              onTap: () {
-                Navigator.pop(context);
-                _shareToOtherApps();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.link),
-              title: const Text('Copy Link'),
-              subtitle: const Text('Copy shareable link'),
-              onTap: () {
-                Navigator.pop(context);
-                _copyListLink(context);
-              },
-            ),
-            if (list.isPublic) ...[
-              ListTile(
-                leading: const Icon(Icons.public),
-                title: const Text('Public List'),
-                subtitle: const Text('Anyone can view this list'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _sharePublicList();
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Social Media Sharing Section
+              FutureBuilder<List<String>>(
+                future: _getAvailableSocialPlatforms(context),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Share to Social Media',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        ...snapshot.data!.map((platform) => ListTile(
+                              leading: _getPlatformIcon(platform),
+                              title: Text(
+                                  'Share to ${platform[0].toUpperCase()}${platform.substring(1)}'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                _shareToSocialMedia(context, platform);
+                              },
+                            )),
+                        const Divider(),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
                 },
               ),
+              // Standard Sharing Options
+              ListTile(
+                leading: const Icon(Icons.share),
+                title: const Text('Share via...'),
+                subtitle: const Text('Share to other apps'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _shareToOtherApps();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.link),
+                title: const Text('Copy Link'),
+                subtitle: const Text('Copy shareable link'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _copyListLink(context);
+                },
+              ),
+              if (widget.list.isPublic) ...[
+                ListTile(
+                  leading: const Icon(Icons.public),
+                  title: const Text('Public List'),
+                  subtitle: const Text('Anyone can view this list'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _sharePublicList();
+                  },
+                ),
+              ],
             ],
-          ],
+          ),
         ),
         actions: [
           TextButton(
@@ -409,23 +538,140 @@ class ListDetailsPage extends StatelessWidget {
     );
   }
 
+  Future<List<String>> _getAvailableSocialPlatforms(
+      BuildContext context) async {
+    try {
+      final authBloc = context.read<AuthBloc>();
+      final authState = authBloc.state;
+      if (authState is! Authenticated) {
+        return [];
+      }
+
+      final userId = authState.user.id;
+      final sharingService = di.sl<SocialMediaSharingService>();
+      return await sharingService.getAvailablePlatforms(userId);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Widget _getPlatformIcon(String platform) {
+    IconData icon;
+    Color color;
+    switch (platform.toLowerCase()) {
+      case 'instagram':
+        icon = Icons.camera_alt;
+        color = Colors.purple;
+        break;
+      case 'facebook':
+        icon = Icons.facebook;
+        color = Colors.blue;
+        break;
+      case 'twitter':
+        icon = Icons.chat_bubble_outline;
+        color = Colors.lightBlue;
+        break;
+      case 'reddit':
+        icon = Icons.forum;
+        color = Colors.orange;
+        break;
+      case 'tumblr':
+        icon = Icons.auto_stories;
+        color = Colors.blue.shade900;
+        break;
+      case 'pinterest':
+        icon = Icons.push_pin;
+        color = Colors.red.shade700;
+        break;
+      default:
+        icon = Icons.link;
+        color = AppTheme.primaryColor;
+    }
+    return Icon(icon, color: color);
+  }
+
+  Future<void> _shareToSocialMedia(
+      BuildContext context, String platform) async {
+    try {
+      final authBloc = context.read<AuthBloc>();
+      final authState = authBloc.state;
+      if (authState is! Authenticated) {
+        throw Exception('User not authenticated');
+      }
+
+      final userId = authState.user.id;
+      final agentIdService = di.sl<AgentIdService>();
+      final agentId = await agentIdService.getUserAgentId(userId);
+      final sharingService = di.sl<SocialMediaSharingService>();
+
+      // Show loading
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sharing to $platform...'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+
+      // Share list
+      final results = await sharingService.shareList(
+        agentId: agentId,
+        userId: userId,
+        listId: widget.list.id,
+        listName: widget.list.title,
+        listDescription: widget.list.description,
+        spotCount: widget.list.spotIds.length,
+        platforms: [platform],
+      );
+
+      if (context.mounted) {
+        if (results[platform] == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Shared to $platform successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to share to $platform'),
+              backgroundColor: AppTheme.errorColor,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error sharing: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    }
+  }
+
   void _shareToOtherApps() {
-    final shareText = '''📝 ${list.title}
+    final shareText = '''📝 ${widget.list.title}
 
-${list.description.isNotEmpty ? '${list.description}\n' : ''}Category: ${list.category ?? 'Uncategorized'}
-Spots: ${list.spotIds.length}
-Respects: ${list.respectCount}
+${widget.list.description.isNotEmpty ? '${widget.list.description}\n' : ''}Category: ${widget.list.category ?? 'Uncategorized'}
+Spots: ${widget.list.spotIds.length}
+Respects: ${widget.list.respectCount}
 
-${list.isPublic ? 'This is a public list on SPOTS' : 'Shared from SPOTS'}
+${widget.list.isPublic ? 'This is a public list on SPOTS' : 'Shared from SPOTS'}
 
 SPOTS - know you belong.''';
 
-    Share.share(shareText, subject: 'Check out this list: ${list.title}');
+    Share.share(shareText,
+        subject: 'Check out this list: ${widget.list.title}');
   }
 
   void _copyListLink(BuildContext context) {
     // Generate a shareable link (this would normally be a deep link to the app)
-    final listLink = 'https://spots.app/list/${list.id}';
+    final listLink = 'https://spots.app/list/${widget.list.id}';
 
     Clipboard.setData(ClipboardData(text: listLink));
     ScaffoldMessenger.of(context).showSnackBar(
@@ -436,13 +682,13 @@ SPOTS - know you belong.''';
   }
 
   void _sharePublicList() {
-    final publicText = '''🌟 Public List: ${list.title}
+    final publicText = '''🌟 Public List: ${widget.list.title}
 
-${list.description}
+${widget.list.description}
 
-This curated list has ${list.respectCount} respects from the community and features ${list.spotIds.length} amazing spots.
+This curated list has ${widget.list.respectCount} respects from the community and features ${widget.list.spotIds.length} amazing spots.
 
-View on SPOTS: https://spots.app/list/${list.id}
+View on SPOTS: https://spots.app/list/${widget.list.id}
 
 SPOTS - know you belong.''';
 
@@ -455,7 +701,7 @@ SPOTS - know you belong.''';
       builder: (context) => AlertDialog(
         title: const Text('Delete List'),
         content: Text(
-            'Are you sure you want to delete "${list.title}"? This action cannot be undone.'),
+            'Are you sure you want to delete "${widget.list.title}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -463,11 +709,11 @@ SPOTS - know you belong.''';
           ),
           TextButton(
             onPressed: () {
-              context.read<ListsBloc>().add(DeleteList(list.id));
+              context.read<ListsBloc>().add(DeleteList(widget.list.id));
               Navigator.pop(context);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${list.title} deleted')),
+                SnackBar(content: Text('${widget.list.title} deleted')),
               );
             },
             style: TextButton.styleFrom(
@@ -485,16 +731,16 @@ SPOTS - know you belong.''';
       context: context,
       builder: (context) => SpotPickerDialog(
         list: list,
-        excludedSpotIds: list.spotIds,
+        excludedSpotIds: widget.list.spotIds,
       ),
     );
 
     if (selectedSpotIds != null && selectedSpotIds.isNotEmpty) {
       // Add selected spots to the list
-      final updatedSpotIds = List<String>.from(list.spotIds);
+      final updatedSpotIds = List<String>.from(widget.list.spotIds);
       updatedSpotIds.addAll(selectedSpotIds);
 
-      final updatedList = list.copyWith(
+      final updatedList = widget.list.copyWith(
         spotIds: updatedSpotIds,
         updatedAt: DateTime.now(),
       );
@@ -504,7 +750,7 @@ SPOTS - know you belong.''';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Added ${selectedSpotIds.length} spot${selectedSpotIds.length > 1 ? 's' : ''} to ${list.title}',
+            'Added ${selectedSpotIds.length} spot${selectedSpotIds.length > 1 ? 's' : ''} to ${widget.list.title}',
           ),
           backgroundColor: AppTheme.successColor,
         ),
@@ -527,10 +773,10 @@ SPOTS - know you belong.''';
           TextButton(
             onPressed: () {
               // Actually remove the spot from the list
-              final updatedSpotIds = List<String>.from(list.spotIds);
+              final updatedSpotIds = List<String>.from(widget.list.spotIds);
               updatedSpotIds.remove(spot.id);
 
-              final updatedList = list.copyWith(
+              final updatedList = widget.list.copyWith(
                 spotIds: updatedSpotIds,
                 updatedAt: DateTime.now(),
               );

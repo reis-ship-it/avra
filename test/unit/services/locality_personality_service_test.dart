@@ -13,12 +13,13 @@
 /// - Mock GoldenExpertAIInfluenceService: For golden expert weight calculation
 /// - Mock PersonalityLearning: For AI personality integration
 /// - Mock MultiPathExpertiseService: For golden expert data
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/locality_personality_service.dart';
+import 'package:spots_ai/services/locality_personality_service.dart';
 import 'package:spots/core/services/golden_expert_ai_influence_service.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/multi_path_expertise.dart';
 import '../../helpers/test_helpers.dart';
 import '../../helpers/platform_channel_helper.dart';

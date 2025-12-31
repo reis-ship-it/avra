@@ -10,6 +10,7 @@
 /// - deployment_readiness_validator.dart
 /// 
 /// To use: Import and call `TestPerformanceBenchmarks.analyzeTestPerformance()`
+library;
 
 import 'dart:io';
 import 'dart:math' as math;

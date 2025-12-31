@@ -382,7 +382,7 @@ void main() {
     group('createStarterListsForUser', () {
       test('creates predefined starter lists locally', () async {
         // Arrange
-        final userId = TestConstants.testUserId;
+        const userId = TestConstants.testUserId;
 
         // Act
         await repository.createStarterListsForUser(userId: userId);
@@ -403,7 +403,7 @@ void main() {
 
       test('handles save errors gracefully', () async {
         // Arrange
-        final userId = TestConstants.testUserId;
+        const userId = TestConstants.testUserId;
         fakeLocalDataSource.setShouldThrowOnSave(true);
 
         // Act & Assert: Should not throw exception
@@ -420,7 +420,7 @@ void main() {
           remoteDataSource: fakeRemoteDataSource,
           connectivity: fakeConnectivity,
         );
-        final userId = TestConstants.testUserId;
+        const userId = TestConstants.testUserId;
 
         // Act & Assert: Should not throw exception
         await repository.createStarterListsForUser(userId: userId);
@@ -430,7 +430,7 @@ void main() {
     group('createPersonalizedListsForUser', () {
       test('creates predefined personalized lists based on user preferences', () async {
         // Arrange
-        final userId = TestConstants.testUserId;
+        const userId = TestConstants.testUserId;
         final userPreferences = {
           'interests': ['coffee', 'parks', 'culture'],
           'location': 'San Francisco',
@@ -462,7 +462,7 @@ void main() {
 
       test('generates unique IDs for each personalized list', () async {
         // Arrange
-        final userId = TestConstants.testUserId;
+        const userId = TestConstants.testUserId;
         final userPreferences = <String, dynamic>{};
 
         // Act
@@ -487,7 +487,7 @@ void main() {
 
       test('handles save errors gracefully', () async {
         // Arrange
-        final userId = TestConstants.testUserId;
+        const userId = TestConstants.testUserId;
         final userPreferences = <String, dynamic>{};
         fakeLocalDataSource.setShouldThrowOnSave(true);
 

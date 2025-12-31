@@ -261,7 +261,7 @@ class BusinessOnboardingResult extends ControllerResult {
   final String? sharedAgentId;
   final String? warning;
 
-  BusinessOnboardingResult._({
+  const BusinessOnboardingResult._({
     required super.success,
     required super.error,
     required super.errorCode,

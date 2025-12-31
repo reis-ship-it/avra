@@ -57,7 +57,7 @@ void main() async {
     print('Deployment Approved: ${deploymentReport.deploymentApproved ? "✅ APPROVED" : "❌ BLOCKED"}');
     
     // Quality Assurance Summary
-    print('\n' + '=' * 60);
+    print('\n${'=' * 60}');
     print('📈 COMPREHENSIVE QUALITY ASSURANCE SUMMARY');
     print('=' * 60);
     

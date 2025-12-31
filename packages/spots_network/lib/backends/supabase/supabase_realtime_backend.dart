@@ -342,7 +342,7 @@ class SupabaseRealtimeBackend implements RealtimeBackend {
   @override
   Future<void> joinChannel(String channelId) async {
     final channel = _getOrCreateChannel(channelId);
-    await channel.subscribe();
+    channel.subscribe();
   }
   
   @override

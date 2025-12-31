@@ -56,7 +56,7 @@ void main() {
         createdBy: 'user-123',
         isVerified: true,
         isActive: true,
-        categories: ['Coffee'],
+        categories: const ['Coffee'],
         location: 'San Francisco',
       );
 
@@ -101,8 +101,8 @@ void main() {
 
         // Test with agreement terms (use different event ID since service only allows one partnership per event)
         final revenueSplit = [
-          SplitParty(partyId: 'user-123', type: SplitPartyType.user, percentage: 50.0, name: 'User'),
-          SplitParty(partyId: 'business-123', type: SplitPartyType.business, percentage: 50.0, name: 'Business'),
+          const SplitParty(partyId: 'user-123', type: SplitPartyType.user, percentage: 50.0, name: 'User'),
+          const SplitParty(partyId: 'business-123', type: SplitPartyType.business, percentage: 50.0, name: 'Business'),
         ];
         final agreement = PartnershipAgreement(
           id: 'agreement-1',

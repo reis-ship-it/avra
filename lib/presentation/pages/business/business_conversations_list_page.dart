@@ -30,7 +30,7 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
   List<Map<String, dynamic>> _expertConversations = [];
   List<Map<String, dynamic>> _businessConversations = [];
   bool _isLoading = true;
-  Map<String, int> _unreadCounts = {};
+  final Map<String, int> _unreadCounts = {};
 
   @override
   void initState() {
@@ -174,13 +174,13 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
     }
 
     if (_expertConversations.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.chat_bubble_outline,
                 size: 64, color: AppColors.textSecondary),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'No conversations with experts yet',
               style: TextStyle(
@@ -188,7 +188,7 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
                 fontSize: 16,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'Start chatting with experts to build partnerships',
               style: TextStyle(
@@ -222,13 +222,13 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
     }
 
     if (_businessConversations.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.business,
                 size: 64, color: AppColors.textSecondary),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'No conversations with businesses yet',
               style: TextStyle(
@@ -236,7 +236,7 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
                 fontSize: 16,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'Connect with other businesses for partnerships',
               style: TextStyle(
@@ -301,7 +301,7 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
       ),
       subtitle: Text(
         subtitle ?? '',
-        style: TextStyle(
+        style: const TextStyle(
           color: AppColors.textSecondary,
           fontSize: 12,
         ),
@@ -313,7 +313,7 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
           if (lastMessageAt != null)
             Text(
               _formatTime(lastMessageAt),
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 12,
               ),

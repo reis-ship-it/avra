@@ -16,7 +16,7 @@ void main() {
 
     group('fromLocation Factory', () {
       test('should create location quantum state from UnifiedLocation', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128, // New York City
           longitude: -74.0060,
           city: 'New York',
@@ -36,7 +36,7 @@ void main() {
       });
 
       test('should normalize latitude to [0, 1] range', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 90.0, // North pole
           longitude: 0.0,
         );
@@ -48,7 +48,7 @@ void main() {
       });
 
       test('should normalize longitude to [0, 1] range', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 0.0,
           longitude: 180.0, // International date line
         );
@@ -60,7 +60,7 @@ void main() {
       });
 
       test('should infer urban location type from city name', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
           city: 'Downtown New York',
@@ -73,7 +73,7 @@ void main() {
       });
 
       test('should infer rural location type from address', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
           address: 'Rural countryside farm',
@@ -86,7 +86,7 @@ void main() {
       });
 
       test('should use provided location type when available', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
@@ -100,7 +100,7 @@ void main() {
       });
 
       test('should use provided accessibility score when available', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
@@ -114,7 +114,7 @@ void main() {
       });
 
       test('should use provided vibe location match when available', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
@@ -130,7 +130,7 @@ void main() {
 
     group('Quantum State Properties', () {
       test('should create quantum state with correct structure', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
@@ -144,7 +144,7 @@ void main() {
       });
 
       test('should have normalized quantum states', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
@@ -164,7 +164,7 @@ void main() {
 
     group('Location Compatibility Calculation', () {
       test('should calculate compatibility between identical locations', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
@@ -179,12 +179,12 @@ void main() {
       });
 
       test('should calculate compatibility between nearby locations', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130, // Very close
           longitude: -74.0062,
         );
@@ -199,12 +199,12 @@ void main() {
       });
 
       test('should calculate lower compatibility for distant locations', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128, // New York
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 34.0522, // Los Angeles
           longitude: -118.2437,
         );
@@ -219,12 +219,12 @@ void main() {
       });
 
       test('should handle inner product calculation correctly', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130,
           longitude: -74.0062,
         );
@@ -242,7 +242,7 @@ void main() {
 
     group('Normalization', () {
       test('should normalize state vector correctly', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
@@ -263,12 +263,12 @@ void main() {
 
     group('Distance Calculation', () {
       test('should throw UnimplementedError for distance calculation', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128, // New York
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130, // Very close
           longitude: -74.0062,
         );
@@ -283,12 +283,12 @@ void main() {
       });
 
       test('should use UnifiedLocation.distanceTo for actual distance', () {
-        final locationA = UnifiedLocation(
+        const locationA = UnifiedLocation(
           latitude: 40.7128, // New York
           longitude: -74.0060,
         );
 
-        final locationB = UnifiedLocation(
+        const locationB = UnifiedLocation(
           latitude: 40.7130, // Very close
           longitude: -74.0062,
         );
@@ -303,7 +303,7 @@ void main() {
 
     group('Edge Cases', () {
       test('should handle locations at poles', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 90.0, // North pole
           longitude: 0.0,
         );
@@ -315,7 +315,7 @@ void main() {
       });
 
       test('should handle locations at equator', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 0.0,
           longitude: 0.0,
         );
@@ -327,7 +327,7 @@ void main() {
       });
 
       test('should handle locations with missing city/address', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
@@ -339,7 +339,7 @@ void main() {
       });
 
       test('should handle negative coordinates', () {
-        final location = UnifiedLocation(
+        const location = UnifiedLocation(
           latitude: -40.7128, // Southern hemisphere
           longitude: -74.0060,
         );

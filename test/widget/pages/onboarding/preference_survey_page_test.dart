@@ -15,7 +15,7 @@ void main() {
       // Test business logic: Preference survey page display and functionality
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: PreferenceSurveyPage(
-          preferences: {},
+          preferences: const {},
           onPreferencesChanged: (_) {},
         ),
       );

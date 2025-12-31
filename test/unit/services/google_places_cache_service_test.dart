@@ -105,7 +105,7 @@ void main() {
             await service.getCachedPlaceDetails('non-existent-place-id');
         expect(details1, isNull);
 
-        final placeId = 'ChIJN1t_tDeuEmsRUsoyG83frY4';
+        const placeId = 'ChIJN1t_tDeuEmsRUsoyG83frY4';
         final details2 = {
           'name': 'Test Place',
           'rating': 4.5,

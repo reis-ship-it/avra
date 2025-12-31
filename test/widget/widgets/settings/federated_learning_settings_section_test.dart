@@ -11,6 +11,7 @@
 /// Dependencies:
 /// - FederatedLearningSystem: For participation status
 /// - GetStorage: For preference storage
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,8 +57,8 @@ void main() {
           (WidgetTester tester) async {
         // Test business logic: Federated learning settings section user interactions
         final widget = WidgetTestHelpers.createTestableWidget(
-          child: Scaffold(
-            body: const FederatedLearningSettingsSection(),
+          child: const Scaffold(
+            body: FederatedLearningSettingsSection(),
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget);

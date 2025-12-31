@@ -98,21 +98,21 @@ void main() {
       test('should filter partnerships by business type', () {
         // Arrange
         final partnerships = [
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-1',
             type: ProfilePartnershipType.business,
             partnerId: 'business-1',
             partnerName: 'Business 1',
             status: PartnershipStatus.active,
           ),
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-2',
             type: ProfilePartnershipType.brand,
             partnerId: 'brand-1',
             partnerName: 'Brand 1',
             status: PartnershipStatus.active,
           ),
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-3',
             type: ProfilePartnershipType.business,
             partnerId: 'business-2',
@@ -134,14 +134,14 @@ void main() {
       test('should filter partnerships by brand type', () {
         // Arrange
         final partnerships = [
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-1',
             type: ProfilePartnershipType.business,
             partnerId: 'business-1',
             partnerName: 'Business 1',
             status: PartnershipStatus.active,
           ),
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-2',
             type: ProfilePartnershipType.brand,
             partnerId: 'brand-1',
@@ -163,14 +163,14 @@ void main() {
       test('should filter partnerships by company type', () {
         // Arrange
         final partnerships = [
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-1',
             type: ProfilePartnershipType.company,
             partnerId: 'company-1',
             partnerName: 'Company 1',
             status: PartnershipStatus.active,
           ),
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-2',
             type: ProfilePartnershipType.business,
             partnerId: 'business-1',
@@ -193,7 +193,7 @@ void main() {
     group('Scenario 3: Calculate Expertise Boost Flow', () {
       test('should calculate expertise boost from partnerships', () {
         // Arrange - Create partnerships with different statuses
-        final activePartnership = UserPartnership(
+        const activePartnership = UserPartnership(
           id: 'partnership-1',
           type: ProfilePartnershipType.business,
           partnerId: 'business-1',
@@ -204,7 +204,7 @@ void main() {
           eventCount: 3,
         );
 
-        final completedPartnership = UserPartnership(
+        const completedPartnership = UserPartnership(
           id: 'partnership-2',
           type: ProfilePartnershipType.brand,
           partnerId: 'brand-1',
@@ -256,7 +256,7 @@ void main() {
       test('should calculate boost with category alignment', () {
         // Arrange - Partnerships in same category
         final partnerships = [
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-1',
             type: ProfilePartnershipType.business,
             partnerId: 'business-1',
@@ -265,7 +265,7 @@ void main() {
             category: 'Food',
             eventCount: 3,
           ),
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-2',
             type: ProfilePartnershipType.brand,
             partnerId: 'brand-1',
@@ -293,7 +293,7 @@ void main() {
       test('should filter public partnerships only', () {
         // Arrange
         final partnerships = [
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-1',
             type: ProfilePartnershipType.business,
             partnerId: 'business-1',
@@ -301,7 +301,7 @@ void main() {
             status: PartnershipStatus.active,
             isPublic: true,
           ),
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-2',
             type: ProfilePartnershipType.brand,
             partnerId: 'brand-1',
@@ -309,7 +309,7 @@ void main() {
             status: PartnershipStatus.active,
             isPublic: false,
           ),
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-3',
             type: ProfilePartnershipType.company,
             partnerId: 'company-1',
@@ -331,7 +331,7 @@ void main() {
 
       test('should toggle partnership visibility', () {
         // Arrange
-        final partnership = UserPartnership(
+        const partnership = UserPartnership(
           id: 'partnership-1',
           type: ProfilePartnershipType.business,
           partnerId: 'business-1',
@@ -351,7 +351,7 @@ void main() {
       test('should filter active partnerships for profile display', () {
         // Arrange
         final partnerships = [
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-1',
             type: ProfilePartnershipType.business,
             partnerId: 'business-1',
@@ -359,7 +359,7 @@ void main() {
             status: PartnershipStatus.active,
             isPublic: true,
           ),
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-2',
             type: ProfilePartnershipType.brand,
             partnerId: 'brand-1',
@@ -367,7 +367,7 @@ void main() {
             status: PartnershipStatus.completed,
             isPublic: true,
           ),
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-3',
             type: ProfilePartnershipType.company,
             partnerId: 'company-1',

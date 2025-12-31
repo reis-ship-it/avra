@@ -197,7 +197,7 @@ void main() {
       expect(collaborative, isA<List>());
       
       // System provides multiple approaches to recommendations
-      final totalAlgorithms = 4; // contextual, time, weather, collaborative
+      const totalAlgorithms = 4; // contextual, time, weather, collaborative
       expect(totalAlgorithms, greaterThanOrEqualTo(4));
     });
 

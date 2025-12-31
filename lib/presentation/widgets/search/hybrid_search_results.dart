@@ -80,9 +80,9 @@ class HybridSearchResults extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     'Try a different search term or location',
-                    style: const TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(color: AppColors.textSecondary),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -143,14 +143,14 @@ class HybridSearchResults extends StatelessWidget {
                         state.isCommunityPrioritized
                             ? 'Community-First Results'
                             : 'External Data Heavy',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
                         ),
                       ),
                       Text(
                         '${state.totalCount} total • ${state.communityCount} community • ${state.externalCount} external',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),

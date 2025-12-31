@@ -7,6 +7,7 @@
 /// - Device timeout (how long before removing stale devices)
 ///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -214,7 +215,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                         validator: _validateScanInterval,
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      const Text(
                         'Recommended: 5-10 seconds for active discovery',
                         style: TextStyle(
                           fontSize: 11,
@@ -269,7 +270,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                         validator: _validateDeviceTimeout,
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      const Text(
                         'Recommended: 2-5 minutes to balance freshness and stability',
                         style: TextStyle(
                           fontSize: 11,

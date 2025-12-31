@@ -2,6 +2,7 @@
 ///
 /// Part of Feature Matrix Phase 1: Critical UI/UX
 /// Section 1.2: Device Discovery UI
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,9 +30,9 @@ void main() {
       GetIt.instance
           .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator1);
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const AI2AIConnectionViewWidget(),
+            body: AI2AIConnectionViewWidget(),
           ),
         ),
       );
@@ -46,9 +47,9 @@ void main() {
       GetIt.instance
           .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator2);
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const AI2AIConnectionViewWidget(),
+            body: AI2AIConnectionViewWidget(),
           ),
         ),
       );
@@ -68,9 +69,9 @@ void main() {
       GetIt.instance
           .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator3);
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const AI2AIConnectionViewWidget(),
+            body: AI2AIConnectionViewWidget(),
           ),
         ),
       );
@@ -86,9 +87,9 @@ void main() {
       GetIt.instance
           .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator4);
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const AI2AIConnectionViewWidget(),
+            body: AI2AIConnectionViewWidget(),
           ),
         ),
       );
@@ -104,9 +105,9 @@ void main() {
       GetIt.instance
           .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator5);
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const AI2AIConnectionViewWidget(),
+            body: AI2AIConnectionViewWidget(),
           ),
         ),
       );
@@ -121,9 +122,9 @@ void main() {
       GetIt.instance
           .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator6);
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const AI2AIConnectionViewWidget(),
+            body: AI2AIConnectionViewWidget(),
           ),
         ),
       );
@@ -138,9 +139,9 @@ void main() {
       GetIt.instance
           .registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator7);
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const AI2AIConnectionViewWidget(),
+            body: AI2AIConnectionViewWidget(),
           ),
         ),
       );

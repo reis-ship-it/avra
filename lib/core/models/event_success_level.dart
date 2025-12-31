@@ -71,9 +71,9 @@ enum EventSuccessLevel {
     required double averageRating,
   }) {
     // Weighted score calculation
-    final attendanceWeight = 0.2;
-    final revenueWeight = 0.3;
-    final qualityWeight = 0.5;
+    const attendanceWeight = 0.2;
+    const revenueWeight = 0.3;
+    const qualityWeight = 0.5;
     
     final overallScore = (attendanceRate * attendanceWeight) +
         (revenueTargetMet * revenueWeight) +

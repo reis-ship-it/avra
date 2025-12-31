@@ -68,7 +68,7 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: AppTheme.primaryColor,
               onPrimary: AppColors.white,
             ),
@@ -123,7 +123,7 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.calendar_today,
                       color: AppTheme.primaryColor,
                       size: 24,
@@ -156,7 +156,7 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
                         ],
                       ),
                     ),
-                    Icon(
+                    const Icon(
                       Icons.arrow_forward_ios,
                       size: 16,
                       color: AppColors.grey400,
@@ -181,7 +181,7 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.info_outline,
                     color: AppTheme.primaryColor,
                     size: 24,
@@ -228,7 +228,7 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
+                const Icon(
                   Icons.lock_outline,
                   color: AppColors.grey600,
                   size: 20,

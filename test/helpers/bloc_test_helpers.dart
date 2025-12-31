@@ -2,6 +2,7 @@
 /// 
 /// Provides common utilities for testing BLoCs with consistent patterns
 /// Ensures optimal development and deployment through comprehensive testing
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/spot.dart';

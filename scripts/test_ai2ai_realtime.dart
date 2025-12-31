@@ -361,7 +361,7 @@ Future<void> _testAI2AICommunication(
     });
 
     // Wait for some events to be received
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 5));
 
     developer.log('✅ AI2AI communication test completed',
         name: 'TestAI2AIRealtime');
@@ -423,7 +423,7 @@ Future<void> _testPresenceTracking(AI2AIRealtimeService realtimeService) async {
     });
 
     // Wait for presence updates
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3));
 
     developer.log('✅ Presence tracking test completed',
         name: 'TestAI2AIRealtime');

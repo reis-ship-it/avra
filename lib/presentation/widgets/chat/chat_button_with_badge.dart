@@ -5,6 +5,7 @@
 /// 
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
+library;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -50,7 +51,7 @@ class _ChatButtonWithBadgeState extends State<ChatButtonWithBadge> {
 
       // TODO: Get community unread count when method is available
       // For now, only counting friend unread messages
-      final communityUnread = 0;
+      const communityUnread = 0;
 
       if (mounted) {
         setState(() {
@@ -75,7 +76,7 @@ class _ChatButtonWithBadgeState extends State<ChatButtonWithBadge> {
               top: -4,
               child: Container(
                 padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.error,
                   shape: BoxShape.circle,
                 ),

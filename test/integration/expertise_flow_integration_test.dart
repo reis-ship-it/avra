@@ -144,7 +144,7 @@ void main() {
           id: 'phase-1',
           name: PhaseName.growth,
           userCountThreshold: 10000,
-          saturationFactors: SaturationFactors(),
+          saturationFactors: const SaturationFactors(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -188,8 +188,8 @@ void main() {
     
     group('Scenario 2: Multiple Visits Leading to Expertise Unlock', () {
       test('should progress from multiple visits to expertise unlock', () async {
-        final userId = 'user-2';
-        final category = 'Coffee';
+        const userId = 'user-2';
+        const category = 'Coffee';
         
         // Create multiple visits
         final visits = <Visit>[];
@@ -273,7 +273,7 @@ void main() {
           id: 'phase-1',
           name: PhaseName.growth,
           userCountThreshold: 10000,
-          saturationFactors: SaturationFactors(),
+          saturationFactors: const SaturationFactors(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -308,8 +308,8 @@ void main() {
     
     group('Scenario 3: Expertise Progression Through Levels', () {
       test('should progress through expertise levels', () async {
-        final userId = 'user-3';
-        final category = 'Coffee';
+        const userId = 'user-3';
+        const category = 'Coffee';
         
         // Simulate progression: Local → City → Region
         // Start with Local level (few visits)
@@ -359,8 +359,8 @@ void main() {
     
     group('Scenario 4: Expertise Unlocking Event Hosting', () {
       test('should unlock event hosting at Local level', () async {
-        final userId = 'user-4';
-        final category = 'Coffee';
+        const userId = 'user-4';
+        const category = 'Coffee';
         
         // Create user with Local level expertise
         final user = IntegrationTestHelpers.createUserWithLocalExpertise(
@@ -387,8 +387,8 @@ void main() {
     
     group('Scenario 5: Automatic Check-in to Expertise Flow', () {
       test('should track automatic check-ins and contribute to expertise', () async {
-        final userId = 'user-5';
-        final category = 'Coffee';
+        const userId = 'user-5';
+        const category = 'Coffee';
         
         // Create multiple automatic check-ins
         final checkIns = <String>[];
@@ -412,7 +412,7 @@ void main() {
         expect(checkIns.length, equals(5));
         
         // Get all visits
-        final visits = await checkInService.getUserVisits(userId);
+        final visits = checkInService.getUserVisits(userId);
         expect(visits.length, equals(5));
         
         // Calculate expertise from visits

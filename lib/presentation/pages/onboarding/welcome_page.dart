@@ -11,6 +11,7 @@
 /// - Skip button for returning users
 /// 
 /// Design inspired by Apple onboarding vibe but with SPOTS minimalist aesthetic.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -102,7 +103,7 @@ class _WelcomePageState extends State<WelcomePage>
           onTap: _handleTapContinue,
           behavior: HitTestBehavior.opaque,
           child: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

@@ -46,7 +46,7 @@ void main() {
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: PerformanceIssuesList(
           issues: issues1,
-          recommendations: [],
+          recommendations: const [],
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
@@ -74,7 +74,7 @@ void main() {
       ];
       final widget3 = WidgetTestHelpers.createTestableWidget(
         child: PerformanceIssuesList(
-          issues: [],
+          issues: const [],
           recommendations: recommendations1,
         ),
       );

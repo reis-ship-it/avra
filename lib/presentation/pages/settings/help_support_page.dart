@@ -18,17 +18,17 @@ class HelpSupportPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Welcome Message
-            Card(
+            const Card(
               color: AppColors.grey100,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.support_agent, color: AppColors.textSecondary),
-                        const SizedBox(width: 8),
+                        Icon(Icons.support_agent, color: AppColors.textSecondary),
+                        SizedBox(width: 8),
                         Text(
                           'We\'re Here to Help',
                           style: TextStyle(
@@ -39,10 +39,10 @@ class HelpSupportPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'SPOTS is designed to be effortless and seamless. If you need help or have questions, we\'re here to support you.',
-                      style: const TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(color: AppColors.textSecondary),
                     ),
                   ],
                 ),

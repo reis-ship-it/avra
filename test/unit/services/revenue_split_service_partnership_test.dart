@@ -45,13 +45,13 @@ void main() {
           () async {
         // Test business logic: revenue split calculation with fees and validation
         final parties2Way = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 50.0,
             name: 'User',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 50.0,
@@ -79,19 +79,19 @@ void main() {
         expect(revenueSplit1.processingFee, closeTo(4.10, 0.01));
 
         final parties3Way = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 40.0,
             name: 'User',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 35.0,
             name: 'Business',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'sponsor-123',
             type: SplitPartyType.sponsor,
             percentage: 25.0,
@@ -108,13 +108,13 @@ void main() {
         expect(revenueSplit2.isValid, isTrue);
 
         final invalidParties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 40.0,
             name: 'User',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 50.0,
@@ -194,13 +194,13 @@ void main() {
           () async {
         // Test business logic: revenue split locking with validation
         final parties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 50.0,
             name: 'User',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 50.0,
@@ -255,14 +255,14 @@ void main() {
           () async {
         // Test business logic: payment distribution with validation
         final parties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 50.0,
             amount: 43.50,
             name: 'User',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 50.0,
@@ -319,14 +319,14 @@ void main() {
           () async {
         // Test business logic: earnings tracking with date filtering
         final parties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 50.0,
             amount: 43.50,
             name: 'User',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 50.0,

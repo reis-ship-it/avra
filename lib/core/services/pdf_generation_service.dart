@@ -133,7 +133,7 @@ class PDFGenerationService {
         pw.SizedBox(height: 8),
         pw.Text(
           'Payment Card and Third Party Network Transactions',
-          style: pw.TextStyle(fontSize: 12),
+          style: const pw.TextStyle(fontSize: 12),
         ),
         pw.SizedBox(height: 4),
         pw.Text(
@@ -143,7 +143,7 @@ class PDFGenerationService {
         pw.SizedBox(height: 4),
         pw.Text(
           'Tax Year: $taxYear',
-          style: pw.TextStyle(fontSize: 10),
+          style: const pw.TextStyle(fontSize: 10),
         ),
       ],
     );
@@ -167,8 +167,8 @@ class PDFGenerationService {
             style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
           ),
           pw.SizedBox(height: 4),
-          pw.Text(payerName, style: pw.TextStyle(fontSize: 10)),
-          pw.Text(payerAddress, style: pw.TextStyle(fontSize: 10)),
+          pw.Text(payerName, style: const pw.TextStyle(fontSize: 10)),
+          pw.Text(payerAddress, style: const pw.TextStyle(fontSize: 10)),
           pw.SizedBox(height: 8),
           pw.Text(
             'PAYER\'S TIN: $payerTIN',
@@ -225,7 +225,7 @@ class PDFGenerationService {
               style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 4),
-            pw.Text(taxpayerAddress, style: pw.TextStyle(fontSize: 10)),
+            pw.Text(taxpayerAddress, style: const pw.TextStyle(fontSize: 10)),
           ],
         ],
       ),
@@ -256,7 +256,7 @@ class PDFGenerationService {
           pw.SizedBox(height: 8),
           pw.Text(
             'Tax Year: $taxYear',
-            style: pw.TextStyle(fontSize: 10),
+            style: const pw.TextStyle(fontSize: 10),
           ),
         ],
       ),
@@ -277,7 +277,7 @@ class PDFGenerationService {
             child: pw.Text(
               'NOTICE: This form was filed with incomplete taxpayer information. '
               'The IRS will contact you directly to obtain your tax identification number.',
-              style: pw.TextStyle(fontSize: 9, color: PdfColors.red),
+              style: const pw.TextStyle(fontSize: 9, color: PdfColors.red),
             ),
           ),
           pw.SizedBox(height: 12),
@@ -289,7 +289,7 @@ class PDFGenerationService {
         pw.SizedBox(height: 8),
         pw.Text(
           'For questions, contact SPOTS support or visit spots.app/support',
-          style: pw.TextStyle(fontSize: 8),
+          style: const pw.TextStyle(fontSize: 8),
         ),
       ],
     );

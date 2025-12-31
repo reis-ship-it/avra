@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:spots/core/models/onboarding_data.dart';
 import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/injection_container.dart' as di;
+import 'package:spots/core/services/onboarding_aggregation_service.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';
+import 'package:get_it/get_it.dart';
 
 /// OnboardingDataService
 /// 
@@ -10,15 +14,20 @@ import 'package:sembast/sembast.dart';
 /// Uses agentId (not userId) internally for privacy protection per Master Plan Phase 7.3.
 /// 
 /// Accepts userId in public API but converts to agentId internally.
+/// Phase 11 Section 4: Integrates with onboarding-aggregation edge function.
 class OnboardingDataService {
   static const String _logName = 'OnboardingDataService';
   static const String _dataKeyPrefix = 'onboarding_data_';
   
   final AgentIdService _agentIdService;
+  final OnboardingAggregationService? _onboardingAggregationService;
   
   OnboardingDataService({
     AgentIdService? agentIdService,
-  }) : _agentIdService = agentIdService ?? AgentIdService();
+    OnboardingAggregationService? onboardingAggregationService,
+  }) : _agentIdService = agentIdService ?? 
+        di.sl<AgentIdService>(),
+       _onboardingAggregationService = onboardingAggregationService;
   
   /// Save onboarding data (accepts userId, converts to agentId internally)
   /// 
@@ -65,6 +74,9 @@ class OnboardingDataService {
         '✅ Onboarding data saved for user: $userId (agentId: ${agentId.substring(0, 10)}...)',
         name: _logName,
       );
+      
+      // Phase 11 Section 4: Trigger onboarding aggregation via edge function (non-blocking)
+      _triggerOnboardingAggregation(userId, dataWithAgentId);
     } catch (e, stackTrace) {
       developer.log(
         'Error saving onboarding data: $e',
@@ -74,6 +86,39 @@ class OnboardingDataService {
       );
       rethrow;
     }
+  }
+  
+  /// Trigger onboarding aggregation via edge function (non-blocking)
+  void _triggerOnboardingAggregation(String userId, OnboardingData data) {
+    // Use service if available, otherwise try to get from DI
+    final aggregationService = _onboardingAggregationService ?? 
+        (GetIt.instance.isRegistered<OnboardingAggregationService>()
+            ? GetIt.instance<OnboardingAggregationService>()
+            : null);
+    
+    if (aggregationService == null) {
+      developer.log(
+        'OnboardingAggregationService not available, skipping aggregation',
+        name: _logName,
+      );
+      return;
+    }
+    
+      // Call aggregation in background (don't block)
+      unawaited(
+        aggregationService.aggregateOnboardingData(
+          userId: userId,
+          onboardingData: data,
+        ).catchError((error) {
+          developer.log(
+            'Error in onboarding aggregation (non-blocking): $error',
+            name: _logName,
+          );
+          // Don't rethrow - aggregation failure shouldn't break onboarding
+          // Return empty map to satisfy return type requirement
+          return <String, double>{};
+        }),
+      );
   }
   
   /// Get onboarding data (accepts userId, converts to agentId internally)

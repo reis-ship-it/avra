@@ -1,9 +1,17 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:spots/injection_container_core.dart';
+import 'package:spots/injection_container_payment.dart';
+import 'package:spots/injection_container_admin.dart';
+import 'package:spots/injection_container_knot.dart';
+import 'package:spots/injection_container_quantum.dart';
+import 'package:spots/injection_container_ai.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:sembast/sembast.dart';
 
 // Database
-import 'package:spots/data/datasources/local/sembast_database.dart';
+// Note: SembastDatabase is now initialized in registerCoreServices() (injection_container_core.dart)
 
 // Auth
 import 'package:spots/data/datasources/remote/auth_remote_datasource.dart';
@@ -54,81 +62,49 @@ import 'package:spots/data/repositories/hybrid_search_repository.dart';
 import 'package:spots/domain/usecases/search/hybrid_search_usecase.dart';
 import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
 
-// Phase 4: Performance Optimization & AI Features
-import 'package:spots/core/services/search_cache_service.dart';
-import 'package:spots/core/services/ai_search_suggestions_service.dart';
-
 // Phase 2: Missing Services
 import 'package:spots/core/services/role_management_service.dart';
 import 'package:spots/core/models/user_role.dart';
-import 'package:spots/core/services/community_validation_service.dart';
-import 'package:spots/core/services/performance_monitor.dart';
-import 'package:spots/core/services/security_validator.dart';
-import 'package:spots/core/services/deployment_validator.dart';
+// Note: SearchCacheService, AISearchSuggestionsService, CommunityValidationService,
+// PerformanceMonitor, SecurityValidator, and DeploymentValidator are now registered
+// in registerCoreServices() (injection_container_core.dart)
 
 // Patent #30: Quantum Atomic Clock System
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 
+// Patent #31: Topological Knot Theory for Personality Representation
+// Note: Most knot services are registered in registerKnotServices() (injection_container_knot.dart)
+// Import only services needed in main container (for CommunityService dependencies)
+import 'package:spots_knot/services/knot/knot_fabric_service.dart';
+import 'package:spots_knot/services/knot/knot_storage_service.dart';
 // Quantum Enhancement Implementation Plan - Phase 2.1: Decoherence Tracking
-import 'package:spots/data/datasources/local/decoherence_pattern_local_datasource.dart';
-import 'package:spots/data/datasources/local/decoherence_pattern_sembast_datasource.dart';
-import 'package:spots/data/repositories/decoherence_pattern_repository_impl.dart';
-import 'package:spots/domain/repositories/decoherence_pattern_repository.dart';
-import 'package:spots/core/services/decoherence_tracking_service.dart';
-
 // Quantum Enhancement Implementation Plan - Phase 3.1: Quantum Prediction Features
-import 'package:spots/core/ai/quantum/quantum_feature_extractor.dart';
-import 'package:spots/core/services/quantum_prediction_enhancer.dart';
-import 'package:spots/core/ml/training/quantum_prediction_training_pipeline.dart';
-
 // Quantum Enhancement Implementation Plan - Phase 4.1: Quantum Satisfaction Enhancement
-import 'package:spots/core/ai/quantum/quantum_satisfaction_feature_extractor.dart';
-import 'package:spots/core/services/quantum_satisfaction_enhancer.dart';
-
 // Feature Flag System
-import 'package:spots/core/services/feature_flag_service.dart';
-
 // Supabase Backend Integration
 import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/ai2ai_realtime_service.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/feedback_learning.dart';
-import 'package:spots/core/ml/nlp_processor.dart';
-import 'package:spots/core/services/usage_pattern_tracker.dart';
-import 'package:spots/core/services/ai2ai_learning_service.dart';
-import 'package:spots/core/ai2ai/connection_log_queue.dart';
-import 'package:spots/core/ai2ai/cloud_intelligence_sync.dart';
-import 'package:spots/core/network/ai2ai_protocol.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/ai_improvement_tracking_service.dart';
-import 'package:spots/core/services/action_history_service.dart';
-import 'package:spots/core/services/contextual_personality_service.dart';
 import 'package:spots/core/services/enhanced_connectivity_service.dart';
-import 'package:spots/core/p2p/federated_learning.dart';
-import 'package:spots/core/p2p/node_manager.dart';
-import 'package:spots/core/services/large_city_detection_service.dart';
-import 'package:spots/core/services/neighborhood_boundary_service.dart';
+// Note: LargeCityDetectionService, NeighborhoodBoundaryService, and GeographicScopeService
+// are now registered in registerCoreServices() (injection_container_core.dart)
 import 'package:spots/core/services/geographic_scope_service.dart';
 // Business Chat Services (AI2AI routing)
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/business_expert_chat_service_ai2ai.dart';
-import 'package:spots/core/services/business_business_chat_service_ai2ai.dart';
-import 'package:spots/core/services/business_expert_outreach_service.dart';
-import 'package:spots/core/services/business_business_outreach_service.dart';
-import 'package:spots/core/services/business_member_service.dart';
 import 'package:spots/core/services/business_shared_agent_service.dart';
 // Onboarding & Agent Creation Services (Phase 1: Foundation)
 import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/social_media_vibe_analyzer.dart';
+import 'package:spots/core/services/edge_function_service.dart';
+import 'package:spots/core/services/onboarding_aggregation_service.dart';
+import 'package:spots/core/services/social_enrichment_service.dart';
 import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/services/oauth_deep_link_handler.dart';
 import 'package:spots/core/services/onboarding_place_list_generator.dart';
 import 'package:spots/core/services/onboarding_recommendation_service.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/event_recommendation_service.dart' as event_rec_service;
+import 'package:spots/core/services/event_recommendation_service.dart'
+    as event_rec_service;
 // Controllers (Phase 8.11)
 import 'package:spots/core/controllers/onboarding_flow_controller.dart';
 import 'package:spots/core/controllers/agent_initialization_controller.dart';
@@ -146,16 +122,22 @@ import 'package:spots/core/controllers/partnership_proposal_controller.dart';
 import 'package:spots/core/controllers/profile_update_controller.dart';
 import 'package:spots/core/controllers/sponsorship_checkout_controller.dart';
 import 'package:spots/core/services/cancellation_service.dart';
-import 'package:spots/core/services/refund_service.dart';
 import 'package:spots/core/controllers/sync_controller.dart';
 import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
+
+// Phase 19: Multi-Entity Quantum Entanglement Matching System
+import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
+import 'package:spots_quantum/services/quantum/location_timing_quantum_state_service.dart';
+
+// Phase 15: Reservation System with Quantum Integration
+import 'package:spots/core/services/reservation_quantum_service.dart';
+import 'package:spots/core/services/reservation_service.dart';
+import 'package:spots/core/services/reservation_recommendation_service.dart';
+import 'package:spots/core/services/event_success_analysis_service.dart';
+import 'package:spots/core/services/post_event_feedback_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/config_service.dart';
 // Device Discovery & Advertising
-import 'package:spots/core/network/device_discovery.dart';
-import 'package:spots/core/network/device_discovery_factory.dart';
-import 'package:spots/core/network/personality_advertising_service.dart';
 // Single integration boundary
 import 'package:spots_network/spots_network.dart';
 import 'package:spots/supabase_config.dart';
@@ -171,44 +153,48 @@ import 'package:spots/data/datasources/remote/google_places_datasource_new_impl.
 import 'package:spots/google_places_config.dart';
 
 // Admin Services (God-Mode Admin System)
-import 'package:spots/core/services/admin_auth_service.dart';
-import 'package:spots/core/services/business_auth_service.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart';
-import 'package:spots/core/services/admin_communication_service.dart';
 import 'package:spots/core/services/business_account_service.dart';
 import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/ml/predictive_analytics.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/services/expertise_service.dart';
 // Payment Processing - Agent 1: Payment Processing & Revenue
-import 'package:spots/core/services/stripe_service.dart';
 import 'package:spots/core/services/payment_service.dart';
 import 'package:spots/core/services/payment_event_service.dart';
-import 'package:spots/core/services/payout_service.dart';
 import 'package:spots/core/services/revenue_split_service.dart';
 import 'package:spots/core/services/partnership_service.dart';
 import 'package:spots/core/services/sponsorship_service.dart';
 import 'package:spots/core/services/product_tracking_service.dart';
-import 'package:spots/core/services/product_sales_service.dart';
-import 'package:spots/core/services/brand_analytics_service.dart';
-import 'package:spots/core/services/brand_discovery_service.dart';
-import 'package:spots/core/config/stripe_config.dart';
-import 'package:spots/core/services/location_obfuscation_service.dart';
-import 'package:spots/core/services/user_anonymization_service.dart';
-import 'package:spots/core/services/field_encryption_service.dart';
-import 'package:spots/core/services/audit_log_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/legal_document_service.dart';
 import 'package:spots/core/services/sales_tax_service.dart';
-import 'package:spots/core/services/permissions_persistence_service.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots/core/services/user_name_resolution_service.dart';
-import 'package:spots/core/services/personality_agent_chat_service.dart';
-import 'package:spots/core/services/friend_chat_service.dart';
-import 'package:spots/core/services/community_chat_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
 import 'package:spots/core/services/community_service.dart';
 import 'package:spots/core/services/geographic_expansion_service.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
+import 'package:spots/core/ai/facts_index.dart';
+// Phase 12: Neural Network Implementation
+import 'package:spots/core/services/calling_score_data_collector.dart';
+import 'package:spots/core/services/calling_score_calculator.dart';
+import 'package:spots/core/services/calling_score_baseline_metrics.dart';
+import 'package:spots/core/services/calling_score_training_data_preparer.dart';
+import 'package:spots/core/services/calling_score_ab_testing_service.dart';
+import 'package:spots/core/ml/calling_score_neural_model.dart';
+import 'package:spots/core/services/behavior_assessment_service.dart';
+import 'package:spots/core/ml/outcome_prediction_model.dart';
+import 'package:spots/core/services/outcome_prediction_service.dart';
+import 'package:spots/core/services/model_version_manager.dart';
+import 'package:spots/core/services/online_learning_service.dart';
+import 'package:spots/core/services/model_retraining_service.dart';
+import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:spots/core/crypto/signal/signal_key_manager.dart';
+import 'package:spots/core/crypto/signal/signal_session_manager.dart';
+import 'package:spots/core/crypto/signal/signal_protocol_service.dart';
+import 'package:spots/core/crypto/signal/signal_platform_bridge_bindings.dart';
+import 'package:spots/core/crypto/signal/signal_rust_wrapper_bindings.dart';
+import 'package:spots/core/crypto/signal/signal_ffi_store_callbacks.dart';
+import 'package:spots/core/services/signal_protocol_initialization_service.dart';
+import 'package:spots/core/services/hybrid_encryption_service.dart';
+import 'package:spots/core/services/signal_protocol_encryption_service.dart';
+import 'package:spots/core/services/secure_mapping_encryption_service.dart';
+import 'package:spots/core/services/agent_id_migration_service.dart';
+import 'package:spots/core/services/mapping_key_rotation_service.dart';
 
 final sl = GetIt.instance;
 
@@ -217,23 +203,13 @@ Future<void> init() async {
   const logger = AppLogger(defaultTag: 'DI', minimumLevel: LogLevel.debug);
   logger.info('🔧 [DI] Starting dependency injection initialization...');
 
-  // External
-  logger.debug('📡 [DI] Registering Connectivity...');
-  sl.registerLazySingleton(() => Connectivity());
-
-  // Permissions Persistence Service
-  sl.registerLazySingleton(() => PermissionsPersistenceService());
-
-  // Initialize Sembast Database (works on both web and mobile now)
-  try {
-    logger.debug('💾 [DI] Initializing Sembast database...');
-    final sembastDb = await SembastDatabase.database;
-    sl.registerLazySingleton(() => sembastDb);
-    logger.debug('✅ [DI] Sembast database registered');
-  } catch (e) {
-    logger.warn('⚠️ [DI] Sembast database initialization failed: $e');
-    // Continue even if database initialization fails
-  }
+  // Register core services first (foundational services that other modules depend on)
+  // This includes: Connectivity, PermissionsPersistenceService, Sembast Database,
+  // StorageService, FeatureFlagService, Geographic services, CommunityValidationService,
+  // AtomicClockService, PerformanceMonitor, SecurityValidator, DeploymentValidator,
+  // SearchCacheService, AISearchSuggestionsService, UserVibeAnalyzer, and SharedPreferencesCompat
+  await registerCoreServices(sl);
+  logger.debug('✅ [DI] Core services registered');
 
   // Data Sources - Local (Offline-First)
   sl.registerLazySingleton<AuthLocalDataSource>(() => AuthSembastDataSource());
@@ -347,167 +323,190 @@ Future<void> init() async {
   // Hybrid Search Use case (Phase 2)
   sl.registerLazySingleton(() => HybridSearchUseCase(sl()));
 
-  // Services
-  sl.registerLazySingleton(() => SearchCacheService());
-  sl.registerLazySingleton(() => AISearchSuggestionsService());
-  // Storage service for UserVibeAnalyzer
-  final sharedPrefs = await StorageService.getInstance();
-  // Expose SharedPreferences so UI/services can use via DI
-  // Note: SharedPreferencesCompat is typedef'd as SharedPreferences
-  sl.registerLazySingleton<SharedPreferencesCompat>(() => sharedPrefs);
-  // Register both types for compatibility
-  // Note: SharedPreferencesCompat implements the same interface, but some services need the original type
-  // We'll register both and services can use whichever they need
-  // For services that require the original SharedPreferences type, we need to use SharedPreferencesCompat
-  // since we're using get_storage instead of shared_preferences
-  // Note: The cast below will fail at runtime - services should be updated to use SharedPreferencesCompat
-  // sl.registerLazySingleton<sp.SharedPreferences>(
-  //     () => sharedPrefs as sp.SharedPreferences); // REMOVED: Invalid cast causes runtime errors
-  sl.registerLazySingleton(() => UserVibeAnalyzer(prefs: sharedPrefs));
-
-  // Storage Service (needed by Phase 2 services)
-  // Initialize StorageService instance
-  final storageService = StorageService.instance;
-  await storageService.init();
-  sl.registerLazySingleton<StorageService>(() => storageService);
-
-  // Feature Flag Service (for gradual rollout and A/B testing)
-  sl.registerLazySingleton<FeatureFlagService>(
-    () => FeatureFlagService(
-      storage: sl<StorageService>(),
-    ),
-  );
-
-  // Geographic Services (Phase 6: Local Expert System Redesign)
-  sl.registerLazySingleton<LargeCityDetectionService>(
-      () => LargeCityDetectionService());
-  sl.registerLazySingleton<GeographicScopeService>(
-      () => GeographicScopeService(
-            largeCityService: sl<LargeCityDetectionService>(),
-          ));
-  sl.registerLazySingleton<NeighborhoodBoundaryService>(
-      () => NeighborhoodBoundaryService(
-            largeCityService: sl<LargeCityDetectionService>(),
-            storageService: sl<StorageService>(),
-          ));
+  // Services (Search services, StorageService, FeatureFlagService, Geographic services,
+  // CommunityValidationService, AtomicClockService, UserVibeAnalyzer, and SharedPreferencesCompat
+  // are now registered in registerCoreServices())
 
   // Phase 2: Missing Services
   // Register Phase 2 services (dependencies first)
+  // Note: CommunityValidationService is registered in registerCoreServices()
   sl.registerLazySingleton<RoleManagementService>(
       () => RoleManagementServiceImpl(
             storageService: sl<StorageService>(),
             prefs: sl<SharedPreferencesCompat>(),
           ));
 
-  sl.registerLazySingleton(() => CommunityValidationService(
-        storageService: sl<StorageService>(),
-        prefs: sl<SharedPreferencesCompat>(),
-      ));
+  // ============================================================================
+  // SHARED FOUNDATIONAL SERVICES
+  // ============================================================================
+  // Register shared services that are used by multiple domain modules
+  // These must be registered before domain modules are called
+  // See PHASE_1_7_SHARED_SERVICES_ANALYSIS.md for details
+  logger.debug('🔗 [DI] Registering shared foundational services...');
 
-  // Patent #30: Quantum Atomic Clock System
-  // Register AtomicClockService (foundation for all quantum temporal calculations)
-  sl.registerLazySingleton<AtomicClockService>(() => AtomicClockService());
-
-  // Quantum Enhancement Implementation Plan - Phase 2.1: Decoherence Tracking
-  // Register Decoherence Pattern Repository
-  sl.registerLazySingleton<DecoherencePatternLocalDataSource>(
-    () => DecoherencePatternSembastDataSource(),
-  );
-  sl.registerLazySingleton<DecoherencePatternRepository>(
-    () => DecoherencePatternRepositoryImpl(
-      localDataSource: sl<DecoherencePatternLocalDataSource>(),
-    ),
-  );
-  
-  // Register Decoherence Tracking Service
-  sl.registerLazySingleton<DecoherenceTrackingService>(
-    () => DecoherenceTrackingService(
-      repository: sl<DecoherencePatternRepository>(),
-      atomicClock: sl<AtomicClockService>(),
-    ),
-  );
-
-  sl.registerLazySingleton(() => PerformanceMonitor(
-        storageService: sl<StorageService>(),
-        prefs: sl<SharedPreferencesCompat>(),
-      ));
-
-  sl.registerLazySingleton(() => SecurityValidator());
-
-  sl.registerLazySingleton(() => DeploymentValidator(
-        performanceMonitor: sl<PerformanceMonitor>(),
-        securityValidator: sl<SecurityValidator>(),
-      ));
-
-  // Supabase Service (kept for internal tooling/debug; app uses spots_network boundary)
-  sl.registerLazySingleton(() => SupabaseService());
-
-  // Admin Services (God-Mode Admin System)
-  sl.registerLazySingleton(
-      () => ConnectionMonitor(prefs: sl<SharedPreferencesCompat>()));
-  sl.registerLazySingleton(() => PredictiveAnalytics());
+  // 1. BusinessAccountService (foundational - used by Payment, Admin, AI)
   sl.registerLazySingleton(() => BusinessAccountService());
-  sl.registerLazySingleton(
-      () => AdminAuthService(sl<SharedPreferencesCompat>()));
-  sl.registerLazySingleton(
-      () => BusinessAuthService(sl<SharedPreferencesCompat>()));
+  logger.debug('✅ [DI] BusinessAccountService registered (shared)');
+
+  // 2. BusinessService (depends on BusinessAccountService)
+  sl.registerLazySingleton<BusinessService>(() => BusinessService(
+        accountService: sl<BusinessAccountService>(),
+      ));
+  logger.debug('✅ [DI] BusinessService registered (shared)');
+
+  // 3. ExpertiseEventService (foundational event service - used by Payment, AI)
+  sl.registerLazySingleton<ExpertiseEventService>(
+      () => ExpertiseEventService());
+  logger.debug('✅ [DI] ExpertiseEventService registered (shared)');
+
+  logger.debug(
+      '✅ [DI] Shared foundational services registered (BusinessAccountService, BusinessService, ExpertiseEventService)');
+
+  // Note: CommunityService will be registered after Knot module (it has optional Knot dependencies)
+  // Note: EventSuccessAnalysisService will be registered after Payment module (it needs PaymentService)
+
+  // ============================================================================
+  // DOMAIN MODULES
+  // ============================================================================
+  // Register domain-specific services in dependency order
+  // See PHASE_1_7_REFACTORING_PLAN.md for details
+
+  // 1. Knot Services (no domain dependencies)
+  await registerKnotServices(sl);
+  logger.debug('✅ [DI] Knot services registered');
+
+  // Register CommunityService after Knot module (it has optional Knot dependencies)
+  sl.registerLazySingleton(() => CommunityService(
+        expansionService: GeographicExpansionService(),
+        knotFabricService: sl<KnotFabricService>(),
+        knotStorageService: sl<KnotStorageService>(),
+      ));
+  logger
+      .debug('✅ [DI] CommunityService registered (shared, after Knot module)');
+
+  // 2. Payment Services (depends on BusinessService, ExpertiseEventService)
+  await registerPaymentServices(sl);
+  logger.debug('✅ [DI] Payment services registered');
+
+  // Register PostEventFeedbackService (needed by EventSuccessAnalysisService)
+  // Note: PartnershipService is optional, so we check if it's registered
+  sl.registerLazySingleton(() => PostEventFeedbackService(
+        eventService: sl<ExpertiseEventService>(),
+        partnershipService: sl.isRegistered<PartnershipService>()
+            ? sl<PartnershipService>()
+            : null,
+      ));
+  logger.debug(
+      '✅ [DI] PostEventFeedbackService registered (shared, after Payment module)');
+
+  // Register EventSuccessAnalysisService (depends on ExpertiseEventService, PostEventFeedbackService, optional PaymentService)
+  sl.registerLazySingleton(() => EventSuccessAnalysisService(
+        eventService: sl<ExpertiseEventService>(),
+        feedbackService: sl<PostEventFeedbackService>(),
+        paymentService: sl<PaymentService>(), // Optional, from Payment module
+      ));
+  logger.debug(
+      '✅ [DI] EventSuccessAnalysisService registered (shared, after Payment module)');
+
+  // 3. Quantum Services (depends on Knot services, EventSuccessAnalysisService)
+  await registerQuantumServices(sl);
+  logger.debug('✅ [DI] Quantum services registered');
+
+  // 4. AI Services (depends on Knot, Quantum, and Payment services via PartnershipService)
+  await registerAIServices(sl);
+  logger.debug('✅ [DI] AI services registered');
+
+  // 5. Admin Services (depends on BusinessAccountService, may depend on AI services)
+  await registerAdminServices(sl);
+  logger.debug('✅ [DI] Admin services registered');
+
+  // ============================================================================
+  // INFRASTRUCTURE SERVICES (NOT in domain modules)
+  // ============================================================================
+  // Note: These services are foundational infrastructure and remain in main container
+
+  // Secure Mapping Encryption Service (for encrypting userId ↔ agentId mappings)
+  sl.registerLazySingleton<FlutterSecureStorage>(
+    () => const FlutterSecureStorage(
+      aOptions: AndroidOptions(),
+      iOptions: IOSOptions(
+        accessibility: KeychainAccessibility.first_unlock_this_device,
+      ),
+    ),
+  );
+  sl.registerLazySingleton<SecureMappingEncryptionService>(
+    () => SecureMappingEncryptionService(
+      secureStorage: sl<FlutterSecureStorage>(),
+    ),
+  );
+
+  // Agent ID Migration Service (for migrating plaintext mappings to encrypted)
+  sl.registerLazySingleton<AgentIdMigrationService>(
+    () => AgentIdMigrationService(
+      supabaseService: sl<SupabaseService>(),
+      encryptionService: sl<SecureMappingEncryptionService>(),
+    ),
+  );
 
   // Agent ID Service (for ai2ai network routing)
   sl.registerLazySingleton(() => AgentIdService(
+        encryptionService: sl<SecureMappingEncryptionService>(),
         businessService: sl<BusinessAccountService>(),
       ));
 
-  // Onboarding & Agent Creation Services (Phase 1: Foundation)
-  sl.registerLazySingleton(() => OnboardingDataService(
-        agentIdService: sl<AgentIdService>(),
-      ));
-  sl.registerLazySingleton(() => SocialMediaVibeAnalyzer());
-  // Phase 8.5: Onboarding Place List Generator (integrated with Google Places API)
-  sl.registerLazySingleton<OnboardingPlaceListGenerator>(
-    () => OnboardingPlaceListGenerator(
-      placesDataSource: sl<GooglePlacesDataSource>(),
+  // Mapping Key Rotation Service (for rotating encryption keys)
+  sl.registerLazySingleton<MappingKeyRotationService>(
+    () => MappingKeyRotationService(
+      supabaseService: sl<SupabaseService>(),
+      encryptionService: sl<SecureMappingEncryptionService>(),
+      agentIdService: sl<AgentIdService>(),
     ),
   );
+
+  // Note: OnboardingDataService, SocialMediaVibeAnalyzer, and OnboardingPlaceListGenerator
+  // are registered in AI module
+
   // Controllers (Phase 8.11)
   sl.registerLazySingleton(() => OnboardingFlowController(
-    onboardingDataService: sl<OnboardingDataService>(),
-    agentIdService: sl<AgentIdService>(),
-    legalDocumentService: sl<LegalDocumentService>(),
-  ));
+        onboardingDataService: sl<OnboardingDataService>(),
+        agentIdService: sl<AgentIdService>(),
+        legalDocumentService: sl<LegalDocumentService>(),
+      ));
 
   // Agent Initialization Controller (Phase 8.11)
   sl.registerLazySingleton(() => AgentInitializationController(
-    socialMediaDataController: sl<SocialMediaDataCollectionController>(),
-    personalityLearning: sl<PersonalityLearning>(),
-    preferencesService: sl<PreferencesProfileService>(),
-    placeListGenerator: sl<OnboardingPlaceListGenerator>(),
-    recommendationService: sl<OnboardingRecommendationService>(),
-    syncService: sl<PersonalitySyncService>(),
-    agentIdService: sl<AgentIdService>(),
-  ));
+        socialMediaDataController: sl<SocialMediaDataCollectionController>(),
+        personalityLearning: sl<PersonalityLearning>(),
+        preferencesService: sl<PreferencesProfileService>(),
+        placeListGenerator: sl<OnboardingPlaceListGenerator>(),
+        recommendationService: sl<OnboardingRecommendationService>(),
+        syncService: sl<PersonalitySyncService>(),
+        agentIdService: sl<AgentIdService>(),
+      ));
 
   // Event Creation Controller (Phase 8.11)
   sl.registerLazySingleton(() => EventCreationController(
-    eventService: sl<ExpertiseEventService>(),
-    geographicScopeService: sl<GeographicScopeService>(),
-  ));
+        eventService: sl<ExpertiseEventService>(),
+        geographicScopeService: sl<GeographicScopeService>(),
+      ));
 
   // Social Media Data Collection Controller (Phase 8.11)
   sl.registerLazySingleton(() => SocialMediaDataCollectionController(
-    socialMediaService: sl<SocialMediaConnectionService>(),
-  ));
+        socialMediaService: sl<SocialMediaConnectionService>(),
+      ));
 
   // Payment Processing Controller (Phase 8.11)
   sl.registerLazySingleton(() => PaymentProcessingController(
-    salesTaxService: sl<SalesTaxService>(),
-    paymentEventService: sl<PaymentEventService>(),
-  ));
+        salesTaxService: sl<SalesTaxService>(),
+        paymentEventService: sl<PaymentEventService>(),
+      ));
 
   // AI Recommendation Controller (Phase 8.11)
   sl.registerLazySingleton(() => AIRecommendationController(
         personalityLearning: sl<PersonalityLearning>(),
         preferencesProfileService: sl<PreferencesProfileService>(),
-        eventRecommendationService: sl<event_rec_service.EventRecommendationService>(),
+        eventRecommendationService:
+            sl<event_rec_service.EventRecommendationService>(),
         agentIdService: sl<AgentIdService>(),
       ));
 
@@ -583,453 +582,52 @@ Future<void> init() async {
         personalityLearning: sl<PersonalityLearning>(),
       ));
 
-  sl.registerLazySingleton(() => OnboardingRecommendationService(
-        agentIdService: sl<AgentIdService>(),
-      ));
-  // Phase 8.8: PreferencesProfile Service (for preference learning and quantum recommendations)
-  sl.registerLazySingleton<PreferencesProfileService>(() => PreferencesProfileService(
-    storage: sl<StorageService>(),
-  ));
+  // Note: OnboardingRecommendationService, PreferencesProfileService, EventRecommendationService,
+  // EventMatchingService, SpotVibeMatchingService, OAuthDeepLinkHandler, SocialMediaConnectionService,
+  // and related social media services are registered in AI module
 
-  // Event Recommendation Service (for AI recommendations)
-  // Note: EventRecommendationService has optional dependencies with defaults
-  // It can be instantiated without explicit dependencies, but we register with DI for consistency
-  sl.registerLazySingleton<event_rec_service.EventRecommendationService>(
-    () => event_rec_service.EventRecommendationService(
-      eventService: sl<ExpertiseEventService>(),
-    ),
-  );
-  
-  // OAuth Deep Link Handler (Phase 8.2: OAuth Implementation)
-  sl.registerLazySingleton<OAuthDeepLinkHandler>(
-    () => OAuthDeepLinkHandler(),
-  );
+  // Note: Quantum services are registered in Quantum module
 
-  // Social Media Connection Service (Phase 8.2: Social Media Data Collection)
-  sl.registerLazySingleton<SocialMediaConnectionService>(
-    () => SocialMediaConnectionService(
-      sl<StorageService>(),
-      sl<AgentIdService>(),
-      sl<OAuthDeepLinkHandler>(),
-    ),
-  );
-
-  // Quantum Vibe Engine (Phase 4: Quantum Analysis)
-  // Enhanced with Decoherence Tracking (Phase 2.1)
-  sl.registerLazySingleton(() => QuantumVibeEngine(
-        decoherenceTracking: sl<DecoherenceTrackingService>(),
-        featureFlags: sl<FeatureFlagService>(),
-      ));
-
-  // Quantum Enhancement Implementation Plan - Phase 3.1: Quantum Prediction Features
-  // Register Quantum Feature Extractor
-  sl.registerLazySingleton<QuantumFeatureExtractor>(
-    () => QuantumFeatureExtractor(
-      decoherenceTracking: sl<DecoherenceTrackingService>(),
-    ),
-  );
-  
-  // Register Quantum Prediction Training Pipeline
-  sl.registerLazySingleton<QuantumPredictionTrainingPipeline>(
-    () => QuantumPredictionTrainingPipeline(),
-  );
-  
-  // Register Quantum Prediction Enhancer
-  sl.registerLazySingleton<QuantumPredictionEnhancer>(
-    () => QuantumPredictionEnhancer(
-      featureExtractor: sl<QuantumFeatureExtractor>(),
-      trainingPipeline: sl<QuantumPredictionTrainingPipeline>(),
-      featureFlags: sl<FeatureFlagService>(),
-    ),
-  );
-
-  // Quantum Enhancement Implementation Plan - Phase 4.1: Quantum Satisfaction Enhancement
-  // Register Quantum Satisfaction Feature Extractor
-  sl.registerLazySingleton<QuantumSatisfactionFeatureExtractor>(
-    () => QuantumSatisfactionFeatureExtractor(
-      decoherenceTracking: sl<DecoherenceTrackingService>(),
-    ),
-  );
-
-  // Register Quantum Satisfaction Enhancer
-  sl.registerLazySingleton<QuantumSatisfactionEnhancer>(
-    () => QuantumSatisfactionEnhancer(
-      featureExtractor: sl<QuantumSatisfactionFeatureExtractor>(),
-      featureFlags: sl<FeatureFlagService>(),
-    ),
-  );
-
-  // Message Encryption Service (Signal Protocol ready)
+  // Message Encryption Service (Phase 14.4: Signal Protocol Integration)
+  // Uses HybridEncryptionService which tries Signal Protocol first, falls back to AES-256-GCM
+  // Note: This is a shared service (kept in main container due to complex initialization)
   sl.registerLazySingleton<MessageEncryptionService>(
-      () => AES256GCMEncryptionService());
+    () {
+      // Get Signal Protocol service (may not be initialized yet)
+      final signalProtocolService = sl<SignalProtocolService>();
 
-  // Phase 3: Unified Chat Services
-  sl.registerLazySingleton(() => UserNameResolutionService());
-  sl.registerLazySingleton(() => PersonalityAgentChatService(
-        llmService: sl<LLMService>(),
-        encryptionService: sl<MessageEncryptionService>(),
-        agentIdService: sl<AgentIdService>(),
-        personalityLearning: sl<PersonalityLearning>(),
-        searchRepository: sl<HybridSearchRepository>(),
-      ));
-  sl.registerLazySingleton(() => FriendChatService(
-        encryptionService: sl<MessageEncryptionService>(),
-      ));
-  sl.registerLazySingleton(() => CommunityChatService(
-        encryptionService: sl<MessageEncryptionService>(),
-      ));
-  
-  // Community Service (for community chat member lists)
-  sl.registerLazySingleton(() => CommunityService(
-        expansionService: GeographicExpansionService(),
-      ));
+      // Get services needed for agent ID resolution
+      final agentIdService = sl<AgentIdService>();
+      final supabaseService = sl<SupabaseService>();
 
-  // Business-Expert Chat Service (AI2AI routing)
-  sl.registerLazySingleton(() => BusinessExpertChatServiceAI2AI(
-        encryptionService: sl<MessageEncryptionService>(),
-        businessService: sl<BusinessAccountService>(),
-        agentIdService: sl<AgentIdService>(),
-      ));
+      // Create Signal Protocol Encryption Service (will be used if Signal Protocol is available)
+      // Agent ID is resolved lazily from the current authenticated user
+      SignalProtocolEncryptionService? signalProtocolEncryptionService;
+      try {
+        signalProtocolEncryptionService = SignalProtocolEncryptionService(
+          signalProtocol: signalProtocolService,
+          agentIdService: agentIdService,
+          supabaseService: supabaseService,
+        );
+      } catch (e) {
+        logger.warn(
+            '⚠️ [DI] Signal Protocol Encryption Service creation failed: $e');
+        signalProtocolEncryptionService = null;
+      }
 
-  // Business-Business Chat Service (AI2AI routing)
-  sl.registerLazySingleton(() => BusinessBusinessChatServiceAI2AI(
-        encryptionService: sl<MessageEncryptionService>(),
-        businessService: sl<BusinessAccountService>(),
-        agentIdService: sl<AgentIdService>(),
-      ));
-
-  // Business-Expert Outreach Service (vibe-based matching)
-  sl.registerLazySingleton(() => BusinessExpertOutreachService(
-        partnershipService: sl<PartnershipService>(),
-        chatService: sl<BusinessExpertChatServiceAI2AI>(),
-      ));
-
-  // Business-Business Outreach Service (partnership discovery)
-  sl.registerLazySingleton(() => BusinessBusinessOutreachService(
-        partnershipService: sl<PartnershipService>(),
-        businessService: sl<BusinessAccountService>(),
-        chatService: sl<BusinessBusinessChatServiceAI2AI>(),
-      ));
-  
-  // Business Member Service (multi-user support)
-  sl.registerLazySingleton(() => BusinessMemberService(
-        businessAccountService: sl<BusinessAccountService>(),
-      ));
-  
-  // Business Shared Agent Service (neural network of agents)
-  sl.registerLazySingleton(() => BusinessSharedAgentService(
-        businessAccountService: sl<BusinessAccountService>(),
-        memberService: sl<BusinessMemberService>(),
-        personalityLearning: sl<PersonalityLearning>(),
-      ));
-  sl.registerLazySingleton(() => AdminCommunicationService(
-        connectionMonitor: sl<ConnectionMonitor>(),
-        chatAnalyzer: null, // Optional - can be registered later if needed
-      ));
-  sl.registerLazySingleton(() => AdminGodModeService(
-        authService: sl<AdminAuthService>(),
-        communicationService: sl<AdminCommunicationService>(),
-        businessService: sl<BusinessAccountService>(),
-        predictiveAnalytics: sl<PredictiveAnalytics>(),
-        connectionMonitor: sl<ConnectionMonitor>(),
-        chatAnalyzer: null, // Optional - can be registered later if needed
-        supabaseService: sl<SupabaseService>(),
-        expertiseService: ExpertiseService(),
-      ));
-
-  // Payment Processing Services - Agent 1: Payment Processing & Revenue
-  // Register StripeConfig first (using test config for now)
-  sl.registerLazySingleton<StripeConfig>(() => StripeConfig.test());
-
-  // Register StripeService with StripeConfig
-  sl.registerLazySingleton<StripeService>(
-      () => StripeService(sl<StripeConfig>()));
-
-  // Register ExpertiseEventService (if not already registered)
-  if (!sl.isRegistered<ExpertiseEventService>()) {
-    sl.registerLazySingleton<ExpertiseEventService>(
-        () => ExpertiseEventService());
-  }
-
-  // Register PaymentService with StripeService and ExpertiseEventService
-  sl.registerLazySingleton<PaymentService>(() => PaymentService(
-        sl<StripeService>(),
-        sl<ExpertiseEventService>(),
-      ));
-
-  // Register PaymentEventService (bridge between payment and event services)
-  sl.registerLazySingleton<PaymentEventService>(() => PaymentEventService(
-        sl<PaymentService>(),
-        sl<ExpertiseEventService>(),
-      ));
-
-  // Register SalesTaxService (for tax calculation on events)
-  sl.registerLazySingleton<SalesTaxService>(() => SalesTaxService(
-        eventService: sl<ExpertiseEventService>(),
-        paymentService: sl<PaymentService>(),
-      ));
-
-  // Register BusinessService (required by PartnershipService)
-  if (!sl.isRegistered<BusinessService>()) {
-    sl.registerLazySingleton<BusinessService>(() => BusinessService(
-          accountService: sl<BusinessAccountService>(),
-        ));
-  }
-
-  // Register PartnershipService (required by RevenueSplitService)
-  sl.registerLazySingleton<PartnershipService>(() => PartnershipService(
-        eventService: sl<ExpertiseEventService>(),
-        businessService: sl<BusinessService>(),
-      ));
-
-  // Register SponsorshipService (required by ProductTrackingService and BrandAnalyticsService)
-  sl.registerLazySingleton(() => SponsorshipService(
-        eventService: sl<ExpertiseEventService>(),
-        partnershipService: sl<PartnershipService>(),
-        businessService: sl<BusinessService>(),
-      ));
-
-  // Register RevenueSplitService (required by PayoutService)
-  sl.registerLazySingleton<RevenueSplitService>(() => RevenueSplitService(
-        partnershipService: sl<PartnershipService>(),
-        sponsorshipService: sl<SponsorshipService>(),
-      ));
-
-  // Register PayoutService
-  sl.registerLazySingleton<PayoutService>(() => PayoutService(
-        revenueSplitService: sl<RevenueSplitService>(),
-      ));
-
-  // Register RefundService (required by CancellationService)
-  sl.registerLazySingleton<RefundService>(() => RefundService(
-        paymentService: sl<PaymentService>(),
-        stripeService: sl<StripeService>(),
-      ));
-
-  // Register CancellationService (required by EventCancellationController)
-  sl.registerLazySingleton<CancellationService>(() => CancellationService(
-        paymentService: sl<PaymentService>(),
-        eventService: sl<ExpertiseEventService>(),
-        refundService: sl<RefundService>(),
-      ));
-
-  // Product Tracking & Sales Services (required by BrandAnalyticsService)
-  sl.registerLazySingleton(() => ProductTrackingService(
-        sponsorshipService: sl<SponsorshipService>(),
-        revenueSplitService: sl<RevenueSplitService>(),
-      ));
-
-  sl.registerLazySingleton(() => ProductSalesService(
-        productTrackingService: sl<ProductTrackingService>(),
-        revenueSplitService: sl<RevenueSplitService>(),
-        paymentService: sl<PaymentService>(),
-      ));
-
-  // Brand Analytics Service
-  sl.registerLazySingleton(() => BrandAnalyticsService(
-        sponsorshipService: sl<SponsorshipService>(),
-        productTrackingService: sl<ProductTrackingService>(),
-        productSalesService: sl<ProductSalesService>(),
-        revenueSplitService: sl<RevenueSplitService>(),
-      ));
-
-  // Brand Discovery Service
-  sl.registerLazySingleton(() => BrandDiscoveryService(
-        eventService: sl<ExpertiseEventService>(),
-        sponsorshipService: sl<SponsorshipService>(),
-      ));
-
-  // Security & Anonymization Services (Phase 7.3.5-6)
-  sl.registerLazySingleton<LocationObfuscationService>(
-      () => LocationObfuscationService());
-  sl.registerLazySingleton<UserAnonymizationService>(
-      () => UserAnonymizationService(
-            locationObfuscationService: sl<LocationObfuscationService>(),
-          ));
-  sl.registerLazySingleton<FieldEncryptionService>(
-      () => FieldEncryptionService());
-  sl.registerLazySingleton<AuditLogService>(() => AuditLogService());
-
-  // Legal Document Service (for Terms of Service and Privacy Policy acceptance)
-  sl.registerLazySingleton<LegalDocumentService>(() => LegalDocumentService(
-        eventService: sl<ExpertiseEventService>(),
-      ));
-
-  sl.registerLazySingleton<DeviceDiscoveryService>(() {
-    final platform = DeviceDiscoveryFactory.createPlatformDiscovery();
-    return DeviceDiscoveryService(platform: platform);
-  });
-
-  // Personality Advertising Service
-  sl.registerLazySingleton<PersonalityAdvertisingService>(() {
-    // PersonalityAdvertisingService handles platform-specific discovery internally
-    // No need to pass platform discovery objects - service will use factory when needed
-    // Pass UserAnonymizationService for UnifiedUser to AnonymousUser conversion
-    final anonymizationService = sl<UserAnonymizationService>();
-    return PersonalityAdvertisingService(
-      anonymizationService: anonymizationService,
-    );
-  });
-
-  // PersonalityLearning (Philosophy: "Always Learning With You")
-  // On-device AI learning that works offline
-  sl.registerLazySingleton(() {
-    final prefs = sl<SharedPreferencesCompat>();
-    // SharedPreferencesCompat implements SharedPreferences interface
-    return PersonalityLearning.withPrefs(prefs);
-  });
-
-  // AI2AI Learning Service (Phase 7, Week 38)
-  // Wrapper service for AI2AI learning methods UI
-  sl.registerLazySingleton(() {
-    final prefs = sl<SharedPreferencesCompat>();
-    final personalityLearning = sl<PersonalityLearning>();
-    return AI2AILearning.create(
-      prefs: prefs,
-      personalityLearning: personalityLearning,
-    );
-  });
-
-  // UserFeedbackAnalyzer (Philosophy: "Dynamic dimension discovery through user feedback analysis")
-  // Advanced feedback learning system that extracts implicit personality dimensions
-  // Enhanced with Quantum Satisfaction Enhancement (Phase 4.1)
-  sl.registerLazySingleton(() {
-    final prefs = sl<SharedPreferencesCompat>();
-    final personalityLearning = sl<PersonalityLearning>();
-    final quantumSatisfactionEnhancer = sl<QuantumSatisfactionEnhancer>();
-    final atomicClock = sl<AtomicClockService>();
-    // SharedPreferencesCompat implements SharedPreferences interface
-    return UserFeedbackAnalyzer(
-      prefs: prefs,
-      personalityLearning: personalityLearning,
-      quantumSatisfactionEnhancer: quantumSatisfactionEnhancer,
-      atomicClock: atomicClock,
-    );
-  });
-
-  // NLPProcessor (Natural Language Processing for text analysis)
-  // Provides sentiment analysis, search intent detection, content moderation, and privacy preservation
-  sl.registerLazySingleton(() => NLPProcessor());
-
-  // PersonalitySyncService (Philosophy: "Cloud sync is optional and encrypted")
-  // Secure cross-device personality profile sync with password-derived encryption
-  sl.registerLazySingleton(() {
-    final supabaseService = sl<SupabaseService>();
-    return PersonalitySyncService(supabaseService: supabaseService);
-  });
-
-  // UsagePatternTracker (Philosophy: "The key adapts to YOUR usage")
-  // Tracks how users engage with SPOTS (community vs recommendations)
-  sl.registerLazySingleton(() {
-    final prefs = sl<SharedPreferencesCompat>();
-    return UsagePatternTracker(prefs);
-  });
-
-  // AI2AI Protocol (Philosophy: "The Key Works Everywhere")
-  // Handles peer-to-peer AI2AI communication
-  sl.registerLazySingleton(() => AI2AIProtocol());
-
-  // Connection Log Queue (Philosophy: "Cloud is optional enhancement")
-  // Queues AI2AI logs for cloud sync when online
-  sl.registerLazySingleton(
-      () => ConnectionLogQueue(sl<SharedPreferencesCompat>()));
-
-  // Cloud Intelligence Sync (Philosophy: "Cloud adds network wisdom")
-  // Syncs offline connections to cloud for collective learning
-  sl.registerLazySingleton(() => CloudIntelligenceSync(
-        queue: sl<ConnectionLogQueue>(),
-        connectivity: sl<Connectivity>(),
-      ));
-
-  // VibeConnectionOrchestrator + AI2AIRealtimeService wiring
-  // Philosophy: "The Key Works Everywhere" - offline AI2AI via PersonalityLearning
-  sl.registerLazySingleton<VibeConnectionOrchestrator>(() {
-    final connectivity = sl<Connectivity>();
-    final vibeAnalyzer = sl<UserVibeAnalyzer>();
-    final deviceDiscovery = sl<DeviceDiscoveryService>();
-    final advertisingService = sl<PersonalityAdvertisingService>();
-    final personalityLearning = sl<PersonalityLearning>();
-    final ai2aiProtocol = sl<AI2AIProtocol>();
-
-    final orchestrator = VibeConnectionOrchestrator(
-      vibeAnalyzer: vibeAnalyzer,
-      connectivity: connectivity,
-      deviceDiscovery: deviceDiscovery,
-      advertisingService: advertisingService,
-      personalityLearning: personalityLearning, // NEW: For offline AI learning
-      protocol: ai2aiProtocol, // Now passed to ConnectionManager
-    );
-    // Build realtime with orchestrator and register it for app-wide access
-    final realtimeBackend = sl<RealtimeBackend>();
-    final realtime = AI2AIRealtimeService(realtimeBackend, orchestrator);
-    orchestrator.setRealtimeService(realtime);
-    // Expose realtime service via DI for UI pages/debug tools
-    if (!sl.isRegistered<AI2AIRealtimeService>()) {
-      sl.registerSingleton<AI2AIRealtimeService>(realtime);
-    }
-    return orchestrator;
-  });
-
-  // HTTP Client (shared across datasources)
-  sl.registerLazySingleton<http.Client>(() => http.Client());
-
-  // Logger
-  sl.registerLazySingleton<AppLogger>(
-      () => const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug));
-
-  // AI Improvement Tracking Service
-  sl.registerLazySingleton(() {
-    final storageService = sl<StorageService>();
-    return AIImprovementTrackingService(storage: storageService.defaultStorage);
-  });
-
-  // Action History Service
-  sl.registerLazySingleton(() {
-    final storageService = sl<StorageService>();
-    return ActionHistoryService(storage: storageService.defaultStorage);
-  });
-
-  // Contextual Personality Service
-  // Philosophy: "Your doors stay yours" - resist homogenization while allowing authentic transformation
-  sl.registerLazySingleton(() => ContextualPersonalityService());
-
-  // Enhanced Connectivity Service
-  // Optional Enhancement: Goes beyond basic WiFi/mobile connectivity to verify actual internet access
-  sl.registerLazySingleton(() {
-    final httpClient = sl<http.Client>();
-    return EnhancedConnectivityService(httpClient: httpClient);
-  });
-
-  // Federated Learning System
-  sl.registerLazySingleton<FederatedLearningSystem>(() {
-    final storageService = sl<StorageService>();
-    return FederatedLearningSystem(storage: storageService.defaultStorage);
-  });
-
-  // Continuous Learning System
-  // Phase 7, Section 39 (7.4.1): Continuous Learning UI
-  // Singleton instance shared across app - pages should use this, not create their own
-  sl.registerLazySingleton<ContinuousLearningSystem>(
-    () => ContinuousLearningSystem(),
+      // Create hybrid service that tries Signal Protocol first, falls back to AES-256-GCM
+      return HybridEncryptionService(
+        signalProtocolService: signalProtocolEncryptionService,
+      );
+    },
   );
 
-  // P2P Node Manager
-  // OUR_GUTS.md: "Decentralized community networks with privacy protection"
-  // Manages P2P nodes for university/company private networks
-  sl.registerLazySingleton(() => P2PNodeManager());
+  // Note: AI/network services (chat services, business services, admin services, payment services, 
+  // AI learning services, etc.) are registered in their respective domain modules
 
-  // Config
-  sl.registerLazySingleton<ConfigService>(() => ConfigService(
-        environment: 'development',
-        supabaseUrl: SupabaseConfig.url,
-        supabaseAnonKey: SupabaseConfig.anonKey,
-        googlePlacesApiKey: GooglePlacesConfig.getApiKey(),
-        debug: SupabaseConfig.debug,
-        // ONNX removed - using cloud-only (Gemini/cloud embeddings)
-        inferenceBackend: 'cloud',
-        orchestrationStrategy: 'device_first',
-      ));
-
+  // ============================================================================
+  // BACKEND INITIALIZATION
+  // ============================================================================
   // Backend (Single Integration Boundary): initialize and expose spots_network
   try {
     logger.info('🔌 [DI] Initializing Supabase backend...');
@@ -1070,6 +668,214 @@ Future<void> init() async {
       try {
         final supabaseClient = Supabase.instance.client;
         sl.registerLazySingleton<SupabaseClient>(() => supabaseClient);
+
+        // Register Edge Function Service (Phase 11 Section 4: Edge Mesh Functions)
+        sl.registerLazySingleton(() => EdgeFunctionService(
+              client: supabaseClient,
+            ));
+        logger.debug('✅ [DI] EdgeFunctionService registered');
+
+        // Register Onboarding Aggregation Service (Phase 11 Section 4: Edge Mesh Functions)
+        sl.registerLazySingleton(() => OnboardingAggregationService(
+              edgeFunctionService: sl<EdgeFunctionService>(),
+              agentIdService: sl<AgentIdService>(),
+            ));
+        logger.debug('✅ [DI] OnboardingAggregationService registered');
+
+        // Register Social Enrichment Service (Phase 11 Section 4: Edge Mesh Functions)
+        sl.registerLazySingleton(() => SocialEnrichmentService(
+              edgeFunctionService: sl<EdgeFunctionService>(),
+              agentIdService: sl<AgentIdService>(),
+            ));
+        logger.debug('✅ [DI] SocialEnrichmentService registered');
+
+        // Register FactsIndex (Phase 11 Section 5: Retrieval + LLM Fusion)
+        // Requires SupabaseClient to be available
+        sl.registerLazySingleton(() => FactsIndex(
+              supabase: supabaseClient,
+              agentIdService: sl<AgentIdService>(),
+            ));
+        logger.debug('✅ [DI] FactsIndex registered');
+
+        // Register Calling Score Data Collector (Phase 12 Section 1: Foundation & Data Collection)
+        // Note: Register BehaviorAssessmentService first (if not already registered)
+        if (!sl.isRegistered<BehaviorAssessmentService>()) {
+          sl.registerLazySingleton<BehaviorAssessmentService>(
+              () => BehaviorAssessmentService());
+          logger.debug('✅ [DI] BehaviorAssessmentService registered');
+        }
+
+        // Register Calling Score Data Collector
+        sl.registerLazySingleton(() => CallingScoreDataCollector(
+              supabase: supabaseClient,
+              agentIdService: sl<AgentIdService>(),
+              enabled:
+                  true, // Enable data collection for neural network training
+            ));
+        logger.debug('✅ [DI] CallingScoreDataCollector registered');
+
+        // Register Calling Score Baseline Metrics (Phase 12 Section 1.2: Baseline Metrics)
+        sl.registerLazySingleton(() => CallingScoreBaselineMetrics(
+              supabase: supabaseClient,
+            ));
+        logger.debug('✅ [DI] CallingScoreBaselineMetrics registered');
+
+        // Register Calling Score Neural Model (Phase 12 Section 2.1: Calling Score Prediction Model)
+        // Register ModelVersionManager (Phase 12 Section 3.2.2: Model Versioning)
+        sl.registerLazySingleton(() => ModelVersionManager());
+        logger.debug('✅ [DI] ModelVersionManager registered');
+
+        // Register ModelRetrainingService (Phase 12 Section 3.2.1: Backend Integration)
+        sl.registerLazySingleton(() => ModelRetrainingService(
+              versionManager: sl<ModelVersionManager>(),
+            ));
+        logger.debug('✅ [DI] ModelRetrainingService registered');
+
+        // Register OnlineLearningService (Phase 12 Section 3.2.1: Continuous Learning)
+        sl.registerLazySingleton(() => OnlineLearningService(
+              supabase: supabaseClient,
+              dataCollector: sl<CallingScoreDataCollector>(),
+              versionManager: sl<ModelVersionManager>(),
+              retrainingService: sl<ModelRetrainingService>(),
+            ));
+        logger.debug('✅ [DI] OnlineLearningService registered');
+
+        sl.registerLazySingleton(() => CallingScoreNeuralModel());
+        logger.debug('✅ [DI] CallingScoreNeuralModel registered');
+
+        // Register Calling Score Training Data Preparer (Phase 12 Section 2.1)
+        sl.registerLazySingleton(() => CallingScoreTrainingDataPreparer(
+              supabase: supabaseClient,
+              agentIdService: sl<AgentIdService>(),
+              neuralModel: sl<CallingScoreNeuralModel>(),
+            ));
+        logger.debug('✅ [DI] CallingScoreTrainingDataPreparer registered');
+
+        // Register Calling Score A/B Testing Service (Phase 12 Section 2.3: A/B Testing Framework)
+        sl.registerLazySingleton(() => CallingScoreABTestingService(
+              supabase: supabaseClient,
+              agentIdService: sl<AgentIdService>(),
+            ));
+        logger.debug('✅ [DI] CallingScoreABTestingService registered');
+
+        // Register Outcome Prediction Model (Phase 12 Section 3.1: Outcome Prediction Model)
+        sl.registerLazySingleton(() => OutcomePredictionModel());
+        logger.debug('✅ [DI] OutcomePredictionModel registered');
+
+        // Register Outcome Prediction Service (Phase 12 Section 3.1: Outcome Prediction Model)
+        sl.registerLazySingleton(() => OutcomePredictionService(
+              model: sl<OutcomePredictionModel>(),
+              supabase: supabaseClient,
+              dataCollector: sl<CallingScoreDataCollector>(),
+            ));
+        logger.debug('✅ [DI] OutcomePredictionService registered');
+
+        // Register Calling Score Calculator (Phase 12: Neural Network Implementation)
+        // Phase 12 Section 2.2: Hybrid calling score calculation
+        // Phase 12 Section 2.3: A/B testing integration
+        // Phase 12 Section 3.1: Outcome prediction integration
+        sl.registerLazySingleton(() => CallingScoreCalculator(
+              behaviorAssessment: sl<BehaviorAssessmentService>(),
+              dataCollector: sl<CallingScoreDataCollector>(),
+              neuralModel:
+                  sl<CallingScoreNeuralModel>(), // Optional: Hybrid calculation
+              abTestingService:
+                  sl<CallingScoreABTestingService>(), // Optional: A/B testing
+              outcomePredictionService: sl<
+                  OutcomePredictionService>(), // Optional: Outcome prediction
+            ));
+        logger.debug(
+            '✅ [DI] CallingScoreCalculator registered (with neural model, A/B testing, and outcome prediction support)');
+
+        // Register Signal Protocol Services (Phase 14: Signal Protocol Implementation - Option 1)
+        sl.registerLazySingleton(() => SignalFFIBindings());
+        logger.debug('✅ [DI] SignalFFIBindings registered');
+
+        // Register Platform Bridge Bindings (Phase 14: Platform Bridge)
+        // Must be registered before Rust Wrapper and Store Callbacks
+        sl.registerLazySingleton(() => SignalPlatformBridgeBindings());
+        logger.debug('✅ [DI] SignalPlatformBridgeBindings registered');
+
+        // Register Rust Wrapper Bindings (Phase 14: Rust Wrapper)
+        // Must be registered before Store Callbacks
+        sl.registerLazySingleton(() => SignalRustWrapperBindings());
+        logger.debug('✅ [DI] SignalRustWrapperBindings registered');
+
+        sl.registerLazySingleton(() => SignalKeyManager(
+              secureStorage: sl<FlutterSecureStorage>(),
+              ffiBindings: sl<SignalFFIBindings>(),
+              supabaseService: sl<SupabaseService>(),
+            ));
+        logger.debug('✅ [DI] SignalKeyManager registered');
+
+        sl.registerLazySingleton(() => SignalSessionManager(
+              database: sl<Database>(),
+              ffiBindings: sl<SignalFFIBindings>(),
+              keyManager: sl<SignalKeyManager>(),
+            ));
+        logger.debug('✅ [DI] SignalSessionManager registered');
+
+        // Register Store Callbacks (Phase 14: Store Callbacks)
+        // Requires Platform Bridge and Rust Wrapper
+        sl.registerLazySingleton(() => SignalFFIStoreCallbacks(
+              keyManager: sl<SignalKeyManager>(),
+              sessionManager: sl<SignalSessionManager>(),
+              ffiBindings: sl<SignalFFIBindings>(),
+              rustWrapper: sl<SignalRustWrapperBindings>(),
+              platformBridge: sl<SignalPlatformBridgeBindings>(),
+            ));
+        logger.debug('✅ [DI] SignalFFIStoreCallbacks registered');
+
+        sl.registerLazySingleton(() => SignalProtocolService(
+              ffiBindings: sl<SignalFFIBindings>(),
+              storeCallbacks: sl<SignalFFIStoreCallbacks>(),
+              keyManager: sl<SignalKeyManager>(),
+              sessionManager: sl<SignalSessionManager>(),
+              atomicClock: sl<AtomicClockService>(),
+            ));
+        logger.debug('✅ [DI] SignalProtocolService registered');
+
+        // Register Signal Protocol Initialization Service (Phase 14)
+        // Pass dependencies for proper initialization sequence
+        sl.registerLazySingleton(() => SignalProtocolInitializationService(
+              signalProtocol: sl<SignalProtocolService>(),
+              platformBridge: sl<SignalPlatformBridgeBindings>(),
+              rustWrapper: sl<SignalRustWrapperBindings>(),
+              storeCallbacks: sl<SignalFFIStoreCallbacks>(),
+            ));
+        logger.debug('✅ [DI] SignalProtocolInitializationService registered');
+
+        // Register Reservation Services (Phase 15: Reservation System with Quantum Integration)
+        // Phase 15 Section 15.1: Foundation - Quantum Integration
+        sl.registerLazySingleton(() => ReservationQuantumService(
+              atomicClock: sl<AtomicClockService>(),
+              quantumVibeEngine: sl<QuantumVibeEngine>(),
+              vibeAnalyzer: sl<UserVibeAnalyzer>(),
+              personalityLearning: sl<PersonalityLearning>(),
+              locationTimingService: sl<LocationTimingQuantumStateService>(),
+              entanglementService: sl<
+                  QuantumEntanglementService>(), // Optional, graceful degradation
+            ));
+        logger.debug('✅ [DI] ReservationQuantumService registered');
+
+        sl.registerLazySingleton(() => ReservationService(
+              atomicClock: sl<AtomicClockService>(),
+              quantumService: sl<ReservationQuantumService>(),
+              agentIdService: sl<AgentIdService>(),
+              storageService: sl<StorageService>(),
+              supabaseService: sl<SupabaseService>(),
+            ));
+        logger.debug('✅ [DI] ReservationService registered');
+
+        sl.registerLazySingleton(() => ReservationRecommendationService(
+              quantumService: sl<ReservationQuantumService>(),
+              atomicClock: sl<AtomicClockService>(),
+              entanglementService: sl<
+                  QuantumEntanglementService>(), // Optional, graceful degradation
+              eventService: sl<ExpertiseEventService>(),
+              agentIdService: sl<AgentIdService>(),
+            ));
+        logger.debug('✅ [DI] ReservationRecommendationService registered');
 
         // Register LLM Service (Google Gemini) with connectivity check
         sl.registerLazySingleton<LLMService>(() => LLMService(

@@ -23,13 +23,13 @@ void main() {
 
     group('Location Quantum State Generation', () {
       test('should generate location quantum states for user and spot', () {
-        final userLocation = UnifiedLocation(
+        const userLocation = UnifiedLocation(
           latitude: 40.7128, // New York
           longitude: -74.0060,
           city: 'New York',
         );
 
-        final spotLocation = UnifiedLocation(
+        const spotLocation = UnifiedLocation(
           latitude: 40.7130, // Very close to user
           longitude: -74.0062,
           city: 'New York',
@@ -48,12 +48,12 @@ void main() {
 
     group('Location Compatibility Integration', () {
       test('should calculate location compatibility between user and spot', () {
-        final userLocation = UnifiedLocation(
+        const userLocation = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final spotLocation = UnifiedLocation(
+        const spotLocation = UnifiedLocation(
           latitude: 40.7130, // Very close
           longitude: -74.0062,
         );
@@ -69,12 +69,12 @@ void main() {
       });
 
       test('should show lower compatibility for distant locations', () {
-        final userLocation = UnifiedLocation(
+        const userLocation = UnifiedLocation(
           latitude: 40.7128, // New York
           longitude: -74.0060,
         );
 
-        final spotLocation = UnifiedLocation(
+        const spotLocation = UnifiedLocation(
           latitude: 34.0522, // Los Angeles
           longitude: -118.2437,
         );
@@ -92,8 +92,8 @@ void main() {
 
     group('Enhanced Compatibility with Location Entanglement', () {
       test('should combine personality and location compatibility', () {
-        final personalityCompat = 0.8;
-        final locationCompat = 0.7;
+        const personalityCompat = 0.8;
+        const locationCompat = 0.7;
 
         final enhanced = LocationCompatibilityCalculator
             .calculateEnhancedCompatibility(
@@ -107,8 +107,8 @@ void main() {
       });
 
       test('should improve compatibility when location matches', () {
-        final personalityCompat = 0.6; // Moderate personality match
-        final locationCompat = 0.9; // High location match
+        const personalityCompat = 0.6; // Moderate personality match
+        const locationCompat = 0.9; // High location match
 
         final enhanced = LocationCompatibilityCalculator
             .calculateEnhancedCompatibility(
@@ -121,8 +121,8 @@ void main() {
       });
 
       test('should handle low location compatibility gracefully', () {
-        final personalityCompat = 0.8; // High personality match
-        final locationCompat = 0.3; // Low location match
+        const personalityCompat = 0.8; // High personality match
+        const locationCompat = 0.3; // Low location match
 
         final enhanced = LocationCompatibilityCalculator
             .calculateEnhancedCompatibility(
@@ -142,12 +142,12 @@ void main() {
         // For now, we test that the method accepts location parameters
         // Full integration test would require actual service setup
 
-        final userLocation = UnifiedLocation(
+        const userLocation = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
         );
 
-        final spotLocation = UnifiedLocation(
+        const spotLocation = UnifiedLocation(
           latitude: 40.7130,
           longitude: -74.0062,
         );
@@ -171,13 +171,13 @@ void main() {
     group('End-to-End Location Entanglement Flow', () {
       test('should complete full location entanglement workflow', () {
         // Step 1: Create user and spot locations
-        final userLocation = UnifiedLocation(
+        const userLocation = UnifiedLocation(
           latitude: 40.7128,
           longitude: -74.0060,
           city: 'New York',
         );
 
-        final spotLocation = UnifiedLocation(
+        const spotLocation = UnifiedLocation(
           latitude: 40.7130,
           longitude: -74.0062,
           city: 'New York',
@@ -192,7 +192,7 @@ void main() {
             .locationCompatibility(spotLocationState);
 
         // Step 4: Calculate enhanced compatibility
-        final personalityCompat = 0.8;
+        const personalityCompat = 0.8;
         final enhanced = LocationCompatibilityCalculator
             .calculateEnhancedCompatibility(
           personalityCompatibility: personalityCompat,

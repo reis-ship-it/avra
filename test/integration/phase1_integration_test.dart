@@ -84,7 +84,7 @@ void main() {
       final mockResult = ActionResult.success(
         message: 'List created successfully!',
         data: {'id': 'test-id'},
-        intent: CreateListIntent(
+        intent: const CreateListIntent(
           title: 'Test List',
           description: 'Test description',
           userId: 'test-user',
@@ -187,7 +187,7 @@ void main() {
       final result = ActionResult.success(
         message: 'Spot created',
         data: {'id': '123'},
-        intent: CreateSpotIntent(
+        intent: const CreateSpotIntent(
           name: 'Test Spot',
           description: 'Test description',
           latitude: 40.7128,

@@ -343,7 +343,7 @@ class RevenueSplitService {
         if (split.parties.isNotEmpty) {
           final party = split.parties.firstWhere(
             (p) => p.partyId == partyId,
-            orElse: () => SplitParty(
+            orElse: () => const SplitParty(
               partyId: '',
               type: SplitPartyType.user,
               percentage: 0.0,

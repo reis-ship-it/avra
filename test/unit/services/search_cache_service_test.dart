@@ -54,7 +54,7 @@ void main() {
           communityCount: 0,
           externalCount: 0,
           totalCount: 0,
-          searchDuration: Duration(milliseconds: 100),
+          searchDuration: const Duration(milliseconds: 100),
           sources: {},
         );
         await service.cacheResult(
@@ -68,7 +68,7 @@ void main() {
           communityCount: 0,
           externalCount: 0,
           totalCount: 0,
-          searchDuration: Duration(milliseconds: 50),
+          searchDuration: const Duration(milliseconds: 50),
           sources: {},
         );
         await service.cacheResult(
@@ -84,7 +84,7 @@ void main() {
           communityCount: 0,
           externalCount: 0,
           totalCount: 0,
-          searchDuration: Duration(milliseconds: 75),
+          searchDuration: const Duration(milliseconds: 75),
           sources: {},
         );
         await service.cacheResult(
@@ -104,7 +104,7 @@ void main() {
             communityCount: 0,
             externalCount: 0,
             totalCount: 0,
-            searchDuration: Duration(milliseconds: 100),
+            searchDuration: const Duration(milliseconds: 100),
             sources: {},
           ),
         );
@@ -124,7 +124,7 @@ void main() {
             communityCount: 0,
             externalCount: 0,
             totalCount: 0,
-            searchDuration: Duration(milliseconds: 50),
+            searchDuration: const Duration(milliseconds: 50),
             sources: {},
           ),
         );

@@ -36,7 +36,7 @@ class SpotCard extends StatelessWidget {
             const SizedBox(height: 4),
             Row(
               children: [
-                Icon(Icons.star, size: 16, color: AppColors.grey600),
+                const Icon(Icons.star, size: 16, color: AppColors.grey600),
                 Text(' ${spot.rating.toStringAsFixed(1)}'),
                 const SizedBox(width: 16),
                 Container(

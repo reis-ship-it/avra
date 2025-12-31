@@ -104,7 +104,7 @@ class SourceIndicatorWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '${indicator.qualityMetrics.qualityGrade}',
+                  indicator.qualityMetrics.qualityGrade,
                   style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,

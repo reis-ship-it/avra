@@ -18,7 +18,7 @@ class UserProgressViewerPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.trending_up, size: 64, color: AppColors.grey500),
+          const Icon(Icons.trending_up, size: 64, color: AppColors.grey500),
           const SizedBox(height: 16),
           Text(
             'User Progress Viewer',

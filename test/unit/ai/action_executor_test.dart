@@ -47,7 +47,7 @@ void main() {
 
     group('executeCreateSpot', () {
       test('should successfully create a spot', () async {
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'A test spot',
           latitude: 40.7128,
@@ -81,7 +81,7 @@ void main() {
       });
 
       test('should handle create spot failure', () async {
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'A test spot',
           latitude: 40.7128,
@@ -101,7 +101,7 @@ void main() {
 
       test('should return failure when use case is not available', () async {
         final executorWithoutUseCase = ActionExecutor();
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'A test spot',
           latitude: 40.7128,
@@ -120,7 +120,7 @@ void main() {
 
     group('executeCreateList', () {
       test('should successfully create a list', () async {
-        final intent = CreateListIntent(
+        const intent = CreateListIntent(
           title: 'My List',
           description: 'A test list',
           userId: 'user123',
@@ -148,7 +148,7 @@ void main() {
       });
 
       test('should handle create list failure', () async {
-        final intent = CreateListIntent(
+        const intent = CreateListIntent(
           title: 'My List',
           description: 'A test list',
           userId: 'user123',
@@ -166,7 +166,7 @@ void main() {
 
     group('executeAddSpotToList', () {
       test('should successfully add spot to list', () async {
-        final intent = AddSpotToListIntent(
+        const intent = AddSpotToListIntent(
           spotId: 'spot123',
           listId: 'list456',
           userId: 'user123',
@@ -198,7 +198,7 @@ void main() {
       });
 
       test('should handle spot already in list', () async {
-        final intent = AddSpotToListIntent(
+        const intent = AddSpotToListIntent(
           spotId: 'spot123',
           listId: 'list456',
           userId: 'user123',
@@ -226,7 +226,7 @@ void main() {
       });
 
       test('should handle list not found', () async {
-        final intent = AddSpotToListIntent(
+        const intent = AddSpotToListIntent(
           spotId: 'spot123',
           listId: 'list456',
           userId: 'user123',
@@ -244,7 +244,7 @@ void main() {
 
     group('execute', () {
       test('should execute create spot intent', () async {
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'A test spot',
           latitude: 40.7128,
@@ -275,7 +275,7 @@ void main() {
       });
 
       test('should return failure for unknown action type', () async {
-        final intent = SearchSpotsIntent(
+        const intent = SearchSpotsIntent(
           query: 'coffee',
           confidence: 0.8,
         );

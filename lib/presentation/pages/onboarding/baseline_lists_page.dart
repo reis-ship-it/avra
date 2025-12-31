@@ -193,7 +193,7 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           width: 8,
                           height: 8,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: AppTheme.primaryColor,
                             shape: BoxShape.circle,
                           ),
@@ -234,7 +234,7 @@ class _BaselineListsPageState extends State<BaselineListsPage>
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.lightbulb_outline,
                     color: AppTheme.primaryColor,
                     size: 24,
@@ -291,12 +291,12 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                       ),
                       subtitle: Text(
                         _getListDescription(listName),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.grey600,
                         ),
                       ),
-                      trailing: Icon(
+                      trailing: const Icon(
                         Icons.check_circle,
                         color: AppTheme.primaryColor,
                         size: 24,

@@ -71,7 +71,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
         id: 'brand-mock-1',
         name: 'Premium Olive Oil Co.',
         brandType: 'Food & Beverage',
-        categories: ['Gourmet', 'Premium Products'],
+        categories: const ['Gourmet', 'Premium Products'],
         contactEmail: 'partnerships@premiumoil.com',
         verificationStatus: BrandVerificationStatus.verified,
         createdAt: DateTime.now(),
@@ -167,19 +167,19 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
           qualityFocus: 88.0,
           audienceAlignment: 87.0,
         ),
-        matchReasons: [
+        matchReasons: const [
           'Strong value alignment with premium products',
           'Target audience matches event attendees',
           'High quality focus aligns with event standards',
         ],
         brandType: 'Food & Beverage',
-        brandCategories: ['Gourmet', 'Premium Products'],
+        brandCategories: const ['Gourmet', 'Premium Products'],
         estimatedContribution: const ContributionRange(
           minAmount: 500.0,
           maxAmount: 1500.0,
           preferredAmount: 1000.0,
         ),
-        metadata: {
+        metadata: const {
           'eventTitle': 'Farm-to-Table Dinner Experience',
           'hostName': 'Chef Maria',
           'eventId': 'event-mock-1',
@@ -236,10 +236,10 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
         controller: _searchController,
         decoration: InputDecoration(
           hintText: 'Search events by name, category, or location...',
-          prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+          prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear, color: AppColors.textSecondary),
+                  icon: const Icon(Icons.clear, color: AppColors.textSecondary),
                   onPressed: () {
                     _searchController.clear();
                     setState(() {});
@@ -267,13 +267,13 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
           Expanded(
             child: OutlinedButton.icon(
               onPressed: () => _showFilterDialog(),
-              icon: Icon(Icons.filter_list, size: 18, color: AppColors.textSecondary),
-              label: Text(
+              icon: const Icon(Icons.filter_list, size: 18, color: AppColors.textSecondary),
+              label: const Text(
                 'Filters',
                 style: TextStyle(color: AppColors.textSecondary),
               ),
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: AppColors.grey300),
+                side: const BorderSide(color: AppColors.grey300),
               ),
             ),
           ),
@@ -302,7 +302,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
               Expanded(
                 child: Text(
                   '🌟 Recommended for ${_currentBrand?.name ?? "Your Brand"}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -319,7 +319,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
                 ),
                 child: Text(
                   '${_recommendedMatches.length} matches',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.electricGreen,
                     fontWeight: FontWeight.w500,
@@ -345,8 +345,8 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(20),
+        const Padding(
+          padding: EdgeInsets.all(20),
           child: Text(
             'Search Results',
             style: TextStyle(
@@ -380,7 +380,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
               color: AppColors.textSecondary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'No events found',
               style: TextStyle(
                 fontSize: 18,
@@ -389,7 +389,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               'Try adjusting your search or filters',
               style: TextStyle(
                 fontSize: 14,

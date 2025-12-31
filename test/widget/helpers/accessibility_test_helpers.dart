@@ -177,7 +177,7 @@ class AccessibilityTestHelpers {
       for (final bgColor in backgroundColors) {
         final textColorValue = textColor.toARGB32().toRadixString(16);
         final bgColorValue = bgColor.toARGB32().toRadixString(16);
-        final key = '${textColorValue}_on_${bgColorValue}';
+        final key = '${textColorValue}_on_$bgColorValue';
         
         // Normal text
         final normalPass = verifyContrastRatio(textColor, bgColor, isLargeText: false);
@@ -207,7 +207,7 @@ class AccessibilityTestHelpers {
       for (final bgColor in backgroundColors) {
         final uiColorValue = uiColor.toARGB32().toRadixString(16);
         final bgColorValue = bgColor.toARGB32().toRadixString(16);
-        final key = '${uiColorValue}_on_${bgColorValue}';
+        final key = '${uiColorValue}_on_$bgColorValue';
         final uiPass = verifyContrastRatio(uiColor, bgColor, isUIComponent: true);
         results['uiComponents'][key] = uiPass;
         if (!uiPass) {

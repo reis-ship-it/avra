@@ -7,7 +7,7 @@ import 'package:spots/core/services/user_anonymization_service.dart';
 import 'package:spots/core/services/location_obfuscation_service.dart';
 import 'package:spots/core/services/field_encryption_service.dart';
 import 'package:spots/core/ai2ai/anonymous_communication.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import '../helpers/platform_channel_helper.dart';
 
 /// Mock FlutterSecureStorage for testing
@@ -38,13 +38,13 @@ void main() {
       mockSecureStorage = MockFlutterSecureStorage();
       
       // In-memory storage to track keys
-      final Map<String, String> _keyStorage = {};
+      final Map<String, String> keyStorage = {};
       
       // Set up read to return stored value or null
       when(() => mockSecureStorage.read(key: any(named: 'key')))
           .thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
-        return _keyStorage[key];
+        return keyStorage[key];
       });
       
       // Set up write to store value
@@ -53,14 +53,14 @@ void main() {
           value: any(named: 'value'))).thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
         final value = invocation.namedArguments[#value] as String;
-        _keyStorage[key] = value;
+        keyStorage[key] = value;
       });
       
       // Set up delete to remove key
       when(() => mockSecureStorage.delete(key: any(named: 'key')))
           .thenAnswer((invocation) async {
         final key = invocation.namedArguments[#key] as String;
-        _keyStorage.remove(key);
+        keyStorage.remove(key);
       });
       
       locationService = LocationObfuscationService();

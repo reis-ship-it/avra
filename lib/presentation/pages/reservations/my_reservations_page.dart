@@ -1,0 +1,388 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spots/core/models/reservation.dart';
+import 'package:spots/core/models/unified_user.dart';
+import 'package:spots/core/services/reservation_service.dart';
+import 'package:spots/core/theme/colors.dart';
+import 'package:spots/core/theme/app_theme.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:spots/presentation/pages/reservations/reservation_detail_page.dart';
+import 'package:spots/injection_container.dart' as di;
+
+/// My Reservations Page
+/// Phase 15: Reservation System Implementation
+/// 
+/// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
+/// 
+/// Features:
+/// - Display user's reservations
+/// - Filter by status
+/// - Sort by date
+/// - Quick actions (cancel, modify)
+class MyReservationsPage extends StatefulWidget {
+  const MyReservationsPage({super.key});
+
+  @override
+  State<MyReservationsPage> createState() => _MyReservationsPageState();
+}
+
+class _MyReservationsPageState extends State<MyReservationsPage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  late final ReservationService _reservationService;
+
+  List<Reservation> _pendingReservations = [];
+  List<Reservation> _confirmedReservations = [];
+  List<Reservation> _cancelledReservations = [];
+  List<Reservation> _pastReservations = [];
+
+  bool _isLoading = false;
+  String? _error;
+  UnifiedUser? _currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+    _reservationService = di.sl<ReservationService>();
+    _loadReservations();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadReservations() async {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! Authenticated) {
+      setState(() {
+        _error = 'Please sign in to view your reservations';
+      });
+      return;
+    }
+
+    final user = authState.user;
+
+    // Convert User to UnifiedUser
+    _currentUser = UnifiedUser(
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName ?? user.name,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isOnline: user.isOnline ?? false,
+    );
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      // Load all reservations
+      final reservations = await _reservationService.getUserReservations(
+        userId: _currentUser!.id,
+      );
+
+      // Separate by status
+      final now = DateTime.now();
+      final pending = <Reservation>[];
+      final confirmed = <Reservation>[];
+      final cancelled = <Reservation>[];
+      final past = <Reservation>[];
+
+      for (final reservation in reservations) {
+        if (reservation.status == ReservationStatus.cancelled) {
+          cancelled.add(reservation);
+        } else if (reservation.reservationTime.isBefore(now)) {
+          past.add(reservation);
+        } else if (reservation.status == ReservationStatus.pending) {
+          pending.add(reservation);
+        } else if (reservation.status == ReservationStatus.confirmed) {
+          confirmed.add(reservation);
+        }
+      }
+
+      // Sort by date (upcoming first)
+      pending.sort((a, b) => a.reservationTime.compareTo(b.reservationTime));
+      confirmed.sort((a, b) => a.reservationTime.compareTo(b.reservationTime));
+      cancelled.sort((a, b) => b.reservationTime.compareTo(a.reservationTime));
+      past.sort((a, b) => b.reservationTime.compareTo(a.reservationTime));
+
+      setState(() {
+        _pendingReservations = pending;
+        _confirmedReservations = confirmed;
+        _cancelledReservations = cancelled;
+        _pastReservations = past;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Failed to load reservations: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  List<Reservation> _getReservationsForTab(int index) {
+    switch (index) {
+      case 0:
+        return _pendingReservations;
+      case 1:
+        return _confirmedReservations;
+      case 2:
+        return _cancelledReservations;
+      case 3:
+        return _pastReservations;
+      default:
+        return [];
+    }
+  }
+
+  String _getTabTitle(int index) {
+    switch (index) {
+      case 0:
+        return 'Pending (${_pendingReservations.length})';
+      case 1:
+        return 'Confirmed (${_confirmedReservations.length})';
+      case 2:
+        return 'Cancelled (${_cancelledReservations.length})';
+      case 3:
+        return 'Past (${_pastReservations.length})';
+      default:
+        return '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Reservations'),
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: AppColors.white,
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: AppColors.white,
+          unselectedLabelColor: AppColors.white.withOpacity(0.7),
+          indicatorColor: AppColors.white,
+          tabs: [
+            Tab(text: _getTabTitle(0)),
+            Tab(text: _getTabTitle(1)),
+            Tab(text: _getTabTitle(2)),
+            Tab(text: _getTabTitle(3)),
+          ],
+        ),
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 48, color: AppTheme.errorColor),
+                      const SizedBox(height: 16),
+                      Text(
+                        _error!,
+                        style: TextStyle(color: AppTheme.errorColor),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _loadReservations,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryColor,
+                          foregroundColor: AppColors.white,
+                        ),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                )
+              : TabBarView(
+                  controller: _tabController,
+                  children: List.generate(4, (index) {
+                    final reservations = _getReservationsForTab(index);
+                    return reservations.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.event_busy,
+                                  size: 64,
+                                  color: AppColors.textSecondary,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No reservations',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _loadReservations,
+                            child: ListView.builder(
+                              itemCount: reservations.length,
+                              padding: const EdgeInsets.all(16),
+                              itemBuilder: (context, i) {
+                                final reservation = reservations[i];
+                                return _ReservationCard(
+                                  reservation: reservation,
+                                  onTap: () async {
+                                    final result = await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => ReservationDetailPage(
+                                          reservationId: reservation.id,
+                                        ),
+                                      ),
+                                    );
+                                    if (result == true) {
+                                      _loadReservations();
+                                    }
+                                  },
+                                );
+                              },
+                            ),
+                          );
+                  }),
+                ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.of(context).pushNamed('/reservations/create');
+          if (result != null) {
+            _loadReservations();
+          }
+        },
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: AppColors.white,
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class _ReservationCard extends StatelessWidget {
+  final Reservation reservation;
+  final VoidCallback onTap;
+
+  const _ReservationCard({
+    required this.reservation,
+    required this.onTap,
+  });
+
+  Color _getStatusColor(ReservationStatus status) {
+    switch (status) {
+      case ReservationStatus.pending:
+        return AppTheme.warningColor;
+      case ReservationStatus.confirmed:
+        return AppTheme.successColor;
+      case ReservationStatus.cancelled:
+        return AppTheme.errorColor;
+      case ReservationStatus.completed:
+        return AppTheme.primaryColor;
+      case ReservationStatus.noShow:
+        return AppTheme.errorColor;
+    }
+  }
+
+  String _getTypeLabel(ReservationType type) {
+    switch (type) {
+      case ReservationType.event:
+        return 'Event';
+      case ReservationType.spot:
+        return 'Spot';
+      case ReservationType.business:
+        return 'Business';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      _getTypeLabel(reservation.type),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(reservation.status).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: _getStatusColor(reservation.status)),
+                    ),
+                    child: Text(
+                      reservation.status.toString().split('.').last.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: _getStatusColor(reservation.status),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                reservation.targetId,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${reservation.reservationTime.toLocal().toString().split('.')[0]}',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(Icons.people, size: 16, color: AppColors.textSecondary),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${reservation.partySize} ${reservation.partySize == 1 ? 'person' : 'people'}',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

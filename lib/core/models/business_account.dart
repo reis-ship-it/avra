@@ -58,7 +58,7 @@ class BusinessAccount extends Equatable {
   // Shared AI agent
   final String? sharedAgentId; // AI agent ID for the business
 
-  BusinessAccount({
+  const BusinessAccount({
     required this.id,
     required this.name,
     required this.email,

@@ -10,6 +10,7 @@
 /// - Actionable guidance and alternatives
 ///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/ai/action_models.dart';
@@ -68,15 +69,15 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      title: Row(
+      title: const Row(
         children: [
-          const Icon(
+          Icon(
             Icons.error_outline,
             color: AppColors.error,
             size: 24,
           ),
-          const SizedBox(width: 8),
-          const Text(
+          SizedBox(width: 8),
+          Text(
             'Action Failed',
             style: TextStyle(
               fontSize: 20,
@@ -148,15 +149,15 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    const Row(
                       children: [
                         Icon(
                           Icons.lightbulb_outline,
                           size: 18,
                           color: AppColors.electricGreen,
                         ),
-                        const SizedBox(width: 8),
-                        const Text(
+                        SizedBox(width: 8),
+                        Text(
                           'Suggestions',
                           style: TextStyle(
                             fontSize: 12,
@@ -247,7 +248,7 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
             },
             child: Text(
               _showDetails ? 'Hide Details' : 'View Details',
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
@@ -258,7 +259,7 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
             widget.onDismiss();
             Navigator.of(context).pop();
           },
-          child: Text(
+          child: const Text(
             'Cancel',
             style: TextStyle(
               color: AppColors.textSecondary,

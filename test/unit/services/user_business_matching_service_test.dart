@@ -64,7 +64,7 @@ void main() {
       });
 
       test('should return compatibility score with preferences', () async {
-        final preferences = BusinessPatronPreferences(
+        const preferences = BusinessPatronPreferences(
           preferLocalPatrons: true,
           preferCommunityMembers: true,
         );
@@ -90,7 +90,7 @@ void main() {
       });
 
       test('should calculate percentage score', () async {
-        final preferences = BusinessPatronPreferences(
+        const preferences = BusinessPatronPreferences(
           preferLocalPatrons: true,
         );
 
@@ -112,7 +112,7 @@ void main() {
       });
 
       test('should determine if user is good match', () async {
-        final preferences = BusinessPatronPreferences(
+        const preferences = BusinessPatronPreferences(
           preferLocalPatrons: true,
           preferCommunityMembers: true,
         );
@@ -134,7 +134,7 @@ void main() {
       });
 
       test('should provide summary of match', () async {
-        final preferences = BusinessPatronPreferences(
+        const preferences = BusinessPatronPreferences(
           preferLocalPatrons: true,
         );
 

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 
 /// Tests for the AI2AI Personality Learning System
@@ -195,11 +195,7 @@ void main() {
     group('Learning Potential Calculations', () {
       test('should calculate high learning potential for compatible personalities', () {
         final confidentProfile = profile.evolve(
-          newConfidence: Map.fromIterable(
-            VibeConstants.coreDimensions,
-            key: (d) => d as String,
-            value: (_) => 1.0,
-          ),
+          newConfidence: { for (var d in VibeConstants.coreDimensions) d : 1.0 },
         );
 
         // Phase 8.3: Use agentId for privacy protection
@@ -289,11 +285,7 @@ void main() {
 
       test('should correctly identify well-developed personality', () {
         final wellDeveloped = profile.evolve(
-          newConfidence: Map.fromIterable(
-            VibeConstants.coreDimensions,
-            key: (d) => d,
-            value: (d) => 0.8,
-          ),
+          newConfidence: { for (var d in VibeConstants.coreDimensions) d : 0.8 },
           additionalLearning: {
             'total_interactions': VibeConstants.minActionsForAnalysis + 10,
           },
@@ -394,7 +386,7 @@ void main() {
 
       test('should maintain consistent hash for same profile state', () {
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$testUserId';
+        const agentId = 'agent_$testUserId';
         final profile1 = PersonalityProfile.initial(agentId, userId: testUserId);
         final profile2 = PersonalityProfile.initial(agentId, userId: testUserId);
         

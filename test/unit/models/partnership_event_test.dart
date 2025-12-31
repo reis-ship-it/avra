@@ -17,8 +17,8 @@ void main() {
     setUp(() {
       TestHelpers.setupTestEnvironment();
       testDate = TestHelpers.createTestDateTime();
-      startTime = testDate.add(Duration(days: 1));
-      endTime = startTime.add(Duration(hours: 2));
+      startTime = testDate.add(const Duration(days: 1));
+      endTime = startTime.add(const Duration(hours: 2));
       testHost = ModelFactories.createTestUser(
         id: 'host-123',
         displayName: 'Expert Host',
@@ -54,7 +54,7 @@ void main() {
           event: baseEvent,
           partnershipId: 'partnership-123',
           revenueSplitId: 'split-123',
-          partnerIds: ['user-123', 'business-123'],
+          partnerIds: const ['user-123', 'business-123'],
           partnerCount: 2,
         );
         final withoutPartnership = PartnershipEvent.fromExpertiseEvent(
@@ -103,7 +103,7 @@ void main() {
           partnershipId: 'partnership-123',
           revenueSplitId: 'split-123',
           isPartnershipEvent: true,
-          partnerIds: ['user-123', 'business-123'],
+          partnerIds: const ['user-123', 'business-123'],
           partnerCount: 2,
         );
 

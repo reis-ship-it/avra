@@ -110,7 +110,7 @@ class AdvancedRecommendationEngine {
         predictedDestinations: predictedDestinations,
         optimizationSuggestions: optimizations,
         confidenceLevel: _calculatePredictionConfidence(behaviorPatterns),
-        timeHorizon: Duration(hours: 4),
+        timeHorizon: const Duration(hours: 4),
         privacyPreserved: true,
       );
       
@@ -303,7 +303,7 @@ class AdvancedRecommendationEngine {
       PredictedDestination(
         spotCategory: 'food',
         probability: 0.8,
-        estimatedArrivalTime: DateTime.now().add(Duration(hours: 1)),
+        estimatedArrivalTime: DateTime.now().add(const Duration(hours: 1)),
       ),
     ];
   }
@@ -315,7 +315,7 @@ class AdvancedRecommendationEngine {
       JourneyOptimization(
         type: 'route_optimization',
         description: 'Optimal route to minimize travel time',
-        timeSavings: Duration(minutes: 15),
+        timeSavings: const Duration(minutes: 15),
       ),
     ];
   }

@@ -10,14 +10,19 @@ import 'package:spots/injection_container.dart' as di;
 /// Social Media Connection Page for Onboarding
 /// Allows users to optionally connect their social media accounts
 /// This enhances AI personality learning and enables friend discovery
+///
+/// **Batch Connection:** During onboarding, users can connect all platforms at once
+/// **Individual Connection:** After onboarding, users connect platforms one at a time
 class SocialMediaConnectionPage extends StatefulWidget {
   final Map<String, bool> connectedPlatforms;
   final Function(Map<String, bool>) onConnectionsChanged;
+  final bool isOnboarding; // If true, shows batch connection option
 
   const SocialMediaConnectionPage({
     super.key,
     required this.connectedPlatforms,
     required this.onConnectionsChanged,
+    this.isOnboarding = true, // Default to onboarding mode
   });
 
   @override
@@ -27,8 +32,11 @@ class SocialMediaConnectionPage extends StatefulWidget {
 
 class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
   late Map<String, bool> _connectedPlatforms;
+  final Set<String> _selectedForBatch =
+      {}; // Platforms selected for batch connection
 
   bool _isConnecting = false;
+  bool _isBatchConnecting = false;
   String? _connectingPlatform;
 
   @override
@@ -57,6 +65,97 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
                 ),
           ),
           const SizedBox(height: 24),
+          // Batch connection option (only during onboarding)
+          if (widget.isOnboarding) ...[
+            Card(
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.auto_awesome, color: AppTheme.primaryColor),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Quick Connect',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.primaryColor,
+                                  ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Select multiple platforms and connect them all at once. This is only available during onboarding.',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.grey600,
+                          ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _connectedPlatforms.keys.map((platform) {
+                        final isSelected = _selectedForBatch.contains(platform);
+                        final isConnected =
+                            _connectedPlatforms[platform] == true;
+                        return FilterChip(
+                          label: Text(platform),
+                          selected: isSelected,
+                          onSelected: isConnected
+                              ? null
+                              : (selected) {
+                                  setState(() {
+                                    if (selected) {
+                                      _selectedForBatch.add(platform);
+                                    } else {
+                                      _selectedForBatch.remove(platform);
+                                    }
+                                  });
+                                },
+                          avatar: isSelected
+                              ? const Icon(Icons.check, size: 18)
+                              : _getPlatformIcon(platform),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed:
+                            _isBatchConnecting || _selectedForBatch.isEmpty
+                                ? null
+                                : _connectBatch,
+                        icon: _isBatchConnecting
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.bolt),
+                        label: Text(
+                          _isBatchConnecting
+                              ? 'Connecting...'
+                              : 'Connect ${_selectedForBatch.length} Selected',
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryColor,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           Expanded(
             child: ListView(
               children: _connectedPlatforms.entries.map((entry) {
@@ -99,6 +198,16 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
             ),
           ),
           const SizedBox(height: 16),
+          // Add custom account option
+          OutlinedButton.icon(
+            onPressed: _showAddCustomAccountDialog,
+            icon: const Icon(Icons.add_circle_outline),
+            label: const Text('Add Custom Account'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+          ),
+          const SizedBox(height: 16),
           Text(
             'Privacy Note: We only use your social data to enhance your AI personality and help you discover friends. You can disconnect anytime in settings.',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -109,6 +218,170 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _showAddCustomAccountDialog() async {
+    final platformNameController = TextEditingController();
+    final clientIdController = TextEditingController();
+    final discoveryUrlController = TextEditingController();
+    final profileEndpointController = TextEditingController();
+
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Custom Account'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: platformNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Platform Name',
+                  hintText: 'e.g., Uber Eats, Lyft, Airbnb',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: clientIdController,
+                decoration: const InputDecoration(
+                  labelText: 'OAuth Client ID',
+                  hintText: 'Your OAuth client ID',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: discoveryUrlController,
+                decoration: const InputDecoration(
+                  labelText: 'Discovery URL',
+                  hintText:
+                      'https://example.com/.well-known/openid_configuration',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: profileEndpointController,
+                decoration: const InputDecoration(
+                  labelText: 'Profile Endpoint (Optional)',
+                  hintText: 'https://api.example.com/user/me',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (platformNameController.text.isNotEmpty &&
+                  clientIdController.text.isNotEmpty &&
+                  discoveryUrlController.text.isNotEmpty) {
+                Navigator.of(context).pop({
+                  'platform': platformNameController.text
+                      .toLowerCase()
+                      .replaceAll(' ', '_'),
+                  'platform_display': platformNameController.text,
+                  'client_id': clientIdController.text,
+                  'discovery_url': discoveryUrlController.text,
+                  'profile_endpoint': profileEndpointController.text.isNotEmpty
+                      ? profileEndpointController.text
+                      : null,
+                });
+              }
+            },
+            child: const Text('Connect'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null) {
+      await _connectCustomPlatform(result);
+    }
+  }
+
+  Future<void> _connectCustomPlatform(Map<String, dynamic> config) async {
+    setState(() {
+      _isConnecting = true;
+      _connectingPlatform = config['platform_display'] as String;
+    });
+
+    try {
+      // Get current user
+      final authBloc = context.read<AuthBloc>();
+      final authState = authBloc.state;
+      if (authState is! Authenticated) {
+        throw Exception('User not authenticated');
+      }
+
+      final userId = authState.user.id;
+
+      // Get agentId for privacy
+      final agentIdService = di.sl<AgentIdService>();
+      final agentId = await agentIdService.getUserAgentId(userId);
+
+      // Prepare custom OAuth config
+      final customOAuthConfig = {
+        'client_id': config['client_id'],
+        'discovery_url': config['discovery_url'],
+        'profile_endpoint': config['profile_endpoint'],
+        'scopes': ['openid', 'profile', 'email'], // Default scopes
+      };
+
+      // Call service to run OAuth flow
+      final socialMediaService = di.sl<SocialMediaConnectionService>();
+      await socialMediaService.connectPlatform(
+        platform: config['platform'] as String,
+        agentId: agentId,
+        userId: userId,
+        customOAuthConfig: customOAuthConfig,
+      );
+
+      if (!mounted) return;
+
+      final platformDisplay = config['platform_display'] as String;
+      setState(() {
+        _connectedPlatforms[platformDisplay] = true;
+        _isConnecting = false;
+        _connectingPlatform = null;
+      });
+
+      // Report changes to parent
+      widget.onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$platformDisplay connected successfully'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isConnecting = false;
+        _connectingPlatform = null;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to connect: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    }
   }
 
   Widget _getPlatformIcon(String platform) {
@@ -135,11 +408,103 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
         icon = Icons.business;
         color = Colors.blue.shade700;
         break;
+      case 'Reddit':
+        icon = Icons.forum;
+        color = Colors.orange;
+        break;
+      case 'Tumblr':
+        icon = Icons.auto_stories;
+        color = Colors.blue.shade900;
+        break;
+      case 'YouTube':
+        icon = Icons.play_circle;
+        color = Colors.red;
+        break;
+      case 'Pinterest':
+        icon = Icons.push_pin;
+        color = Colors.red.shade700;
+        break;
+      case 'Are.na':
+        icon = Icons.grid_view;
+        color = Colors.purple;
+        break;
       default:
         icon = Icons.link;
         color = AppTheme.primaryColor;
     }
     return Icon(icon, color: color, size: 32);
+  }
+
+  Future<void> _connectBatch() async {
+    if (_selectedForBatch.isEmpty) return;
+
+    setState(() {
+      _isBatchConnecting = true;
+    });
+
+    try {
+      // Get current user
+      final authBloc = context.read<AuthBloc>();
+      final authState = authBloc.state;
+      if (authState is! Authenticated) {
+        throw Exception('User not authenticated');
+      }
+
+      final userId = authState.user.id;
+
+      // Get agentId for privacy
+      final agentIdService = di.sl<AgentIdService>();
+      final agentId = await agentIdService.getUserAgentId(userId);
+
+      // Call service to batch connect
+      final socialMediaService = di.sl<SocialMediaConnectionService>();
+      final platforms = _selectedForBatch.map((p) => p.toLowerCase()).toList();
+      final connections = await socialMediaService.connectPlatformsBatch(
+        platforms: platforms,
+        agentId: agentId,
+        userId: userId,
+      );
+
+      if (mounted) {
+        // Update UI with successful connections
+        for (final connection in connections) {
+          final platformName = connection.platform[0].toUpperCase() +
+              connection.platform.substring(1);
+          _connectedPlatforms[platformName] = true;
+        }
+
+        setState(() {
+          _isBatchConnecting = false;
+          _selectedForBatch.clear();
+        });
+
+        // Report changes to parent
+        widget
+            .onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Connected ${connections.length} platform(s) successfully'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isBatchConnecting = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to connect platforms: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _connectPlatform(String platform) async {
@@ -178,7 +543,8 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
         });
 
         // Report changes to parent with real connection status
-        widget.onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
+        widget
+            .onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -253,7 +619,8 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
         });
 
         // Report changes to parent
-        widget.onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
+        widget
+            .onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

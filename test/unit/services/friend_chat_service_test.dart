@@ -11,6 +11,7 @@
 /// - Decryption: Message decryption for display
 /// - Unread Count: Total unread message counting
 /// - Error Handling: Invalid inputs, encryption errors
+library;
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
@@ -223,8 +224,8 @@ void main() {
       
       test('should sort by most recent message', () async {
         // Arrange
-        final friend1 = 'friend_1';
-        final friend2 = 'friend_2';
+        const friend1 = 'friend_1';
+        const friend2 = 'friend_2';
         
         await service.sendMessage(friend1, testUserId, 'Old message');
         await Future.delayed(const Duration(milliseconds: 10));
@@ -263,7 +264,7 @@ void main() {
       
       test('should only mark messages from specific friend', () async {
         // Arrange
-        final otherFriend = 'other_friend';
+        const otherFriend = 'other_friend';
         await service.sendMessage(testFriendId, testUserId, 'Message from friend');
         await service.sendMessage(otherFriend, testUserId, 'Message from other');
         
@@ -333,8 +334,8 @@ void main() {
     group('Unread Count', () {
       test('should calculate total unread count across all friends', () async {
         // Arrange
-        final friend1 = 'friend_1';
-        final friend2 = 'friend_2';
+        const friend1 = 'friend_1';
+        const friend2 = 'friend_2';
         
         await service.sendMessage(friend1, testUserId, 'Unread 1');
         await service.sendMessage(friend1, testUserId, 'Unread 2');

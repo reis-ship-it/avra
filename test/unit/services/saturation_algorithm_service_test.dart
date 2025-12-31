@@ -153,7 +153,7 @@ void main() {
           growthRate: 2.0,
           competitionLevel: 0.2,
           marketDemand: 0.8,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.2,
             qualityDistribution: 0.9,
             utilizationRate: 0.9,
@@ -178,7 +178,7 @@ void main() {
           growthRate: 5.0,
           competitionLevel: 0.4,
           marketDemand: 0.6,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.5,
             qualityDistribution: 0.8,
             utilizationRate: 0.7,
@@ -203,7 +203,7 @@ void main() {
           growthRate: 20.0,
           competitionLevel: 0.8,
           marketDemand: 0.3,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.9,
             qualityDistribution: 0.6,
             utilizationRate: 0.5,
@@ -224,7 +224,7 @@ void main() {
     group('Saturation Factors Calculation', () {
       test('should calculate saturation score from factors or handle edge case with zero experts', () async {
         // Test business logic: saturation factors calculation and edge cases
-        final factors = SaturationFactors(
+        const factors = SaturationFactors(
           supplyRatio: 0.5,
           qualityDistribution: 0.8,
           utilizationRate: 0.7,

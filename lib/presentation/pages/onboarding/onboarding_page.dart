@@ -65,51 +65,65 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Map<String, List<String>> _preferences = {};
   List<String> _baselineLists = [];
   List<String> _respectedFriends = [];
-  Map<String, bool> _connectedSocialPlatforms = {}; // Track social media connections
+  Map<String, bool> _connectedSocialPlatforms = {
+    // Core platforms
+    'Instagram': false,
+    'Facebook': false,
+    'Twitter': false,
+    'Google': false,
+    // New platforms
+    'Reddit': false,
+    'TikTok': false,
+    'Tumblr': false,
+    'YouTube': false,
+    'Pinterest': false,
+    'Are.na': false,
+  }; // Track social media connections
   bool _isCompleting = false; // Guard to prevent multiple completion attempts
 
   final List<OnboardingStep> _steps = [
-    OnboardingStep(
+    const OnboardingStep(
       page: OnboardingStepType.welcome,
       title: 'Welcome',
       description: 'Get started with SPOTS',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       page: OnboardingStepType.permissions,
       title: 'Permissions & Legal',
       description: 'Enable permissions and accept terms',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       page: OnboardingStepType.homebase,
       title: 'Choose Your Homebase',
       description: 'Select your primary location',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       page: OnboardingStepType.favoritePlaces,
       title: 'Favorite Places',
       description: 'Tell us about your favorite spots',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       page: OnboardingStepType.preferences,
       title: 'What do you love?',
-      description: 'Set your preferences for vibe matching and spot recommendations',
+      description:
+          'Set your preferences for vibe matching and spot recommendations',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       page: OnboardingStepType.baselineLists,
       title: 'Your Lists',
       description: 'Create your starting lists (optional)',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       page: OnboardingStepType.socialMedia,
       title: 'Social Media',
       description: 'Connect your social accounts (optional)',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       page: OnboardingStepType.friends,
       title: 'Friends & Respect',
       description: 'Connect with friends',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       page: OnboardingStepType.connectAndDiscover,
       title: 'Connect & Discover',
       description: 'Enable ai2ai discovery and connections',
@@ -120,7 +134,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   void dispose() {
     // Stop any ongoing operations
     _isCompleting = true;
-    
+
     // Dispose PageController first to prevent any ongoing animations
     // This must happen before super.dispose() to prevent rendering issues
     // Note: PageController may already be disposed in _completeOnboarding
@@ -185,8 +199,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
           Expanded(
             child: PageView.builder(
               controller: _pageController,
-              physics: _isCompleting 
-                  ? const NeverScrollableScrollPhysics() 
+              physics: _isCompleting
+                  ? const NeverScrollableScrollPhysics()
                   : const PageScrollPhysics(),
               onPageChanged: (index) {
                 if (!_isCompleting && mounted) {
@@ -296,6 +310,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       case OnboardingStepType.socialMedia:
         return SocialMediaConnectionPage(
           connectedPlatforms: _connectedSocialPlatforms,
+          isOnboarding: true, // Enable batch connections during onboarding
           onConnectionsChanged: (connections) async {
             setState(() {
               _connectedSocialPlatforms = connections;
@@ -308,14 +323,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
               final authState = authBloc.state;
               if (authState is Authenticated) {
                 final userId = authState.user.id;
-                final socialMediaService = di.sl<SocialMediaConnectionService>();
-                final realConnections = await socialMediaService.getActiveConnections(userId);
+                final socialMediaService =
+                    di.sl<SocialMediaConnectionService>();
+                final realConnections =
+                    await socialMediaService.getActiveConnections(userId);
 
                 // Update map to reflect only real connections
                 final realPlatforms = <String, bool>{};
                 for (final conn in realConnections) {
                   // Map platform names: 'instagram' -> 'Instagram'
-                  final displayName = conn.platform[0].toUpperCase() + conn.platform.substring(1);
+                  final displayName = conn.platform[0].toUpperCase() +
+                      conn.platform.substring(1);
                   realPlatforms[displayName] = true;
                 }
 
@@ -327,12 +345,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
               }
             } catch (e) {
               // Continue with UI state if service check fails
-              _logger.warn('⚠️ Could not verify social media connections: $e', tag: 'Onboarding');
+              _logger.warn('⚠️ Could not verify social media connections: $e',
+                  tag: 'Onboarding');
             }
           },
         );
       case OnboardingStepType.connectAndDiscover:
-        return _ConnectAndDiscoverPage();
+        return const _ConnectAndDiscoverPage();
     }
   }
 
@@ -348,10 +367,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   ? null
                   : (_canProceedToNextStep()
                       ? () {
-                          _logger.debug('Button pressed on step ${_steps[_currentPage].page.name}',
+                          _logger.debug(
+                              'Button pressed on step ${_steps[_currentPage].page.name}',
                               tag: 'Onboarding');
                           if (_currentPage == _steps.length - 1) {
-                            _logger.info('Completing onboarding from Connect & Discover step',
+                            _logger.info(
+                                'Completing onboarding from Connect & Discover step',
                                 tag: 'Onboarding');
                             _completeOnboarding();
                           } else {
@@ -380,7 +401,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   bool _canProceedToNextStep() {
     if (_currentPage >= _steps.length) {
-      _logger.debug('Cannot proceed: currentPage >= steps.length', tag: 'Onboarding');
+      _logger.debug('Cannot proceed: currentPage >= steps.length',
+          tag: 'Onboarding');
       return false;
     }
 
@@ -392,7 +414,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
     final stepType = _steps[_currentPage].page;
     bool canProceed;
-    
+
     switch (stepType) {
       case OnboardingStepType.welcome:
         canProceed = true; // Welcome page is always ready to proceed
@@ -413,7 +435,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
         canProceed = true; // Optional step
         break;
       case OnboardingStepType.permissions:
-        canProceed = _selectedBirthday != null && _areCriticalPermissionsGrantedSync();
+        canProceed =
+            _selectedBirthday != null && _areCriticalPermissionsGrantedSync();
         break;
       case OnboardingStepType.socialMedia:
         canProceed = true; // Social media step is optional
@@ -423,8 +446,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
         canProceed = true;
         break;
     }
-    
-    _logger.debug('Can proceed from ${stepType.name}: $canProceed', tag: 'Onboarding');
+
+    _logger.debug('Can proceed from ${stepType.name}: $canProceed',
+        tag: 'Onboarding');
     return canProceed;
   }
 
@@ -446,7 +470,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   void _completeOnboarding() async {
     // Prevent multiple completion attempts
     if (_isCompleting) {
-      _logger.warn('⚠️ [ONBOARDING_PAGE] Onboarding completion already in progress',
+      _logger.warn(
+          '⚠️ [ONBOARDING_PAGE] Onboarding completion already in progress',
           tag: 'Onboarding');
       return;
     }
@@ -461,7 +486,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
       // Get authenticated user
       final authState = context.read<AuthBloc>().state;
       if (authState is! Authenticated) {
-        _logger.error('❌ [ONBOARDING_PAGE] User not authenticated', tag: 'Onboarding');
+        _logger.error('❌ [ONBOARDING_PAGE] User not authenticated',
+            tag: 'Onboarding');
         _isCompleting = false;
         return;
       }
@@ -473,7 +499,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
       if (!isIntegrationTest) {
         final legalService = GetIt.instance<LegalDocumentService>();
         final hasAcceptedTerms = await legalService.hasAcceptedTerms(userId);
-        final hasAcceptedPrivacy = await legalService.hasAcceptedPrivacyPolicy(userId);
+        final hasAcceptedPrivacy =
+            await legalService.hasAcceptedPrivacyPolicy(userId);
 
         if (!hasAcceptedTerms || !hasAcceptedPrivacy) {
           // Check mounted before using context
@@ -481,7 +508,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             _isCompleting = false;
             return;
           }
-          
+
           final accepted = await showDialog<bool>(
             context: context,
             barrierDismissible: false,
@@ -534,22 +561,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
       // Handle controller result
       if (!result.isSuccess) {
-        _logger.error('❌ [ONBOARDING_PAGE] Onboarding completion failed: ${result.error}',
+        _logger.error(
+            '❌ [ONBOARDING_PAGE] Onboarding completion failed: ${result.error}',
             tag: 'Onboarding');
-        
+
         // Show error to user if needed
         if (result.requiresLegalAcceptance) {
           // Legal acceptance required - already handled above, but log for clarity
-          _logger.warn('⚠️ [ONBOARDING_PAGE] Legal acceptance required', tag: 'Onboarding');
+          _logger.warn('⚠️ [ONBOARDING_PAGE] Legal acceptance required',
+              tag: 'Onboarding');
         }
-        
+
         _isCompleting = false;
-        
+
         // In integration tests, surface the root cause
         if (isIntegrationTest) {
           throw Exception('Onboarding completion failed: ${result.error}');
         }
-        
+
         // Show error dialog to user
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -563,12 +592,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
       }
 
       // Success - log and continue to navigation
-      _logger.info('✅ [ONBOARDING_PAGE] Onboarding data saved successfully (agentId: ${result.agentId?.substring(0, 10)}...)',
+      _logger.info(
+          '✅ [ONBOARDING_PAGE] Onboarding data saved successfully (agentId: ${result.agentId?.substring(0, 10)}...)',
           tag: 'Onboarding');
 
       // Ensure widget is still mounted before navigation
       if (!mounted) {
-        _logger.warn('⚠️ [ONBOARDING_PAGE] Widget not mounted, skipping navigation',
+        _logger.warn(
+            '⚠️ [ONBOARDING_PAGE] Widget not mounted, skipping navigation',
             tag: 'Onboarding');
         _isCompleting = false;
         return;
@@ -583,14 +614,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
       // Wait for the current frame to complete using SchedulerBinding
       // This ensures all rendering operations are finished
       await SchedulerBinding.instance.endOfFrame;
-      
+
       // Note: PageController disposal is handled by dispose() method in normal widget lifecycle
       // Do NOT dispose here - disposing before navigation can cause graphics thread crashes
       // The controller will be properly disposed after navigation completes
 
       // Double-check mounted after delays
       if (!mounted) {
-        _logger.warn('⚠️ [ONBOARDING_PAGE] Widget not mounted after delays, skipping navigation',
+        _logger.warn(
+            '⚠️ [ONBOARDING_PAGE] Widget not mounted after delays, skipping navigation',
             tag: 'Onboarding');
         _isCompleting = false;
         return;
@@ -605,23 +637,23 @@ class _OnboardingPageState extends State<OnboardingPage> {
             _isCompleting = false;
             return;
           }
-          
+
           try {
             final router = GoRouter.of(context);
-            if (bool.fromEnvironment('FLUTTER_TEST')) {
+            if (const bool.fromEnvironment('FLUTTER_TEST')) {
               // Helpful signal in integration test output.
               // ignore: avoid_print
               print('TEST: OnboardingPage -> /ai-loading');
             }
-            
+
             // Get user name from auth state
             final authState = context.read<AuthBloc>().state;
-            final userName = authState is Authenticated 
-                ? authState.user.name
-                : 'User';
-            
+            final userName =
+                authState is Authenticated ? authState.user.name : 'User';
+
             // Navigate to AI loading page with all onboarding data
-            _logger.info('🚀 [ONBOARDING_PAGE] Navigating to /ai-loading with onboarding data',
+            _logger.info(
+                '🚀 [ONBOARDING_PAGE] Navigating to /ai-loading with onboarding data',
                 tag: 'Onboarding');
             router.go('/ai-loading', extra: {
               'userName': userName,
@@ -635,28 +667,32 @@ class _OnboardingPageState extends State<OnboardingPage> {
               'socialMediaConnected': _connectedSocialPlatforms,
             });
           } catch (navigationError) {
-            _logger.error('❌ [ONBOARDING_PAGE] Navigation error in postFrameCallback',
-                error: navigationError, tag: 'Onboarding');
+            _logger.error(
+                '❌ [ONBOARDING_PAGE] Navigation error in postFrameCallback',
+                error: navigationError,
+                tag: 'Onboarding');
             // Fallback navigation
             if (mounted) {
               try {
                 GoRouter.of(context).go('/home');
               } catch (fallbackError) {
-                _logger.error('❌ [ONBOARDING_PAGE] Fallback navigation also failed',
-                    error: fallbackError, tag: 'Onboarding');
+                _logger.error(
+                    '❌ [ONBOARDING_PAGE] Fallback navigation also failed',
+                    error: fallbackError,
+                    tag: 'Onboarding');
               }
             }
           }
         });
       });
-      
+
       // Note: Navigation happens in postFrameCallback
       // The outer catch will handle any errors before navigation
     } catch (e) {
       _isCompleting = false; // Reset on error
       _logger.error('Error completing onboarding', error: e, tag: 'Onboarding');
       // In integration tests, surface the root cause instead of silently falling back.
-      if (bool.fromEnvironment('FLUTTER_TEST')) {
+      if (const bool.fromEnvironment('FLUTTER_TEST')) {
         rethrow;
       }
       // Fallback: try direct navigation to home
@@ -720,7 +756,8 @@ class _PermissionsAndLegalPage extends StatefulWidget {
   });
 
   @override
-  State<_PermissionsAndLegalPage> createState() => _PermissionsAndLegalPageState();
+  State<_PermissionsAndLegalPage> createState() =>
+      _PermissionsAndLegalPageState();
 }
 
 class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
@@ -737,8 +774,10 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
       final legalService = GetIt.instance<LegalDocumentService>();
       final authState = context.read<AuthBloc>().state;
       if (authState is Authenticated) {
-        final hasAcceptedTerms = await legalService.hasAcceptedTerms(authState.user.id);
-        final hasAcceptedPrivacy = await legalService.hasAcceptedPrivacyPolicy(authState.user.id);
+        final hasAcceptedTerms =
+            await legalService.hasAcceptedTerms(authState.user.id);
+        final hasAcceptedPrivacy =
+            await legalService.hasAcceptedPrivacyPolicy(authState.user.id);
         setState(() {
           _legalAccepted = hasAcceptedTerms && hasAcceptedPrivacy;
         });
@@ -753,8 +792,10 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
     final authState = context.read<AuthBloc>().state;
 
     if (authState is Authenticated) {
-      final hasAcceptedTerms = await legalService.hasAcceptedTerms(authState.user.id);
-      final hasAcceptedPrivacy = await legalService.hasAcceptedPrivacyPolicy(authState.user.id);
+      final hasAcceptedTerms =
+          await legalService.hasAcceptedTerms(authState.user.id);
+      final hasAcceptedPrivacy =
+          await legalService.hasAcceptedPrivacyPolicy(authState.user.id);
 
       if (!hasAcceptedTerms || !hasAcceptedPrivacy) {
         final accepted = await showDialog<bool>(
@@ -786,8 +827,8 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
           Text(
             'Permissions & Legal',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -798,7 +839,7 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Permissions Section
           Card(
             elevation: 0,
@@ -834,9 +875,9 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Age Verification Section
           Card(
             elevation: 0,
@@ -875,9 +916,9 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Legal Acceptance Section
           Card(
             elevation: 0,
@@ -959,7 +1000,8 @@ class _ConnectAndDiscoverPage extends StatefulWidget {
   const _ConnectAndDiscoverPage();
 
   @override
-  State<_ConnectAndDiscoverPage> createState() => _ConnectAndDiscoverPageState();
+  State<_ConnectAndDiscoverPage> createState() =>
+      _ConnectAndDiscoverPageState();
 }
 
 class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {

@@ -10,7 +10,7 @@ import 'package:shared_preferences/src/shared_preferences_legacy.dart' as _i4;
 import 'package:spots/core/ai/personality_learning.dart' as _i3;
 import 'package:spots/core/models/multi_path_expertise.dart' as _i6;
 import 'package:spots/core/models/outcome_result.dart' as _i7;
-import 'package:spots/core/models/personality_profile.dart' as _i2;
+import 'package:spots_ai/models/personality_profile.dart' as _i2;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -25,7 +25,6 @@ import 'package:spots/core/models/personality_profile.dart' as _i2;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
-// ignore_for_file: invalid_use_of_internal_member
 
 class _FakePersonalityProfile_0 extends _i1.SmartFake
     implements _i2.PersonalityProfile {
@@ -255,11 +254,11 @@ class MockPersonalityLearning extends _i1.Mock
           dynamic Function(
             String,
             _i2.PersonalityProfile,
-          )? value) =>
+          )? _onPersonalityEvolved) =>
       super.noSuchMethod(
         Invocation.setter(
           #onPersonalityEvolved,
-          value,
+          _onPersonalityEvolved,
         ),
         returnValueForMissingStub: null,
       );

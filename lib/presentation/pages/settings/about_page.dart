@@ -56,17 +56,17 @@ class AboutPage extends StatelessWidget {
             const SizedBox(height: 32),
 
             // OUR_GUTS.md Mission
-            Card(
+            const Card(
               color: AppColors.grey100,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.favorite, color: AppTheme.primaryColor),
-                        const SizedBox(width: 8),
+                        Icon(Icons.favorite, color: AppTheme.primaryColor),
+                        SizedBox(width: 8),
                         Text(
                           'Our Mission',
                           style: TextStyle(
@@ -77,7 +77,7 @@ class AboutPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       'SPOTS exists to help people find places, experiences, and communities where they truly feel at home—wherever they are. We believe everyone deserves to know they belong.',
                       style: TextStyle(
@@ -294,17 +294,17 @@ class AboutPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Credits
-            Card(
+            const Card(
               color: AppColors.grey100,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.favorite, color: AppTheme.primaryColor),
-                        const SizedBox(width: 8),
+                        Icon(Icons.favorite, color: AppTheme.primaryColor),
+                        SizedBox(width: 8),
                         Text(
                           'Made with ❤️',
                           style: TextStyle(
@@ -315,17 +315,17 @@ class AboutPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       'SPOTS is built with care by a team that believes technology should help people feel more connected to the places and communities around them.',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       'Thank you for being part of our community! 🌟',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),

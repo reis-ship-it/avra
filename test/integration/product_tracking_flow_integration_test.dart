@@ -195,7 +195,7 @@ void main() {
           unitPrice: 25.00,
           totalSales: 375.00,
           platformFee: 37.50,
-          revenueDistribution: {
+          revenueDistribution: const {
             'brand-123': 202.50, // 60% of net
             'user-123': 84.38,   // 25% of net
             'business-123': 50.62, // 15% of net

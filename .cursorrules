@@ -828,6 +828,75 @@ ALWAYS invest the 40 minutes.
 
 ---
 
-**Last Updated:** December 16, 2025  
+---
+
+## 🧪 Experiment Data Requirements (MANDATORY)
+
+**CRITICAL:** All experiments MUST use real Big Five OCEAN data converted to SPOTS 12 dimensions.
+
+### **Mandatory Rule (Effective December 30, 2025):**
+
+**ALL experiments MUST:**
+1. ✅ **Use `load_and_convert_big_five_to_spots()` from `shared_data_model.py`**
+2. ✅ **Load raw Big Five OCEAN data (100k+ real examples)**
+3. ✅ **Convert to SPOTS 12 dimensions using `BigFiveToSpotsConverter`**
+4. ✅ **Document that experiments use real data (not synthetic)**
+
+**FORBIDDEN:**
+- ❌ **DO NOT use synthetic data generation for personality profiles**
+- ❌ **DO NOT use `generate_integrated_user_profile()` or similar synthetic generators**
+- ❌ **DO NOT hardcode personality dimensions**
+
+### **Historical Note:**
+
+**Experiments completed before December 30, 2025 used synthetic data.**
+- All new experiments must use real Big Five data
+- When referencing old experiments, clearly state they used synthetic data
+- When updating old experiments, migrate them to use real Big Five data
+
+### **Standard Pattern:**
+
+```python
+from shared_data_model import load_and_convert_big_five_to_spots
+from pathlib import Path
+
+# Get project root
+project_root = Path(__file__).parent.parent.parent.parent.parent
+
+# Load and convert Big Five OCEAN to SPOTS 12
+spots_profiles = load_and_convert_big_five_to_spots(
+    max_profiles=1000,  # Or None for all available
+    data_source='auto',  # Tries CSV first, then JSON
+    project_root=project_root
+)
+
+# Each profile has:
+# - user_id
+# - dimensions: {all 12 SPOTS dimensions}
+# - original_data.big_five: {OCEAN scores}
+```
+
+### **Data Sources:**
+
+1. **Primary:** `data/raw/big_five.csv` - Raw Big Five OCEAN data (100k+ examples)
+2. **Fallback:** `data/raw/big_five_spots.json` - Extracts original_data.big_five
+
+### **Conversion:**
+
+- Uses `BigFiveToSpotsConverter` from `scripts/personality_data/converters/big_five_to_spots.py`
+- Converts OCEAN (Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism) → SPOTS 12 dimensions
+- All values normalized to 0.0-1.0 range
+
+### **Documentation Requirement:**
+
+When creating or updating experiments:
+- ✅ State that experiments use real Big Five OCEAN data
+- ✅ Reference `load_and_convert_big_five_to_spots()` function
+- ✅ Note that experiments before December 30, 2025 used synthetic data
+- ✅ Include data source and conversion method in experiment documentation
+
+---
+
+**Last Updated:** December 30, 2025  
 **Status:** Active - Mandatory for all AI assistants working on SPOTS
 

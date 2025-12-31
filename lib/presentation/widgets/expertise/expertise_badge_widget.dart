@@ -71,7 +71,7 @@ class ExpertiseBadgeWidget extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               '+${pins.length - 1}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 10,
                 color: AppColors.textSecondary,
               ),
@@ -120,8 +120,8 @@ class ExpertiseBadgeWidget extends StatelessWidget {
               ),
               if (pins.length > 1)
                 Text(
-                  '${pins.length} ${category} Experts',
-                  style: TextStyle(
+                  '${pins.length} $category Experts',
+                  style: const TextStyle(
                     fontSize: 10,
                     color: AppColors.textSecondary,
                   ),

@@ -22,7 +22,7 @@ void main() {
         (WidgetTester tester) async {
       // Test business logic: product contribution form display and interactions
       final widget1 = WidgetTestHelpers.createTestableWidget(
-        child: ProductContributionWidget(
+        child: const ProductContributionWidget(
           productName: 'Test Product',
           productQuantity: 5,
           productValue: 25.0,
@@ -32,7 +32,7 @@ void main() {
       expect(find.byType(ProductContributionWidget), findsOneWidget);
 
       final widget2 = WidgetTestHelpers.createTestableWidget(
-        child: ProductContributionWidget(
+        child: const ProductContributionWidget(
           productName: 'Coffee Beans',
           productQuantity: 1,
         ),
@@ -41,7 +41,7 @@ void main() {
       expect(find.byType(ProductContributionWidget), findsOneWidget);
 
       final widget3 = WidgetTestHelpers.createTestableWidget(
-        child: ProductContributionWidget(
+        child: const ProductContributionWidget(
           productQuantity: 10,
         ),
       );

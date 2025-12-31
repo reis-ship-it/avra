@@ -5,6 +5,9 @@ import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
 import 'package:spots/presentation/widgets/search/hybrid_search_results.dart';
+import 'package:spots/core/ai/event_logger.dart';
+import 'package:spots/injection_container.dart' as di;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HybridSearchPage extends StatefulWidget {
   const HybridSearchPage({super.key});
@@ -19,6 +22,29 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
   bool _includeExternal = true;
   int _maxResults = 50;
   int _searchRadius = 5000;
+  late EventLogger _eventLogger;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeEventLogger();
+  }
+
+  Future<void> _initializeEventLogger() async {
+    try {
+      _eventLogger = di.sl<EventLogger>();
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser != null) {
+        await _eventLogger.initialize(userId: currentUser.id);
+        _eventLogger.updateScreen('search');
+      }
+      _isInitialized = true;
+    } catch (e) {
+      // Event logging is non-critical, continue without it
+      _isInitialized = false;
+    }
+  }
 
   @override
   void dispose() {
@@ -32,13 +58,23 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
       return;
     }
 
+    final trimmedQuery = query.trim();
+
+    // Log search performed (will log results count after search completes)
+    if (_isInitialized) {
+      _eventLogger.logSearchPerformed(
+        query: trimmedQuery,
+        resultsCount: 0, // Will be updated when results are available
+      );
+    }
+
     context.read<HybridSearchBloc>().add(
-      SearchHybridSpots(
-        query: query.trim(),
-        includeExternal: _includeExternal,
-        maxResults: _maxResults,
-      ),
-    );
+          SearchHybridSpots(
+            query: trimmedQuery,
+            includeExternal: _includeExternal,
+            maxResults: _maxResults,
+          ),
+        );
   }
 
   void _searchNearby() async {
@@ -48,8 +84,9 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
       if (!serviceEnabled) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Location services are disabled. Please enable them.'),
+            const SnackBar(
+              content:
+                  Text('Location services are disabled. Please enable them.'),
               backgroundColor: AppTheme.warningColor,
             ),
           );
@@ -63,8 +100,8 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
         if (permission == LocationPermission.denied) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Location permissions are denied.'),
+              const SnackBar(
+                content: Text('Location permissions are denied.'),
                 backgroundColor: AppTheme.errorColor,
               ),
             );
@@ -75,29 +112,30 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
 
       if (permission == LocationPermission.deniedForever) {
         if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Location permissions are permanently denied. Please enable them in settings.'),
-                backgroundColor: AppTheme.errorColor,
-              ),
-            );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Location permissions are permanently denied. Please enable them in settings.'),
+              backgroundColor: AppTheme.errorColor,
+            ),
+          );
         }
         return;
       }
 
       // Get current position
       final position = await Geolocator.getCurrentPosition();
-      
+
       if (mounted) {
         context.read<HybridSearchBloc>().add(
-          SearchNearbyHybridSpots(
-            latitude: position.latitude,
-            longitude: position.longitude,
-            radius: _searchRadius,
-            includeExternal: _includeExternal,
-            maxResults: _maxResults,
-          ),
-        );
+              SearchNearbyHybridSpots(
+                latitude: position.latitude,
+                longitude: position.longitude,
+                radius: _searchRadius,
+                includeExternal: _includeExternal,
+                maxResults: _maxResults,
+              ),
+            );
       }
     } catch (e) {
       if (mounted) {
@@ -118,7 +156,8 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
         title: const Text('Hybrid Search'),
         actions: [
           IconButton(
-            icon: Icon(_showFilters ? Icons.filter_list_off : Icons.filter_list),
+            icon:
+                Icon(_showFilters ? Icons.filter_list_off : Icons.filter_list),
             onPressed: () {
               setState(() {
                 _showFilters = !_showFilters;
@@ -132,19 +171,19 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
           // Search Header with OUR_GUTS.md Info
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.grey100,
               border: Border(
                 bottom: BorderSide(color: AppColors.grey200),
               ),
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.info, color: AppColors.textSecondary, size: 20),
-                    const SizedBox(width: 8),
+                    Icon(Icons.info, color: AppColors.textSecondary, size: 20),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Community-First Search',
@@ -156,7 +195,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'Per OUR_GUTS.md: Community spots are prioritized over external data sources for authentic, local knowledge.',
                   style: TextStyle(
@@ -184,7 +223,9 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
                               icon: const Icon(Icons.clear),
                               onPressed: () {
                                 _searchController.clear();
-                                context.read<HybridSearchBloc>().add(ClearHybridSearch());
+                                context
+                                    .read<HybridSearchBloc>()
+                                    .add(ClearHybridSearch());
                               },
                             )
                           : null,
@@ -224,7 +265,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
   Widget _buildFilters() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.grey100,
         border: Border(
           bottom: BorderSide(color: AppColors.grey300),
@@ -236,16 +277,16 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
           Text(
             'Search Filters',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
-          
+
           // External Data Toggle
           SwitchListTile(
             title: const Text('Include External Data'),
             subtitle: Text(
-              _includeExternal 
+              _includeExternal
                   ? 'Google Places and OpenStreetMap included'
                   : 'Community data only',
             ),
@@ -255,15 +296,15 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
                 _includeExternal = value;
               });
               context.read<HybridSearchBloc>().add(
-                ToggleExternalDataSources(value),
-              );
+                    ToggleExternalDataSources(value),
+                  );
             },
             secondary: Icon(
               _includeExternal ? Icons.public : Icons.people,
               color: AppTheme.primaryColor,
             ),
           ),
-          
+
           // Max Results Slider
           ListTile(
             title: Text('Max Results: $_maxResults'),
@@ -279,10 +320,11 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
               },
             ),
           ),
-          
+
           // Search Radius for Nearby
           ListTile(
-            title: Text('Search Radius: ${(_searchRadius / 1000).toStringAsFixed(1)}km'),
+            title: Text(
+                'Search Radius: ${(_searchRadius / 1000).toStringAsFixed(1)}km'),
             subtitle: Slider(
               value: _searchRadius.toDouble(),
               min: 1000,
@@ -301,8 +343,8 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
           Text(
             'Quick Search',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Wrap(

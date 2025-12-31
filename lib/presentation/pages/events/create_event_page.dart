@@ -138,7 +138,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: AppTheme.primaryColor,
               onPrimary: AppColors.white,
             ),
@@ -156,7 +156,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
+              colorScheme: const ColorScheme.light(
                 primary: AppTheme.primaryColor,
                 onPrimary: AppColors.white,
               ),
@@ -204,7 +204,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: AppTheme.primaryColor,
               onPrimary: AppColors.white,
             ),
@@ -222,7 +222,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
+              colorScheme: const ColorScheme.light(
                 primary: AppTheme.primaryColor,
                 onPrimary: AppColors.white,
               ),
@@ -461,13 +461,13 @@ class _CreateEventPageState extends State<CreateEventPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.lock_outline,
                   size: 64,
                   color: AppColors.textSecondary,
                 ),
                 const SizedBox(height: 16),
-                Text(
+                const Text(
                   'Event Hosting Unlocked',
                   style: TextStyle(
                     fontSize: 20,
@@ -478,7 +478,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 const SizedBox(height: 16),
                 Text(
                   _expertiseError!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),
@@ -522,13 +522,13 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.check_circle,
+                      const Icon(Icons.check_circle,
                           color: AppColors.electricGreen, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Expertise: ${_userExpertise![_selectedCategory!]?.displayName ?? "Unknown"} level in $_selectedCategory',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w500,
@@ -547,14 +547,14 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Event Title *',
                   hintText: 'Enter event title',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Event title is required';
@@ -570,14 +570,14 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Description *',
                   hintText: 'Describe your event',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 maxLines: 5,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -599,7 +599,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 items: _availableCategories.map((category) {
                   final level = _userExpertise![category];
                   return DropdownMenuItem(
@@ -619,7 +619,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                             ),
                             child: Text(
                               level.displayName,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 10,
                                 color: AppColors.electricGreen,
                                 fontWeight: FontWeight.w500,
@@ -685,7 +685,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 items: _eventTypes.map((type) {
                   return DropdownMenuItem(
                     value: type,
@@ -766,7 +766,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Location *',
                   hintText: 'Enter event location',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -774,7 +774,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   fillColor: AppColors.grey100,
                   suffixIcon: const Icon(Icons.location_on),
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Location is required';
@@ -790,14 +790,14 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Max Attendees',
                   hintText: 'Enter max attendees',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
                   final parsed = int.tryParse(value);
@@ -814,7 +814,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Price (Optional)',
                   hintText: 'Leave empty for free event',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -822,7 +822,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   fillColor: AppColors.grey100,
                   prefixText: '\$ ',
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 onChanged: (value) {
@@ -863,12 +863,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: AppColors.error),
+                      const Icon(Icons.error_outline, color: AppColors.error),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontSize: 14,
                           ),

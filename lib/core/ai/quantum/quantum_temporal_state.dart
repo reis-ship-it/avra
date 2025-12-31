@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 
 /// Quantum Temporal State
 ///

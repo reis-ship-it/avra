@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:spots/core/ai2ai/trust_network.dart' show TrustNetworkManager, TrustContext, TrustInteraction, InteractionType, TrustLevel;

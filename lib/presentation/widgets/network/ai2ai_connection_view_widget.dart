@@ -15,6 +15,7 @@
 /// - No manual disconnect - connections are AI-managed
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -131,18 +132,18 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
           children: [
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.grey100,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.link_off,
                 size: 64,
                 color: AppColors.grey400,
               ),
             ),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               'No Active AI Connections',
               style: TextStyle(
                 fontSize: 20,
@@ -151,7 +152,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(
+            const Text(
               'Your AI hasn\'t connected with other AIs yet.\n'
               'Enable device discovery to find compatible AIs.',
               textAlign: TextAlign.center,
@@ -172,14 +173,14 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
                   width: 1,
                 ),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(
                     Icons.info_outline,
                     color: AppColors.electricGreen,
                     size: 20,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'AI connections are fleeting and managed automatically by your AI personality',
@@ -270,9 +271,9 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'AI Connection',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -281,7 +282,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
               const SizedBox(height: 4),
               Text(
                 'Connected ${_formatDuration(connection.connectionDuration)}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
                   color: AppColors.textSecondary,
                 ),
@@ -319,7 +320,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               'Compatibility Score',
               style: TextStyle(
                 fontSize: 14,
@@ -400,7 +401,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
         ),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 11,
             color: AppColors.textSecondary,
           ),
@@ -423,14 +424,14 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(
                 Icons.auto_awesome,
                 size: 18,
                 color: AppColors.electricGreen,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Why They\'re Compatible',
                 style: TextStyle(
@@ -444,7 +445,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
           const SizedBox(height: 12),
           Text(
             _generateCompatibilityReason(connection),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 13,
               color: AppColors.textSecondary,
               height: 1.5,
@@ -469,14 +470,14 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       ),
       child: Column(
         children: [
-          Row(
+          const Row(
             children: [
               Icon(
                 Icons.celebration,
                 color: AppColors.electricGreen,
                 size: 24,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'Perfect Match!',
@@ -490,7 +491,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
             ],
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Your AIs are 100% compatible. You can now enable human-to-human conversation.',
             style: TextStyle(
               fontSize: 13,
@@ -520,14 +521,14 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
   }
   
   Widget _buildFleetingNotice(ConnectionMetrics connection) {
-    return Row(
+    return const Row(
       children: [
         Icon(
           Icons.access_time,
           size: 14,
           color: AppColors.textSecondary,
         ),
-        const SizedBox(width: 6),
+        SizedBox(width: 6),
         Expanded(
           child: Text(
             'Fleeting connection • Managed by AI • Will disconnect automatically',
@@ -543,14 +544,14 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
   }
   
   Widget _buildPrivacyIndicator() {
-    return Row(
+    return const Row(
       children: [
         Icon(
           Icons.verified_user,
           size: 12,
           color: AppColors.success,
         ),
-        const SizedBox(width: 4),
+        SizedBox(width: 4),
         Expanded(
           child: Text(
             'Privacy protected • No personal information shared',

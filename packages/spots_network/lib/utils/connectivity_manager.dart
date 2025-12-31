@@ -183,7 +183,7 @@ class ConnectivityHelper {
     timeoutTimer = Timer(timeout, () {
       subscription?.cancel();
       if (!completer.isCompleted) {
-        completer.completeError(ConnectivityTimeoutException('Connectivity timeout'));
+        completer.completeError(const ConnectivityTimeoutException('Connectivity timeout'));
       }
     });
     

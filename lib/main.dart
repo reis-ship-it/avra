@@ -10,6 +10,7 @@ import 'firebase_options.dart';
 import 'package:spots/core/services/storage_health_checker.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
+import 'package:spots/core/services/signal_protocol_initialization_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +32,7 @@ void main() async {
   }
 
   // Helper function to check if data already exists
-  Future<bool> _checkIfDataExists() async {
+  Future<bool> checkIfDataExists() async {
     try {
       final db = await SembastDatabase.database;
       final users = await SembastDatabase.usersStore.find(db, finder: Finder());
@@ -61,10 +62,9 @@ void main() async {
           'spot-images',
           'list-images',
         ]);
-        logger.info('✅ [MAIN] Storage health: ' +
-            results.entries
+        logger.info('✅ [MAIN] Storage health: ${results.entries
                 .map((e) => '${e.key}=${e.value ? 'OK' : 'FAIL'}')
-                .join(', '));
+                .join(', ')}');
       } catch (e) {
         logger.warn('⚠️ [MAIN] Supabase not initialized, skipping storage health check: $e');
       }
@@ -106,13 +106,26 @@ void main() async {
 
     // Check if data already exists before seeding
     logger.info('🔍 [MAIN] Checking if data exists...');
-    final hasData = await _checkIfDataExists();
+    final hasData = await checkIfDataExists();
     if (!hasData) {
       logger.info('🌱 [MAIN] Seeding demo data...');
       await SembastSeeder.seedDatabase();
       logger.info('✅ [MAIN] Demo data seeded.');
     } else {
       logger.info('ℹ️ [MAIN] Data already exists, skipping seeding.');
+    }
+
+    // Initialize Signal Protocol (non-blocking, fallback to AES-256-GCM if fails)
+    try {
+      logger.info('🔐 [MAIN] Initializing Signal Protocol...');
+      final signalInitService = di.sl<SignalProtocolInitializationService>();
+      await signalInitService.initialize();
+      logger.info('✅ [MAIN] Signal Protocol initialized');
+    } catch (e, stackTrace) {
+      logger.warn('⚠️ [MAIN] Signal Protocol initialization failed: $e');
+      logger.debug('Stack trace: $stackTrace');
+      logger.info('ℹ️ [MAIN] App will use fallback encryption (AES-256-GCM)');
+      // Continue - Signal Protocol is optional, app can work with fallback
     }
 
     logger.info('🎬 [MAIN] Running app...');

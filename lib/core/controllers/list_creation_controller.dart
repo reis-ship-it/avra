@@ -7,7 +7,7 @@ import 'package:spots/core/controllers/base/controller_result.dart';
 import 'package:spots/core/models/list.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/domain/repositories/lists_repository.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 
 /// List Creation Controller
 /// 
@@ -270,7 +270,7 @@ class ListCreationResult extends ControllerResult {
   final int? spotsAdded;
   final String? warning;
 
-  ListCreationResult._({
+  const ListCreationResult._({
     required super.success,
     required super.error,
     required super.errorCode,

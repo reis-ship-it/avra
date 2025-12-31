@@ -149,9 +149,7 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
     _logger.debug('HomebaseSelectionPage: Initializing map');
 
     // Set a default location first to ensure map loads
-    if (_currentLocation == null) {
-      _currentLocation = const LatLng(40.7128, -74.0060); // NYC default
-    }
+    _currentLocation ??= const LatLng(40.7128, -74.0060);
 
     setState(() {
       _mapLoaded = true;
@@ -715,10 +713,10 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
-                              Expanded(
+                              const Expanded(
                                 child: Text(
                                   'Location access needed to find your neighborhood',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: AppColors.white,
                                     fontSize: 12,
                                   ),
@@ -759,10 +757,10 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
-                              Expanded(
+                              const Expanded(
                                 child: Text(
                                   'Tap to refresh location',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: AppColors.white,
                                     fontSize: 12,
                                   ),

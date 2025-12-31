@@ -7,6 +7,7 @@
 /// 
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/app_theme.dart';
@@ -69,7 +70,7 @@ class UnifiedChatMessage extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 4),
                       child: Text(
                         senderName!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -109,10 +110,10 @@ class UnifiedChatMessage extends StatelessWidget {
   Widget _buildAvatar() {
     switch (chatType) {
       case ChatType.agent:
-        return CircleAvatar(
+        return const CircleAvatar(
           radius: 16,
           backgroundColor: AppTheme.primaryColor,
-          child: const Icon(
+          child: Icon(
             Icons.smart_toy,
             size: 16,
             color: AppColors.white,
@@ -152,10 +153,10 @@ class UnifiedChatMessage extends StatelessWidget {
   }
 
   Widget _buildUserAvatar() {
-    return CircleAvatar(
+    return const CircleAvatar(
       radius: 16,
       backgroundColor: AppColors.grey300,
-      child: const Icon(
+      child: Icon(
         Icons.person,
         size: 16,
         color: AppColors.white,

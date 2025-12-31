@@ -11,7 +11,6 @@ import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/payment.dart';
 import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/models/expertise_level.dart';
 
 import 'checkout_controller_test.mocks.dart';
 
@@ -97,7 +96,7 @@ void main() {
       updatedAt: now,
     );
 
-    final testTaxCalculation = SalesTaxCalculation(
+    const testTaxCalculation = SalesTaxCalculation(
       taxableAmount: 50.0,
       taxRate: 8.5,
       taxAmount: 4.25,

@@ -14,7 +14,7 @@ void main() {
     testWidgets('should display ROI chart widget and display ROI percentage',
         (WidgetTester tester) async {
       // Test business logic: ROI chart display
-      final analytics = BrandAnalytics(
+      const analytics = BrandAnalytics(
         totalInvestment: 10000.0,
         cashInvestment: 5000.0,
         productInvestment: 5000.0,
@@ -23,14 +23,14 @@ void main() {
         estimatedBrandValue: 3000.0,
         roiPercentage: 50.0,
         topPerformingEvents: [],
-        exposureMetrics: const BrandExposureMetrics(
+        exposureMetrics: BrandExposureMetrics(
           totalReach: 5000,
           totalImpressions: 10000,
           productSampling: 200,
           emailSignups: 150,
           websiteVisits: 300,
         ),
-        performanceMetrics: const PerformanceMetrics(
+        performanceMetrics: PerformanceMetrics(
           totalEvents: 10,
           activeSponsorships: 5,
           averageROI: 50.0,
@@ -38,7 +38,7 @@ void main() {
         ),
       );
       final widget = WidgetTestHelpers.createTestableWidget(
-        child: ROICartWidget(analytics: analytics),
+        child: const ROICartWidget(analytics: analytics),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
       expect(find.byType(ROICartWidget), findsOneWidget);

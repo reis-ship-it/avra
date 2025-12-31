@@ -5,19 +5,19 @@ import 'package:get_it/get_it.dart';
 import 'package:spots/core/controllers/base/workflow_controller.dart';
 import 'package:spots/core/controllers/base/controller_result.dart';
 import 'package:spots/core/models/user.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/preferences_profile.dart';
 import 'package:spots/domain/repositories/auth_repository.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 
 /// Profile Update Controller
-/// 
+///
 /// Orchestrates the complete profile update workflow. Coordinates validation,
 /// user profile updates, personality/profile updates, and cloud synchronization.
-/// 
+///
 /// **Responsibilities:**
 /// - Validate profile changes
 /// - Update user profile (via AuthRepository)
@@ -25,7 +25,7 @@ import 'package:spots/core/services/atomic_clock_service.dart';
 /// - Update PreferencesProfile (if preferences changed)
 /// - Sync to cloud (if sync enabled)
 /// - Return unified result with errors
-/// 
+///
 /// **Dependencies:**
 /// - `AuthRepository` - Update user profile
 /// - `PersonalityLearning` - Update personality profile
@@ -33,7 +33,7 @@ import 'package:spots/core/services/atomic_clock_service.dart';
 /// - `PersonalitySyncService` - Sync personality to cloud
 /// - `AtomicClockService` - Mandatory for timestamps (Phase 8.3+)
 /// - `AgentIdService` - Get agent ID for user
-/// 
+///
 /// **Usage:**
 /// ```dart
 /// final controller = ProfileUpdateController();
@@ -45,7 +45,7 @@ import 'package:spots/core/services/atomic_clock_service.dart';
 ///     location: 'New Location',
 ///   ),
 /// );
-/// 
+///
 /// if (result.isSuccess) {
 ///   // Profile updated successfully
 /// } else {
@@ -68,8 +68,7 @@ class ProfileUpdateController
     PreferencesProfileService? preferencesService,
     PersonalitySyncService? syncService,
     AtomicClockService? atomicClock,
-  })  : _authRepository =
-            authRepository ?? GetIt.instance<AuthRepository>(),
+  })  : _authRepository = authRepository ?? GetIt.instance<AuthRepository>(),
         _personalityLearning = personalityLearning ??
             (GetIt.instance.isRegistered<PersonalityLearning>()
                 ? GetIt.instance<PersonalityLearning>()
@@ -82,11 +81,10 @@ class ProfileUpdateController
             (GetIt.instance.isRegistered<PersonalitySyncService>()
                 ? GetIt.instance<PersonalitySyncService>()
                 : null),
-        _atomicClock =
-            atomicClock ?? GetIt.instance<AtomicClockService>();
+        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>();
 
   /// Update user profile
-  /// 
+  ///
   /// Orchestrates the complete profile update workflow:
   /// 1. Validate input
   /// 2. Get current user
@@ -95,11 +93,11 @@ class ProfileUpdateController
   /// 5. Update preferences profile (if preferences changed)
   /// 6. Sync to cloud (if sync enabled)
   /// 7. Return unified result
-  /// 
+  ///
   /// **Parameters:**
   /// - `userId`: User ID to update
   /// - `data`: Profile update data (displayName, bio, location, etc.)
-  /// 
+  ///
   /// **Returns:**
   /// `ProfileUpdateResult` with success/failure and error details
   Future<ProfileUpdateResult> updateProfile({
@@ -306,7 +304,7 @@ class ProfileUpdateController
 }
 
 /// Profile Update Data
-/// 
+///
 /// Input data for profile updates
 class ProfileUpdateData {
   final String? displayName;
@@ -329,7 +327,7 @@ class ProfileUpdateData {
 }
 
 /// Profile Update Result
-/// 
+///
 /// Unified result for profile update operations
 class ProfileUpdateResult extends ControllerResult {
   final User? user;
@@ -337,7 +335,7 @@ class ProfileUpdateResult extends ControllerResult {
   final bool personalityUpdated;
   final bool preferencesUpdated;
 
-  ProfileUpdateResult._({
+  const ProfileUpdateResult._({
     required super.success,
     required super.error,
     required super.errorCode,
@@ -379,4 +377,3 @@ class ProfileUpdateResult extends ControllerResult {
     );
   }
 }
-

@@ -67,7 +67,7 @@ Future<void> _testChannelCreation() async {
     developer.log('  Creating channel: $channel', name: 'TestSupabaseRealtime');
     
     // Simulate channel creation
-    await Future.delayed(Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 100));
     
     developer.log('  ✅ Channel created: $channel', name: 'TestSupabaseRealtime');
   }
@@ -128,7 +128,7 @@ Future<void> _testMessageBroadcasting() async {
   developer.log('  Payload: ${json.encode(anonymousMessage)}', name: 'TestSupabaseRealtime');
   
   // Simulate message sending
-  await Future.delayed(Duration(milliseconds: 500));
+  await Future.delayed(const Duration(milliseconds: 500));
   
   developer.log('✅ Message broadcasting test passed', name: 'TestSupabaseRealtime');
 }
@@ -150,7 +150,7 @@ Future<void> _testPresenceTracking() async {
   developer.log('  Presence: ${json.encode(presenceData)}', name: 'TestSupabaseRealtime');
   
   // Simulate presence tracking
-  await Future.delayed(Duration(milliseconds: 300));
+  await Future.delayed(const Duration(milliseconds: 300));
   
   // Test presence retrieval
   final mockPresenceList = [

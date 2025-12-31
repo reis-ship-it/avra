@@ -317,9 +317,9 @@ void main() {
         
         // Report results
         print('ℹ️  Tested ${allTables.length} tables:');
-        print('   - ${blockedCount} blocked by RLS ✅');
-        print('   - ${accessibleCount} accessible (may allow public reads)');
-        print('   - ${notFoundCount} not found (may not be created yet)');
+        print('   - $blockedCount blocked by RLS ✅');
+        print('   - $accessibleCount accessible (may allow public reads)');
+        print('   - $notFoundCount not found (may not be created yet)');
         
         // At least some tables should be protected by RLS
         expect(blockedCount, greaterThan(0), 
@@ -356,8 +356,8 @@ void main() {
 
         // Report results (some buckets may allow public reads for images)
         print('ℹ️  Tested ${buckets.length} storage buckets:');
-        print('   - ${blockedCount} blocked by RLS');
-        print('   - ${accessibleCount} accessible (may allow public reads)');
+        print('   - $blockedCount blocked by RLS');
+        print('   - $accessibleCount accessible (may allow public reads)');
       });
     });
 

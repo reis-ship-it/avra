@@ -96,8 +96,8 @@ void main() {
       // Arrange
       final profile = PreferencesProfile(
         agentId: 'agent_test_123',
-        categoryPreferences: {'Coffee': 0.9, 'Food': 0.7},
-        localityPreferences: {'Brooklyn': 0.8},
+        categoryPreferences: const {'Coffee': 0.9, 'Food': 0.7},
+        localityPreferences: const {'Brooklyn': 0.8},
         lastUpdated: DateTime.now(),
       );
 
@@ -118,10 +118,10 @@ void main() {
       // Arrange
       final profile = PreferencesProfile(
         agentId: 'agent_test_123',
-        categoryPreferences: {'Coffee': 0.9},
-        localityPreferences: {'Brooklyn': 0.8},
-        eventTypePreferences: {ExpertiseEventType.workshop: 0.7},
-        scopePreferences: {EventScope.locality: 0.8},
+        categoryPreferences: const {'Coffee': 0.9},
+        localityPreferences: const {'Brooklyn': 0.8},
+        eventTypePreferences: const {ExpertiseEventType.workshop: 0.7},
+        scopePreferences: const {EventScope.locality: 0.8},
         lastUpdated: DateTime.now(),
       );
 
@@ -158,10 +158,10 @@ void main() {
       // Arrange
       final original = PreferencesProfile(
         agentId: 'agent_test_123',
-        categoryPreferences: {'Coffee': 0.9, 'Food': 0.7},
-        localityPreferences: {'Brooklyn': 0.8},
-        scopePreferences: {EventScope.locality: 0.7, EventScope.city: 0.5},
-        eventTypePreferences: {ExpertiseEventType.workshop: 0.8},
+        categoryPreferences: const {'Coffee': 0.9, 'Food': 0.7},
+        localityPreferences: const {'Brooklyn': 0.8},
+        scopePreferences: const {EventScope.locality: 0.7, EventScope.city: 0.5},
+        eventTypePreferences: const {ExpertiseEventType.workshop: 0.8},
         localExpertPreferenceWeight: 0.6,
         explorationWillingness: 0.4,
         lastUpdated: DateTime(2025, 12, 23),
@@ -194,7 +194,7 @@ void main() {
       // Arrange
       final profile = PreferencesProfile(
         agentId: 'agent_test_123',
-        categoryPreferences: {
+        categoryPreferences: const {
           'Coffee': 0.9,
           'Food': 0.7,
           'Art': 0.5,

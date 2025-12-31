@@ -178,7 +178,7 @@ class ProductionDeploymentManager {
   
   String _generateDeploymentId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return 'deploy_${timestamp}';
+    return 'deploy_$timestamp';
   }
   
   Future<PerformanceMetrics> _gatherPerformanceMetrics() async {
@@ -186,7 +186,7 @@ class ProductionDeploymentManager {
     developer.log('Gathering performance metrics', name: _logName);
     // #endregion
     final metrics = PerformanceMetrics(
-      responseTime: Duration(milliseconds: 85),
+      responseTime: const Duration(milliseconds: 85),
       throughput: 1250,
       errorRate: 0.002,
       memoryUsage: 0.65,
@@ -204,10 +204,10 @@ class ProductionDeploymentManager {
     developer.log('Checking system health', name: _logName);
     // #endregion
     final health = SystemHealthMetrics(
-      uptime: Duration(hours: 720),
+      uptime: const Duration(hours: 720),
       availability: 0.999,
       diskUsage: 0.35,
-      networkLatency: Duration(milliseconds: 12),
+      networkLatency: const Duration(milliseconds: 12),
       score: 0.98,
     );
     // #region agent log
@@ -239,7 +239,7 @@ class ProductionDeploymentManager {
     // #endregion
     final ux = UserExperienceMetrics(
       userSatisfaction: 0.92,
-      averageSessionDuration: Duration(minutes: 18),
+      averageSessionDuration: const Duration(minutes: 18),
       discoverySuccess: 0.88,
       recommendationAccuracy: 0.86,
       score: 0.89,

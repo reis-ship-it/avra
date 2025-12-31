@@ -270,7 +270,7 @@ class MicroservicesManager {
       clusterId: config.clusterId,
       region: config.region,
       encryptionEnabled: true,
-      healthCheckInterval: Duration(seconds: 30),
+      healthCheckInterval: const Duration(seconds: 30),
     );
   }
   
@@ -296,7 +296,7 @@ class MicroservicesManager {
   Future<CircuitBreaker> _initializeCircuitBreaker() async {
     return CircuitBreaker(
       failureThreshold: 5,
-      recoveryTimeout: Duration(seconds: 30),
+      recoveryTimeout: const Duration(seconds: 30),
       halfOpenMaxCalls: 3,
       enabled: true,
     );
@@ -392,7 +392,7 @@ class MicroservicesManager {
     return AutoScaler(
       services: services,
       scalingConfigs: _serviceConfigs,
-      monitoringInterval: Duration(minutes: 1),
+      monitoringInterval: const Duration(minutes: 1),
       enabled: true,
     );
   }
@@ -400,8 +400,8 @@ class MicroservicesManager {
   Future<HealthCheckSystem> _initializeHealthCheckSystem(Map<String, MicroService> services) async {
     return HealthCheckSystem(
       services: services,
-      checkInterval: Duration(seconds: 30),
-      timeoutDuration: Duration(seconds: 10),
+      checkInterval: const Duration(seconds: 30),
+      timeoutDuration: const Duration(seconds: 10),
       retryAttempts: 3,
     );
   }
@@ -501,7 +501,7 @@ class MicroservicesManager {
     return ServiceHealthStatus(
       serviceName: service.name,
       isHealthy: true,
-      responseTime: Duration(milliseconds: 45),
+      responseTime: const Duration(milliseconds: 45),
       errorRate: 0.001,
       lastChecked: DateTime.now(),
     );
@@ -512,14 +512,14 @@ class MicroservicesManager {
       cpuUsage: 0.65,
       memoryUsage: 0.70,
       diskUsage: 0.35,
-      networkLatency: Duration(milliseconds: 8),
+      networkLatency: const Duration(milliseconds: 8),
       score: 0.92,
     );
   }
   
   Future<NetworkHealth> _checkNetworkHealth(MicroservicesCluster cluster) async {
     return NetworkHealth(
-      latency: Duration(milliseconds: 12),
+      latency: const Duration(milliseconds: 12),
       throughput: 950.0,
       packetLoss: 0.001,
       connectivity: 0.999,
@@ -532,7 +532,7 @@ class MicroservicesManager {
       encryptionEnabled: true,
       authenticationEnabled: true,
       vulnerabilities: 0,
-      lastSecurityScan: DateTime.now().subtract(Duration(hours: 2)),
+      lastSecurityScan: DateTime.now().subtract(const Duration(hours: 2)),
       score: 1.0,
     );
   }
@@ -626,7 +626,7 @@ class MicroservicesManager {
   
   String _generateClusterId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return 'cluster_${timestamp}';
+    return 'cluster_$timestamp';
   }
 }
 

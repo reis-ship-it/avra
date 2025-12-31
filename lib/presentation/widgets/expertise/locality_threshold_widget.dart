@@ -153,9 +153,9 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
             color: AppColors.textSecondary.withValues(alpha: 0.2),
           ),
         ),
-        child: Row(
+        child: const Row(
           children: [
-            const SizedBox(
+            SizedBox(
               width: 16,
               height: 16,
               child: CircularProgressIndicator(
@@ -163,7 +163,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
                 color: AppTheme.primaryColor,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Loading locality-specific thresholds...',
@@ -190,7 +190,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
         ),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 16,
               color: AppColors.error,
@@ -199,7 +199,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
             Expanded(
               child: Text(
                 'Error loading thresholds: $_error',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.error,
                 ),
@@ -225,7 +225,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
           // Header
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.location_on,
                 color: AppColors.electricGreen,
                 size: 20,
@@ -235,7 +235,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Locality-Specific Thresholds',
                       style: TextStyle(
                         fontSize: 16,
@@ -245,7 +245,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
                     ),
                     Text(
                       widget.locality!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -253,7 +253,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
                   ],
                 ),
               ),
-              Tooltip(
+              const Tooltip(
                 message: 'Thresholds adapt to what your locality values most. '
                     'Activities valued by your locality have lower thresholds.',
                 child: Icon(
@@ -277,7 +277,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Qualification Requirements',
                     style: TextStyle(
                       fontSize: 14,
@@ -303,7 +303,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
 
           // Activity Values
           if (_activityWeights != null && _activityWeights!.isNotEmpty) ...[
-            Text(
+            const Text(
               'What Your Locality Values',
               style: TextStyle(
                 fontSize: 14,
@@ -316,7 +316,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
               final activity = entry.key;
               final weight = entry.value;
               return _buildActivityValueRow(activity, weight);
-            }).toList(),
+            }),
           ],
         ],
       ),
@@ -331,14 +331,14 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: AppColors.textSecondary,
             ),
           ),
           Text(
             value.toString(),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -376,7 +376,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
           Expanded(
             child: Text(
               displayName,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textPrimary,
               ),

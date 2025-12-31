@@ -1,5 +1,6 @@
 /// Action models for AI action execution system
 /// Part of Phase 5: Action Execution System
+library;
 
 /// Base class for all action intents
 abstract class ActionIntent {

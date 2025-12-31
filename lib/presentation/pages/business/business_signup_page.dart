@@ -112,10 +112,10 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: const Text(
+              content: Text(
                 'Business account created! Please contact support to set up login credentials.',
               ),
-              duration: const Duration(seconds: 5),
+              duration: Duration(seconds: 5),
               backgroundColor: AppColors.warning,
             ),
           );
@@ -126,10 +126,10 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: const Text(
+              content: Text(
                 'Business account created! Please set up login credentials using the admin tool.',
               ),
-              duration: const Duration(seconds: 5),
+              duration: Duration(seconds: 5),
               backgroundColor: AppColors.warning,
             ),
           );
@@ -370,12 +370,12 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: AppColors.error),
+                      const Icon(Icons.error_outline, color: AppColors.error),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _errorMessage!,
-                          style: TextStyle(color: AppColors.error),
+                          style: const TextStyle(color: AppColors.error),
                         ),
                       ),
                     ],
@@ -418,7 +418,7 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Already have an account? ',
                     style: TextStyle(color: AppColors.textSecondary),
                   ),

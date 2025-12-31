@@ -2,6 +2,7 @@
 /// Date: August 5, 2025 23:11:54 CDT
 /// Purpose: Automated test quality validation and scoring for optimal development
 /// Focus: Ensure deployment-ready code quality through comprehensive test analysis
+library;
 
 import 'dart:io';
 import 'dart:math' as math;
@@ -167,7 +168,7 @@ class TestHealthMetrics {
   static Future<double> _analyzeTestReliability() async {
     try {
       // Run tests multiple times to detect flakiness
-      final runs = 5;
+      const runs = 5;
       final results = <bool>[];
       
       for (int i = 0; i < runs; i++) {

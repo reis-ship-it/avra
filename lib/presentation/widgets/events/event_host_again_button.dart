@@ -12,10 +12,10 @@ class EventHostAgainButton extends StatelessWidget {
   final VoidCallback? onSuccess;
   
   const EventHostAgainButton({
-    Key? key,
+    super.key,
     required this.originalEvent,
     this.onSuccess,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class EventHostAgainButton extends StatelessWidget {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => Center(
+        builder: (context) => const Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
       );
@@ -95,15 +95,15 @@ class EventHostAgainIconButton extends StatelessWidget {
   final VoidCallback? onSuccess;
   
   const EventHostAgainIconButton({
-    Key? key,
+    super.key,
     required this.originalEvent,
     this.onSuccess,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.replay, color: AppColors.primary),
+      icon: const Icon(Icons.replay, color: AppColors.primary),
       tooltip: 'Host Again',
       onPressed: () => _hostAgain(context),
     );

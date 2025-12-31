@@ -119,8 +119,8 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Thank you for your rating!'),
+          const SnackBar(
+            content: Text('Thank you for your rating!'),
             backgroundColor: AppColors.electricGreen,
           ),
         );
@@ -189,12 +189,12 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline, color: AppColors.error),
+                        const Icon(Icons.error_outline, color: AppColors.error),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             _error!,
-                            style: TextStyle(color: AppColors.error),
+                            style: const TextStyle(color: AppColors.error),
                           ),
                         ),
                       ],
@@ -241,7 +241,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Rate Your Partner',
             style: TextStyle(
               fontSize: 18,
@@ -252,7 +252,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
           const SizedBox(height: 8),
           Text(
             'Event: ${widget.event.title}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
             ),
@@ -260,7 +260,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
           const SizedBox(height: 4),
           Text(
             'Role: ${_getRoleDisplayName(widget.partnershipRole)}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -275,7 +275,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Overall Rating *',
           style: TextStyle(
             fontSize: 16,
@@ -314,7 +314,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
           Center(
             child: Text(
               '${_overallRating.toStringAsFixed(1)} out of 5',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -329,7 +329,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Detailed Ratings',
           style: TextStyle(
             fontSize: 16,
@@ -368,7 +368,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
           children: [
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -376,7 +376,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
             ),
             Text(
               value > 0 ? '${value.toStringAsFixed(1)} / 5.0' : 'Not rated',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),
@@ -401,7 +401,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Would you partner again? *',
           style: TextStyle(
             fontSize: 16,
@@ -440,7 +440,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
           Center(
             child: Text(
               _getWouldPartnerAgainText(_wouldPartnerAgain),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -455,7 +455,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Positive Feedback (Optional)',
           style: TextStyle(
             fontSize: 16,
@@ -471,20 +471,20 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
             hintText: 'What did they do well?',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppTheme.primaryColor),
+              borderSide: const BorderSide(color: AppTheme.primaryColor),
             ),
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: TextStyle(color: AppColors.textPrimary),
+          style: const TextStyle(color: AppColors.textPrimary),
         ),
       ],
     );
@@ -494,7 +494,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Improvement Suggestions (Optional)',
           style: TextStyle(
             fontSize: 16,
@@ -510,20 +510,20 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
             hintText: 'What could be improved?',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppTheme.primaryColor),
+              borderSide: const BorderSide(color: AppTheme.primaryColor),
             ),
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: TextStyle(color: AppColors.textPrimary),
+          style: const TextStyle(color: AppColors.textPrimary),
         ),
       ],
     );

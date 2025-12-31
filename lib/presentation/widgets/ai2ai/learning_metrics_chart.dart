@@ -240,7 +240,7 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
 
   Widget _buildChart(BuildContext context) {
     final historicalData = _generateHistoricalData(_selectedTimeRange);
-    final height = 200.0;
+    const height = 200.0;
 
     return GestureDetector(
       onTapDown: (details) {
@@ -409,7 +409,7 @@ class _MetricChartPainter extends CustomPainter {
       AppColors.textSecondary,
     ];
 
-    final padding = 20.0;
+    const padding = 20.0;
     final chartWidth = size.width - (padding * 2);
     final chartHeight = size.height - (padding * 2);
     final stepX = chartWidth / (historicalData.length - 1);
@@ -452,9 +452,9 @@ class _MetricChartPainter extends CustomPainter {
   }
 
   void _paintBarChart(Canvas canvas, Size size) {
-    final metric = 'matchingSuccessRate';
-    final color = AppColors.success;
-    final padding = 20.0;
+    const metric = 'matchingSuccessRate';
+    const color = AppColors.success;
+    const padding = 20.0;
     final chartWidth = size.width - (padding * 2);
     final chartHeight = size.height - (padding * 2);
     final barWidth = (chartWidth / historicalData.length) * 0.7;
@@ -479,9 +479,9 @@ class _MetricChartPainter extends CustomPainter {
   }
 
   void _paintAreaChart(Canvas canvas, Size size) {
-    final metric = 'matchingSuccessRate';
-    final color = AppColors.success;
-    final padding = 20.0;
+    const metric = 'matchingSuccessRate';
+    const color = AppColors.success;
+    const padding = 20.0;
     final chartWidth = size.width - (padding * 2);
     final chartHeight = size.height - (padding * 2);
     final stepX = chartWidth / (historicalData.length - 1);

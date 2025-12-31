@@ -22,7 +22,7 @@ void main() {
 
       test('should calculate probability correctly (|amplitude|²)', () {
         final state = QuantumVibeState(0.6, 0.8);
-        final expectedProbability = 0.6 * 0.6 + 0.8 * 0.8; // 0.36 + 0.64 = 1.0
+        const expectedProbability = 0.6 * 0.6 + 0.8 * 0.8; // 0.36 + 0.64 = 1.0
         expect(state.probability, closeTo(expectedProbability, 0.001));
       });
 

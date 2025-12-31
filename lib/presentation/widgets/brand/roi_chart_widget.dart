@@ -23,7 +23,7 @@ class ROICartWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'ROI Trend',
               style: TextStyle(
                 fontSize: 18,
@@ -49,7 +49,7 @@ class ROICartWidget extends StatelessWidget {
                       color: AppColors.textSecondary.withValues(alpha: 0.5),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       'ROI Chart',
                       style: TextStyle(
                         fontSize: 14,

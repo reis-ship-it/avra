@@ -58,7 +58,7 @@ void main() {
           'admin-3', // Add admin-3 as member for tests (needed for admin management tests)
         ],
         memberCount: 18, // 12 + 6 = 18 members
-        eventIds: ['event-1', 'event-2', 'event-3', 'event-4'], // 4 events
+        eventIds: const ['event-1', 'event-2', 'event-3', 'event-4'], // 4 events
         eventCount: 4,
       );
 
@@ -74,9 +74,9 @@ void main() {
         originalLocality: 'Mission District, San Francisco',
         createdAt: testDate,
         updatedAt: testDate,
-        memberIds: ['user-1', 'user-2'], // Only 2 members
+        memberIds: const ['user-1', 'user-2'], // Only 2 members
         memberCount: 2,
-        eventIds: ['event-1'], // Only 1 event
+        eventIds: const ['event-1'], // Only 1 event
         eventCount: 1,
       );
     });

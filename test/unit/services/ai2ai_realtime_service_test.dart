@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/ai2ai_realtime_service.dart';
+import 'package:spots_ai/services/ai2ai_realtime_service.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:spots_network/spots_network.dart';
 import 'package:spots/core/ai2ai/aipersonality_node.dart';
@@ -136,7 +136,7 @@ void main() {
               type: 'test',
               timestamp: DateTime.now()),
         );
-        final emptyStream = Stream<RealtimeMessage>.empty();
+        const emptyStream = Stream<RealtimeMessage>.empty();
         when(() => mockBackend.subscribeToMessages('ai2ai-network'))
             .thenAnswer((_) => testStream);
         when(() => mockBackend.subscribeToMessages('personality-discovery'))
@@ -263,7 +263,7 @@ void main() {
 
         // Test timeout
         when(() => mockBackend.subscribeToMessages(any()))
-            .thenAnswer((_) => Stream<RealtimeMessage>.empty());
+            .thenAnswer((_) => const Stream<RealtimeMessage>.empty());
         final timeoutLatency = await service.measureRealtimeLatency(
             timeout: const Duration(milliseconds: 100));
         expect(timeoutLatency, isNull);

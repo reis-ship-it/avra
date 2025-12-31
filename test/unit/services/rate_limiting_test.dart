@@ -5,6 +5,7 @@
 /// and protects sensitive operations
 /// 
 /// Phase 7, Section 41 (7.4.3): Backend Completion
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/rate_limiting_service.dart';

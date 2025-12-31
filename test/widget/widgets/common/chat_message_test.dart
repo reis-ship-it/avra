@@ -92,7 +92,7 @@ void main() {
       final row2 = tester.widget<Row>(find.byType(Row));
       expect(row2.mainAxisAlignment, equals(MainAxisAlignment.start));
 
-      final longMessage = 'This is a very long message that should wrap correctly '
+      const longMessage = 'This is a very long message that should wrap correctly '
           'and display properly in the chat interface without breaking the layout.';
       final widget8 = WidgetTestHelpers.createTestableWidget(
         child: ChatMessage(

@@ -94,9 +94,9 @@ class TestHelpers {
 
       tearDown(() {
         // Clean up after each test
-        MocksRegistry.allMocks.forEach((mock) {
+        for (var mock in MocksRegistry.allMocks) {
           verifyNoMoreInteractions(mock);
-        });
+        }
       });
 
       body();

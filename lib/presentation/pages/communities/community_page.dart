@@ -89,8 +89,8 @@ class _CommunityPageState extends State<CommunityPage> {
     final authState = context.read<AuthBloc>().state;
     if (authState is! Authenticated) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please sign in to join communities'),
+        const SnackBar(
+          content: Text('Please sign in to join communities'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -110,8 +110,8 @@ class _CommunityPageState extends State<CommunityPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Successfully joined community!'),
+          const SnackBar(
+            content: Text('Successfully joined community!'),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -152,8 +152,8 @@ class _CommunityPageState extends State<CommunityPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Left community'),
+          const SnackBar(
+            content: Text('Left community'),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -207,14 +207,14 @@ class _CommunityPageState extends State<CommunityPage> {
         elevation: 0,
       ),
       body: _isLoading
-          ? Center(
+          ? const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(
+                  CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     'Loading community...',
                     style: TextStyle(
@@ -234,14 +234,14 @@ class _CommunityPageState extends State<CommunityPage> {
                       children: [
                         Semantics(
                           label: 'Error loading community',
-                          child: Icon(
+                          child: const Icon(
                             Icons.error_outline,
                             size: 64,
                             color: AppColors.error,
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Text(
+                        const Text(
                           'Unable to load community',
                           style: TextStyle(
                             fontSize: 20,
@@ -253,7 +253,7 @@ class _CommunityPageState extends State<CommunityPage> {
                         const SizedBox(height: 8),
                         Text(
                           _error!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
                           ),
@@ -332,7 +332,7 @@ class _CommunityPageState extends State<CommunityPage> {
         children: [
           Text(
             _community!.name,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -342,7 +342,7 @@ class _CommunityPageState extends State<CommunityPage> {
             const SizedBox(height: 12),
             Text(
               _community!.description!,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 color: AppColors.textSecondary,
               ),
@@ -351,7 +351,7 @@ class _CommunityPageState extends State<CommunityPage> {
           const SizedBox(height: 16),
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.person,
                 size: 16,
                 color: AppColors.textSecondary,
@@ -362,7 +362,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   children: [
                     Text(
                       'Founded by ${_community!.founderId.substring(0, 8)}...',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -454,7 +454,7 @@ class _CommunityPageState extends State<CommunityPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Information',
             style: TextStyle(
               fontSize: 20,
@@ -522,7 +522,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
@@ -531,7 +531,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   const SizedBox(height: 4),
                   Text(
                     value,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
                     ),
@@ -540,7 +540,7 @@ class _CommunityPageState extends State<CommunityPage> {
               ),
             ),
             if (onTap != null)
-              Icon(
+              const Icon(
                 Icons.chevron_right,
                 color: AppColors.textSecondary,
               ),
@@ -557,7 +557,7 @@ class _CommunityPageState extends State<CommunityPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Metrics',
             style: TextStyle(
               fontSize: 20,
@@ -624,7 +624,7 @@ class _CommunityPageState extends State<CommunityPage> {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                 ),
@@ -634,7 +634,7 @@ class _CommunityPageState extends State<CommunityPage> {
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -653,7 +653,7 @@ class _CommunityPageState extends State<CommunityPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Geographic Coverage',
             style: TextStyle(
               fontSize: 20,
@@ -702,14 +702,14 @@ class _CommunityPageState extends State<CommunityPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(
                 Icons.trending_up,
                 color: AppTheme.primaryColor,
                 size: 20,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Expansion Progress',
                 style: TextStyle(
@@ -742,7 +742,7 @@ class _CommunityPageState extends State<CommunityPage> {
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.info_outline,
                     size: 16,
                     color: AppColors.textSecondary,
@@ -751,7 +751,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   Expanded(
                     child: Text(
                       'Active in ${_community!.currentLocalities.length} locality(ies)',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -792,7 +792,7 @@ class _CommunityPageState extends State<CommunityPage> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),
@@ -800,7 +800,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,

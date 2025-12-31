@@ -1,6 +1,7 @@
 /// Phase 9: Performance Benchmarks & Regression Detection
 /// Establishes performance baselines and detects regressions for production deployment
 /// OUR_GUTS.md: "Effortless, Seamless Discovery" - Consistent, predictable performance
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert';
 import 'dart:io';

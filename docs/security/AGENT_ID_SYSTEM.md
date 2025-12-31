@@ -55,29 +55,55 @@ The Agent ID System provides cryptographically secure anonymous identifiers for 
 
 ### Mapping Storage
 
-**Location:** Database table `user_agent_mappings`
+**Location:** Database table `user_agent_mappings_secure` (encrypted storage)
 
 **Structure:**
-- `user_id`: User ID (references auth.users)
-- `agent_id`: Agent ID (unique, format validated)
+- `user_id`: User ID (references auth.users, primary key)
+- `encrypted_mapping`: Encrypted blob (BYTEA) - contains encrypted agentId
+- `encryption_key_id`: Encryption key identifier (for key rotation)
+- `encryption_algorithm`: Algorithm name ('aes256_gcm')
+- `encryption_version`: Version number (for future algorithm changes)
 - `created_at`: Creation timestamp
 - `last_rotated_at`: Last rotation timestamp
 - `last_accessed_at`: Last access timestamp
-- `encryption_key_id`: Encryption key identifier
 - `access_count`: Access counter
 - `rotation_count`: Rotation counter
 
+**Legacy Table:** `user_agent_mappings` (plaintext) - deprecated, migrated to encrypted storage
+
 ### Encryption of Mappings
 
-**Encryption:**
-- Mapping data encrypted at rest
-- Encryption keys in secure storage
-- Field-level encryption for sensitive fields
+**Encryption Algorithm: AES-256-GCM**
+- **Authenticated Encryption:** GCM mode provides authentication
+- **256-bit keys:** Maximum security
+- **Random IV:** Each encryption uses unique initialization vector
+- **Non-deterministic:** Same plaintext produces different ciphertexts
+
+**Key Management:**
+- Keys stored in `FlutterSecureStorage` (device Keychain/Keystore)
+- One key per user (isolated keys)
+- Keys never leave the device (except for backup/restore)
+- Key rotation supported (periodic rotation for enhanced security)
+
+**Encryption Process:**
+1. Generate or retrieve user's encryption key from `FlutterSecureStorage`
+2. Encrypt agentId using AES-256-GCM with random IV
+3. Store encrypted blob in database
+4. Store key identifier (not the key itself) in database
+
+**Decryption Process:**
+1. Retrieve encrypted blob from database
+2. Retrieve encryption key from `FlutterSecureStorage` using key identifier
+3. Decrypt blob using AES-256-GCM
+4. Return decrypted agentId
 
 **Access Control:**
 - RLS policies restrict access
 - Users can only view their own mapping
 - Service role for system operations
+- Audit logging (uses agentId, not userId, for privacy)
+
+**See:** [Secure Mapping Encryption](SECURE_MAPPING_ENCRYPTION.md) for complete details
 
 ---
 

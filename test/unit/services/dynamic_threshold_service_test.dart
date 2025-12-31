@@ -26,7 +26,7 @@ void main() {
           'should calculate local threshold for locality and category, return base thresholds on error, and adjust thresholds based on locality values',
           () async {
         // Test business logic: local threshold calculation with adjustments
-        final baseThresholds1 = const ThresholdValues(
+        const baseThresholds1 = ThresholdValues(
           minVisits: 10,
           minRatings: 5,
           minAvgRating: 4.0,
@@ -45,9 +45,9 @@ void main() {
         expect(adjustedThresholds1.minRatings, greaterThan(0));
         expect(adjustedThresholds1.minAvgRating, equals(4.0));
         expect(
-            adjustedThresholds1.minTimeInCategory, equals(Duration(days: 30)));
+            adjustedThresholds1.minTimeInCategory, equals(const Duration(days: 30)));
 
-        final baseThresholds2 = const ThresholdValues(
+        const baseThresholds2 = ThresholdValues(
           minVisits: 10,
           minRatings: 5,
           minAvgRating: 4.0,
@@ -61,7 +61,7 @@ void main() {
         expect(adjustedThresholds2.minVisits, equals(12));
         expect(adjustedThresholds2.minRatings, greaterThan(0));
 
-        final baseThresholds3 = const ThresholdValues(
+        const baseThresholds3 = ThresholdValues(
           minVisits: 10,
           minRatings: 5,
           minAvgRating: 4.0,
@@ -84,7 +84,7 @@ void main() {
           'should return adjusted threshold for activity, return base threshold on error, and adjust threshold based on activity weight',
           () async {
         // Test business logic: activity threshold calculation with adjustments
-        final baseThreshold = 10.0;
+        const baseThreshold = 10.0;
         final adjustedThreshold1 = await service.getThresholdForActivity(
           locality: 'Greenpoint',
           activity: 'events_hosted',
@@ -141,7 +141,7 @@ void main() {
           'should lower threshold for highly valued activities or raise threshold for less valued activities',
           () async {
         // Test business logic: threshold adjustment based on activity value
-        final baseThreshold = 10.0;
+        const baseThreshold = 10.0;
         final threshold1 = await service.getThresholdForActivity(
           locality: 'Greenpoint',
           activity: 'events_hosted',

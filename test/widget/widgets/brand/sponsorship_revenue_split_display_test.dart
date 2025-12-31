@@ -22,7 +22,7 @@ void main() {
         platformFee: 100.0,
         processingFee: 30.0,
         hostPayout: 870.0,
-        parties: [],
+        parties: const [],
         isLocked: false,
         calculatedAt: DateTime.now(),
         ticketsSold: 20,

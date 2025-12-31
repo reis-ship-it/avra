@@ -36,14 +36,14 @@ void main() {
       expect(find.text('5 events'), findsOneWidget);
       expect(find.text('Active'), findsOneWidget);
 
-      final partnership2 = UserPartnership(
+      const partnership2 = UserPartnership(
         id: '1',
         type: ProfilePartnershipType.brand,
         partnerId: 'br1',
         partnerName: 'Test Brand',
         status: PartnershipStatus.active,
       );
-      final widget2 = ProfilePartnershipCard(
+      const widget2 = ProfilePartnershipCard(
         partnership: partnership2,
       );
       final testableWidget2 = WidgetTestHelpers.createTestableWidget(
@@ -55,7 +55,7 @@ void main() {
       expect(find.text('Brand Partnership'), findsOneWidget);
 
       var tapped = false;
-      final partnership3 = UserPartnership(
+      const partnership3 = UserPartnership(
         id: '1',
         type: ProfilePartnershipType.business,
         partnerId: 'b1',

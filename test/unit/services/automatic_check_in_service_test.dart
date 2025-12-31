@@ -118,7 +118,7 @@ void main() {
           latitude: 40.7128,
           longitude: -74.0060,
         );
-        final longDwellTime = const Duration(minutes: 35);
+        const longDwellTime = Duration(minutes: 35);
         final checkOutTime2 = checkIn2.checkInTime.add(longDwellTime);
         final checkedOut2 = await service.checkOut(
           userId: 'user-2',
@@ -132,7 +132,7 @@ void main() {
           latitude: 40.7128,
           longitude: -74.0060,
         );
-        final shortDwellTime = const Duration(minutes: 3);
+        const shortDwellTime = Duration(minutes: 3);
         final checkOutTime3 = checkIn3.checkInTime.add(shortDwellTime);
         final checkedOut3 = await service.checkOut(
           userId: 'user-3',

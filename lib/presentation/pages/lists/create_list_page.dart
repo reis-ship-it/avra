@@ -270,12 +270,12 @@ class _CreateListPageState extends State<CreateListPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: AppTheme.errorColor),
+                      const Icon(Icons.error_outline, color: AppTheme.errorColor),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppTheme.errorColor,
                             fontSize: 14,
                           ),

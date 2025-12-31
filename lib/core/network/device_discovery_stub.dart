@@ -1,5 +1,6 @@
 /// Stub implementation for device discovery when platform is not supported
 /// Used in unit tests and unsupported platforms
+library;
 import 'package:spots/core/network/device_discovery.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 

@@ -139,11 +139,11 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 64, color: AppColors.error),
+                      const Icon(Icons.error_outline, size: 64, color: AppColors.error),
                       const SizedBox(height: 16),
                       Text(
                         _error!,
-                        style: TextStyle(color: AppColors.error),
+                        style: const TextStyle(color: AppColors.error),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
@@ -191,8 +191,8 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${_selectedYear} Earnings Summary',
-            style: TextStyle(
+            '$_selectedYear Earnings Summary',
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -205,7 +205,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Total Earnings',
                       style: TextStyle(
                         fontSize: 14,
@@ -215,7 +215,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                     const SizedBox(height: 4),
                     Text(
                       '\$${_currentYearEarnings.toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -265,10 +265,10 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                 color: AppTheme.warningColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(Icons.warning, color: AppTheme.warningColor, size: 20),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'W-9 form required to generate tax documents',
@@ -291,7 +291,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Tax Year',
           style: TextStyle(
             fontSize: 16,
@@ -317,7 +317,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                 value: year,
                 child: Text(
                   year.toString(),
-                  style: TextStyle(color: AppColors.textPrimary),
+                  style: const TextStyle(color: AppColors.textPrimary),
                 ),
               );
             }),
@@ -341,11 +341,11 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
         padding: const EdgeInsets.all(32),
         child: Column(
           children: [
-            Icon(Icons.description, size: 64, color: AppColors.textSecondary),
+            const Icon(Icons.description, size: 64, color: AppColors.textSecondary),
             const SizedBox(height: 16),
             Text(
-              'No tax documents for ${_selectedYear}',
-              style: TextStyle(
+              'No tax documents for $_selectedYear',
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -356,7 +356,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
               _currentYearEarnings < 600.0
                   ? 'Earnings are below the \$600 threshold. No tax documents required.'
                   : 'Tax documents will be generated after W-9 submission.',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -370,7 +370,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Tax Documents',
           style: TextStyle(
             fontSize: 18,
@@ -400,7 +400,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.description,
                 color: AppTheme.primaryColor,
                 size: 24,
@@ -412,7 +412,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                   children: [
                     Text(
                       _getFormTypeDisplayName(document.formType),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -420,7 +420,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                     ),
                     Text(
                       'Tax Year ${document.taxYear}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -438,7 +438,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Earnings',
                       style: TextStyle(
                         fontSize: 12,
@@ -447,7 +447,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                     ),
                     Text(
                       '\$${document.totalEarnings.toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -463,7 +463,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                   label: const Text('Download'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppTheme.primaryColor,
-                    side: BorderSide(color: AppTheme.primaryColor),
+                    side: const BorderSide(color: AppTheme.primaryColor),
                   ),
                 ),
             ],

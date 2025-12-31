@@ -303,7 +303,7 @@ class _SpotsTabState extends State<SpotsTab> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.list,
                                         size: 64,
                                         color: AppColors.textSecondary,
@@ -377,21 +377,21 @@ class _SpotsTabState extends State<SpotsTab> {
 
                             if (state is SpotsLoaded) {
                               if (state.respectedSpots.isEmpty) {
-                                return Center(
+                                return const Center(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(Icons.favorite_border,
+                                      Icon(Icons.favorite_border,
                                           size: 64, color: AppColors.textSecondary),
-                                      const SizedBox(height: 16),
-                                      const Text(
+                                      SizedBox(height: 16),
+                                      Text(
                                         'No respected lists yet',
                                         style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      const SizedBox(height: 8),
-                                      const Text(
+                                      SizedBox(height: 8),
+                                      Text(
                                         'Respect some lists during onboarding to see them here',
                                         style: TextStyle(
                                             fontSize: 16, color: AppColors.textSecondary),
@@ -698,7 +698,7 @@ class _UsersSubTabState extends State<UsersSubTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 64,
               color: AppTheme.errorColor,
@@ -729,7 +729,7 @@ class _UsersSubTabState extends State<UsersSubTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.explore,
               size: 64,
               color: AppColors.textSecondary,
@@ -764,7 +764,7 @@ class _UsersSubTabState extends State<UsersSubTab> {
             child: ListTile(
               leading: CircleAvatar(
                 backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
-                child: Icon(
+                child: const Icon(
                   Icons.list,
                   color: AppTheme.primaryColor,
                 ),
@@ -785,7 +785,7 @@ class _UsersSubTabState extends State<UsersSubTab> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.favorite,
                         size: 16,
                         color: AppColors.textSecondary,
@@ -793,13 +793,13 @@ class _UsersSubTabState extends State<UsersSubTab> {
                       const SizedBox(width: 4),
                       Text(
                         '${list.respectCount} respects',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
                       ),
                       const SizedBox(width: 16),
-                      Icon(
+                      const Icon(
                         Icons.location_on,
                         size: 16,
                         color: AppColors.textSecondary,
@@ -807,7 +807,7 @@ class _UsersSubTabState extends State<UsersSubTab> {
                       const SizedBox(width: 4),
                       Text(
                         '${list.spots.length} spots',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -816,7 +816,7 @@ class _UsersSubTabState extends State<UsersSubTab> {
                   ),
                 ],
               ),
-              trailing: Icon(
+              trailing: const Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
                 color: AppColors.textSecondary,
@@ -914,7 +914,7 @@ class _AISubTabState extends State<AISubTab> {
         // AI Features Section
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.grey100,
             border: Border(
               bottom: BorderSide(color: AppColors.grey200),
@@ -960,7 +960,7 @@ class _AISubTabState extends State<AISubTab> {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Try: "Find coffee shops near me" or "Create a weekend list"',
                 style: TextStyle(
                   fontSize: 12,
@@ -992,10 +992,10 @@ class _AISubTabState extends State<AISubTab> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 16,
                   backgroundColor: AppTheme.primaryColor,
-                  child: const Icon(
+                  child: Icon(
                     Icons.auto_awesome,
                     size: 16,
                    color: AppColors.white,
@@ -1011,7 +1011,7 @@ class _AISubTabState extends State<AISubTab> {
                         : AppColors.grey700,
                     borderRadius: BorderRadius.circular(18),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
@@ -1023,7 +1023,7 @@ class _AISubTabState extends State<AISubTab> {
                               AppTheme.primaryColor),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         'Processing your request...',
                         style: TextStyle(
@@ -1087,7 +1087,7 @@ class _AISubTabState extends State<AISubTab> {
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 10,
                   color: AppColors.grey600,
                 ),

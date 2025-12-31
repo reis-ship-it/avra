@@ -223,7 +223,7 @@ void main() {
           maxAttendees: 10,
           createdAt: now,
           updatedAt: now,
-          attendeeIds: [],
+          attendeeIds: const [],
           attendeeCount: 0,
         );
 

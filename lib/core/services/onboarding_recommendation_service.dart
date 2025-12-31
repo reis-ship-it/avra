@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/injection_container.dart' as di;
 
 /// OnboardingRecommendationService
 /// 
@@ -15,7 +16,7 @@ class OnboardingRecommendationService {
   
   OnboardingRecommendationService({
     AgentIdService? agentIdService,
-  }) : _agentIdService = agentIdService ?? AgentIdService();
+  }) : _agentIdService = agentIdService ?? di.sl<AgentIdService>();
   
   /// Get recommended lists to follow based on onboarding
   /// 

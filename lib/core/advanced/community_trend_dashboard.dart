@@ -144,7 +144,7 @@ class CommunityTrendDetectionDashboard {
         predictionType: 'category_growth',
         category: 'outdoor',
         predictedGrowth: 0.25,
-        timeHorizon: Duration(days: 30),
+        timeHorizon: const Duration(days: 30),
         confidence: 0.75,
       ),
     ];
@@ -162,7 +162,7 @@ class CommunityTrendDetectionDashboard {
   Future<CommunicationMetrics> _analyzeCommunicationMetrics() async {
     return CommunicationMetrics(
       messageCount: 1520,
-      averageLatency: Duration(milliseconds: 45),
+      averageLatency: const Duration(milliseconds: 45),
       successRate: 0.98,
       encryptionLevel: 'maximum',
     );

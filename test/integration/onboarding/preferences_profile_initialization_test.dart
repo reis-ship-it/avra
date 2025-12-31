@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/preferences_profile.dart';
 import 'package:spots/core/models/onboarding_data.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
@@ -106,8 +105,8 @@ void main() {
       // Create a learned profile first
       final learnedProfile = PreferencesProfile(
         agentId: agentId,
-        categoryPreferences: {'Coffee': 0.9, 'Food': 0.8},
-        localityPreferences: {'Manhattan': 0.7},
+        categoryPreferences: const {'Coffee': 0.9, 'Food': 0.8},
+        localityPreferences: const {'Manhattan': 0.7},
         source: 'learned',
         lastUpdated: DateTime.now(),
       );

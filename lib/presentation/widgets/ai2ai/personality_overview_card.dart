@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/theme/colors.dart';
 
 /// Widget displaying personality overview with dimensions, confidence, and archetype
@@ -63,7 +63,7 @@ class PersonalityOverviewCard extends StatelessWidget {
                 value: profile.authenticity,
                 minHeight: 8,
                 backgroundColor: AppColors.grey200,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.success),
+                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.success),
               ),
             ),
             const SizedBox(height: 24),

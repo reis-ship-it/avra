@@ -15,10 +15,12 @@
 /// - AuthBloc: For authentication
 ///
 /// Phase 7, Section 51-52 (7.6): Testing & Validation
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/ai/continuous_learning_system.dart';
+import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/presentation/pages/settings/continuous_learning_page.dart';
 import '../widget/helpers/widget_test_helpers.dart';
 import '../widget/mocks/mock_blocs.dart';
@@ -31,7 +33,12 @@ void main() {
     late MockAuthBloc mockAuthBloc;
 
     setUp(() {
-      learningSystem = ContinuousLearningSystem();
+      // Create system without Supabase for integration tests (or use real Supabase if available)
+      learningSystem = ContinuousLearningSystem(
+        agentIdService: AgentIdService(),
+        supabase:
+            null, // Use null for tests, or inject real SupabaseClient if needed
+      );
       mockAuthBloc = MockBlocFactory.createAuthenticatedAuthBloc();
     });
 

@@ -218,8 +218,8 @@ void main() {
 
       test('should handle user with very long names', () async {
         // Arrange
-        final longName = 'Very' + ' Long' * 100 + ' Name';
-        final longDisplayName = 'Very' + ' Long' * 100 + ' Display Name';
+        final longName = 'Very${' Long' * 100} Name';
+        final longDisplayName = 'Very${' Long' * 100} Display Name';
         final userWithLongNames = testUser.copyWith(
           name: longName,
           displayName: longDisplayName,
@@ -362,7 +362,7 @@ void main() {
 
       test('should handle data corruption error', () async {
         // Arrange
-        final corruptionError = FormatException('User data corrupted');
+        const corruptionError = FormatException('User data corrupted');
         when(mockRepository.getCurrentUser())
             .thenThrow(corruptionError);
 
@@ -537,7 +537,7 @@ void main() {
         // Arrange
         when(mockRepository.getCurrentUser())
             .thenAnswer((_) async {
-              await Future.delayed(Duration(milliseconds: 200));
+              await Future.delayed(const Duration(milliseconds: 200));
               return testUser;
             });
 

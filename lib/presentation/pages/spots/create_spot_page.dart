@@ -115,9 +115,9 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
     if (_formKey.currentState!.validate()) {
       if (_latitude == null || _longitude == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content:
-                const Text('Please enable location services to create a spot'),
+                Text('Please enable location services to create a spot'),
             backgroundColor: AppTheme.errorColor,
           ),
         );
@@ -266,7 +266,7 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                           ),
                           const Spacer(),
                           if (_latitude != null && _longitude != null)
-                            Icon(Icons.check_circle,
+                            const Icon(Icons.check_circle,
                                 color: AppTheme.successColor),
                         ],
                       ),
@@ -286,13 +286,13 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                       else if (_locationError != null)
                         Row(
                           children: [
-                            Icon(Icons.error,
+                            const Icon(Icons.error,
                                 color: AppTheme.errorColor, size: 16),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 _locationError!,
-                                style: TextStyle(color: AppTheme.errorColor),
+                                style: const TextStyle(color: AppTheme.errorColor),
                               ),
                             ),
                           ],

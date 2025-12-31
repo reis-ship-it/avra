@@ -206,24 +206,7 @@ class AES256GCMEncryptionService implements MessageEncryptionService {
   }
 }
 
-/// Signal Protocol Encryption Service (Future Implementation)
-/// 
-/// Placeholder for Signal Protocol implementation.
-/// Will be implemented when Signal Protocol is added (Phase 15).
-class SignalProtocolEncryptionService implements MessageEncryptionService {
-  @override
-  EncryptionType get encryptionType => EncryptionType.signalProtocol;
-
-  @override
-  Future<EncryptedMessage> encrypt(String plaintext, String recipientId) async {
-    // TODO: Implement Signal Protocol encryption
-    throw UnimplementedError('Signal Protocol encryption not yet implemented');
-  }
-
-  @override
-  Future<String> decrypt(EncryptedMessage encrypted, String senderId) async {
-    // TODO: Implement Signal Protocol decryption
-    throw UnimplementedError('Signal Protocol decryption not yet implemented');
-  }
-}
+// Signal Protocol Encryption Service moved to separate file
+// See: lib/core/services/signal_protocol_encryption_service.dart
+// Phase 14: Signal Protocol Implementation - Option 1
 

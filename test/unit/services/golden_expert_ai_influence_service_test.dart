@@ -12,6 +12,7 @@
 /// - Mock MultiPathExpertiseService: For golden expert status
 /// - Mock PersonalityLearning: For AI personality integration
 /// - LocalExpertise model: For residency data
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/golden_expert_ai_influence_service.dart';

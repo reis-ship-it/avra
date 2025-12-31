@@ -31,7 +31,7 @@ void main() {
           growthRate: 5.0,
           competitionLevel: 0.3,
           marketDemand: 0.6,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.2,
             qualityDistribution: 0.8,
             utilizationRate: 0.7,
@@ -53,7 +53,7 @@ void main() {
           growthRate: 5.0,
           competitionLevel: 0.3,
           marketDemand: 0.6,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.5,
             qualityDistribution: 0.8,
             utilizationRate: 0.7,
@@ -75,7 +75,7 @@ void main() {
           growthRate: 5.0,
           competitionLevel: 0.3,
           marketDemand: 0.6,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.8,
             qualityDistribution: 0.8,
             utilizationRate: 0.7,
@@ -106,7 +106,7 @@ void main() {
           growthRate: 15.0,
           competitionLevel: 0.8,
           marketDemand: 0.4,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.9,
             qualityDistribution: 0.6,
             utilizationRate: 0.5,
@@ -133,7 +133,7 @@ void main() {
           growthRate: 2.0,
           competitionLevel: 0.2,
           marketDemand: 0.8,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.2,
             qualityDistribution: 0.9,
             utilizationRate: 0.9,
@@ -154,7 +154,7 @@ void main() {
     group('Saturation Factors', () {
       test('should calculate saturation score within valid range', () {
         // Test business logic: score calculation
-        final factors = SaturationFactors(
+        const factors = SaturationFactors(
           supplyRatio: 0.5,
           qualityDistribution: 0.8,
           utilizationRate: 0.7,
@@ -171,7 +171,7 @@ void main() {
 
     group('JSON Serialization', () {
       test('should serialize and deserialize without data loss', () {
-        final factors = SaturationFactors(
+        const factors = SaturationFactors(
           supplyRatio: 0.5,
           qualityDistribution: 0.8,
           utilizationRate: 0.7,

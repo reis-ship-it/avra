@@ -54,7 +54,7 @@ void main() {
         final withNeighborhoods = LargeCity(
           id: 'city-2',
           name: 'Brooklyn',
-          neighborhoods: ['greenpoint', 'dumbo'],
+          neighborhoods: const ['greenpoint', 'dumbo'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -72,7 +72,7 @@ void main() {
           id: 'city-123',
           name: 'Brooklyn',
           state: 'New York',
-          neighborhoods: ['greenpoint', 'dumbo'],
+          neighborhoods: const ['greenpoint', 'dumbo'],
           createdAt: testDate,
           updatedAt: testDate,
         );

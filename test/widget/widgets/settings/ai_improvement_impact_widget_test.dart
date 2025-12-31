@@ -11,6 +11,7 @@
 ///
 /// Dependencies:
 /// - AIImprovementTrackingService: For service reference (stateless widget)
+library;
 
 import 'dart:async';
 import 'package:flutter/material.dart';

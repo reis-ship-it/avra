@@ -5,33 +5,34 @@ import 'package:get_it/get_it.dart';
 import 'package:spots/core/controllers/base/workflow_controller.dart';
 import 'package:spots/core/controllers/base/controller_result.dart';
 import 'package:spots/core/services/enhanced_connectivity_service.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
 import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 
 // Import for SharedPreferencesCompat (matches injection_container.dart)
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:spots/core/services/storage_service.dart'
+    show SharedPreferencesCompat;
 
 /// Sync Controller
-/// 
+///
 /// Orchestrates data synchronization between local and cloud storage.
 /// Coordinates connectivity checks, conflict detection, and sync operations
 /// for personality profiles and other user data.
-/// 
+///
 /// **Responsibilities:**
 /// - Check connectivity before sync
 /// - Sync personality profile to/from cloud
 /// - Detect and resolve conflicts
 /// - Handle sync errors gracefully
 /// - Return unified sync results
-/// 
+///
 /// **Dependencies:**
 /// - `EnhancedConnectivityService` - Check connectivity
 /// - `PersonalitySyncService` - Sync personality profiles
 /// - `PersonalityLearning` - Load local personality profile
 /// - `StorageService` - Local storage operations
-/// 
+///
 /// **Usage:**
 /// ```dart
 /// final controller = SyncController();
@@ -40,15 +41,14 @@ import 'package:spots/core/services/storage_service.dart' show SharedPreferences
 ///   password: 'user_password',
 ///   scope: SyncScope.personality,
 /// );
-/// 
+///
 /// if (result.isSuccess) {
 ///   // Sync completed successfully
 /// } else {
 ///   // Handle errors
 /// }
 /// ```
-class SyncController
-    implements WorkflowController<SyncInput, SyncResult> {
+class SyncController implements WorkflowController<SyncInput, SyncResult> {
   static const String _logName = 'SyncController';
 
   final EnhancedConnectivityService _connectivityService;
@@ -71,19 +71,19 @@ class SyncController
             })();
 
   /// Sync user data to/from cloud
-  /// 
+  ///
   /// Orchestrates the complete sync workflow:
   /// 1. Check connectivity
   /// 2. Load local data
   /// 3. Sync based on scope
   /// 4. Handle conflicts
   /// 5. Return unified result
-  /// 
+  ///
   /// **Parameters:**
   /// - `userId`: User ID to sync data for
   /// - `password`: User password (for encryption key derivation)
   /// - `scope`: What data to sync (personality, preferences, all)
-  /// 
+  ///
   /// **Returns:**
   /// SyncResult with success/error state and sync details
   Future<SyncResult> syncUserData({
@@ -92,45 +92,51 @@ class SyncController
     SyncScope scope = SyncScope.all,
   }) async {
     try {
-      developer.log('Starting sync for user: $userId, scope: $scope', name: _logName);
+      developer.log('Starting sync for user: $userId, scope: $scope',
+          name: _logName);
 
       // 1. Check connectivity
       final hasConnectivity = await _connectivityService.hasInternetAccess();
       if (!hasConnectivity) {
         developer.log('No internet connectivity, cannot sync', name: _logName);
-        return SyncResult.failure(
-          error: 'No internet connectivity. Please check your connection and try again.',
+        return const SyncResult.failure(
+          error:
+              'No internet connectivity. Please check your connection and try again.',
           errorCode: 'NO_CONNECTIVITY',
         );
       }
 
       // 2. Check if sync is enabled
-      final syncEnabled = await _personalitySyncService.isCloudSyncEnabled(userId);
+      final syncEnabled =
+          await _personalitySyncService.isCloudSyncEnabled(userId);
       if (!syncEnabled) {
         developer.log('Cloud sync disabled for user: $userId', name: _logName);
-        return SyncResult.failure(
-          error: 'Cloud sync is disabled. Enable it in settings to sync your data.',
+        return const SyncResult.failure(
+          error:
+              'Cloud sync is disabled. Enable it in settings to sync your data.',
           errorCode: 'SYNC_DISABLED',
         );
       }
 
       // 3. Sync based on scope
       final syncDetails = <String, dynamic>{};
-      
+
       if (scope == SyncScope.personality || scope == SyncScope.all) {
         try {
           // Load local personality profile
-          final localProfile = await _personalityLearning.initializePersonality(userId);
-          
+          final localProfile =
+              await _personalityLearning.initializePersonality(userId);
+
           // Sync to cloud
           await _personalitySyncService.syncToCloud(
             userId,
             localProfile,
             password,
           );
-          
+
           syncDetails['personality'] = 'synced';
-          developer.log('Personality profile synced successfully', name: _logName);
+          developer.log('Personality profile synced successfully',
+              name: _logName);
         } catch (e, stackTrace) {
           developer.log(
             'Error syncing personality profile',
@@ -168,15 +174,15 @@ class SyncController
   }
 
   /// Load data from cloud
-  /// 
+  ///
   /// Downloads data from cloud and merges with local data.
   /// Handles conflicts by merging profiles.
-  /// 
+  ///
   /// **Parameters:**
   /// - `userId`: User ID
   /// - `password`: User password (for decryption)
   /// - `scope`: What data to load
-  /// 
+  ///
   /// **Returns:**
   /// SyncResult with loaded data
   Future<SyncResult> loadFromCloud({
@@ -185,22 +191,26 @@ class SyncController
     SyncScope scope = SyncScope.all,
   }) async {
     try {
-      developer.log('Loading data from cloud for user: $userId', name: _logName);
+      developer.log('Loading data from cloud for user: $userId',
+          name: _logName);
 
       // 1. Check connectivity
       final hasConnectivity = await _connectivityService.hasInternetAccess();
       if (!hasConnectivity) {
-        return SyncResult.failure(
-          error: 'No internet connectivity. Please check your connection and try again.',
+        return const SyncResult.failure(
+          error:
+              'No internet connectivity. Please check your connection and try again.',
           errorCode: 'NO_CONNECTIVITY',
         );
       }
 
       // 2. Check if sync is enabled
-      final syncEnabled = await _personalitySyncService.isCloudSyncEnabled(userId);
+      final syncEnabled =
+          await _personalitySyncService.isCloudSyncEnabled(userId);
       if (!syncEnabled) {
-        return SyncResult.failure(
-          error: 'Cloud sync is disabled. Enable it in settings to load your data.',
+        return const SyncResult.failure(
+          error:
+              'Cloud sync is disabled. Enable it in settings to load your data.',
           errorCode: 'SYNC_DISABLED',
         );
       }
@@ -214,12 +224,13 @@ class SyncController
             userId,
             password,
           );
-          
+
           if (cloudProfile != null) {
             // PersonalitySyncService handles merging during syncToCloud
             // For loadFromCloud, we just return the cloud profile
             loadedItems['personality'] = cloudProfile;
-            developer.log('Personality profile loaded from cloud', name: _logName);
+            developer.log('Personality profile loaded from cloud',
+                name: _logName);
           } else {
             loadedItems['personality'] = 'not_found';
           }
@@ -293,10 +304,10 @@ class SyncController
 enum SyncScope {
   /// Sync personality profile only
   personality,
-  
+
   /// Sync preferences profile only (future)
   preferences,
-  
+
   /// Sync all available data
   all,
 }
@@ -319,7 +330,7 @@ class SyncResult extends ControllerResult {
   final Map<String, dynamic> syncedItems;
   final DateTime? syncTimestamp;
 
-  SyncResult.success({
+  const SyncResult.success({
     required this.syncedItems,
     this.syncTimestamp,
   }) : super(
@@ -328,15 +339,13 @@ class SyncResult extends ControllerResult {
           errorCode: null,
         );
 
-  SyncResult.failure({
-    required String error,
-    String? errorCode,
+  const SyncResult.failure({
+    required String super.error,
+    super.errorCode,
     this.syncedItems = const {},
     this.syncTimestamp,
   }) : super(
           success: false,
-          error: error,
-          errorCode: errorCode,
         );
 
   /// Get synced personality profile (if available)
@@ -348,4 +357,3 @@ class SyncResult extends ControllerResult {
     return null;
   }
 }
-

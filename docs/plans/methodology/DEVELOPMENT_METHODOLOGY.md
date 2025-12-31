@@ -143,8 +143,20 @@ codebase_search('How does similar feature work?')
 
 - [ ] Which layer? (UI, Service, Repository, Model)
 - [ ] Which module? (core, presentation, data)
-- [ ] Which package? (spots_core, main app)
+- [ ] **Which package?** (spots_core, spots_network, spots_ml, spots_ai, spots_quantum, spots_knot, spots_app)
+- [ ] **Package boundaries?** (What belongs in this package vs others?)
+- [ ] **Dependencies?** (What other packages does this need?)
+- [ ] **Public API?** (What will other packages use?)
 - [ ] Integration points? (What does it connect to?)
+
+**Package Placement Decision Framework:**
+- **Core models/data structures** → `spots_core`
+- **Network/API communication** → `spots_network`
+- **ML models/inference** → `spots_ml`
+- **AI2AI learning/personality** → `spots_ai`
+- **Quantum services/matching** → `spots_quantum`
+- **Knot theory services** → `spots_knot`
+- **UI/Application logic** → `spots_app`
 
 **See detailed guide in: [Optimal Placement Strategy](#optimal-placement-strategy)**
 

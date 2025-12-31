@@ -40,7 +40,7 @@ void main() {
     late MockPaymentService mockPaymentService;
     late MockExpertiseEventService mockEventService;
 
-    Widget _wrapWithAuthBloc(Widget child) {
+    Widget wrapWithAuthBloc(Widget child) {
       return BlocProvider<AuthBloc>.value(
         value: mockAuthBloc,
         child: child,
@@ -143,7 +143,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -158,7 +158,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -173,7 +173,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -188,7 +188,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentSuccessPage(
+            home: wrapWithAuthBloc(PaymentSuccessPage(
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
@@ -206,7 +206,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentSuccessPage(
+            home: wrapWithAuthBloc(PaymentSuccessPage(
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
@@ -225,7 +225,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentFailurePage(
+            home: wrapWithAuthBloc(PaymentFailurePage(
               event: testEvent,
               errorMessage: 'Payment failed',
               quantity: 1,
@@ -243,7 +243,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentFailurePage(
+            home: wrapWithAuthBloc(PaymentFailurePage(
               event: testEvent,
               errorMessage: 'Payment failed',
               quantity: 1,
@@ -260,7 +260,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentFailurePage(
+            home: wrapWithAuthBloc(PaymentFailurePage(
               event: testEvent,
               errorMessage: 'Card declined',
               errorCode: 'CARD_DECLINED',
@@ -284,7 +284,7 @@ void main() {
         
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -301,7 +301,7 @@ void main() {
         // Test Checkout page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -310,7 +310,7 @@ void main() {
         // Test Payment Success page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentSuccessPage(
+            home: wrapWithAuthBloc(PaymentSuccessPage(
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
@@ -329,7 +329,7 @@ void main() {
         // Test Checkout page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -338,7 +338,7 @@ void main() {
         // Test Payment Failure page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentFailurePage(
+            home: wrapWithAuthBloc(PaymentFailurePage(
               event: testEvent,
               quantity: 1,
               errorMessage: 'Payment failed',
@@ -355,7 +355,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -370,7 +370,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pump(); // First frame
@@ -388,7 +388,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();

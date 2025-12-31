@@ -63,8 +63,8 @@ void main() {
         child: AILoadingPage(
           userName: 'Test User',
           homebase: 'New York',
-          favoritePlaces: ['Central Park', 'Brooklyn Bridge'],
-          preferences: {
+          favoritePlaces: const ['Central Park', 'Brooklyn Bridge'],
+          preferences: const {
             'Food & Drink': ['Coffee & Tea'],
           },
           onLoadingComplete: () {},
@@ -126,8 +126,8 @@ void main() {
           age: 25,
           birthday: DateTime(2000, 1, 1),
           homebase: 'Brooklyn',
-          favoritePlaces: ['Park', 'Bridge'],
-          preferences: {
+          favoritePlaces: const ['Park', 'Bridge'],
+          preferences: const {
             'Activities': ['Music', 'Art'],
           },
           onLoadingComplete: () {},

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 
 /// OUR_GUTS.md: "Complete privacy protection with zero personal data exposure for AI2AI personality learning"
 /// Comprehensive privacy protection system that ensures no personal data enters the AI2AI network
@@ -74,7 +74,7 @@ class PrivacyProtection {
         anonymizationQuality: anonymizationQuality,
         salt: salt,
         createdAt: DateTime.now(),
-        expiresAt: DateTime.now().add(Duration(days: VibeConstants.vibeSignatureExpiryDays)),
+        expiresAt: DateTime.now().add(const Duration(days: VibeConstants.vibeSignatureExpiryDays)),
       );
       
       developer.log('Personality profile anonymized successfully (quality: ${(anonymizationQuality * 100).round()}%)', name: _logName);
@@ -484,7 +484,7 @@ class PrivacyProtection {
   static double _calculateNoiseScale(double epsilon, String privacyLevel) {
     // Laplace mechanism: scale = sensitivity / epsilon
     // Reserved for future Laplace noise implementation
-    final sensitivity = 1.0; // Sensitivity for normalized data
+    const sensitivity = 1.0; // Sensitivity for normalized data
     return sensitivity / epsilon;
   }
   

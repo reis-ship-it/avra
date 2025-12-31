@@ -8,6 +8,7 @@
 /// - Compatibility Calculation: Calculating compatibility scores
 /// - Privacy Protection: userId → agentId conversion validation
 /// - Edge Cases: Empty data, no matches, invalid inputs
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

@@ -3,9 +3,9 @@
   "packages": [
     {
       "name": "_fe_analyzer_shared",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-91.0.0",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-85.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.5"
     },
     {
       "name": "adaptive_number",
@@ -15,9 +15,9 @@
     },
     {
       "name": "analyzer",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/analyzer-8.4.1",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/analyzer-7.7.1",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.5"
     },
     {
       "name": "app_links",
@@ -63,7 +63,7 @@
     },
     {
       "name": "build",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/build-4.0.3",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/build-3.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -80,8 +80,20 @@
       "languageVersion": "3.7"
     },
     {
+      "name": "build_resolvers",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/build_resolvers-3.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
       "name": "build_runner",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/build_runner-2.10.4",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/build_runner-2.7.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "build_runner_core",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/build_runner_core-9.3.1",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -171,9 +183,9 @@
     },
     {
       "name": "dart_style",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/dart_style-3.1.3",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/dart_style-3.1.1",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.7"
     },
     {
       "name": "dbus",
@@ -219,9 +231,9 @@
     },
     {
       "name": "flutter",
-      "rootUri": "file:///Users/reisgordon/flutter/packages/flutter",
+      "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.32.6/flutter/packages/flutter",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.7"
     },
     {
       "name": "flutter_lints",
@@ -231,15 +243,15 @@
     },
     {
       "name": "flutter_test",
-      "rootUri": "file:///Users/reisgordon/flutter/packages/flutter_test",
+      "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.32.6/flutter/packages/flutter_test",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.7"
     },
     {
       "name": "flutter_web_plugins",
-      "rootUri": "file:///Users/reisgordon/flutter/packages/flutter_web_plugins",
+      "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.32.6/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.7"
     },
     {
       "name": "frontend_server_client",
@@ -327,19 +339,19 @@
     },
     {
       "name": "leak_tracker",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/leak_tracker-11.0.2",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/leak_tracker-10.0.9",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "leak_tracker_flutter_testing",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.10",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.9",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "leak_tracker_testing",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/leak_tracker_testing-3.0.2",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/leak_tracker_testing-3.0.1",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -369,9 +381,9 @@
     },
     {
       "name": "meta",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/meta-1.17.0",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/meta-1.16.0",
       "packageUri": "lib/",
-      "languageVersion": "3.5"
+      "languageVersion": "2.12"
     },
     {
       "name": "mime",
@@ -381,7 +393,7 @@
     },
     {
       "name": "mockito",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/mockito-5.6.1",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/mockito-5.5.0",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -417,15 +429,15 @@
     },
     {
       "name": "path_provider_android",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/path_provider_android-2.2.22",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/path_provider_android-2.2.19",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.7"
     },
     {
       "name": "path_provider_foundation",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/path_provider_foundation-2.5.1",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.2",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.7"
     },
     {
       "name": "path_provider_linux",
@@ -513,21 +525,21 @@
     },
     {
       "name": "shared_preferences",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/shared_preferences-2.5.4",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/shared_preferences-2.5.3",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.5"
     },
     {
       "name": "shared_preferences_android",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/shared_preferences_android-2.4.18",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/shared_preferences_android-2.4.13",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.7"
     },
     {
       "name": "shared_preferences_foundation",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.6",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.4",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.4"
     },
     {
       "name": "shared_preferences_linux",
@@ -579,13 +591,13 @@
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///Users/reisgordon/flutter/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.32.6/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.7"
     },
     {
       "name": "source_gen",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/source_gen-4.1.1",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/source_gen-3.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -669,21 +681,27 @@
     },
     {
       "name": "test",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/test-1.26.3",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/test-1.25.15",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
     {
       "name": "test_api",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/test_api-0.7.7",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/test_api-0.7.4",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
     {
       "name": "test_core",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/test_core-0.6.12",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/test_core-0.6.8",
       "packageUri": "lib/",
       "languageVersion": "3.5"
+    },
+    {
+      "name": "timing",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/timing-1.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
     },
     {
       "name": "typed_data",
@@ -699,15 +717,15 @@
     },
     {
       "name": "url_launcher_android",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/url_launcher_android-6.3.28",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/url_launcher_android-6.3.20",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.7"
     },
     {
       "name": "url_launcher_ios",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/url_launcher_ios-6.3.6",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/url_launcher_ios-6.3.4",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.7"
     },
     {
       "name": "url_launcher_linux",
@@ -717,9 +735,9 @@
     },
     {
       "name": "url_launcher_macos",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/url_launcher_macos-3.2.5",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/url_launcher_macos-3.2.3",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.7"
     },
     {
       "name": "url_launcher_platform_interface",
@@ -741,15 +759,15 @@
     },
     {
       "name": "vector_math",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/vector_math-2.2.0",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/vector_math-2.1.4",
       "packageUri": "lib/",
-      "languageVersion": "3.1"
+      "languageVersion": "2.14"
     },
     {
       "name": "vm_service",
-      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/vm_service-15.0.2",
+      "rootUri": "file:///Users/reisgordon/.pub-cache/hosted/pub.dev/vm_service-15.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.5"
+      "languageVersion": "3.3"
     },
     {
       "name": "watcher",
@@ -813,8 +831,8 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.10.4",
-  "flutterRoot": "file:///Users/reisgordon/flutter",
-  "flutterVersion": "3.38.5",
+  "generatorVersion": "3.8.1",
+  "flutterRoot": "file:///opt/homebrew/Caskroom/flutter/3.32.6/flutter",
+  "flutterVersion": "3.32.7",
   "pubCache": "file:///Users/reisgordon/.pub-cache"
 }

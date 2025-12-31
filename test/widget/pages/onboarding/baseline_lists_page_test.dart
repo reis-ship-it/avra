@@ -15,7 +15,7 @@ void main() {
       // Test business logic: Baseline lists page display and functionality
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: BaselineListsPage(
-          baselineLists: [],
+          baselineLists: const [],
           onBaselineListsChanged: (_) {},
         ),
       );
@@ -25,7 +25,7 @@ void main() {
 
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: BaselineListsPage(
-          baselineLists: [],
+          baselineLists: const [],
           onBaselineListsChanged: (_) {},
         ),
       );
@@ -35,13 +35,13 @@ void main() {
 
       final widget3 = WidgetTestHelpers.createTestableWidget(
         child: BaselineListsPage(
-          baselineLists: [],
+          baselineLists: const [],
           onBaselineListsChanged: (_) {},
           userName: 'Test User',
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget3);
-      await tester.pump(Duration(seconds: 2));
+      await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
       expect(find.text('Baseline Lists'), findsOneWidget);
 
@@ -61,14 +61,14 @@ void main() {
       };
       final widget5 = WidgetTestHelpers.createTestableWidget(
         child: BaselineListsPage(
-          baselineLists: [],
+          baselineLists: const [],
           onBaselineListsChanged: (_) {},
           userName: 'Test User',
           userPreferences: preferences,
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget5);
-      await tester.pump(Duration(seconds: 2));
+      await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
       expect(find.text('Baseline Lists'), findsOneWidget);
     });

@@ -88,7 +88,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                       label: 'Clear search',
                       button: true,
                       child: IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.clear,
                           color: AppColors.grey600,
                         ),

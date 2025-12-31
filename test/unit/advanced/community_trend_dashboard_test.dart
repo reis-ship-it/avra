@@ -25,7 +25,7 @@ void main() {
     group('generateTrendDashboard', () {
       test('should generate trend dashboard successfully', () async {
         // Arrange
-        final timeRange = DashboardTimeRange.week;
+        const timeRange = DashboardTimeRange.week;
 
         // Act
         final result = await dashboard.generateTrendDashboard(

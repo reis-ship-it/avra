@@ -111,18 +111,18 @@ void main() {
       // Test business logic: preference retrieval methods
       final preferences = UserPreferences(
         userId: 'user-1',
-        categoryPreferences: {
+        categoryPreferences: const {
           'food': 0.9,
           'coffee': 0.7,
           'art': 0.5,
           'music': 0.3
         },
-        localityPreferences: {
+        localityPreferences: const {
           'Mission District': 0.9,
           'SOMA': 0.6,
           'Marina': 0.3
         },
-        scopePreferences: {EventScope.locality: 0.8, EventScope.city: 0.5},
+        scopePreferences: const {EventScope.locality: 0.8, EventScope.city: 0.5},
         lastUpdated: DateTime.now(),
       );
 
@@ -147,10 +147,10 @@ void main() {
       final preferences = UserPreferences(
         userId: 'user-1',
         localExpertPreferenceWeight: 0.8,
-        categoryPreferences: {'food': 0.9},
-        localityPreferences: {'Mission District': 0.9},
-        scopePreferences: {EventScope.locality: 0.8},
-        eventTypePreferences: {ExpertiseEventType.tour: 0.9},
+        categoryPreferences: const {'food': 0.9},
+        localityPreferences: const {'Mission District': 0.9},
+        scopePreferences: const {EventScope.locality: 0.8},
+        eventTypePreferences: const {ExpertiseEventType.tour: 0.9},
         explorationWillingness: 0.4,
         lastUpdated: DateTime.now(),
         eventsAnalyzed: 20,

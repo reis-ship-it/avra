@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/ai/continuous_learning_system.dart';
+import 'package:spots/core/services/agent_id_service.dart';
 
 /// Continuous Learning System Tests
 /// Tests the AI system that learns from everything continuously
@@ -9,7 +10,11 @@ void main() {
     late ContinuousLearningSystem system;
 
     setUp(() {
-      system = ContinuousLearningSystem();
+      // Create system without Supabase for unit tests
+      system = ContinuousLearningSystem(
+        agentIdService: AgentIdService(),
+        supabase: null, // No Supabase in unit tests
+      );
     });
 
     tearDown(() async {
@@ -60,11 +65,15 @@ void main() {
       test('should process user interaction without errors', () async {
         await system.initialize();
         final payload = {
-          'action': 'spot_visit',
-          'timestamp': DateTime.now().toIso8601String(),
+          'event_type': 'spot_visited',
+          'parameters': {},
+          'context': {},
         };
         await expectLater(
-          system.processUserInteraction(payload),
+          system.processUserInteraction(
+            userId: 'test-user-id',
+            payload: payload,
+          ),
           completes,
         );
       });
@@ -72,7 +81,10 @@ void main() {
       test('should handle empty payload', () async {
         await system.initialize();
         await expectLater(
-          system.processUserInteraction({}),
+          system.processUserInteraction(
+            userId: 'test-user-id',
+            payload: {},
+          ),
           completes,
         );
       });

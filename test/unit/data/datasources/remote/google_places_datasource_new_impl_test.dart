@@ -13,6 +13,7 @@
 /// Dependencies:
 /// - http.Client: For HTTP requests (mocked for external API)
 /// - GooglePlacesCacheService: For caching (real fake implementation)
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;

@@ -172,7 +172,7 @@ void main() {
           earnedReason: 'Created 10 lists',
           contributionCount: 10,
           communityTrustScore: 0.85,
-          unlockedFeatures: ['event_hosting'],
+          unlockedFeatures: const ['event_hosting'],
         );
 
         final json = pin.toJson();

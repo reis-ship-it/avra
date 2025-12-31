@@ -15,7 +15,7 @@ void main() {
         'should display performance metrics widget with all metrics (total events, active sponsorships)',
         (WidgetTester tester) async {
       // Test business logic: performance metrics display
-      final analytics = BrandAnalytics(
+      const analytics = BrandAnalytics(
         totalInvestment: 10000.0,
         cashInvestment: 5000.0,
         productInvestment: 5000.0,
@@ -24,14 +24,14 @@ void main() {
         estimatedBrandValue: 3000.0,
         roiPercentage: 50.0,
         topPerformingEvents: [],
-        exposureMetrics: const BrandExposureMetrics(
+        exposureMetrics: BrandExposureMetrics(
           totalReach: 5000,
           totalImpressions: 10000,
           productSampling: 200,
           emailSignups: 150,
           websiteVisits: 300,
         ),
-        performanceMetrics: const PerformanceMetrics(
+        performanceMetrics: PerformanceMetrics(
           totalEvents: 10,
           activeSponsorships: 5,
           averageROI: 50.0,
@@ -39,7 +39,7 @@ void main() {
         ),
       );
       final widget = WidgetTestHelpers.createTestableWidget(
-        child: PerformanceMetricsWidget(analytics: analytics),
+        child: const PerformanceMetricsWidget(analytics: analytics),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
       expect(find.byType(PerformanceMetricsWidget), findsOneWidget);

@@ -53,7 +53,7 @@ void main() {
           growthRate: 5.0,
           competitionLevel: 0.4,
           marketDemand: 0.6,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.5,
             qualityDistribution: 0.8,
             utilizationRate: 0.7,
@@ -178,7 +178,7 @@ void main() {
           id: 'phase-growth',
           name: PhaseName.growth,
           userCountThreshold: 1000,
-          saturationFactors: platform_phase.SaturationFactors(),
+          saturationFactors: const platform_phase.SaturationFactors(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -186,13 +186,13 @@ void main() {
         final requirements = ExpertiseRequirements(
           category: 'Coffee',
           platformPhase: platformPhaseObj,
-          thresholdValues: ThresholdValues(
+          thresholdValues: const ThresholdValues(
             minVisits: 10,
             minRatings: 5,
             minAvgRating: 4.0,
-            minTimeInCategory: const Duration(days: 30),
+            minTimeInCategory: Duration(days: 30),
           ),
-          multiPathRequirements: MultiPathRequirements(),
+          multiPathRequirements: const MultiPathRequirements(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -277,7 +277,7 @@ void main() {
           growthRate: 5.0,
           competitionLevel: 0.4,
           marketDemand: 0.6,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.5,
             qualityDistribution: 0.8,
             utilizationRate: 0.7,
@@ -412,7 +412,7 @@ void main() {
           id: 'phase-growth',
           name: PhaseName.growth,
           userCountThreshold: 1000,
-          saturationFactors: platform_phase.SaturationFactors(),
+          saturationFactors: const platform_phase.SaturationFactors(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -420,13 +420,13 @@ void main() {
         final requirements2 = ExpertiseRequirements(
           category: 'Coffee',
           platformPhase: platformPhaseObj2,
-          thresholdValues: ThresholdValues(
+          thresholdValues: const ThresholdValues(
             minVisits: 10,
             minRatings: 5,
             minAvgRating: 4.0,
-            minTimeInCategory: const Duration(days: 30),
+            minTimeInCategory: Duration(days: 30),
           ),
-          multiPathRequirements: MultiPathRequirements(),
+          multiPathRequirements: const MultiPathRequirements(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -440,7 +440,7 @@ void main() {
           growthRate: 5.0,
           competitionLevel: 0.4,
           marketDemand: 0.6,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.5,
             qualityDistribution: 0.8,
             utilizationRate: 0.7,

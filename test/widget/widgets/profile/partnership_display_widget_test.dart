@@ -26,7 +26,7 @@ void main() {
       expect(find.text('No partnerships yet'), findsOneWidget);
 
       final partnerships1 = [
-        UserPartnership(
+        const UserPartnership(
           id: '1',
           type: ProfilePartnershipType.business,
           partnerId: 'b1',
@@ -70,14 +70,14 @@ void main() {
       expect(find.textContaining('View All'), findsOneWidget);
 
       final partnerships3 = [
-        UserPartnership(
+        const UserPartnership(
           id: '1',
           type: ProfilePartnershipType.business,
           partnerId: 'b1',
           partnerName: 'Business',
           status: PartnershipStatus.active,
         ),
-        UserPartnership(
+        const UserPartnership(
           id: '2',
           type: ProfilePartnershipType.brand,
           partnerId: 'br1',

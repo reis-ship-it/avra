@@ -30,7 +30,7 @@ void main() {
         appWidget = const SpotsApp();
       } catch (e) {
         // If DI failed, create a minimal app widget
-        appWidget = MaterialApp(
+        appWidget = const MaterialApp(
           title: 'SPOTS Test',
           home: Scaffold(
             body: Center(child: Text('SPOTS App')),
@@ -57,7 +57,7 @@ void main() {
       try {
         appWidget = const SpotsApp();
       } catch (e) {
-        appWidget = MaterialApp(
+        appWidget = const MaterialApp(
           title: 'SPOTS Test',
           home: Scaffold(body: Center(child: Text('SPOTS App'))),
         );

@@ -47,7 +47,7 @@ void main() {
       // Arrange
       final service = di.sl<SocialMediaConnectionService>();
       final agentIdService = di.sl<AgentIdService>();
-      final testUserId = 'test_user_123';
+      const testUserId = 'test_user_123';
       final agentId = await agentIdService.getUserAgentId(testUserId);
 
       // Act - Connect a platform (creates placeholder connection)
@@ -68,7 +68,7 @@ void main() {
       // Arrange
       final service = di.sl<SocialMediaConnectionService>();
       final agentIdService = di.sl<AgentIdService>();
-      final testUserId = 'test_user_456';
+      const testUserId = 'test_user_456';
       final agentId = await agentIdService.getUserAgentId(testUserId);
 
       // Act - Create connections
@@ -98,7 +98,7 @@ void main() {
       // Arrange
       final service = di.sl<SocialMediaConnectionService>();
       final agentIdService = di.sl<AgentIdService>();
-      final testUserId = 'test_user_789';
+      const testUserId = 'test_user_789';
       final agentId = await agentIdService.getUserAgentId(testUserId);
 
       // Act - Create connection
@@ -129,7 +129,7 @@ void main() {
       // Arrange
       final service = di.sl<SocialMediaConnectionService>();
       final agentIdService = di.sl<AgentIdService>();
-      final testUserId = 'test_user_privacy';
+      const testUserId = 'test_user_privacy';
       final agentId = await agentIdService.getUserAgentId(testUserId);
 
       // Act - Create connection
@@ -149,7 +149,7 @@ void main() {
       // Arrange
       final service = di.sl<SocialMediaConnectionService>();
       final agentIdService = di.sl<AgentIdService>();
-      final testUserId = 'test_user_profile';
+      const testUserId = 'test_user_profile';
       final agentId = await agentIdService.getUserAgentId(testUserId);
 
       // Act - Create connection and fetch profile
@@ -170,7 +170,7 @@ void main() {
       // Arrange
       final service = di.sl<SocialMediaConnectionService>();
       final agentIdService = di.sl<AgentIdService>();
-      final testUserId = 'test_user_places';
+      const testUserId = 'test_user_places';
       final agentId = await agentIdService.getUserAgentId(testUserId);
 
       // Act - Create Google connection and fetch places data
@@ -194,7 +194,7 @@ void main() {
       // Arrange
       final service = di.sl<SocialMediaConnectionService>();
       final agentIdService = di.sl<AgentIdService>();
-      final testUserId = 'test_user_ai_loading';
+      const testUserId = 'test_user_ai_loading';
       final agentId = await agentIdService.getUserAgentId(testUserId);
 
       // Create connections

@@ -38,14 +38,14 @@ void main() {
     group('isEmpty Checker', () {
       test('should correctly identify empty vs non-empty preferences', () {
         // Test business logic: empty state determination
-        final empty = BusinessPatronPreferences();
-        final withAgeRange = BusinessPatronPreferences(
+        const empty = BusinessPatronPreferences();
+        const withAgeRange = BusinessPatronPreferences(
           preferredAgeRange: AgeRange(minAge: 21),
         );
-        final withLanguages = BusinessPatronPreferences(
+        const withLanguages = BusinessPatronPreferences(
           preferredLanguages: ['English'],
         );
-        final withSpendingLevel = BusinessPatronPreferences(
+        const withSpendingLevel = BusinessPatronPreferences(
           preferredSpendingLevel: SpendingLevel.midRange,
         );
 
@@ -59,8 +59,8 @@ void main() {
     group('getSummary', () {
       test('should generate summary with all preference fields', () {
         // Test business logic: summary generation
-        final empty = BusinessPatronPreferences();
-        final withAllFields = BusinessPatronPreferences(
+        const empty = BusinessPatronPreferences();
+        const withAllFields = BusinessPatronPreferences(
           preferredAgeRange: AgeRange(minAge: 21, maxAge: 65),
           preferredInterests: ['Food'],
           preferredSpendingLevel: SpendingLevel.midRange,
@@ -78,8 +78,8 @@ void main() {
 
     group('JSON Serialization', () {
       test('should serialize and deserialize without data loss', () {
-        final ageRange = AgeRange(minAge: 21, maxAge: 65);
-        final prefs = BusinessPatronPreferences(
+        const ageRange = AgeRange(minAge: 21, maxAge: 65);
+        const prefs = BusinessPatronPreferences(
           preferredAgeRange: ageRange,
           preferredLanguages: ['English'],
           preferredInterests: ['Food'],
@@ -98,7 +98,7 @@ void main() {
 
     group('copyWith', () {
       test('should create immutable copy with updated fields', () {
-        final original = BusinessPatronPreferences(
+        const original = BusinessPatronPreferences(
           preferredInterests: ['Food'],
           preferredSpendingLevel: SpendingLevel.budget,
         );

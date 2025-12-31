@@ -7,7 +7,7 @@ import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:spots/core/ai/vibe_analysis_engine.dart' as _i3;
-import 'package:spots/core/models/personality_profile.dart' as _i5;
+import 'package:spots_ai/models/personality_profile.dart' as _i5;
 import 'package:spots/core/models/unified_user.dart' as _i6;
 import 'package:spots/core/models/user_vibe.dart' as _i2;
 
@@ -24,7 +24,6 @@ import 'package:spots/core/models/user_vibe.dart' as _i2;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
-// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeUserVibe_0 extends _i1.SmartFake implements _i2.UserVibe {
   _FakeUserVibe_0(

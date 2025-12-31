@@ -106,7 +106,7 @@ class PaymentFailurePage extends StatelessWidget {
                     color: AppColors.error.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.error_outline,
                     size: 80,
                     color: AppColors.error,
@@ -116,7 +116,7 @@ class PaymentFailurePage extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Error Message
-                Text(
+                const Text(
                   'Payment Failed',
                   style: TextStyle(
                     fontSize: 28,
@@ -130,7 +130,7 @@ class PaymentFailurePage extends StatelessWidget {
 
                 Text(
                   userFriendlyMessage,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
@@ -149,7 +149,7 @@ class PaymentFailurePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Error Details',
                         style: TextStyle(
                           fontSize: 14,
@@ -160,7 +160,7 @@ class PaymentFailurePage extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         errorMessage,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -169,7 +169,7 @@ class PaymentFailurePage extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           'Error Code: $errorCode',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 10,
                             color: AppColors.textHint,
                             fontFamily: 'monospace',
@@ -194,12 +194,12 @@ class PaymentFailurePage extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, color: AppColors.electricGreen),
+                      const Icon(Icons.info_outline, color: AppColors.electricGreen),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           supportMessage,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textPrimary,
                           ),
@@ -254,7 +254,7 @@ class PaymentFailurePage extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: BorderSide(color: AppColors.grey300),
+                      side: const BorderSide(color: AppColors.grey300),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -268,7 +268,7 @@ class PaymentFailurePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.isFirst);
                   },
-                  child: Text(
+                  child: const Text(
                     'Back to Home',
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
@@ -277,7 +277,7 @@ class PaymentFailurePage extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Support Contact
-                Text(
+                const Text(
                   'Need help?',
                   style: TextStyle(
                     fontSize: 14,
@@ -294,7 +294,7 @@ class PaymentFailurePage extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     'Contact Support',
                     style: TextStyle(color: AppTheme.primaryColor),
                   ),

@@ -1,0 +1,155 @@
+// Real-Time User Calling Service Tests
+//
+// Tests for Phase 19 Section 19.4: Dynamic Real-Time User Calling System
+// Patent #29: Multi-Entity Quantum Entanglement Matching System
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:spots/core/services/quantum/real_time_user_calling_service.dart';
+import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
+import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:spots_quantum/models/quantum_entity_state.dart';
+import 'package:spots_quantum/models/quantum_entity_type.dart';
+import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots/core/ai/personality_learning.dart';
+import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:spots/core/services/storage_service.dart';
+
+void main() {
+  group('RealTimeUserCallingService', () {
+    late RealTimeUserCallingService service;
+    late QuantumEntanglementService entanglementService;
+    late LocationTimingQuantumStateService locationTimingService;
+    late AtomicClockService atomicClock;
+    late PersonalityLearning personalityLearning;
+    late UserVibeAnalyzer vibeAnalyzer;
+
+    setUp(() async {
+      atomicClock = AtomicClockService();
+      await atomicClock.initialize();
+      
+      entanglementService = QuantumEntanglementService(
+        atomicClock: atomicClock,
+        knotEngine: null,
+        knotCompatibilityService: null,
+      );
+      locationTimingService = LocationTimingQuantumStateService();
+      
+      // Initialize PersonalityLearning and UserVibeAnalyzer
+      final prefs = await SharedPreferencesCompat.getInstance();
+      personalityLearning = PersonalityLearning.withPrefs(prefs);
+      vibeAnalyzer = UserVibeAnalyzer(prefs: prefs);
+      
+      service = RealTimeUserCallingService(
+        atomicClock: atomicClock,
+        entanglementService: entanglementService,
+        locationTimingService: locationTimingService,
+        personalityLearning: personalityLearning,
+        vibeAnalyzer: vibeAnalyzer,
+        quantumVibeEngine: null,
+        knotEngine: null,
+        knotCompatibilityService: null,
+        supabaseService: null,
+      );
+    });
+
+    test('should call users on event creation', () async {
+      await atomicClock.initialize();
+
+      final tAtomic1 = await atomicClock.getAtomicTimestamp();
+      final tAtomic2 = await atomicClock.getAtomicTimestamp();
+
+      final eventEntity = QuantumEntityState(
+        entityId: 'event1',
+        entityType: QuantumEntityType.event,
+        personalityState: {'dim1': 0.5},
+        quantumVibeAnalysis: {'vibe1': 0.7},
+        entityCharacteristics: {'type': 'event'},
+        tAtomic: tAtomic1,
+      );
+
+      final creatorEntity = QuantumEntityState(
+        entityId: 'creator1',
+        entityType: QuantumEntityType.expert,
+        personalityState: {'dim1': 0.6},
+        quantumVibeAnalysis: {'vibe1': 0.8},
+        entityCharacteristics: {'type': 'expert'},
+        tAtomic: tAtomic2,
+      );
+
+      // Should not throw
+      await service.callUsersOnEventCreation(
+        eventId: 'event1',
+        eventEntities: [eventEntity, creatorEntity],
+      );
+    });
+
+    test('should re-evaluate users on entity addition', () async {
+      await atomicClock.initialize();
+
+      final tAtomic1 = await atomicClock.getAtomicTimestamp();
+      final tAtomic2 = await atomicClock.getAtomicTimestamp();
+      final tAtomic3 = await atomicClock.getAtomicTimestamp();
+
+      final eventEntity = QuantumEntityState(
+        entityId: 'event1',
+        entityType: QuantumEntityType.event,
+        personalityState: {'dim1': 0.5},
+        quantumVibeAnalysis: {'vibe1': 0.7},
+        entityCharacteristics: {'type': 'event'},
+        tAtomic: tAtomic1,
+      );
+
+      final creatorEntity = QuantumEntityState(
+        entityId: 'creator1',
+        entityType: QuantumEntityType.expert,
+        personalityState: {'dim1': 0.6},
+        quantumVibeAnalysis: {'vibe1': 0.8},
+        entityCharacteristics: {'type': 'expert'},
+        tAtomic: tAtomic2,
+      );
+
+      final newEntity = QuantumEntityState(
+        entityId: 'business1',
+        entityType: QuantumEntityType.business,
+        personalityState: {'dim1': 0.55},
+        quantumVibeAnalysis: {'vibe1': 0.75},
+        entityCharacteristics: {'type': 'business'},
+        tAtomic: tAtomic3,
+      );
+
+      // Should not throw
+      await service.reEvaluateUsersOnEntityAddition(
+        eventId: 'event1',
+        eventEntities: [eventEntity, creatorEntity],
+        newEntity: newEntity,
+      );
+    });
+
+    test('should use atomic timestamps for all operations', () async {
+      await atomicClock.initialize();
+
+      final tAtomic = await atomicClock.getAtomicTimestamp();
+      final eventEntity = QuantumEntityState(
+        entityId: 'event1',
+        entityType: QuantumEntityType.event,
+        personalityState: {'dim1': 0.5},
+        quantumVibeAnalysis: {'vibe1': 0.7},
+        entityCharacteristics: {'type': 'event'},
+        tAtomic: tAtomic,
+      );
+
+      final creatorEntity = QuantumEntityState(
+        entityId: 'creator1',
+        entityType: QuantumEntityType.expert,
+        personalityState: {'dim1': 0.6},
+        quantumVibeAnalysis: {'vibe1': 0.8},
+        entityCharacteristics: {'type': 'expert'},
+        tAtomic: tAtomic,
+      );
+
+      // Verify atomic timestamps are used
+      expect(eventEntity.tAtomic, isNotNull);
+      expect(creatorEntity.tAtomic, isNotNull);
+    });
+  });
+}

@@ -48,14 +48,14 @@ void main() {
       test('should correctly identify partnership status and ongoing state',
           () {
         // Test business logic: status and date-based logic
-        final activePartnership = UserPartnership(
+        const activePartnership = UserPartnership(
           id: 'partnership-123',
           type: ProfilePartnershipType.business,
           partnerId: 'business-123',
           partnerName: 'Test Business',
           status: PartnershipStatus.active,
         );
-        final completedPartnership = UserPartnership(
+        const completedPartnership = UserPartnership(
           id: 'partnership-456',
           type: ProfilePartnershipType.business,
           partnerId: 'business-456',
@@ -126,7 +126,7 @@ void main() {
 
     group('copyWith', () {
       test('should create immutable copy with updated fields', () {
-        final original = UserPartnership(
+        const original = UserPartnership(
           id: 'partnership-123',
           type: ProfilePartnershipType.business,
           partnerId: 'business-123',

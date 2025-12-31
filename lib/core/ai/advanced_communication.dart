@@ -94,7 +94,7 @@ class AdvancedAICommunication {
         priority: _messagePriorities[messageType] ?? 5,
         timestamp: DateTime.now(),
         deliveryStatus: routingResult.success ? 'delivered' : 'failed',
-        expiresAt: DateTime.now().add(Duration(hours: 24)),
+        expiresAt: DateTime.now().add(const Duration(hours: 24)),
         isAnonymous: true,
         containsUserData: false,
       );
@@ -227,7 +227,7 @@ class AdvancedAICommunication {
         encryptionKey: handshakeResult.sharedSecret,
         channelParams: channelParams,
         establishedAt: DateTime.now(),
-        expiresAt: DateTime.now().add(Duration(hours: 12)),
+        expiresAt: DateTime.now().add(const Duration(hours: 12)),
         isActive: true,
         trustLevel: trustLevel,
         messageCount: 0,
@@ -536,7 +536,7 @@ class AdvancedAICommunication {
       encryptedPayload: encryptedMessage,
       priority: _messagePriorities[messageType] ?? 5,
       timestamp: DateTime.now(),
-      expiresAt: DateTime.now().add(Duration(hours: 24)),
+      expiresAt: DateTime.now().add(const Duration(hours: 24)),
       routingHops: [],
       deliveryAttempts: 0,
     );
@@ -592,7 +592,7 @@ class AdvancedAICommunication {
         encryptedPayload: 'encrypted_payload_$index',
         priority: Random().nextInt(6) + 1,
         timestamp: DateTime.now().subtract(Duration(minutes: Random().nextInt(60))),
-        expiresAt: DateTime.now().add(Duration(hours: 24)),
+        expiresAt: DateTime.now().add(const Duration(hours: 24)),
         routingHops: ['hop1', 'hop2'],
         deliveryAttempts: 1,
       ));
@@ -765,8 +765,8 @@ class AdvancedAICommunication {
       maxMessageSize: 65536, // 64KB
       encryptionMode: 'aes_256_gcm',
       compressionEnabled: true,
-      heartbeatInterval: Duration(minutes: 5),
-      messageTimeout: Duration(minutes: 2),
+      heartbeatInterval: const Duration(minutes: 5),
+      messageTimeout: const Duration(minutes: 2),
       maxConcurrentMessages: 10,
       qualityOfService: 'high_reliability',
     );
@@ -1131,8 +1131,8 @@ class ChannelParameters {
       maxMessageSize: 1024,
       encryptionMode: 'basic',
       compressionEnabled: false,
-      heartbeatInterval: Duration(minutes: 10),
-      messageTimeout: Duration(minutes: 5),
+      heartbeatInterval: const Duration(minutes: 10),
+      messageTimeout: const Duration(minutes: 5),
       maxConcurrentMessages: 1,
       qualityOfService: 'basic',
     );
@@ -1269,11 +1269,11 @@ class LatencyMetrics {
   
   static LatencyMetrics fallback() {
     return LatencyMetrics(
-      averageLatency: Duration(milliseconds: 1000),
-      p95Latency: Duration(milliseconds: 2000),
-      p99Latency: Duration(milliseconds: 3000),
-      minLatency: Duration(milliseconds: 100),
-      maxLatency: Duration(milliseconds: 5000),
+      averageLatency: const Duration(milliseconds: 1000),
+      p95Latency: const Duration(milliseconds: 2000),
+      p99Latency: const Duration(milliseconds: 3000),
+      minLatency: const Duration(milliseconds: 100),
+      maxLatency: const Duration(milliseconds: 5000),
     );
   }
 }

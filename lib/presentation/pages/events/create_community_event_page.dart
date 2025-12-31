@@ -39,7 +39,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
   DateTime? _endTime;
   final _locationController = TextEditingController();
   int _maxAttendees = 20;
-  bool _isPublic = true; // Always true for community events
+  final bool _isPublic = true; // Always true for community events
   
   // State
   bool _isLoading = false;
@@ -109,7 +109,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: AppTheme.primaryColor,
               onPrimary: AppColors.white,
             ),
@@ -126,7 +126,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
+              colorScheme: const ColorScheme.light(
                 primary: AppTheme.primaryColor,
                 onPrimary: AppColors.white,
               ),
@@ -174,7 +174,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: AppTheme.primaryColor,
               onPrimary: AppColors.white,
             ),
@@ -191,7 +191,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
+              colorScheme: const ColorScheme.light(
                 primary: AppTheme.primaryColor,
                 onPrimary: AppColors.white,
               ),
@@ -375,10 +375,10 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
                     color: AppColors.electricGreen.withValues(alpha: 0.3),
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(Icons.info_outline, color: AppColors.electricGreen, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Community events are free and open to everyone. No expertise required!',
@@ -400,14 +400,14 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Event Title *',
                   hintText: 'Enter event title',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Event title is required';
@@ -423,14 +423,14 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Description *',
                   hintText: 'Describe your event',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 maxLines: 5,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -452,7 +452,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 items: _availableCategories.map((category) {
                   return DropdownMenuItem(
                     value: category,
@@ -484,7 +484,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 items: _eventTypes.map((type) {
                   return DropdownMenuItem(
                     value: type,
@@ -561,7 +561,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Location *',
                   hintText: 'Enter event location',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -569,7 +569,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
                   fillColor: AppColors.grey100,
                   suffixIcon: const Icon(Icons.location_on),
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Location is required';
@@ -585,14 +585,14 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Max Attendees',
                   hintText: 'Enter max attendees',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
                   final parsed = int.tryParse(value);
@@ -613,10 +613,10 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
                     color: AppColors.electricGreen.withValues(alpha: 0.3),
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(Icons.public, color: AppColors.electricGreen, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Community events are always public',
@@ -641,12 +641,12 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: AppColors.error),
+                      const Icon(Icons.error_outline, color: AppColors.error),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontSize: 14,
                           ),

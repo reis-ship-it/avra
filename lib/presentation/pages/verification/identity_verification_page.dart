@@ -218,12 +218,12 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.error_outline, color: AppColors.error),
+                            const Icon(Icons.error_outline, color: AppColors.error),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 _error!,
-                                style: TextStyle(color: AppColors.error),
+                                style: const TextStyle(color: AppColors.error),
                               ),
                             ),
                           ],
@@ -248,10 +248,10 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.verified_user, color: AppTheme.primaryColor, size: 32),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'Identity Verification',
@@ -269,7 +269,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
             _needsVerification
                 ? 'You need to verify your identity to continue receiving payments. This is required for users earning \$5,000+ per month or \$20,000+ lifetime.'
                 : 'Identity verification is not currently required. You\'ll be notified if verification becomes necessary.',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textPrimary,
               height: 1.5,
@@ -347,7 +347,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
                     ),
                     Text(
                       'Started: ${_formatDate(_session!.createdAt)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -362,7 +362,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
             const SizedBox(height: 12),
             Text(
               'Expires: ${_formatDateTime(_session!.expiresAt!)}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppTheme.warningColor,
                 fontWeight: FontWeight.w600,
@@ -385,7 +385,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Verification Instructions',
             style: TextStyle(
               fontSize: 18,
@@ -428,14 +428,14 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
           Container(
             width: 24,
             height: 24,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppTheme.primaryColor,
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Text(
                 '$step',
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -447,7 +447,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
           Expanded(
             child: Text(
               instruction,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textPrimary,
               ),
@@ -489,10 +489,10 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
           border:
               Border.all(color: AppColors.electricGreen.withValues(alpha: 0.3)),
         ),
-        child: Row(
+        child: const Row(
           children: [
             Icon(Icons.check_circle, color: AppColors.electricGreen, size: 32),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Your identity has been verified successfully!',
@@ -525,7 +525,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
           ),
           if (_session!.status == VerificationStatus.processing) ...[
             const SizedBox(height: 12),
-            Text(
+            const Text(
               'Your verification is being processed. Please check back later.',
               style: TextStyle(
                 fontSize: 14,

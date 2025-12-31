@@ -10,7 +10,9 @@
 /// 
 /// Location: Settings/Account page (within Federated Learning section)
 /// Uses AppColors for consistent styling per design token requirements.
+library;
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -19,6 +21,7 @@ import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/presentation/widgets/common/standard_error_widget.dart';
 import 'package:spots/presentation/widgets/common/standard_loading_widget.dart';
 import 'package:get_it/get_it.dart';
+import 'dart:developer' as developer;
 
 /// Widget displaying federated learning round status and participation
 class FederatedLearningStatusWidget extends StatefulWidget {
@@ -34,6 +37,8 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
   String? _currentNodeId;
   bool _isLoading = true;
   String? _errorMessage;
+  Timer? _refreshTimer;
+  final Map<String, bool> _actionInProgress = {}; // Track join/leave actions per round
 
   @override
   void initState() {
@@ -46,6 +51,18 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
       _federatedLearningSystem = FederatedLearningSystem();
     }
     _loadActiveRounds();
+    // Set up periodic refresh (every 30 seconds)
+    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) {
+        _loadActiveRounds();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadActiveRounds() async {
@@ -168,18 +185,18 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
+      child: const Row(
         children: [
-          const Icon(
+          Icon(
             Icons.info_outline,
             color: AppColors.textSecondary,
             size: 20,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               'No active learning rounds at the moment. Rounds start when enough participants join.',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -321,9 +338,9 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Progress',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textPrimary,
@@ -344,7 +361,210 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
               ),
             ],
           ),
+          // Join/Leave button
+          if (_currentNodeId != null && 
+              round.status != RoundStatus.completed && 
+              round.status != RoundStatus.failed) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: _buildJoinLeaveButton(round, isParticipating),
+            ),
+          ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildJoinLeaveButton(FederatedLearningRound round, bool isParticipating) {
+    final isActionInProgress = _actionInProgress[round.roundId] ?? false;
+    final canJoin = !isParticipating && 
+        round.status != RoundStatus.completed && 
+        round.status != RoundStatus.failed;
+    final canLeave = isParticipating && 
+        round.status != RoundStatus.completed && 
+        round.status != RoundStatus.failed;
+
+    if (!canJoin && !canLeave) {
+      return const SizedBox.shrink();
+    }
+
+    return ElevatedButton.icon(
+      onPressed: isActionInProgress
+          ? null
+          : () {
+              if (isParticipating) {
+                _leaveRound(round);
+              } else {
+                _joinRound(round);
+              }
+            },
+      icon: isActionInProgress
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.surface),
+              ),
+            )
+          : Icon(
+              isParticipating ? Icons.exit_to_app : Icons.login,
+              size: 18,
+            ),
+      label: Text(
+        isActionInProgress
+            ? (isParticipating ? 'Leaving...' : 'Joining...')
+            : (isParticipating ? 'Leave Round' : 'Join Round'),
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isParticipating ? AppColors.error : AppColors.electricGreen,
+        foregroundColor: AppColors.surface,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _joinRound(FederatedLearningRound round) async {
+    if (_currentNodeId == null) {
+      _showError('Please sign in to join learning rounds');
+      return;
+    }
+
+    setState(() {
+      _actionInProgress[round.roundId] = true;
+    });
+
+    try {
+      await _federatedLearningSystem.joinRound(round.roundId, _currentNodeId!);
+      
+      if (mounted) {
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Successfully joined learning round'),
+            backgroundColor: AppColors.electricGreen,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        
+        // Reload rounds to reflect changes
+        await _loadActiveRounds();
+      }
+    } catch (e) {
+      developer.log('Error joining round: $e', name: 'FederatedLearningStatusWidget');
+      if (mounted) {
+        _showError('Failed to join round: ${e.toString()}');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _actionInProgress[round.roundId] = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _leaveRound(FederatedLearningRound round) async {
+    if (_currentNodeId == null) {
+      _showError('Please sign in to leave learning rounds');
+      return;
+    }
+
+    // Confirm before leaving
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        title: const Text(
+          'Leave Learning Round?',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: const Text(
+          'Are you sure you want to leave this learning round? Your contributions will be lost.',
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.surface,
+            ),
+            child: const Text('Leave'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    setState(() {
+      _actionInProgress[round.roundId] = true;
+    });
+
+    try {
+      await _federatedLearningSystem.leaveRound(round.roundId, _currentNodeId!);
+      
+      if (mounted) {
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Left learning round'),
+            backgroundColor: AppColors.textSecondary,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        
+        // Reload rounds to reflect changes
+        await _loadActiveRounds();
+      }
+    } catch (e) {
+      developer.log('Error leaving round: $e', name: 'FederatedLearningStatusWidget');
+      if (mounted) {
+        _showError('Failed to leave round: ${e.toString()}');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _actionInProgress[round.roundId] = false;
+        });
+      }
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.error,
+        duration: const Duration(seconds: 3),
       ),
     );
   }

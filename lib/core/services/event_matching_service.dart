@@ -1,17 +1,20 @@
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/expertise_level.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
+import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/geographic_scope_service.dart';
 
 /// Event Matching Service
-/// 
+///
 /// Calculates matching signals (not formal ranking) to help users find likeminded people
 /// and events they'll enjoy. This is a matching system, not a competitive ranking.
-/// 
+///
 /// **Philosophy:** "Doors, not badges" - Opens doors to likeminded people and events
-/// 
+///
 /// **Matching Signals:**
 /// - Events hosted count (more events = higher signal)
 /// - Event ratings (average rating from attendees)
@@ -20,12 +23,12 @@ import 'package:spots/core/services/geographic_scope_service.dart';
 /// - Community recognition (partnerships, collaborations)
 /// - Event growth (community building - attendance growth over time)
 /// - Active list respects (users adding events to their lists)
-/// 
+///
 /// **Locality-Specific Weighting:**
 /// - Higher weight for signals in user's locality
 /// - Lower weight for signals outside locality
 /// - Geographic interaction patterns (where user attends events)
-/// 
+///
 /// **What Doors Does This Open?**
 /// - Discovery Doors: Users find events from likeminded local experts
 /// - Connection Doors: System matches users to events they'll enjoy
@@ -39,25 +42,31 @@ class EventMatchingService {
 
   final ExpertiseEventService _eventService;
   final GeographicScopeService _geographicScopeService;
+  final IntegratedKnotRecommendationEngine? _knotRecommendationEngine;
+  final PersonalityLearning? _personalityLearning;
 
   EventMatchingService({
     ExpertiseEventService? eventService,
     GeographicScopeService? geographicScopeService,
+    IntegratedKnotRecommendationEngine? knotRecommendationEngine,
+    PersonalityLearning? personalityLearning,
   })  : _eventService = eventService ?? ExpertiseEventService(),
         _geographicScopeService =
-            geographicScopeService ?? GeographicScopeService();
+            geographicScopeService ?? GeographicScopeService(),
+        _knotRecommendationEngine = knotRecommendationEngine,
+        _personalityLearning = personalityLearning;
 
   /// Calculate matching score for an expert hosting events
-  /// 
+  ///
   /// **Parameters:**
   /// - `expert`: Expert user to calculate score for
   /// - `user`: User looking for events (for locality-specific weighting)
   /// - `category`: Expertise category
   /// - `locality`: Target locality for matching
-  /// 
+  ///
   /// **Returns:**
   /// Matching score (0.0 to 1.0) - higher means better match
-  /// 
+  ///
   /// **Philosophy:**
   /// This is NOT a competitive ranking. It's a matching signal to help users
   /// find likeminded people and events they'll enjoy.
@@ -84,36 +93,91 @@ class EventMatchingService {
       // Calculate weighted score based on locality-specific weighting
       double score = 0.0;
 
-      // Events hosted (30% weight)
-      score += signals.eventsHostedScore * 0.3;
+      // Events hosted (28% weight, reduced from 30% to make room for knot compatibility)
+      score += signals.eventsHostedScore * 0.28;
 
-      // Event ratings (25% weight)
-      score += signals.averageRating * 0.25;
+      // Event ratings (23% weight, reduced from 25%)
+      score += signals.averageRating * 0.23;
 
-      // Followers count (15% weight)
-      score += signals.followersScore * 0.15;
+      // Followers count (14% weight, reduced from 15%)
+      score += signals.followersScore * 0.14;
 
       // External social following (5% weight - if available)
       score += signals.externalSocialScore * 0.05;
 
-      // Community recognition (10% weight)
-      score += signals.communityRecognitionScore * 0.1;
+      // Community recognition (9% weight, reduced from 10%)
+      score += signals.communityRecognitionScore * 0.09;
 
-      // Event growth (10% weight - community building)
-      score += signals.eventGrowthScore * 0.1;
+      // Event growth (9% weight, reduced from 10%)
+      score += signals.eventGrowthScore * 0.09;
 
       // Active list respects (5% weight)
       score += signals.activeListRespectsScore * 0.05;
 
+      // Knot compatibility (7% weight - optional enhancement)
+      final knotScore = await _calculateKnotCompatibilityScore(
+        expert: expert,
+        user: user,
+      );
+      score += knotScore * 0.07;
+
       return score.clamp(0.0, 1.0);
     } catch (e) {
-      _logger.error('Error calculating matching score', error: e, tag: _logName);
+      _logger.error('Error calculating matching score',
+          error: e, tag: _logName);
       return 0.0;
     }
   }
 
+  /// Calculate knot compatibility score for event matching
+  ///
+  /// Uses IntegratedKnotRecommendationEngine to calculate compatibility
+  /// between user and expert personalities.
+  ///
+  /// **Returns:** Compatibility score (0.0 to 1.0), or 0.5 (neutral) if unavailable
+  Future<double> _calculateKnotCompatibilityScore({
+    required UnifiedUser expert,
+    required UnifiedUser user,
+  }) async {
+    // If knot services not available, return neutral score
+    if (_knotRecommendationEngine == null || _personalityLearning == null) {
+      return 0.5;
+    }
+
+    try {
+      // Get personality profiles for user and expert
+      final userProfile =
+          await _personalityLearning!.initializePersonality(user.id);
+      final expertProfile =
+          await _personalityLearning!.initializePersonality(expert.id);
+
+      // Calculate integrated compatibility (quantum + knot topology)
+      final compatibility =
+          await _knotRecommendationEngine!.calculateIntegratedCompatibility(
+        profileA: userProfile,
+        profileB: expertProfile,
+      );
+
+      _logger.debug(
+        'Knot compatibility for expert ${expert.id}: ${(compatibility.combined * 100).toStringAsFixed(1)}% '
+        '(quantum: ${(compatibility.quantum * 100).toStringAsFixed(1)}%, '
+        'knot: ${(compatibility.knot * 100).toStringAsFixed(1)}%)',
+        tag: _logName,
+      );
+
+      return compatibility.combined;
+    } catch (e) {
+      _logger.warn(
+        'Error calculating knot compatibility: $e, using neutral score',
+        tag: _logName,
+      );
+      // Return neutral score on error (don't break matching)
+      return 0.5;
+    }
+  }
+
   /// Get detailed matching signals breakdown
-  /// 
+  ///
   /// **Returns:**
   /// MatchingSignals object with all signal components
   /// Useful for debugging and UI display
@@ -126,7 +190,8 @@ class EventMatchingService {
     try {
       // Get events hosted by expert
       final events = await _eventService.getEventsByHost(expert);
-      final categoryEvents = events.where((e) => e.category == category).toList();
+      final categoryEvents =
+          events.where((e) => e.category == category).toList();
 
       // Calculate locality-specific weighting
       final localityWeight = _calculateLocalityWeight(
@@ -138,34 +203,41 @@ class EventMatchingService {
 
       // Events hosted count (more events = higher signal)
       final eventsHostedCount = categoryEvents.length;
-      final eventsHostedScore = _normalizeEventsHosted(eventsHostedCount) * localityWeight;
+      final eventsHostedScore =
+          _normalizeEventsHosted(eventsHostedCount) * localityWeight;
 
       // Event ratings (average rating from attendees)
       final averageRating = await _calculateAverageRating(categoryEvents);
-      final ratingScore = (averageRating / 5.0) * localityWeight; // Normalize to 0-1
+      // Note: ratingScore calculated but used directly in signals.averageRating
 
       // Followers count (users following the expert)
-      final followersCount = expert.friends.length; // Using friends as proxy for followers
-      final followersScore = _normalizeFollowers(followersCount) * localityWeight;
+      final followersCount =
+          expert.friends.length; // Using friends as proxy for followers
+      final followersScore =
+          _normalizeFollowers(followersCount) * localityWeight;
 
       // External social following (if available)
-      final externalSocialScore = _getExternalSocialScore(expert) * localityWeight;
+      final externalSocialScore =
+          _getExternalSocialScore(expert) * localityWeight;
 
       // Community recognition (partnerships, collaborations)
       final communityRecognitionScore = await _calculateCommunityRecognition(
-        expert: expert,
-        category: category,
-        locality: locality,
-      ) * localityWeight;
+            expert: expert,
+            category: category,
+            locality: locality,
+          ) *
+          localityWeight;
 
       // Event growth (community building - attendance growth over time)
-      final eventGrowthScore = _calculateEventGrowth(categoryEvents) * localityWeight;
+      final eventGrowthScore =
+          _calculateEventGrowth(categoryEvents) * localityWeight;
 
       // Active list respects (users adding events to their lists)
       final activeListRespectsScore = await _calculateActiveListRespects(
-        expert: expert,
-        category: category,
-      ) * localityWeight;
+            expert: expert,
+            category: category,
+          ) *
+          localityWeight;
 
       return MatchingSignals(
         eventsHostedCount: eventsHostedCount,
@@ -186,12 +258,12 @@ class EventMatchingService {
   }
 
   /// Calculate locality-specific weighting
-  /// 
+  ///
   /// **Rules:**
   /// - Higher weight (1.0) for signals in user's locality
   /// - Lower weight (0.5-0.7) for signals outside locality
   /// - Considers geographic interaction patterns (where user attends events)
-  /// 
+  ///
   /// **Returns:**
   /// Weight multiplier (0.0 to 1.0)
   double _calculateLocalityWeight({
@@ -249,7 +321,7 @@ class EventMatchingService {
   }
 
   /// Calculate average rating from event feedback
-  /// 
+  ///
   /// **Note:** In production, this would query event feedback service
   /// For now, returns a placeholder based on event attendance
   Future<double> _calculateAverageRating(List<ExpertiseEvent> events) async {
@@ -264,7 +336,8 @@ class EventMatchingService {
       // Events with more attendees likely have better ratings
       // Placeholder logic: assume 4.0 base + attendance boost
       if (event.attendeeCount > 0) {
-        final attendanceBoost = (event.attendeeCount / event.maxAttendees).clamp(0.0, 1.0) * 0.5;
+        final attendanceBoost =
+            (event.attendeeCount / event.maxAttendees).clamp(0.0, 1.0) * 0.5;
         totalRating += 4.0 + attendanceBoost;
         ratedEvents++;
       }
@@ -282,7 +355,7 @@ class EventMatchingService {
   }
 
   /// Get external social following score
-  /// 
+  ///
   /// **Note:** In production, this would query external social media APIs
   /// For now, returns placeholder
   double _getExternalSocialScore(UnifiedUser expert) {
@@ -292,7 +365,7 @@ class EventMatchingService {
   }
 
   /// Calculate community recognition score
-  /// 
+  ///
   /// **Note:** In production, this would query partnerships, collaborations, etc.
   /// For now, returns placeholder based on expertise level
   Future<double> _calculateCommunityRecognition({
@@ -309,11 +382,13 @@ class EventMatchingService {
   }
 
   /// Calculate event growth score
-  /// 
+  ///
   /// Measures community building - attendance growth over time
   /// Events that grow in size show community value
   double _calculateEventGrowth(List<ExpertiseEvent> events) {
-    if (events.length < 2) return 0.5; // Need at least 2 events to measure growth
+    if (events.length < 2) {
+      return 0.5; // Need at least 2 events to measure growth
+    }
 
     // Sort events by start time
     final sortedEvents = List<ExpertiseEvent>.from(events)
@@ -343,7 +418,7 @@ class EventMatchingService {
   }
 
   /// Calculate active list respects score
-  /// 
+  ///
   /// **Note:** In production, this would query user_respects table
   /// For now, returns placeholder
   Future<double> _calculateActiveListRespects({
@@ -358,7 +433,7 @@ class EventMatchingService {
 }
 
 /// Matching Signals Model
-/// 
+///
 /// Contains all matching signal components for debugging and UI display
 class MatchingSignals {
   final int eventsHostedCount;
@@ -400,4 +475,3 @@ class MatchingSignals {
     );
   }
 }
-

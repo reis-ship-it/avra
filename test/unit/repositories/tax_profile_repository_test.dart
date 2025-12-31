@@ -123,7 +123,7 @@ void main() {
       test('should get all tax profiles', () async {
         // Save multiple profiles
         final profile1 = testProfile;
-        final profile2 = TaxProfile(
+        const profile2 = TaxProfile(
           userId: 'user-456',
           classification: TaxClassification.soleProprietor,
           w9Submitted: false,
@@ -158,7 +158,7 @@ void main() {
       test('should get users with W-9 submitted', () async {
         // Save profiles with different W-9 statuses
         final profile1 = testProfile; // w9Submitted: true
-        final profile2 = TaxProfile(
+        const profile2 = TaxProfile(
           userId: 'user-456',
           classification: TaxClassification.individual,
           w9Submitted: false, // Not submitted
@@ -183,7 +183,7 @@ void main() {
       });
 
       test('should return empty list when no users have W-9 submitted', () async {
-        final profile = TaxProfile(
+        const profile = TaxProfile(
           userId: 'user-123',
           classification: TaxClassification.individual,
           w9Submitted: false,

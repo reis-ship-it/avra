@@ -27,36 +27,36 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
   int _currentStep = 0;
 
   // Onboarding data
-  Map<String, dynamic> _expertPreferences = {};
-  Map<String, dynamic> _patronPreferences = {};
-  List<String> _teamMembers = [];
+  final Map<String, dynamic> _expertPreferences = {};
+  final Map<String, dynamic> _patronPreferences = {};
+  final List<String> _teamMembers = [];
   bool _setupSharedAgent = true;
   bool _isCompleting = false;
 
   late BusinessOnboardingController _onboardingController;
 
   final List<OnboardingStep> _steps = [
-    OnboardingStep(
+    const OnboardingStep(
       title: 'Welcome',
       description: 'Let\'s set up your business profile',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       title: 'Expert Preferences',
       description: 'What experts do you want to connect with?',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       title: 'Customer Preferences',
       description: 'What customers are you looking for?',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       title: 'Team Setup',
       description: 'Invite team members (optional)',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       title: 'AI Agent Setup',
       description: 'Set up your shared business AI agent',
     ),
-    OnboardingStep(
+    const OnboardingStep(
       title: 'Complete',
       description: 'You\'re all set!',
     ),
@@ -279,7 +279,7 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.business_center,
             size: 80,
             color: AppTheme.primaryColor,
@@ -318,13 +318,13 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
                 ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Tell us about the expertise you need for your business',
             style: TextStyle(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 24),
           // TODO: Add expert preferences form
-          Expanded(
+          const Expanded(
             child: Center(
               child: Text(
                 'Expert preferences form coming soon',
@@ -350,13 +350,13 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
                 ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Describe your ideal customers and patrons',
             style: TextStyle(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 24),
           // TODO: Add patron preferences form
-          Expanded(
+          const Expanded(
             child: Center(
               child: Text(
                 'Patron preferences form coming soon',
@@ -382,13 +382,13 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
                 ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Add team members to your business account (optional)',
             style: TextStyle(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 24),
           // TODO: Add team member invitation form
-          Expanded(
+          const Expanded(
             child: Center(
               child: Text(
                 'Team member invitation coming soon',
@@ -414,7 +414,7 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
                 ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Your business will have a shared AI agent that learns from all team members',
             style: TextStyle(color: AppColors.textSecondary),
           ),
@@ -441,10 +441,10 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
                 color: AppColors.success.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(Icons.info_outline, color: AppColors.success),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Your shared agent will learn from all team member interactions and create a unified business personality for better matching.',
@@ -465,7 +465,7 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.check_circle,
             size: 80,
             color: AppColors.success,

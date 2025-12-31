@@ -8,8 +8,9 @@ import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
 import 'package:spots/core/services/event_recommendation_service.dart' as event_rec_service;
 import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/injection_container.dart' as di;
 import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/preferences_profile.dart';
 
 // Import for SharedPreferencesCompat (matches injection_container.dart)
@@ -81,7 +82,7 @@ class AIRecommendationController
         _eventRecommendationService =
             eventRecommendationService ??
             event_rec_service.EventRecommendationService(),
-        _agentIdService = agentIdService ?? AgentIdService();
+        _agentIdService = agentIdService ?? di.sl<AgentIdService>();
 
   /// Generate comprehensive recommendations
   /// 
@@ -211,8 +212,8 @@ class AIRecommendationController
 
       return RecommendationResult.success(
         events: filteredEvents,
-        spots: [], // TODO(Phase 8.11): Implement when SpotRecommendationService is available
-        lists: [], // TODO(Phase 8.11): Implement when ListRecommendationService is available
+        spots: const [], // TODO(Phase 8.11): Implement when SpotRecommendationService is available
+        lists: const [], // TODO(Phase 8.11): Implement when ListRecommendationService is available
         personalityProfile: personalityProfile,
         preferencesProfile: preferencesProfile,
       );
@@ -406,7 +407,7 @@ class RecommendationResult extends ControllerResult {
   final PersonalityProfile? personalityProfile;
   final PreferencesProfile? preferencesProfile;
 
-  RecommendationResult({
+  const RecommendationResult({
     required super.success,
     super.error,
     super.errorCode,

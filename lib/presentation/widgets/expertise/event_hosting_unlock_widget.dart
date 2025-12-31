@@ -285,14 +285,14 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                     color: AppTheme.primaryColor.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.check_circle,
                     color: AppTheme.primaryColor,
                     size: 32,
                   ),
                 ),
                 const SizedBox(width: 16),
-                Expanded(
+                const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -304,7 +304,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         'You can now create and host events',
                         style: TextStyle(
@@ -337,7 +337,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                     const SizedBox(width: 8),
                     Text(
                       '${_currentHighestLevel!.displayName} Level',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -381,18 +381,18 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
           children: [
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.grey200,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.lock,
                 color: AppColors.textSecondary,
                 size: 32,
               ),
             ),
             const SizedBox(width: 16),
-            Expanded(
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -404,7 +404,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'Reach Local level expertise to host events',
                     style: TextStyle(
@@ -428,7 +428,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
           ),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.info_outline,
                 color: AppTheme.primaryColor,
                 size: 20,
@@ -437,7 +437,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
               Expanded(
                 child: Text(
                   'Requirement: ${ExpertiseLevel.local.emoji} ${ExpertiseLevel.local.displayName} Level or higher',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textPrimary,
                   ),
@@ -453,7 +453,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Current Level',
                 style: TextStyle(
                   fontSize: 14,
@@ -469,7 +469,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                   const SizedBox(width: 4),
                   Text(
                     _currentHighestLevel!.displayName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
@@ -489,14 +489,14 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
             children: [
               Text(
                 'Progress to ${ExpertiseLevel.local.displayName}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                 ),
               ),
               Text(
                 '${_progressToCity!.progressPercentage.toStringAsFixed(0)}%',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.primaryColor,
@@ -519,7 +519,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                   value: value,
                   minHeight: 8,
                   backgroundColor: AppColors.grey200,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
                 ),
               );
             },
@@ -527,7 +527,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
           const SizedBox(height: 8),
           Text(
             _progressToCity!.getFormattedProgress(),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: AppColors.textSecondary,
             ),
@@ -547,7 +547,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Next Steps:',
                   style: TextStyle(
                     fontSize: 12,
@@ -574,7 +574,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                         Expanded(
                           child: Text(
                             step,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -622,17 +622,17 @@ class EventHostingUnlockNotification extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Celebration Icon
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 '🎉',
-                style: const TextStyle(fontSize: 32),
+                style: TextStyle(fontSize: 32),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          Text(
+          const Text(
             'Event Hosting Unlocked!',
             style: TextStyle(
               fontSize: 20,
@@ -642,7 +642,7 @@ class EventHostingUnlockNotification extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'You\'ve reached Local level expertise. You can now create and host events!',
             style: TextStyle(
               fontSize: 14,
@@ -656,7 +656,7 @@ class EventHostingUnlockNotification extends StatelessWidget {
               Expanded(
                 child: TextButton(
                   onPressed: onDismiss,
-                  child: Text(
+                  child: const Text(
                     'Dismiss',
                     style: TextStyle(color: AppColors.textSecondary),
                   ),

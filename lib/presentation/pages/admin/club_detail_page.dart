@@ -84,7 +84,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 64, color: AppColors.grey500),
+                      const Icon(Icons.error_outline, size: 64, color: AppColors.grey500),
                       const SizedBox(height: 16),
                       Text(
                         'Club/Community not found',
@@ -317,7 +317,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.privacy_tip, color: AppColors.electricGreen, size: 20),
+                                    const Icon(Icons.privacy_tip, color: AppColors.electricGreen, size: 20),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
@@ -388,14 +388,14 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                             _buildAIAgentInfo('AI Activity', aiAgent['ai_activity']?.toString() ?? 'N/A'),
                                             _buildAIAgentInfo('AI Connections', '${aiAgent['ai_connections'] ?? 0}'),
                                             if (isLeader)
-                                              Chip(
-                                                label: const Text('Leader'),
-                                                avatar: const Icon(Icons.star, size: 16),
+                                              const Chip(
+                                                label: Text('Leader'),
+                                                avatar: Icon(Icons.star, size: 16),
                                               ),
                                             if (isAdmin)
-                                              Chip(
-                                                label: const Text('Admin'),
-                                                avatar: const Icon(Icons.admin_panel_settings, size: 16),
+                                              const Chip(
+                                                label: Text('Admin'),
+                                                avatar: Icon(Icons.admin_panel_settings, size: 16),
                                               ),
                                           ],
                                         ),
@@ -403,7 +403,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                     ],
                                   ),
                                 );
-                              }).toList(),
+                              }),
                             ],
                           ),
                         ),

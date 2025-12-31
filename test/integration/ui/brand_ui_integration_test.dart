@@ -47,7 +47,7 @@ void main() {
     late ExpertiseEventService eventService;
     late PaymentService paymentService;
 
-    Widget _wrapWithAuthBloc(Widget child) {
+    Widget wrapWithAuthBloc(Widget child) {
       return BlocProvider<AuthBloc>.value(
         value: mockAuthBloc,
         child: child,
@@ -152,7 +152,7 @@ void main() {
         
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDiscoveryPage(),
             ),
@@ -177,7 +177,7 @@ void main() {
         
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDiscoveryPage(),
             ),
@@ -201,7 +201,7 @@ void main() {
         
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDiscoveryPage(),
             ),
@@ -225,7 +225,7 @@ void main() {
         
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDiscoveryPage(),
             ),
@@ -249,7 +249,7 @@ void main() {
         
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDiscoveryPage(),
             ),
@@ -271,7 +271,7 @@ void main() {
       testWidgets('should display sponsorship management page correctly', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: SponsorshipManagementPage(),
             ),
@@ -288,7 +288,7 @@ void main() {
       testWidgets('should display tab navigation (Active, Pending, Completed)', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: SponsorshipManagementPage(),
             ),
@@ -305,7 +305,7 @@ void main() {
       testWidgets('should display sponsorship status updates', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: SponsorshipManagementPage(),
             ),
@@ -322,7 +322,7 @@ void main() {
       testWidgets('should show empty state when no sponsorships', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: SponsorshipManagementPage(),
             ),
@@ -341,7 +341,7 @@ void main() {
       testWidgets('should display brand dashboard page correctly', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDashboardPage(),
             ),
@@ -358,7 +358,7 @@ void main() {
       testWidgets('should display analytics overview', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDashboardPage(),
             ),
@@ -375,7 +375,7 @@ void main() {
       testWidgets('should display active sponsorships', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDashboardPage(),
             ),
@@ -392,7 +392,7 @@ void main() {
       testWidgets('should provide navigation to other brand pages', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDashboardPage(),
             ),
@@ -411,7 +411,7 @@ void main() {
       testWidgets('should display brand analytics page correctly', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandAnalyticsPage(),
             ),
@@ -428,7 +428,7 @@ void main() {
       testWidgets('should display ROI charts', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandAnalyticsPage(),
             ),
@@ -443,7 +443,7 @@ void main() {
       testWidgets('should display performance metrics', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandAnalyticsPage(),
             ),
@@ -458,7 +458,7 @@ void main() {
       testWidgets('should display brand exposure metrics', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandAnalyticsPage(),
             ),
@@ -475,7 +475,7 @@ void main() {
       testWidgets('should display sponsorship checkout page correctly', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             MaterialApp(
               home: SponsorshipCheckoutPage(
                 event: testEvent,
@@ -494,7 +494,7 @@ void main() {
       testWidgets('should display event details in checkout', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             MaterialApp(
               home: SponsorshipCheckoutPage(
                 event: testEvent,
@@ -513,7 +513,7 @@ void main() {
       testWidgets('should display multi-party checkout interface', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             MaterialApp(
               home: SponsorshipCheckoutPage(
                 event: testEvent,
@@ -532,7 +532,7 @@ void main() {
       testWidgets('should display revenue split information', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             MaterialApp(
               home: SponsorshipCheckoutPage(
                 event: testEvent,
@@ -551,7 +551,7 @@ void main() {
       testWidgets('should display product contribution tracking', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             MaterialApp(
               home: SponsorshipCheckoutPage(
                 event: testEvent,
@@ -576,7 +576,7 @@ void main() {
         
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDiscoveryPage(),
             ),
@@ -596,7 +596,7 @@ void main() {
       testWidgets('should handle error states in sponsorship management', (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: SponsorshipManagementPage(),
             ),
@@ -619,7 +619,7 @@ void main() {
         
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDiscoveryPage(),
             ),
@@ -643,7 +643,7 @@ void main() {
         
         // Arrange & Act
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: SponsorshipManagementPage(),
             ),
@@ -668,7 +668,7 @@ void main() {
         tester.view.devicePixelRatio = 2.0;
 
         await tester.pumpWidget(
-          _wrapWithAuthBloc(
+          wrapWithAuthBloc(
             const MaterialApp(
               home: BrandDiscoveryPage(),
             ),

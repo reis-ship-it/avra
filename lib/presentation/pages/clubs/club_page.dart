@@ -110,8 +110,8 @@ class _ClubPageState extends State<ClubPage> {
     final authState = context.read<AuthBloc>().state;
     if (authState is! Authenticated) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please sign in to join clubs'),
+        const SnackBar(
+          content: Text('Please sign in to join clubs'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -132,8 +132,8 @@ class _ClubPageState extends State<ClubPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Successfully joined club!'),
+          const SnackBar(
+            content: Text('Successfully joined club!'),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -175,8 +175,8 @@ class _ClubPageState extends State<ClubPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Left club'),
+          const SnackBar(
+            content: Text('Left club'),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -260,14 +260,14 @@ class _ClubPageState extends State<ClubPage> {
         ],
       ),
       body: _isLoading
-          ? Center(
+          ? const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(
+                  CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     'Loading club...',
                     style: TextStyle(
@@ -287,14 +287,14 @@ class _ClubPageState extends State<ClubPage> {
                       children: [
                         Semantics(
                           label: 'Error loading club',
-                          child: Icon(
+                          child: const Icon(
                             Icons.error_outline,
                             size: 64,
                             color: AppColors.error,
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Text(
+                        const Text(
                           'Unable to load club',
                           style: TextStyle(
                             fontSize: 20,
@@ -306,7 +306,7 @@ class _ClubPageState extends State<ClubPage> {
                         const SizedBox(height: 8),
                         Text(
                           _error!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
                           ),
@@ -389,7 +389,7 @@ class _ClubPageState extends State<ClubPage> {
               Expanded(
                 child: Text(
                   _club?.name ?? 'Club',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -403,7 +403,7 @@ class _ClubPageState extends State<ClubPage> {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: AppTheme.primaryColor),
                 ),
-                child: Text(
+                child: const Text(
                   'CLUB',
                   style: TextStyle(
                     fontSize: 12,
@@ -418,7 +418,7 @@ class _ClubPageState extends State<ClubPage> {
             const SizedBox(height: 12),
             Text(
               _club!.description!,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 color: AppColors.textSecondary,
               ),
@@ -434,7 +434,7 @@ class _ClubPageState extends State<ClubPage> {
               ),
               child: Text(
                 'Your Role: ${_userRole!.getDisplayName()}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -512,7 +512,7 @@ class _ClubPageState extends State<ClubPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Organizational Structure',
             style: TextStyle(
               fontSize: 20,
@@ -579,7 +579,7 @@ class _ClubPageState extends State<ClubPage> {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -589,7 +589,7 @@ class _ClubPageState extends State<ClubPage> {
                 const SizedBox(width: 8),
                 Text(
                   '($totalCount)',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),
@@ -612,7 +612,7 @@ class _ClubPageState extends State<ClubPage> {
                   ),
                   child: Text(
                     'User ${memberId.substring(0, 8)}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textPrimary,
                     ),
@@ -623,7 +623,7 @@ class _ClubPageState extends State<ClubPage> {
           ] else
             Text(
               'No $title',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -639,7 +639,7 @@ class _ClubPageState extends State<ClubPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Information',
             style: TextStyle(
               fontSize: 20,
@@ -707,7 +707,7 @@ class _ClubPageState extends State<ClubPage> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
@@ -716,7 +716,7 @@ class _ClubPageState extends State<ClubPage> {
                   const SizedBox(height: 4),
                   Text(
                     value,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
                     ),
@@ -725,7 +725,7 @@ class _ClubPageState extends State<ClubPage> {
               ),
             ),
             if (onTap != null)
-              Icon(
+              const Icon(
                 Icons.chevron_right,
                 color: AppColors.textSecondary,
               ),
@@ -742,7 +742,7 @@ class _ClubPageState extends State<ClubPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Metrics',
             style: TextStyle(
               fontSize: 20,
@@ -809,7 +809,7 @@ class _ClubPageState extends State<ClubPage> {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                 ),
@@ -819,7 +819,7 @@ class _ClubPageState extends State<ClubPage> {
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -838,7 +838,7 @@ class _ClubPageState extends State<ClubPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Expertise Coverage',
             style: TextStyle(
               fontSize: 20,
@@ -888,7 +888,7 @@ class _ClubPageState extends State<ClubPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Neighborhood Boundaries',
           style: TextStyle(
             fontSize: 20,
@@ -897,7 +897,7 @@ class _ClubPageState extends State<ClubPage> {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           'View boundaries between localities to understand community connections',
           style: TextStyle(
             fontSize: 14,
@@ -964,7 +964,7 @@ class _ClubPageState extends State<ClubPage> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        child: Container(
+        child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.9,
           height: MediaQuery.of(context).size.height * 0.8,
           child: Column(
@@ -972,9 +972,9 @@ class _ClubPageState extends State<ClubPage> {
               // Header
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.grey100,
-                  borderRadius: const BorderRadius.only(
+                  borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8),
                     topRight: Radius.circular(8),
                   ),
@@ -1021,7 +1021,7 @@ class _ClubPageState extends State<ClubPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Leader Expertise',
           style: TextStyle(
             fontSize: 20,
@@ -1044,7 +1044,7 @@ class _ClubPageState extends State<ClubPage> {
     // TODO: Load leader expertise from ClubService when available
     // TODO: Check if leader is golden expert using GoldenExpertAIInfluenceService
     // For now, show placeholder with golden expert indicator support
-    final isGoldenExpert = false; // TODO: Check golden expert status
+    const isGoldenExpert = false; // TODO: Check golden expert status
     final locality = _club?.originalLocality; // TODO: Get leader's locality
     
     return Container(
@@ -1065,7 +1065,7 @@ class _ClubPageState extends State<ClubPage> {
                   color: AppTheme.primaryColor.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.star,
                   color: AppTheme.primaryColor,
                   size: 20,
@@ -1080,7 +1080,7 @@ class _ClubPageState extends State<ClubPage> {
                       children: [
                         Text(
                           'Leader ${leaderId.substring(0, 8)}...',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
@@ -1098,7 +1098,7 @@ class _ClubPageState extends State<ClubPage> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       'Expertise gained through club expansion',
                       style: TextStyle(
                         fontSize: 12,
@@ -1120,7 +1120,7 @@ class _ClubPageState extends State<ClubPage> {
             ),
             child: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.location_on,
                   size: 16,
                   color: AppColors.textSecondary,
@@ -1129,7 +1129,7 @@ class _ClubPageState extends State<ClubPage> {
                 Expanded(
                   child: Text(
                     'Expertise in ${_club!.currentLocalities.length} locality(ies)',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),

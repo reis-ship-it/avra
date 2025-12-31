@@ -61,14 +61,14 @@ void main() {
           avgCpuUsage: 85.0, // Above 70% threshold
           avgMemoryUsage: 88.0, // Above 80% threshold  
           requestRate: 1500.0,
-          avgResponseTime: Duration(milliseconds: 120),
+          avgResponseTime: const Duration(milliseconds: 120),
           errorRate: 0.002,
         ),
         'recommendation_service': ServiceMetrics(
           avgCpuUsage: 92.0, // Very high
           avgMemoryUsage: 78.0,
           requestRate: 2200.0,
-          avgResponseTime: Duration(milliseconds: 95),
+          avgResponseTime: const Duration(milliseconds: 95),
           errorRate: 0.001,
         ),
       };
@@ -162,7 +162,7 @@ void main() {
           ChannelConfiguration(
             channelId: 'user_data_sync',
             dataType: 'user_preferences',
-            syncFrequency: Duration(seconds: 30),
+            syncFrequency: const Duration(seconds: 30),
             conflictResolutionStrategy: ConflictResolutionStrategy.lastWriteWins,
             privacyLevel: PrivacyLevel.high,
             compressionEnabled: true,
@@ -170,7 +170,7 @@ void main() {
           ChannelConfiguration(
             channelId: 'spots_sync',
             dataType: 'spots_data',
-            syncFrequency: Duration(minutes: 1),
+            syncFrequency: const Duration(minutes: 1),
             conflictResolutionStrategy: ConflictResolutionStrategy.merge,
             privacyLevel: PrivacyLevel.medium,
             compressionEnabled: true,
@@ -204,7 +204,7 @@ void main() {
           ChannelConfiguration(
             channelId: 'incremental_sync_test',
             dataType: 'test_data',
-            syncFrequency: Duration(seconds: 15),
+            syncFrequency: const Duration(seconds: 15),
             conflictResolutionStrategy: ConflictResolutionStrategy.lastWriteWins,
             privacyLevel: PrivacyLevel.high,
             compressionEnabled: true,
@@ -248,7 +248,7 @@ void main() {
           ChannelConfiguration(
             channelId: 'offline_queue_test',
             dataType: 'offline_data',
-            syncFrequency: Duration(minutes: 2),
+            syncFrequency: const Duration(minutes: 2),
             conflictResolutionStrategy: ConflictResolutionStrategy.userDecision,
             privacyLevel: PrivacyLevel.high,
             compressionEnabled: true,
@@ -293,7 +293,7 @@ void main() {
           ChannelConfiguration(
             channelId: 'status_test_1',
             dataType: 'status_data_1',
-            syncFrequency: Duration(seconds: 30),
+            syncFrequency: const Duration(seconds: 30),
             conflictResolutionStrategy: ConflictResolutionStrategy.lastWriteWins,
             privacyLevel: PrivacyLevel.medium,
             compressionEnabled: true,
@@ -301,7 +301,7 @@ void main() {
           ChannelConfiguration(
             channelId: 'status_test_2',
             dataType: 'status_data_2',
-            syncFrequency: Duration(minutes: 1),
+            syncFrequency: const Duration(minutes: 1),
             conflictResolutionStrategy: ConflictResolutionStrategy.merge,
             privacyLevel: PrivacyLevel.high,
             compressionEnabled: true,
@@ -340,7 +340,7 @@ void main() {
           ChannelConfiguration(
             channelId: 'conflict_test',
             dataType: 'conflict_data',
-            syncFrequency: Duration(seconds: 30),
+            syncFrequency: const Duration(seconds: 30),
             conflictResolutionStrategy: ConflictResolutionStrategy.lastWriteWins,
             privacyLevel: PrivacyLevel.high,
             compressionEnabled: true,
@@ -358,7 +358,7 @@ void main() {
         DataConflict(
           conflictId: 'conflict_001',
           channelId: 'conflict_test',
-          localData: {'value': 'local_version', 'timestamp': DateTime.now().subtract(Duration(minutes: 1)).toIso8601String()},
+          localData: {'value': 'local_version', 'timestamp': DateTime.now().subtract(const Duration(minutes: 1)).toIso8601String()},
           remoteData: {'value': 'remote_version', 'timestamp': DateTime.now().toIso8601String()},
           timestamp: DateTime.now(),
         ),
@@ -431,7 +431,7 @@ void main() {
           ChannelConfiguration(
             channelId: 'guts_test_channel',
             dataType: 'guts_test_data',
-            syncFrequency: Duration(seconds: 30),
+            syncFrequency: const Duration(seconds: 30),
             conflictResolutionStrategy: ConflictResolutionStrategy.lastWriteWins,
             privacyLevel: PrivacyLevel.high,
             compressionEnabled: true,
@@ -493,7 +493,7 @@ void main() {
             avgCpuUsage: 75.0,
             avgMemoryUsage: 80.0,
             requestRate: 1000.0,
-            avgResponseTime: Duration(milliseconds: 100),
+            avgResponseTime: const Duration(milliseconds: 100),
             errorRate: 0.001,
           ),
         )),

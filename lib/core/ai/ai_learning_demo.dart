@@ -145,7 +145,7 @@ class AILearningDemo {
       await _continuousLearning.startContinuousLearning();
       
       // Let it run for a few seconds
-      await Future.delayed(Duration(seconds: 10));
+      await Future.delayed(const Duration(seconds: 10));
       
       // Stop continuous learning
       await _continuousLearning.stopContinuousLearning();

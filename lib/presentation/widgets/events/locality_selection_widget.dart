@@ -113,7 +113,7 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Label with tooltip
-        Row(
+        const Row(
           children: [
             Text(
               'Locality *',
@@ -123,7 +123,7 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Tooltip(
               message: 'Select the locality where you want to host this event. '
                   'Local experts can only host in their locality. '
@@ -151,7 +151,7 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
             ),
             child: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.info_outline,
                   size: 16,
                   color: AppColors.electricGreen,
@@ -160,7 +160,7 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
                 Expanded(
                   child: Text(
                     helpfulMessage,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textPrimary,
                     ),
@@ -197,7 +197,7 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
             decoration: InputDecoration(
               labelText: 'Select Locality',
               hintText: 'Choose a locality',
-              hintStyle: TextStyle(color: AppColors.textHint),
+              hintStyle: const TextStyle(color: AppColors.textHint),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -205,7 +205,7 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
               fillColor: AppColors.grey100,
               errorText: widget.errorMessage,
             ),
-            style: TextStyle(color: AppColors.textPrimary),
+            style: const TextStyle(color: AppColors.textPrimary),
             items: _availableLocalities.map((locality) {
               return DropdownMenuItem(
                 value: locality,
@@ -231,14 +231,14 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
                 color: AppColors.error.withValues(alpha: 0.3),
               ),
             ),
-            child: Row(
+            child: const Row(
               children: [
                 Icon(
                   Icons.error_outline,
                   size: 16,
                   color: AppColors.error,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'No localities available. Please check your location settings.',

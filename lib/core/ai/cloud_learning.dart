@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 import 'dart:convert';
 import 'dart:math';
 import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/ai/personality_learning.dart' show PersonalityLearning, AI2AILearningInsight, AI2AIInsightType;
 import 'package:spots/core/ai/privacy_protection.dart' show PrivacyProtection, AnonymizedPersonalityData;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -385,7 +385,7 @@ class CloudLearningInterface {
     final random = Random();
     // Generate Laplace noise for differential privacy
     final u = random.nextDouble() - 0.5;
-    final epsilon = VibeConstants.privacyNoiseLevel;
+    const epsilon = VibeConstants.privacyNoiseLevel;
     return -1.0 / epsilon * (u >= 0 ? log(1 - 2 * u.abs()) : -log(1 - 2 * u.abs()));
   }
   
@@ -470,7 +470,7 @@ class CloudLearningInterface {
         trendDirection: -0.5 + random.nextDouble(),
         trendStrength: random.nextDouble(),
         contributorCount: 10 + random.nextInt(100),
-        timeWindow: Duration(days: 30),
+        timeWindow: const Duration(days: 30),
       ));
     }
     

@@ -24,7 +24,7 @@ void main() {
           'should obfuscate location string to city center, return city-level location for different cities, and handle different cities correctly',
           () async {
         // Test business logic: city-level location obfuscation
-        final locationString1 = 'San Francisco, CA';
+        const locationString1 = 'San Francisco, CA';
         const userId1 = 'user-123';
         final obfuscated1 = await service.obfuscateLocation(
           locationString1,
@@ -55,7 +55,7 @@ void main() {
           expect(obfuscated2.longitude, closeTo(-122.4194, 0.1));
         }
 
-        final locationString2 = 'New York, NY';
+        const locationString2 = 'New York, NY';
         final obfuscated3 = await service.obfuscateLocation(
           locationString2,
           'user-ny',
@@ -77,7 +77,7 @@ void main() {
           'should apply differential privacy noise during obfuscation and respect privacy budget',
           () async {
         // Test business logic: differential privacy with noise and budget management
-        final locationString = 'San Francisco, CA';
+        const locationString = 'San Francisco, CA';
         const userId1 = 'user-dp';
         final obfuscated1 = await service.obfuscateLocation(
           locationString,
@@ -132,7 +132,7 @@ void main() {
           country: 'USA',
           latitude: 37.7749,
           longitude: -122.4194,
-          expiresAt: DateTime.now().subtract(Duration(hours: 1)),
+          expiresAt: DateTime.now().subtract(const Duration(hours: 1)),
         );
         final isExpired1 = service.isLocationExpired(oldLocation);
         expect(isExpired1, isTrue);
@@ -142,12 +142,12 @@ void main() {
           country: 'USA',
           latitude: 37.7749,
           longitude: -122.4194,
-          expiresAt: DateTime.now().add(Duration(hours: 12)),
+          expiresAt: DateTime.now().add(const Duration(hours: 12)),
         );
         final isExpired2 = service.isLocationExpired(recentLocation);
         expect(isExpired2, isFalse);
 
-        final locationString = 'San Francisco, CA';
+        const locationString = 'San Francisco, CA';
         const userId = 'user-expire';
         final obfuscated = await service.obfuscateLocation(
           locationString,

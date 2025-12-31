@@ -37,17 +37,17 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Privacy Note
-            Card(
+            const Card(
               color: AppColors.grey100,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
-                        const SizedBox(width: 8),
+                        Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
+                        SizedBox(width: 8),
                         Text(
                           'Privacy First',
                           style: TextStyle(
@@ -57,7 +57,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'Per OUR_GUTS.md: "Privacy and Control Are Non-Negotiable". You control all notification settings and data usage.',
                       style: TextStyle(color: AppTheme.primaryColor),
@@ -278,8 +278,8 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
 
   void _sendTestNotification() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Test notification sent! Check your notification panel.'),
+      const SnackBar(
+        content: Text('Test notification sent! Check your notification panel.'),
         backgroundColor: AppTheme.successColor,
       ),
     );

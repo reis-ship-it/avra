@@ -25,7 +25,7 @@ class _PrivacyControlsWidgetState extends State<PrivacyControlsWidget> {
           children: [
             Row(
               children: [
-                Icon(Icons.privacy_tip, color: AppColors.success),
+                const Icon(Icons.privacy_tip, color: AppColors.success),
                 const SizedBox(width: 8),
                 Text(
                   'Privacy Controls',
@@ -108,7 +108,7 @@ class _PrivacyControlsWidgetState extends State<PrivacyControlsWidget> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.verified_user, size: 16, color: AppColors.success),
+                  const Icon(Icons.verified_user, size: 16, color: AppColors.success),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(

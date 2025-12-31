@@ -260,15 +260,15 @@ class _BorderManagementWidgetState extends State<BorderManagementWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.info_outline,
                   color: AppTheme.primaryColor,
                   size: 20,
                 ),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Border Type',
                   style: TextStyle(
                     fontSize: 16,
@@ -308,7 +308,7 @@ class _BorderManagementWidgetState extends State<BorderManagementWidget> {
                       _borderType == BorderType.hardBorder
                           ? 'Hard Border: Well-defined geographic boundary'
                           : 'Soft Border: Blended area shared by both localities',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
                       ),
@@ -330,15 +330,15 @@ class _BorderManagementWidgetState extends State<BorderManagementWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.map,
                   color: AppTheme.primaryColor,
                   size: 20,
                 ),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Boundary Coordinates',
                   style: TextStyle(
                     fontSize: 16,
@@ -366,7 +366,7 @@ class _BorderManagementWidgetState extends State<BorderManagementWidget> {
                       child: Center(
                         child: Text(
                           '${index + 1}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.primaryColor,
@@ -402,15 +402,15 @@ class _BorderManagementWidgetState extends State<BorderManagementWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.people,
                   color: AppTheme.primaryColor,
                   size: 20,
                 ),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Visit Counts by Locality',
                   style: TextStyle(
                     fontSize: 16,
@@ -483,15 +483,15 @@ class _BorderManagementWidgetState extends State<BorderManagementWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.location_on,
                   color: AppTheme.primaryColor,
                   size: 20,
                 ),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Soft Border Spots',
                   style: TextStyle(
                     fontSize: 16,
@@ -592,7 +592,7 @@ class _BorderManagementWidgetState extends State<BorderManagementWidget> {
         children: [
           Text(
             locality,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 11,
               color: AppColors.textSecondary,
             ),
@@ -618,15 +618,15 @@ class _BorderManagementWidgetState extends State<BorderManagementWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.history,
                   color: AppTheme.primaryColor,
                   size: 20,
                 ),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Refinement History',
                   style: TextStyle(
                     fontSize: 16,
@@ -658,7 +658,7 @@ class _BorderManagementWidgetState extends State<BorderManagementWidget> {
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.trending_up,
                 color: AppTheme.primaryColor,
                 size: 16,

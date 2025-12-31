@@ -453,7 +453,7 @@ class PartnershipProposalData {
 class PartnershipProposalResult extends ControllerResult {
   final EventPartnership? partnership;
 
-  PartnershipProposalResult._({
+  const PartnershipProposalResult._({
     required super.success,
     required super.error,
     required super.errorCode,

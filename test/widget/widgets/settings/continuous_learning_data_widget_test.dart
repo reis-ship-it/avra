@@ -16,6 +16,7 @@
 /// - ContinuousLearningSystem: For data collection status
 /// 
 /// Phase 7, Section 39 (7.4.1): Continuous Learning UI - Integration & Polish
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

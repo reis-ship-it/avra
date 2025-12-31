@@ -4,7 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spots/core/ai/cloud_learning.dart' show CloudLearningInterface, CloudContributionResult, CloudLearningResult, CollectiveIntelligenceTrends, CloudBasedRecommendations, CloudLearningMetrics;
 import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 
 import 'cloud_learning_test.mocks.dart';
 
@@ -29,7 +29,7 @@ void main() {
       test('should contribute anonymous patterns without errors', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
         final context = {'source': 'test'};
 
@@ -51,7 +51,7 @@ void main() {
       test('should handle contribution errors gracefully', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         when(mockPrefs.getString(any)).thenThrow(Exception('Storage error'));
@@ -71,7 +71,7 @@ void main() {
       test('should learn from cloud patterns without errors', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         when(mockPrefs.getString(any)).thenReturn(null);
@@ -89,7 +89,7 @@ void main() {
       test('should handle empty cloud patterns', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         when(mockPrefs.getString(any)).thenReturn(null);
@@ -120,7 +120,7 @@ void main() {
       test('should generate cloud recommendations without errors', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         when(mockPrefs.getString(any)).thenReturn(null);
@@ -137,7 +137,7 @@ void main() {
     group('Learning Impact Measurement', () {
       test('should measure cloud learning impact without errors', () async {
         const userId = 'test-user-123';
-        final timeWindow = Duration(days: 30);
+        const timeWindow = Duration(days: 30);
 
         when(mockPrefs.getString(any)).thenReturn(null);
 

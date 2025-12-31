@@ -26,8 +26,8 @@ void main() {
       final validSplit = MultiPartySponsorship(
         id: 'multi-sponsor-123',
         eventId: 'event-456',
-        brandIds: ['brand-1', 'brand-2'],
-        revenueSplitConfiguration: {
+        brandIds: const ['brand-1', 'brand-2'],
+        revenueSplitConfiguration: const {
           'brand-1': 60.0,
           'brand-2': 40.0,
         },
@@ -38,8 +38,8 @@ void main() {
       final invalidSplit = MultiPartySponsorship(
         id: 'multi-sponsor-456',
         eventId: 'event-456',
-        brandIds: ['brand-1', 'brand-2'],
-        revenueSplitConfiguration: {
+        brandIds: const ['brand-1', 'brand-2'],
+        revenueSplitConfiguration: const {
           'brand-1': 60.0,
           'brand-2': 50.0, // Total > 100%
         },
@@ -55,8 +55,8 @@ void main() {
       final multiParty = MultiPartySponsorship(
         id: 'multi-sponsor-123',
         eventId: 'event-456',
-        brandIds: ['brand-1', 'brand-2'],
-        revenueSplitConfiguration: {
+        brandIds: const ['brand-1', 'brand-2'],
+        revenueSplitConfiguration: const {
           'brand-1': 60.0,
           'brand-2': 40.0,
         },

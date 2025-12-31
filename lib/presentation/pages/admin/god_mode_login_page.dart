@@ -178,7 +178,7 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.block,
                         size: 64,
                         color: AppColors.error,
@@ -243,7 +243,7 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // Logo/Icon
-                        Icon(
+                        const Icon(
                           Icons.admin_panel_settings,
                           size: 64,
                           color: AppTheme.primaryColor,
@@ -353,13 +353,13 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.error_outline,
+                                const Icon(Icons.error_outline,
                                     color: AppColors.error),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     _errorMessage!,
-                                    style: TextStyle(color: AppColors.error),
+                                    style: const TextStyle(color: AppColors.error),
                                   ),
                                 ),
                               ],
@@ -379,11 +379,11 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                             ),
                             child: Column(
                               children: [
-                                Row(
+                                const Row(
                                   children: [
                                     Icon(Icons.lock_clock,
                                         color: AppColors.warning),
-                                    const SizedBox(width: 8),
+                                    SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         'Account locked',
@@ -398,7 +398,7 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                                 const SizedBox(height: 4),
                                 Text(
                                   'Try again in ${_lockoutRemaining!.inMinutes} minutes',
-                                  style: TextStyle(color: AppColors.warning),
+                                  style: const TextStyle(color: AppColors.warning),
                                 ),
                               ],
                             ),
@@ -410,8 +410,8 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                         if (_remainingAttempts != null &&
                             _remainingAttempts! > 0) ...[
                           Text(
-                            '${_remainingAttempts} attempt${_remainingAttempts! > 1 ? 's' : ''} remaining',
-                            style: TextStyle(
+                            '$_remainingAttempts attempt${_remainingAttempts! > 1 ? 's' : ''} remaining',
+                            style: const TextStyle(
                               color: AppColors.warning,
                               fontSize: 12,
                             ),

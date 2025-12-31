@@ -80,7 +80,7 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               'Partnerships',
               style: TextStyle(
                 fontSize: 18,
@@ -96,7 +96,7 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
                 },
                 child: Text(
                   'View All (${widget.partnerships.length})',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppTheme.primaryColor,
                     fontSize: 14,
                   ),
@@ -135,7 +135,7 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
                     : null,
               ),
             );
-          }).toList(),
+          }),
       ],
     );
   }
@@ -149,10 +149,10 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
             value: _selectedType,
             decoration: InputDecoration(
               labelText: 'Type',
-              labelStyle: TextStyle(color: AppColors.textSecondary),
+              labelStyle: const TextStyle(color: AppColors.textSecondary),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.grey300),
+                borderSide: const BorderSide(color: AppColors.grey300),
               ),
               filled: true,
               fillColor: AppColors.grey100,
@@ -183,10 +183,10 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
             value: _selectedStatus,
             decoration: InputDecoration(
               labelText: 'Status',
-              labelStyle: TextStyle(color: AppColors.textSecondary),
+              labelStyle: const TextStyle(color: AppColors.textSecondary),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.grey300),
+                borderSide: const BorderSide(color: AppColors.grey300),
               ),
               filled: true,
               fillColor: AppColors.grey100,
@@ -225,7 +225,7 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
             color: AppColors.textSecondary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'No partnerships yet',
             style: TextStyle(
               fontSize: 18,
@@ -234,7 +234,7 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Create partnerships to showcase your collaborations',
             style: TextStyle(
               fontSize: 14,
@@ -260,7 +260,7 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
               color: AppColors.textSecondary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'No partnerships match your filters',
               style: TextStyle(
                 fontSize: 16,

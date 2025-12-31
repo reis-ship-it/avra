@@ -184,7 +184,7 @@ class AIImprovementTrackingService {
     try {
       // Would integrate with actual user context
       // For now, using a default user ID
-      final userId = 'current_user';
+      const userId = 'current_user';
 
       // #region agent log
       developer.log('Capturing improvement snapshot for user: $userId', name: _logName);

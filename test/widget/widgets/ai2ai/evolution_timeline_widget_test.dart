@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/ai2ai/evolution_timeline_widget.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/theme/colors.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../helpers/test_helpers.dart';

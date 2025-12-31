@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
+import 'package:go_router/go_router.dart';
 
 /// Social Media Settings Page
 /// Allows users to manage their social media connections
@@ -19,7 +20,13 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
     'Instagram': false,
     'Facebook': false,
     'Twitter': false,
+    'Google': false,
+    'Reddit': false,
     'TikTok': false,
+    'Tumblr': false,
+    'YouTube': false,
+    'Pinterest': false,
+    'Are.na': false,
     'LinkedIn': false,
   };
 
@@ -63,6 +70,52 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.grey600,
                   ),
+            ),
+            const SizedBox(height: 16),
+            // Friend Discovery Link
+            Card(
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              child: InkWell(
+                onTap: () => context.go('/friends/discover'),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.people, color: AppTheme.primaryColor),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Find Friends on SPOTS',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.primaryColor,
+                                  ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Discover friends who use SPOTS from your social connections',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.grey700,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: AppTheme.primaryColor),
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 24),
             Expanded(
@@ -173,6 +226,30 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
       case 'LinkedIn':
         icon = Icons.business;
         color = Colors.blue.shade700;
+        break;
+      case 'Google':
+        icon = Icons.search;
+        color = Colors.blue;
+        break;
+      case 'Reddit':
+        icon = Icons.forum;
+        color = Colors.orange;
+        break;
+      case 'Tumblr':
+        icon = Icons.auto_stories;
+        color = Colors.blue.shade900;
+        break;
+      case 'YouTube':
+        icon = Icons.play_circle;
+        color = Colors.red;
+        break;
+      case 'Pinterest':
+        icon = Icons.push_pin;
+        color = Colors.red.shade700;
+        break;
+      case 'Are.na':
+        icon = Icons.grid_view;
+        color = Colors.black;
         break;
       default:
         icon = Icons.link;

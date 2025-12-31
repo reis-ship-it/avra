@@ -303,7 +303,7 @@ class NetworkAnalysisService {
         averageTrustLevel: averageTrustLevel,
         networkDensity: networkDensity,
         collaborationEfficiency: 0.90,
-        communicationLatency: Duration(milliseconds: 65),
+        communicationLatency: const Duration(milliseconds: 65),
         privacyCompliance: 0.99,
         authenticityScore: 0.94,
       );
@@ -317,7 +317,7 @@ class NetworkAnalysisService {
         averageTrustLevel: 0.88,
         networkDensity: 0.75,
         collaborationEfficiency: 0.90,
-        communicationLatency: Duration(milliseconds: 65),
+        communicationLatency: const Duration(milliseconds: 65),
         privacyCompliance: 0.99,
         authenticityScore: 0.94,
       );

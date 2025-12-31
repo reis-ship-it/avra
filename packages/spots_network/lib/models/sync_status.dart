@@ -190,7 +190,7 @@ class SyncQueue extends Equatable {
   factory SyncQueue.empty() {
     final now = DateTime.now();
     return SyncQueue(
-      operations: [],
+      operations: const [],
       createdAt: now,
       updatedAt: now,
     );

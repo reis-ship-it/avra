@@ -154,8 +154,8 @@ void main() {
         final multiParty = MultiPartySponsorship(
           id: 'multi-sponsor-123',
           eventId: 'event-456',
-          brandIds: ['brand-1', 'brand-2', 'brand-3'],
-          revenueSplitConfiguration: {
+          brandIds: const ['brand-1', 'brand-2', 'brand-3'],
+          revenueSplitConfiguration: const {
             'brand-1': 40.0,
             'brand-2': 35.0,
             'brand-3': 25.0,
@@ -194,7 +194,7 @@ void main() {
         final multiParty = MultiPartySponsorship(
           id: 'multi-sponsor-123',
           eventId: 'event-456',
-          brandIds: ['brand-1', 'brand-2', 'brand-3'],
+          brandIds: const ['brand-1', 'brand-2', 'brand-3'],
           agreementStatus: MultiPartyAgreementStatus.approved,
           createdAt: testDate,
           updatedAt: testDate,
@@ -256,7 +256,7 @@ void main() {
           unitPrice: 25.00,
           totalSales: 375.00,
           platformFee: 37.50,
-          revenueDistribution: {
+          revenueDistribution: const {
             'brand-123': 202.50,
             'user-123': 84.38,
             'business-123': 50.62,
@@ -289,7 +289,7 @@ void main() {
           updatedAt: testDate,
         );
 
-        final vibeCompatibility = VibeCompatibility(
+        const vibeCompatibility = VibeCompatibility(
           overallScore: 85.0,
           valueAlignment: 90.0,
           styleCompatibility: 80.0,
@@ -297,7 +297,7 @@ void main() {
           audienceAlignment: 85.0,
         );
 
-        final brandMatch = BrandMatch(
+        const brandMatch = BrandMatch(
           brandId: 'brand-123',
           brandName: 'Premium Oil Co.',
           compatibilityScore: 85.0,
@@ -308,11 +308,11 @@ void main() {
         final discovery = BrandDiscovery(
           id: 'discovery-123',
           eventId: 'event-456',
-          searchCriteria: {
+          searchCriteria: const {
             'category': 'Food & Beverage',
             'minContribution': 500.0,
           },
-          matchingResults: [brandMatch],
+          matchingResults: const [brandMatch],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -349,7 +349,7 @@ void main() {
           eventId: 'event-456',
           totalAmount: 1000.00,
           ticketsSold: 20,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'user-123',
               type: SplitPartyType.user,
@@ -385,8 +385,8 @@ void main() {
         final multiParty = MultiPartySponsorship(
           id: 'multi-sponsor-123',
           eventId: 'event-456',
-          brandIds: ['brand-1', 'brand-2'],
-          revenueSplitConfiguration: {
+          brandIds: const ['brand-1', 'brand-2'],
+          revenueSplitConfiguration: const {
             'brand-1': 60.0,
             'brand-2': 40.0,
           },
@@ -401,7 +401,7 @@ void main() {
           eventId: 'event-456',
           totalAmount: 2000.00,
           ticketsSold: 25,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'user-123',
               type: SplitPartyType.user,
@@ -553,7 +553,7 @@ void main() {
           eventId: 'event-456',
           totalAmount: 1000.00,
           ticketsSold: 20,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'user-123',
               type: SplitPartyType.user,
@@ -609,7 +609,7 @@ void main() {
           unitPrice: 25.00,
           totalSales: 375.00,
           platformFee: 37.50,
-          revenueDistribution: {
+          revenueDistribution: const {
             'brand-123': 202.50,
             'user-123': 84.38,
             'business-123': 50.62,

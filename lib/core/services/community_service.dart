@@ -2,8 +2,13 @@ import 'package:spots/core/models/community.dart';
 import 'package:spots/core/models/community_event.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/geographic_expansion.dart';
+import 'package:spots_knot/models/knot/community_metrics.dart';
+import 'package:spots_knot/models/knot/fabric_cluster.dart';
+import 'package:spots_knot/models/personality_knot.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/geographic_expansion_service.dart';
+import 'package:spots_knot/services/knot/knot_fabric_service.dart';
+import 'package:spots_knot/services/knot/knot_storage_service.dart';
 
 /// Community Service
 /// 
@@ -33,11 +38,17 @@ class CommunityService {
   final Map<String, Community> _communities = {};
 
   final GeographicExpansionService _expansionService;
+  final KnotFabricService? _knotFabricService;
+  final KnotStorageService? _knotStorageService;
 
   CommunityService({
     GeographicExpansionService? expansionService,
-  }) : _expansionService =
-            expansionService ?? GeographicExpansionService();
+    KnotFabricService? knotFabricService,
+    KnotStorageService? knotStorageService,
+  })  : _expansionService =
+            expansionService ?? GeographicExpansionService(),
+        _knotFabricService = knotFabricService,
+        _knotStorageService = knotStorageService;
 
   /// Auto-create community from successful event
   /// 
@@ -587,6 +598,230 @@ class CommunityService {
   String? _extractLocality(String? location) {
     if (location == null || location.isEmpty) return null;
     return location.split(',').first.trim();
+  }
+  
+  /// Get community health metrics from knot fabric
+  /// 
+  /// **Phase 5: Knot Fabric Integration**
+  /// 
+  /// Generates a knot fabric from all community members' knots and calculates
+  /// health metrics including cohesion, diversity, clusters, and bridges.
+  Future<CommunityMetrics?> getCommunityHealth(String communityId) async {
+    if (_knotFabricService == null || _knotStorageService == null) {
+      _logger.warning(
+        'Knot fabric services not available',
+        tag: _logName,
+      );
+      return null;
+    }
+    
+    try {
+      final community = await getCommunityById(communityId);
+      if (community == null) {
+        throw Exception('Community not found: $communityId');
+      }
+      
+      // Get knots for all community members
+      final knots = await _getUserKnots(community.memberIds);
+      
+      if (knots.isEmpty) {
+        _logger.warning(
+          'No knots found for community members',
+          tag: _logName,
+        );
+        return null;
+      }
+      
+      // Generate fabric from member knots
+      final fabric = await _knotFabricService!.generateMultiStrandBraidFabric(
+        userKnots: knots,
+      );
+      
+      // Calculate fabric invariants
+      final invariants = await _knotFabricService!.calculateFabricInvariants(
+        fabric,
+      );
+      
+      // Identify clusters
+      final clusters = await _knotFabricService!.identifyFabricClusters(fabric);
+      
+      // Identify bridges
+      final bridges = await _knotFabricService!.identifyBridgeStrands(fabric);
+      
+      // Calculate diversity
+      final diversity = _calculateDiversity(knots);
+      
+      return CommunityMetrics(
+        cohesion: invariants.stability,
+        diversity: diversity,
+        bridges: bridges,
+        clusters: clusters,
+        density: invariants.density,
+      );
+    } catch (e) {
+      _logger.error(
+        'Error getting community health: $e',
+        error: e,
+        tag: _logName,
+      );
+      return null;
+    }
+  }
+  
+  /// Discover communities from fabric clusters
+  /// 
+  /// **Phase 5: Knot Fabric Integration**
+  /// 
+  /// Analyzes all users' knots to identify natural clusters (knot tribes)
+  /// and creates communities from those clusters.
+  Future<List<Community>> discoverCommunitiesFromFabric({
+    required List<String> allUserIds,
+  }) async {
+    if (_knotFabricService == null || _knotStorageService == null) {
+      _logger.warning(
+        'Knot fabric services not available',
+        tag: _logName,
+      );
+      return [];
+    }
+    
+    try {
+      // Get knots for all users
+      final knots = await _getUserKnots(allUserIds);
+      
+      if (knots.isEmpty) {
+        _logger.warning('No knots found for users', tag: _logName);
+        return [];
+      }
+      
+      // Generate fabric from all knots
+      final fabric = await _knotFabricService!.generateMultiStrandBraidFabric(
+        userKnots: knots,
+      );
+      
+      // Identify clusters
+      final clusters = await _knotFabricService!.identifyFabricClusters(fabric);
+      
+      // Create communities from clusters
+      final communities = <Community>[];
+      for (final cluster in clusters) {
+        // Extract user IDs from cluster knots
+        final memberIds = cluster.userKnots
+            .map((knot) => knot.agentId)
+            .toList();
+        
+        if (memberIds.isEmpty) continue;
+        
+        // Create community from cluster
+        final community = Community(
+          id: 'fabric_cluster_${cluster.clusterId}',
+          name: 'Knot Tribe ${cluster.clusterId}',
+          description: 'Community discovered from knot fabric analysis',
+          category: cluster.knotTypeDistribution.primaryType,
+          originatingEventId: '', // No originating event for fabric-discovered communities
+          originatingEventType: OriginatingEventType.communityEvent,
+          memberIds: memberIds,
+          memberCount: memberIds.length,
+          founderId: memberIds.first, // First member as founder
+          eventIds: const [],
+          eventCount: 0,
+          createdAt: DateTime.now(),
+          originalLocality: 'Unknown', // Would be determined from user locations
+          updatedAt: DateTime.now(),
+        );
+        
+        communities.add(community);
+        await _saveCommunity(community);
+      }
+      
+      _logger.info(
+        'Discovered ${communities.length} communities from fabric',
+        tag: _logName,
+      );
+      
+      return communities;
+    } catch (e) {
+      _logger.error(
+        'Error discovering communities from fabric: $e',
+        error: e,
+        tag: _logName,
+      );
+      return [];
+    }
+  }
+  
+  /// Get user knots from user IDs
+  Future<List<PersonalityKnot>> _getUserKnots(List<String> userIds) async {
+    if (_knotStorageService == null) {
+      return [];
+    }
+    
+    final knots = <PersonalityKnot>[];
+    
+    for (final userId in userIds) {
+      try {
+        final knot = await _knotStorageService!.loadKnot(userId);
+        if (knot != null) {
+          knots.add(knot);
+        }
+      } catch (e) {
+        // Skip users without knots
+        continue;
+      }
+    }
+    
+    return knots;
+  }
+  
+  /// Calculate diversity from knots
+  KnotTypeDistribution _calculateDiversity(
+    List<PersonalityKnot> knots,
+  ) {
+    if (knots.isEmpty) {
+      return const KnotTypeDistribution(
+        primaryType: 'unknown',
+        typeCounts: {},
+        diversity: 0.0,
+      );
+    }
+    
+    // Count knot types (using crossing number as type)
+    final typeCounts = <String, int>{};
+    
+    for (final knot in knots) {
+      final type = 'type_${knot.invariants.crossingNumber}';
+      typeCounts[type] = (typeCounts[type] ?? 0) + 1;
+    }
+    
+    // Find primary type
+    String primaryType = 'unknown';
+    int maxCount = 0;
+    for (final entry in typeCounts.entries) {
+      if (entry.value > maxCount) {
+        maxCount = entry.value;
+        primaryType = entry.key;
+      }
+    }
+    
+    // Calculate diversity (Shannon entropy normalized)
+    double diversity = 0.0;
+    if (knots.isNotEmpty && typeCounts.length > 1) {
+      final total = knots.length;
+      double entropy = 0.0;
+      for (final count in typeCounts.values) {
+        final p = count / total;
+        if (p > 0) {
+          entropy -= p * (p > 0 ? (p * p).clamp(0.0, 1.0) : 0.0);
+        }
+      }
+      diversity = (entropy / (typeCounts.length - 1)).clamp(0.0, 1.0);
+    }
+    
+    return KnotTypeDistribution(
+      primaryType: primaryType,
+      typeCounts: typeCounts,
+      diversity: diversity,
+    );
   }
 }
 

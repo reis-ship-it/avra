@@ -94,11 +94,11 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: AppColors.error),
+            const Icon(Icons.error_outline, size: 64, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               _error!,
-              style: TextStyle(color: AppColors.error),
+              style: const TextStyle(color: AppColors.error),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -204,7 +204,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                 const SizedBox(height: 4),
                 Text(
                   _getStatusDescription(status),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),
@@ -228,7 +228,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Dispute Details',
             style: TextStyle(
               fontSize: 18,
@@ -243,7 +243,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
           if (_dispute!.assignedAdminId != null)
             _buildDetailRow('Assigned Admin', _dispute!.assignedAdminId!),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Description',
             style: TextStyle(
               fontSize: 16,
@@ -254,14 +254,14 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
           const SizedBox(height: 8),
           Text(
             _dispute!.description,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textPrimary,
             ),
           ),
           if (_dispute!.evidenceUrls.isNotEmpty) ...[
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Evidence',
               style: TextStyle(
                 fontSize: 16,
@@ -289,7 +289,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           color: AppColors.grey200,
-                          child: Icon(Icons.image, color: AppColors.textSecondary),
+                          child: const Icon(Icons.image, color: AppColors.textSecondary),
                         );
                       },
                     ),
@@ -314,7 +314,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Timeline',
             style: TextStyle(
               fontSize: 18,
@@ -368,7 +368,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -376,7 +376,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                 ),
                 Text(
                   date,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
@@ -400,7 +400,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Messages',
             style: TextStyle(
               fontSize: 18,
@@ -426,12 +426,12 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                     Row(
                       children: [
                         if (message.isAdminMessage)
-                          Icon(Icons.admin_panel_settings,
+                          const Icon(Icons.admin_panel_settings,
                               size: 16, color: AppTheme.primaryColor),
                         if (message.isAdminMessage) const SizedBox(width: 4),
                         Text(
                           message.isAdminMessage ? 'Admin' : 'You',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textSecondary,
@@ -440,7 +440,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                         const Spacer(),
                         Text(
                           _formatDateTime(message.timestamp),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textSecondary,
                           ),
@@ -450,7 +450,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                     const SizedBox(height: 4),
                     Text(
                       message.message,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
                       ),
@@ -459,7 +459,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -476,10 +476,10 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.check_circle, color: AppColors.electricGreen),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Resolution',
                 style: TextStyle(
@@ -494,7 +494,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
           if (_dispute!.resolution != null) ...[
             Text(
               _dispute!.resolution!,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textPrimary,
               ),
@@ -504,7 +504,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
           if (_dispute!.refundAmount != null) ...[
             Text(
               'Refund Amount: \$${_dispute!.refundAmount!.toStringAsFixed(2)}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -526,7 +526,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
             width: 100,
             child: Text(
               '$label:',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -535,7 +535,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
           Expanded(
             child: Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,

@@ -107,7 +107,7 @@ void main() {
       });
 
       test('should reject intents with missing required fields', () async {
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: '',
           description: 'Test',
           latitude: 40.7128,

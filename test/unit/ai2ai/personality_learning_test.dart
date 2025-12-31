@@ -6,7 +6,7 @@ import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/ai2ai/aipersonality_node.dart';
@@ -413,11 +413,11 @@ void main() {
       });
       
       test('should enforce temporal decay', () async {
-        final pastTime = DateTime.now().subtract(Duration(days: 35)); // Expired
-        final futureTime = DateTime.now().add(Duration(days: 25)); // Valid
+        final pastTime = DateTime.now().subtract(const Duration(days: 35)); // Expired
+        final futureTime = DateTime.now().add(const Duration(days: 25)); // Valid
         
         // Test expired data
-        final expiredValid = await PrivacyProtection.enforceTemporalDecay(pastTime, pastTime.add(Duration(days: 30)));
+        final expiredValid = await PrivacyProtection.enforceTemporalDecay(pastTime, pastTime.add(const Duration(days: 30)));
         expect(expiredValid, isFalse);
         
         // Test valid data

@@ -50,7 +50,7 @@ class PartnershipVisibilityToggle extends StatelessWidget {
                     children: [
                       Text(
                         partnership.partnerName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -61,7 +61,7 @@ class PartnershipVisibilityToggle extends StatelessWidget {
                         partnership.isPublic
                             ? 'Visible on your profile'
                             : 'Hidden from your profile',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -108,7 +108,7 @@ class BulkPartnershipVisibilityControls extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Bulk Visibility Settings',
               style: TextStyle(
                 fontSize: 16,
@@ -132,7 +132,7 @@ class BulkPartnershipVisibilityControls extends StatelessWidget {
                     label: const Text('Show All'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
-                      side: BorderSide(color: AppColors.grey300),
+                      side: const BorderSide(color: AppColors.grey300),
                     ),
                   ),
                 ),
@@ -150,7 +150,7 @@ class BulkPartnershipVisibilityControls extends StatelessWidget {
                     label: const Text('Hide All'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
-                      side: BorderSide(color: AppColors.grey300),
+                      side: const BorderSide(color: AppColors.grey300),
                     ),
                   ),
                 ),

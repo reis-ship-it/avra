@@ -38,8 +38,8 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
   bool _isLoading = true;
   
   // Mock analytics data
-  double _totalInvestment = 3200.0;
-  double _totalReturns = 1847.0;
+  final double _totalInvestment = 3200.0;
+  final double _totalReturns = 1847.0;
   
   @override
   void initState() {
@@ -81,7 +81,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
           id: 'brand-mock-1',
           name: 'Premium Olive Oil Co.',
           brandType: 'Food & Beverage',
-          categories: ['Gourmet', 'Premium Products'],
+          categories: const ['Gourmet', 'Premium Products'],
           contactEmail: 'partnerships@premiumoil.com',
           verificationStatus: BrandVerificationStatus.verified,
           activeSponsorshipCount: 3,
@@ -197,7 +197,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
             CircleAvatar(
               radius: 32,
               backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-              child: Icon(
+              child: const Icon(
                 Icons.business,
                 size: 32,
                 color: AppTheme.primaryColor,
@@ -210,7 +210,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               children: [
                 Text(
                   _brandAccount!.name,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -221,16 +221,16 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                   children: [
                     Text(
                       _brandAccount!.brandType,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
                     ),
                     if (_brandAccount!.categories.isNotEmpty) ...[
-                      Text(' • ', style: TextStyle(color: AppColors.textSecondary)),
+                      const Text(' • ', style: TextStyle(color: AppColors.textSecondary)),
                       Text(
                         _brandAccount!.categories.join(', '),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textSecondary,
                         ),
@@ -240,14 +240,14 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                 ),
                 const SizedBox(height: 4),
                 if (_brandAccount!.isVerified)
-                  Row(
+                  const Row(
                     children: [
                       Icon(
                         Icons.verified,
                         size: 16,
                         color: AppColors.electricGreen,
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         'Verified Brand',
                         style: TextStyle(
@@ -261,7 +261,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                 else
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.pending,
                         size: 16,
                         color: AppColors.warning,
@@ -269,7 +269,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                       const SizedBox(width: 4),
                       Text(
                         'Verification: ${_brandAccount!.verificationStatus.displayName}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.warning,
                           fontWeight: FontWeight.w500,
@@ -321,7 +321,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Active Sponsorships',
                 style: TextStyle(
                   fontSize: 20,
@@ -357,7 +357,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                     color: AppColors.textSecondary.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     'No active sponsorships',
                     style: TextStyle(
                       fontSize: 18,
@@ -366,7 +366,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     'Start sponsoring events to see them here',
                     style: TextStyle(
                       fontSize: 14,
@@ -426,7 +426,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 '📊 Performance Overview',
                 style: TextStyle(
                   fontSize: 18,
@@ -442,7 +442,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               _buildAnalyticsRow('Products', '\$${(_totalInvestment * 0.375).toStringAsFixed(0)}', indent: true),
               
               const SizedBox(height: 12),
-              Divider(color: AppColors.grey300),
+              const Divider(color: AppColors.grey300),
               const SizedBox(height: 12),
               
               // Returns
@@ -451,7 +451,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               _buildAnalyticsRow('Brand Value', '\$${(12400.0).toStringAsFixed(0)}', indent: true),
               
               const SizedBox(height: 12),
-              Divider(color: AppColors.grey300),
+              const Divider(color: AppColors.grey300),
               const SizedBox(height: 12),
               
               // ROI
@@ -476,7 +476,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.textPrimary,
-                    side: BorderSide(color: AppColors.grey300),
+                    side: const BorderSide(color: AppColors.grey300),
                   ),
                   child: const Text('View Detailed Analytics'),
                 ),
@@ -537,7 +537,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               color: AppColors.textSecondary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'No Brand Account',
               style: TextStyle(
                 fontSize: 18,
@@ -546,7 +546,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               'Create a brand account to start sponsoring events',
               style: TextStyle(
                 fontSize: 14,

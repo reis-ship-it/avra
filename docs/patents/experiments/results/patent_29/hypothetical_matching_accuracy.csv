@@ -1,5 +1,5 @@
 scenario,accuracy,correlation
 event_overlap,1.0,
 similar_user,1.0,
-prediction_correlation,,0.9105812672312914
+prediction_correlation,,0.960416967624899
 overall,1.0,

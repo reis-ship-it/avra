@@ -45,7 +45,7 @@ void main() {
         eventId: 'event-456',
         totalAmount: 1000.00,
         ticketsSold: 20,
-        parties: [
+        parties: const [
           SplitParty(
             partyId: 'user-1',
             type: SplitPartyType.user,

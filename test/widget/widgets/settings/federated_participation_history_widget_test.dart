@@ -11,6 +11,7 @@
 /// Dependencies:
 /// - ParticipationHistory: For participation data
 /// - FederatedLearningRound: For round information
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

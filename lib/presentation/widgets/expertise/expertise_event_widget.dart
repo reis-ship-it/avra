@@ -67,7 +67,7 @@ class ExpertiseEventWidget extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           event.getEventTypeDisplayName(),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
                           ),
@@ -122,7 +122,7 @@ class ExpertiseEventWidget extends StatelessWidget {
               // Description
               Text(
                 event.description,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                 ),
@@ -133,33 +133,33 @@ class ExpertiseEventWidget extends StatelessWidget {
               // Event Details
               Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     _formatDateTime(event.startTime),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Icon(Icons.people, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.people, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     '${event.attendeeCount}/${event.maxAttendees}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   if (event.location != null) ...[
                     const SizedBox(width: 16),
-                    Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
+                    const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         event.location!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -173,11 +173,11 @@ class ExpertiseEventWidget extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Icon(Icons.place, size: 16, color: AppColors.textSecondary),
+                    const Icon(Icons.place, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Text(
                       '${event.spots.length} ${event.spots.length == 1 ? 'spot' : 'spots'}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -210,7 +210,7 @@ class ExpertiseEventWidget extends StatelessWidget {
                 else
                   Text(
                     event.isFull ? 'Event Full' : 'Registration Closed',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                       fontStyle: FontStyle.italic,
@@ -301,11 +301,11 @@ class ExpertiseEventListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (events.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           children: [
-            const Icon(Icons.event_busy, size: 64, color: AppColors.textSecondary),
-            const SizedBox(height: 16),
+            Icon(Icons.event_busy, size: 64, color: AppColors.textSecondary),
+            SizedBox(height: 16),
             Text(
               'No events found',
               style: TextStyle(

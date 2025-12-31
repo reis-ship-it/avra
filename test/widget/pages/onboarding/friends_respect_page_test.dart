@@ -15,7 +15,7 @@ void main() {
       // Test business logic: Friends respect page display and functionality
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: FriendsRespectPage(
-          respectedLists: [],
+          respectedLists: const [],
           onRespectedListsChanged: (_) {},
         ),
       );

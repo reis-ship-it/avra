@@ -11,6 +11,7 @@
 /// 
 /// Location: Settings/Account page (within Federated Learning section)
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -207,18 +208,18 @@ class _FederatedParticipationHistoryWidgetState extends State<FederatedParticipa
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
+      child: const Row(
         children: [
-          const Icon(
+          Icon(
             Icons.info_outline,
             color: AppColors.textSecondary,
             size: 20,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               'No participation history yet. Start participating in federated learning rounds to see your contributions here.',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),

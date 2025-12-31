@@ -88,8 +88,8 @@ class SocialMediaDataCollectionController implements WorkflowController<String, 
       if (connections.isEmpty) {
         _logger.info('ℹ️ No active social media connections found', tag: _logName);
         return SocialMediaDataResult.success(
-          profileData: {},
-          follows: [],
+          profileData: const {},
+          follows: const [],
           primaryPlatform: null,
         );
       }
@@ -259,7 +259,7 @@ class SocialMediaDataCollectionController implements WorkflowController<String, 
     // Simple validation: userId should not be empty
     if (input.trim().isEmpty) {
       return ValidationResult.invalid(
-        generalErrors: ['User ID cannot be empty'],
+        generalErrors: const ['User ID cannot be empty'],
       );
     }
     return ValidationResult.valid();
@@ -291,20 +291,15 @@ class SocialMediaDataResult extends ControllerResult {
   final Map<String, String>? platformErrors;
   
   const SocialMediaDataResult({
-    required bool success,
-    String? error,
-    String? errorCode,
-    Map<String, dynamic>? metadata,
+    required super.success,
+    super.error,
+    super.errorCode,
+    super.metadata,
     this.profileData,
     this.follows,
     this.primaryPlatform,
     this.platformErrors,
-  }) : super(
-    success: success,
-    error: error,
-    errorCode: errorCode,
-    metadata: metadata,
-  );
+  });
   
   /// Create a successful result
   factory SocialMediaDataResult.success({

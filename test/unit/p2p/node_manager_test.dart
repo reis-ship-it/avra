@@ -51,7 +51,7 @@ void main() {
         requireAuthentication: true,
         allowedRoles: ['member', 'admin'],
         logAccess: true,
-        dataRetention: Duration(days: 30),
+        dataRetention: const Duration(days: 30),
       );
       
       final silo = await manager.createEncryptedSilo(node, 'test-silo', policy);

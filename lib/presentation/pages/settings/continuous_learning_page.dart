@@ -111,13 +111,13 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.error_outline,
                       size: 64,
                       color: AppColors.error,
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'Error',
                       style: TextStyle(
                         fontSize: 20,
@@ -129,7 +129,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
                     Text(
                       _errorMessage!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -161,7 +161,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
               // Section 1: Learning Status Overview
               _buildSectionHeader(context, 'Learning Status Overview'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Current learning status and system metrics',
                 style: TextStyle(
                   fontSize: 14,
@@ -178,7 +178,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
               // Section 2: Learning Progress by Dimension
               _buildSectionHeader(context, 'Learning Progress by Dimension'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Track progress across all 10 learning dimensions',
                 style: TextStyle(
                   fontSize: 14,
@@ -195,7 +195,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
               // Section 3: Data Collection Status
               _buildSectionHeader(context, 'Data Collection Status'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Monitor data collection from all 10 sources',
                 style: TextStyle(
                   fontSize: 14,
@@ -212,7 +212,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
               // Section 4: Learning Controls
               _buildSectionHeader(context, 'Learning Controls'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Start, stop, and configure continuous learning',
                 style: TextStyle(
                   fontSize: 14,
@@ -257,11 +257,11 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Continuous Learning',
                   style: TextStyle(
                     fontSize: 18,
@@ -269,7 +269,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'See how your AI continuously learns',
                   style: TextStyle(
@@ -303,10 +303,10 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.info_outline,
@@ -324,7 +324,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             'Continuous learning enables your AI to learn from everything and improve itself '
             'every second. Your AI learns from your actions, location data, weather conditions, '
@@ -336,7 +336,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
               height: 1.5,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Icon(
@@ -344,7 +344,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
                 color: AppColors.success,
                 size: 16,
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Text(
                 'Your data stays on your device',
                 style: TextStyle(

@@ -229,7 +229,7 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Continuous Learning',
                         style: TextStyle(
                           fontSize: 16,
@@ -242,7 +242,7 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
                         _isLearningActive
                             ? 'Learning is actively improving your AI'
                             : 'Learning is paused',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 13,
                           color: AppColors.textSecondary,
                         ),
@@ -291,15 +291,15 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
-            const Icon(
+            Icon(
               Icons.privacy_tip,
               color: AppColors.primary,
               size: 20,
             ),
-            const SizedBox(width: 8),
-            const Text(
+            SizedBox(width: 8),
+            Text(
               'Privacy Settings',
               style: TextStyle(
                 fontSize: 16,
@@ -310,7 +310,7 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
           ],
         ),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           'Control what data is used for continuous learning',
           style: TextStyle(
             fontSize: 13,
@@ -359,14 +359,14 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
             color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
+          child: const Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.shield,
                 color: AppColors.success,
                 size: 20,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'All learning happens on your device. Your data never leaves your device.',
@@ -422,7 +422,7 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -431,7 +431,7 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
                     const SizedBox(height: 2),
                     Text(
                       description,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),

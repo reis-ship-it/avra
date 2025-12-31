@@ -23,7 +23,6 @@ import 'package:spots/core/services/social_media_connection_service.dart'
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
-// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeSocialMediaConnection_0 extends _i1.SmartFake
     implements _i2.SocialMediaConnection {
@@ -46,10 +45,31 @@ class MockSocialMediaConnectionService extends _i1.Mock
   }
 
   @override
+  _i4.Future<List<_i2.SocialMediaConnection>> connectPlatformsBatch({
+    required List<String>? platforms,
+    required String? agentId,
+    required String? userId,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #connectPlatformsBatch,
+          [],
+          {
+            #platforms: platforms,
+            #agentId: agentId,
+            #userId: userId,
+          },
+        ),
+        returnValue: _i4.Future<List<_i2.SocialMediaConnection>>.value(
+            <_i2.SocialMediaConnection>[]),
+      ) as _i4.Future<List<_i2.SocialMediaConnection>>);
+
+  @override
   _i4.Future<_i2.SocialMediaConnection> connectPlatform({
     required String? platform,
     required String? agentId,
     required String? userId,
+    Map<String, dynamic>? customOAuthConfig,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -59,6 +79,7 @@ class MockSocialMediaConnectionService extends _i1.Mock
             #platform: platform,
             #agentId: agentId,
             #userId: userId,
+            #customOAuthConfig: customOAuthConfig,
           },
         ),
         returnValue: _i4.Future<_i2.SocialMediaConnection>.value(
@@ -71,6 +92,7 @@ class MockSocialMediaConnectionService extends _i1.Mock
               #platform: platform,
               #agentId: agentId,
               #userId: userId,
+              #customOAuthConfig: customOAuthConfig,
             },
           ),
         )),
@@ -141,4 +163,20 @@ class MockSocialMediaConnectionService extends _i1.Mock
         returnValue:
             _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i4.Future<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<Map<String, dynamic>?> getAccessTokens(
+    String? agentId,
+    String? platform,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAccessTokens,
+          [
+            agentId,
+            platform,
+          ],
+        ),
+        returnValue: _i4.Future<Map<String, dynamic>?>.value(),
+      ) as _i4.Future<Map<String, dynamic>?>);
 }

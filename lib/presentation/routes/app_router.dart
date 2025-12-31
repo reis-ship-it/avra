@@ -20,6 +20,7 @@ import 'package:spots/presentation/pages/expertise/expertise_dashboard_page.dart
 import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:spots/presentation/pages/onboarding/ai_loading_page.dart';
+import 'package:spots/presentation/pages/onboarding/knot_discovery_page.dart';
 import 'package:spots/presentation/pages/supabase_test_page.dart';
 import 'package:spots/presentation/pages/search/hybrid_search_page.dart';
 import 'package:spots/presentation/pages/admin/ai2ai_admin_dashboard.dart';
@@ -51,6 +52,11 @@ import 'package:spots/presentation/pages/settings/ai2ai_learning_methods_page.da
 import 'package:spots/presentation/pages/settings/continuous_learning_page.dart';
 // Phase 4.5: Partnerships Page
 import 'package:spots/presentation/pages/profile/partnerships_page.dart';
+// Phase 10: Social Media Integration - Friend Discovery
+import 'package:spots/presentation/pages/social/friend_discovery_page.dart';
+// Phase 10: Social Media Integration - Public Handles
+import 'package:spots/presentation/pages/settings/public_handles_page.dart';
+import 'package:spots/presentation/pages/admin/learning_analytics_page.dart';
 // Phase 6, Week 29: Communities & Clubs
 import 'package:spots/presentation/pages/communities/community_page.dart';
 import 'package:spots/presentation/pages/clubs/club_page.dart';
@@ -68,6 +74,11 @@ import 'package:spots/domain/repositories/spots_repository.dart';
 import 'package:spots/data/repositories/spots_repository_impl.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/core/models/user.dart';
+// Phase 15: Reservations
+import 'package:spots/presentation/pages/reservations/my_reservations_page.dart';
+import 'package:spots/presentation/pages/reservations/create_reservation_page.dart';
+import 'package:spots/presentation/pages/reservations/reservation_detail_page.dart';
+import 'package:spots/core/models/reservation.dart';
 
 class AppRouter {
   // Route path helpers for legacy Navigator.pushNamed usages
@@ -333,6 +344,29 @@ class AppRouter {
               builder: (c, s) =>
                   const ProfilePage(), // Settings is part of ProfilePage
             ),
+            // Phase 15: Reservations
+            GoRoute(
+              path: 'reservations',
+              builder: (c, s) => const MyReservationsPage(),
+            ),
+            GoRoute(
+              path: 'reservations/create',
+              builder: (c, s) {
+                final extra = s.extra as Map<String, dynamic>?;
+                return CreateReservationPage(
+                  type: extra?['type'] as ReservationType?,
+                  targetId: extra?['targetId'] as String?,
+                  targetTitle: extra?['targetTitle'] as String?,
+                );
+              },
+            ),
+            GoRoute(
+              path: 'reservations/:id',
+              builder: (c, s) {
+                final id = s.pathParameters['id']!;
+                return ReservationDetailPage(reservationId: id);
+              },
+            ),
             GoRoute(
               path: 'profile/ai-status',
               builder: (c, s) => const AIPersonalityStatusPage(),
@@ -366,6 +400,16 @@ class AppRouter {
             GoRoute(
               path: 'profile/partnerships',
               builder: (c, s) => const PartnershipsPage(),
+            ),
+            // Phase 10: Social Media Integration - Friend Discovery
+            GoRoute(
+              path: 'friends/discover',
+              builder: (c, s) => const FriendDiscoveryPage(),
+            ),
+            // Phase 10: Social Media Integration - Public Handles
+            GoRoute(
+              path: 'settings/public-handles',
+              builder: (c, s) => const PublicHandlesPage(),
             ),
             // Phase 6, Week 29: Communities & Clubs
             GoRoute(
@@ -513,6 +557,26 @@ class AppRouter {
                 return ClubDetailPage(clubCommunityId: clubId);
               },
             ),
+            // Phase 11 Section 8: Learning Quality Monitoring
+            GoRoute(
+              path: 'admin/learning-analytics',
+              redirect: (context, state) async {
+                final authState = authBloc.state;
+
+                // Check authentication
+                if (authState is! Authenticated) {
+                  return '/login';
+                }
+
+                // Check admin role (optional - can be removed if all users should access)
+                // if (authState.user.role != UserRole.admin) {
+                //   return '/home';
+                // }
+
+                return null;
+              },
+              builder: (c, s) => const LearningAnalyticsPage(),
+            ),
             // Business Routes
             GoRoute(
               path: 'business/signup',
@@ -622,9 +686,38 @@ class AppRouter {
                   // but AILoadingPage loads data from OnboardingDataService, so these are
                   // primarily for fallback/verification. The page will use saved onboarding data.
                   onLoadingComplete: () {
-                    // Mark onboarding as completed and navigate to home
-                    c.go('/home');
+                    // Phase 3: Navigate to knot discovery page (optional step)
+                    // If knot services are available, show knot discovery
+                    // Otherwise, go directly to home
+                    try {
+                      final authState = c.read<AuthBloc>().state;
+                      if (authState is Authenticated) {
+                        c.go('/knot-discovery', extra: {
+                          'userId': authState.user.id,
+                        });
+                      } else {
+                        c.go('/home');
+                      }
+                    } catch (e) {
+                      // Fallback to home if knot discovery fails
+                      c.go('/home');
+                    }
                   },
+                );
+              },
+            ),
+            // Phase 3: Knot Discovery Page (optional onboarding step)
+            GoRoute(
+              path: 'knot-discovery',
+              builder: (c, s) {
+                final extra = s.extra as Map<String, dynamic>?;
+                final userId = extra?['userId'] as String?;
+                
+                // Try to get personality profile from AgentInitializationController result
+                // For now, pass null - page will load it from storage
+                return KnotDiscoveryPage(
+                  userId: userId,
+                  personalityProfile: null, // Will be loaded from storage
                 );
               },
             ),

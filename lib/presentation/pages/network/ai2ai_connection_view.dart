@@ -10,6 +10,7 @@
 /// - Connection management actions
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -193,7 +194,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -202,8 +203,8 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
             size: 64,
             color: AppColors.grey400,
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 16),
+          Text(
             'No active connections',
             style: TextStyle(
               fontSize: 18,
@@ -211,8 +212,8 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 8),
-          const Text(
+          SizedBox(height: 8),
+          Text(
             'AI2AI connections will appear here when established',
             style: TextStyle(
               fontSize: 14,
@@ -331,7 +332,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.access_time,
                     size: 14,
                     color: AppColors.textSecondary,
@@ -348,7 +349,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
                   if (connection.interactionHistory.isNotEmpty)
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.chat_bubble_outline,
                           size: 14,
                           color: AppColors.textSecondary,

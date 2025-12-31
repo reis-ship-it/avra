@@ -116,7 +116,7 @@ void main() {
         category: 'food',
       );
 
-      final preferenceMatch = PreferenceMatchDetails(
+      const preferenceMatch = PreferenceMatchDetails(
         categoryMatch: 0.9,
         localityMatch: 0.8,
         scopeMatch: 0.7,
@@ -178,7 +178,7 @@ void main() {
         category: 'food',
       );
 
-      final preferenceMatch = PreferenceMatchDetails(
+      const preferenceMatch = PreferenceMatchDetails(
         categoryMatch: 0.9,
         localityMatch: 0.8,
         scopeMatch: 0.7,
@@ -201,7 +201,7 @@ void main() {
 
   group('PreferenceMatchDetails Tests', () {
     test('should calculate overall match score', () {
-      final matchDetails = PreferenceMatchDetails(
+      const matchDetails = PreferenceMatchDetails(
         categoryMatch: 0.9,
         localityMatch: 0.8,
         scopeMatch: 0.7,
@@ -216,7 +216,7 @@ void main() {
 
     test('should serialize and deserialize without data loss', () {
       // Test business logic: JSON round-trip preservation
-      final matchDetails = PreferenceMatchDetails(
+      const matchDetails = PreferenceMatchDetails(
         categoryMatch: 0.9,
         localityMatch: 0.8,
         scopeMatch: 0.7,

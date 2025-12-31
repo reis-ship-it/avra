@@ -54,11 +54,11 @@ class SponsorableEventCard extends StatelessWidget {
                         color: AppColors.electricGreen.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.star, size: 16, color: AppColors.electricGreen),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4),
                           Text(
                             'Recommended',
                             style: TextStyle(
@@ -78,7 +78,7 @@ class SponsorableEventCard extends StatelessWidget {
               // Event Title
               Text(
                 brandMatch.metadata['eventTitle'] as String? ?? 'Event',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -91,11 +91,11 @@ class SponsorableEventCard extends StatelessWidget {
               if (brandMatch.metadata['hostName'] != null)
                 Row(
                   children: [
-                    Icon(Icons.person, size: 16, color: AppColors.textSecondary),
+                    const Icon(Icons.person, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
                       'By ${brandMatch.metadata['hostName']}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -118,7 +118,7 @@ class SponsorableEventCard extends StatelessWidget {
                     children: [
                       Text(
                         'Match Score: ${compatibility.overallScore.toStringAsFixed(0)}% ⭐',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: AppColors.electricGreen,
@@ -141,12 +141,12 @@ class SponsorableEventCard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 8, top: 2),
                       child: Row(
                         children: [
-                          Icon(Icons.check_circle, size: 14, color: AppColors.electricGreen),
+                          const Icon(Icons.check_circle, size: 14, color: AppColors.electricGreen),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               reason,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 12,
                                 color: AppColors.textSecondary,
                               ),
@@ -168,12 +168,12 @@ class SponsorableEventCard extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.account_balance_wallet, size: 16, color: AppTheme.primaryColor),
+                      const Icon(Icons.account_balance_wallet, size: 16, color: AppTheme.primaryColor),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Estimated: \$${brandMatch.estimatedContribution!.minAmount.toStringAsFixed(0)} - \$${brandMatch.estimatedContribution!.maxAmount.toStringAsFixed(0)}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w500,
@@ -194,7 +194,7 @@ class SponsorableEventCard extends StatelessWidget {
                       onPressed: onTap,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textPrimary,
-                        side: BorderSide(color: AppColors.grey300),
+                        side: const BorderSide(color: AppColors.grey300),
                       ),
                       child: const Text('View Details'),
                     ),
@@ -227,14 +227,14 @@ class SponsorableEventCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: AppColors.textSecondary,
             ),
           ),
           Text(
             '${score.toStringAsFixed(0)}%',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
               color: AppColors.textPrimary,

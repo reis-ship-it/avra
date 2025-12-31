@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 import 'package:spots/core/models/language_profile.dart';
 import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';
 import 'dart:math' as math;
@@ -24,7 +25,7 @@ class LanguagePatternLearningService {
   
   LanguagePatternLearningService({
     AgentIdService? agentIdService,
-  }) : _agentIdService = agentIdService ?? AgentIdService();
+  }) : _agentIdService = agentIdService ?? di.sl<AgentIdService>();
   
   /// Analyze a message and update language profile
   /// 

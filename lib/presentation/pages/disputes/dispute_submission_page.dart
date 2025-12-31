@@ -46,7 +46,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
   final _formKey = GlobalKey<FormState>();
 
   DisputeType? _selectedType;
-  List<String> _evidenceUrls = [];
+  final List<String> _evidenceUrls = [];
   bool _isSubmitting = false;
   String? _error;
 
@@ -186,12 +186,12 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline, color: AppColors.error),
+                        const Icon(Icons.error_outline, color: AppColors.error),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             _error!,
-                            style: TextStyle(color: AppColors.error),
+                            style: const TextStyle(color: AppColors.error),
                           ),
                         ),
                       ],
@@ -238,7 +238,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Event Information',
             style: TextStyle(
               fontSize: 16,
@@ -249,7 +249,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
           const SizedBox(height: 8),
           Text(
             widget.event.title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -258,7 +258,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
           const SizedBox(height: 4),
           Text(
             '${_formatDateTime(widget.event.startTime)} • ${widget.event.location ?? 'Location TBD'}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
             ),
@@ -272,7 +272,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Dispute Type *',
           style: TextStyle(
             fontSize: 16,
@@ -285,11 +285,11 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
           return RadioListTile<DisputeType>(
             title: Text(
               type.displayName,
-              style: TextStyle(color: AppColors.textPrimary),
+              style: const TextStyle(color: AppColors.textPrimary),
             ),
             subtitle: Text(
               _getTypeDescription(type),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),
@@ -312,7 +312,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Description *',
           style: TextStyle(
             fontSize: 16,
@@ -328,20 +328,20 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
             hintText: 'Please describe the issue in detail...',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppTheme.primaryColor),
+              borderSide: const BorderSide(color: AppTheme.primaryColor),
             ),
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: TextStyle(color: AppColors.textPrimary),
+          style: const TextStyle(color: AppColors.textPrimary),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
               return 'Please provide a description';
@@ -360,7 +360,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Evidence (Optional)',
           style: TextStyle(
             fontSize: 16,
@@ -369,7 +369,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           'Upload photos or screenshots to support your dispute',
           style: TextStyle(
             fontSize: 14,
@@ -386,7 +386,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
                 label: const Text('Choose Photo'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.primaryColor,
-                  side: BorderSide(color: AppTheme.primaryColor),
+                  side: const BorderSide(color: AppTheme.primaryColor),
                 ),
               ),
             ),
@@ -398,7 +398,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
                 label: const Text('Take Photo'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.primaryColor,
-                  side: BorderSide(color: AppTheme.primaryColor),
+                  side: const BorderSide(color: AppTheme.primaryColor),
                 ),
               ),
             ),
@@ -427,7 +427,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
                             color: AppColors.grey200,
-                            child: Icon(Icons.image, color: AppColors.textSecondary),
+                            child: const Icon(Icons.image, color: AppColors.textSecondary),
                           );
                         },
                       ),
@@ -444,7 +444,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
                       },
                       child: Container(
                         padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: AppColors.error,
                           shape: BoxShape.circle,
                         ),

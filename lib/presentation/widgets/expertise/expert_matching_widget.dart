@@ -146,7 +146,7 @@ class ExpertMatchingWidget extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             message,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: AppColors.textSecondary,
             ),
@@ -192,7 +192,7 @@ class ExpertMatchingWidget extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               match.matchReason,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),
@@ -212,7 +212,7 @@ class ExpertMatchingWidget extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 'Also: ${match.complementaryExpertise.join(', ')}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 11,
                   color: AppColors.electricGreen,
                   fontStyle: FontStyle.italic,

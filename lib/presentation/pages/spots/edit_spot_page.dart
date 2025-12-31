@@ -112,8 +112,8 @@ class _EditSpotPageState extends State<EditSpotPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Location updated successfully'),
+          const SnackBar(
+            content: Text('Location updated successfully'),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -146,8 +146,8 @@ class _EditSpotPageState extends State<EditSpotPage> {
 
       Navigator.pop(context, updatedSpot);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Spot updated successfully'),
+        const SnackBar(
+          content: Text('Spot updated successfully'),
           backgroundColor: AppTheme.successColor,
         ),
       );
@@ -373,7 +373,7 @@ class _EditSpotPageState extends State<EditSpotPage> {
                           const SizedBox(height: 8),
                           Text(
                             _locationError!,
-                            style: TextStyle(color: AppTheme.errorColor),
+                            style: const TextStyle(color: AppTheme.errorColor),
                           ),
                         ],
                       ],

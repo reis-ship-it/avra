@@ -60,14 +60,14 @@ void main() {
         userId: 'attendee-456',
         userRole: 'attendee',
         overallRating: 4.5,
-        categoryRatings: {
+        categoryRatings: const {
           'organization': 5.0,
           'content_quality': 4.5,
           'venue': 4.0,
         },
         comments: 'Great event!',
-        highlights: ['Engaging host', 'Great location'],
-        improvements: ['Could use more breaks'],
+        highlights: const ['Engaging host', 'Great location'],
+        improvements: const ['Could use more breaks'],
         wouldAttendAgain: true,
         wouldRecommend: true,
         submittedAt: DateTime.now(),

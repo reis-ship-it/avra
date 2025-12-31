@@ -285,14 +285,14 @@ class GeographicExpansion extends Equatable {
     } catch (_) {}
     // #endregion
 
-    Map<String, dynamic>? _asStringKeyedMap(dynamic v) {
+    Map<String, dynamic>? asStringKeyedMap(dynamic v) {
       if (v == null) return null;
       if (v is Map<String, dynamic>) return v;
       if (v is Map) return Map<String, dynamic>.from(v);
       return null;
     }
 
-    final localityCoverageMap = _asStringKeyedMap(json['localityCoverage']);
+    final localityCoverageMap = asStringKeyedMap(json['localityCoverage']);
     final localityCoverage = <String, double>{};
     if (localityCoverageMap != null) {
       localityCoverageMap.forEach((key, value) {
@@ -300,7 +300,7 @@ class GeographicExpansion extends Equatable {
       });
     }
 
-    final cityCoverageMap = _asStringKeyedMap(json['cityCoverage']);
+    final cityCoverageMap = asStringKeyedMap(json['cityCoverage']);
     final cityCoverage = <String, double>{};
     if (cityCoverageMap != null) {
       cityCoverageMap.forEach((key, value) {
@@ -308,7 +308,7 @@ class GeographicExpansion extends Equatable {
       });
     }
 
-    final stateCoverageMap = _asStringKeyedMap(json['stateCoverage']);
+    final stateCoverageMap = asStringKeyedMap(json['stateCoverage']);
     final stateCoverage = <String, double>{};
     if (stateCoverageMap != null) {
       stateCoverageMap.forEach((key, value) {
@@ -316,7 +316,7 @@ class GeographicExpansion extends Equatable {
       });
     }
 
-    final nationCoverageMap = _asStringKeyedMap(json['nationCoverage']);
+    final nationCoverageMap = asStringKeyedMap(json['nationCoverage']);
     final nationCoverage = <String, double>{};
     if (nationCoverageMap != null) {
       nationCoverageMap.forEach((key, value) {
@@ -324,7 +324,7 @@ class GeographicExpansion extends Equatable {
       });
     }
 
-    final commutePatternsMap = _asStringKeyedMap(json['commutePatterns']);
+    final commutePatternsMap = asStringKeyedMap(json['commutePatterns']);
     final commutePatterns = <String, List<String>>{};
     if (commutePatternsMap != null) {
       commutePatternsMap.forEach((key, value) {
@@ -332,7 +332,7 @@ class GeographicExpansion extends Equatable {
       });
     }
 
-    final eventHostingLocationsMap = _asStringKeyedMap(json['eventHostingLocations']);
+    final eventHostingLocationsMap = asStringKeyedMap(json['eventHostingLocations']);
     final eventHostingLocations = <String, List<String>>{};
     if (eventHostingLocationsMap != null) {
       eventHostingLocationsMap.forEach((key, value) {

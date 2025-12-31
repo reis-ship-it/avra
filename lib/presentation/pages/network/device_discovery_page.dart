@@ -14,6 +14,7 @@
 /// - Privacy-preserving device info
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -238,8 +239,8 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
   
   Widget _buildDevicesList() {
     if (!_isScanning) {
-      return Padding(
-        padding: const EdgeInsets.all(16),
+      return const Padding(
+        padding: EdgeInsets.all(16),
         child: Center(
           child: Column(
             children: [
@@ -248,7 +249,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                 size: 64,
                 color: AppColors.grey300,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 'Start discovery to find nearby devices',
                 style: TextStyle(
@@ -263,13 +264,13 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
     }
     
     if (_discoveredDevices.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(16),
+      return const Padding(
+        padding: EdgeInsets.all(16),
         child: Center(
           child: Column(
             children: [
-              const CircularProgressIndicator(),
-              const SizedBox(height: 16),
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
               Text(
                 'Searching for nearby SPOTS devices...',
                 style: TextStyle(
@@ -286,8 +287,8 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Text(
             'Discovered Devices',
             style: TextStyle(
@@ -369,7 +370,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                       ),
                       const SizedBox(width: 12),
                       if (device.signalStrength != null) ...[
-                        Icon(
+                        const Icon(
                           Icons.signal_cellular_alt,
                           size: 14,
                           color: AppColors.textSecondary,
@@ -395,7 +396,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                   color: AppColors.electricGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
@@ -403,7 +404,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                       size: 14,
                       color: AppColors.electricGreen,
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4),
                     Text(
                       'AI',
                       style: TextStyle(

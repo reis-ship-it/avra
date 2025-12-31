@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/ai2ai/anonymous_communication.dart' as anonymous_communication;
 import 'package:spots/core/ai2ai/trust_network.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
@@ -15,10 +15,10 @@ import 'package:spots/core/constants/vibe_constants.dart';
 /// These tests ensure ZERO user data exposure throughout the AI2AI ecosystem
 /// Critical for both development security and deployment privacy compliance
 void main() {
-  const _debugLogPath = '/Users/reisgordon/SPOTS/.cursor/debug.log';
-  const _sessionId = 'debug-session';
+  const debugLogPath = '/Users/reisgordon/SPOTS/.cursor/debug.log';
+  const sessionId = 'debug-session';
 
-  void _agentLog({
+  void agentLog({
     required String runId,
     required String hypothesisId,
     required String location,
@@ -28,7 +28,7 @@ void main() {
     // #region agent log
     try {
       final payload = <String, dynamic>{
-        'sessionId': _sessionId,
+        'sessionId': sessionId,
         'runId': runId,
         'hypothesisId': hypothesisId,
         'location': location,
@@ -36,7 +36,7 @@ void main() {
         'data': data ?? <String, dynamic>{},
         'timestamp': DateTime.now().millisecondsSinceEpoch,
       };
-      File(_debugLogPath).writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
+      File(debugLogPath).writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
     } catch (_) {}
     // #endregion
   }
@@ -46,7 +46,7 @@ void main() {
       // Clear debug log (tool deletion is blocked in this environment)
       // #region agent log
       try {
-        File(_debugLogPath).writeAsStringSync('', mode: FileMode.write);
+        File(debugLogPath).writeAsStringSync('', mode: FileMode.write);
       } catch (_) {}
       // #endregion
     });
@@ -85,7 +85,7 @@ void main() {
               reason: 'PersonalityProfile leaked user data: $pattern');
         }
 
-        _agentLog(
+        agentLog(
           runId: 'pre-fix',
           hypothesisId: 'H1',
           location: 'privacy_validation_test.dart:PersonalityProfile',
@@ -148,7 +148,7 @@ void main() {
         ];
 
         for (final payload in invalidPayloads) {
-          _agentLog(
+          agentLog(
             runId: 'pre-fix',
             hypothesisId: 'H2',
             location: 'privacy_validation_test.dart:AnonymousMessage',
@@ -255,7 +255,7 @@ void main() {
         expect(anonymizedVibeData.vibeSignature, isNot(equals(testVibe.hashedSignature)));
         expect(anonymizedVibeData.vibeSignature, isNotEmpty);
 
-        _agentLog(
+        agentLog(
           runId: 'pre-fix',
           hypothesisId: 'H3',
           location: 'privacy_validation_test.dart:anonymizeUserVibe',
@@ -294,7 +294,7 @@ void main() {
 
         // Should have some variance due to noise
         final variance = _calculateVariance(explorationValues);
-        _agentLog(
+        agentLog(
           runId: 'pre-fix',
           hypothesisId: 'H4',
           location: 'privacy_validation_test.dart:applyDifferentialPrivacy',
@@ -332,7 +332,7 @@ void main() {
 
         // Should have high diversity (entropy)
         final entropyRatio = uniqueFingerprints.length / fingerprints.length;
-        _agentLog(
+        agentLog(
           runId: 'pre-fix',
           hypothesisId: 'H5',
           location: 'privacy_validation_test.dart:entropy',
@@ -445,8 +445,8 @@ void main() {
           targetAgentId: 'test-agent',
           messageType: anonymous_communication.MessageType.discoverySync,
           encryptedPayload: 'expired-data',
-          timestamp: DateTime.now().subtract(Duration(hours: 2)),
-          expiresAt: DateTime.now().subtract(Duration(hours: 1)), // Already expired
+          timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+          expiresAt: DateTime.now().subtract(const Duration(hours: 1)), // Already expired
           routingHops: [],
           privacyLevel: anonymous_communication.PrivacyLevel.maximum,
         );
@@ -556,7 +556,7 @@ void main() {
         // Phase 8.3: Use agentId for privacy protection
         final oldProfile = PersonalityProfile.initial('agent_retention-test', userId: 'retention-test').evolve(
           additionalLearning: {
-            'data_created': DateTime.now().subtract(Duration(days: 400)).toIso8601String(),
+            'data_created': DateTime.now().subtract(const Duration(days: 400)).toIso8601String(),
           },
         );
 

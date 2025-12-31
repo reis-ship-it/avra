@@ -38,7 +38,7 @@ void main() {
         connectionsNeedingAttention: ['conn-3'],
         learningVelocityDistribution: LearningVelocityDistribution.normal(),
         optimizationOpportunities: [],
-        averageConnectionDuration: Duration(minutes: 20),
+        averageConnectionDuration: const Duration(minutes: 20),
         totalAlertsGenerated: 0,
         generatedAt: TestHelpers.createTestDateTime(),
       );
@@ -69,7 +69,7 @@ void main() {
         connectionsNeedingAttention: [],
         learningVelocityDistribution: LearningVelocityDistribution.normal(),
         optimizationOpportunities: [],
-        averageConnectionDuration: Duration(minutes: 15),
+        averageConnectionDuration: const Duration(minutes: 15),
         totalAlertsGenerated: 0,
         generatedAt: TestHelpers.createTestDateTime(),
       );
@@ -109,7 +109,7 @@ void main() {
         connectionsNeedingAttention: [],
         learningVelocityDistribution: LearningVelocityDistribution.normal(),
         optimizationOpportunities: [],
-        averageConnectionDuration: Duration(minutes: 20),
+        averageConnectionDuration: const Duration(minutes: 20),
         totalAlertsGenerated: 0,
         generatedAt: TestHelpers.createTestDateTime(),
       );
@@ -150,7 +150,7 @@ void main() {
         connectionsNeedingAttention: [],
         learningVelocityDistribution: LearningVelocityDistribution.normal(),
         optimizationOpportunities: [],
-        averageConnectionDuration: Duration(minutes: 20),
+        averageConnectionDuration: const Duration(minutes: 20),
         totalAlertsGenerated: 0,
         generatedAt: TestHelpers.createTestDateTime(),
       );
@@ -174,7 +174,7 @@ void main() {
         connectionsNeedingAttention: ['conn-3'],
         learningVelocityDistribution: LearningVelocityDistribution.normal(),
         optimizationOpportunities: [],
-        averageConnectionDuration: Duration(minutes: 20),
+        averageConnectionDuration: const Duration(minutes: 20),
         totalAlertsGenerated: 0,
         generatedAt: TestHelpers.createTestDateTime(),
       );
@@ -223,7 +223,7 @@ void main() {
         connectionsNeedingAttention: List.generate(3, (i) => 'conn-attn-$i'),
         learningVelocityDistribution: LearningVelocityDistribution.normal(),
         optimizationOpportunities: [],
-        averageConnectionDuration: Duration(minutes: 20),
+        averageConnectionDuration: const Duration(minutes: 20),
         totalAlertsGenerated: 0,
         generatedAt: TestHelpers.createTestDateTime(),
       );
@@ -268,7 +268,7 @@ void main() {
         connectionsNeedingAttention: [], // No connections need attention
         learningVelocityDistribution: LearningVelocityDistribution.normal(),
         optimizationOpportunities: [],
-        averageConnectionDuration: Duration(minutes: 25),
+        averageConnectionDuration: const Duration(minutes: 25),
         totalAlertsGenerated: 0,
         generatedAt: TestHelpers.createTestDateTime(),
       );
@@ -297,7 +297,7 @@ void main() {
         connectionsNeedingAttention: ['conn-1', 'conn-2'],
         learningVelocityDistribution: LearningVelocityDistribution.normal(),
         optimizationOpportunities: [],
-        averageConnectionDuration: Duration(minutes: 5),
+        averageConnectionDuration: const Duration(minutes: 5),
         totalAlertsGenerated: 2,
         generatedAt: TestHelpers.createTestDateTime(),
       );

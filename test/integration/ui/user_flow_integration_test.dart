@@ -146,7 +146,7 @@ void main() {
       }
     });
 
-    Widget _wrapWithAuthBloc(Widget child) {
+    Widget wrapWithAuthBloc(Widget child) {
       return BlocProvider<AuthBloc>.value(
         value: mockAuthBloc,
         child: child,
@@ -260,7 +260,7 @@ void main() {
         // Arrange & Act - Start at Brand Discovery
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(const BrandDiscoveryPage()),
+            home: wrapWithAuthBloc(const BrandDiscoveryPage()),
           ),
         );
         await tester.pumpAndSettle();
@@ -277,7 +277,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(SponsorshipCheckoutPage(
+            home: wrapWithAuthBloc(SponsorshipCheckoutPage(
               event: testEvent,
             )),
           ),
@@ -294,7 +294,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pump();
@@ -308,7 +308,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentSuccessPage(
+            home: wrapWithAuthBloc(PaymentSuccessPage(
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
@@ -325,7 +325,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(const BrandAnalyticsPage()),
+            home: wrapWithAuthBloc(const BrandAnalyticsPage()),
           ),
         );
         await tester.pump();
@@ -344,7 +344,7 @@ void main() {
         // Test analytics page renders (final step in flow)
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(const BrandAnalyticsPage()),
+            home: wrapWithAuthBloc(const BrandAnalyticsPage()),
           ),
         );
         await tester.pump();
@@ -369,7 +369,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -382,7 +382,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipCheckoutPage(
+            home: wrapWithAuthBloc(PartnershipCheckoutPage(
               partnership: testPartnership,
               event: testEvent,
             )),
@@ -399,7 +399,7 @@ void main() {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentSuccessPage(
+            home: wrapWithAuthBloc(PaymentSuccessPage(
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
@@ -420,7 +420,7 @@ void main() {
         // Test Partnership Proposal page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -429,7 +429,7 @@ void main() {
         // Test Partnership Checkout page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipCheckoutPage(
+            home: wrapWithAuthBloc(PartnershipCheckoutPage(
               partnership: testPartnership,
               event: testEvent,
             )),
@@ -441,7 +441,7 @@ void main() {
         // Test Payment Success page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentSuccessPage(
+            home: wrapWithAuthBloc(PaymentSuccessPage(
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
@@ -484,7 +484,7 @@ void main() {
         // Test Partnership Proposal page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -501,7 +501,7 @@ void main() {
         // Test Brand Discovery page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(const BrandDiscoveryPage()),
+            home: wrapWithAuthBloc(const BrandDiscoveryPage()),
           ),
         );
         await tester.pumpAndSettle();
@@ -510,7 +510,7 @@ void main() {
         // Test Sponsorship Checkout page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(SponsorshipCheckoutPage(
+            home: wrapWithAuthBloc(SponsorshipCheckoutPage(
               sponsorship: testSponsorship,
               event: testEvent,
             )),
@@ -528,7 +528,7 @@ void main() {
         // Test Partnership Proposal page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -537,7 +537,7 @@ void main() {
         // Test Partnership Checkout page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipCheckoutPage(
+            home: wrapWithAuthBloc(PartnershipCheckoutPage(
               partnership: testPartnership,
               event: testEvent,
             )),
@@ -555,7 +555,7 @@ void main() {
         // Test Checkout page
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(CheckoutPage(event: testEvent)),
+            home: wrapWithAuthBloc(CheckoutPage(event: testEvent)),
           ),
         );
         await tester.pump();
@@ -567,7 +567,7 @@ void main() {
         // so we inject the mocked service to ensure test isolation
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentSuccessPage(
+            home: wrapWithAuthBloc(PaymentSuccessPage(
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
@@ -602,7 +602,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(const BrandDiscoveryPage()),
+            home: wrapWithAuthBloc(const BrandDiscoveryPage()),
           ),
         );
         // Use limited pump() calls instead of pumpAndSettle() to avoid timeout
@@ -643,7 +643,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -672,7 +672,7 @@ void main() {
         
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(const BrandDiscoveryPage()),
+            home: wrapWithAuthBloc(const BrandDiscoveryPage()),
           ),
         );
         await tester.pumpAndSettle();
@@ -686,7 +686,7 @@ void main() {
         
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -716,7 +716,7 @@ void main() {
           // Use same approach as responsive design test to avoid timeout
           await tester.pumpWidget(
             MaterialApp(
-              home: _wrapWithAuthBloc(const BrandDiscoveryPage()),
+              home: wrapWithAuthBloc(const BrandDiscoveryPage()),
             ),
           );
           // First frame - may show loading
@@ -741,7 +741,7 @@ void main() {
         
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pump(); // First frame - may show loading
@@ -757,7 +757,7 @@ void main() {
         
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(const BrandDiscoveryPage()),
+            home: wrapWithAuthBloc(const BrandDiscoveryPage()),
           ),
         );
         await tester.pumpAndSettle();
@@ -771,7 +771,7 @@ void main() {
         
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         // Use pump() instead of pumpAndSettle() to avoid timeout

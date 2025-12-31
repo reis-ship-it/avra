@@ -89,14 +89,14 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.stars,
                   color: AppTheme.primaryColor,
                   size: 24,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   'Your Expertise',
                   style: TextStyle(
@@ -138,14 +138,14 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
+      child: const Row(
         children: [
           Icon(
             Icons.info_outline,
             color: AppColors.textSecondary,
             size: 20,
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Expanded(
             child: Text(
               'Start contributing to earn expertise pins!',
@@ -209,7 +209,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Expertise Levels',
           style: TextStyle(
             fontSize: 14,
@@ -273,7 +273,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
               ),
               child: Text(
                 '$count',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   color: AppColors.white,
@@ -298,7 +298,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Category Expertise',
           style: TextStyle(
             fontSize: 14,
@@ -348,7 +348,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
               children: [
                 Text(
                   pin.category,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -364,7 +364,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
                     const SizedBox(width: 4),
                     Text(
                       '${pin.level.displayName} Level',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -373,7 +373,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
                       const SizedBox(width: 8),
                       Text(
                         '• ${pin.location}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -396,7 +396,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
             ),
             child: Text(
               pin.level.displayName,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.primaryColor,
@@ -441,11 +441,11 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
 
     // Get base thresholds (would come from ExpertiseRequirements in production)
     // For now, use placeholder - in production would get from service
-    final baseThresholds = ThresholdValues(
+    const baseThresholds = ThresholdValues(
       minVisits: 10,
       minRatings: 5,
       minAvgRating: 4.0,
-      minTimeInCategory: const Duration(days: 30),
+      minTimeInCategory: Duration(days: 30),
       minCommunityEngagement: 3,
       minListCuration: 1,
       minEventHosting: null,
@@ -473,7 +473,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Progress to Next Level',
           style: TextStyle(
             fontSize: 14,
@@ -507,7 +507,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
           children: [
             Text(
               pin.category,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: AppColors.textPrimary,
@@ -516,13 +516,13 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
             if (nextLevel != null)
               Text(
                 '→ ${nextLevel.displayName}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
               )
             else
-              Text(
+              const Text(
                 'Max Level',
                 style: TextStyle(
                   fontSize: 12,
@@ -539,13 +539,13 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
             value: progressPercentage / 100.0,
             minHeight: 6,
             backgroundColor: AppColors.grey200,
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
           ),
         ),
         const SizedBox(height: 2),
         Text(
           '${progressPercentage.toStringAsFixed(0)}%',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 10,
             color: AppColors.textSecondary,
           ),
@@ -585,7 +585,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
           ),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.handshake,
                 size: 16,
                 color: AppTheme.primaryColor,
@@ -594,7 +594,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
               Expanded(
                 child: Text(
                   '+${(totalBoost * 100).toStringAsFixed(1)}% from partnerships',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryColor,
@@ -610,7 +610,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: Text(
+                child: const Text(
                   'View',
                   style: TextStyle(
                     fontSize: 12,

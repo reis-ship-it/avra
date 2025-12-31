@@ -17,7 +17,7 @@ void main() {
         (WidgetTester tester) async {
       // Test business logic: Partnership management page display and functionality
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: PartnershipManagementPage(),
         ),
       );

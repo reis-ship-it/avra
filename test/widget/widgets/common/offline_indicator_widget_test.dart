@@ -1,6 +1,7 @@
 /// Tests for Offline Indicator Widget
 ///
 /// Part of Feature Matrix Phase 1.3: LLM Full Integration
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +17,7 @@ void main() {
         (tester) async {
       // Test business logic: offline indicator display and interactions
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: OfflineIndicatorWidget(isOffline: true),
           ),
@@ -28,7 +29,7 @@ void main() {
       expect(find.byIcon(Icons.cloud_off), findsOneWidget);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: OfflineIndicatorWidget(isOffline: false),
           ),
@@ -37,7 +38,7 @@ void main() {
       expect(find.text('Limited Functionality'), findsNothing);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: OfflineIndicatorWidget(isOffline: true),
           ),
@@ -68,7 +69,7 @@ void main() {
       expect(retryCalled, isTrue);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: OfflineIndicatorWidget(
               isOffline: true,
@@ -83,7 +84,7 @@ void main() {
       expect(find.text('Limited Functionality'), findsNothing);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: OfflineIndicatorWidget(
               isOffline: true,
@@ -107,7 +108,7 @@ void main() {
         (tester) async {
       // Test business logic: offline banner display and interactions
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: OfflineBanner(isOffline: true),
           ),
@@ -117,7 +118,7 @@ void main() {
       expect(find.byIcon(Icons.cloud_off), findsOneWidget);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: OfflineBanner(isOffline: false),
           ),

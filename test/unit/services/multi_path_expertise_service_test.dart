@@ -107,7 +107,7 @@ void main() {
           userId: 'user-1',
           category: 'Coffee',
           degrees: [
-            EducationCredential(
+            const EducationCredential(
               degree: 'MS',
               field: 'Food Science',
               institution: 'University',

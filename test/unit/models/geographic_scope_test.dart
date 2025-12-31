@@ -29,7 +29,7 @@ void main() {
           userId: 'user-123',
           level: ExpertiseLevel.local,
           locality: 'Greenpoint',
-          allowedLocalities: ['Greenpoint'],
+          allowedLocalities: const ['Greenpoint'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -37,7 +37,7 @@ void main() {
           userId: 'user-456',
           level: ExpertiseLevel.city,
           city: 'Brooklyn',
-          allowedLocalities: ['Greenpoint', 'DUMBO', 'Sunset Park'],
+          allowedLocalities: const ['Greenpoint', 'DUMBO', 'Sunset Park'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -73,7 +73,7 @@ void main() {
           userId: 'user-456',
           level: ExpertiseLevel.city,
           city: 'Brooklyn',
-          allowedCities: ['Brooklyn'],
+          allowedCities: const ['Brooklyn'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -98,7 +98,7 @@ void main() {
         final scope = GeographicScope(
           userId: 'user-123',
           level: ExpertiseLevel.city,
-          allowedLocalities: ['Greenpoint', 'DUMBO', 'Sunset Park'],
+          allowedLocalities: const ['Greenpoint', 'DUMBO', 'Sunset Park'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -115,7 +115,7 @@ void main() {
         final scope = GeographicScope(
           userId: 'user-123',
           level: ExpertiseLevel.regional,
-          allowedCities: ['Brooklyn', 'Manhattan', 'Queens'],
+          allowedCities: const ['Brooklyn', 'Manhattan', 'Queens'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -133,7 +133,7 @@ void main() {
           level: ExpertiseLevel.local,
           locality: 'Greenpoint',
           city: 'Brooklyn',
-          allowedLocalities: ['Greenpoint'],
+          allowedLocalities: const ['Greenpoint'],
           createdAt: testDate,
           updatedAt: testDate,
         );

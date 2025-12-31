@@ -201,7 +201,7 @@ class CommunityTrendDetectionService {
     for (final list in lists) {
       for (final _ in list.spotIds) {
         // Analyze without accessing individual user data
-        final category = 'general'; // Would be derived from spot data
+        const category = 'general'; // Would be derived from spot data
         categoryCount[category] = (categoryCount[category] ?? 0) + 1;
       }
     }

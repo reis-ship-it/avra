@@ -102,7 +102,7 @@ void main() {
     group('generateAnalyticsDashboard', () {
       test('should generate dashboard for specified time window', () async {
         // Arrange
-        final timeWindow = const Duration(days: 7);
+        const timeWindow = Duration(days: 7);
 
         // Act
         final dashboard = await networkAnalytics.generateAnalyticsDashboard(timeWindow);
@@ -123,7 +123,7 @@ void main() {
 
       test('should return empty dashboard on error', () async {
         // Arrange
-        final timeWindow = const Duration(days: 1);
+        const timeWindow = Duration(days: 1);
 
         // Act
         final dashboard = await networkAnalytics.generateAnalyticsDashboard(timeWindow);

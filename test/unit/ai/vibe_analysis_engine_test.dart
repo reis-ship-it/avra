@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart' show UserVibeAnalyzer, VibeCompatibilityResult;
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
 
@@ -31,7 +31,7 @@ void main() {
       test('should compile user vibe without errors', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         final vibe = await analyzer.compileUserVibe(userId, profile);
@@ -44,7 +44,7 @@ void main() {
       test('should handle different personality profiles', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile1 = PersonalityProfile.initial(agentId, userId: userId);
         final profile2 = profile1.evolve(
           newDimensions: {'exploration_eagerness': 0.8},
@@ -99,7 +99,7 @@ void main() {
       test('should ensure vibe compilation preserves privacy', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         final vibe = await analyzer.compileUserVibe(userId, profile);

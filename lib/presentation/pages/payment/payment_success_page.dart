@@ -134,7 +134,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                     color: AppColors.electricGreen.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.check_circle,
                     size: 80,
                     color: AppColors.electricGreen,
@@ -144,7 +144,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 const SizedBox(height: 24),
 
                 // Success Message
-                Text(
+                const Text(
                   'Payment Successful!',
                   style: TextStyle(
                     fontSize: 28,
@@ -160,7 +160,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                   _registrationComplete
                       ? 'You are registered for ${widget.quantity > 1 ? "${widget.quantity} tickets" : "the event"}!'
                       : 'Registering you for the event...',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
@@ -185,12 +185,12 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline, color: AppColors.error),
+                        const Icon(Icons.error_outline, color: AppColors.error),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             _error!,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.error,
                               fontSize: 14,
                             ),
@@ -230,7 +230,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                                 children: [
                                   Text(
                                     widget.event.title,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.textPrimary,
@@ -239,7 +239,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                                   const SizedBox(height: 4),
                                   Text(
                                     widget.event.getEventTypeDisplayName(),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       color: AppColors.textSecondary,
                                     ),
@@ -293,7 +293,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.isFirst);
                   },
-                  child: Text(
+                  child: const Text(
                     'Back to Home',
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
@@ -316,7 +316,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textPrimary,
               ),

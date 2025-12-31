@@ -92,7 +92,7 @@ void main() {
           requireAuthentication: true,
           allowedRoles: ['verified_member'],
           logAccess: true,
-          dataRetention: Duration(days: 30),
+          dataRetention: const Duration(days: 30),
         ),
       );
 
@@ -230,7 +230,7 @@ void main() {
           requireAuthentication: true,
           allowedRoles: ['verified_member'],
           logAccess: true,
-          dataRetention: Duration(days: 30),
+          dataRetention: const Duration(days: 30),
         ),
       );
 
@@ -269,7 +269,7 @@ void main() {
           requireAuthentication: true,
           allowedRoles: ['admin', 'verified'],
           logAccess: true,
-          dataRetention: Duration(days: 60),
+          dataRetention: const Duration(days: 60),
         ),
       );
 
@@ -314,7 +314,7 @@ void main() {
           requireAuthentication: true,
           allowedRoles: ['admin', 'verified'],
           logAccess: true,
-          dataRetention: Duration(days: 14),
+          dataRetention: const Duration(days: 14),
         ),
       );
 

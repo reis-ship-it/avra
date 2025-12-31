@@ -1,11 +1,14 @@
 import 'dart:developer' as developer;
 import 'package:geolocator/geolocator.dart';
-import 'package:spots/core/models/personality_chat_message.dart';
+import 'package:spots_ai/models/personality_chat_message.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/message_encryption_service.dart';
 import 'package:spots/core/services/language_pattern_learning_service.dart';
 import 'package:spots/core/services/llm_service.dart';
 import 'package:spots/core/ai/personality_learning.dart' as pl;
+import 'package:spots/core/ai/facts_index.dart';
+import 'package:get_it/get_it.dart';
+import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/repositories/hybrid_search_repository.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';
@@ -39,7 +42,8 @@ class PersonalityAgentChatService {
     required LLMService llmService,
     pl.PersonalityLearning? personalityLearning,
     HybridSearchRepository? searchRepository,
-  })  : _agentIdService = agentIdService ?? AgentIdService(),
+      })  : _agentIdService = agentIdService ?? 
+            di.sl<AgentIdService>(),
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _languageLearningService = languageLearningService ?? LanguagePatternLearningService(),
         _llmService = llmService,
@@ -116,19 +120,55 @@ class PersonalityAgentChatService {
       // Get language style summary
       final languageStyle = await _languageLearningService.getLanguageStyleSummary(userId);
       
-      // Generate agent response
-      final response = await _llmService.chat(
-        messages: historyMessages,
-        context: LLMContext(
+      // Phase 11 Section 5: Use generateWithContext() for structured facts integration
+      // This automatically retrieves structured facts and includes them in context
+      String response;
+      try {
+        // Use generateWithContext() with conversation history for enriched context
+        response = await _llmService.generateWithContext(
+          query: userMessage, // Use userMessage which may include search context
           userId: userId,
-          location: currentLocation,
-          personality: personality,
-          preferences: {},
-          languageStyle: languageStyle.isNotEmpty ? languageStyle : null,
-        ),
-        temperature: 0.7,
-        maxTokens: 500,
-      );
+          messages: historyMessages, // Include conversation history
+          temperature: 0.7,
+          maxTokens: 500,
+        );
+      } catch (e) {
+        developer.log(
+          'generateWithContext failed, falling back to chat() with manual context: $e',
+          name: _logName,
+        );
+        // Fallback: Manually retrieve structured facts and build context
+        Map<String, dynamic> enrichedPreferences = {};
+        try {
+          if (GetIt.instance.isRegistered<FactsIndex>()) {
+            final factsIndex = GetIt.instance<FactsIndex>();
+            final facts = await factsIndex.retrieveFacts(userId: userId);
+            
+            // Merge structured facts into preferences
+            enrichedPreferences = {
+              'traits': facts.traits,
+              'places': facts.places,
+              'social_graph': facts.socialGraph,
+            };
+          }
+        } catch (factsError) {
+          developer.log('Error retrieving structured facts: $factsError', name: _logName);
+        }
+        
+        // Generate agent response with fallback context
+        response = await _llmService.chat(
+          messages: historyMessages,
+          context: LLMContext(
+            userId: userId,
+            location: currentLocation,
+            personality: personality,
+            preferences: enrichedPreferences.isNotEmpty ? enrichedPreferences : null,
+            languageStyle: languageStyle.isNotEmpty ? languageStyle : null,
+          ),
+          temperature: 0.7,
+          maxTokens: 500,
+        );
+      }
       
       // Encrypt and save agent response
       await _saveMessage(

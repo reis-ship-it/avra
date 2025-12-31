@@ -12,6 +12,7 @@
 /// - Mock LLMService: Simulates LLM backend
 /// - Mock Connectivity: Simulates network state
 /// - Mock BuildContext: Simulates Flutter context
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

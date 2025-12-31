@@ -143,7 +143,7 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                               CircleAvatar(
                                 radius: 24,
                                 backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-                                child: Icon(
+                                child: const Icon(
                                   Icons.business,
                                   color: AppTheme.primaryColor,
                                 ),
@@ -155,21 +155,21 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                                 children: [
                                   Text(
                                     widget.business.name,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.textPrimary,
                                     ),
                                   ),
                                   if (widget.business.verification?.isComplete ?? false)
-                                    Row(
+                                    const Row(
                                       children: [
                                         Icon(
                                           Icons.verified,
                                           size: 16,
                                           color: AppColors.electricGreen,
                                         ),
-                                        const SizedBox(width: 4),
+                                        SizedBox(width: 4),
                                         Text(
                                           'Verified Business',
                                           style: TextStyle(
@@ -228,7 +228,7 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Earnings Summary',
                               style: TextStyle(
                                 fontSize: 18,
@@ -266,7 +266,7 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                                 },
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: AppColors.textPrimary,
-                                  side: BorderSide(color: AppColors.grey300),
+                                  side: const BorderSide(color: AppColors.grey300),
                                 ),
                                 child: const Text('View All Earnings'),
                               ),
@@ -281,8 +281,8 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
 
                   // Recent Revenue Splits
                   if (_revenueSplits.isNotEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
                         'Recent Revenue',
                         style: TextStyle(
@@ -313,7 +313,7 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                               color: AppColors.textSecondary.withValues(alpha: 0.5),
                             ),
                             const SizedBox(height: 16),
-                            Text(
+                            const Text(
                               'No earnings yet',
                               style: TextStyle(
                                 fontSize: 18,
@@ -322,7 +322,7 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Text(
+                            const Text(
                               'Start hosting events to see your earnings here',
                               style: TextStyle(
                                 fontSize: 14,

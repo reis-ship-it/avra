@@ -197,7 +197,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           children: [
                             Text(
                               widget.event.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -206,7 +206,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             const SizedBox(height: 4),
                             Text(
                               widget.event.getEventTypeDisplayName(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
                               ),
@@ -233,7 +233,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Order Summary',
                     style: TextStyle(
                       fontSize: 20,
@@ -247,7 +247,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
+                      const Flexible(
                         child: Text(
                           'Ticket Price',
                           style: TextStyle(
@@ -259,7 +259,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                       Text(
                         '\$${ticketPrice.toStringAsFixed(2)}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
@@ -273,7 +273,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
+                      const Flexible(
                         child: Text(
                           'Subtotal',
                           style: TextStyle(
@@ -285,7 +285,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                       Text(
                         '\$${subtotal.toStringAsFixed(2)}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
@@ -297,7 +297,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
                   // Sales Tax
                   if (_isLoadingTax)
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
@@ -310,7 +310,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        const SizedBox(
+                        SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
@@ -321,7 +321,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
@@ -338,7 +338,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Icon(
                                     Icons.check_circle,
                                     size: 16,
@@ -364,7 +364,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           const SizedBox(height: 4),
                           Text(
                             _exemptionReason!,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -380,7 +380,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Flexible(
+                              const Flexible(
                                 child: Text(
                                   'Sales Tax',
                                   style: TextStyle(
@@ -395,7 +395,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 Flexible(
                                   child: Text(
                                     '(${_taxRate.toStringAsFixed(2)}%)',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 12,
                                       color: AppColors.textSecondary,
                                     ),
@@ -408,7 +408,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         ),
                         Text(
                           '\$${_salesTax.toStringAsFixed(2)}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w500,
@@ -417,14 +417,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ],
                     ),
                   const SizedBox(height: 12),
-                  Divider(color: AppColors.grey300),
+                  const Divider(color: AppColors.grey300),
                   const SizedBox(height: 12),
 
                   // Quantity Selector
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
+                      const Flexible(
                         child: Text(
                           'Quantity',
                           style: TextStyle(
@@ -456,7 +456,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                             child: Text(
                               '$_quantity',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -484,7 +484,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
                         'Only $availableTickets tickets remaining!',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppTheme.warningColor,
                           fontWeight: FontWeight.w500,
@@ -493,14 +493,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
 
                   const SizedBox(height: 16),
-                  Divider(color: AppColors.grey300),
+                  const Divider(color: AppColors.grey300),
                   const SizedBox(height: 16),
 
                   // Total
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
+                      const Flexible(
                         child: Text(
                           'Total',
                           style: TextStyle(
@@ -513,7 +513,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                       Text(
                         '\$${totalAmount.toStringAsFixed(2)}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: AppTheme.primaryColor,
@@ -546,10 +546,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      const Row(
                         children: [
                           Icon(Icons.warning, color: AppTheme.warningColor),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               'Event Waiver Required',
@@ -563,7 +563,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      const Text(
                         'You must accept the event waiver before completing your purchase.',
                         style: TextStyle(
                           fontSize: 14,
@@ -621,12 +621,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: AppColors.error),
+                      const Icon(Icons.error_outline, color: AppColors.error),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontSize: 14,
                           ),
@@ -655,7 +655,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textPrimary,
               ),

@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:spots/core/services/admin_auth_service.dart';
 import 'package:spots/core/services/admin_god_mode_service.dart';
@@ -12,6 +13,7 @@ import 'package:spots/presentation/pages/admin/business_accounts_viewer_page.dar
 import 'package:spots/presentation/pages/admin/communications_viewer_page.dart';
 import 'package:spots/presentation/pages/admin/clubs_communities_viewer_page.dart';
 import 'package:spots/presentation/pages/admin/ai_live_map_page.dart';
+import 'package:spots/presentation/pages/admin/knot_visualizer_page.dart';
 import 'package:spots/presentation/widgets/admin/admin_federated_rounds_widget.dart';
 
 /// God-Mode Admin Dashboard
@@ -28,18 +30,12 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage> with Single
   AdminGodModeService? _godModeService;
   GodModeDashboardData? _dashboardData;
   bool _isLoading = true;
-  int _selectedTab = 0;
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 9, vsync: this);
-    _tabController.addListener(() {
-      setState(() {
-        _selectedTab = _tabController.index;
-      });
-    });
+    _tabController = TabController(length: 10, vsync: this);
     _initializeServices();
     _loadDashboardData();
   }
@@ -63,7 +59,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage> with Single
       // Get god-mode service from DI
       _godModeService = GetIt.instance<AdminGodModeService>();
     } catch (e) {
-      debugPrint('Error initializing services: $e');
+      developer.log('Error initializing services: $e', name: 'GodModeDashboardPage');
       // Defer navigation to after the frame completes to avoid Navigator lock errors
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -89,7 +85,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage> with Single
         _isLoading = false;
       });
     } catch (e) {
-      debugPrint('Error loading dashboard data: $e');
+      developer.log('Error loading dashboard data: $e', name: 'GodModeDashboardPage');
       setState(() {
         _isLoading = false;
       });
@@ -206,6 +202,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage> with Single
             Tab(icon: Icon(Icons.chat), text: 'Communications'),
             Tab(icon: Icon(Icons.group), text: 'Clubs'),
             Tab(icon: Icon(Icons.map), text: 'AI Map'),
+            Tab(icon: Icon(Icons.category), text: 'Knots'),
           ],
         ),
         actions: [
@@ -252,6 +249,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage> with Single
           CommunicationsViewerPage(godModeService: _godModeService),
           ClubsCommunitiesViewerPage(godModeService: _godModeService),
           AILiveMapPage(godModeService: _godModeService),
+          const KnotVisualizerPage(),
         ],
       ),
     );
@@ -279,7 +277,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage> with Single
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.health_and_safety, color: AppTheme.primaryColor),
+                        const Icon(Icons.health_and_safety, color: AppTheme.primaryColor),
                         const SizedBox(width: 8),
                         Text(
                           'System Health',
@@ -373,7 +371,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage> with Single
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
+                        const Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
                         const SizedBox(width: 8),
                         Text(
                           'System-Wide Privacy Metrics',
@@ -432,7 +430,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage> with Single
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.shield, color: AppTheme.primaryColor),
+                        const Icon(Icons.shield, color: AppTheme.primaryColor),
                         const SizedBox(width: 8),
                         Text(
                           'Fraud Review',

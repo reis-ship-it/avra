@@ -13,6 +13,7 @@
 /// - FederatedLearningSystem: For learning rounds
 /// - NetworkAnalytics: For privacy metrics
 /// - Widgets: FederatedLearningStatusWidget, FederatedParticipationHistoryWidget, PrivacyMetricsWidget
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

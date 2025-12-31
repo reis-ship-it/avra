@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 import 'dart:async';
 import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/network/personality_data_codec.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/anonymous_user.dart';
@@ -697,7 +697,7 @@ class PersonalityAdvertisingService {
     _refreshTimer?.cancel();
     
     // Refresh every 5 minutes or when data is about to expire
-    final refreshInterval = const Duration(minutes: 5);
+    const refreshInterval = Duration(minutes: 5);
     
     _refreshTimer = Timer.periodic(refreshInterval, (timer) async {
       // Check if data is expired or about to expire

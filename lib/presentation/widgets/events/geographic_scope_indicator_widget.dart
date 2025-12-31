@@ -174,7 +174,7 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Hosting Scope',
                       style: TextStyle(
                         fontSize: 12,
@@ -196,7 +196,7 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
               ),
               Tooltip(
                 message: detailedMessage,
-                child: Icon(
+                child: const Icon(
                   Icons.help_outline,
                   size: 18,
                   color: AppColors.textSecondary,
@@ -208,7 +208,7 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
           // Detailed message
           Text(
             detailedMessage,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: AppColors.textPrimary,
               height: 1.4,

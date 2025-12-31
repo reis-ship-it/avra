@@ -9,6 +9,7 @@
 /// - Expandable details
 /// 
 /// Uses AppColors/AppTheme for 100% design token compliance.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -149,7 +150,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.error_outline,
                   color: AppColors.error,
                   size: 32,
@@ -157,7 +158,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.error,
                     fontSize: 14,
                   ),
@@ -203,10 +204,10 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'Learning Insights',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -215,7 +216,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
                   ),
                   Text(
                     '${_insights.length}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
                     ),
@@ -235,8 +236,8 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
   }
 
   Widget _buildEmptyState() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
       child: Center(
         child: Column(
           children: [
@@ -245,7 +246,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
               color: AppColors.textSecondary,
               size: 48,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'No insights yet',
               style: TextStyle(
@@ -253,7 +254,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               'Start AI2AI connections to generate insights',
               style: TextStyle(
@@ -317,7 +318,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
                         const SizedBox(height: 4),
                         Text(
                           insight.description,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
                           ),
@@ -346,7 +347,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.access_time,
                         size: 16,
                         color: AppColors.textHint,
@@ -354,7 +355,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
                       const SizedBox(width: 4),
                       Text(
                         _formatTimestamp(insight.timestamp),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textHint,
                         ),
@@ -385,7 +386,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
                       ),
                       child: Text(
                         insight.details!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),

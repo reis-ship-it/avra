@@ -45,7 +45,7 @@ class _MapViewState extends State<MapView> {
   LatLng? _center;
   final double _currentZoom = 13.0;
   gmap.GoogleMapController? _gController;
-  bool _isLoadingLocation = false;
+  final bool _isLoadingLocation = false;
   String? _locationError;
   MapTheme _currentTheme = MapThemes.spotsBlue;
   SpotList? _selectedList;
@@ -360,14 +360,17 @@ class _MapViewState extends State<MapView> {
 
   String _extractCategory(String query) {
     final lowerQuery = query.toLowerCase();
-    if (lowerQuery.contains('coffee') || lowerQuery.contains('cafe'))
+    if (lowerQuery.contains('coffee') || lowerQuery.contains('cafe')) {
       return 'coffee';
-    if (lowerQuery.contains('restaurant') || lowerQuery.contains('food'))
+    }
+    if (lowerQuery.contains('restaurant') || lowerQuery.contains('food')) {
       return 'restaurant';
+    }
     if (lowerQuery.contains('park')) return 'park';
     if (lowerQuery.contains('museum')) return 'museum';
-    if (lowerQuery.contains('bar') || lowerQuery.contains('drink'))
+    if (lowerQuery.contains('bar') || lowerQuery.contains('drink')) {
       return 'bar';
+    }
     if (lowerQuery.contains('shopping')) return 'shopping';
     if (lowerQuery.contains('gym')) return 'gym';
     if (lowerQuery.contains('library')) return 'library';
@@ -522,7 +525,7 @@ class _MapViewState extends State<MapView> {
                 onPressed: _getCurrentLocation,
                 tooltip: 'Center on my location',
               ),
-              OfflineIndicator(),
+              const OfflineIndicator(),
             ],
           )
         : null;
@@ -943,19 +946,25 @@ class _MapViewState extends State<MapView> {
 
   IconData _getSuggestionIcon(String suggestion) {
     final lowerSuggestion = suggestion.toLowerCase();
-    if (lowerSuggestion.contains('coffee') || lowerSuggestion.contains('cafe'))
+    if (lowerSuggestion.contains('coffee') || lowerSuggestion.contains('cafe')) {
       return Icons.coffee;
+    }
     if (lowerSuggestion.contains('restaurant') ||
-        lowerSuggestion.contains('food')) return Icons.restaurant;
+        lowerSuggestion.contains('food')) {
+      return Icons.restaurant;
+    }
     if (lowerSuggestion.contains('park')) return Icons.park;
     if (lowerSuggestion.contains('museum')) return Icons.museum;
-    if (lowerSuggestion.contains('bar') || lowerSuggestion.contains('drink'))
+    if (lowerSuggestion.contains('bar') || lowerSuggestion.contains('drink')) {
       return Icons.local_bar;
+    }
     if (lowerSuggestion.contains('shopping')) return Icons.shopping_bag;
     if (lowerSuggestion.contains('gym')) return Icons.fitness_center;
     if (lowerSuggestion.contains('library')) return Icons.local_library;
     if (lowerSuggestion.contains('near me') ||
-        lowerSuggestion.contains('nearby')) return Icons.near_me;
+        lowerSuggestion.contains('nearby')) {
+      return Icons.near_me;
+    }
     if (lowerSuggestion.contains('popular')) return Icons.trending_up;
     if (lowerSuggestion.contains('new')) return Icons.new_releases;
     if (lowerSuggestion.contains('trending')) return Icons.trending_up;

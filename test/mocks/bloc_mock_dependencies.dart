@@ -2,6 +2,7 @@
 ///
 /// Comprehensive mocks for all BLoC dependencies to ensure isolated testing
 /// Follows mocktail patterns for optimal development and deployment testing
+library;
 
 import 'package:mocktail/mocktail.dart';
 import 'package:spots/domain/usecases/auth/sign_in_usecase.dart';

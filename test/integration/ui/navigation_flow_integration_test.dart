@@ -140,7 +140,7 @@ void main() {
       }
     });
 
-    Widget _wrapWithAuthBloc(Widget child) {
+    Widget wrapWithAuthBloc(Widget child) {
       return BlocProvider<AuthBloc>.value(
         value: mockAuthBloc,
         child: child,
@@ -242,7 +242,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -258,7 +258,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipAcceptancePage(
+            home: wrapWithAuthBloc(PartnershipAcceptancePage(
               partnership: testPartnership,
             )),
           ),
@@ -278,7 +278,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipCheckoutPage(
+            home: wrapWithAuthBloc(PartnershipCheckoutPage(
               partnership: testPartnership,
               event: testEvent,
             )),
@@ -298,7 +298,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentSuccessPage(
+            home: wrapWithAuthBloc(PaymentSuccessPage(
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
@@ -321,7 +321,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(BusinessAccountCreationPage(user: testUser)),
+            home: wrapWithAuthBloc(BusinessAccountCreationPage(user: testUser)),
           ),
         );
         await tester.pumpAndSettle();
@@ -339,7 +339,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(const ProfilePage()),
+            home: wrapWithAuthBloc(const ProfilePage()),
           ),
         );
         await tester.pumpAndSettle();
@@ -355,7 +355,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(const ExpertiseDashboardPage()),
+            home: wrapWithAuthBloc(const ExpertiseDashboardPage()),
           ),
         );
         await tester.pump();
@@ -377,7 +377,7 @@ void main() {
         // Test each page renders correctly
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -385,7 +385,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipAcceptancePage(
+            home: wrapWithAuthBloc(PartnershipAcceptancePage(
               partnership: testPartnership,
             )),
           ),
@@ -397,7 +397,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipCheckoutPage(
+            home: wrapWithAuthBloc(PartnershipCheckoutPage(
               partnership: testPartnership,
               event: testEvent,
             )),
@@ -408,7 +408,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentSuccessPage(
+            home: wrapWithAuthBloc(PaymentSuccessPage(
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
@@ -428,7 +428,7 @@ void main() {
         // Test checkout page renders
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipCheckoutPage(
+            home: wrapWithAuthBloc(PartnershipCheckoutPage(
               partnership: testPartnership,
               event: testEvent,
             )),
@@ -440,7 +440,7 @@ void main() {
         // Test success page renders
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PaymentSuccessPage(
+            home: wrapWithAuthBloc(PaymentSuccessPage(
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
@@ -462,7 +462,7 @@ void main() {
         // Test that pages render without crashing
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();
@@ -479,7 +479,7 @@ void main() {
         // Test that pages render when navigated to
         await tester.pumpWidget(
           MaterialApp(
-            home: _wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
+            home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
           ),
         );
         await tester.pumpAndSettle();

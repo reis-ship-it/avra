@@ -115,7 +115,7 @@ void main() {
         if (service == null) return;
         
         // Arrange
-        final timeWindow = const Duration(days: 30);
+        const timeWindow = Duration(days: 30);
         
         // Act
         final history = service!.getHistory(

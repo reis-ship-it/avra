@@ -173,7 +173,7 @@ class RefundPolicy {
     }
 
     return 'Full refund >${fullRefundHours}h, '
-        '${partialRefundPercentage}% refund ${partialRefundHours}-${fullRefundHours}h';
+        '$partialRefundPercentage% refund $partialRefundHours-${fullRefundHours}h';
   }
 
   /// Convert to JSON for serialization

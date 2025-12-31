@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/friend_chat_message.dart';
+import 'package:spots_ai/models/friend_chat_message.dart';
 import 'package:spots/core/services/message_encryption_service.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';

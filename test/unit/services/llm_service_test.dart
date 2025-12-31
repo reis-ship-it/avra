@@ -13,6 +13,7 @@
 /// - Mock SupabaseClient: Simulates Supabase backend
 /// - Mock FunctionsClient: Simulates Edge Functions
 /// - Mock Connectivity: Simulates network connectivity checks
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

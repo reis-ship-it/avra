@@ -2,6 +2,7 @@
 ///
 /// Part of Feature Matrix Phase 1: Critical UI/UX
 /// Section 1.2: Device Discovery UI
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,8 +28,8 @@ void main() {
       final mockService1 = MockDeviceDiscoveryService();
       GetIt.instance.registerSingleton<DeviceDiscoveryService>(mockService1);
       await tester.pumpWidget(
-        MaterialApp(
-          home: const DeviceDiscoveryPage(),
+        const MaterialApp(
+          home: DeviceDiscoveryPage(),
         ),
       );
       await tester.pumpAndSettle();
@@ -49,8 +50,8 @@ void main() {
       ]);
       GetIt.instance.registerSingleton<DeviceDiscoveryService>(mockService2);
       await tester.pumpWidget(
-        MaterialApp(
-          home: const DeviceDiscoveryPage(),
+        const MaterialApp(
+          home: DeviceDiscoveryPage(),
         ),
       );
       await tester.pumpAndSettle();
@@ -62,8 +63,8 @@ void main() {
       final mockService3 = MockDeviceDiscoveryService();
       GetIt.instance.registerSingleton<DeviceDiscoveryService>(mockService3);
       await tester.pumpWidget(
-        MaterialApp(
-          home: const DeviceDiscoveryPage(),
+        const MaterialApp(
+          home: DeviceDiscoveryPage(),
         ),
       );
       await tester.pumpAndSettle();

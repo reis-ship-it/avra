@@ -25,13 +25,13 @@ void main() {
     setUp(() {
       testStartTime = DateTime(2025, 12, 1, 14, 0); // Dec 1, 2025, 2:00 PM
 
-      template = EventTemplate(
+      template = const EventTemplate(
         id: 'coffee_tasting_tour',
         name: 'Coffee Tasting Tour',
         category: 'Coffee',
         eventType: ExpertiseEventType.tour,
         descriptionTemplate: 'Join {hostName} for a coffee tour at {location}!',
-        defaultDuration: const Duration(hours: 2),
+        defaultDuration: Duration(hours: 2),
         defaultMaxAttendees: 15,
         suggestedPrice: 25.0,
         suggestedSpotTypes: ['coffee_shop', 'roastery'],

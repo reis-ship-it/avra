@@ -30,8 +30,8 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
   int _vibeSuggestionsShown = 0; // Track how many times we've shown suggestions
 
   // State for auto-expanding categories during search
-  Set<String> _expandedRegions = {};
-  Map<String, Set<String>> _expandedCities = {};
+  final Set<String> _expandedRegions = {};
+  final Map<String, Set<String>> _expandedCities = {};
 
   // Method to dismiss any active SnackBars
   void dismissSnackBars() {
@@ -256,7 +256,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
             onChanged: _onSearchChanged,
@@ -305,7 +305,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                       backgroundColor:
                           AppTheme.primaryColor.withValues(alpha: 0.1),
                       deleteIconColor: AppTheme.primaryColor,
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                         color: AppTheme.primaryColor,
                         fontSize: 11,
                       ),
@@ -477,7 +477,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
           ),
           title: Text(place),
           trailing: isSelected
-              ? Icon(
+              ? const Icon(
                   Icons.remove_circle_outline,
                   color: AppTheme.errorColor,
                 )
@@ -639,9 +639,9 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Similar vibe places:',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close, size: 18),
@@ -665,7 +665,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                           },
                           backgroundColor:
                               AppTheme.primaryColor.withValues(alpha: 0.1),
-                          labelStyle: TextStyle(color: AppTheme.primaryColor),
+                          labelStyle: const TextStyle(color: AppTheme.primaryColor),
                         ))
                     .toList(),
               ),

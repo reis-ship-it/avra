@@ -20,10 +20,10 @@ void main() {
     group('AgeRange Model', () {
       test('should correctly format display text and match ages', () {
         // Test business logic: age range formatting and matching
-        final fullRange = AgeRange(minAge: 25, maxAge: 45);
-        final minOnly = AgeRange(minAge: 25);
-        final maxOnly = AgeRange(maxAge: 45);
-        final empty = AgeRange();
+        const fullRange = AgeRange(minAge: 25, maxAge: 45);
+        const minOnly = AgeRange(minAge: 25);
+        const maxOnly = AgeRange(maxAge: 45);
+        const empty = AgeRange();
 
         expect(fullRange.displayText, equals('25-45'));
         expect(minOnly.displayText, equals('25+'));
@@ -39,14 +39,14 @@ void main() {
     group('isEmpty Checker', () {
       test('should correctly identify empty vs non-empty preferences', () {
         // Test business logic: empty state determination
-        final empty = BusinessExpertPreferences();
-        final withCategories = BusinessExpertPreferences(
+        const empty = BusinessExpertPreferences();
+        const withCategories = BusinessExpertPreferences(
           requiredExpertiseCategories: ['Coffee'],
         );
-        final withLevel = BusinessExpertPreferences(
+        const withLevel = BusinessExpertPreferences(
           minExpertLevel: 3,
         );
-        final withLocation = BusinessExpertPreferences(
+        const withLocation = BusinessExpertPreferences(
           preferredLocation: 'NYC',
         );
 
@@ -60,8 +60,8 @@ void main() {
     group('getSummary', () {
       test('should generate summary with all preference fields', () {
         // Test business logic: summary generation
-        final empty = BusinessExpertPreferences();
-        final withAllFields = BusinessExpertPreferences(
+        const empty = BusinessExpertPreferences();
+        const withAllFields = BusinessExpertPreferences(
           requiredExpertiseCategories: ['Coffee'],
           preferredExpertiseCategories: ['Food'],
           preferredLocation: 'NYC',
@@ -79,8 +79,8 @@ void main() {
 
     group('JSON Serialization', () {
       test('should serialize and deserialize without data loss', () {
-        final ageRange = AgeRange(minAge: 25, maxAge: 45);
-        final prefs = BusinessExpertPreferences(
+        const ageRange = AgeRange(minAge: 25, maxAge: 45);
+        const prefs = BusinessExpertPreferences(
           requiredExpertiseCategories: ['Coffee'],
           preferredExpertiseCategories: ['Food'],
           minExpertLevel: 3,
@@ -100,7 +100,7 @@ void main() {
 
     group('copyWith', () {
       test('should create immutable copy with updated fields', () {
-        final original = BusinessExpertPreferences(
+        const original = BusinessExpertPreferences(
           requiredExpertiseCategories: ['Coffee'],
           minExpertLevel: 3,
         );

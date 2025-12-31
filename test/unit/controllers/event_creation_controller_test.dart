@@ -219,7 +219,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           isOnline: false,
-          expertiseMap: {'Coffee': 'local'},
+          expertiseMap: const {'Coffee': 'local'},
         );
 
         // Act
@@ -238,7 +238,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           isOnline: false,
-          expertiseMap: {'Coffee': 'city'},
+          expertiseMap: const {'Coffee': 'city'},
         );
 
         // Act
@@ -257,7 +257,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           isOnline: false,
-          expertiseMap: {'Food': 'local'},
+          expertiseMap: const {'Food': 'local'},
         );
 
         // Act
@@ -278,7 +278,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           isOnline: false,
-          expertiseMap: {},
+          expertiseMap: const {},
         );
 
         // Act
@@ -365,7 +365,7 @@ void main() {
         updatedAt: DateTime.now(),
         isOnline: false,
         location: 'Greenpoint, Brooklyn, NY, USA',
-        expertiseMap: {'Coffee': 'local'},
+        expertiseMap: const {'Coffee': 'local'},
       );
 
       test('should successfully create event with valid data', () async {
@@ -496,7 +496,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           isOnline: false,
-          expertiseMap: {}, // No expertise
+          expertiseMap: const {}, // No expertise
         );
 
         final formData = EventFormData(

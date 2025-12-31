@@ -40,7 +40,7 @@ void main() {
         originalLocality: 'Mission District, San Francisco',
         createdAt: testDate,
         updatedAt: testDate,
-        memberIds: ['user-1', 'user-2', 'user-3'],
+        memberIds: const ['user-1', 'user-2', 'user-3'],
         memberCount: 3,
       );
     });
@@ -75,13 +75,13 @@ void main() {
         // Test business logic: structure detection and default leader assignment
         final clubWithStructure = Club.fromCommunity(
           community: baseCommunity,
-          leaders: ['leader-1'],
-          adminTeam: ['admin-1'],
+          leaders: const ['leader-1'],
+          adminTeam: const ['admin-1'],
         );
         final clubWithoutStructure = Club.fromCommunity(
           community: baseCommunity,
-          leaders: [],
-          adminTeam: [],
+          leaders: const [],
+          adminTeam: const [],
         );
         final defaultClub = Club.fromCommunity(community: baseCommunity);
 
@@ -99,14 +99,14 @@ void main() {
         // Test business logic: role identification and membership tracking
         final club = Club.fromCommunity(
           community: baseCommunity,
-          leaders: ['leader-1'],
-          adminTeam: ['admin-1'],
-          memberRoles: {
+          leaders: const ['leader-1'],
+          adminTeam: const ['admin-1'],
+          memberRoles: const {
             'user-1': ClubRole.moderator,
             'user-2': ClubRole.member,
           },
-          pendingMembers: ['pending-1'],
-          bannedMembers: ['banned-1'],
+          pendingMembers: const ['pending-1'],
+          bannedMembers: const ['banned-1'],
         );
 
         expect(club.isLeader('leader-1'), isTrue);
@@ -127,9 +127,9 @@ void main() {
         // Test business logic: permission checking and management hierarchy
         final club = Club.fromCommunity(
           community: baseCommunity,
-          leaders: ['leader-1'],
-          adminTeam: ['admin-1'],
-          memberRoles: {
+          leaders: const ['leader-1'],
+          adminTeam: const ['admin-1'],
+          memberRoles: const {
             'user-1': ClubRole.moderator,
             'user-2': ClubRole.member,
           },
@@ -179,9 +179,9 @@ void main() {
           () {
         final club = Club.fromCommunity(
           community: baseCommunity,
-          leaders: ['leader-1'],
-          adminTeam: ['admin-1'],
-          memberRoles: {
+          leaders: const ['leader-1'],
+          adminTeam: const ['admin-1'],
+          memberRoles: const {
             'user-1': ClubRole.moderator,
           },
           organizationalMaturity: 0.75,

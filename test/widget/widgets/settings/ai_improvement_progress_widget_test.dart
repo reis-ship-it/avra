@@ -12,6 +12,7 @@
 ///
 /// Dependencies:
 /// - AIImprovementTrackingService: For history data
+library;
 
 import 'dart:async';
 import 'package:flutter/material.dart';

@@ -72,13 +72,13 @@ void main() {
       final eventTemporalState = QuantumTemporalStateGenerator.generate(timestamp);
 
       final userLocationState = LocationQuantumState.fromLocation(
-        unified_models.UnifiedLocation(
+        const unified_models.UnifiedLocation(
           latitude: 37.7749,
           longitude: -122.4194,
         ),
       );
       final eventLocationState = LocationQuantumState.fromLocation(
-        unified_models.UnifiedLocation(
+        const unified_models.UnifiedLocation(
           latitude: 37.7849,
           longitude: -122.4094,
         ),

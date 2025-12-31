@@ -17,6 +17,7 @@
 /// - All 4 continuous learning widgets
 /// 
 /// Phase 7, Section 39 (7.4.1): Continuous Learning UI - Integration & Polish
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

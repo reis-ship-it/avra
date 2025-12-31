@@ -1,6 +1,7 @@
 /// Phase 9: Database Performance & Load Testing
 /// Ensures optimal database operations for development and deployment
 /// OUR_GUTS.md: "Effortless, Seamless Discovery" - Fast, reliable data access
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_memory.dart';
 import 'package:spots/core/models/spot.dart';

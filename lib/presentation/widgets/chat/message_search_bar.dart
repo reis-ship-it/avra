@@ -4,6 +4,7 @@
 /// 
 /// Phase 3 Enhancement: Message Search
 /// Date: December 2025
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -52,7 +53,7 @@ class _MessageSearchBarState extends State<MessageSearchBar> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.white,
         border: Border(
           bottom: BorderSide(
@@ -77,7 +78,7 @@ class _MessageSearchBarState extends State<MessageSearchBar> {
                     : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide(color: AppColors.grey300),
+                  borderSide: const BorderSide(color: AppColors.grey300),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,

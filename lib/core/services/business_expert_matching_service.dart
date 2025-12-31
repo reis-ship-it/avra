@@ -130,7 +130,7 @@ class BusinessExpertMatchingService {
         location: business.preferredLocation ?? business.location,
         createdAt: business.createdAt,
         updatedAt: business.updatedAt,
-        expertiseMap: {}, // Business doesn't have expertise, they need it
+        expertiseMap: const {}, // Business doesn't have expertise, they need it
       );
 
       // Find similar experts (businesses need experts, so we find experts)

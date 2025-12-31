@@ -34,7 +34,7 @@ void main() {
         initiator: CancellationInitiator.attendee,
         reason: 'Unable to attend',
         refundStatus: RefundStatus.pending,
-        paymentIds: ['payment-1', 'payment-2'],
+        paymentIds: const ['payment-1', 'payment-2'],
         createdAt: testDate,
         updatedAt: testDate,
         refundAmount: 50.0,

@@ -285,10 +285,15 @@ void main() {
 
 /// Real fake AuthBloc with actual state management
 class _FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
+  @override
   final GetCurrentUserUseCase getCurrentUserUseCase;
+  @override
   final SignInUseCase signInUseCase;
+  @override
   final SignOutUseCase signOutUseCase;
+  @override
   final SignUpUseCase signUpUseCase;
+  @override
   final UpdatePasswordUseCase updatePasswordUseCase;
   final List<AuthEvent> addedEvents = [];
 
@@ -361,14 +366,6 @@ class _FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
     emit(AuthLoading());
   }
 
-  @override
-  Stream<AuthState> get stream => super.stream;
-  @override
-  AuthState get state => super.state;
-  @override
-  Future<void> close() => super.close();
-  @override
-  bool get isClosed => super.isClosed;
 }
 
 /// Fake repository for use cases

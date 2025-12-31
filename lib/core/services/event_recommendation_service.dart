@@ -5,23 +5,25 @@ import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/event_matching_service.dart';
 import 'package:spots/core/services/user_preference_learning_service.dart';
 import 'package:spots/core/services/cross_locality_connection_service.dart';
+import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
+import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/logger.dart';
 
 /// Event Recommendation Service
-/// 
+///
 /// Generates personalized event recommendations by combining:
 /// - User preferences (learned from attendance patterns)
 /// - Event matching scores (from EventMatchingService)
 /// - Cross-locality connections (from CrossLocalityConnectionService)
-/// 
+///
 /// **Philosophy:** "Doors, not badges" - Opens doors to events users will enjoy
-/// 
+///
 /// **What Doors Does This Open?**
 /// - Discovery Doors: Users find events matching their preferences
 /// - Exploration Doors: Users discover events outside typical behavior
 /// - Connection Doors: Users find events in connected localities
 /// - Preference Doors: System learns and adapts to user preferences
-/// 
+///
 /// **Recommendation Strategy:**
 /// - Balance familiar preferences with exploration (70% familiar, 30% exploration)
 /// - Show local expert events to users who prefer local events
@@ -38,32 +40,37 @@ class EventRecommendationService {
   final EventMatchingService _matchingService;
   final UserPreferenceLearningService _preferenceService;
   final CrossLocalityConnectionService _crossLocalityService;
+  final IntegratedKnotRecommendationEngine? _knotRecommendationEngine;
+  final PersonalityLearning? _personalityLearning;
 
   EventRecommendationService({
     ExpertiseEventService? eventService,
     EventMatchingService? matchingService,
     UserPreferenceLearningService? preferenceService,
     CrossLocalityConnectionService? crossLocalityService,
+    IntegratedKnotRecommendationEngine? knotRecommendationEngine,
+    PersonalityLearning? personalityLearning,
   })  : _eventService = eventService ?? ExpertiseEventService(),
-        _matchingService =
-            matchingService ?? EventMatchingService(),
+        _matchingService = matchingService ?? EventMatchingService(),
         _preferenceService =
             preferenceService ?? UserPreferenceLearningService(),
         _crossLocalityService =
-            crossLocalityService ?? CrossLocalityConnectionService();
+            crossLocalityService ?? CrossLocalityConnectionService(),
+        _knotRecommendationEngine = knotRecommendationEngine,
+        _personalityLearning = personalityLearning;
 
   /// Get personalized event recommendations
-  /// 
+  ///
   /// **Parameters:**
   /// - `user`: User to get recommendations for
   /// - `category`: Optional category filter
   /// - `location`: Optional location filter
   /// - `maxResults`: Maximum number of recommendations
   /// - `explorationRatio`: Ratio of exploration events (0.0 to 1.0, default 0.3)
-  /// 
+  ///
   /// **Returns:**
   /// List of event recommendations sorted by relevance score
-  /// 
+  ///
   /// **Recommendation Process:**
   /// 1. Get user preferences
   /// 2. Get matching scores for events
@@ -84,7 +91,8 @@ class EventRecommendationService {
       );
 
       // Get user preferences
-      final preferences = await _preferenceService.getUserPreferences(user: user);
+      final preferences =
+          await _preferenceService.getUserPreferences(user: user);
 
       // Get all available events
       final allEvents = await _eventService.searchEvents(
@@ -117,9 +125,8 @@ class EventRecommendationService {
       }
 
       // Separate familiar and exploration recommendations
-      final familiarRecommendations = recommendations
-          .where((r) => r.relevanceScore >= 0.6)
-          .toList();
+      final familiarRecommendations =
+          recommendations.where((r) => r.relevanceScore >= 0.6).toList();
       final explorationRecommendations = recommendations
           .where((r) => r.relevanceScore < 0.6 && r.relevanceScore >= 0.3)
           .toList();
@@ -129,10 +136,10 @@ class EventRecommendationService {
       final explorationCount = (explorationRatio * maxResults).round();
 
       // Sort by relevance score
-      familiarRecommendations.sort((a, b) =>
-          b.relevanceScore.compareTo(a.relevanceScore));
-      explorationRecommendations.sort((a, b) =>
-          b.relevanceScore.compareTo(a.relevanceScore));
+      familiarRecommendations
+          .sort((a, b) => b.relevanceScore.compareTo(a.relevanceScore));
+      explorationRecommendations
+          .sort((a, b) => b.relevanceScore.compareTo(a.relevanceScore));
 
       // Combine recommendations
       final combined = <EventRecommendation>[
@@ -155,16 +162,16 @@ class EventRecommendationService {
   }
 
   /// Get recommendations for specific scope
-  /// 
+  ///
   /// **Parameters:**
   /// - `user`: User to get recommendations for
   /// - `scope`: Scope to filter by (local, city, state, national, global, universal)
   /// - `category`: Optional category filter
   /// - `maxResults`: Maximum number of recommendations
-  /// 
+  ///
   /// **Returns:**
   /// List of event recommendations for the specified scope
-  /// 
+  ///
   /// **Usage:**
   /// Used for tab-based filtering in EventsBrowsePage
   Future<List<EventRecommendation>> getRecommendationsForScope({
@@ -180,7 +187,8 @@ class EventRecommendationService {
       );
 
       // Get user preferences
-      final preferences = await _preferenceService.getUserPreferences(user: user);
+      final preferences =
+          await _preferenceService.getUserPreferences(user: user);
 
       // Filter events by scope
       final scopeEvents = await _getEventsByScope(
@@ -213,8 +221,8 @@ class EventRecommendationService {
       }
 
       // Sort by relevance score
-      recommendations.sort((a, b) =>
-          b.relevanceScore.compareTo(a.relevanceScore));
+      recommendations
+          .sort((a, b) => b.relevanceScore.compareTo(a.relevanceScore));
 
       return recommendations.take(maxResults).toList();
     } catch (e) {
@@ -230,11 +238,12 @@ class EventRecommendationService {
   // Private helper methods
 
   /// Calculate relevance score for an event
-  /// 
+  ///
   /// **Combines:**
-  /// - Matching score (from EventMatchingService): 40%
-  /// - Preference match: 40%
-  /// - Cross-locality boost: 20%
+  /// - Matching score (from EventMatchingService): 35%
+  /// - Preference match: 35%
+  /// - Cross-locality boost: 15%
+  /// - Knot compatibility (integrated quantum + topological): 15% (optional enhancement)
   Future<double> _calculateRelevanceScore({
     required ExpertiseEvent event,
     required UnifiedUser user,
@@ -244,30 +253,84 @@ class EventRecommendationService {
   }) async {
     double score = 0.0;
 
-    // 1. Matching score (40% weight)
+    // 1. Matching score (35% weight, reduced from 40% to make room for knot compatibility)
     final matchingScore = await _matchingService.calculateMatchingScore(
       expert: event.host,
       user: user,
       category: event.category,
       locality: _extractLocality(event.location) ?? '',
     );
-    score += matchingScore * 0.4;
+    score += matchingScore * 0.35;
 
-    // 2. Preference match (40% weight)
+    // 2. Preference match (35% weight, reduced from 40%)
     final preferenceScore = _calculatePreferenceScore(
       event: event,
       preferences: preferences,
     );
-    score += preferenceScore * 0.4;
+    score += preferenceScore * 0.35;
 
-    // 3. Cross-locality boost (20% weight)
+    // 3. Cross-locality boost (15% weight, reduced from 20%)
     final crossLocalityScore = await _calculateCrossLocalityScore(
       event: event,
       user: user,
     );
-    score += crossLocalityScore * 0.2;
+    score += crossLocalityScore * 0.15;
+
+    // 4. Knot compatibility (15% weight - optional enhancement)
+    final knotScore = await _calculateKnotCompatibilityScore(
+      event: event,
+      user: user,
+    );
+    score += knotScore * 0.15;
 
     return score.clamp(0.0, 1.0);
+  }
+
+  /// Calculate knot compatibility score for event recommendation
+  ///
+  /// Uses IntegratedKnotRecommendationEngine to calculate compatibility
+  /// between user and event host personalities.
+  ///
+  /// **Returns:** Compatibility score (0.0 to 1.0), or 0.5 (neutral) if unavailable
+  Future<double> _calculateKnotCompatibilityScore({
+    required ExpertiseEvent event,
+    required UnifiedUser user,
+  }) async {
+    // If knot services not available, return neutral score
+    if (_knotRecommendationEngine == null || _personalityLearning == null) {
+      return 0.5;
+    }
+
+    try {
+      // Get personality profiles for user and event host
+      final userProfile =
+          await _personalityLearning!.initializePersonality(user.id);
+      final hostProfile =
+          await _personalityLearning!.initializePersonality(event.host.id);
+
+      // Calculate integrated compatibility (quantum + knot topology)
+      final compatibility =
+          await _knotRecommendationEngine!.calculateIntegratedCompatibility(
+        profileA: userProfile,
+        profileB: hostProfile,
+      );
+
+      _logger.debug(
+        'Knot compatibility for event ${event.id}: ${(compatibility.combined * 100).toStringAsFixed(1)}% '
+        '(quantum: ${(compatibility.quantum * 100).toStringAsFixed(1)}%, '
+        'knot: ${(compatibility.knot * 100).toStringAsFixed(1)}%)',
+        tag: _logName,
+      );
+
+      return compatibility.combined;
+    } catch (e) {
+      _logger.warn(
+        'Error calculating knot compatibility: $e, using neutral score',
+        tag: _logName,
+      );
+      // Return neutral score on error (don't break recommendations)
+      return 0.5;
+    }
   }
 
   /// Calculate preference match score
@@ -278,7 +341,8 @@ class EventRecommendationService {
     double score = 0.0;
 
     // Category preference
-    final categoryWeight = preferences.categoryPreferences[event.category] ?? 0.0;
+    final categoryWeight =
+        preferences.categoryPreferences[event.category] ?? 0.0;
     score += categoryWeight * 0.3;
 
     // Locality preference
@@ -306,8 +370,7 @@ class EventRecommendationService {
     }
 
     // Event type preference
-    final typeWeight =
-        preferences.eventTypePreferences[event.eventType] ?? 0.0;
+    final typeWeight = preferences.eventTypePreferences[event.eventType] ?? 0.0;
     score += typeWeight * 0.1;
 
     return score.clamp(0.0, 1.0);
@@ -339,8 +402,7 @@ class EventRecommendationService {
 
     // Check if event locality is connected
     for (final connected in connectedLocalities) {
-      if (connected.locality.toLowerCase() ==
-          eventLocality.toLowerCase()) {
+      if (connected.locality.toLowerCase() == eventLocality.toLowerCase()) {
         return connected.connectionStrength;
       }
     }
@@ -405,7 +467,7 @@ class EventRecommendationService {
     final locality = _extractLocality(event.location);
     if (locality != null &&
         preferences.localityPreferences.containsKey(locality)) {
-      reasons.add('In ${locality}, which you frequent');
+      reasons.add('In $locality, which you frequent');
     }
 
     // Local expert preference
@@ -443,4 +505,3 @@ class EventRecommendation {
     required this.recommendationReason,
   });
 }
-

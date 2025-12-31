@@ -91,7 +91,7 @@ void main() {
             limit: anyNamed('limit'),
             filters: anyNamed('filters'),
           ),
-        ).thenAnswer((_) async => ApiResponse.success(<spots_core.SpotList>[]));
+        ).thenAnswer((_) async => ApiResponse.success(const <spots_core.SpotList>[]));
         final lists = await dataSource.getPublicLists(limit: limit);
 
         expect(lists.length, lessThanOrEqualTo(limit));

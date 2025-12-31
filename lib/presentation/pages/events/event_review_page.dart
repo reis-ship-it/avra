@@ -129,18 +129,18 @@ class _EventReviewPageState extends State<EventReviewPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.background,
-        title: Text(
+        title: const Text(
           'Publish Event?',
           style: TextStyle(color: AppColors.textPrimary),
         ),
         content: Text(
           'Are you sure you want to publish "${widget.title}"? The event will be visible to others.',
-          style: TextStyle(color: AppColors.textPrimary),
+          style: const TextStyle(color: AppColors.textPrimary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
+            child: const Text(
               'Cancel',
               style: TextStyle(color: AppColors.textSecondary),
             ),
@@ -307,7 +307,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
             Container(
               padding: const EdgeInsets.all(20),
               color: AppColors.surface,
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -318,7 +318,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'Please review all details before publishing',
                     style: TextStyle(
@@ -410,7 +410,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Total Price',
                             style: TextStyle(
                               fontSize: 16,
@@ -420,7 +420,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
                           ),
                           Text(
                             '\$${((widget.price ?? 0.0) + _salesTax).toStringAsFixed(2)}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: AppTheme.primaryColor,
@@ -449,10 +449,10 @@ class _EventReviewPageState extends State<EventReviewPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        const Row(
                           children: [
                             Icon(Icons.verified, color: AppColors.electricGreen, size: 20),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text(
                               'Expertise Verified',
                               style: TextStyle(
@@ -468,7 +468,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
                           expertiseLevel != null
                               ? 'You have ${expertiseLevel.displayName} level expertise in ${widget.category} (Required: Local level+)'
                               : 'Expertise level will be verified before publishing',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textPrimary,
                           ),
@@ -492,12 +492,12 @@ class _EventReviewPageState extends State<EventReviewPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: AppColors.error),
+                      const Icon(Icons.error_outline, color: AppColors.error),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontSize: 14,
                           ),
@@ -544,7 +544,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: BorderSide(color: AppColors.grey300),
+                        side: const BorderSide(color: AppColors.grey300),
                       ),
                       child: const Text('Edit Details'),
                     ),
@@ -564,7 +564,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color: AppColors.textSecondary,
             fontWeight: FontWeight.w500,
@@ -573,7 +573,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
         const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             color: AppColors.textPrimary,
           ),

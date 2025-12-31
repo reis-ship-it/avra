@@ -8,6 +8,7 @@
 /// - _identifyOptimalLearningPartners() - Tested via generateLearningRecommendations
 /// - _generateLearningTopics() - Tested via generateLearningRecommendations
 /// - _recommendDevelopmentAreas() - Tested via generateLearningRecommendations
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/ai/ai2ai_learning.dart';

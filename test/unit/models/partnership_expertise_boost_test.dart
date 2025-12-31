@@ -21,9 +21,9 @@ void main() {
       test('should correctly identify boost state and calculate percentage',
           () {
         // Test business logic: boost detection and percentage calculation
-        final zeroBoost = PartnershipExpertiseBoost(totalBoost: 0.0);
-        final activeBoost = PartnershipExpertiseBoost(totalBoost: 0.25);
-        final maxBoost = PartnershipExpertiseBoost(totalBoost: 0.50);
+        const zeroBoost = PartnershipExpertiseBoost(totalBoost: 0.0);
+        const activeBoost = PartnershipExpertiseBoost(totalBoost: 0.25);
+        const maxBoost = PartnershipExpertiseBoost(totalBoost: 0.50);
 
         expect(zeroBoost.hasBoost, isFalse);
         expect(zeroBoost.boostPercentage, equals(0.0));
@@ -41,7 +41,7 @@ void main() {
           'should serialize and deserialize with defaults and handle null fields',
           () {
         // Test business logic: JSON round-trip with error handling
-        final boost = PartnershipExpertiseBoost(
+        const boost = PartnershipExpertiseBoost(
           totalBoost: 0.35,
           activeBoost: 0.10,
           completedBoost: 0.15,
@@ -76,7 +76,7 @@ void main() {
 
     group('copyWith', () {
       test('should create immutable copy with updated fields', () {
-        final original = PartnershipExpertiseBoost(
+        const original = PartnershipExpertiseBoost(
           totalBoost: 0.25,
           partnershipCount: 3,
         );

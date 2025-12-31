@@ -109,8 +109,8 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Event waiver accepted'),
+          const SnackBar(
+            content: Text('Event waiver accepted'),
             backgroundColor: AppColors.electricGreen,
           ),
         );
@@ -155,7 +155,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.warning, color: AppTheme.warningColor),
+                    const Icon(Icons.warning, color: AppTheme.warningColor),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
@@ -163,7 +163,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                         children: [
                           Text(
                             widget.event.title,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
@@ -171,7 +171,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                           ),
                           Text(
                             '${_formatDateTime(widget.event.startTime)} • ${widget.event.location ?? 'Location TBD'}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -186,10 +186,10 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                           color: AppColors.electricGreen.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Row(
+                        child: const Row(
                           children: [
                             Icon(Icons.check_circle, size: 16, color: AppColors.electricGreen),
-                            const SizedBox(width: 4),
+                            SizedBox(width: 4),
                             Text(
                               'Accepted',
                               style: TextStyle(
@@ -216,7 +216,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                 children: [
                   Text(
                     waiverText,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textPrimary,
                       height: 1.6,
@@ -226,9 +226,9 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
 
                   // Acknowledgment Checkboxes
                   if (requiresFull && !_hasAccepted) ...[
-                    Divider(color: AppColors.grey300),
+                    const Divider(color: AppColors.grey300),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'Acknowledgment',
                       style: TextStyle(
                         fontSize: 16,
@@ -238,7 +238,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                     ),
                     const SizedBox(height: 12),
                     CheckboxListTile(
-                      title: Text(
+                      title: const Text(
                         'I understand and acknowledge the risks of participation',
                         style: TextStyle(color: AppColors.textPrimary),
                       ),
@@ -252,7 +252,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
                     CheckboxListTile(
-                      title: Text(
+                      title: const Text(
                         'I release SPOTS and all parties from liability',
                         style: TextStyle(color: AppColors.textPrimary),
                       ),
@@ -266,7 +266,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
                     CheckboxListTile(
-                      title: Text(
+                      title: const Text(
                         'I am of legal age to enter into this agreement (or have guardian consent)',
                         style: TextStyle(color: AppColors.textPrimary),
                       ),
@@ -289,7 +289,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
           if (widget.requireAcceptance && !_hasAccepted) ...[
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.surface,
                 border: Border(top: BorderSide(color: AppColors.grey300)),
               ),
@@ -306,12 +306,12 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline, color: AppColors.error, size: 20),
+                          const Icon(Icons.error_outline, color: AppColors.error, size: 20),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _error!,
-                              style: TextStyle(color: AppColors.error, fontSize: 12),
+                              style: const TextStyle(color: AppColors.error, fontSize: 12),
                             ),
                           ),
                         ],

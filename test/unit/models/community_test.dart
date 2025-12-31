@@ -40,7 +40,7 @@ void main() {
         endTime: testDate.add(const Duration(days: 1, hours: 2)),
         createdAt: testDate,
         updatedAt: testDate,
-        attendeeIds: ['user-1', 'user-2', 'user-3'],
+        attendeeIds: const ['user-1', 'user-2', 'user-3'],
         attendeeCount: 3,
       );
     });
@@ -83,7 +83,7 @@ void main() {
           originalLocality: 'Mission District, San Francisco',
           createdAt: testDate,
           updatedAt: testDate,
-          memberIds: ['user-1', 'user-2'],
+          memberIds: const ['user-1', 'user-2'],
           memberCount: 2,
           engagementScore: 0.75,
           activityLevel: ActivityLevel.active,

@@ -18,8 +18,8 @@ void main() {
     setUp(() {
       TestHelpers.setupTestEnvironment();
       testDate = TestHelpers.createTestDateTime();
-      startTime = testDate.add(Duration(days: 1));
-      endTime = startTime.add(Duration(hours: 2));
+      startTime = testDate.add(const Duration(days: 1));
+      endTime = startTime.add(const Duration(hours: 2));
       testHost = ModelFactories.createTestUser(
           id: 'host-123', displayName: 'Expert Host');
       testSpots = [
@@ -50,8 +50,8 @@ void main() {
           host: testHost,
           attendeeCount: 10,
           maxAttendees: 10,
-          startTime: now.add(Duration(hours: 1)),
-          endTime: now.add(Duration(hours: 3)),
+          startTime: now.add(const Duration(hours: 1)),
+          endTime: now.add(const Duration(hours: 3)),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -62,8 +62,8 @@ void main() {
           category: 'Coffee',
           eventType: ExpertiseEventType.tour,
           host: testHost,
-          startTime: now.subtract(Duration(hours: 2)),
-          endTime: now.subtract(Duration(hours: 1)),
+          startTime: now.subtract(const Duration(hours: 2)),
+          endTime: now.subtract(const Duration(hours: 1)),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -74,8 +74,8 @@ void main() {
           category: 'Coffee',
           eventType: ExpertiseEventType.tour,
           host: testHost,
-          startTime: now.add(Duration(hours: 1)),
-          endTime: now.add(Duration(hours: 3)),
+          startTime: now.add(const Duration(hours: 1)),
+          endTime: now.add(const Duration(hours: 3)),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -99,8 +99,8 @@ void main() {
           host: testHost,
           attendeeCount: 5,
           maxAttendees: 10,
-          startTime: now.add(Duration(hours: 1)),
-          endTime: now.add(Duration(hours: 3)),
+          startTime: now.add(const Duration(hours: 1)),
+          endTime: now.add(const Duration(hours: 3)),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -113,8 +113,8 @@ void main() {
           host: testHost,
           attendeeCount: 10,
           maxAttendees: 10,
-          startTime: now.add(Duration(hours: 1)),
-          endTime: now.add(Duration(hours: 3)),
+          startTime: now.add(const Duration(hours: 1)),
+          endTime: now.add(const Duration(hours: 3)),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -125,8 +125,8 @@ void main() {
           category: 'Coffee',
           eventType: ExpertiseEventType.tour,
           host: testHost,
-          startTime: now.subtract(Duration(hours: 2)),
-          endTime: now.subtract(Duration(hours: 1)),
+          startTime: now.subtract(const Duration(hours: 2)),
+          endTime: now.subtract(const Duration(hours: 1)),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -137,9 +137,9 @@ void main() {
           category: 'Coffee',
           eventType: ExpertiseEventType.tour,
           host: testHost,
-          attendeeIds: ['user-1'],
-          startTime: now.add(Duration(hours: 1)),
-          endTime: now.add(Duration(hours: 3)),
+          attendeeIds: const ['user-1'],
+          startTime: now.add(const Duration(hours: 1)),
+          endTime: now.add(const Duration(hours: 3)),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -197,7 +197,7 @@ void main() {
           category: 'Coffee',
           eventType: ExpertiseEventType.tour,
           host: testHost,
-          attendeeIds: ['user-1'],
+          attendeeIds: const ['user-1'],
           attendeeCount: 1,
           maxAttendees: 10,
           startTime: startTime,

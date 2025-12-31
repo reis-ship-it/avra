@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:developer' as developer;
 import 'package:crypto/crypto.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 
 /// Privacy-preserving AI collaboration networks for SPOTS discovery platform
 /// Enables AI agents to find each other, build trust, and collaborate without exposing user data
@@ -160,7 +160,7 @@ class CollaborationNetworks {
         privacyPreserving: true,
       );
       
-      developer.log('Reputation calculated: ${reputationTier} (${overallScore.toStringAsFixed(2)})', name: _logName);
+      developer.log('Reputation calculated: $reputationTier (${overallScore.toStringAsFixed(2)})', name: _logName);
       return reputation;
     } catch (e) {
       developer.log('Error calculating AI reputation: $e', name: _logName);
@@ -201,7 +201,7 @@ class CollaborationNetworks {
         privacyLevel: PrivacyLevel.maximum,
         encryptionKey: _generateEncryptionKey(),
         timestamp: DateTime.now(),
-        validUntil: DateTime.now().add(Duration(hours: 4)),
+        validUntil: DateTime.now().add(const Duration(hours: 4)),
       );
       
       developer.log('Collaboration data anonymized successfully', name: _logName);
@@ -560,7 +560,7 @@ class CollaborationNetworks {
     
     // Health based on trust levels, cluster distribution, and connectivity
     final avgTrust = _calculateAverageTrustLevel(relationships);
-    final clusterDistribution = clusters.length > 0 ? min(1.0, clusters.length / 10.0) : 0.0;
+    final clusterDistribution = clusters.isNotEmpty ? min(1.0, clusters.length / 10.0) : 0.0;
     final connectivity = min(1.0, relationships.length / 100.0);
     
     return (avgTrust + clusterDistribution + connectivity) / 3;
@@ -632,7 +632,7 @@ class CollaborationNetworks {
     
     // Penalize if too many rapid collaborations (bot-like behavior)
     final recentCollabs = history.where((c) => 
-        c.timestamp.isAfter(DateTime.now().subtract(Duration(days: 7)))).length;
+        c.timestamp.isAfter(DateTime.now().subtract(const Duration(days: 7)))).length;
     
     if (recentCollabs > 10) {
       authenticityScore -= 0.2;
@@ -1010,7 +1010,7 @@ class PrivacyPreservingCollaboration {
       privacyLevel: PrivacyLevel.maximum,
       encryptionKey: 'fallback_key',
       timestamp: DateTime.now(),
-      validUntil: DateTime.now().add(Duration(hours: 4)),
+      validUntil: DateTime.now().add(const Duration(hours: 4)),
     );
   }
 }

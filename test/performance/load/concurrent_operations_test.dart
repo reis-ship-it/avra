@@ -1,6 +1,7 @@
 /// Phase 9: Load Testing & Concurrent Operations
 /// Ensures optimal performance under high concurrent load for production deployment
 /// OUR_GUTS.md: "Self-improving ecosystem" - Scalable, robust performance
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/data/datasources/remote/spots_remote_datasource.dart';
@@ -51,7 +52,7 @@ void main() {
         expect(stopwatch.elapsedMilliseconds, lessThan(15000)); // Under 15 seconds
         expect(results.length, equals(concurrentUsers));
         
-        final totalOperations = concurrentUsers * operationsPerUser;
+        const totalOperations = concurrentUsers * operationsPerUser;
         final avgTimePerOperation = stopwatch.elapsedMilliseconds / totalOperations;
         expect(avgTimePerOperation, lessThan(15)); // Under 15ms per operation
         
@@ -174,7 +175,7 @@ void main() {
         // Assert
         expect(stopwatch.elapsedMilliseconds, lessThan(45000)); // Under 45 seconds
         
-        final totalLearningOperations = concurrentLearners * learningCycles;
+        const totalLearningOperations = concurrentLearners * learningCycles;
         final avgLearningTime = stopwatch.elapsedMilliseconds / totalLearningOperations;
         expect(avgLearningTime, lessThan(45)); // Under 45ms per learning operation
         
@@ -340,7 +341,7 @@ void main() {
         expect(stopwatch.elapsedMilliseconds, lessThan(60000)); // Under 60 seconds
         expect(journeyResults.length, equals(simulatedUsers));
         
-        final totalOperations = simulatedUsers * operationsPerUser;
+        const totalOperations = simulatedUsers * operationsPerUser;
         final avgOperationTime = stopwatch.elapsedMilliseconds / totalOperations;
         expect(avgOperationTime, lessThan(240)); // Under 240ms per operation
         
@@ -782,13 +783,21 @@ class _FakeSpotsRemote implements SpotsRemoteDataSource {
 }
 class _FakeSpotsLocal implements SpotsLocalDataSource {
   final Map<String, Spot> _db = {};
+  @override
   Future<List<Spot>> getAllSpots() async => _db.values.toList();
+  @override
   Future<Spot?> getSpotById(String id) async => _db[id];
+  @override
   Future<String> createSpot(Spot spot) async { _db[spot.id] = spot; return spot.id; }
+  @override
   Future<Spot> updateSpot(Spot spot) async { _db[spot.id] = spot; return spot; }
+  @override
   Future<void> deleteSpot(String id) async { _db.remove(id); }
+  @override
   Future<List<Spot>> getSpotsByCategory(String category) async => _db.values.where((s)=>s.category==category).toList();
+  @override
   Future<List<Spot>> getSpotsFromRespectedLists() async => _db.values.toList();
+  @override
   Future<List<Spot>> searchSpots(String query) async => _db.values.where((s)=>s.name.contains(query)).toList();
 }
 

@@ -17,7 +17,7 @@ class SecurityValidator {
       
       // Check that encryption is being used
       // Test SHA-256 hashing (used by PrivacyProtection)
-      final testData = 'test_encryption_data';
+      const testData = 'test_encryption_data';
       
       // #region agent log
       _logger.debug('Testing encryption with test data: length=${testData.length}', tag: _logName);
@@ -67,7 +67,7 @@ class SecurityValidator {
         
         return SecurityResult(
           isCompliant: true,
-          details: 'SHA-256 encryption implemented and verified (${hashLength} bytes)',
+          details: 'SHA-256 encryption implemented and verified ($hashLength bytes)',
         );
       } catch (e) {
         // #region agent log
@@ -107,7 +107,7 @@ class SecurityValidator {
       // This would integrate with actual auth system
       
       // Test password hashing with SHA-256
-      final testPassword = 'test_password_123';
+      const testPassword = 'test_password_123';
       final passwordHash = sha256.convert(utf8.encode(testPassword));
       
       // #region agent log
@@ -167,7 +167,7 @@ class SecurityValidator {
         // - Temporal expiration
         
         // Verify anonymization quality threshold
-        final minAnonymizationLevel = 0.98; // From VibeConstants
+        const minAnonymizationLevel = 0.98; // From VibeConstants
         
         // Validate hash is properly generated (non-empty and correct length)
         final hashValid = testHash.bytes.length == 32 && testHash.bytes.isNotEmpty;
@@ -228,7 +228,7 @@ class SecurityValidator {
       // - Privacy protection in connections
       
       // Test encryption for AI2AI messages
-      final testMessage = 'test_ai2ai_message';
+      const testMessage = 'test_ai2ai_message';
       final messageHash = sha256.convert(utf8.encode(testMessage));
       
       // #region agent log
@@ -283,7 +283,7 @@ class SecurityValidator {
       // - Encrypted data transmission
       
       // Test network data encryption
-      final testNetworkData = 'test_network_transmission';
+      const testNetworkData = 'test_network_transmission';
       final networkHash = sha256.convert(utf8.encode(testNetworkData));
       
       // #region agent log

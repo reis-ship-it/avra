@@ -60,7 +60,7 @@ class ExpertiseProgressWidget extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   '${progress.currentLevel.displayName} Level',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),
@@ -69,7 +69,7 @@ class ExpertiseProgressWidget extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     '• ${progress.location}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
                     ),
@@ -86,13 +86,13 @@ class ExpertiseProgressWidget extends StatelessWidget {
                   value: progress.progressPercentage / 100.0,
                   minHeight: 8,
                   backgroundColor: AppColors.grey200,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 progress.getFormattedProgress(),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
@@ -104,14 +104,14 @@ class ExpertiseProgressWidget extends StatelessWidget {
                   color: AppColors.electricGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.star,
                       size: 16,
                       color: AppColors.electricGreen,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Highest level achieved!',
@@ -151,7 +151,7 @@ class ExpertiseProgressWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Your Contributions',
           style: TextStyle(
             fontSize: 12,
@@ -175,7 +175,7 @@ class ExpertiseProgressWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Next Steps',
           style: TextStyle(
             fontSize: 12,
@@ -201,7 +201,7 @@ class ExpertiseProgressWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       step,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -241,13 +241,13 @@ class ExpertiseProgressWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.info_outline,
                 size: 16,
                 color: AppColors.electricGreen,
               ),
               const SizedBox(width: 8),
-              Expanded(
+              const Expanded(
                 child: Text(
                   'Locality-Specific Qualification',
                   style: TextStyle(
@@ -261,7 +261,7 @@ class ExpertiseProgressWidget extends StatelessWidget {
                 message: 'Thresholds adapt to what $locality values most. '
                     'Activities valued by your locality have lower thresholds, '
                     'making it easier to qualify as a local expert.',
-                child: Icon(
+                child: const Icon(
                   Icons.help_outline,
                   size: 14,
                   color: AppColors.electricGreen,
@@ -273,7 +273,7 @@ class ExpertiseProgressWidget extends StatelessWidget {
           Text(
             'Your qualification requirements are adjusted based on what $locality values. '
             'Focus on activities your locality cares about most to reach Local expert faster.',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 11,
               color: AppColors.textPrimary,
               height: 1.4,
@@ -312,8 +312,8 @@ class CompactExpertiseProgressWidget extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            '${progress.currentLevel.displayName}',
-            style: TextStyle(
+            progress.currentLevel.displayName,
+            style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
@@ -329,7 +329,7 @@ class CompactExpertiseProgressWidget extends StatelessWidget {
                   value: progress.progressPercentage / 100.0,
                   minHeight: 4,
                   backgroundColor: AppColors.grey200,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
                 ),
               ),
             ),

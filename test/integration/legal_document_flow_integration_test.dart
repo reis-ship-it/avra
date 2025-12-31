@@ -122,7 +122,7 @@ void main() {
     });
 
     test('terms of service version tracking', () {
-      final currentVersion = TermsOfService.version;
+      const currentVersion = TermsOfService.version;
       final effectiveDate = TermsOfService.effectiveDate;
 
       expect(currentVersion, equals('1.0.0'));

@@ -13,6 +13,7 @@
 /// - ActionSuccessWidget: Success feedback after actions
 /// - OfflineIndicatorWidget: Offline connectivity indicator
 /// - LLMService: For LLM calls that trigger thinking indicator
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -146,7 +147,7 @@ void main() {
     group('ActionSuccessWidget Integration', () {
       testWidgets('should show success widget after successful action execution', (tester) async {
         // Arrange
-        final intent = CreateListIntent(
+        const intent = CreateListIntent(
           title: 'Test List',
           description: 'Test description',
           userId: 'user123',
@@ -190,7 +191,7 @@ void main() {
         // Arrange
         bool undoCalled = false;
         
-        final intent = CreateListIntent(
+        const intent = CreateListIntent(
           title: 'Test List',
           description: 'Test',
           userId: 'user123',
@@ -256,7 +257,7 @@ void main() {
                 builder: (context) => ElevatedButton(
                   onPressed: () async {
                     // Simulate action execution that would show success widget
-                    final intent = CreateListIntent(
+                    const intent = CreateListIntent(
                       title: 'Test List',
                       description: 'Test',
                       userId: 'user123',
@@ -295,13 +296,13 @@ void main() {
       testWidgets('should show offline indicator when device is offline', (tester) async {
         // Arrange
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: Column(
                 children: [
                   // Simulate offline state
                   OfflineIndicatorWidget(isOffline: true),
-                  const Expanded(
+                  Expanded(
                     child: Center(child: Text('Content')),
                   ),
                 ],
@@ -319,13 +320,13 @@ void main() {
       testWidgets('should hide offline indicator when device is online', (tester) async {
         // Arrange
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: Column(
                 children: [
                   // Simulate online state
                   OfflineIndicatorWidget(isOffline: false),
-                  const Expanded(
+                  Expanded(
                     child: Center(child: Text('Content')),
                   ),
                 ],
@@ -433,7 +434,7 @@ void main() {
                 builder: (context) => ElevatedButton(
                   onPressed: () async {
                     // Simulate complete flow
-                    final intent = CreateListIntent(
+                    const intent = CreateListIntent(
                       title: 'Test List',
                       description: 'Test',
                       userId: 'user123',
@@ -477,7 +478,7 @@ void main() {
               body: Column(
                 children: [
                   // Offline indicator
-                  OfflineIndicatorWidget(isOffline: true),
+                  const OfflineIndicatorWidget(isOffline: true),
                   // Command processing (would use rule-based when offline)
                   Expanded(
                     child: Builder(
@@ -565,7 +566,7 @@ void main() {
               body: Column(
                 children: [
                   // Offline indicator (always visible when offline)
-                  OfflineIndicatorWidget(isOffline: false), // Online state
+                  const OfflineIndicatorWidget(isOffline: false), // Online state
                   // Main content
                   Expanded(
                     child: Builder(
@@ -583,7 +584,7 @@ void main() {
                               );
                               
                               // 2. Show success widget (dialog) after action
-                              final intent = CreateListIntent(
+                              const intent = CreateListIntent(
                                 title: 'Test',
                                 description: 'Test',
                                 userId: 'user123',

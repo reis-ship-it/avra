@@ -42,7 +42,7 @@ void main() {
         reportedId: 'user-012',
         type: DisputeType.payment,
         description: 'Refund amount incorrect',
-        evidenceUrls: ['evidence1.jpg', 'evidence2.jpg'],
+        evidenceUrls: const ['evidence1.jpg', 'evidence2.jpg'],
         createdAt: testDate,
         status: DisputeStatus.pending,
         messages: [testMessage],

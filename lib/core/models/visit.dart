@@ -140,7 +140,7 @@ class Visit extends Equatable {
   /// Check out from visit
   Visit checkOut({DateTime? checkOutTime}) {
     final checkout = checkOutTime ?? DateTime.now();
-    final dwell = checkout.difference(this.checkInTime);
+    final dwell = checkout.difference(checkInTime);
     final quality = calculateQualityScore();
 
     return copyWith(

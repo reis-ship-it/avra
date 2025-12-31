@@ -7,6 +7,7 @@
 /// - _getLocalitiesInState() - Tested via getHostingScope
 /// - _getCitiesInNation() - Tested via getHostingScope
 /// - _getLocalitiesInNation() - Tested via getHostingScope
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/geographic_scope_service.dart';

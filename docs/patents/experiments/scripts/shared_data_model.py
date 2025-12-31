@@ -248,8 +248,23 @@ def quantum_compatibility(profile_a: np.ndarray, profile_b: np.ndarray) -> float
     """
     Calculate quantum compatibility: C = |⟨ψ_A|ψ_B⟩|²
     Used by: Patent #1, #17, #19, #22
+    
+    Note: Vectors must be normalized for quantum compatibility to be in [0, 1]
     """
-    inner_product = np.abs(np.dot(profile_a, profile_b))
+    # Normalize vectors (quantum states must be normalized)
+    norm_a = np.linalg.norm(profile_a)
+    norm_b = np.linalg.norm(profile_b)
+    
+    if norm_a == 0.0 or norm_b == 0.0:
+        return 0.0
+    
+    normalized_a = profile_a / norm_a
+    normalized_b = profile_b / norm_b
+    
+    # Inner product of normalized vectors
+    inner_product = np.abs(np.dot(normalized_a, normalized_b))
+    
+    # Squared magnitude (quantum compatibility)
     return inner_product ** 2
 
 
@@ -440,6 +455,395 @@ def generate_integrated_partnership(
         start_date=start_date,
         end_date=end_date,
         minimum_events=minimum_events,
+    )
+
+
+# ============================================================================
+# BIG FIVE DATA LOADING
+# ============================================================================
+
+def load_big_five_profiles(
+    data_path: Optional[Path] = None,
+    max_profiles: Optional[int] = None,
+    project_root: Optional[Path] = None
+) -> Optional[List[UserProfile]]:
+    """
+    Load Big Five converted profiles from JSON file.
+    
+    Args:
+        data_path: Path to big_five_spots.json file. If None, uses default location.
+        max_profiles: Maximum number of profiles to load. If None, loads all.
+        project_root: Project root path. If None, attempts to detect from file location.
+    
+    Returns:
+        List of UserProfile objects, or None if file not found.
+    """
+    # Default path: data/raw/big_five_spots.json relative to project root
+    if data_path is None:
+        if project_root is None:
+            # Try to detect project root from current file location
+            current_file = Path(__file__)
+            # Go up from docs/patents/experiments/scripts/shared_data_model.py
+            project_root = current_file.parent.parent.parent.parent.parent
+        data_path = project_root / 'data' / 'raw' / 'big_five_spots.json'
+    
+    if not data_path.exists():
+        return None
+    
+    try:
+        with open(data_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        # Handle different JSON structures
+        if isinstance(data, list):
+            profiles_data = data
+        elif isinstance(data, dict) and 'profiles' in data:
+            profiles_data = data['profiles']
+        elif isinstance(data, dict) and 'data' in data:
+            profiles_data = data['data']
+        else:
+            profiles_data = [data]
+        
+        # Limit number of profiles if specified
+        if max_profiles:
+            profiles_data = profiles_data[:max_profiles]
+        
+        # Convert to UserProfile objects
+        users = []
+        for i, item in enumerate(profiles_data):
+            dimensions = item.get('dimensions', {})
+            
+            # Convert dimensions dict to 12D numpy array
+            # Map to correct order for UserProfile (matching generate_integrated_user_profile)
+            dimension_order = [
+                'exploration_eagerness',
+                'community_orientation', 
+                'adventure_seeking',
+                'social_preference',
+                'energy_preference',
+                'novelty_seeking',
+                'value_orientation',
+                'crowd_tolerance',
+                'authenticity',
+                'archetype',  # This is a derived value, but included in 12D
+                'trust_level',
+                'openness'
+            ]
+            
+            personality_12d = np.array([
+                dimensions.get(dim, 0.5) for dim in dimension_order
+            ])
+            
+            # Generate dimension confidence (default to 0.8 for real data)
+            dimension_confidence = np.ones(12) * 0.8
+            
+            # Generate expertise paths from personality dimensions
+            expertise_paths = {
+                'exploration': dimensions.get('exploration_eagerness', 0.5),
+                'credentials': dimensions.get('value_orientation', 0.5),
+                'influence': dimensions.get('social_preference', 0.5),
+                'professional': dimensions.get('authenticity', 0.5),
+                'community': dimensions.get('community_orientation', 0.5),
+                'local': dimensions.get('adventure_seeking', 0.5) * 0.5,  # Scaled down
+            }
+            
+            expertise_score = calculate_expertise_score(expertise_paths)
+            
+            # Determine expertise level
+            if expertise_score >= 0.8:
+                expertise_level = 'Global'
+            elif expertise_score >= 0.7:
+                expertise_level = 'National'
+            elif expertise_score >= 0.6:
+                expertise_level = 'Regional'
+            elif expertise_score >= 0.5:
+                expertise_level = 'City'
+            elif expertise_score >= 0.4:
+                expertise_level = 'Local'
+            else:
+                expertise_level = 'none'
+            
+            # Generate location (random if not available, but use consistent seed per user)
+            user_id = item.get('user_id', f"user_{i}")
+            np.random.seed(hash(user_id) % (2**32))
+            location = {
+                'lat': np.random.uniform(40.0, 41.0),  # NYC area default
+                'lng': np.random.uniform(-74.0, -73.0)
+            }
+            
+            # Select category based on personality
+            categories = ['technology', 'science', 'art', 'business', 'health']
+            # Use exploration_eagerness to determine category preference
+            category_idx = int(dimensions.get('exploration_eagerness', 0.5) * len(categories))
+            category_idx = min(category_idx, len(categories) - 1)
+            category = categories[category_idx]
+            
+            user = UserProfile(
+                agent_id=user_id,
+                personality_12d=personality_12d,
+                dimension_confidence=dimension_confidence,
+                expertise_paths=expertise_paths,
+                expertise_score=expertise_score,
+                expertise_level=expertise_level,
+                location=location,
+                platform_phase='Growth',
+                category=category,
+            )
+            users.append(user)
+        
+        return users
+    except Exception as e:
+        print(f"⚠️  Error loading Big Five data from {data_path}: {e}")
+        return None
+
+
+def load_profiles_with_fallback(
+    num_profiles: int,
+    use_big_five: bool = True,
+    data_path: Optional[Path] = None,
+    project_root: Optional[Path] = None,
+    fallback_generator: Optional[callable] = None
+) -> List[UserProfile]:
+    """
+    Load profiles with automatic fallback to synthetic generation.
+    
+    Args:
+        num_profiles: Number of profiles needed
+        use_big_five: Whether to try loading Big Five data first
+        data_path: Path to Big Five data file (optional)
+        project_root: Project root path (optional)
+        fallback_generator: Function to generate synthetic profiles if Big Five unavailable
+                           Should accept (agent_id: str) and return UserProfile
+    
+    Returns:
+        List of UserProfile objects (from Big Five if available, otherwise synthetic)
+    """
+    users = []
+    
+    # Try to load Big Five data first
+    if use_big_five:
+        big_five_users = load_big_five_profiles(
+            data_path=data_path,
+            max_profiles=num_profiles,
+            project_root=project_root
+        )
+        
+        if big_five_users and len(big_five_users) >= num_profiles:
+            print(f"✅ Loaded {len(big_five_users)} profiles from Big Five data")
+            return big_five_users[:num_profiles]
+        elif big_five_users:
+            print(f"⚠️  Only {len(big_five_users)} Big Five profiles available")
+            print(f"   Using {len(big_five_users)} real + {num_profiles - len(big_five_users)} synthetic")
+            users = big_five_users
+        else:
+            print("⚠️  Big Five data not available, using synthetic profiles")
+    
+    # Generate synthetic profiles to fill remaining slots
+    if len(users) < num_profiles:
+        if fallback_generator is None:
+            # Default fallback: use generate_integrated_user_profile
+            fallback_generator = lambda agent_id: generate_integrated_user_profile(agent_id)
+        
+        synthetic_count = num_profiles - len(users)
+        for i in range(synthetic_count):
+            agent_id = f"synthetic_user_{len(users) + i:04d}"
+            user = fallback_generator(agent_id)
+            users.append(user)
+    
+    return users[:num_profiles]
+
+
+# ============================================================================
+# RAW BIG FIVE TO SPOTS CONVERSION (FOR ALL EXPERIMENTS)
+# ============================================================================
+
+def load_and_convert_big_five_to_spots(
+    max_profiles: Optional[int] = None,
+    data_source: str = 'auto',  # 'csv', 'json', or 'auto'
+    project_root: Optional[Path] = None
+) -> List[Dict[str, Any]]:
+    """
+    Load raw Big Five OCEAN data and convert to SPOTS 12 dimensions.
+    
+    **MANDATORY FOR ALL EXPERIMENTS (as of December 30, 2025):**
+    All experiments MUST use this function to load real Big Five OCEAN data
+    (100k+ examples) and convert it to SPOTS 12 dimensions.
+    
+    **IMPORTANT:** Experiments completed before December 30, 2025 used synthetic data.
+    All new experiments must use real Big Five data via this function.
+    
+    Args:
+        max_profiles: Maximum number of profiles to load. If None, loads all available.
+        data_source: Source to load from ('csv', 'json', or 'auto' to try both)
+        project_root: Project root path. If None, auto-detects.
+    
+    Returns:
+        List of SPOTS profiles with 12 dimensions (converted from Big Five OCEAN)
+        Each profile contains:
+        - user_id: User identifier
+        - dimensions: Dict of 12 SPOTS dimensions (0.0-1.0)
+        - created_at: Creation timestamp (if available)
+        - source: 'big_five_conversion'
+        - original_data.big_five: Original OCEAN scores
+        - original_data.raw_profile: Raw profile data
+    """
+    import sys
+    import csv
+    from pathlib import Path
+    
+    # Detect project root if not provided
+    if project_root is None:
+        current_file = Path(__file__)
+        project_root = current_file.parent.parent.parent.parent.parent
+    
+    # Import converter
+    sys.path.insert(0, str(project_root))
+    from scripts.personality_data.registry.converter_registry import get_converter
+    
+    converter_class = get_converter('big_five_to_spots')
+    if converter_class is None:
+        raise ValueError("BigFiveToSpotsConverter not found. Check converter registry.")
+    
+    converter = converter_class(scale='1-5')  # Big Five is typically 1-5 scale
+    
+    profiles = []
+    
+    # Try CSV first (raw Big Five data)
+    csv_path = project_root / 'data' / 'raw' / 'big_five.csv'
+    if (data_source in ['csv', 'auto']) and csv_path.exists():
+        try:
+            print(f"📊 Loading raw Big Five OCEAN data from CSV: {csv_path}")
+            
+            with open(csv_path, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                count = 0
+                
+                for row in reader:
+                    if max_profiles and count >= max_profiles:
+                        break
+                    
+                    # Extract Big Five OCEAN scores
+                    try:
+                        big_five_data = {
+                            'openness': float(row.get('openness', 0)),
+                            'conscientiousness': float(row.get('conscientiousness', 0)),
+                            'extraversion': float(row.get('extraversion', 0)),
+                            'agreeableness': float(row.get('agreeableness', 0)),
+                            'neuroticism': float(row.get('neuroticism', 0)),
+                        }
+                    except (ValueError, TypeError) as e:
+                        print(f"⚠️  Skipping row {count + 1}: Invalid Big Five data: {e}")
+                        continue
+                    
+                    # Validate Big Five data
+                    if not all(1 <= v <= 5 for v in big_five_data.values()):
+                        print(f"⚠️  Skipping row {count + 1}: Big Five scores out of range (expected 1-5)")
+                        continue
+                    
+                    # Convert to SPOTS 12 dimensions
+                    spots_dimensions = converter.convert(big_five_data)
+                    
+                    # Create profile
+                    user_id = row.get('user_id', f"user_{count + 1}")
+                    profile = {
+                        'user_id': user_id,
+                        'dimensions': spots_dimensions,
+                        'created_at': None,
+                        'source': 'big_five_conversion',
+                        'original_data': {
+                            'big_five': big_five_data,
+                            'raw_profile': dict(row)
+                        }
+                    }
+                    
+                    profiles.append(profile)
+                    count += 1
+                
+                if profiles:
+                    print(f"✅ Converted {len(profiles)} profiles from CSV to SPOTS 12 dimensions")
+                    return profiles
+                
+        except Exception as e:
+            print(f"⚠️  Error loading from CSV: {e}")
+            if data_source == 'csv':
+                raise
+    
+    # Fallback: Extract from JSON's original_data
+    json_path = project_root / 'data' / 'raw' / 'big_five_spots.json'
+    if (data_source in ['json', 'auto']) and json_path.exists():
+        try:
+            print(f"📊 Loading Big Five OCEAN data from JSON original_data: {json_path}")
+            
+            with open(json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            # Handle different JSON structures
+            if isinstance(data, list):
+                profiles_data = data
+            elif isinstance(data, dict) and 'profiles' in data:
+                profiles_data = data['profiles']
+            elif isinstance(data, dict) and 'data' in data:
+                profiles_data = data['data']
+            else:
+                profiles_data = [data]
+            
+            count = 0
+            for item in profiles_data:
+                if max_profiles and count >= max_profiles:
+                    break
+                
+                # Extract original Big Five OCEAN data
+                original_data = item.get('original_data', {})
+                big_five_data = original_data.get('big_five', {})
+                
+                if not big_five_data:
+                    # Try raw_profile
+                    raw_profile = original_data.get('raw_profile', {})
+                    if raw_profile:
+                        try:
+                            big_five_data = {
+                                'openness': float(raw_profile.get('openness', 0)),
+                                'conscientiousness': float(raw_profile.get('conscientiousness', 0)),
+                                'extraversion': float(raw_profile.get('extraversion', 0)),
+                                'agreeableness': float(raw_profile.get('agreeableness', 0)),
+                                'neuroticism': float(raw_profile.get('neuroticism', 0)),
+                            }
+                        except (ValueError, TypeError):
+                            continue
+                
+                if big_five_data and all(isinstance(v, (int, float)) for v in big_five_data.values()):
+                    # Convert to SPOTS 12 dimensions
+                    spots_dimensions = converter.convert(big_five_data)
+                    
+                    profile = {
+                        'user_id': item.get('user_id', f"user_{count + 1}"),
+                        'dimensions': spots_dimensions,
+                        'created_at': item.get('created_at'),
+                        'source': 'big_five_conversion',
+                        'original_data': {
+                            'big_five': big_five_data,
+                            'raw_profile': original_data.get('raw_profile', {})
+                        }
+                    }
+                    
+                    profiles.append(profile)
+                    count += 1
+            
+            if profiles:
+                print(f"✅ Converted {len(profiles)} profiles from JSON to SPOTS 12 dimensions")
+                return profiles
+                
+        except Exception as e:
+            print(f"⚠️  Error loading from JSON: {e}")
+            if data_source == 'json':
+                raise
+    
+    # No data found
+    raise FileNotFoundError(
+        f"Big Five OCEAN data not found. Tried:\n"
+        f"  - CSV: {csv_path}\n"
+        f"  - JSON: {json_path}\n"
+        f"Please ensure Big Five data is available at one of these locations."
     )
 
 

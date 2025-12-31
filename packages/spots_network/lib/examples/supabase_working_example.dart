@@ -257,7 +257,7 @@ class SupabaseWorkingExample {
     }
     
     try {
-      final response = await _client!.storage
+      final response = _client!.storage
         .from('files')
         .getPublicUrl(path);
       

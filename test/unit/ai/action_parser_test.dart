@@ -101,7 +101,7 @@ void main() {
 
     group('canExecute', () {
       test('should validate create spot intent', () async {
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'A test spot',
           latitude: 40.7128,
@@ -116,7 +116,7 @@ void main() {
       });
 
       test('should reject create spot intent with missing name', () async {
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: '',
           description: 'A test spot',
           latitude: 40.7128,
@@ -131,7 +131,7 @@ void main() {
       });
 
       test('should reject create spot intent with invalid location', () async {
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'A test spot',
           latitude: 0.0,
@@ -146,7 +146,7 @@ void main() {
       });
 
       test('should validate create list intent', () async {
-        final intent = CreateListIntent(
+        const intent = CreateListIntent(
           title: 'My List',
           description: 'A test list',
           userId: 'user123',
@@ -158,7 +158,7 @@ void main() {
       });
 
       test('should reject create list intent with missing title', () async {
-        final intent = CreateListIntent(
+        const intent = CreateListIntent(
           title: '',
           description: 'A test list',
           userId: 'user123',
@@ -170,7 +170,7 @@ void main() {
       });
 
       test('should validate add spot to list intent', () async {
-        final intent = AddSpotToListIntent(
+        const intent = AddSpotToListIntent(
           spotId: 'spot123',
           listId: 'list456',
           userId: 'user123',
@@ -182,7 +182,7 @@ void main() {
       });
 
       test('should reject add spot to list intent with missing IDs', () async {
-        final intent = AddSpotToListIntent(
+        const intent = AddSpotToListIntent(
           spotId: '',
           listId: 'list456',
           userId: 'user123',

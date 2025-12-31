@@ -27,12 +27,12 @@ void main() {
         final localityValue = LocalityValue(
           id: 'value-123',
           locality: 'Greenpoint',
-          activityWeights: {
+          activityWeights: const {
             'events_hosted': 0.30, // High (>= 0.25)
             'lists_created': 0.20, // Low (< 0.25)
           },
-          categoryPreferences: {},
-          activityCounts: {},
+          categoryPreferences: const {},
+          activityCounts: const {},
           lastAnalyzed: testDate,
           createdAt: testDate,
           updatedAt: testDate,
@@ -54,16 +54,16 @@ void main() {
         final localityValue = LocalityValue(
           id: 'value-123',
           locality: 'Greenpoint',
-          activityWeights: {
+          activityWeights: const {
             'events_hosted': 0.20,
           },
-          categoryPreferences: {
+          categoryPreferences: const {
             'Coffee': {
               'events_hosted': 0.35,
               'lists_created': 0.30,
             },
           },
-          activityCounts: {},
+          activityCounts: const {},
           lastAnalyzed: testDate,
           createdAt: testDate,
           updatedAt: testDate,
@@ -84,9 +84,9 @@ void main() {
         final localityValue = LocalityValue(
           id: 'value-123',
           locality: 'Greenpoint',
-          activityWeights: {},
-          categoryPreferences: {},
-          activityCounts: {
+          activityWeights: const {},
+          categoryPreferences: const {},
+          activityCounts: const {
             'events_hosted': 50,
             'lists_created': 30,
             'reviews_written': 20,
@@ -107,16 +107,16 @@ void main() {
         final localityValue = LocalityValue(
           id: 'value-123',
           locality: 'Greenpoint',
-          activityWeights: {
+          activityWeights: const {
             'events_hosted': 0.30,
             'lists_created': 0.25,
           },
-          categoryPreferences: {
+          categoryPreferences: const {
             'Coffee': {
               'events_hosted': 0.35,
             },
           },
-          activityCounts: {
+          activityCounts: const {
             'events_hosted': 50,
           },
           lastAnalyzed: testDate,
@@ -140,9 +140,9 @@ void main() {
         final original = LocalityValue(
           id: 'value-123',
           locality: 'Greenpoint',
-          activityWeights: {'events_hosted': 0.30},
-          categoryPreferences: {},
-          activityCounts: {},
+          activityWeights: const {'events_hosted': 0.30},
+          categoryPreferences: const {},
+          activityCounts: const {},
           lastAnalyzed: testDate,
           createdAt: testDate,
           updatedAt: testDate,

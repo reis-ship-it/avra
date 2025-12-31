@@ -43,6 +43,12 @@ class SocialMediaVibeAnalyzer {
           ));
           break;
         case 'instagram':
+          insights.addAll(await analyzeInstagramProfileForVibe(
+            profileData: profileData,
+            follows: follows,
+            connections: connections,
+          ));
+          break;
         case 'facebook':
         case 'twitter':
           insights.addAll(_analyzeGenericSocialProfile(
@@ -188,7 +194,87 @@ class SocialMediaVibeAnalyzer {
     return insights.map((key, value) => MapEntry(key, value.clamp(0.0, 1.0)));
   }
   
-  /// Analyze generic social media profile (Instagram, Facebook, Twitter)
+  /// Analyze Instagram profile specifically (posts, interests, communities)
+  /// 
+  /// [profileData] - Instagram profile data
+  /// [follows] - Accounts followed
+  /// [connections] - Connections/friends
+  /// 
+  /// Returns personality insights
+  Future<Map<String, double>> analyzeInstagramProfileForVibe({
+    required Map<String, dynamic> profileData,
+    required List<Map<String, dynamic>> follows,
+    required List<Map<String, dynamic>> connections,
+  }) async {
+    final insights = <String, double>{};
+    
+    // Get profile info
+    final profile = profileData['profile'] as Map<String, dynamic>? ?? {};
+    final posts = profileData['posts'] as List<dynamic>? ?? [];
+    final interests = profileData['interests'] as List<dynamic>? ?? [];
+    final communities = profileData['communities'] as List<dynamic>? ?? [];
+    
+    // Analyze media count → curation tendency, exploration
+    final mediaCount = (profile['media_count'] as num?)?.toInt() ?? 0;
+    if (mediaCount > 100) {
+      insights['curation_tendency'] = 0.15;
+      insights['exploration_eagerness'] = 0.12;
+    } else if (mediaCount > 50) {
+      insights['curation_tendency'] = 0.10;
+      insights['exploration_eagerness'] = 0.08;
+    }
+    
+    // Analyze interests from parsed data
+    if (interests.contains('travel') || interests.contains('adventure')) {
+      insights['exploration_eagerness'] = (insights['exploration_eagerness'] ?? 0.0) + 0.15;
+      insights['location_adventurousness'] = (insights['location_adventurousness'] ?? 0.0) + 0.12;
+      insights['temporal_flexibility'] = (insights['temporal_flexibility'] ?? 0.0) + 0.10;
+    }
+    
+    if (interests.contains('food') || interests.contains('culinary')) {
+      insights['curation_tendency'] = (insights['curation_tendency'] ?? 0.0) + 0.12;
+      insights['authenticity_preference'] = (insights['authenticity_preference'] ?? 0.0) + 0.10;
+    }
+    
+    if (interests.contains('art') || interests.contains('photography')) {
+      insights['curation_tendency'] = (insights['curation_tendency'] ?? 0.0) + 0.10;
+      insights['authenticity_preference'] = (insights['authenticity_preference'] ?? 0.0) + 0.08;
+    }
+    
+    if (interests.contains('nature') || interests.contains('outdoor')) {
+      insights['location_adventurousness'] = (insights['location_adventurousness'] ?? 0.0) + 0.12;
+      insights['exploration_eagerness'] = (insights['exploration_eagerness'] ?? 0.0) + 0.10;
+    }
+    
+    // Analyze communities (hashtags) → community orientation
+    if (communities.length > 20) {
+      insights['community_orientation'] = (insights['community_orientation'] ?? 0.0) + 0.12;
+      insights['trust_network_reliance'] = (insights['trust_network_reliance'] ?? 0.0) + 0.10;
+    }
+    
+    // Analyze follows count → social discovery style
+    if (follows.length > 500) {
+      insights['social_discovery_style'] = (insights['social_discovery_style'] ?? 0.0) + 0.15;
+    } else if (follows.length > 200) {
+      insights['social_discovery_style'] = (insights['social_discovery_style'] ?? 0.0) + 0.10;
+    }
+    
+    // Analyze post captions for keywords
+    for (final post in posts) {
+      final caption = (post['caption'] as String? ?? '').toLowerCase();
+      if (caption.contains('authentic') || caption.contains('local') || caption.contains('hidden gem')) {
+        insights['authenticity_preference'] = (insights['authenticity_preference'] ?? 0.0) + 0.05;
+      }
+      if (caption.contains('explore') || caption.contains('discover') || caption.contains('adventure')) {
+        insights['exploration_eagerness'] = (insights['exploration_eagerness'] ?? 0.0) + 0.05;
+      }
+    }
+    
+    // Normalize all values to 0.0-1.0 range
+    return insights.map((key, value) => MapEntry(key, value.clamp(0.0, 1.0)));
+  }
+  
+  /// Analyze generic social media profile (Facebook, Twitter)
   /// 
   /// [profileData] - Profile data
   /// [follows] - Accounts followed

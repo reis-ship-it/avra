@@ -48,7 +48,7 @@ void main() {
         endTime: DateTime.now().subtract(const Duration(days: 1, hours: -2)),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
-        attendeeIds: ['user-456', 'user-789'],
+        attendeeIds: const ['user-456', 'user-789'],
       );
     });
 

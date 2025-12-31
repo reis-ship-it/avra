@@ -70,13 +70,13 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
           // Header with view toggle
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.map,
                 color: AppTheme.primaryColor,
                 size: 24,
               ),
               const SizedBox(width: 12),
-              Expanded(
+              const Expanded(
                 child: Text(
                   'Geographic Coverage',
                   style: TextStyle(
@@ -141,7 +141,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Coverage by Level',
               style: TextStyle(
                 fontSize: 16,
@@ -173,7 +173,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
             color: AppColors.grey100,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Center(
+          child: const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -182,7 +182,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
                   size: 48,
                   color: AppColors.textSecondary,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   'No locality coverage data available',
                   style: TextStyle(
@@ -224,7 +224,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
         const SizedBox(height: 12),
         // Locality coverage list
         if (widget.localityCoverage.isNotEmpty) ...[
-          Text(
+          const Text(
             'Locality Coverage',
             style: TextStyle(
               fontSize: 14,
@@ -340,7 +340,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
                   children: [
                     Text(
                       locality,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -354,7 +354,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
                           color: AppTheme.primaryColor,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Text(
+                        child: const Text(
                           'ORIGINAL',
                           style: TextStyle(
                             fontSize: 9,
@@ -435,7 +435,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),
@@ -443,7 +443,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -482,7 +482,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
             ),
           ),
           if (isAchieved)
-            Icon(
+            const Icon(
               Icons.check_circle,
               color: AppTheme.primaryColor,
               size: 20,
@@ -529,7 +529,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
               const SizedBox(width: 8),
               Text(
                 displayName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -543,7 +543,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
                     color: AppTheme.primaryColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
+                  child: const Text(
                     'ACHIEVED',
                     style: TextStyle(
                       fontSize: 10,
@@ -553,7 +553,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
                   ),
                 )
               else
-                Text(
+                const Text(
                   'In Progress',
                   style: TextStyle(
                     fontSize: 12,
@@ -593,7 +593,7 @@ class _ExpertiseCoverageWidgetState extends State<ExpertiseCoverageWidget> {
             const SizedBox(height: 8),
             Text(
               '${((ExpertiseCoverageWidget.coverageThreshold - coverage) * 100).toStringAsFixed(0)}% to reach ${(ExpertiseCoverageWidget.coverageThreshold * 100).toStringAsFixed(0)}% threshold',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),
@@ -722,7 +722,7 @@ class _CoverageMapPainter extends CustomPainter {
         // Draw locality label
         textPainter.text = TextSpan(
           text: locality.length > 10 ? '${locality.substring(0, 10)}...' : locality,
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 10,
             fontWeight: FontWeight.w600,
@@ -736,7 +736,7 @@ class _CoverageMapPainter extends CustomPainter {
       }
     } else {
       // Draw placeholder text
-      textPainter.text = TextSpan(
+      textPainter.text = const TextSpan(
         text: 'No locality data available',
         style: TextStyle(
           color: AppColors.textSecondary,

@@ -54,7 +54,7 @@ void main() {
         communityCount: 1,
         externalCount: 1,
         totalCount: 2,
-        searchDuration: Duration(milliseconds: 150),
+        searchDuration: const Duration(milliseconds: 150),
         sources: {'community': 1, 'google_places': 1},
       );
     });
@@ -388,7 +388,7 @@ void main() {
           communityCount: 1,
           externalCount: 0,
           totalCount: 1,
-          searchDuration: Duration(milliseconds: 100),
+          searchDuration: const Duration(milliseconds: 100),
           sources: {'community': 1},
         );
 
@@ -429,7 +429,7 @@ void main() {
           communityCount: testResult.communityCount,
           externalCount: testResult.externalCount,
           totalCount: testResult.totalCount,
-          searchDuration: Duration(milliseconds: 50),
+          searchDuration: const Duration(milliseconds: 50),
           sources: testResult.sources,
           metadata: testResult.metadata,
         );

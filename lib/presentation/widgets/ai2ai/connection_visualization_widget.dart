@@ -47,7 +47,7 @@ class ConnectionVisualizationWidget extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.account_tree,
                         size: 64,
                         color: AppColors.textSecondary,

@@ -179,7 +179,7 @@ class LocationObfuscationService {
     // "City"
     final commaParts = locationString.split(',');
     
-    if (commaParts.length >= 1) {
+    if (commaParts.isNotEmpty) {
       parts['city'] = commaParts[0].trim();
     }
     

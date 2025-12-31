@@ -5,12 +5,13 @@
 /// - Encryption/decryption
 /// - Merge strategy logic
 /// - Cloud sync enable/disable (local storage)
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
 import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
 import 'package:spots/core/services/storage_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -102,7 +103,7 @@ void main() {
         const userId = 'test_user_1';
         const password = 'test_password';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile1 = PersonalityProfile.initial(agentId, userId: userId);
         final key1 = await syncService.deriveKeyFromPassword(password, userId);
         final encrypted1 =
@@ -118,7 +119,7 @@ void main() {
             equals(profile1.evolutionGeneration));
 
         // Phase 8.3: Use agentId for privacy protection
-        final agentId2 = 'agent_$userId';
+        const agentId2 = 'agent_$userId';
         final profile2 = PersonalityProfile.initial(agentId2, userId: userId);
         final correctKey =
             await syncService.deriveKeyFromPassword('correct', userId);
@@ -169,7 +170,7 @@ void main() {
         expect(newKey.length, equals(32));
 
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
         final encryptedWithOld =
             await syncService.encryptProfileForCloud(profile, oldKey);
@@ -195,7 +196,7 @@ void main() {
         const userId = 'test_user_1';
         const password = 'test_password';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId1 = 'agent_$userId';
+        const agentId1 = 'agent_$userId';
         final profile1 = PersonalityProfile.initial(agentId1, userId: userId);
         
         // Disable cloud sync - this should not call Supabase
@@ -206,7 +207,7 @@ void main() {
         // Assert - Operation completed without throwing (test passes if we reach here)
 
         const wrongPassword = 'wrong_password';
-        final agentId2 = 'agent_$userId';
+        const agentId2 = 'agent_$userId';
         final profile2 = PersonalityProfile.initial(agentId2, userId: userId);
         final correctKey =
             await syncService.deriveKeyFromPassword(password, userId);

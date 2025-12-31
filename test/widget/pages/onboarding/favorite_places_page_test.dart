@@ -16,7 +16,7 @@ void main() {
       // Test business logic: Favorite places page display and functionality
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: FavoritePlacesPage(
-          favoritePlaces: [],
+          favoritePlaces: const [],
           onPlacesChanged: (_) {},
         ),
       );
@@ -41,7 +41,7 @@ void main() {
 
       final widget3 = WidgetTestHelpers.createTestableWidget(
         child: FavoritePlacesPage(
-          favoritePlaces: [],
+          favoritePlaces: const [],
           onPlacesChanged: (_) {},
           userHomebase: 'Brooklyn',
         ),

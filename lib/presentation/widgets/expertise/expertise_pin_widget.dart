@@ -58,7 +58,7 @@ class ExpertisePinWidget extends StatelessWidget {
               children: [
                 Text(
                   pin.category,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -76,7 +76,7 @@ class ExpertisePinWidget extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         '${pin.level.displayName} Level',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 10,
                           color: AppColors.textSecondary,
                         ),
@@ -85,7 +85,7 @@ class ExpertisePinWidget extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           '• ${pin.location}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 10,
                             color: AppColors.textSecondary,
                           ),
@@ -148,7 +148,7 @@ class ExpertisePinGallery extends StatelessWidget {
       ),
       child: Text(
         '+$count more',
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 12,
           color: AppColors.textSecondary,
         ),
@@ -209,7 +209,7 @@ class ExpertisePinDetailCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         pin.getFullDescription(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textSecondary,
                         ),
@@ -227,7 +227,7 @@ class ExpertisePinDetailCard extends StatelessWidget {
               _buildDetailRow('Contributions', '${pin.contributionCount}'),
             if (pin.unlockedFeatures.isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Unlocked Features:',
                 style: TextStyle(
                   fontSize: 12,
@@ -246,7 +246,7 @@ class ExpertisePinDetailCard extends StatelessWidget {
                       style: const TextStyle(fontSize: 10),
                     ),
                     backgroundColor: AppColors.grey100,
-                    side: BorderSide(color: AppColors.grey300),
+                    side: const BorderSide(color: AppColors.grey300),
                   );
                 }).toList(),
               ),
@@ -267,7 +267,7 @@ class ExpertisePinDetailCard extends StatelessWidget {
             width: 100,
             child: Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),

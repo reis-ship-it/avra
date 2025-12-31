@@ -7,6 +7,7 @@
 /// 
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/app_theme.dart';

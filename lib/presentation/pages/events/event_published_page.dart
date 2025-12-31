@@ -91,7 +91,7 @@ SPOTS - know you belong.''';
                     color: AppColors.electricGreen.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.check_circle,
                     size: 80,
                     color: AppColors.electricGreen,
@@ -101,7 +101,7 @@ SPOTS - know you belong.''';
                 const SizedBox(height: 24),
                 
                 // Success Message
-                Text(
+                const Text(
                   'Event Published!',
                   style: TextStyle(
                     fontSize: 28,
@@ -113,7 +113,7 @@ SPOTS - know you belong.''';
                 
                 const SizedBox(height: 12),
                 
-                Text(
+                const Text(
                   'Your event is now live and discoverable by others',
                   style: TextStyle(
                     fontSize: 16,
@@ -151,7 +151,7 @@ SPOTS - know you belong.''';
                                 children: [
                                   Text(
                                     event.title,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.textPrimary,
@@ -160,7 +160,7 @@ SPOTS - know you belong.''';
                                   const SizedBox(height: 4),
                                   Text(
                                     event.getEventTypeDisplayName(),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       color: AppColors.textSecondary,
                                     ),
@@ -175,7 +175,7 @@ SPOTS - know you belong.''';
                         
                         Text(
                           event.description,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textPrimary,
                             height: 1.5,
@@ -188,24 +188,24 @@ SPOTS - know you belong.''';
                         
                         Row(
                           children: [
-                            Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                            const Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 _formatDateTime(event.startTime),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,
                                 ),
                               ),
                             ),
                             if (event.location != null) ...[
-                              Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
+                              const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   event.location!,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     color: AppColors.textSecondary,
                                   ),
@@ -251,7 +251,7 @@ SPOTS - know you belong.''';
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: BorderSide(color: AppColors.grey300),
+                      side: const BorderSide(color: AppColors.grey300),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -265,7 +265,7 @@ SPOTS - know you belong.''';
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.isFirst);
                   },
-                  child: Text(
+                  child: const Text(
                     'Back to Home',
                     style: TextStyle(color: AppColors.textSecondary),
                   ),

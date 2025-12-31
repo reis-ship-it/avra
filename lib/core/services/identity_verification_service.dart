@@ -88,7 +88,7 @@ class IdentityVerificationService {
       // Calculate monthly earnings for current month
       // TODO: Implement calculateEarningsForYear or use alternative method
       // For now, using placeholder - TaxComplianceService has _getUserEarnings (private)
-      final monthlyEarnings = 0.0; // await _taxComplianceService!.calculateEarningsForYear(userId, currentYear);
+      const monthlyEarnings = 0.0; // await _taxComplianceService!.calculateEarningsForYear(userId, currentYear);
       
       // For monthly calculation, would need month-specific calculation
       // For now, using yearly calculation as placeholder
@@ -196,7 +196,7 @@ class IdentityVerificationService {
       // In production, would call Stripe Identity API to get status
       // For now, using placeholder
       // TODO: Implement Stripe Identity API integration
-      final stripeStatus = 'pending'; // Placeholder
+      const stripeStatus = 'pending'; // Placeholder
       
       // Step 3: Map Stripe status to VerificationStatus
       final status = _mapStripeStatus(stripeStatus);

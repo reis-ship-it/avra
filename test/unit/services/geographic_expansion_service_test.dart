@@ -26,9 +26,9 @@ void main() {
           'should track event expansion to new locality, update expansion history, and prevent duplicate localities',
           () async {
         // Test business logic: event expansion tracking with history and deduplication
-        final clubId = 'club-1';
-        final newLocality = 'Williamsburg, Brooklyn';
-        final category = 'Coffee';
+        const clubId = 'club-1';
+        const newLocality = 'Williamsburg, Brooklyn';
+        const category = 'Coffee';
 
         final host = ModelFactories.createTestUser(
             id: 'host-1', displayName: 'Test Host');
@@ -82,15 +82,15 @@ void main() {
           'should track single and multiple commute patterns, and prevent duplicate source localities',
           () async {
         // Test business logic: commute pattern tracking with deduplication
-        final clubId = 'club-1';
-        final eventLocality = 'Mission District, San Francisco';
-        final sourceLocality = 'SOMA, San Francisco';
+        const clubId = 'club-1';
+        const eventLocality = 'Mission District, San Francisco';
+        const sourceLocality = 'SOMA, San Francisco';
         final sourceLocalities = [
           'SOMA, San Francisco',
           'Castro, San Francisco',
           'Hayes Valley, San Francisco'
         ];
-        final category = 'Coffee';
+        const category = 'Coffee';
 
         final host = ModelFactories.createTestUser(id: 'host-1');
         final event = IntegrationTestHelpers.createTestEvent(
@@ -136,8 +136,8 @@ void main() {
           'should calculate locality, city, state, nation, and global coverage with 75% threshold',
           () async {
         // Test business logic: coverage calculation at all geographic levels
-        final clubId = 'club-1';
-        final category = 'Coffee';
+        const clubId = 'club-1';
+        const category = 'Coffee';
         final host = ModelFactories.createTestUser(id: 'host-1');
 
         // Locality coverage
@@ -257,8 +257,8 @@ void main() {
           'should check if locality, city, state, nation, and global thresholds reached',
           () async {
         // Test business logic: threshold checking at all geographic levels
-        final clubId = 'club-1';
-        final category = 'Coffee';
+        const clubId = 'club-1';
+        const category = 'Coffee';
         final host = ModelFactories.createTestUser(id: 'host-1');
 
         // Locality threshold
@@ -329,9 +329,9 @@ void main() {
           'should get expansion by club or community, update expansion data, and get expansion history',
           () async {
         // Test business logic: expansion management operations
-        final clubId = 'club-1';
-        final communityId = 'community-1';
-        final category = 'Coffee';
+        const clubId = 'club-1';
+        const communityId = 'community-1';
+        const category = 'Coffee';
         final host = ModelFactories.createTestUser(id: 'host-1');
 
         // Get expansion by club

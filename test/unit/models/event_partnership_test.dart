@@ -120,7 +120,7 @@ void main() {
         final agreement = PartnershipAgreement(
           id: 'agreement-123',
           partnershipId: 'partnership-123',
-          terms: {'revenueSplit': '50/50'},
+          terms: const {'revenueSplit': '50/50'},
           agreedAt: testDate,
           agreedBy: 'user-123',
         );

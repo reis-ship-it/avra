@@ -57,11 +57,11 @@ void main() {
           businessType: 'Restaurant',
         );
 
-        final expertPrefs = BusinessExpertPreferences(
+        const expertPrefs = BusinessExpertPreferences(
           preferredExpertiseCategories: ['Coffee'],
           minExpertLevel: 3,
         );
-        final patronPrefs = BusinessPatronPreferences(
+        const patronPrefs = BusinessPatronPreferences(
           preferredVibePreferences: ['Cozy', 'Social'],
         );
 

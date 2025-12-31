@@ -90,8 +90,8 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
                         ),
                       ),
                       Text(
-                        'Help verify this ${_dataSource} data',
-                        style: TextStyle(
+                        'Help verify this $_dataSource data',
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.grey600,
                         ),
@@ -113,10 +113,10 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: AppColors.grey200),
               ),
-              child: Row(
+              child: const Row(
                 children: [
-                  const Icon(Icons.info, color: AppColors.textSecondary, size: 16),
-                  const SizedBox(width: 8),
+                  Icon(Icons.info, color: AppColors.textSecondary, size: 16),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Per OUR_GUTS.md: Your community validation helps maintain authentic, trustworthy place data.',
@@ -255,7 +255,7 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
             const SizedBox(height: 8),
             
             // Privacy Note
-            Text(
+            const Text(
               'Your validation is anonymous and helps improve data quality for the community.',
               style: TextStyle(
                 fontSize: 10,
@@ -351,21 +351,21 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.check_circle, color: AppColors.white),
-                const SizedBox(width: 8),
+                Icon(Icons.check_circle, color: AppColors.white),
+                SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Thank you! Your validation helps improve community data quality.',
-                    style: const TextStyle(color: AppColors.white),
+                    style: TextStyle(color: AppColors.white),
                   ),
                 ),
               ],
             ),
             backgroundColor: AppTheme.successColor,
-            duration: const Duration(seconds: 3),
+            duration: Duration(seconds: 3),
           ),
         );
         

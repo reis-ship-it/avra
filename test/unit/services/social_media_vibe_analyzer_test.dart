@@ -8,6 +8,7 @@
 /// - Dimension Extraction: Personality insights from social data
 /// - Value Normalization: Ensuring values are in 0.0-1.0 range
 /// - Edge Cases: Empty data, missing fields, invalid platforms
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/social_media_vibe_analyzer.dart';

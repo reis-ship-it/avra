@@ -11,9 +11,9 @@ import 'package:mockito/src/dummies.dart' as _i8;
 import 'package:spots/core/ai/personality_learning.dart' as _i4;
 import 'package:spots/core/models/multi_path_expertise.dart' as _i9;
 import 'package:spots/core/models/outcome_result.dart' as _i10;
-import 'package:spots/core/models/personality_profile.dart' as _i3;
+import 'package:spots_ai/models/personality_profile.dart' as _i3;
 import 'package:spots/core/services/enhanced_connectivity_service.dart' as _i2;
-import 'package:spots/core/services/personality_sync_service.dart' as _i6;
+import 'package:spots_ai/services/personality_sync_service.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -28,7 +28,6 @@ import 'package:spots/core/services/personality_sync_service.dart' as _i6;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
-// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeConnectivityStatus_0 extends _i1.SmartFake
     implements _i2.ConnectivityStatus {
@@ -327,11 +326,11 @@ class MockPersonalityLearning extends _i1.Mock
           dynamic Function(
             String,
             _i3.PersonalityProfile,
-          )? value) =>
+          )? _onPersonalityEvolved) =>
       super.noSuchMethod(
         Invocation.setter(
           #onPersonalityEvolved,
-          value,
+          _onPersonalityEvolved,
         ),
         returnValueForMissingStub: null,
       );

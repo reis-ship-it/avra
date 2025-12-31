@@ -94,7 +94,7 @@ void main() {
     });
 
     test('ConnectionMonitor should support AI signature lookups', () {
-      final testSignature = 'ai_test_123';
+      const testSignature = 'ai_test_123';
       final connections = connectionMonitor.getConnectionsByAISignature(testSignature);
       expect(connections, isA<Set<String>>());
       
@@ -127,7 +127,7 @@ void main() {
     });
 
     test('AI data streams should work without connections', () async {
-      final testSignature = 'ai_nonexistent_123';
+      const testSignature = 'ai_nonexistent_123';
       
       // Should throw UnauthorizedException without login
       expect(

@@ -68,7 +68,7 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Product Contribution',
               style: TextStyle(
                 fontSize: 18,
@@ -89,7 +89,7 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                prefixIcon: Icon(Icons.inventory_2, color: AppColors.textSecondary),
+                prefixIcon: const Icon(Icons.inventory_2, color: AppColors.textSecondary),
               ),
               onChanged: (value) {
                 widget.onProductNameChanged?.call(value);
@@ -100,7 +100,7 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
             // Quantity
             Row(
               children: [
-                Expanded(
+                const Expanded(
                   child: Text(
                     'Quantity',
                     style: TextStyle(
@@ -136,7 +136,7 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
                       ),
                       child: Text(
                         '$_quantity',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -151,7 +151,7 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
                           _updateTotalValue();
                         });
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.add_circle_outline,
                         color: AppTheme.primaryColor,
                       ),
@@ -174,9 +174,9 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                prefixIcon: Icon(Icons.attach_money, color: AppColors.textSecondary),
+                prefixIcon: const Icon(Icons.attach_money, color: AppColors.textSecondary),
               ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               onChanged: (value) {
                 _unitPrice = double.tryParse(value);
                 _updateTotalValue();
@@ -195,7 +195,7 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       'Total Product Value',
                       style: TextStyle(
                         fontSize: 14,
@@ -205,7 +205,7 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
                     ),
                     Text(
                       '\$${totalValue.toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.primaryColor,

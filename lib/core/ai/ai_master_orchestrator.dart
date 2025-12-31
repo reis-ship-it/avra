@@ -9,9 +9,9 @@ import 'package:spots/core/ai/personality_learning.dart' as pl;
 import 'package:spots/core/ai/collaboration_networks.dart' as collab;
 import 'package:spots/core/ai/list_generator_service.dart';
 import 'package:spots/core/ml/pattern_recognition.dart' as pattern_recognition;
-import 'package:spots/core/models/personality_profile.dart' show PersonalityProfile;
+import 'package:spots_ai/models/personality_profile.dart' show PersonalityProfile;
 import 'package:spots/core/models/user.dart' as user_model;
-import 'package:spots/core/models/personality_profile.dart' show UserPersonality;
+import 'package:spots_ai/models/personality_profile.dart' show UserPersonality;
 
 /// Master AI Orchestrator for SPOTS
 /// Coordinates all AI systems to create a comprehensive learning AI that improves itself
@@ -90,7 +90,7 @@ class AIMasterOrchestrator {
       await _selfImprovementSystem.startSelfImprovement();
       
       // Start orchestration loop
-      _orchestrationTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
+      _orchestrationTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
         await _performOrchestrationCycle();
       });
       
@@ -353,7 +353,7 @@ class AIMasterOrchestrator {
       
       final networkStatusStr = networkStatus.toString();
       final secureChannelStr = secureChannel.toString();
-      developer.log('AI collaboration optimized (network: ${networkStatusStr.length > 20 ? networkStatusStr.substring(0, 20) + '...' : networkStatusStr}, channel: ${secureChannelStr.length > 20 ? secureChannelStr.substring(0, 20) + '...' : secureChannelStr})', name: _logName);
+      developer.log('AI collaboration optimized (network: ${networkStatusStr.length > 20 ? '${networkStatusStr.substring(0, 20)}...' : networkStatusStr}, channel: ${secureChannelStr.length > 20 ? '${secureChannelStr.substring(0, 20)}...' : secureChannelStr})', name: _logName);
       
     } catch (e) {
       developer.log('Error optimizing AI collaboration: $e', name: _logName);

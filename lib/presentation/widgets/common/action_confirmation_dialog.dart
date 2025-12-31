@@ -8,6 +8,7 @@
 /// - Cancel and Confirm options
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/ai/action_models.dart';
@@ -45,15 +46,15 @@ class ActionConfirmationDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      title: Row(
+      title: const Row(
         children: [
           Icon(
             Icons.info_outline,
             color: AppColors.electricGreen,
             size: 24,
           ),
-          const SizedBox(width: 8),
-          const Text(
+          SizedBox(width: 8),
+          Text(
             'Confirm Action',
             style: TextStyle(
               fontSize: 20,
@@ -82,7 +83,7 @@ class ActionConfirmationDialog extends StatelessWidget {
             onCancel();
             Navigator.of(context).pop();
           },
-          child: Text(
+          child: const Text(
             'Cancel',
             style: TextStyle(
               color: AppColors.textSecondary,

@@ -10,6 +10,7 @@
 /// 
 /// Location: Settings/Account page
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';

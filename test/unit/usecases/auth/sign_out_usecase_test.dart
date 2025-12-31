@@ -356,7 +356,7 @@ void main() {
         // Arrange
         when(mockRepository.signOut())
             .thenAnswer((_) async {
-              await Future.delayed(Duration(milliseconds: 100));
+              await Future.delayed(const Duration(milliseconds: 100));
               return Future<void>.value();
             });
 

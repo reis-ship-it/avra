@@ -12,17 +12,73 @@ import 'package:spots/presentation/widgets/common/source_indicator_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import 'package:spots/core/services/social_media_sharing_service.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:spots/injection_container.dart' as di;
+import 'package:spots/core/ai/event_logger.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SpotDetailsPage extends StatelessWidget {
+class SpotDetailsPage extends StatefulWidget {
   final Spot spot;
 
   const SpotDetailsPage({super.key, required this.spot});
 
   @override
+  State<SpotDetailsPage> createState() => _SpotDetailsPageState();
+}
+
+class _SpotDetailsPageState extends State<SpotDetailsPage> {
+  late EventLogger _eventLogger;
+  DateTime? _viewStartTime;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeEventLogger();
+    _viewStartTime = DateTime.now();
+  }
+
+  Future<void> _initializeEventLogger() async {
+    try {
+      _eventLogger = di.sl<EventLogger>();
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser != null) {
+        await _eventLogger.initialize(userId: currentUser.id);
+        _eventLogger.updateScreen('spot_details');
+
+        // Log spot visited
+        await _eventLogger.logSpotVisited(
+          spotId: widget.spot.id,
+        );
+      }
+      _isInitialized = true;
+    } catch (e) {
+      // Event logging is non-critical, continue without it
+      _isInitialized = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    // Log dwell time
+    if (_isInitialized && _viewStartTime != null) {
+      final duration = DateTime.now().difference(_viewStartTime!);
+      _eventLogger.logDwellTime(
+        spotId: widget.spot.id,
+        durationMs: duration.inMilliseconds,
+        interactionType: 'view',
+      );
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(spot.name),
+        title: Text(widget.spot.name),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -58,11 +114,11 @@ class SpotDetailsPage extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: _getCategoryColor(spot.category),
+                            color: _getCategoryColor(widget.spot.category),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
-                            spot.category,
+                            widget.spot.category,
                             style: const TextStyle(
                               color: AppColors.white,
                               fontWeight: FontWeight.bold,
@@ -71,14 +127,14 @@ class SpotDetailsPage extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        if (spot.rating > 0)
+                        if (widget.spot.rating > 0)
                           Row(
                             children: [
                               const Icon(Icons.star,
                                   color: AppColors.grey600, size: 16),
                               const SizedBox(width: 4),
                               Text(
-                                spot.rating.toString(),
+                                widget.spot.rating.toString(),
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                               ),
@@ -88,16 +144,16 @@ class SpotDetailsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      spot.name,
+                      widget.spot.name,
                       style:
                           Theme.of(context).textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                     ),
-                    if (spot.description.isNotEmpty) ...[
+                    if (widget.spot.description.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text(
-                        spot.description,
+                        widget.spot.description,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppColors.grey600,
                             ),
@@ -105,7 +161,7 @@ class SpotDetailsPage extends StatelessWidget {
                     ],
                     const SizedBox(height: 12),
                     SourceIndicatorWidget(
-                      indicator: spot.getSourceIndicator(),
+                      indicator: widget.spot.getSourceIndicator(),
                       showWarning: true,
                       compact: false,
                     ),
@@ -122,12 +178,12 @@ class SpotDetailsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    const Row(
                       children: [
-                        const Icon(Icons.location_on,
+                        Icon(Icons.location_on,
                             color: AppTheme.primaryColor),
-                        const SizedBox(width: 8),
-                        const Text(
+                        SizedBox(width: 8),
+                        Text(
                           'Location',
                           style: TextStyle(
                             fontSize: 18,
@@ -137,27 +193,27 @@ class SpotDetailsPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    if (spot.address != null) ...[
+                    if (widget.spot.address != null) ...[
                       Text(
-                        spot.address!,
+                        widget.spot.address!,
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 8),
                     ],
                     Text(
-                      'Latitude: ${spot.latitude.toStringAsFixed(6)}',
+                      'Latitude: ${widget.spot.latitude.toStringAsFixed(6)}',
                       style: const TextStyle(
                           fontSize: 12, color: AppColors.textSecondary),
                     ),
                     Text(
-                      'Longitude: ${spot.longitude.toStringAsFixed(6)}',
+                      'Longitude: ${widget.spot.longitude.toStringAsFixed(6)}',
                       style: const TextStyle(
                           fontSize: 12, color: AppColors.textSecondary),
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
                       onPressed: () {
-                        _openInMaps(context, spot);
+                        _openInMaps(context, widget.spot);
                       },
                       icon: const Icon(Icons.directions),
                       label: const Text('Get Directions'),
@@ -176,11 +232,11 @@ class SpotDetailsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    const Row(
                       children: [
-                        const Icon(Icons.info, color: AppTheme.primaryColor),
-                        const SizedBox(width: 8),
-                        const Text(
+                        Icon(Icons.info, color: AppTheme.primaryColor),
+                        SizedBox(width: 8),
+                        Text(
                           'Details',
                           style: TextStyle(
                             fontSize: 18,
@@ -190,12 +246,14 @@ class SpotDetailsPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    _buildDetailRow('Created', _formatDate(spot.createdAt)),
-                    _buildDetailRow('Updated', _formatDate(spot.updatedAt)),
-                    if (spot.tags.isNotEmpty) ...[
+                    _buildDetailRow(
+                        'Created', _formatDate(widget.spot.createdAt)),
+                    _buildDetailRow(
+                        'Updated', _formatDate(widget.spot.updatedAt)),
+                    if (widget.spot.tags.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text(
-                        'Tags: ${spot.tags.join(', ')}',
+                        'Tags: ${widget.spot.tags.join(', ')}',
                         style: const TextStyle(fontSize: 14),
                       ),
                     ],
@@ -234,12 +292,12 @@ class SpotDetailsPage extends StatelessWidget {
 
             // Community Validation (Phase 3: For external data spots)
             CommunityValidationWidget(
-              spot: spot,
+              spot: widget.spot,
               onValidationComplete: () {
                 // Optionally refresh spot data or show confirmation
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text(
+                  const SnackBar(
+                    content: Text(
                         'Thank you for helping validate community data!'),
                     backgroundColor: AppTheme.successColor,
                   ),
@@ -253,20 +311,7 @@ class SpotDetailsPage extends StatelessWidget {
   }
 
   void _navigateToEdit(BuildContext context) {
-    context.go('/spot/${spot.id}/edit');
-  }
-
-  // Note: Edit result handling moved to EditSpotPage navigation
-  void _handleEditResult(BuildContext context, Spot? updatedSpot) {
-    if (updatedSpot != null) {
-      // The spot details will be automatically updated via BLoC
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Spot updated successfully'),
-          backgroundColor: AppTheme.successColor,
-        ),
-      );
-    }
+    context.go('/spot/${widget.spot.id}/edit');
   }
 
   void _showShareDialog(BuildContext context) {
@@ -274,37 +319,69 @@ class SpotDetailsPage extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Share Spot'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.share),
-              title: const Text('Share via...'),
-              subtitle: const Text('Share to other apps'),
-              onTap: () {
-                Navigator.pop(context);
-                _shareToOtherApps();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.link),
-              title: const Text('Copy Link'),
-              subtitle: const Text('Copy shareable link'),
-              onTap: () {
-                Navigator.pop(context);
-                _copySpotLink(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.location_on),
-              title: const Text('Share Location'),
-              subtitle: const Text('Share coordinates'),
-              onTap: () {
-                Navigator.pop(context);
-                _shareLocation();
-              },
-            ),
-          ],
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Social Media Sharing Section
+              FutureBuilder<List<String>>(
+                future: _getAvailableSocialPlatforms(context),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Share to Social Media',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        ...snapshot.data!.map((platform) => ListTile(
+                              leading: _getPlatformIcon(platform),
+                              title: Text(
+                                  'Share to ${platform[0].toUpperCase()}${platform.substring(1)}'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                _shareToSocialMedia(context, platform);
+                              },
+                            )),
+                        const Divider(),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+              // Standard Sharing Options
+              ListTile(
+                leading: const Icon(Icons.share),
+                title: const Text('Share via...'),
+                subtitle: const Text('Share to other apps'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _shareToOtherApps();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.link),
+                title: const Text('Copy Link'),
+                subtitle: const Text('Copy shareable link'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _copySpotLink(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.location_on),
+                title: const Text('Share Location'),
+                subtitle: const Text('Share coordinates'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _shareLocation();
+                },
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -316,21 +393,138 @@ class SpotDetailsPage extends StatelessWidget {
     );
   }
 
-  void _shareToOtherApps() {
-    final shareText = '''${spot.name}
+  Future<List<String>> _getAvailableSocialPlatforms(
+      BuildContext context) async {
+    try {
+      final authBloc = context.read<AuthBloc>();
+      final authState = authBloc.state;
+      if (authState is! Authenticated) {
+        return [];
+      }
 
-${spot.description.isNotEmpty ? '${spot.description}\n' : ''}${spot.address != null ? 'Address: ${spot.address}\n' : ''}Category: ${spot.category}
-Location: ${spot.latitude.toStringAsFixed(6)}, ${spot.longitude.toStringAsFixed(6)}
+      final userId = authState.user.id;
+      final sharingService = di.sl<SocialMediaSharingService>();
+      return await sharingService.getAvailablePlatforms(userId);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Widget _getPlatformIcon(String platform) {
+    IconData icon;
+    Color color;
+    switch (platform.toLowerCase()) {
+      case 'instagram':
+        icon = Icons.camera_alt;
+        color = Colors.purple;
+        break;
+      case 'facebook':
+        icon = Icons.facebook;
+        color = Colors.blue;
+        break;
+      case 'twitter':
+        icon = Icons.chat_bubble_outline;
+        color = Colors.lightBlue;
+        break;
+      case 'reddit':
+        icon = Icons.forum;
+        color = Colors.orange;
+        break;
+      case 'tumblr':
+        icon = Icons.auto_stories;
+        color = Colors.blue.shade900;
+        break;
+      case 'pinterest':
+        icon = Icons.push_pin;
+        color = Colors.red.shade700;
+        break;
+      default:
+        icon = Icons.link;
+        color = AppTheme.primaryColor;
+    }
+    return Icon(icon, color: color);
+  }
+
+  Future<void> _shareToSocialMedia(
+      BuildContext context, String platform) async {
+    try {
+      final authBloc = context.read<AuthBloc>();
+      final authState = authBloc.state;
+      if (authState is! Authenticated) {
+        throw Exception('User not authenticated');
+      }
+
+      final userId = authState.user.id;
+      final agentIdService = di.sl<AgentIdService>();
+      final agentId = await agentIdService.getUserAgentId(userId);
+      final sharingService = di.sl<SocialMediaSharingService>();
+
+      // Show loading
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sharing to $platform...'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+
+      // Share place
+      final results = await sharingService.sharePlace(
+        agentId: agentId,
+        userId: userId,
+        placeId: widget.spot.id,
+        placeName: widget.spot.name,
+        placeDescription: widget.spot.description,
+        placeLocation: widget.spot.address,
+        placeImageUrl: widget.spot.imageUrl,
+        platforms: [platform],
+      );
+
+      if (context.mounted) {
+        if (results[platform] == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Shared to $platform successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to share to $platform'),
+              backgroundColor: AppTheme.errorColor,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error sharing: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    }
+  }
+
+  void _shareToOtherApps() {
+    final shareText = '''${widget.spot.name}
+
+${widget.spot.description.isNotEmpty ? '${widget.spot.description}\n' : ''}${widget.spot.address != null ? 'Address: ${widget.spot.address}\n' : ''}Category: ${widget.spot.category}
+Location: ${widget.spot.latitude.toStringAsFixed(6)}, ${widget.spot.longitude.toStringAsFixed(6)}
 
 Shared from SPOTS - know you belong.''';
 
-    Share.share(shareText, subject: 'Check out this spot: ${spot.name}');
+    Share.share(shareText, subject: 'Check out this spot: ${widget.spot.name}');
   }
 
   void _copySpotLink(BuildContext context) {
     // Generate a shareable link (this would normally be a deep link to the app)
     final spotLink =
-        'https://spots.app/spot/${spot.id}?lat=${spot.latitude}&lng=${spot.longitude}';
+        'https://spots.app/spot/${widget.spot.id}?lat=${widget.spot.latitude}&lng=${widget.spot.longitude}';
 
     Clipboard.setData(ClipboardData(text: spotLink));
     ScaffoldMessenger.of(context).showSnackBar(
@@ -342,8 +536,8 @@ Shared from SPOTS - know you belong.''';
   }
 
   void _shareLocation() {
-    final locationText = '''📍 ${spot.name}
-${spot.address ?? 'Coordinates: ${spot.latitude.toStringAsFixed(6)}, ${spot.longitude.toStringAsFixed(6)}'}
+    final locationText = '''📍 ${widget.spot.name}
+${widget.spot.address ?? 'Coordinates: ${widget.spot.latitude.toStringAsFixed(6)}, ${widget.spot.longitude.toStringAsFixed(6)}'}
 
 Shared from SPOTS''';
 
@@ -408,7 +602,8 @@ Shared from SPOTS''';
   }
 
   Future<void> _openAppleMaps(Spot spot) async {
-    final url = 'https://maps.apple.com/?q=${spot.latitude},${spot.longitude}';
+    final url =
+        'https://maps.apple.com/?q=${widget.spot.latitude},${widget.spot.longitude}';
     final uri = Uri.parse(url);
 
     if (await canLaunchUrl(uri)) {
@@ -457,7 +652,7 @@ Shared from SPOTS''';
                   itemCount: state.lists.length,
                   itemBuilder: (context, index) {
                     final list = state.lists[index];
-                    final isInList = list.spotIds.contains(spot.id);
+                    final isInList = list.spotIds.contains(widget.spot.id);
 
                     return ListTile(
                       leading: Icon(
@@ -498,7 +693,7 @@ Shared from SPOTS''';
 
   void _addSpotToList(BuildContext context, SpotList list) {
     final updatedList = list.copyWith(
-      spotIds: [...list.spotIds, spot.id],
+      spotIds: [...list.spotIds, widget.spot.id],
       updatedAt: DateTime.now(),
     );
 
@@ -506,7 +701,7 @@ Shared from SPOTS''';
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Added ${spot.name} to ${list.title}'),
+        content: Text('Added ${widget.spot.name} to ${list.title}'),
         backgroundColor: AppTheme.successColor,
       ),
     );

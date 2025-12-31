@@ -871,9 +871,9 @@ class SupabaseDataBackendSimple implements DataBackend {
   }
 
   Spot _mapRowToSpot(Map<String, dynamic> row) {
-    double _numToDouble(dynamic v) =>
+    double numToDouble(dynamic v) =>
         v is num ? v.toDouble() : double.tryParse('$v') ?? 0.0;
-    DateTime _toDate(dynamic v) {
+    DateTime toDate(dynamic v) {
       if (v is DateTime) return v;
       if (v is String) {
         try {
@@ -887,12 +887,12 @@ class SupabaseDataBackendSimple implements DataBackend {
       id: row['id'] as String,
       name: (row['name'] as String?) ?? '',
       description: (row['description'] as String?) ?? '',
-      latitude: _numToDouble(row['latitude']),
-      longitude: _numToDouble(row['longitude']),
+      latitude: numToDouble(row['latitude']),
+      longitude: numToDouble(row['longitude']),
       category: (row['category'] as String?) ?? 'general',
       createdBy: (row['created_by'] as String?) ?? '',
-      createdAt: _toDate(row['created_at']),
-      updatedAt: _toDate(row['updated_at']),
+      createdAt: toDate(row['created_at']),
+      updatedAt: toDate(row['updated_at']),
       address: row['address'] as String?,
       tags: (row['tags'] as List?)?.cast<String>() ?? const [],
       viewCount: (row['view_count'] as int?) ?? 0,
@@ -902,7 +902,7 @@ class SupabaseDataBackendSimple implements DataBackend {
   }
 
   SpotList _mapRowToSpotList(Map<String, dynamic> row) {
-    DateTime _toDate(dynamic v) {
+    DateTime toDate(dynamic v) {
       if (v is DateTime) return v;
       if (v is String) {
         try {
@@ -919,8 +919,8 @@ class SupabaseDataBackendSimple implements DataBackend {
       category: ListCategory.general,
       type: ListType.public,
       curatorId: (row['created_by'] as String?) ?? '',
-      createdAt: _toDate(row['created_at']),
-      updatedAt: _toDate(row['updated_at']),
+      createdAt: toDate(row['created_at']),
+      updatedAt: toDate(row['updated_at']),
       isPublic: (row['is_public'] as bool?) ?? true,
       tags: (row['tags'] as List?)?.cast<String>() ?? const [],
       respectCount: (row['respect_count'] as int?) ?? 0,
@@ -1119,7 +1119,7 @@ class SupabaseRealtimeBackendSimple implements RealtimeBackend {
 
   @override
   Stream<List<LiveCursor>> subscribeToLiveCursors(String documentId) {
-    return Stream.empty(); // Not implemented yet
+    return const Stream.empty(); // Not implemented yet
   }
 
   @override

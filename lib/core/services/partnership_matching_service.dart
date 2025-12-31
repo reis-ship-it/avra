@@ -238,7 +238,7 @@ class PartnershipSuggestion {
   
   @override
   String toString() {
-    return 'PartnershipSuggestion(business: $businessId, compatibility: ${compatibilityPercentage}%, reason: $reason)';
+    return 'PartnershipSuggestion(business: $businessId, compatibility: $compatibilityPercentage%, reason: $reason)';
   }
 }
 

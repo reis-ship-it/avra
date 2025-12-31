@@ -6,10 +6,10 @@ import 'package:spots/core/ai/personality_learning.dart'
     show PersonalityLearning, AI2AILearningInsight, AI2AIInsightType;
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/services/quantum_satisfaction_enhancer.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
 import 'package:spots/core/ai/quantum/location_quantum_state.dart';
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:spots/core/models/unified_models.dart' as unified_models;
 
 /// OUR_GUTS.md: "Dynamic dimension discovery through user feedback analysis that evolves personality understanding"

@@ -334,7 +334,7 @@ class ComprehensiveDataCollector {
       ),
       UnifiedUserActionData(
         type: 'feature_use',
-        timestamp: DateTime.now().subtract(Duration(minutes: 5)),
+        timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
         metadata: {'feature': 'search', 'query': 'coffee'},
         location: null,
         socialContext: SocialContext.solo,
@@ -346,14 +346,14 @@ class ComprehensiveDataCollector {
     return [
       UnifiedUserActionData(
         type: 'spot_view',
-        timestamp: DateTime.now().subtract(Duration(minutes: 10)),
+        timestamp: DateTime.now().subtract(const Duration(minutes: 10)),
         metadata: {'spot_id': 'spot_123', 'category': 'food'},
         location: Location(latitude: 37.7749, longitude: -122.4194),
         socialContext: SocialContext.solo,
       ),
       UnifiedUserActionData(
         type: 'list_create',
-        timestamp: DateTime.now().subtract(Duration(hours: 1)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 1)),
         metadata: {'list_name': 'My Coffee Spots', 'spots_count': 5},
         location: null,
         socialContext: SocialContext.solo,
@@ -365,14 +365,14 @@ class ComprehensiveDataCollector {
     return [
       UnifiedUserActionData(
         type: 'share_spot',
-        timestamp: DateTime.now().subtract(Duration(hours: 2)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
         metadata: {'spot_id': 'spot_456', 'platform': 'instagram'},
         location: Location(latitude: 37.7749, longitude: -122.4194),
         socialContext: SocialContext.social,
       ),
       UnifiedUserActionData(
         type: 'respect_list',
-        timestamp: DateTime.now().subtract(Duration(hours: 3)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 3)),
         metadata: {'list_id': 'list_789', 'user_id': 'user_456'},
         location: null,
         socialContext: SocialContext.community,
@@ -384,14 +384,14 @@ class ComprehensiveDataCollector {
     return [
       UnifiedUserActionData(
         type: 'preference_update',
-        timestamp: DateTime.now().subtract(Duration(hours: 4)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 4)),
         metadata: {'category': 'food', 'preference': 'italian'},
         location: null,
         socialContext: SocialContext.solo,
       ),
       UnifiedUserActionData(
         type: 'rating_given',
-        timestamp: DateTime.now().subtract(Duration(hours: 5)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 5)),
         metadata: {'spot_id': 'spot_123', 'rating': 5, 'review': 'Great coffee!'},
         location: Location(latitude: 37.7749, longitude: -122.4194),
         socialContext: SocialContext.solo,
@@ -417,7 +417,7 @@ class ComprehensiveDataCollector {
         latitude: 37.7849,
         longitude: -122.4094,
         accuracy: 15.0,
-        timestamp: DateTime.now().subtract(Duration(hours: 1)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 1)),
         metadata: {'city': 'San Francisco', 'neighborhood': 'SOMA'},
       ),
       UnifiedLocationData(
@@ -425,7 +425,7 @@ class ComprehensiveDataCollector {
         latitude: 37.7649,
         longitude: -122.4294,
         accuracy: 12.0,
-        timestamp: DateTime.now().subtract(Duration(hours: 2)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
         metadata: {'city': 'San Francisco', 'neighborhood': 'Castro'},
       ),
     ];
@@ -483,7 +483,7 @@ class ComprehensiveDataCollector {
         temperature: 20.0,
         humidity: 60.0,
         conditions: 'sunny',
-        timestamp: DateTime.now().add(Duration(hours: 24)),
+        timestamp: DateTime.now().add(const Duration(hours: 24)),
         metadata: {'hour': 14, 'confidence': 0.8},
       ),
     ];
@@ -496,7 +496,7 @@ class ComprehensiveDataCollector {
         temperature: 16.0,
         humidity: 70.0,
         conditions: 'rainy',
-        timestamp: DateTime.now().subtract(Duration(days: 1)),
+        timestamp: DateTime.now().subtract(const Duration(days: 1)),
         metadata: {'precipitation': 0.5},
       ),
     ];
@@ -577,7 +577,7 @@ class ComprehensiveDataCollector {
         connectionType: 'group',
         userId: 'group_456',
         strength: 0.6,
-        timestamp: DateTime.now().subtract(Duration(hours: 2)),
+        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
         metadata: {'activity': 'shared_spot', 'group_size': 4},
       ),
     ];

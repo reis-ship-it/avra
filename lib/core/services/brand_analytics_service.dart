@@ -356,7 +356,7 @@ class BrandAnalyticsService {
         // Score from product sales (0-30 points)
         visibilityScore += (productSalesValue / 500).clamp(0.0, 30.0);
       }
-      if (brandSponsorships.length > 0) {
+      if (brandSponsorships.isNotEmpty) {
         // Score from number of sponsorships (0-20 points)
         visibilityScore += (brandSponsorships.length * 5).clamp(0.0, 20.0);
       }

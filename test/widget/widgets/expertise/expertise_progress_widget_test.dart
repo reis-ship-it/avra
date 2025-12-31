@@ -22,14 +22,14 @@ void main() {
         progressPercentage: 50.0,
         nextLevel: ExpertiseLevel.city,
         location: 'Brooklyn',
-        contributionBreakdown: {
+        contributionBreakdown: const {
           'spots': 5,
           'lists': 2,
           'reviews': 10,
         },
         totalContributions: 17,
         requiredContributions: 30,
-        nextSteps: ['Create 3 more spots', 'Write 5 more reviews'],
+        nextSteps: const ['Create 3 more spots', 'Write 5 more reviews'],
         lastUpdated: DateTime.now(),
       );
       final widget1 = WidgetTestHelpers.createTestableWidget(
@@ -47,10 +47,10 @@ void main() {
         progressPercentage: 75.0,
         nextLevel: ExpertiseLevel.city,
         location: 'Manhattan',
-        contributionBreakdown: {},
+        contributionBreakdown: const {},
         totalContributions: 0,
         requiredContributions: 0,
-        nextSteps: [],
+        nextSteps: const [],
         lastUpdated: DateTime.now(),
       );
       final widget2 = WidgetTestHelpers.createTestableWidget(
@@ -66,14 +66,14 @@ void main() {
         progressPercentage: 100.0,
         nextLevel: null,
         location: 'Global',
-        contributionBreakdown: {
+        contributionBreakdown: const {
           'spots': 100,
           'lists': 50,
           'reviews': 200,
         },
         totalContributions: 350,
         requiredContributions: 0,
-        nextSteps: [],
+        nextSteps: const [],
         lastUpdated: DateTime.now(),
       );
       final widget3 = WidgetTestHelpers.createTestableWidget(
@@ -90,14 +90,14 @@ void main() {
         progressPercentage: 50.0,
         nextLevel: ExpertiseLevel.city,
         location: 'Brooklyn',
-        contributionBreakdown: {
+        contributionBreakdown: const {
           'spots': 5,
           'lists': 2,
           'reviews': 10,
         },
         totalContributions: 17,
         requiredContributions: 30,
-        nextSteps: ['Create 3 more spots'],
+        nextSteps: const ['Create 3 more spots'],
         lastUpdated: DateTime.now(),
       );
       final widget4 = WidgetTestHelpers.createTestableWidget(
@@ -114,12 +114,12 @@ void main() {
         progressPercentage: 50.0,
         nextLevel: ExpertiseLevel.city,
         location: 'Brooklyn',
-        contributionBreakdown: {
+        contributionBreakdown: const {
           'spots': 5,
         },
         totalContributions: 5,
         requiredContributions: 30,
-        nextSteps: ['Create 3 more spots'],
+        nextSteps: const ['Create 3 more spots'],
         lastUpdated: DateTime.now(),
       );
       final widget5 = WidgetTestHelpers.createTestableWidget(
@@ -136,10 +136,10 @@ void main() {
         progressPercentage: 50.0,
         nextLevel: ExpertiseLevel.city,
         location: 'Brooklyn',
-        contributionBreakdown: {},
+        contributionBreakdown: const {},
         totalContributions: 0,
         requiredContributions: 0,
-        nextSteps: [],
+        nextSteps: const [],
         lastUpdated: DateTime.now(),
       );
       final widget6 = WidgetTestHelpers.createTestableWidget(
@@ -161,10 +161,10 @@ void main() {
         progressPercentage: 50.0,
         nextLevel: ExpertiseLevel.city,
         location: 'Brooklyn',
-        contributionBreakdown: {},
+        contributionBreakdown: const {},
         totalContributions: 0,
         requiredContributions: 0,
-        nextSteps: [],
+        nextSteps: const [],
         lastUpdated: DateTime.now(),
       );
       final widget7 = WidgetTestHelpers.createTestableWidget(

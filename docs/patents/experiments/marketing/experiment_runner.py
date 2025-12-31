@@ -27,6 +27,7 @@ from shared_data_model import (
     quantum_compatibility, calculate_expertise_score,
     calculate_location_match,
     generate_integrated_user_profile, generate_integrated_event,
+    load_profiles_with_fallback,
 )
 
 # Import scenario config
@@ -63,17 +64,24 @@ class ExperimentRunner:
         
     def setup_experiment(self) -> Tuple[List[UserProfile], List[UserProfile], List[Event]]:
         """Set up users and events for the experiment"""
-        print(f"Creating {self.config.num_users_per_group} users for control group...")
-        control_users = [
-            generate_integrated_user_profile(f"control_user_{i:04d}")
-            for i in range(self.config.num_users_per_group)
-        ]
+        # Load profiles from Big Five data (with synthetic fallback)
+        project_root = Path(__file__).parent.parent.parent.parent.parent
         
-        print(f"Creating {self.config.num_users_per_group} users for test group...")
-        test_users = [
-            generate_integrated_user_profile(f"test_user_{i:04d}")
-            for i in range(self.config.num_users_per_group)
-        ]
+        print(f"Loading {self.config.num_users_per_group} users for control group from Big Five data...")
+        control_users = load_profiles_with_fallback(
+            num_profiles=self.config.num_users_per_group,
+            use_big_five=True,
+            project_root=project_root,
+            fallback_generator=lambda agent_id: generate_integrated_user_profile(agent_id)
+        )
+        
+        print(f"Loading {self.config.num_users_per_group} users for test group from Big Five data...")
+        test_users = load_profiles_with_fallback(
+            num_profiles=self.config.num_users_per_group,
+            use_big_five=True,
+            project_root=project_root,
+            fallback_generator=lambda agent_id: generate_integrated_user_profile(agent_id)
+        )
         
         print(f"Creating {self.config.num_events_per_group} events...")
         events = []

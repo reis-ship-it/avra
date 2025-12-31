@@ -156,7 +156,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
         ),
         Row(
           children: [
-            Text(
+            const Text(
               'Show Completed',
               style: TextStyle(
                 fontSize: 14,
@@ -215,7 +215,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
               size: 48,
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Error loading rounds',
               style: TextStyle(
                 fontSize: 16,
@@ -226,7 +226,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             const SizedBox(height: 8),
             Text(
               _error ?? 'Unknown error',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -239,17 +239,17 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
   }
   
   Widget _buildEmptyState() {
-    return Center(
+    return const Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const Icon(
+            Icon(
               Icons.inbox,
               color: AppColors.textSecondary,
               size: 48,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'No Learning Rounds',
               style: TextStyle(
@@ -258,7 +258,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'No federated learning rounds are currently active',
               style: TextStyle(
@@ -317,7 +317,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
                   const SizedBox(height: 4),
                   Text(
                     'Round ${round.roundNumber} • ${roundInfo.durationString}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -332,7 +332,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
           padding: const EdgeInsets.only(top: 8),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.people,
                 size: 16,
                 color: AppColors.textSecondary,
@@ -340,13 +340,13 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
               const SizedBox(width: 4),
               Text(
                 '${roundInfo.participants.length} participants',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
               ),
               const SizedBox(width: 16),
-              Icon(
+              const Icon(
                 Icons.trending_up,
                 size: 16,
                 color: AppColors.textSecondary,
@@ -354,7 +354,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
               const SizedBox(width: 4),
               Text(
                 '${(round.globalModel.accuracy * 100).toStringAsFixed(1)}% accuracy',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
@@ -402,7 +402,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.info_outline,
                       size: 20,
                       color: AppColors.electricGreen,
@@ -411,7 +411,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
                     Expanded(
                       child: Text(
                         roundInfo.learningRationale,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 13,
                           color: AppColors.textPrimary,
                           fontStyle: FontStyle.italic,
@@ -582,7 +582,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
                 const SizedBox(height: 2),
                 Text(
                   'User: ${participant.userId}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 11,
                     color: AppColors.textSecondary,
                   ),
@@ -604,7 +604,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
               const SizedBox(height: 2),
               Text(
                 participant.joinedTimeAgo,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 11,
                   color: AppColors.textSecondary,
                 ),

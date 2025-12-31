@@ -4,8 +4,6 @@ import 'package:spots/core/models/onboarding_data.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/legal_document_service.dart';
 
 /// Integration tests for OnboardingFlowController
 /// 

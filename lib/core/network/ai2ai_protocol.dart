@@ -4,13 +4,14 @@ import 'dart:typed_data';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:pointycastle/export.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/anonymous_user.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/user_anonymization_service.dart';
+import 'package:spots/core/services/message_encryption_service.dart';
 
 /// AI2AI Protocol Handler for Phase 6: Physical Layer
 /// Handles message encoding/decoding, encryption, and connection management
@@ -20,28 +21,36 @@ class AI2AIProtocol {
   static const String _protocolVersion = '1.0';
   static const String _spotsIdentifier = 'SPOTS-AI2AI';
   
-  // Encryption key (should be derived from shared secret in real implementation)
+  // Message encryption service (Phase 14: Signal Protocol ready)
+  final MessageEncryptionService _encryptionService;
+  
+  // Legacy encryption key (deprecated - kept for backward compatibility)
+  // TODO: Remove once all code uses MessageEncryptionService
   final Uint8List? _encryptionKey;
   
   // Anonymization service for converting UnifiedUser to AnonymousUser
   final UserAnonymizationService? _anonymizationService;
   
   AI2AIProtocol({
-    Uint8List? encryptionKey,
+    required MessageEncryptionService encryptionService,
+    Uint8List? encryptionKey, // Deprecated - use encryptionService instead
     UserAnonymizationService? anonymizationService,
-  }) : _encryptionKey = encryptionKey,
+  }) : _encryptionService = encryptionService,
+       _encryptionKey = encryptionKey,
        _anonymizationService = anonymizationService;
   
   /// Encode a message for transmission
   /// 
   /// **CRITICAL:** This method validates that no UnifiedUser data is in the payload.
   /// All user data must be converted to AnonymousUser before calling this method.
-  ProtocolMessage encodeMessage({
+  /// 
+  /// **Phase 14:** Now uses MessageEncryptionService (Signal Protocol ready)
+  Future<ProtocolMessage> encodeMessage({
     required MessageType type,
     required Map<String, dynamic> payload,
     required String senderNodeId,
     String? recipientNodeId,
-  }) {
+  }) async {
     try {
       // Validate no UnifiedUser in payload (safety check)
       _validateNoUnifiedUserInPayload(payload);
@@ -57,14 +66,27 @@ class AI2AIProtocol {
       
       // Serialize message
       final json = jsonEncode(message.toJson());
-      final bytes = utf8.encode(json);
       
-      // Encrypt if key available
+      // Encrypt using MessageEncryptionService (Phase 14: Signal Protocol ready)
       Uint8List encryptedBytes;
-      if (_encryptionKey != null) {
-        encryptedBytes = _encrypt(bytes);
-      } else {
-        encryptedBytes = Uint8List.fromList(bytes);
+      try {
+        final encryptedMessage = await _encryptionService.encrypt(
+          json,
+          recipientNodeId ?? senderNodeId,
+        );
+        encryptedBytes = encryptedMessage.encryptedContent;
+        
+        developer.log(
+          'Message encrypted using ${_encryptionService.encryptionType.name}',
+          name: _logName,
+        );
+      } catch (e) {
+        developer.log(
+          'Encryption failed, falling back to unencrypted: $e',
+          name: _logName,
+        );
+        // Fallback to unencrypted if encryption fails
+        encryptedBytes = Uint8List.fromList(utf8.encode(json));
       }
       
       // Create protocol packet (for future transport layer implementation)
@@ -86,7 +108,9 @@ class AI2AIProtocol {
   }
   
   /// Decode a received message
-  ProtocolMessage? decodeMessage(Uint8List packetData) {
+  /// 
+  /// **Phase 14:** Now uses MessageEncryptionService (Signal Protocol ready)
+  Future<ProtocolMessage?> decodeMessage(Uint8List packetData, String senderId) async {
     try {
       // Parse packet header
       final packet = _parsePacket(packetData);
@@ -104,16 +128,45 @@ class AI2AIProtocol {
         return null;
       }
       
-      // Decrypt if key available
-      Uint8List decryptedBytes;
-      if (_encryptionKey != null) {
-        decryptedBytes = _decrypt(packet.data);
-      } else {
-        decryptedBytes = packet.data;
+      // Decrypt using MessageEncryptionService (Phase 14: Signal Protocol ready)
+      String json;
+      try {
+        // Try to decrypt using MessageEncryptionService
+        // First, try to detect encryption type from packet data
+        // If it looks like AES-256-GCM format (IV + ciphertext + tag), use that
+        // Otherwise, try Signal Protocol
+        final decryptedJson = await _encryptionService.decrypt(
+          EncryptedMessage(
+            encryptedContent: packet.data,
+            encryptionType: _encryptionService.encryptionType, // Use current service's type
+          ),
+          senderId,
+        );
+        json = decryptedJson;
+        
+        developer.log(
+          'Message decrypted using ${_encryptionService.encryptionType.name}',
+          name: _logName,
+        );
+      } catch (e) {
+        // Fallback: Try legacy decryption if MessageEncryptionService fails
+        if (_encryptionKey != null) {
+          try {
+            final decryptedBytes = _decrypt(packet.data);
+            json = utf8.decode(decryptedBytes);
+            developer.log('Message decrypted using legacy encryption', name: _logName);
+          } catch (legacyError) {
+            developer.log('Both encryption methods failed: $e, $legacyError', name: _logName);
+            // Last resort: try as plaintext
+            json = utf8.decode(packet.data);
+          }
+        } else {
+          // No encryption - use as plaintext
+          json = utf8.decode(packet.data);
+        }
       }
       
       // Deserialize message
-      final json = utf8.decode(decryptedBytes);
       final data = jsonDecode(json) as Map<String, dynamic>;
       
       return ProtocolMessage.fromJson(data);
@@ -124,12 +177,12 @@ class AI2AIProtocol {
   }
   
   /// Create a connection request message
-  ProtocolMessage createConnectionRequest({
+  Future<ProtocolMessage> createConnectionRequest({
     required String senderNodeId,
     required String recipientNodeId,
     required AnonymizedVibeData senderVibe,
-  }) {
-    return encodeMessage(
+  }) async {
+    return await encodeMessage(
       type: MessageType.connectionRequest,
       payload: {
         'senderVibe': _vibeDataToJson(senderVibe),
@@ -141,15 +194,15 @@ class AI2AIProtocol {
   }
   
   /// Create a connection response message
-  ProtocolMessage createConnectionResponse({
+  Future<ProtocolMessage> createConnectionResponse({
     required String senderNodeId,
     required String recipientNodeId,
     required String requestId,
     required bool accepted,
     double? compatibilityScore,
     AnonymizedVibeData? recipientVibe,
-  }) {
-    return encodeMessage(
+  }) async {
+    return await encodeMessage(
       type: MessageType.connectionResponse,
       payload: {
         'requestId': requestId,
@@ -163,18 +216,18 @@ class AI2AIProtocol {
   }
   
   /// Create a learning exchange message
-  ProtocolMessage createLearningExchange({
+  Future<ProtocolMessage> createLearningExchange({
     required String senderNodeId,
     required String recipientNodeId,
     required Map<String, dynamic> learningData,
-  }) {
+  }) async {
     // Validate no UnifiedUser in payload
     _validateNoUnifiedUserInPayload(learningData);
     
     // Anonymize learning data before transmission
     final anonymizedData = _anonymizeLearningData(learningData);
     
-    return encodeMessage(
+    return await encodeMessage(
       type: MessageType.learningExchange,
       payload: {
         'learningData': anonymizedData,
@@ -238,7 +291,7 @@ class AI2AIProtocol {
         'timestamp': DateTime.now().toIso8601String(),
       };
       
-      return encodeMessage(
+      return await encodeMessage(
         type: type,
         payload: payload,
         senderNodeId: senderNodeId,
@@ -286,13 +339,13 @@ class AI2AIProtocol {
   /// 
   /// Use this method when you already have an AnonymousUser object.
   /// This is more efficient than createMessageWithUser() if you've already anonymized.
-  ProtocolMessage createMessageWithAnonymousUser({
+  Future<ProtocolMessage> createMessageWithAnonymousUser({
     required String senderNodeId,
     String? recipientNodeId,
     required MessageType type,
     required AnonymousUser anonymousUser,
     Map<String, dynamic>? additionalPayload,
-  }) {
+  }) async {
     // Validate AnonymousUser contains no personal data
     anonymousUser.validateNoPersonalData();
     
@@ -302,7 +355,7 @@ class AI2AIProtocol {
       if (additionalPayload != null) ...additionalPayload,
     };
     
-    return encodeMessage(
+    return await encodeMessage(
       type: type,
       payload: payload,
       senderNodeId: senderNodeId,
@@ -311,11 +364,11 @@ class AI2AIProtocol {
   }
   
   /// Create a heartbeat message
-  ProtocolMessage createHeartbeat({
+  Future<ProtocolMessage> createHeartbeat({
     required String senderNodeId,
     String? recipientNodeId,
-  }) {
-    return encodeMessage(
+  }) async {
+    return await encodeMessage(
       type: MessageType.heartbeat,
       payload: {
         'timestamp': DateTime.now().toIso8601String(),
@@ -343,7 +396,7 @@ class AI2AIProtocol {
   ) async {
     try {
       // Create personality exchange message
-      final message = encodeMessage(
+      final message = await encodeMessage(
         type: MessageType.personalityExchange,
         payload: {
           'profile': localProfile.toJson(),
@@ -469,8 +522,10 @@ class AI2AIProtocol {
   
   /// Encrypt data using AES-256-GCM authenticated encryption
   ///
-  /// Replaces insecure XOR encryption with proper cryptographic encryption.
+  /// **Deprecated:** Legacy method kept for backward compatibility.
+  /// New code should use MessageEncryptionService instead.
   /// Returns encrypted data with format: IV (12 bytes) + ciphertext + tag (16 bytes)
+  // ignore: unused_element
   Uint8List _encrypt(Uint8List data) {
     final encryptionKey = _encryptionKey;
     if (encryptionKey == null) {

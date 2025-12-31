@@ -2,7 +2,7 @@ import 'package:spots/core/services/performance_monitor.dart';
 import 'package:spots/core/services/security_validator.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable" - Deployment validation
 /// Service for validating deployment readiness before production release

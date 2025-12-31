@@ -135,13 +135,13 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
+                    const Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Version ${PrivacyPolicy.version}',
                             style: TextStyle(
                               fontSize: 16,
@@ -151,7 +151,7 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                           ),
                           Text(
                             'Effective: ${_formatDate(PrivacyPolicy.effectiveDate)}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -167,11 +167,11 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                           color: AppColors.electricGreen.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Row(
+                        child: const Row(
                           children: [
                             Icon(Icons.check_circle,
                                 size: 16, color: AppColors.electricGreen),
-                            const SizedBox(width: 4),
+                            SizedBox(width: 4),
                             Text(
                               'Accepted',
                               style: TextStyle(
@@ -190,9 +190,9 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
           ),
 
           // Privacy Policy Content
-          Expanded(
+          const Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               child: Text(
                 PrivacyPolicy.content,
                 style: TextStyle(
@@ -208,7 +208,7 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
           if (widget.requireAcceptance || !_hasAccepted) ...[
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.surface,
                 border: Border(top: BorderSide(color: AppColors.grey300)),
               ),
@@ -226,13 +226,13 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline,
+                          const Icon(Icons.error_outline,
                               color: AppColors.error, size: 20),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _error!,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: AppColors.error, fontSize: 12),
                             ),
                           ),

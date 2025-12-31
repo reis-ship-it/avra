@@ -42,7 +42,7 @@ void main() {
       TestHelpers.setupTestEnvironment();
       
       // Create test Stripe config (using test keys)
-      testConfig = StripeConfig(
+      testConfig = const StripeConfig(
         publishableKey: 'pk_test_1234567890',
         merchantIdentifier: 'merchant.com.spots',
       );
@@ -99,7 +99,7 @@ void main() {
 
       test('should fail initialization with invalid config', () async {
         // Arrange
-        final invalidConfig = StripeConfig(
+        const invalidConfig = StripeConfig(
           publishableKey: '', // Invalid
         );
         final invalidStripeService = StripeService(invalidConfig);
@@ -141,7 +141,7 @@ void main() {
 
       test('should propagate Stripe errors to PaymentService', () async {
         // Arrange
-        final invalidConfig = StripeConfig(publishableKey: '');
+        const invalidConfig = StripeConfig(publishableKey: '');
         final invalidStripe = StripeService(invalidConfig);
         final invalidPayment = PaymentService(invalidStripe, mockEventService);
         
@@ -195,7 +195,7 @@ void main() {
     group('Error Handling Integration', () {
       test('should handle Stripe initialization failure gracefully', () async {
         // Arrange
-        final invalidConfig = StripeConfig(publishableKey: '');
+        const invalidConfig = StripeConfig(publishableKey: '');
         final invalidStripe = StripeService(invalidConfig);
         final invalidPayment = PaymentService(invalidStripe, mockEventService);
         

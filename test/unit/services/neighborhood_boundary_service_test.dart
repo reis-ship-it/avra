@@ -316,7 +316,7 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1', 'spot-2'],
+          softBorderSpots: const ['spot-1', 'spot-2'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -345,7 +345,7 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
+          softBorderSpots: const ['spot-1'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -367,8 +367,8 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
+          softBorderSpots: const ['spot-1'],
+          userVisitCounts: const {
             'spot-1': {'Nolita': 15, 'East Village': 8},
           },
           createdAt: testDate,
@@ -396,8 +396,8 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
+          softBorderSpots: const ['spot-1'],
+          userVisitCounts: const {
             'spot-1': {'Nolita': 20, 'East Village': 5},
           },
           createdAt: testDate,
@@ -415,8 +415,8 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
+          softBorderSpots: const ['spot-1'],
+          userVisitCounts: const {
             'spot-1': {'Nolita': 3, 'East Village': 2},
           },
           createdAt: testDate,
@@ -434,8 +434,8 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1', 'spot-2'],
-          userVisitCounts: {
+          softBorderSpots: const ['spot-1', 'spot-2'],
+          userVisitCounts: const {
             'spot-1': {'Nolita': 20, 'East Village': 5},
             'spot-2': {'Nolita': 3, 'East Village': 15},
           },
@@ -488,8 +488,8 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
+          softBorderSpots: const ['spot-1'],
+          userVisitCounts: const {
             'spot-1': {'Nolita': 20, 'East Village': 5},
           },
           createdAt: testDate,

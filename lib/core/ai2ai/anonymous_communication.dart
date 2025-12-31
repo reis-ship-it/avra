@@ -3,17 +3,44 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
+import 'package:spots/core/services/message_encryption_service.dart' as message_encryption_service;
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:spots/core/services/user_anonymization_service.dart';
 
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"
 /// Anonymous AI2AI communication protocol with zero user data exposure
+/// 
+/// **Phase 14:** Updated to use MessageEncryptionService (Signal Protocol ready)
 class AnonymousCommunicationProtocol {
   static const String _logName = 'AnonymousCommunicationProtocol';
+  
+  // Message encryption service (Phase 14: Signal Protocol ready)
+  final message_encryption_service.MessageEncryptionService _encryptionService;
+  
+  // Required dependencies (used by protocol methods)
+  // ignore: unused_field
+  final SupabaseClient _supabase;
+  // ignore: unused_field
+  final AtomicClockService _atomicClock;
+  // ignore: unused_field
+  final UserAnonymizationService _anonymizationService;
   
   // Encryption settings for maximum privacy
   // ignore: unused_field
   static const int _keyRotationIntervalMinutes = 30; // Reserved for future key rotation implementation
   static const int _messageExpirationMinutes = 60;
   static const int _maxHopsForMessage = 5;
+  
+  AnonymousCommunicationProtocol({
+    required message_encryption_service.MessageEncryptionService encryptionService,
+    required SupabaseClient supabase,
+    required AtomicClockService atomicClock,
+    required UserAnonymizationService anonymizationService,
+  }) : _encryptionService = encryptionService,
+       _supabase = supabase,
+       _atomicClock = atomicClock,
+       _anonymizationService = anonymizationService;
   
   /// Send encrypted message between AI agents invisibly
   /// OUR_GUTS.md: "Zero user data exposure, maximum privacy"
@@ -33,17 +60,27 @@ class AnonymousCommunicationProtocol {
       // Validate payload contains no user data
       await _validateAnonymousPayload(anonymousPayload);
       
-      // Generate ephemeral encryption key
-      final ephemeralKey = await _generateEphemeralKey();
+      // Encrypt payload using MessageEncryptionService (Phase 14: Signal Protocol ready)
+      final payloadJson = jsonEncode(anonymousPayload);
+      final encryptedMessage = await _encryptionService.encrypt(
+        payloadJson,
+        targetAgentId,
+      );
+      final encryptedPayloadBase64 = encryptedMessage.toBase64();
+      
+      developer.log(
+        'Payload encrypted using ${_encryptionService.encryptionType.name}',
+        name: _logName,
+      );
       
       // Create message with privacy protection
       final message = AnonymousMessage(
         messageId: _generateMessageId(),
         targetAgentId: targetAgentId,
         messageType: messageType,
-        encryptedPayload: await _encryptPayload(anonymousPayload, ephemeralKey),
+        encryptedPayload: encryptedPayloadBase64,
         timestamp: DateTime.now(),
-        expiresAt: DateTime.now().add(Duration(minutes: _messageExpirationMinutes)),
+        expiresAt: DateTime.now().add(const Duration(minutes: _messageExpirationMinutes)),
         routingHops: [],
         privacyLevel: PrivacyLevel.maximum,
       );
@@ -256,6 +293,11 @@ class AnonymousCommunicationProtocol {
     return violations;
   }
   
+  /// Generate ephemeral encryption key
+  /// 
+  /// **Deprecated:** Legacy method kept for backward compatibility.
+  /// New code should use MessageEncryptionService instead.
+  // ignore: unused_element
   Future<String> _generateEphemeralKey() async {
     final random = math.Random.secure();
     final bytes = List<int>.generate(32, (i) => random.nextInt(256));
@@ -276,8 +318,10 @@ class AnonymousCommunicationProtocol {
   
   /// Encrypt payload using AES-256-GCM authenticated encryption
   ///
-  /// Uses proper cryptographic library (pointycastle) for real encryption.
+  /// **Deprecated:** Legacy method kept for backward compatibility.
+  /// New code should use MessageEncryptionService instead.
   /// Returns base64-encoded encrypted data with format: IV (12 bytes) + ciphertext + tag (16 bytes)
+  // ignore: unused_element
   Future<String> _encryptPayload(Map<String, dynamic> payload, String keyBase64) async {
     try {
       // 1. Prepare data
@@ -324,8 +368,11 @@ class AnonymousCommunicationProtocol {
   
   /// Decrypt payload using AES-256-GCM authenticated encryption
   ///
+  /// **Deprecated:** Legacy method kept for backward compatibility.
+  /// New code should use MessageEncryptionService instead.
   /// Verifies authentication tag to ensure message integrity and authenticity.
   /// Returns decrypted payload as Map.
+  // ignore: unused_element
   Future<Map<String, dynamic>> _decryptPayload(String encryptedBase64, String keyBase64) async {
     try {
       // 1. Decode base64
@@ -439,6 +486,12 @@ class AnonymousCommunicationProtocol {
   
   Future<List<EncryptedMessage>> _getEncryptedMessagesFromQueue(String agentId) async {
     // Get encrypted messages from secure queue
+    // TODO(Phase 14.5): Implement message queue retrieval from Supabase or in-memory store
+    // When implementing, ensure each message includes:
+    // - senderAgentId: The agent ID of the message sender (required for Signal Protocol decryption)
+    // - targetAgentId: The agent ID of the message recipient (should match the provided agentId parameter)
+    // - payload: The encrypted message payload
+    // - Other metadata (messageId, timestamp, expiresAt)
     return [];
   }
   
@@ -454,13 +507,18 @@ class AnonymousCommunicationProtocol {
       // 2. Decrypt the payload
       // 3. Validate and reconstruct the message
       
-      // For now, we need the key - this should come from the secure channel
-      // TODO: Integrate with KeyExchange (lib/core/crypto/key_exchange.dart) to get the correct key
-      // For now, using ephemeral key as placeholder - in production, retrieve from SecureCommunicationChannel
-      final key = await _generateEphemeralKey(); // Temporary - should use actual key from key exchange
-      
-      // Decrypt the payload
-      final decryptedPayload = await _decryptPayload(encrypted.payload, key);
+      // Decrypt using MessageEncryptionService (Phase 14: Signal Protocol ready)
+      final messageEncryptionEncrypted = message_encryption_service.EncryptedMessage.fromBase64(
+        encrypted.payload,
+        _encryptionService.encryptionType,
+      );
+      // Use sender's agent ID for decryption (required for Signal Protocol)
+      // Signal Protocol needs the sender's identity to decrypt messages
+      final decryptedJson = await _encryptionService.decrypt(
+        messageEncryptionEncrypted,
+        encrypted.senderAgentId, // Sender's agent ID (correct for Signal Protocol)
+      );
+      final decryptedPayload = jsonDecode(decryptedJson) as Map<String, dynamic>;
       
       // Extract message type from decrypted payload if available
       final messageType = decryptedPayload['messageType'] != null
@@ -556,13 +614,15 @@ class AnonymousMessage {
 
 class EncryptedMessage {
   final String messageId;
-  final String targetAgentId;
+  final String senderAgentId; // Sender's agent ID (required for Signal Protocol decryption)
+  final String targetAgentId; // Recipient's agent ID
   final String payload;
   final DateTime timestamp;
   final DateTime expiresAt;
   
   EncryptedMessage({
     required this.messageId,
+    required this.senderAgentId,
     required this.targetAgentId,
     required this.payload,
     required this.timestamp,

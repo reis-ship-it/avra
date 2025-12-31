@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
 import 'package:spots/core/controllers/sync_controller.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/injection_container.dart' as di;
@@ -191,8 +191,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
 
         if (result.success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Sync completed successfully'),
+            const SnackBar(
+              content: Text('Sync completed successfully'),
               backgroundColor: AppTheme.successColor,
             ),
           );
@@ -222,7 +222,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
 
   Future<String?> _promptForPassword() async {
     final passwordController = TextEditingController();
-    
+
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -269,17 +269,17 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // OUR_GUTS.md Commitment
-            Card(
+            const Card(
               color: AppColors.grey100,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
                         Icon(Icons.verified_user, color: AppTheme.successColor),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           'OUR_GUTS.md Commitment',
                           style: TextStyle(
@@ -289,7 +289,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       '"Privacy and Control Are Non-Negotiable" - You own your data, you control your experience, and you decide what to share.',
                       style: TextStyle(color: AppTheme.successColor),
@@ -382,7 +382,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               Card(
                 margin: const EdgeInsets.only(bottom: 8),
                 child: ListTile(
-                  leading: Icon(Icons.sync, color: AppTheme.primaryColor),
+                  leading: const Icon(Icons.sync, color: AppTheme.primaryColor),
                   title: const Text('Sync Now'),
                   subtitle: _isSyncing
                       ? const Text('Syncing...')
@@ -486,8 +486,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading:
-                        Icon(Icons.delete_forever, color: AppTheme.errorColor),
+                    leading: const Icon(Icons.delete_forever,
+                        color: AppTheme.errorColor),
                     title: const Text('Delete My Account'),
                     subtitle:
                         const Text('Permanently delete your account and data'),
@@ -517,10 +517,10 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    const Row(
                       children: [
-                        const Icon(Icons.restore, color: AppTheme.warningColor),
-                        const SizedBox(width: 8),
+                        Icon(Icons.restore, color: AppTheme.warningColor),
+                        SizedBox(width: 8),
                         Text(
                           'Reset Privacy Settings',
                           style: TextStyle(

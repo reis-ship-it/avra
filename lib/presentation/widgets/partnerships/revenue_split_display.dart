@@ -44,13 +44,13 @@ class RevenueSplitDisplay extends StatelessWidget {
             // Header
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.account_balance_wallet,
                   color: AppTheme.primaryColor,
                   size: 24,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   'Revenue Breakdown',
                   style: TextStyle(
                     fontSize: 18,
@@ -69,7 +69,7 @@ class RevenueSplitDisplay extends StatelessWidget {
                         color: AppColors.electricGreen.withValues(alpha: 0.3),
                       ),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
@@ -77,7 +77,7 @@ class RevenueSplitDisplay extends StatelessWidget {
                           size: 12,
                           color: AppColors.electricGreen,
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4),
                         Text(
                           'Locked',
                           style: TextStyle(
@@ -121,7 +121,7 @@ class RevenueSplitDisplay extends StatelessWidget {
                 description: '~3% to Stripe (2.9% + \$0.30 per ticket)',
               ),
               const SizedBox(height: 12),
-              Divider(color: AppColors.grey300),
+              const Divider(color: AppColors.grey300),
               const SizedBox(height: 12),
             ],
 
@@ -136,7 +136,7 @@ class RevenueSplitDisplay extends StatelessWidget {
 
             // Partner Splits (N-way)
             if (split.parties.isNotEmpty) ...[
-              Text(
+              const Text(
                 'Partner Distribution',
                 style: TextStyle(
                   fontSize: 14,
@@ -167,14 +167,14 @@ class RevenueSplitDisplay extends StatelessWidget {
                     color: AppColors.warning.withValues(alpha: 0.3),
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(
                       Icons.warning_amber_rounded,
                       size: 20,
                       color: AppColors.warning,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Revenue split must be locked before event starts',
@@ -218,7 +218,7 @@ class RevenueSplitDisplay extends StatelessWidget {
             if (ticketsSold != null && ticketsSold > 0)
               Text(
                 '($ticketsSold tickets)',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
@@ -256,14 +256,14 @@ class RevenueSplitDisplay extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textPrimary,
                 ),
               ),
               Text(
                 description,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
@@ -273,7 +273,7 @@ class RevenueSplitDisplay extends StatelessWidget {
         ),
         Text(
           '\$${amount.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: AppColors.textSecondary,
@@ -315,7 +315,7 @@ class RevenueSplitDisplay extends StatelessWidget {
                         ),
                         child: Text(
                           partyTypeLabel,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
                             color: AppTheme.primaryColor,
@@ -326,7 +326,7 @@ class RevenueSplitDisplay extends StatelessWidget {
                       Expanded(
                         child: Text(
                           partyName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textPrimary,
@@ -340,7 +340,7 @@ class RevenueSplitDisplay extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${party.percentage.toStringAsFixed(1)}% of net revenue',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -352,7 +352,7 @@ class RevenueSplitDisplay extends StatelessWidget {
             if (party.amount != null)
               Text(
                 '\$${party.amount!.toStringAsFixed(2)}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: AppColors.electricGreen,
@@ -361,7 +361,7 @@ class RevenueSplitDisplay extends StatelessWidget {
             else if (party.percentage > 0)
               Text(
                 '${party.percentage.toStringAsFixed(1)}%',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textSecondary,

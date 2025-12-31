@@ -215,7 +215,7 @@ class EventCancellationController
       }
 
       // Get payment for this user and event
-      final payment = await _paymentService.getPaymentForEventAndUser(
+      final payment = _paymentService.getPaymentForEventAndUser(
         eventId,
         userId,
       );
@@ -355,7 +355,7 @@ class CancellationResult extends ControllerResult {
   final double refundAmount;
   final RefundStatus? refundStatus;
 
-  CancellationResult._({
+  const CancellationResult._({
     required super.success,
     required super.error,
     required super.errorCode,

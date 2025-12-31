@@ -2,6 +2,7 @@
 /// Date: August 5, 2025 23:11:54 CDT  
 /// Purpose: Automated validation tools for maintaining test quality standards
 /// Focus: Continuous quality monitoring for optimal development and deployment
+library;
 
 import 'dart:io';
 import 'dart:convert';
@@ -63,11 +64,11 @@ class AutomatedQualityChecker {
         await _updateQualityDashboard(assessment);
         
         // Wait for next check interval
-        await Future.delayed(Duration(hours: QUALITY_CHECK_INTERVAL_HOURS));
+        await Future.delayed(const Duration(hours: QUALITY_CHECK_INTERVAL_HOURS));
         
       } catch (e) {
         print('❌ Quality monitoring error: $e');
-        await Future.delayed(Duration(minutes: 30)); // Retry in 30 minutes
+        await Future.delayed(const Duration(minutes: 30)); // Retry in 30 minutes
       }
     }
   }

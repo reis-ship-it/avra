@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/models/personality_profile.dart';
-import 'package:spots/core/models/contextual_personality.dart';
+import 'package:spots_ai/models/personality_profile.dart';
+import 'package:spots_ai/models/contextual_personality.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 
 /// OUR_GUTS.md: "Your doors stay yours"
@@ -12,10 +12,10 @@ class PersonalityEvolutionWidget extends StatelessWidget {
   final bool showDetailed;
   
   const PersonalityEvolutionWidget({
-    Key? key,
+    super.key,
     required this.profile,
     this.showDetailed = true,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -43,9 +43,9 @@ class PersonalityEvolutionWidget extends StatelessWidget {
   Widget _buildHeader() {
     return Row(
       children: [
-        Icon(Icons.person_outline, color: AppColors.primary),
+        const Icon(Icons.person_outline, color: AppColors.primary),
         const SizedBox(width: 8),
-        Text(
+        const Text(
           'Personality Evolution',
           style: TextStyle(
             fontSize: 20,
@@ -68,7 +68,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
       ),
       child: Text(
         'Gen ${profile.evolutionGeneration}',
-        style: TextStyle(
+        style: const TextStyle(
           color: AppColors.primary,
           fontWeight: FontWeight.bold,
           fontSize: 12,
@@ -120,7 +120,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
                 Text(
                   'Authenticity: ${(transition.authenticityScore * 100).round()}% | '
                   'Consistency: ${(transition.consistency * 100).round()}%',
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -134,7 +134,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Core vs Current Personality',
           style: TextStyle(
             fontSize: 16,
@@ -158,7 +158,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
                     Expanded(
                       child: Text(
                         _formatDimensionName(dimension),
-                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                       ),
                     ),
                     if (diff.abs() > 0.1)
@@ -201,7 +201,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
                       ),
                     ),
                     // Current (overlay)
-                    Container(
+                    SizedBox(
                       height: 20,
                       child: FractionallySizedBox(
                         widthFactor: currentValue,
@@ -219,7 +219,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
               ],
             ),
           );
-        }).toList(),
+        }),
         const SizedBox(height: 8),
         Row(
           children: [
@@ -246,7 +246,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
       ],
     );
@@ -254,7 +254,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
   
   Widget _buildContextualLayers() {
     if (profile.contexts.isEmpty) {
-      return Column(
+      return const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -265,7 +265,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             'No contextual adaptations yet',
             style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
@@ -277,7 +277,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Contextual Layers',
           style: TextStyle(
             fontSize: 16,
@@ -288,7 +288,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
         const SizedBox(height: 12),
         ...profile.contexts.entries.map((entry) {
           return _buildContextCard(entry.value);
-        }).toList(),
+        }),
       ],
     );
   }
@@ -312,7 +312,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   _formatContextType(context.contextType),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
@@ -320,7 +320,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
                 const Spacer(),
                 Text(
                   '${(context.adaptationWeight * 100).round()}% blend',
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -328,7 +328,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
             Text(
               '${context.adaptedDimensions.length} adapted dimensions • '
               'Updated ${context.updateCount} times',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -340,7 +340,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Evolution Timeline',
           style: TextStyle(
             fontSize: 16,
@@ -351,7 +351,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
         const SizedBox(height: 12),
         ...profile.evolutionTimeline.reversed.map((phase) {
           return _buildPhaseCard(phase);
-        }).toList(),
+        }),
       ],
     );
   }
@@ -391,9 +391,9 @@ class PersonalityEvolutionWidget extends StatelessWidget {
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
+                    child: const Text(
                       'CURRENT',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.white,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -405,7 +405,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               _formatPhaseDate(phase),
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
             if (phase.dominantTraits.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -421,7 +421,7 @@ class PersonalityEvolutionWidget extends StatelessWidget {
                     ),
                     child: Text(
                       _formatDimensionName(trait),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 10,
                         color: AppColors.primary,
                       ),

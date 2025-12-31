@@ -135,7 +135,7 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
           children: [
             Semantics(
               header: true,
-              child: Text(
+              child: const Text(
                 'Payment Information',
                 style: TextStyle(
                   fontSize: 20,
@@ -155,15 +155,15 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
               decoration: InputDecoration(
                 labelText: 'Cardholder Name',
                 hintText: 'John Doe',
-                hintStyle: TextStyle(color: AppColors.textHint),
+                hintStyle: const TextStyle(color: AppColors.textHint),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 filled: true,
                 fillColor: AppColors.grey100,
-                prefixIcon: Icon(Icons.person, color: AppColors.textSecondary),
+                prefixIcon: const Icon(Icons.person, color: AppColors.textSecondary),
               ),
-              style: TextStyle(color: AppColors.textPrimary),
+              style: const TextStyle(color: AppColors.textPrimary),
               textCapitalization: TextCapitalization.words,
               enabled: !widget.isProcessing,
               validator: (value) {
@@ -186,15 +186,15 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
               decoration: InputDecoration(
                 labelText: 'Card Number',
                 hintText: '1234 5678 9012 3456',
-                hintStyle: TextStyle(color: AppColors.textHint),
+                hintStyle: const TextStyle(color: AppColors.textHint),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 filled: true,
                 fillColor: AppColors.grey100,
-                prefixIcon: Icon(Icons.credit_card, color: AppColors.textSecondary),
+                prefixIcon: const Icon(Icons.credit_card, color: AppColors.textSecondary),
               ),
-              style: TextStyle(color: AppColors.textPrimary),
+              style: const TextStyle(color: AppColors.textPrimary),
               keyboardType: TextInputType.number,
               enabled: !widget.isProcessing,
               maxLength: 19, // 16 digits + 3 spaces
@@ -222,15 +222,15 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
                   decoration: InputDecoration(
                     labelText: 'Expiry (MM/YY)',
                     hintText: '12/25',
-                    hintStyle: TextStyle(color: AppColors.textHint),
+                    hintStyle: const TextStyle(color: AppColors.textHint),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
                     fillColor: AppColors.grey100,
-                    prefixIcon: Icon(Icons.calendar_today, color: AppColors.textSecondary, size: 20),
+                    prefixIcon: const Icon(Icons.calendar_today, color: AppColors.textSecondary, size: 20),
                   ),
-                  style: TextStyle(color: AppColors.textPrimary),
+                  style: const TextStyle(color: AppColors.textPrimary),
                   keyboardType: TextInputType.number,
                   enabled: !widget.isProcessing,
                   maxLength: 5,
@@ -252,15 +252,15 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
                   decoration: InputDecoration(
                     labelText: 'CVV',
                     hintText: '123',
-                    hintStyle: TextStyle(color: AppColors.textHint),
+                    hintStyle: const TextStyle(color: AppColors.textHint),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
                     fillColor: AppColors.grey100,
-                    prefixIcon: Icon(Icons.lock, color: AppColors.textSecondary, size: 20),
+                    prefixIcon: const Icon(Icons.lock, color: AppColors.textSecondary, size: 20),
                   ),
-                  style: TextStyle(color: AppColors.textPrimary),
+                  style: const TextStyle(color: AppColors.textPrimary),
                   keyboardType: TextInputType.number,
                   enabled: !widget.isProcessing,
                   maxLength: 4,
@@ -292,12 +292,12 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.error_outline, color: AppColors.error, size: 20),
+                  const Icon(Icons.error_outline, color: AppColors.error, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       _error!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.error,
                         fontSize: 14,
                       ),
@@ -358,10 +358,10 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
           const SizedBox(height: 12),
 
           // Security Notice
-          Row(
+          const Row(
             children: [
               Icon(Icons.lock, size: 16, color: AppColors.textSecondary),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Expanded(
                 child: Text(
                   'Your payment is secure and encrypted',

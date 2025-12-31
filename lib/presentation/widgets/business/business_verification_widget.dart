@@ -634,7 +634,7 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
                   ),
                   if (currentUrl != null) ...[
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       'Document uploaded',
                       style: TextStyle(
                         fontSize: 12,

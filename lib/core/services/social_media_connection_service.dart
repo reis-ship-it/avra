@@ -1,14 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:spots/core/models/social_media_connection.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/social_media_insight_service.dart';
 import 'package:spots/core/config/oauth_config.dart';
 import 'package:spots/core/services/oauth_deep_link_handler.dart';
+import 'package:spots/core/services/social_media/social_media_service_factory.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:get_it/get_it.dart';
 
 /// Social Media Connection Service
 ///
@@ -32,16 +36,22 @@ class SocialMediaConnectionService {
   final AgentIdService _agentIdService;
   final OAuthDeepLinkHandler _deepLinkHandler;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final SocialMediaServiceFactory? _serviceFactory;
 
   // Storage keys
   static const String _connectionsKeyPrefix = 'social_media_connections_';
-  static const String _tokensKeyPrefix = 'social_media_tokens_'; // Encrypted in production
+  static const String _tokensKeyPrefix =
+      'social_media_tokens_'; // Encrypted in production
+  static const String _profileCacheKeyPrefix = 'social_media_profile_cache_';
+  static const Duration _profileCacheExpiry =
+      Duration(days: 7); // Cache profiles for 7 days
 
   SocialMediaConnectionService(
     this._storageService,
     this._agentIdService,
-    this._deepLinkHandler,
-  ) {
+    this._deepLinkHandler, {
+    SocialMediaServiceFactory? serviceFactory,
+  }) : _serviceFactory = serviceFactory {
     // Start listening for OAuth deep links (for AppAuth flows)
     _deepLinkHandler.startListening();
     // Also check for initial deep link (if app was opened via deep link)
@@ -50,6 +60,55 @@ class SocialMediaConnectionService {
       _logger.warn('Failed to get initial deep link: $e', tag: _logName);
       return null;
     });
+  }
+
+  /// Connect multiple platforms in batch (for onboarding/agent creation)
+  ///
+  /// **Flow:**
+  /// 1. Show user list of available platforms
+  /// 2. User selects platforms to connect
+  /// 3. Connect each platform sequentially
+  /// 4. Return list of successful connections
+  ///
+  /// **Parameters:**
+  /// - `platforms`: List of platform names to connect
+  /// - `agentId`: Privacy-protected agent identifier
+  /// - `userId`: User identifier for service lookup
+  ///
+  /// **Returns:**
+  /// List of successfully connected platforms
+  ///
+  /// **Note:** This is only available during onboarding/agent creation
+  Future<List<SocialMediaConnection>> connectPlatformsBatch({
+    required List<String> platforms,
+    required String agentId,
+    required String userId,
+  }) async {
+    final connections = <SocialMediaConnection>[];
+
+    for (final platform in platforms) {
+      try {
+        _logger.info('🔗 Batch connecting to $platform...', tag: _logName);
+        final connection = await connectPlatform(
+          platform: platform,
+          agentId: agentId,
+          userId: userId,
+        );
+        connections.add(connection);
+        _logger.info('✅ Batch connected to $platform', tag: _logName);
+      } catch (e) {
+        _logger.warn('⚠️ Failed to batch connect to $platform: $e',
+            tag: _logName);
+        // Continue with other platforms even if one fails
+      }
+    }
+
+    // Trigger insight analysis after batch completion (non-blocking)
+    if (connections.isNotEmpty) {
+      _triggerInsightAnalysis(agentId, userId);
+    }
+
+    return connections;
   }
 
   /// Connect a social media platform (runs OAuth flow and stores tokens)
@@ -66,6 +125,7 @@ class SocialMediaConnectionService {
   /// - `platform`: Platform name ('google', 'instagram', 'facebook', etc.)
   /// - `agentId`: Privacy-protected agent identifier
   /// - `userId`: User identifier for service lookup (used internally, not stored with connection)
+  /// - `customOAuthConfig`: Optional custom OAuth config for generic platforms (Uber Eats, Lyft, etc.)
   ///
   /// **Returns:**
   /// SocialMediaConnection record after successful OAuth
@@ -76,53 +136,211 @@ class SocialMediaConnectionService {
     required String platform,
     required String agentId,
     required String userId,
+    Map<String, dynamic>? customOAuthConfig,
   }) async {
     try {
-      _logger.info('🔗 Connecting to $platform for agent: ${agentId.substring(0, 10)}...', tag: _logName);
+      _logger.info(
+          '🔗 Connecting to $platform for agent: ${agentId.substring(0, 10)}...',
+          tag: _logName);
 
       // Normalize platform name
       final normalizedPlatform = platform.toLowerCase();
 
       // Route to appropriate OAuth flow or placeholder
       SocialMediaConnection connection;
-      
+
       switch (normalizedPlatform) {
         case 'google':
           if (OAuthConfig.isGoogleConfigured) {
-            connection = await _connectGoogle(agentId, userId);
+            // Try to use platform service if factory is available
+            final platformService = _serviceFactory?.getService('google');
+            if (platformService != null) {
+              connection = await platformService.connect(
+                agentId: agentId,
+                userId: userId,
+              );
+            } else {
+              // Fallback to legacy implementation
+              connection = await _connectGoogle(agentId, userId);
+            }
           } else {
             connection = await _connectPlaceholder(agentId, normalizedPlatform);
           }
           break;
         case 'instagram':
           if (OAuthConfig.isInstagramConfigured) {
-            connection = await _connectInstagram(agentId, userId);
+            final platformService = _serviceFactory?.getService('instagram');
+            if (platformService != null) {
+              connection = await platformService.connect(
+                agentId: agentId,
+                userId: userId,
+              );
+            } else {
+              connection = await _connectInstagram(agentId, userId);
+            }
           } else {
             connection = await _connectPlaceholder(agentId, normalizedPlatform);
           }
           break;
         case 'facebook':
           if (OAuthConfig.isFacebookConfigured) {
-            connection = await _connectFacebook(agentId, userId);
+            final platformService = _serviceFactory?.getService('facebook');
+            if (platformService != null) {
+              connection = await platformService.connect(
+                agentId: agentId,
+                userId: userId,
+              );
+            } else {
+              connection = await _connectFacebook(agentId, userId);
+            }
+          } else {
+            connection = await _connectPlaceholder(agentId, normalizedPlatform);
+          }
+          break;
+        case 'twitter':
+          if (OAuthConfig.isTwitterConfigured) {
+            final platformService = _serviceFactory?.getService('twitter');
+            if (platformService != null) {
+              connection = await platformService.connect(
+                agentId: agentId,
+                userId: userId,
+              );
+            } else {
+              connection = await _connectTwitter(agentId, userId);
+            }
+          } else {
+            connection = await _connectPlaceholder(agentId, normalizedPlatform);
+          }
+          break;
+        case 'reddit':
+          if (OAuthConfig.isRedditConfigured) {
+            connection = await _connectReddit(agentId, userId);
+          } else {
+            connection = await _connectPlaceholder(agentId, normalizedPlatform);
+          }
+          break;
+        case 'tiktok':
+          if (OAuthConfig.isTikTokConfigured) {
+            connection = await _connectTikTok(agentId, userId);
+          } else {
+            connection = await _connectPlaceholder(agentId, normalizedPlatform);
+          }
+          break;
+        case 'tumblr':
+          if (OAuthConfig.isTumblrConfigured) {
+            connection = await _connectTumblr(agentId, userId);
+          } else {
+            connection = await _connectPlaceholder(agentId, normalizedPlatform);
+          }
+          break;
+        case 'youtube':
+          // YouTube uses Google OAuth
+          if (OAuthConfig.isGoogleConfigured) {
+            connection = await _connectYouTube(agentId, userId);
+          } else {
+            connection = await _connectPlaceholder(agentId, normalizedPlatform);
+          }
+          break;
+        case 'pinterest':
+          if (OAuthConfig.isPinterestConfigured) {
+            connection = await _connectPinterest(agentId, userId);
+          } else {
+            connection = await _connectPlaceholder(agentId, normalizedPlatform);
+          }
+          break;
+        case 'arena':
+        case 'are.na':
+          if (OAuthConfig.isArenaConfigured) {
+            connection = await _connectArena(agentId, userId);
+          } else {
+            connection = await _connectPlaceholder(agentId, normalizedPlatform);
+          }
+          break;
+        case 'linkedin':
+          if (OAuthConfig.isLinkedInConfigured) {
+            final platformService = _serviceFactory?.getService('linkedin');
+            if (platformService != null) {
+              connection = await platformService.connect(
+                agentId: agentId,
+                userId: userId,
+              );
+            } else {
+              connection = await _connectLinkedIn(agentId, userId);
+            }
           } else {
             connection = await _connectPlaceholder(agentId, normalizedPlatform);
           }
           break;
         default:
-          // Use placeholder for unsupported platforms
-          connection = await _connectPlaceholder(agentId, normalizedPlatform);
+          // Generic OAuth for any platform (Uber Eats, Lyft, Airbnb, etc.)
+          if (customOAuthConfig != null) {
+            connection = await _connectGenericOAuth(
+              agentId,
+              userId,
+              normalizedPlatform,
+              customOAuthConfig,
+            );
+          } else {
+            // Use placeholder for unsupported platforms
+            connection = await _connectPlaceholder(agentId, normalizedPlatform);
+          }
       }
 
       _logger.info('✅ Connected to $platform successfully', tag: _logName);
+
+      // Trigger automatic insight analysis (non-blocking, fire-and-forget)
+      _triggerInsightAnalysis(agentId, userId);
+
       return connection;
     } catch (e, stackTrace) {
-      _logger.error('❌ Failed to connect to $platform', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Failed to connect to $platform',
+          error: e, stackTrace: stackTrace, tag: _logName);
       rethrow;
     }
   }
 
+  /// Trigger insight analysis after connection (non-blocking)
+  ///
+  /// This method triggers insight analysis in the background without blocking
+  /// the connection flow. Errors are logged but do not affect the connection.
+  /// Uses GetIt lazy access to avoid circular dependency.
+  void _triggerInsightAnalysis(String agentId, String userId) {
+    // Use unawaited to fire-and-forget
+    unawaited(_triggerInsightAnalysisAsync(agentId, userId));
+  }
+
+  Future<void> _triggerInsightAnalysisAsync(
+      String agentId, String userId) async {
+    try {
+      // Lazy-load insight service via GetIt to avoid circular dependency
+      // SocialMediaInsightService depends on SocialMediaConnectionService,
+      // so we can't inject it in constructor, but we can access it lazily here
+      if (!GetIt.instance.isRegistered<SocialMediaInsightService>()) {
+        _logger.debug('Insight service not registered, skipping analysis',
+            tag: _logName);
+        return;
+      }
+
+      final insightService = GetIt.instance<SocialMediaInsightService>();
+
+      _logger.info(
+          '🔍 Triggering automatic insight analysis after connection...',
+          tag: _logName);
+      await insightService.analyzeAllPlatforms(
+        agentId: agentId,
+        userId: userId,
+      );
+      _logger.info('✅ Automatic insight analysis completed', tag: _logName);
+    } catch (e) {
+      _logger.warn('⚠️ Automatic insight analysis failed (non-blocking): $e',
+          tag: _logName);
+      // Non-blocking - don't throw
+    }
+  }
+
   /// Connect to Google using Google Sign-In
-  Future<SocialMediaConnection> _connectGoogle(String agentId, String userId) async {
+  Future<SocialMediaConnection> _connectGoogle(
+      String agentId, String userId) async {
     try {
       final googleSignIn = GoogleSignIn(
         scopes: OAuthConfig.googleScopes,
@@ -166,22 +384,25 @@ class SocialMediaConnectionService {
 
       return connection;
     } catch (e, stackTrace) {
-      _logger.error('❌ Google OAuth failed', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Google OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
       rethrow;
     }
   }
 
   /// Connect to Instagram using AppAuth
-  Future<SocialMediaConnection> _connectInstagram(String agentId, String userId) async {
+  Future<SocialMediaConnection> _connectInstagram(
+      String agentId, String userId) async {
     try {
-      final appAuth = const FlutterAppAuth();
+      const appAuth = FlutterAppAuth();
       final redirectUri = OAuthConfig.getRedirectUri('instagram');
-      
+
       final result = await appAuth.authorizeAndExchangeCode(
         AuthorizationTokenRequest(
           OAuthConfig.instagramClientId,
           redirectUri,
-          discoveryUrl: 'https://www.instagram.com/.well-known/openid_configuration',
+          discoveryUrl:
+              'https://www.instagram.com/.well-known/openid_configuration',
           scopes: OAuthConfig.instagramScopes,
         ),
       );
@@ -192,14 +413,16 @@ class SocialMediaConnectionService {
 
       // Fetch user profile
       final profileResponse = await http.get(
-        Uri.parse('https://graph.instagram.com/me?fields=id,username&access_token=${result.accessToken}'),
+        Uri.parse(
+            'https://graph.instagram.com/me?fields=id,username&access_token=${result.accessToken}'),
       );
 
       if (profileResponse.statusCode != 200) {
         throw Exception('Failed to fetch Instagram profile');
       }
 
-      final profileData = jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
       final now = DateTime.now();
       final connection = SocialMediaConnection(
         agentId: agentId,
@@ -225,22 +448,97 @@ class SocialMediaConnectionService {
 
       return connection;
     } catch (e, stackTrace) {
-      _logger.error('❌ Instagram OAuth failed', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Instagram OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Connect to Twitter/X using OAuth 2.0
+  Future<SocialMediaConnection> _connectTwitter(
+      String agentId, String userId) async {
+    try {
+      const appAuth = FlutterAppAuth();
+      final redirectUri = OAuthConfig.getRedirectUri('twitter');
+
+      // Twitter OAuth 2.0 uses PKCE flow
+      final result = await appAuth.authorizeAndExchangeCode(
+        AuthorizationTokenRequest(
+          OAuthConfig.twitterClientId,
+          redirectUri,
+          discoveryUrl:
+              'https://twitter.com/i/oauth2/.well-known/oauth-authorization-server',
+          scopes: OAuthConfig.twitterScopes,
+        ),
+      );
+
+      if (result.accessToken == null) {
+        throw Exception('Twitter OAuth failed or was cancelled');
+      }
+
+      // Fetch user profile from Twitter API v2
+      final profileResponse = await http.get(
+        Uri.parse(
+            'https://api.twitter.com/2/users/me?user.fields=id,name,username,profile_image_url'),
+        headers: {'Authorization': 'Bearer ${result.accessToken}'},
+      );
+
+      if (profileResponse.statusCode != 200) {
+        throw Exception('Failed to fetch Twitter profile');
+      }
+
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final userData = profileData['data'] as Map<String, dynamic>?;
+
+      if (userData == null) {
+        throw Exception('Invalid Twitter profile response');
+      }
+
+      final now = DateTime.now();
+      final connection = SocialMediaConnection(
+        agentId: agentId,
+        platform: 'twitter',
+        platformUserId: userData['id'] as String?,
+        platformUsername: userData['username'] as String?,
+        isActive: true,
+        createdAt: now,
+        lastUpdated: now,
+        lastTokenRefresh: now,
+        metadata: const {
+          'oauth_implemented': true,
+        },
+      );
+
+      await _saveConnection(agentId, 'twitter', connection);
+      await _storeTokens(agentId, 'twitter', {
+        'access_token': result.accessToken!,
+        'refresh_token': result.refreshToken,
+        'id_token': result.idToken,
+        'expires_at': result.accessTokenExpirationDateTime?.toIso8601String(),
+      });
+
+      return connection;
+    } catch (e, stackTrace) {
+      _logger.error('❌ Twitter OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
       rethrow;
     }
   }
 
   /// Connect to Facebook using AppAuth
-  Future<SocialMediaConnection> _connectFacebook(String agentId, String userId) async {
+  Future<SocialMediaConnection> _connectFacebook(
+      String agentId, String userId) async {
     try {
-      final appAuth = const FlutterAppAuth();
+      const appAuth = FlutterAppAuth();
       final redirectUri = OAuthConfig.getRedirectUri('facebook');
-      
+
       final result = await appAuth.authorizeAndExchangeCode(
         AuthorizationTokenRequest(
           OAuthConfig.facebookClientId,
           redirectUri,
-          discoveryUrl: 'https://www.facebook.com/.well-known/openid_configuration',
+          discoveryUrl:
+              'https://www.facebook.com/.well-known/openid_configuration',
           scopes: OAuthConfig.facebookScopes,
         ),
       );
@@ -251,14 +549,16 @@ class SocialMediaConnectionService {
 
       // Fetch user profile
       final profileResponse = await http.get(
-        Uri.parse('https://graph.facebook.com/me?fields=id,name&access_token=${result.accessToken}'),
+        Uri.parse(
+            'https://graph.facebook.com/me?fields=id,name&access_token=${result.accessToken}'),
       );
 
       if (profileResponse.statusCode != 200) {
         throw Exception('Failed to fetch Facebook profile');
       }
 
-      final profileData = jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
       final now = DateTime.now();
       final connection = SocialMediaConnection(
         agentId: agentId,
@@ -284,13 +584,593 @@ class SocialMediaConnectionService {
 
       return connection;
     } catch (e, stackTrace) {
-      _logger.error('❌ Facebook OAuth failed', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Facebook OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Connect to Reddit using OAuth 2.0
+  Future<SocialMediaConnection> _connectReddit(
+      String agentId, String userId) async {
+    try {
+      const appAuth = FlutterAppAuth();
+      final redirectUri = OAuthConfig.getRedirectUri('reddit');
+
+      final result = await appAuth.authorizeAndExchangeCode(
+        AuthorizationTokenRequest(
+          OAuthConfig.redditClientId,
+          redirectUri,
+          discoveryUrl:
+              'https://www.reddit.com/.well-known/openid_configuration',
+          scopes: OAuthConfig.redditScopes,
+        ),
+      );
+
+      if (result.accessToken == null) {
+        throw Exception('Reddit OAuth failed or was cancelled');
+      }
+
+      // Fetch user profile from Reddit API
+      final profileResponse = await http.get(
+        Uri.parse('https://oauth.reddit.com/api/v1/me'),
+        headers: {'Authorization': 'Bearer ${result.accessToken}'},
+      );
+
+      if (profileResponse.statusCode != 200) {
+        throw Exception('Failed to fetch Reddit profile');
+      }
+
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final now = DateTime.now();
+      final connection = SocialMediaConnection(
+        agentId: agentId,
+        platform: 'reddit',
+        platformUserId: profileData['id'] as String?,
+        platformUsername: profileData['name'] as String?,
+        isActive: true,
+        createdAt: now,
+        lastUpdated: now,
+        lastTokenRefresh: now,
+        metadata: const {
+          'oauth_implemented': true,
+        },
+      );
+
+      await _saveConnection(agentId, 'reddit', connection);
+      await _storeTokens(agentId, 'reddit', {
+        'access_token': result.accessToken!,
+        'refresh_token': result.refreshToken,
+        'id_token': result.idToken,
+        'expires_at': result.accessTokenExpirationDateTime?.toIso8601String(),
+      });
+
+      return connection;
+    } catch (e, stackTrace) {
+      _logger.error('❌ Reddit OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Connect to TikTok using OAuth 2.0
+  Future<SocialMediaConnection> _connectTikTok(
+      String agentId, String userId) async {
+    try {
+      const appAuth = FlutterAppAuth();
+      final redirectUri = OAuthConfig.getRedirectUri('tiktok');
+
+      final result = await appAuth.authorizeAndExchangeCode(
+        AuthorizationTokenRequest(
+          OAuthConfig.tiktokClientId,
+          redirectUri,
+          discoveryUrl:
+              'https://www.tiktok.com/.well-known/openid_configuration',
+          scopes: OAuthConfig.tiktokScopes,
+        ),
+      );
+
+      if (result.accessToken == null) {
+        throw Exception('TikTok OAuth failed or was cancelled');
+      }
+
+      // Fetch user profile from TikTok API
+      final profileResponse = await http.get(
+        Uri.parse(
+            'https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name'),
+        headers: {'Authorization': 'Bearer ${result.accessToken}'},
+      );
+
+      if (profileResponse.statusCode != 200) {
+        throw Exception('Failed to fetch TikTok profile');
+      }
+
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final userData = profileData['data']?['user'] as Map<String, dynamic>?;
+
+      if (userData == null) {
+        throw Exception('Invalid TikTok profile response');
+      }
+
+      final now = DateTime.now();
+      final connection = SocialMediaConnection(
+        agentId: agentId,
+        platform: 'tiktok',
+        platformUserId: userData['open_id'] as String?,
+        platformUsername: userData['display_name'] as String?,
+        isActive: true,
+        createdAt: now,
+        lastUpdated: now,
+        lastTokenRefresh: now,
+        metadata: const {
+          'oauth_implemented': true,
+        },
+      );
+
+      await _saveConnection(agentId, 'tiktok', connection);
+      await _storeTokens(agentId, 'tiktok', {
+        'access_token': result.accessToken!,
+        'refresh_token': result.refreshToken,
+        'id_token': result.idToken,
+        'expires_at': result.accessTokenExpirationDateTime?.toIso8601String(),
+      });
+
+      return connection;
+    } catch (e, stackTrace) {
+      _logger.error('❌ TikTok OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Connect to Tumblr using OAuth 2.0
+  Future<SocialMediaConnection> _connectTumblr(
+      String agentId, String userId) async {
+    try {
+      const appAuth = FlutterAppAuth();
+      final redirectUri = OAuthConfig.getRedirectUri('tumblr');
+
+      final result = await appAuth.authorizeAndExchangeCode(
+        AuthorizationTokenRequest(
+          OAuthConfig.tumblrClientId,
+          redirectUri,
+          discoveryUrl:
+              'https://www.tumblr.com/.well-known/openid_configuration',
+          scopes: OAuthConfig.tumblrScopes,
+        ),
+      );
+
+      if (result.accessToken == null) {
+        throw Exception('Tumblr OAuth failed or was cancelled');
+      }
+
+      // Fetch user profile from Tumblr API
+      final profileResponse = await http.get(
+        Uri.parse('https://api.tumblr.com/v2/user/info'),
+        headers: {'Authorization': 'Bearer ${result.accessToken}'},
+      );
+
+      if (profileResponse.statusCode != 200) {
+        throw Exception('Failed to fetch Tumblr profile');
+      }
+
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final userData =
+          profileData['response']?['user'] as Map<String, dynamic>?;
+
+      if (userData == null) {
+        throw Exception('Invalid Tumblr profile response');
+      }
+
+      final now = DateTime.now();
+      final connection = SocialMediaConnection(
+        agentId: agentId,
+        platform: 'tumblr',
+        platformUserId: userData['name'] as String?,
+        platformUsername: userData['name'] as String?,
+        isActive: true,
+        createdAt: now,
+        lastUpdated: now,
+        lastTokenRefresh: now,
+        metadata: const {
+          'oauth_implemented': true,
+        },
+      );
+
+      await _saveConnection(agentId, 'tumblr', connection);
+      await _storeTokens(agentId, 'tumblr', {
+        'access_token': result.accessToken!,
+        'refresh_token': result.refreshToken,
+        'id_token': result.idToken,
+        'expires_at': result.accessTokenExpirationDateTime?.toIso8601String(),
+      });
+
+      return connection;
+    } catch (e, stackTrace) {
+      _logger.error('❌ Tumblr OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Connect to YouTube (uses Google OAuth)
+  Future<SocialMediaConnection> _connectYouTube(
+      String agentId, String userId) async {
+    try {
+      // YouTube uses Google OAuth with YouTube-specific scopes
+      final googleSignIn = GoogleSignIn(
+        scopes: [
+          ...OAuthConfig.googleScopes,
+          'https://www.googleapis.com/auth/youtube.readonly',
+        ],
+        clientId: OAuthConfig.googleClientId,
+      );
+
+      final account = await googleSignIn.signIn();
+      if (account == null) {
+        throw Exception('YouTube OAuth cancelled');
+      }
+
+      final auth = await account.authentication;
+      if (auth.accessToken == null) {
+        throw Exception('YouTube OAuth failed');
+      }
+
+      // Fetch YouTube channel info
+      final channelResponse = await http.get(
+        Uri.parse(
+            'https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true'),
+        headers: {'Authorization': 'Bearer ${auth.accessToken}'},
+      );
+
+      String? channelId;
+      String? channelTitle;
+      if (channelResponse.statusCode == 200) {
+        final channelData =
+            jsonDecode(channelResponse.body) as Map<String, dynamic>;
+        final items = channelData['items'] as List<dynamic>?;
+        if (items != null && items.isNotEmpty) {
+          final channel = items[0] as Map<String, dynamic>;
+          channelId = channel['id'] as String?;
+          final snippet = channel['snippet'] as Map<String, dynamic>?;
+          channelTitle = snippet?['title'] as String?;
+        }
+      }
+
+      final now = DateTime.now();
+      final connection = SocialMediaConnection(
+        agentId: agentId,
+        platform: 'youtube',
+        platformUserId: channelId ?? account.id,
+        platformUsername: channelTitle ?? account.displayName,
+        isActive: true,
+        createdAt: now,
+        lastUpdated: now,
+        lastTokenRefresh: now,
+        metadata: const {
+          'oauth_implemented': true,
+        },
+      );
+
+      await _saveConnection(agentId, 'youtube', connection);
+      await _storeTokens(agentId, 'youtube', {
+        'access_token': auth.accessToken,
+        'id_token': auth.idToken,
+        'expires_at': null, // Google tokens don't expire easily
+      });
+
+      return connection;
+    } catch (e, stackTrace) {
+      _logger.error('❌ YouTube OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Connect to Pinterest using OAuth 2.0
+  Future<SocialMediaConnection> _connectPinterest(
+      String agentId, String userId) async {
+    try {
+      const appAuth = FlutterAppAuth();
+      final redirectUri = OAuthConfig.getRedirectUri('pinterest');
+
+      final result = await appAuth.authorizeAndExchangeCode(
+        AuthorizationTokenRequest(
+          OAuthConfig.pinterestClientId,
+          redirectUri,
+          discoveryUrl:
+              'https://www.pinterest.com/.well-known/openid_configuration',
+          scopes: OAuthConfig.pinterestScopes,
+        ),
+      );
+
+      if (result.accessToken == null) {
+        throw Exception('Pinterest OAuth failed or was cancelled');
+      }
+
+      // Fetch user profile from Pinterest API
+      final profileResponse = await http.get(
+        Uri.parse('https://api.pinterest.com/v5/user_account'),
+        headers: {'Authorization': 'Bearer ${result.accessToken}'},
+      );
+
+      if (profileResponse.statusCode != 200) {
+        throw Exception('Failed to fetch Pinterest profile');
+      }
+
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final now = DateTime.now();
+      final connection = SocialMediaConnection(
+        agentId: agentId,
+        platform: 'pinterest',
+        platformUserId: profileData['id'] as String?,
+        platformUsername: profileData['username'] as String?,
+        isActive: true,
+        createdAt: now,
+        lastUpdated: now,
+        lastTokenRefresh: now,
+        metadata: const {
+          'oauth_implemented': true,
+        },
+      );
+
+      await _saveConnection(agentId, 'pinterest', connection);
+      await _storeTokens(agentId, 'pinterest', {
+        'access_token': result.accessToken!,
+        'refresh_token': result.refreshToken,
+        'id_token': result.idToken,
+        'expires_at': result.accessTokenExpirationDateTime?.toIso8601String(),
+      });
+
+      return connection;
+    } catch (e, stackTrace) {
+      _logger.error('❌ Pinterest OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Connect to LinkedIn using OAuth 2.0
+  Future<SocialMediaConnection> _connectLinkedIn(
+      String agentId, String userId) async {
+    try {
+      const appAuth = FlutterAppAuth();
+      final redirectUri = OAuthConfig.getRedirectUri('linkedin');
+
+      final result = await appAuth.authorizeAndExchangeCode(
+        AuthorizationTokenRequest(
+          OAuthConfig.linkedinClientId,
+          redirectUri,
+          discoveryUrl:
+              'https://www.linkedin.com/.well-known/openid_configuration',
+          scopes: OAuthConfig.linkedinScopes,
+        ),
+      );
+
+      if (result.accessToken == null) {
+        throw Exception('LinkedIn OAuth failed or was cancelled');
+      }
+
+      // Fetch user profile from LinkedIn API
+      final profileResponse = await http.get(
+        Uri.parse('https://api.linkedin.com/v2/userinfo'),
+        headers: {'Authorization': 'Bearer ${result.accessToken}'},
+      );
+
+      if (profileResponse.statusCode != 200) {
+        throw Exception('Failed to fetch LinkedIn profile');
+      }
+
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final now = DateTime.now();
+      final connection = SocialMediaConnection(
+        agentId: agentId,
+        platform: 'linkedin',
+        platformUserId:
+            profileData['sub'] as String? ?? profileData['id'] as String?,
+        platformUsername: profileData['name'] as String? ??
+            profileData['given_name'] as String?,
+        isActive: true,
+        createdAt: now,
+        lastUpdated: now,
+        lastTokenRefresh: now,
+        metadata: {
+          'oauth_implemented': true,
+          'email': profileData['email'],
+          'picture': profileData['picture'],
+        },
+      );
+
+      await _saveConnection(agentId, 'linkedin', connection);
+      await _storeTokens(agentId, 'linkedin', {
+        'access_token': result.accessToken!,
+        'refresh_token': result.refreshToken,
+        'id_token': result.idToken,
+        'expires_at': result.accessTokenExpirationDateTime?.toIso8601String(),
+      });
+
+      return connection;
+    } catch (e, stackTrace) {
+      _logger.error('❌ LinkedIn OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Connect to Are.na using OAuth 2.0
+  Future<SocialMediaConnection> _connectArena(
+      String agentId, String userId) async {
+    try {
+      const appAuth = FlutterAppAuth();
+      final redirectUri = OAuthConfig.getRedirectUri('arena');
+
+      final result = await appAuth.authorizeAndExchangeCode(
+        AuthorizationTokenRequest(
+          OAuthConfig.arenaClientId,
+          redirectUri,
+          discoveryUrl: 'https://www.are.na/.well-known/openid_configuration',
+          scopes: OAuthConfig.arenaScopes,
+        ),
+      );
+
+      if (result.accessToken == null) {
+        throw Exception('Are.na OAuth failed or was cancelled');
+      }
+
+      // Fetch user profile from Are.na API
+      final profileResponse = await http.get(
+        Uri.parse('https://api.are.na/v2/me'),
+        headers: {'Authorization': 'Bearer ${result.accessToken}'},
+      );
+
+      if (profileResponse.statusCode != 200) {
+        throw Exception('Failed to fetch Are.na profile');
+      }
+
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final now = DateTime.now();
+      final connection = SocialMediaConnection(
+        agentId: agentId,
+        platform: 'arena',
+        platformUserId: profileData['id']?.toString(),
+        platformUsername: profileData['username'] as String?,
+        isActive: true,
+        createdAt: now,
+        lastUpdated: now,
+        lastTokenRefresh: now,
+        metadata: const {
+          'oauth_implemented': true,
+        },
+      );
+
+      await _saveConnection(agentId, 'arena', connection);
+      await _storeTokens(agentId, 'arena', {
+        'access_token': result.accessToken!,
+        'refresh_token': result.refreshToken,
+        'id_token': result.idToken,
+        'expires_at': result.accessTokenExpirationDateTime?.toIso8601String(),
+      });
+
+      return connection;
+    } catch (e, stackTrace) {
+      _logger.error('❌ Are.na OAuth failed',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Connect to any platform using generic OAuth 2.0
+  /// For platforms like Uber Eats, Lyft, Airbnb, etc. that support OAuth 2.0
+  Future<SocialMediaConnection> _connectGenericOAuth(
+    String agentId,
+    String userId,
+    String platform,
+    Map<String, dynamic> oauthConfig,
+  ) async {
+    try {
+      const appAuth = FlutterAppAuth();
+
+      // Extract OAuth config
+      final clientId = oauthConfig['client_id'] as String? ?? '';
+      final redirectUri = oauthConfig['redirect_uri'] as String? ??
+          OAuthConfig.getRedirectUri(platform);
+      final discoveryUrl = oauthConfig['discovery_url'] as String?;
+      final scopes =
+          (oauthConfig['scopes'] as List<dynamic>?)?.cast<String>() ??
+              OAuthConfig.getDefaultScopes(platform);
+
+      if (clientId.isEmpty) {
+        throw Exception('Generic OAuth requires client_id in config');
+      }
+
+      if (discoveryUrl == null || discoveryUrl.isEmpty) {
+        throw Exception('Generic OAuth requires discovery_url in config');
+      }
+
+      final result = await appAuth.authorizeAndExchangeCode(
+        AuthorizationTokenRequest(
+          clientId,
+          redirectUri,
+          discoveryUrl: discoveryUrl,
+          scopes: scopes,
+        ),
+      );
+
+      if (result.accessToken == null) {
+        throw Exception('Generic OAuth failed or was cancelled');
+      }
+
+      // Try to fetch user profile if profile endpoint is provided
+      String? platformUserId;
+      String? platformUsername;
+
+      final profileEndpoint = oauthConfig['profile_endpoint'] as String?;
+      if (profileEndpoint != null && profileEndpoint.isNotEmpty) {
+        try {
+          final profileResponse = await http.get(
+            Uri.parse(profileEndpoint),
+            headers: {'Authorization': 'Bearer ${result.accessToken}'},
+          );
+
+          if (profileResponse.statusCode == 200) {
+            final profileData =
+                jsonDecode(profileResponse.body) as Map<String, dynamic>;
+            // Try common field names for user ID and username
+            platformUserId = profileData['id']?.toString() ??
+                profileData['user_id']?.toString() ??
+                profileData['sub']?.toString();
+            platformUsername = profileData['username'] as String? ??
+                profileData['name'] as String? ??
+                profileData['display_name'] as String?;
+          }
+        } catch (e) {
+          _logger.warn('Could not fetch profile from $profileEndpoint: $e',
+              tag: _logName);
+        }
+      }
+
+      final now = DateTime.now();
+      final connection = SocialMediaConnection(
+        agentId: agentId,
+        platform: platform,
+        platformUserId: platformUserId,
+        platformUsername: platformUsername,
+        isActive: true,
+        createdAt: now,
+        lastUpdated: now,
+        lastTokenRefresh: now,
+        metadata: const {
+          'oauth_implemented': true,
+          'generic_oauth': true,
+          'custom_config': true,
+        },
+      );
+
+      await _saveConnection(agentId, platform, connection);
+      await _storeTokens(agentId, platform, {
+        'access_token': result.accessToken!,
+        'refresh_token': result.refreshToken,
+        'id_token': result.idToken,
+        'expires_at': result.accessTokenExpirationDateTime?.toIso8601String(),
+      });
+
+      return connection;
+    } catch (e, stackTrace) {
+      _logger.error('❌ Generic OAuth failed for $platform',
+          error: e, stackTrace: stackTrace, tag: _logName);
       rethrow;
     }
   }
 
   /// Create placeholder connection (for development/testing)
-  Future<SocialMediaConnection> _connectPlaceholder(String agentId, String platform) async {
+  Future<SocialMediaConnection> _connectPlaceholder(
+      String agentId, String platform) async {
     // Placeholder: Simulate OAuth flow
     await Future.delayed(const Duration(seconds: 1));
 
@@ -339,10 +1219,21 @@ class SocialMediaConnectionService {
     required String agentId,
   }) async {
     try {
-      _logger.info('🔌 Disconnecting from $platform for agent: ${agentId.substring(0, 10)}...', tag: _logName);
+      _logger.info(
+          '🔌 Disconnecting from $platform for agent: ${agentId.substring(0, 10)}...',
+          tag: _logName);
 
       final normalizedPlatform = platform.toLowerCase();
 
+      // Try to use platform service if factory is available
+      final platformService = _serviceFactory?.getService(normalizedPlatform);
+      if (platformService != null) {
+        await platformService.disconnect(agentId: agentId);
+        _logger.info('✅ Disconnected from $platform', tag: _logName);
+        return;
+      }
+
+      // Fallback to legacy implementation
       // Get existing connection
       final connection = await _getConnection(agentId, normalizedPlatform);
       if (connection == null) {
@@ -367,7 +1258,8 @@ class SocialMediaConnectionService {
 
       _logger.info('✅ Disconnected from $platform', tag: _logName);
     } catch (e, stackTrace) {
-      _logger.error('❌ Failed to disconnect from $platform', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Failed to disconnect from $platform',
+          error: e, stackTrace: stackTrace, tag: _logName);
       rethrow;
     }
   }
@@ -379,7 +1271,8 @@ class SocialMediaConnectionService {
   ///
   /// **Returns:**
   /// List of active SocialMediaConnection records
-  Future<List<SocialMediaConnection>> getActiveConnections(String userId) async {
+  Future<List<SocialMediaConnection>> getActiveConnections(
+      String userId) async {
     try {
       // Get agentId from userId (via AgentIdService)
       final agentId = await _agentIdService.getUserAgentId(userId);
@@ -390,7 +1283,8 @@ class SocialMediaConnectionService {
       // Filter to active connections only
       return connections.where((conn) => conn.isActive).toList();
     } catch (e, stackTrace) {
-      _logger.error('❌ Failed to get active connections', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Failed to get active connections',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return [];
     }
   }
@@ -419,7 +1313,8 @@ class SocialMediaConnectionService {
     SocialMediaConnection connection,
   ) async {
     try {
-      _logger.info('📥 Fetching profile data from ${connection.platform}', tag: _logName);
+      _logger.info('📥 Fetching profile data from ${connection.platform}',
+          tag: _logName);
 
       // Get tokens
       final tokens = await _getTokens(connection.agentId, connection.platform);
@@ -439,6 +1334,13 @@ class SocialMediaConnectionService {
       }
 
       // Route to platform-specific API implementation
+      // Try to use platform service if factory is available
+      final platformService = _serviceFactory?.getService(connection.platform);
+      if (platformService != null) {
+        return await platformService.fetchProfileData(connection);
+      }
+
+      // Fallback to legacy implementation
       switch (connection.platform) {
         case 'google':
           return await _fetchGoogleProfileData(accessToken, connection);
@@ -446,11 +1348,19 @@ class SocialMediaConnectionService {
           return await _fetchInstagramProfileData(accessToken, connection);
         case 'facebook':
           return await _fetchFacebookProfileData(accessToken, connection);
+        case 'twitter':
+          return await _fetchTwitterProfileData(accessToken, connection);
+        case 'linkedin':
+          return await _fetchLinkedInProfileData(accessToken, connection);
         default:
           return _getPlaceholderProfileData(connection);
       }
     } catch (e, stackTrace) {
-      _logger.error('❌ Failed to fetch profile data from ${connection.platform}', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error(
+          '❌ Failed to fetch profile data from ${connection.platform}',
+          error: e,
+          stackTrace: stackTrace,
+          tag: _logName);
       return {};
     }
   }
@@ -466,7 +1376,8 @@ class SocialMediaConnectionService {
     SocialMediaConnection connection,
   ) async {
     try {
-      _logger.info('📥 Fetching follows from ${connection.platform}', tag: _logName);
+      _logger.info('📥 Fetching follows from ${connection.platform}',
+          tag: _logName);
 
       // Get tokens
       final tokens = await _getTokens(connection.agentId, connection.platform);
@@ -486,16 +1397,28 @@ class SocialMediaConnectionService {
       }
 
       // Route to platform-specific API implementation
+      // Try to use platform service if factory is available
+      final platformService = _serviceFactory?.getService(connection.platform);
+      if (platformService != null) {
+        return await platformService.fetchFollows(connection);
+      }
+
+      // Fallback to legacy implementation
       switch (connection.platform) {
         case 'instagram':
           return await _fetchInstagramFollows(accessToken, connection);
         case 'facebook':
           return await _fetchFacebookFriends(accessToken, connection);
+        case 'twitter':
+          return await _fetchTwitterFollows(accessToken, connection);
+        case 'linkedin':
+          return await _fetchLinkedInConnections(accessToken, connection);
         default:
           return [];
       }
     } catch (e, stackTrace) {
-      _logger.error('❌ Failed to fetch follows from ${connection.platform}', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Failed to fetch follows from ${connection.platform}',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return [];
     }
   }
@@ -541,7 +1464,8 @@ class SocialMediaConnectionService {
       // Fetch real Google Places data
       return await _fetchGooglePlacesDataReal(accessToken, connection);
     } catch (e, stackTrace) {
-      _logger.error('❌ Failed to fetch Google Places data', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Failed to fetch Google Places data',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return {
         'places': [],
         'reviews': [],
@@ -560,68 +1484,221 @@ class SocialMediaConnectionService {
     try {
       // Fetch user profile from Google People API
       final profileResponse = await http.get(
-        Uri.parse('https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos'),
+        Uri.parse(
+            'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos'),
         headers: {'Authorization': 'Bearer $accessToken'},
       );
 
       if (profileResponse.statusCode != 200) {
-        _logger.warn('Failed to fetch Google profile, using placeholder', tag: _logName);
+        _logger.warn('Failed to fetch Google profile, using placeholder',
+            tag: _logName);
         return _getPlaceholderProfileData(connection);
       }
 
-      final profileData = jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
       final names = profileData['names'] as List<dynamic>?;
       final emails = profileData['emailAddresses'] as List<dynamic>?;
       final photos = profileData['photos'] as List<dynamic>?;
 
       return {
         'profile': {
-          'name': names?.isNotEmpty == true ? (names![0] as Map)['displayName'] : connection.platformUsername,
-          'email': emails?.isNotEmpty == true ? (emails![0] as Map)['value'] : null,
-          'photo': photos?.isNotEmpty == true ? (photos![0] as Map)['url'] : null,
+          'name': names?.isNotEmpty == true
+              ? (names![0] as Map)['displayName']
+              : connection.platformUsername,
+          'email':
+              emails?.isNotEmpty == true ? (emails![0] as Map)['value'] : null,
+          'photo':
+              photos?.isNotEmpty == true ? (photos![0] as Map)['url'] : null,
         },
-        'savedPlaces': [], // Will be fetched separately via fetchGooglePlacesData
+        'savedPlaces':
+            [], // Will be fetched separately via fetchGooglePlacesData
         'reviews': [], // Will be fetched separately via fetchGooglePlacesData
         'photos': [], // Will be fetched separately via fetchGooglePlacesData
         'locationHistory': null, // Requires additional permissions
       };
     } catch (e, stackTrace) {
-      _logger.error('Error fetching Google profile data', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('Error fetching Google profile data',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return _getPlaceholderProfileData(connection);
     }
   }
 
   /// Fetch Instagram profile data from Instagram Graph API
+  /// Enhanced with caching and more fields
   Future<Map<String, dynamic>> _fetchInstagramProfileData(
     String accessToken,
     SocialMediaConnection connection,
   ) async {
     try {
-      // Fetch user profile from Instagram Graph API
+      // Check cache first
+      final cacheKey = '$_profileCacheKeyPrefix${connection.agentId}_instagram';
+      final cachedData = await _getCachedProfileData(cacheKey);
+      if (cachedData != null) {
+        _logger.info('📦 Using cached Instagram profile data', tag: _logName);
+        return cachedData;
+      }
+
+      // Fetch user profile from Instagram Graph API with extended fields
+      // Note: Instagram Graph API fields vary by permissions
       final profileResponse = await http.get(
-        Uri.parse('https://graph.instagram.com/me?fields=id,username,account_type&access_token=$accessToken'),
+        Uri.parse(
+            'https://graph.instagram.com/me?fields=id,username,account_type,media_count,followers_count,follows_count&access_token=$accessToken'),
       );
 
       if (profileResponse.statusCode != 200) {
-        _logger.warn('Failed to fetch Instagram profile, using placeholder', tag: _logName);
+        _logger.warn('Failed to fetch Instagram profile, using placeholder',
+            tag: _logName);
         return _getPlaceholderProfileData(connection);
       }
 
-      final profileData = jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
 
-      return {
+      // Fetch recent media for interest extraction (if available)
+      List<Map<String, dynamic>> recentMedia = [];
+      try {
+        final mediaResponse = await http.get(
+          Uri.parse(
+              'https://graph.instagram.com/me/media?fields=id,caption,media_type,permalink&limit=25&access_token=$accessToken'),
+        );
+        if (mediaResponse.statusCode == 200) {
+          final mediaData =
+              jsonDecode(mediaResponse.body) as Map<String, dynamic>;
+          final mediaList = mediaData['data'] as List<dynamic>? ?? [];
+          recentMedia =
+              mediaList.map((m) => m as Map<String, dynamic>).toList();
+        }
+      } catch (e) {
+        _logger.warn(
+            'Could not fetch Instagram media (may require additional permissions): $e',
+            tag: _logName);
+      }
+
+      // Parse interests from captions and media
+      final interests = _parseInstagramInterests(recentMedia);
+      final communities = _parseInstagramCommunities(recentMedia);
+
+      final result = {
         'profile': {
           'id': profileData['id'],
           'username': profileData['username'] ?? connection.platformUsername,
           'account_type': profileData['account_type'],
+          'media_count': profileData['media_count'],
+          'followers_count': profileData['followers_count'],
+          'follows_count': profileData['follows_count'],
         },
         'follows': [], // Will be fetched separately via fetchFollows
-        'posts': [], // Can be fetched if needed for vibe analysis
+        'posts': recentMedia,
+        'interests': interests,
+        'communities': communities,
       };
+
+      // Cache the result
+      await _cacheProfileData(cacheKey, result);
+
+      return result;
     } catch (e, stackTrace) {
-      _logger.error('Error fetching Instagram profile data', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('Error fetching Instagram profile data',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return _getPlaceholderProfileData(connection);
     }
+  }
+
+  /// Parse interests from Instagram media captions
+  List<String> _parseInstagramInterests(List<Map<String, dynamic>> media) {
+    final interests = <String>{};
+    final interestKeywords = {
+      'food': [
+        'food',
+        'restaurant',
+        'cafe',
+        'coffee',
+        'brunch',
+        'dinner',
+        'lunch',
+        'foodie',
+        'culinary'
+      ],
+      'travel': [
+        'travel',
+        'trip',
+        'vacation',
+        'explore',
+        'adventure',
+        'wanderlust',
+        'journey'
+      ],
+      'art': [
+        'art',
+        'gallery',
+        'museum',
+        'exhibition',
+        'artist',
+        'creative',
+        'design'
+      ],
+      'music': ['music', 'concert', 'live', 'gig', 'festival', 'dj', 'band'],
+      'fitness': [
+        'fitness',
+        'gym',
+        'workout',
+        'yoga',
+        'running',
+        'exercise',
+        'health'
+      ],
+      'nature': [
+        'nature',
+        'outdoor',
+        'hiking',
+        'camping',
+        'park',
+        'beach',
+        'mountain'
+      ],
+      'fashion': [
+        'fashion',
+        'style',
+        'outfit',
+        'clothing',
+        'shopping',
+        'boutique'
+      ],
+      'photography': [
+        'photography',
+        'photo',
+        'camera',
+        'shot',
+        'picture',
+        'photographer'
+      ],
+    };
+
+    for (final item in media) {
+      final caption = (item['caption'] as String? ?? '').toLowerCase();
+      for (final entry in interestKeywords.entries) {
+        if (entry.value.any((keyword) => caption.contains(keyword))) {
+          interests.add(entry.key);
+        }
+      }
+    }
+
+    return interests.toList();
+  }
+
+  /// Parse communities from Instagram follows and media
+  List<String> _parseInstagramCommunities(List<Map<String, dynamic>> media) {
+    final communities = <String>{};
+    // Extract hashtags from captions as communities
+    for (final item in media) {
+      final caption = item['caption'] as String? ?? '';
+      final hashtags = RegExp(r'#(\w+)').allMatches(caption);
+      for (final match in hashtags) {
+        communities.add(match.group(1)!.toLowerCase());
+      }
+    }
+    return communities.toList();
   }
 
   /// Fetch Facebook profile data from Facebook Graph API
@@ -632,15 +1709,18 @@ class SocialMediaConnectionService {
     try {
       // Fetch user profile from Facebook Graph API
       final profileResponse = await http.get(
-        Uri.parse('https://graph.facebook.com/me?fields=id,name,email,picture&access_token=$accessToken'),
+        Uri.parse(
+            'https://graph.facebook.com/me?fields=id,name,email,picture&access_token=$accessToken'),
       );
 
       if (profileResponse.statusCode != 200) {
-        _logger.warn('Failed to fetch Facebook profile, using placeholder', tag: _logName);
+        _logger.warn('Failed to fetch Facebook profile, using placeholder',
+            tag: _logName);
         return _getPlaceholderProfileData(connection);
       }
 
-      final profileData = jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
       final picture = profileData['picture'] as Map<String, dynamic>?;
 
       return {
@@ -654,7 +1734,53 @@ class SocialMediaConnectionService {
         'pages': [], // Can be fetched if needed
       };
     } catch (e, stackTrace) {
-      _logger.error('Error fetching Facebook profile data', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('Error fetching Facebook profile data',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      return _getPlaceholderProfileData(connection);
+    }
+  }
+
+  /// Fetch Twitter profile data from Twitter API v2
+  Future<Map<String, dynamic>> _fetchTwitterProfileData(
+    String accessToken,
+    SocialMediaConnection connection,
+  ) async {
+    try {
+      // Fetch user profile from Twitter API v2
+      final profileResponse = await http.get(
+        Uri.parse(
+            'https://api.twitter.com/2/users/me?user.fields=id,name,username,profile_image_url,description'),
+        headers: {'Authorization': 'Bearer $accessToken'},
+      );
+
+      if (profileResponse.statusCode != 200) {
+        _logger.warn('Failed to fetch Twitter profile, using placeholder',
+            tag: _logName);
+        return _getPlaceholderProfileData(connection);
+      }
+
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
+      final userData = profileData['data'] as Map<String, dynamic>?;
+
+      if (userData == null) {
+        return _getPlaceholderProfileData(connection);
+      }
+
+      return {
+        'profile': {
+          'id': userData['id'],
+          'name': userData['name'] ?? connection.platformUsername,
+          'username': userData['username'],
+          'profile_image_url': userData['profile_image_url'],
+          'description': userData['description'],
+        },
+        'follows': [], // Will be fetched separately via fetchFollows
+        'tweets': [], // Can be fetched if needed for vibe analysis
+      };
+    } catch (e, stackTrace) {
+      _logger.error('Error fetching Twitter profile data',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return _getPlaceholderProfileData(connection);
     }
   }
@@ -668,23 +1794,70 @@ class SocialMediaConnectionService {
       // Note: Instagram Graph API has limited access to follows
       // This may require additional permissions or may not be available
       final followsResponse = await http.get(
-        Uri.parse('https://graph.instagram.com/me/follows?access_token=$accessToken'),
+        Uri.parse(
+            'https://graph.instagram.com/me/follows?access_token=$accessToken'),
       );
 
       if (followsResponse.statusCode != 200) {
-        _logger.warn('Failed to fetch Instagram follows (may require additional permissions)', tag: _logName);
+        _logger.warn(
+            'Failed to fetch Instagram follows (may require additional permissions)',
+            tag: _logName);
         return [];
       }
 
-      final followsData = jsonDecode(followsResponse.body) as Map<String, dynamic>;
+      final followsData =
+          jsonDecode(followsResponse.body) as Map<String, dynamic>;
       final follows = followsData['data'] as List<dynamic>? ?? [];
 
-      return follows.map((f) => {
-        'id': (f as Map)['id'],
-        'username': f['username'],
+      return follows
+          .map((f) => {
+                'id': (f as Map)['id'],
+                'username': f['username'],
+              })
+          .toList();
+    } catch (e, stackTrace) {
+      _logger.error('Error fetching Instagram follows',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      return [];
+    }
+  }
+
+  /// Fetch Twitter follows from Twitter API v2
+  Future<List<Map<String, dynamic>>> _fetchTwitterFollows(
+    String accessToken,
+    SocialMediaConnection connection,
+  ) async {
+    try {
+      // Fetch user follows from Twitter API v2
+      // Note: This requires 'follows.read' scope
+      final followsResponse = await http.get(
+        Uri.parse(
+            'https://api.twitter.com/2/users/${connection.platformUserId}/following?max_results=100&user.fields=id,name,username'),
+        headers: {'Authorization': 'Bearer $accessToken'},
+      );
+
+      if (followsResponse.statusCode != 200) {
+        _logger.warn(
+            'Failed to fetch Twitter follows (may require additional permissions)',
+            tag: _logName);
+        return [];
+      }
+
+      final followsData =
+          jsonDecode(followsResponse.body) as Map<String, dynamic>;
+      final follows = followsData['data'] as List<dynamic>? ?? [];
+
+      return follows.map((f) {
+        final follow = f as Map<String, dynamic>;
+        return {
+          'id': follow['id'],
+          'name': follow['name'],
+          'username': follow['username'],
+        };
       }).toList();
     } catch (e, stackTrace) {
-      _logger.error('Error fetching Instagram follows', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('Error fetching Twitter follows',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return [];
     }
   }
@@ -698,23 +1871,98 @@ class SocialMediaConnectionService {
       // Note: Facebook Graph API v2.0+ has limited access to friends
       // This may require additional permissions or may not be available
       final friendsResponse = await http.get(
-        Uri.parse('https://graph.facebook.com/me/friends?access_token=$accessToken'),
+        Uri.parse(
+            'https://graph.facebook.com/me/friends?access_token=$accessToken'),
       );
 
       if (friendsResponse.statusCode != 200) {
-        _logger.warn('Failed to fetch Facebook friends (may require additional permissions)', tag: _logName);
+        _logger.warn(
+            'Failed to fetch Facebook friends (may require additional permissions)',
+            tag: _logName);
         return [];
       }
 
-      final friendsData = jsonDecode(friendsResponse.body) as Map<String, dynamic>;
+      final friendsData =
+          jsonDecode(friendsResponse.body) as Map<String, dynamic>;
       final friends = friendsData['data'] as List<dynamic>? ?? [];
 
-      return friends.map((f) => {
-        'id': (f as Map)['id'],
-        'name': f['name'],
-      }).toList();
+      return friends
+          .map((f) => {
+                'id': (f as Map)['id'],
+                'name': f['name'],
+              })
+          .toList();
     } catch (e, stackTrace) {
-      _logger.error('Error fetching Facebook friends', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('Error fetching Facebook friends',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      return [];
+    }
+  }
+
+  /// Fetch LinkedIn profile data from LinkedIn API
+  Future<Map<String, dynamic>> _fetchLinkedInProfileData(
+    String accessToken,
+    SocialMediaConnection connection,
+  ) async {
+    try {
+      // Fetch user profile from LinkedIn API v2
+      final profileResponse = await http.get(
+        Uri.parse('https://api.linkedin.com/v2/userinfo'),
+        headers: {'Authorization': 'Bearer $accessToken'},
+      );
+
+      if (profileResponse.statusCode != 200) {
+        _logger.warn('Failed to fetch LinkedIn profile, using placeholder',
+            tag: _logName);
+        return _getPlaceholderProfileData(connection);
+      }
+
+      final profileData =
+          jsonDecode(profileResponse.body) as Map<String, dynamic>;
+
+      return {
+        'profile': {
+          'id': profileData['sub'] ?? connection.platformUserId,
+          'name': profileData['name'] ?? connection.platformUsername,
+          'email': profileData['email'],
+          'picture': profileData['picture'],
+        },
+        'connections': [], // Will be fetched separately via fetchFollows
+      };
+    } catch (e, stackTrace) {
+      _logger.error('Error fetching LinkedIn profile data',
+          error: e, stackTrace: stackTrace, tag: _logName);
+      return _getPlaceholderProfileData(connection);
+    }
+  }
+
+  /// Fetch LinkedIn connections from LinkedIn API
+  Future<List<Map<String, dynamic>>> _fetchLinkedInConnections(
+    String accessToken,
+    SocialMediaConnection connection,
+  ) async {
+    try {
+      // Note: LinkedIn API v2 has limited access to connections
+      // This may require additional permissions or may not be available
+      final connectionsResponse = await http.get(
+        Uri.parse(
+            'https://api.linkedin.com/v2/networkSizes/edge=1?edgeType=CompanyFollowedByMember'),
+        headers: {'Authorization': 'Bearer $accessToken'},
+      );
+
+      if (connectionsResponse.statusCode != 200) {
+        _logger.warn(
+            'Failed to fetch LinkedIn connections (may require additional permissions)',
+            tag: _logName);
+        return [];
+      }
+
+      // LinkedIn API returns connection count, not full list
+      // For privacy, we'll return an empty list and note this in metadata
+      return [];
+    } catch (e, stackTrace) {
+      _logger.error('Error fetching LinkedIn connections',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return [];
     }
   }
@@ -725,14 +1973,16 @@ class SocialMediaConnectionService {
     SocialMediaConnection connection,
   ) async {
     try {
-      _logger.info('📥 Fetching Google Places data (saved places, reviews, photos)', tag: _logName);
+      _logger.info(
+          '📥 Fetching Google Places data (saved places, reviews, photos)',
+          tag: _logName);
 
       // Fetch saved places from Google Maps (if available via API)
       final savedPlaces = await _fetchGoogleSavedPlaces(accessToken);
-      
+
       // Fetch user's reviews from Google Maps
       final reviews = await _fetchGoogleReviews(accessToken);
-      
+
       // Fetch photos with location data from Google Photos
       final photos = await _fetchGooglePhotosWithLocation(accessToken);
 
@@ -747,7 +1997,8 @@ class SocialMediaConnectionService {
         'photos': photos,
       };
     } catch (e, stackTrace) {
-      _logger.error('Error fetching Google Places data', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('Error fetching Google Places data',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return {
         'places': [],
         'reviews': [],
@@ -758,7 +2009,8 @@ class SocialMediaConnectionService {
 
   /// Fetch saved places from Google Maps
   /// Note: This requires Google Maps Platform API access to user's saved places
-  Future<List<Map<String, dynamic>>> _fetchGoogleSavedPlaces(String accessToken) async {
+  Future<List<Map<String, dynamic>>> _fetchGoogleSavedPlaces(
+      String accessToken) async {
     try {
       // Google Maps Platform API endpoint for saved places
       // Note: This endpoint may require additional scopes and API access
@@ -781,11 +2033,12 @@ class SocialMediaConnectionService {
       return results.map((place) {
         final geometry = (place as Map)['geometry'] as Map<String, dynamic>?;
         final location = geometry?['location'] as Map<String, dynamic>?;
-        
+
         return {
           'place_id': place['place_id'],
           'name': place['name'],
-          'type': (place['types'] as List<dynamic>?)?.firstOrNull ?? 'establishment',
+          'type': (place['types'] as List<dynamic>?)?.firstOrNull ??
+              'establishment',
           'rating': place['rating']?.toDouble(),
           'latitude': location?['lat']?.toDouble(),
           'longitude': location?['lng']?.toDouble(),
@@ -803,7 +2056,8 @@ class SocialMediaConnectionService {
 
   /// Fetch user's Google reviews
   /// Note: This requires Google Maps Platform API or Google My Business API access
-  Future<List<Map<String, dynamic>>> _fetchGoogleReviews(String accessToken) async {
+  Future<List<Map<String, dynamic>>> _fetchGoogleReviews(
+      String accessToken) async {
     try {
       // Google Maps Platform API endpoint for user reviews
       // Note: This endpoint may require additional scopes
@@ -843,7 +2097,8 @@ class SocialMediaConnectionService {
   }
 
   /// Fetch photos with location data from Google Photos
-  Future<List<Map<String, dynamic>>> _fetchGooglePhotosWithLocation(String accessToken) async {
+  Future<List<Map<String, dynamic>>> _fetchGooglePhotosWithLocation(
+      String accessToken) async {
     try {
       // Google Photos API endpoint
       final response = await _makeAuthenticatedRequest(
@@ -868,9 +2123,10 @@ class SocialMediaConnectionService {
       final mediaItems = data['mediaItems'] as List<dynamic>? ?? [];
 
       return mediaItems.map((item) {
-        final mediaMetadata = (item as Map)['mediaMetadata'] as Map<String, dynamic>?;
+        final mediaMetadata =
+            (item as Map)['mediaMetadata'] as Map<String, dynamic>?;
         final location = mediaMetadata?['location'] as Map<String, dynamic>?;
-        
+
         return {
           'id': item['id'],
           'baseUrl': item['baseUrl'],
@@ -890,7 +2146,8 @@ class SocialMediaConnectionService {
   }
 
   /// Get placeholder profile data (for development/testing)
-  Map<String, dynamic> _getPlaceholderProfileData(SocialMediaConnection connection) {
+  Map<String, dynamic> _getPlaceholderProfileData(
+      SocialMediaConnection connection) {
     switch (connection.platform) {
       case 'google':
         return {
@@ -911,7 +2168,8 @@ class SocialMediaConnectionService {
       default:
         return {
           'profile': {
-            'name': connection.platformUsername ?? '${connection.platform} User',
+            'name':
+                connection.platformUsername ?? '${connection.platform} User',
             'username': connection.platformUsername,
           },
           'follows': [],
@@ -939,7 +2197,7 @@ class SocialMediaConnectionService {
     int maxRetries = 3,
   }) async {
     final platform = _extractPlatformFromUrl(url);
-    
+
     // Rate limiting check
     await _checkRateLimit(platform);
 
@@ -1016,7 +2274,8 @@ class SocialMediaConnectionService {
           await Future.delayed(backoff);
           continue;
         } else {
-          throw Exception('Request failed: ${response.statusCode} - ${response.body}');
+          throw Exception(
+              'Request failed: ${response.statusCode} - ${response.body}');
         }
       } catch (e, stackTrace) {
         if (attempt == maxRetries - 1) {
@@ -1043,8 +2302,7 @@ class SocialMediaConnectionService {
     final requestCount = _requestCount[platform] ?? 0;
 
     // Reset counter if window expired
-    if (lastRequest == null ||
-        now.difference(lastRequest) > _rateLimitWindow) {
+    if (lastRequest == null || now.difference(lastRequest) > _rateLimitWindow) {
       _requestCount[platform] = 0;
       _lastRequestTime[platform] = now;
       return;
@@ -1094,7 +2352,8 @@ class SocialMediaConnectionService {
   }
 
   /// Refresh token if needed
-  Future<bool> _refreshTokenIfNeeded(String platform, String currentToken) async {
+  Future<bool> _refreshTokenIfNeeded(
+      String platform, String currentToken) async {
     try {
       // Get all connections to find the one for this platform
       // Note: This is a simplified implementation - in production, we'd cache the agentId
@@ -1118,7 +2377,8 @@ class SocialMediaConnectionService {
   }
 
   /// Refresh token for a specific connection
-  Future<bool> _refreshTokenForConnection(SocialMediaConnection connection) async {
+  Future<bool> _refreshTokenForConnection(
+      SocialMediaConnection connection) async {
     try {
       final tokens = await _getTokens(connection.agentId, connection.platform);
       if (tokens == null) {
@@ -1127,7 +2387,8 @@ class SocialMediaConnectionService {
 
       final refreshToken = tokens['refresh_token'] as String?;
       if (refreshToken == null) {
-        _logger.warn('No refresh token available for ${connection.platform}', tag: _logName);
+        _logger.warn('No refresh token available for ${connection.platform}',
+            tag: _logName);
         return false;
       }
 
@@ -1138,7 +2399,7 @@ class SocialMediaConnectionService {
           final expiresAt = DateTime.parse(expiresAtStr);
           final now = DateTime.now();
           final timeUntilExpiry = expiresAt.difference(now);
-          
+
           // Only refresh if expired or expiring within 5 minutes
           if (timeUntilExpiry.inMinutes > 5) {
             return false; // Token still valid
@@ -1198,7 +2459,9 @@ class SocialMediaConnectionService {
             'access_token': newAccessToken,
             'refresh_token': refreshToken, // Refresh token doesn't change
             'expires_at': expiresIn != null
-                ? DateTime.now().add(Duration(seconds: expiresIn)).toIso8601String()
+                ? DateTime.now()
+                    .add(Duration(seconds: expiresIn))
+                    .toIso8601String()
                 : null,
           });
 
@@ -1209,7 +2472,8 @@ class SocialMediaConnectionService {
 
       return false;
     } catch (e, stackTrace) {
-      _logger.error('Failed to refresh Google token', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('Failed to refresh Google token',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return false;
     }
   }
@@ -1240,7 +2504,9 @@ class SocialMediaConnectionService {
             'access_token': newAccessToken,
             'refresh_token': refreshToken,
             'expires_at': expiresIn != null
-                ? DateTime.now().add(Duration(seconds: expiresIn)).toIso8601String()
+                ? DateTime.now()
+                    .add(Duration(seconds: expiresIn))
+                    .toIso8601String()
                 : null,
           });
 
@@ -1251,7 +2517,8 @@ class SocialMediaConnectionService {
 
       return false;
     } catch (e, stackTrace) {
-      _logger.error('Failed to refresh Instagram token', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('Failed to refresh Instagram token',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return false;
     }
   }
@@ -1284,7 +2551,9 @@ class SocialMediaConnectionService {
             'access_token': newAccessToken,
             'refresh_token': newAccessToken, // Facebook uses long-lived tokens
             'expires_at': expiresIn != null
-                ? DateTime.now().add(Duration(seconds: expiresIn)).toIso8601String()
+                ? DateTime.now()
+                    .add(Duration(seconds: expiresIn))
+                    .toIso8601String()
                 : null,
           });
 
@@ -1295,13 +2564,15 @@ class SocialMediaConnectionService {
 
       return false;
     } catch (e, stackTrace) {
-      _logger.error('Failed to refresh Facebook token', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('Failed to refresh Facebook token',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return false;
     }
   }
 
   /// Get all connections for a platform (helper for token refresh)
-  Future<List<SocialMediaConnection>> _getAllConnectionsForPlatform(String platform) async {
+  Future<List<SocialMediaConnection>> _getAllConnectionsForPlatform(
+      String platform) async {
     // This is a simplified implementation - in production, we'd have better indexing
     final connections = <SocialMediaConnection>[];
 
@@ -1321,13 +2592,15 @@ class SocialMediaConnectionService {
   // Private helper methods
 
   /// Save connection to storage
-  Future<void> _saveConnection(String agentId, String platform, SocialMediaConnection connection) async {
+  Future<void> _saveConnection(
+      String agentId, String platform, SocialMediaConnection connection) async {
     final key = '$_connectionsKeyPrefix${agentId}_$platform';
     await _storageService.setObject(key, connection.toJson());
   }
 
   /// Get connection from storage
-  Future<SocialMediaConnection?> _getConnection(String agentId, String platform) async {
+  Future<SocialMediaConnection?> _getConnection(
+      String agentId, String platform) async {
     final key = '$_connectionsKeyPrefix${agentId}_$platform';
     final data = _storageService.getObject<Map<String, dynamic>>(key);
     if (data == null) return null;
@@ -1338,7 +2611,14 @@ class SocialMediaConnectionService {
   Future<List<SocialMediaConnection>> _getAllConnections(String agentId) async {
     // TODO: Implement efficient storage query
     // For now, we'll need to know all possible platforms
-    final platforms = ['google', 'instagram', 'facebook', 'twitter', 'tiktok', 'linkedin'];
+    final platforms = [
+      'google',
+      'instagram',
+      'facebook',
+      'twitter',
+      'tiktok',
+      'linkedin'
+    ];
     final connections = <SocialMediaConnection>[];
 
     for (final platform in platforms) {
@@ -1352,15 +2632,60 @@ class SocialMediaConnectionService {
   }
 
   /// Store OAuth tokens (encrypted using flutter_secure_storage)
-  Future<void> _storeTokens(String agentId, String platform, Map<String, dynamic> tokens) async {
+  Future<void> _storeTokens(
+      String agentId, String platform, Map<String, dynamic> tokens) async {
     final key = '$_tokensKeyPrefix${agentId}_$platform';
     // Store encrypted using flutter_secure_storage
     final tokensJson = jsonEncode(tokens);
     await _secureStorage.write(key: key, value: tokensJson);
   }
 
+  /// Cache profile data locally
+  Future<void> _cacheProfileData(
+      String cacheKey, Map<String, dynamic> data) async {
+    try {
+      final cacheData = {
+        'data': data,
+        'cached_at': DateTime.now().toIso8601String(),
+        'expires_at': DateTime.now().add(_profileCacheExpiry).toIso8601String(),
+      };
+      await _storageService.setObject(cacheKey, cacheData);
+    } catch (e) {
+      _logger.warn('Failed to cache profile data: $e', tag: _logName);
+    }
+  }
+
+  /// Get cached profile data if still valid
+  Future<Map<String, dynamic>?> _getCachedProfileData(String cacheKey) async {
+    try {
+      final cacheData =
+          _storageService.getObject<Map<String, dynamic>>(cacheKey);
+      if (cacheData == null) return null;
+
+      final expiresAt = DateTime.parse(cacheData['expires_at'] as String);
+      if (DateTime.now().isAfter(expiresAt)) {
+        // Cache expired, remove it
+        await _storageService.remove(cacheKey);
+        return null;
+      }
+
+      return cacheData['data'] as Map<String, dynamic>?;
+    } catch (e) {
+      _logger.warn('Failed to get cached profile data: $e', tag: _logName);
+      return null;
+    }
+  }
+
   /// Get OAuth tokens (decrypted from flutter_secure_storage)
-  Future<Map<String, dynamic>?> _getTokens(String agentId, String platform) async {
+  /// Public method for sharing service to access tokens
+  Future<Map<String, dynamic>?> getAccessTokens(
+      String agentId, String platform) async {
+    return await _getTokens(agentId, platform);
+  }
+
+  /// Get OAuth tokens (decrypted from flutter_secure_storage)
+  Future<Map<String, dynamic>?> _getTokens(
+      String agentId, String platform) async {
     final key = '$_tokensKeyPrefix${agentId}_$platform';
     final tokensJson = await _secureStorage.read(key: key);
     if (tokensJson == null) return null;
@@ -1373,4 +2698,3 @@ class SocialMediaConnectionService {
     await _secureStorage.delete(key: key);
   }
 }
-

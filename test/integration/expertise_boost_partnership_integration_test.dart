@@ -40,7 +40,7 @@ void main() {
       test('should calculate boost from active partnerships correctly', () {
         // Arrange - Active partnerships
         final partnerships = [
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-1',
             type: ProfilePartnershipType.business,
             partnerId: 'business-1',
@@ -50,7 +50,7 @@ void main() {
             vibeCompatibility: 0.85,
             eventCount: 3,
           ),
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-2',
             type: ProfilePartnershipType.brand,
             partnerId: 'brand-1',
@@ -81,7 +81,7 @@ void main() {
       test('should calculate boost from completed partnerships correctly', () {
         // Arrange - Completed partnerships
         final partnerships = [
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-1',
             type: ProfilePartnershipType.business,
             partnerId: 'business-1',
@@ -151,7 +151,7 @@ void main() {
         ));
 
         // Act - Calculate boost with multiplier
-        final baseBoost = 0.15; // Max active boost
+        const baseBoost = 0.15; // Max active boost
         final countMultiplier = partnerships.length >= 6 ? 1.5 : (partnerships.length >= 3 ? 1.2 : 1.0);
         final totalBoost = (baseBoost * countMultiplier).clamp(0.0, 0.50);
         
@@ -172,8 +172,8 @@ void main() {
     group('Scenario 2: Expertise Calculation with Partnership Boost', () {
       test('should integrate partnership boost into total expertise', () {
         // Arrange
-        final baseExpertise = 0.60;
-        final partnershipBoost = PartnershipExpertiseBoost(
+        const baseExpertise = 0.60;
+        const partnershipBoost = PartnershipExpertiseBoost(
           totalBoost: 0.25,
           activeBoost: 0.10,
           completedBoost: 0.15,
@@ -191,8 +191,8 @@ void main() {
 
       test('should cap total expertise at 1.0', () {
         // Arrange
-        final baseExpertise = 0.80;
-        final partnershipBoost = PartnershipExpertiseBoost(
+        const baseExpertise = 0.80;
+        const partnershipBoost = PartnershipExpertiseBoost(
           totalBoost: 0.50, // Max boost
           partnershipCount: 10,
         );
@@ -206,7 +206,7 @@ void main() {
 
       test('should apply boost to different expertise paths', () {
         // Arrange
-        final partnershipBoost = PartnershipExpertiseBoost(
+        const partnershipBoost = PartnershipExpertiseBoost(
           totalBoost: 0.25,
           partnershipCount: 4,
         );
@@ -229,7 +229,7 @@ void main() {
     group('Scenario 3: Community/Professional/Influence Path Integration', () {
       test('should apply boost primarily to Community Path', () {
         // Arrange
-        final partnershipBoost = PartnershipExpertiseBoost(
+        const partnershipBoost = PartnershipExpertiseBoost(
           totalBoost: 0.20,
           partnershipCount: 3,
         );
@@ -244,7 +244,7 @@ void main() {
 
       test('should apply boost secondarily to Professional Path', () {
         // Arrange
-        final partnershipBoost = PartnershipExpertiseBoost(
+        const partnershipBoost = PartnershipExpertiseBoost(
           totalBoost: 0.20,
           partnershipCount: 3,
         );
@@ -258,7 +258,7 @@ void main() {
 
       test('should apply minor boost to Influence Path', () {
         // Arrange
-        final partnershipBoost = PartnershipExpertiseBoost(
+        const partnershipBoost = PartnershipExpertiseBoost(
           totalBoost: 0.20,
           partnershipCount: 3,
         );
@@ -301,7 +301,7 @@ void main() {
         ));
 
         // Act - Calculate boost with multiplier
-        final baseBoost = 0.15; // Max active boost
+        const baseBoost = 0.15; // Max active boost
         final countMultiplier = partnerships.length >= 6 ? 1.5 : (partnerships.length >= 3 ? 1.2 : 1.0);
         final totalBoost = (baseBoost * countMultiplier).clamp(0.0, 0.50);
         
@@ -322,7 +322,7 @@ void main() {
       test('should handle partnerships with no category', () {
         // Arrange
         final partnerships = [
-          UserPartnership(
+          const UserPartnership(
             id: 'partnership-1',
             type: ProfilePartnershipType.business,
             partnerId: 'business-1',
@@ -347,7 +347,7 @@ void main() {
 
       test('should cap boost at maximum (0.50)', () {
         // Arrange - Very high boost calculation
-        final calculatedBoost = 0.75; // Would exceed max
+        const calculatedBoost = 0.75; // Would exceed max
 
         // Act - Cap at 0.50
         final cappedBoost = calculatedBoost.clamp(0.0, 0.50);

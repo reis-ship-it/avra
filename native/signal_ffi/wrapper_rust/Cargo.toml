@@ -1,0 +1,21 @@
+[package]
+name = "signal_ffi_wrapper"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]  # Dynamic library for FFI
+
+[dependencies]
+# FFI support
+libc = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true

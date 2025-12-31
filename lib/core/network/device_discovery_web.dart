@@ -289,7 +289,7 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
       await openCompleter.future;
       
       // Request device list
-      final messageJson = '{"action": "discover"}';
+      const messageJson = '{"action": "discover"}';
       final messageBytes = utf8.encode(messageJson);
       final messageBase64 = base64Encode(messageBytes);
       ws.send(messageBase64.toJS);

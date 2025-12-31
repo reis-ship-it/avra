@@ -76,11 +76,11 @@ class _BusinessPartnershipDiscoveryPageState
               if (business.compatibilityScore != null) ...[
                 Row(
                   children: [
-                    Icon(Icons.handshake, size: 16, color: AppColors.success),
+                    const Icon(Icons.handshake, size: 16, color: AppColors.success),
                     const SizedBox(width: 4),
                     Text(
                       'Compatibility: ${(business.compatibilityScore! * 100).toStringAsFixed(0)}%',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.success,
                         fontWeight: FontWeight.bold,
                       ),
@@ -189,12 +189,12 @@ class _BusinessPartnershipDiscoveryPageState
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.error_outline,
+                        const Icon(Icons.error_outline,
                             size: 64, color: AppColors.error),
                         const SizedBox(height: 16),
                         Text(
                           _errorMessage!,
-                          style: TextStyle(color: AppColors.error),
+                          style: const TextStyle(color: AppColors.error),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
@@ -211,10 +211,10 @@ class _BusinessPartnershipDiscoveryPageState
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.business_center,
+                          const Icon(Icons.business_center,
                               size: 64, color: AppColors.textSecondary),
                           const SizedBox(height: 16),
-                          Text(
+                          const Text(
                             'No businesses found',
                             style: TextStyle(
                               color: AppColors.textSecondary,
@@ -222,7 +222,7 @@ class _BusinessPartnershipDiscoveryPageState
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
+                          const Text(
                             'Try adjusting your compatibility threshold',
                             style: TextStyle(
                               color: AppColors.textSecondary,
@@ -273,7 +273,7 @@ class _BusinessPartnershipDiscoveryPageState
                     radius: 24,
                     backgroundColor:
                         AppTheme.primaryColor.withValues(alpha: 0.2),
-                    child: Icon(
+                    child: const Icon(
                       Icons.business,
                       color: AppTheme.primaryColor,
                     ),
@@ -293,7 +293,7 @@ class _BusinessPartnershipDiscoveryPageState
                         if (business.metadata?['business_type'] != null)
                           Text(
                             business.metadata!['business_type'] as String,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
                             ),
@@ -301,7 +301,7 @@ class _BusinessPartnershipDiscoveryPageState
                         if (business.metadata?['location'] != null)
                           Text(
                             business.metadata!['location'] as String,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -349,7 +349,7 @@ class _BusinessPartnershipDiscoveryPageState
                 const SizedBox(height: 12),
                 Text(
                   business.metadata!['description'] as String,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),

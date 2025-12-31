@@ -249,92 +249,71 @@ CREATE TABLE IF NOT EXISTS public.users (
 
 ---
 
-### **13. No Secure User Account → AI Agent Mapping System**
+### **13. No Secure User Account → AI Agent Mapping System** ✅ **RESOLVED**
 
 **Location:** Agent ID generation and storage
 
-**Issue:**
-- No dedicated system for mapping user accounts to AI agent IDs
-- Agent IDs are generated but not securely stored/retrieved
-- No protection against reverse lookup (agentId → userId)
-- No encryption of the mapping relationship
+**Status:** ✅ **IMPLEMENTED** - Secure mapping system with AES-256-GCM encryption
 
-**Risk:**
-- If mapping is compromised, attacker could link agent IDs to user accounts
-- No audit trail for mapping access
-- No access controls on mapping table
-- Could enable de-anonymization attacks
+**Implementation:**
+- ✅ Secure mapping table created (`user_agent_mappings_secure`)
+- ✅ AES-256-GCM encryption for all mappings
+- ✅ Keys stored in `FlutterSecureStorage` (device Keychain/Keystore)
+- ✅ RLS policies enforce access control
+- ✅ Audit logging (uses agentId, not userId, for privacy)
+- ✅ Key rotation support
+- ✅ Migration from plaintext to encrypted storage
 
-**Current State:**
+**Current Implementation:**
 ```dart
-// Agent IDs are generated but mapping is unclear
-String _generateAnonymousAgentId() {
-  final random = Random.secure();
-  final bytes = List<int>.generate(8, (i) => random.nextInt(256));
-  return 'anon_${sha256.convert(bytes).toString().substring(0, 8)}';
-}
+// ✅ SECURE: Encrypted storage
+final agentId = await agentIdService.getUserAgentId(userId);
+// Uses SecureMappingEncryptionService with AES-256-GCM
+// Keys stored in FlutterSecureStorage
+// Encrypted blob stored in user_agent_mappings_secure table
 ```
 
-**Recommendation:**
-1. **Create Secure Mapping Table**
+**Security Features:**
+1. **Encrypted Mapping Table** ✅
    ```sql
-   CREATE TABLE user_agent_mappings (
+   CREATE TABLE user_agent_mappings_secure (
      user_id UUID REFERENCES auth.users(id) PRIMARY KEY,
-     agent_id TEXT UNIQUE NOT NULL,
-     created_at TIMESTAMP DEFAULT NOW(),
-     last_rotated_at TIMESTAMP,
-     encryption_key_id TEXT, -- Reference to key used for encryption
-     -- Encrypted fields
-     encrypted_metadata BYTEA, -- Encrypted additional metadata
-     -- Access control
-     access_count INTEGER DEFAULT 0,
-     last_accessed_at TIMESTAMP
+     encrypted_mapping BYTEA NOT NULL,
+     encryption_key_id TEXT NOT NULL,
+     encryption_algorithm TEXT NOT NULL DEFAULT 'aes256_gcm',
+     encryption_version INTEGER NOT NULL DEFAULT 1,
+     -- ... metadata fields
    );
-   
-   -- RLS Policy: Users can only access their own mapping
-   CREATE POLICY "Users can only access own mapping" 
-   ON user_agent_mappings
-   FOR SELECT USING (auth.uid() = user_id);
    ```
 
-2. **Cryptographically Secure Agent ID Generation**
-   ```dart
-   Future<String> generateSecureAgentId() async {
-     // Use cryptographically secure random
-     final random = Random.secure();
-     final bytes = List<int>.generate(32, (i) => random.nextInt(256));
-     
-     // Hash with SHA-256 for additional security
-     final hash = sha256.convert(bytes);
-     
-     // Use longer ID for better security (32 chars = 128 bits)
-     return 'agent_${hash.toString().substring(0, 32)}';
-   }
-   ```
+2. **Cryptographically Secure Agent ID Generation** ✅
+   - 256 bits of entropy
+   - SHA-256 hashing
+   - Format: `agent_[32+ character base64url string]`
 
-3. **One-Way Mapping Protection**
-   - Store only userId → agentId (forward lookup)
-   - Do NOT store agentId → userId (reverse lookup)
-   - Use separate encrypted index if reverse lookup needed (with access controls)
-   - Hash agentId before storing in any logs
+3. **One-Way Mapping Protection** ✅
+   - Only forward lookup (userId → agentId) allowed
+   - No reverse lookup API (requires service role)
+   - Audit logs use agentId (not userId)
 
-4. **Mapping Encryption**
-   - Encrypt the mapping relationship itself
-   - Use separate encryption keys per user
-   - Rotate keys periodically
-   - Store keys in secure key management service
+4. **Mapping Encryption** ✅
+   - AES-256-GCM encryption
+   - One key per user (isolated keys)
+   - Keys stored in `FlutterSecureStorage`
+   - Key rotation supported
 
-5. **Access Controls**
-   - Only authenticated user can access their own mapping
-   - Log all mapping access attempts
-   - Rate limit mapping lookups
-   - Require re-authentication for sensitive operations
+5. **Access Controls** ✅
+   - RLS policies enforce user isolation
+   - Users can only access own mapping
+   - Service role for system operations
+   - Audit logging for all access
 
-6. **Agent ID Rotation**
-   - Allow users to rotate their agent ID
-   - Maintain history of old agent IDs (encrypted)
-   - Grace period for old agent ID to expire
-   - Notify connected agents of rotation
+6. **Agent ID Rotation** ✅
+   - `MappingKeyRotationService` for periodic rotation
+   - Batch processing with rate limiting
+   - Rotation audit logging
+
+**See:** [Secure Mapping Encryption Documentation](security/SECURE_MAPPING_ENCRYPTION.md) for complete details
 
 ---
 

@@ -9,7 +9,6 @@ import 'package:spots/core/services/product_tracking_service.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/sponsorship.dart';
 import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
 
 import 'sponsorship_checkout_controller_test.mocks.dart';
 

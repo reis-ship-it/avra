@@ -155,7 +155,7 @@ class _UserDetailPageState extends State<UserDetailPage> with SingleTickerProvid
                         CircleAvatar(
                           radius: 32,
                           backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-                          child: Icon(
+                          child: const Icon(
                             Icons.person,
                             color: AppTheme.primaryColor,
                             size: 32,
@@ -225,7 +225,7 @@ class _UserDetailPageState extends State<UserDetailPage> with SingleTickerProvid
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.update, color: AppTheme.primaryColor),
+                          const Icon(Icons.update, color: AppTheme.primaryColor),
                           const SizedBox(width: 8),
                           Text(
                             'AI-Related Data',
@@ -560,7 +560,7 @@ class _UserDetailPageState extends State<UserDetailPage> with SingleTickerProvid
           children: [
             Row(
               children: [
-                Icon(Icons.location_on, color: AppColors.electricGreen),
+                const Icon(Icons.location_on, color: AppColors.electricGreen),
                 const SizedBox(width: 8),
                 Text(
                   'Location Data (Vibe Indicators)',

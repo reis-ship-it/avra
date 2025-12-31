@@ -7,13 +7,14 @@
 /// 
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
+library;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/services/community_chat_service.dart';
-import 'package:spots/core/models/community_chat_message.dart';
+import 'package:spots_ai/models/community_chat_message.dart';
 import 'package:spots/core/models/community.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -105,7 +106,7 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
               child: CircularProgressIndicator(),
             )
           : _chatList.isEmpty
-              ? Center(
+              ? const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -114,7 +115,7 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
                         size: 64,
                         color: AppColors.textSecondary,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       Text(
                         'No community chats yet',
                         style: TextStyle(
@@ -122,7 +123,7 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text(
                         'Join communities to start chatting!',
                         style: TextStyle(
@@ -145,9 +146,9 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
 
   Widget _buildChatListItem(CommunityChatPreview chat) {
     return ListTile(
-      leading: CircleAvatar(
+      leading: const CircleAvatar(
         backgroundColor: AppTheme.primaryColor,
-        child: const Icon(
+        child: Icon(
           Icons.group,
           color: AppColors.white,
         ),
@@ -175,7 +176,7 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
               chat.lastMessagePreview!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.textSecondary,
               ),
             ),
@@ -184,7 +185,7 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
           if (chat.lastMessageTime != null)
             Text(
               _formatTimestamp(chat.lastMessageTime!),
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 12,
               ),

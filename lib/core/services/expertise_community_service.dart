@@ -163,7 +163,7 @@ class ExpertiseCommunityService {
   String _generateCommunityId(String category, String? location) {
     final base = category.toLowerCase().replaceAll(' ', '_');
     final loc = location != null ? '_${location.toLowerCase().replaceAll(' ', '_')}' : '';
-    return '${base}${loc}_${DateTime.now().millisecondsSinceEpoch}';
+    return '$base${loc}_${DateTime.now().millisecondsSinceEpoch}';
   }
 
   Future<void> _saveCommunity(ExpertiseCommunity community) async {

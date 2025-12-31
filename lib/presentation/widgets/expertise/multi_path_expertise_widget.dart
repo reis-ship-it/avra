@@ -219,7 +219,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
                     const Spacer(),
                     Text(
                       weight,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -230,7 +230,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     details,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -250,7 +250,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '${(score * 100).toStringAsFixed(0)}%',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 11,
                     color: AppColors.textSecondary,
                   ),
@@ -304,7 +304,7 @@ class CompactMultiPathExpertiseWidget extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             '($activePaths paths)',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 11,
               color: AppColors.textSecondary,
             ),

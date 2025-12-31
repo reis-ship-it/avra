@@ -5,6 +5,7 @@
 /// 
 /// Phase 3 Enhancement: Name Resolution
 /// Date: December 2025
+library;
 
 import 'dart:developer' as developer;
 import 'package:get_it/get_it.dart';

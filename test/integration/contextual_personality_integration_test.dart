@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/contextual_personality_service.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/services/contextual_personality_service.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import '../fixtures/model_factories.dart';
 import '../helpers/test_helpers.dart';
 

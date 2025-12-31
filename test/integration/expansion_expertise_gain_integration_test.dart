@@ -35,16 +35,16 @@ void main() {
 
     group('End-to-End Expansion Flow', () {
       test('should track event expansion and grant expertise', () async {
-        final clubId = 'club-1';
-        final category = 'Coffee';
-        final newLocality = 'Williamsburg, Brooklyn';
+        const clubId = 'club-1';
+        const category = 'Coffee';
+        const newLocality = 'Williamsburg, Brooklyn';
 
         // Create test user
         final user = UnifiedUser(
           id: 'user-1',
           email: 'test@example.com',
           displayName: 'Test User',
-          expertiseMap: {},
+          expertiseMap: const {},
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -91,8 +91,8 @@ void main() {
 
     group('Club Leader Expertise Recognition', () {
       test('should grant expertise to club leaders in all localities where club hosts events', () async {
-        final clubId = 'club-1';
-        final category = 'Coffee';
+        const clubId = 'club-1';
+        const category = 'Coffee';
         final localities = [
           'Mission District, San Francisco',
           'Williamsburg, Brooklyn',
@@ -104,7 +104,7 @@ void main() {
           id: 'leader-1',
           email: 'leader@example.com',
           displayName: 'Leader User',
-          expertiseMap: {},
+          expertiseMap: const {},
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -150,16 +150,16 @@ void main() {
 
     group('75% Coverage Rule', () {
       test('should grant city expertise when 75% city coverage reached', () async {
-        final clubId = 'club-1';
-        final category = 'Coffee';
-        final city = 'Brooklyn';
+        const clubId = 'club-1';
+        const category = 'Coffee';
+        const city = 'Brooklyn';
 
         // Create test user
         final user = UnifiedUser(
           id: 'user-1',
           email: 'test@example.com',
           displayName: 'Test User',
-          expertiseMap: {},
+          expertiseMap: const {},
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -211,8 +211,8 @@ void main() {
 
     group('Expansion Timeline', () {
       test('should track expansion timeline correctly', () async {
-        final clubId = 'club-1';
-        final category = 'Coffee';
+        const clubId = 'club-1';
+        const category = 'Coffee';
         final localities = [
           'Williamsburg, Brooklyn',
           'Greenpoint, Brooklyn',
@@ -224,7 +224,7 @@ void main() {
           id: 'user-1',
           email: 'test@example.com',
           displayName: 'Test User',
-          expertiseMap: {},
+          expertiseMap: const {},
           createdAt: testDate,
           updatedAt: testDate,
         );

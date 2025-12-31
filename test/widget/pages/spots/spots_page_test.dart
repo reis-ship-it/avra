@@ -42,7 +42,7 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(CircularProgressIndicator), findsWidgets);
 
-      mockSpotsBloc.setState(SpotsLoaded([]));
+      mockSpotsBloc.setState(SpotsLoaded(const []));
       final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const SpotsPage(),
         spotsBloc: mockSpotsBloc,

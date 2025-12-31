@@ -8,6 +8,7 @@
 /// 
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
+library;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -223,7 +224,7 @@ class _AgentChatViewState extends State<AgentChatView> {
                   child: CircularProgressIndicator(),
                 )
               : _messages.isEmpty
-                  ? Center(
+                  ? const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -232,7 +233,7 @@ class _AgentChatViewState extends State<AgentChatView> {
                             size: 64,
                             color: AppColors.textSecondary,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Text(
                             'Start chatting with your AI companion',
                             style: TextStyle(
@@ -240,7 +241,7 @@ class _AgentChatViewState extends State<AgentChatView> {
                               fontSize: 16,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             'Ask about spots, philosophy, or anything!',
                             style: TextStyle(
@@ -271,14 +272,14 @@ class _AgentChatViewState extends State<AgentChatView> {
         if (_isSending)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
+            child: const Row(
               children: [
                 Icon(
                   Icons.smart_toy,
                   size: 16,
                   color: AppColors.textSecondary,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   'Agent is typing...',
                   style: TextStyle(
@@ -315,7 +316,7 @@ class _AgentChatViewState extends State<AgentChatView> {
                         hintText: 'Message your AI companion...',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide(color: AppColors.grey300),
+                          borderSide: const BorderSide(color: AppColors.grey300),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -329,7 +330,7 @@ class _AgentChatViewState extends State<AgentChatView> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.send,
                       color: AppTheme.primaryColor,
                     ),

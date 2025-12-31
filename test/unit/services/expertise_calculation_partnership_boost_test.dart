@@ -364,7 +364,7 @@ void main() {
     group('calculatePartnershipBoost', () {
       test('should calculate partnership boost', () async {
         // Arrange
-        final boost = PartnershipExpertiseBoost(
+        const boost = PartnershipExpertiseBoost(
           totalBoost: 0.15,
           activeBoost: 0.05,
           completedBoost: 0.10,
@@ -410,29 +410,29 @@ void main() {
       test('should integrate partnership boost into expertise calculation', () async {
         // Arrange
         // Create dummy metrics for mocking
-        final dummyQualityMetrics = QualityMetrics(
+        const dummyQualityMetrics = QualityMetrics(
           averageExpertRating: 4.5,
           averageEngagementRate: 0.8,
           verifiedExpertRatio: 0.9,
         );
-        final dummyUtilizationMetrics = UtilizationMetrics(
+        const dummyUtilizationMetrics = UtilizationMetrics(
           totalExperts: 100,
           activeExperts: 80,
           totalEvents: 200,
           totalConsultations: 150,
         );
-        final dummyDemandMetrics = DemandMetrics(
+        const dummyDemandMetrics = DemandMetrics(
           expertSearchQueries: 500,
           totalSearchQueries: 2000,
           consultationRequests: 100,
           totalUsers: 5000,
           averageWaitTimeDays: 2.0,
         );
-        final dummyGrowthMetrics = GrowthMetrics(
+        const dummyGrowthMetrics = GrowthMetrics(
           expertsPerMonth: 10,
           totalExperts: 100,
         );
-        final dummyGeographicMetrics = GeographicMetrics(
+        const dummyGeographicMetrics = GeographicMetrics(
           totalExperts: 100,
           totalCities: 10,
           citiesWithExperts: 8,
@@ -447,7 +447,7 @@ void main() {
           growthRate: 5.0,
           competitionLevel: 0.4,
           marketDemand: 0.6,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.5,
             qualityDistribution: 0.8,
             utilizationRate: 0.7,
@@ -461,7 +461,7 @@ void main() {
           updatedAt: testDate,
         );
 
-        final partnershipBoost = PartnershipExpertiseBoost(
+        const partnershipBoost = PartnershipExpertiseBoost(
           totalBoost: 0.20, // 20% boost
           activeBoost: 0.10,
           completedBoost: 0.10,
@@ -581,11 +581,11 @@ void main() {
 
         final requirements = ExpertiseRequirements(
           category: 'Coffee',
-          thresholdValues: ThresholdValues(
+          thresholdValues: const ThresholdValues(
             minVisits: 10,
             minRatings: 5,
             minAvgRating: 4.0,
-            minTimeInCategory: const Duration(days: 30),
+            minTimeInCategory: Duration(days: 30),
           ),
           multiPathRequirements: const MultiPathRequirements(),
           createdAt: testDate,
@@ -596,8 +596,8 @@ void main() {
           id: 'phase-1',
           name: PhaseName.growth,
           userCountThreshold: 1000,
-          categoryMultipliers: {'Coffee': 1.0},
-          saturationFactors: platform_phase.SaturationFactors(),
+          categoryMultipliers: const {'Coffee': 1.0},
+          saturationFactors: const platform_phase.SaturationFactors(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -633,29 +633,29 @@ void main() {
       test('should apply partnership boost to community path (60%)', () async {
         // Arrange
         // Create dummy metrics for mocking
-        final dummyQualityMetrics2 = QualityMetrics(
+        const dummyQualityMetrics2 = QualityMetrics(
           averageExpertRating: 4.5,
           averageEngagementRate: 0.8,
           verifiedExpertRatio: 0.9,
         );
-        final dummyUtilizationMetrics2 = UtilizationMetrics(
+        const dummyUtilizationMetrics2 = UtilizationMetrics(
           totalExperts: 100,
           activeExperts: 80,
           totalEvents: 200,
           totalConsultations: 150,
         );
-        final dummyDemandMetrics2 = DemandMetrics(
+        const dummyDemandMetrics2 = DemandMetrics(
           expertSearchQueries: 500,
           totalSearchQueries: 2000,
           consultationRequests: 100,
           totalUsers: 5000,
           averageWaitTimeDays: 2.0,
         );
-        final dummyGrowthMetrics2 = GrowthMetrics(
+        const dummyGrowthMetrics2 = GrowthMetrics(
           expertsPerMonth: 10,
           totalExperts: 100,
         );
-        final dummyGeographicMetrics2 = GeographicMetrics(
+        const dummyGeographicMetrics2 = GeographicMetrics(
           totalExperts: 100,
           totalCities: 10,
           citiesWithExperts: 8,
@@ -670,7 +670,7 @@ void main() {
           growthRate: 5.0,
           competitionLevel: 0.4,
           marketDemand: 0.6,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.5,
             qualityDistribution: 0.8,
             utilizationRate: 0.7,
@@ -684,7 +684,7 @@ void main() {
           updatedAt: testDate,
         );
 
-        final partnershipBoost = PartnershipExpertiseBoost(
+        const partnershipBoost = PartnershipExpertiseBoost(
           totalBoost: 0.10, // 10% boost
           partnershipCount: 1,
         );
@@ -734,11 +734,11 @@ void main() {
 
         final requirements = ExpertiseRequirements(
           category: 'Coffee',
-          thresholdValues: ThresholdValues(
+          thresholdValues: const ThresholdValues(
             minVisits: 10,
             minRatings: 5,
             minAvgRating: 4.0,
-            minTimeInCategory: const Duration(days: 30),
+            minTimeInCategory: Duration(days: 30),
           ),
           multiPathRequirements: const MultiPathRequirements(),
           createdAt: testDate,
@@ -749,8 +749,8 @@ void main() {
           id: 'phase-1',
           name: PhaseName.growth,
           userCountThreshold: 1000,
-          categoryMultipliers: {'Coffee': 1.0},
-          saturationFactors: platform_phase.SaturationFactors(),
+          categoryMultipliers: const {'Coffee': 1.0},
+          saturationFactors: const platform_phase.SaturationFactors(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -788,29 +788,29 @@ void main() {
         );
 
         // Create dummy metrics for mocking
-        final dummyQualityMetrics3 = QualityMetrics(
+        const dummyQualityMetrics3 = QualityMetrics(
           averageExpertRating: 4.5,
           averageEngagementRate: 0.8,
           verifiedExpertRatio: 0.9,
         );
-        final dummyUtilizationMetrics3 = UtilizationMetrics(
+        const dummyUtilizationMetrics3 = UtilizationMetrics(
           totalExperts: 100,
           activeExperts: 80,
           totalEvents: 200,
           totalConsultations: 150,
         );
-        final dummyDemandMetrics3 = DemandMetrics(
+        const dummyDemandMetrics3 = DemandMetrics(
           expertSearchQueries: 500,
           totalSearchQueries: 2000,
           consultationRequests: 100,
           totalUsers: 5000,
           averageWaitTimeDays: 2.0,
         );
-        final dummyGrowthMetrics3 = GrowthMetrics(
+        const dummyGrowthMetrics3 = GrowthMetrics(
           expertsPerMonth: 10,
           totalExperts: 100,
         );
-        final dummyGeographicMetrics3 = GeographicMetrics(
+        const dummyGeographicMetrics3 = GeographicMetrics(
           totalExperts: 100,
           totalCities: 10,
           citiesWithExperts: 8,
@@ -825,7 +825,7 @@ void main() {
           growthRate: 5.0,
           competitionLevel: 0.4,
           marketDemand: 0.6,
-          factors: SaturationFactors(
+          factors: const SaturationFactors(
             supplyRatio: 0.5,
             qualityDistribution: 0.8,
             utilizationRate: 0.7,
@@ -879,11 +879,11 @@ void main() {
 
         final requirements = ExpertiseRequirements(
           category: 'Coffee',
-          thresholdValues: ThresholdValues(
+          thresholdValues: const ThresholdValues(
             minVisits: 10,
             minRatings: 5,
             minAvgRating: 4.0,
-            minTimeInCategory: const Duration(days: 30),
+            minTimeInCategory: Duration(days: 30),
           ),
           multiPathRequirements: const MultiPathRequirements(),
           createdAt: testDate,
@@ -894,8 +894,8 @@ void main() {
           id: 'phase-1',
           name: PhaseName.growth,
           userCountThreshold: 1000,
-          categoryMultipliers: {'Coffee': 1.0},
-          saturationFactors: platform_phase.SaturationFactors(),
+          categoryMultipliers: const {'Coffee': 1.0},
+          saturationFactors: const platform_phase.SaturationFactors(),
           createdAt: testDate,
           updatedAt: testDate,
         );

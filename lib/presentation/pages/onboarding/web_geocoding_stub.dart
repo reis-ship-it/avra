@@ -31,7 +31,7 @@ Future<List<Placemark>> placemarkFromCoordinates(
   Duration? timeLimit,
 }) async {
   // Return a quick placeholder. Real web reverse geocoding can be added later via a web API.
-  return [Placemark(name: 'Approximate Location', locality: 'Web', subLocality: 'Demo')];
+  return [const Placemark(name: 'Approximate Location', locality: 'Web', subLocality: 'Demo')];
 }
 
 

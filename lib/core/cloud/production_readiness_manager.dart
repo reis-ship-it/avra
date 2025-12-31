@@ -524,7 +524,7 @@ class ProductionReadinessManager {
     SystemInitialization systemInit,
   ) async {
     // #region agent log
-    developer.log('Performing comprehensive performance validation: maxLatency=${_maxLatency.inMilliseconds}ms, minAvailability=${_minAvailability}', name: _logName);
+    developer.log('Performing comprehensive performance validation: maxLatency=${_maxLatency.inMilliseconds}ms, minAvailability=$_minAvailability', name: _logName);
     // #endregion
     
     // Test response times
@@ -697,7 +697,7 @@ class ProductionReadinessManager {
     // In a real implementation, this would check actual availability against _minAvailability
     return SLAComplianceResult(compliant: health >= _minAvailability);
   }
-  Future<Duration> _calculateSystemUptime() async => Duration(days: 30);
+  Future<Duration> _calculateSystemUptime() async => const Duration(days: 30);
   Future<void> _triggerHealthAlerts(ProductionHealthReport report) async {}
   Future<RecoveryActionResultItem> _executeRecoveryAction(ProductionIssue issue) async => RecoveryActionResultItem(successful: true);
   Future<RecoveryActionResultItem> _performEmergencyAutoScaling(ProductionHealthReport report) async => RecoveryActionResultItem(successful: true);
@@ -739,7 +739,7 @@ class ProductionReadinessManager {
   
   String _generateDeploymentId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return 'prod_deploy_${timestamp}';
+    return 'prod_deploy_$timestamp';
   }
 }
 

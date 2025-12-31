@@ -12,6 +12,7 @@
 /// 
 /// Location: Settings/Account page
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -267,15 +268,15 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
-            const Icon(
+            Icon(
               Icons.verified_outlined,
               size: 18,
               color: AppColors.electricGreen,
             ),
-            const SizedBox(width: 8),
-            const Text(
+            SizedBox(width: 8),
+            Text(
               'Accuracy Measurements',
               style: TextStyle(
                 fontSize: 16,
@@ -372,15 +373,15 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
-            const Icon(
+            Icon(
               Icons.speed,
               size: 18,
               color: AppColors.electricGreen,
             ),
-            const SizedBox(width: 8),
-            const Text(
+            SizedBox(width: 8),
+            Text(
               'Performance Scores',
               style: TextStyle(
                 fontSize: 16,
@@ -399,7 +400,7 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
               entry.value,
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -408,15 +409,15 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
-            const Icon(
+            Icon(
               Icons.insights,
               size: 18,
               color: AppColors.electricGreen,
             ),
-            const SizedBox(width: 8),
-            const Text(
+            SizedBox(width: 8),
+            Text(
               'Improvement Dimensions',
               style: TextStyle(
                 fontSize: 16,
@@ -435,7 +436,7 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
               entry.value,
             ),
           );
-        }).toList(),
+        }),
         if (_metrics!.dimensionScores.length > 6)
           Semantics(
             label: 'View all improvement dimensions',

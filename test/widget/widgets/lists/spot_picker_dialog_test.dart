@@ -34,7 +34,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       // Act: Build widget
@@ -66,7 +66,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       final testList = WidgetTestHelpers.createTestList();
@@ -98,7 +98,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       final testList = WidgetTestHelpers.createTestList();
@@ -106,7 +106,7 @@ void main() {
         spotsBloc: mockSpotsBloc,
         child: SpotPickerDialog(
           list: testList,
-          excludedSpotIds: ['spot-1', 'spot-3'],
+          excludedSpotIds: const ['spot-1', 'spot-3'],
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
@@ -128,7 +128,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       final testList = SpotList(
@@ -162,7 +162,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       final testList = WidgetTestHelpers.createTestList();
@@ -209,7 +209,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       final testList = WidgetTestHelpers.createTestList();
@@ -251,7 +251,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       final testList = WidgetTestHelpers.createTestList();
@@ -292,7 +292,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       final testList = WidgetTestHelpers.createTestList();
@@ -342,7 +342,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       final testList = WidgetTestHelpers.createTestList();
@@ -385,7 +385,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       final testList = WidgetTestHelpers.createTestList();
@@ -424,7 +424,7 @@ void main() {
       mockSpotsBloc.setState(SpotsLoaded(
         testSpots,
         filteredSpots: testSpots,
-        respectedSpots: [],
+        respectedSpots: const [],
       ));
 
       final testList = WidgetTestHelpers.createTestList();
@@ -448,9 +448,9 @@ void main() {
     testWidgets('should display empty state when no spots are available', (WidgetTester tester) async {
       // Arrange: No spots
       mockSpotsBloc.setState(SpotsLoaded(
-        [],
-        filteredSpots: [],
-        respectedSpots: [],
+        const [],
+        filteredSpots: const [],
+        respectedSpots: const [],
       ));
 
       final testList = WidgetTestHelpers.createTestList();

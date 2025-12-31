@@ -108,7 +108,7 @@ class _ConnectionCommunicationDetailPageState extends State<ConnectionCommunicat
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                      const Icon(Icons.error_outline, size: 48, color: AppColors.error),
                       const SizedBox(height: 16),
                       Text(
                         _error!,
@@ -267,7 +267,7 @@ class _ConnectionCommunicationDetailPageState extends State<ConnectionCommunicat
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Icon(Icons.chat_bubble_outline, size: 48, color: AppColors.textSecondary),
+              const Icon(Icons.chat_bubble_outline, size: 48, color: AppColors.textSecondary),
               const SizedBox(height: 8),
               Text(
                 'No chat history available',
@@ -422,7 +422,7 @@ class _ConnectionCommunicationDetailPageState extends State<ConnectionCommunicat
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Icon(Icons.swap_horiz, size: 48, color: AppColors.textSecondary),
+              const Icon(Icons.swap_horiz, size: 48, color: AppColors.textSecondary),
               const SizedBox(height: 8),
               Text(
                 'No interaction history',

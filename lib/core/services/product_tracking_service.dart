@@ -106,8 +106,8 @@ class ProductTrackingService {
         unitCostPrice: unitCostPrice,
         totalSales: 0.0,
         platformFee: 0.0,
-        revenueDistribution: {},
-        sales: [],
+        revenueDistribution: const {},
+        sales: const [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );

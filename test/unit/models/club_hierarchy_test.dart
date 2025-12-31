@@ -160,7 +160,7 @@ void main() {
       final original = ClubHierarchy();
       final customPermissions = {
         ...original.rolePermissions,
-        ClubRole.member: ClubPermissions(
+        ClubRole.member: const ClubPermissions(
           canCreateEvents: true,
           canManageMembers: true,
         ),

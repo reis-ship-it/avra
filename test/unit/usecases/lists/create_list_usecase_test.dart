@@ -274,8 +274,8 @@ void main() {
 
       test('should handle special characters in title and description', () async {
         // Arrange
-        final specialTitle = 'List !@#\$%^&*()_+{}|:<>?[]\\;\'\",./ Title';
-        final specialDescription = 'Description !@#\$%^&*()_+{}|:<>?[]\\;\'\",./ Text';
+        const specialTitle = 'List !@#\$%^&*()_+{}|:<>?[]\\;\'",./ Title';
+        const specialDescription = 'Description !@#\$%^&*()_+{}|:<>?[]\\;\'",./ Text';
         final specialList = testList.copyWith(
           title: specialTitle,
           description: specialDescription,

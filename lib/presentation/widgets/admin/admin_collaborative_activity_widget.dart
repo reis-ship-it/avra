@@ -132,7 +132,7 @@ class _AdminCollaborativeActivityWidgetState
         padding: const EdgeInsets.all(32.0),
         child: Column(
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 48,
               color: AppColors.error,
@@ -162,7 +162,7 @@ class _AdminCollaborativeActivityWidgetState
         padding: const EdgeInsets.all(32.0),
         child: Column(
           children: [
-            Icon(
+            const Icon(
               Icons.group_outlined,
               size: 48,
               color: AppColors.textSecondary,
@@ -532,7 +532,7 @@ class _AdminCollaborativeActivityWidgetState
       ),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.lock_outline,
             color: AppColors.success,
             size: 20,
@@ -565,7 +565,7 @@ class _ActivityBarChartPainter extends CustomPainter {
     final maxValue = activityByHour.values.reduce((a, b) => a > b ? a : b);
     if (maxValue == 0) return;
 
-    final padding = 20.0;
+    const padding = 20.0;
     final chartWidth = size.width - (padding * 2);
     final chartHeight = size.height - (padding * 2);
     final barWidth = (chartWidth / activityByHour.length) * 0.7;

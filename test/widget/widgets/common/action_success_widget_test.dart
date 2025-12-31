@@ -1,6 +1,7 @@
 /// Tests for Action Success Widget
 ///
 /// Part of Feature Matrix Phase 1.3: LLM Full Integration
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +17,7 @@ void main() {
         'should display success dialog for CreateListIntent, display success dialog for CreateSpotIntent, show undo button with countdown, call onViewResult when View button tapped, close dialog when Done button tapped, or handle AddSpotToListIntent',
         (tester) async {
       // Test business logic: action success widget display and interactions
-      final intent1 = CreateListIntent(
+      const intent1 = CreateListIntent(
         title: 'Coffee Shops',
         description: 'Best coffee spots',
         userId: 'user-1',
@@ -49,7 +50,7 @@ void main() {
       expect(find.text('Coffee Shops'), findsOneWidget);
       expect(find.byIcon(Icons.check_circle), findsOneWidget);
 
-      final intent2 = CreateSpotIntent(
+      const intent2 = CreateSpotIntent(
         name: 'Blue Bottle Coffee',
         category: 'cafe',
         latitude: 37.7749,
@@ -84,7 +85,7 @@ void main() {
       expect(find.text('Blue Bottle Coffee'), findsOneWidget);
 
       bool undoCalled = false;
-      final intent3 = CreateListIntent(
+      const intent3 = CreateListIntent(
         title: 'Test List',
         description: '',
         userId: 'user-1',
@@ -127,7 +128,7 @@ void main() {
       expect(undoCalled, isTrue);
 
       bool viewCalled = false;
-      final intent4 = CreateListIntent(
+      const intent4 = CreateListIntent(
         title: 'Test List',
         description: '',
         userId: 'user-1',
@@ -166,7 +167,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(viewCalled, isTrue);
 
-      final intent5 = CreateListIntent(
+      const intent5 = CreateListIntent(
         title: 'Test List',
         description: '',
         userId: 'user-1',
@@ -200,7 +201,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('🎉 List Created!'), findsNothing);
 
-      final intent6 = AddSpotToListIntent(
+      const intent6 = AddSpotToListIntent(
         spotId: 'spot-1',
         listId: 'list-1',
         userId: 'user-1',
@@ -245,7 +246,7 @@ void main() {
         (tester) async {
       // Test business logic: action success toast display
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ActionSuccessToast(
               message: 'Action completed!',
@@ -257,7 +258,7 @@ void main() {
       expect(find.byIcon(Icons.check_circle), findsOneWidget);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ActionSuccessToast(
               message: 'Deleted!',

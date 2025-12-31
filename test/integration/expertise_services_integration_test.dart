@@ -48,7 +48,7 @@ void main() {
         await Future.delayed(const Duration(milliseconds: 100));
         await checkInService.checkOut(userId: 'user-1');
 
-        final visit1 = await checkInService.getVisit(checkIn1.visitId);
+        final visit1 = checkInService.getVisit(checkIn1.visitId);
         expect(visit1, isNotNull);
 
         // Step 2: Calculate exploration expertise from visits
@@ -198,7 +198,7 @@ void main() {
           userId: 'user-1',
           category: 'Coffee',
           degrees: [
-            EducationCredential(
+            const EducationCredential(
               degree: 'MS',
               field: 'Food Science',
               institution: 'University',

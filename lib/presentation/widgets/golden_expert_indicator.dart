@@ -96,7 +96,7 @@ class GoldenExpertIndicator extends StatelessWidget {
             size: size ?? 18,
           ),
           const SizedBox(width: 4),
-          Text(
+          const Text(
             'Golden Expert',
             style: TextStyle(
               fontSize: 12,
@@ -108,7 +108,7 @@ class GoldenExpertIndicator extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               '($residencyYears years)',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 11,
                 color: AppColors.textSecondary,
               ),
@@ -145,7 +145,7 @@ class GoldenExpertIndicator extends StatelessWidget {
                   size: size ?? 24,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   'Golden Expert',
                   style: TextStyle(
                     fontSize: 16,
@@ -159,7 +159,7 @@ class GoldenExpertIndicator extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.location_on,
                     size: 16,
                     color: AppColors.textSecondary,
@@ -167,7 +167,7 @@ class GoldenExpertIndicator extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     locality!,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textPrimary,
                     ),
@@ -179,7 +179,7 @@ class GoldenExpertIndicator extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.calendar_today,
                     size: 16,
                     color: AppColors.textSecondary,
@@ -187,7 +187,7 @@ class GoldenExpertIndicator extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '$residencyYears years of residency',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -199,7 +199,7 @@ class GoldenExpertIndicator extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.trending_up,
                     size: 16,
                     color: AppColors.textSecondary,
@@ -207,7 +207,7 @@ class GoldenExpertIndicator extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '${(influenceWeight! * 100).toStringAsFixed(0)}% influence weight',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),

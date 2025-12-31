@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:spots/core/models/unified_models.dart';
 
 /// Location Quantum State

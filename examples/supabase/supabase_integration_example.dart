@@ -149,8 +149,8 @@ class _SupabaseIntegrationExampleState extends State<SupabaseIntegrationExample>
                   children: [
                     Text('Configuration', style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 8),
-                    Text('URL: ${SupabaseConfig.url}'),
-                    Text('Environment: ${SupabaseConfig.environment}'),
+                    const Text('URL: ${SupabaseConfig.url}'),
+                    const Text('Environment: ${SupabaseConfig.environment}'),
                     Text('Valid Config: ${SupabaseConfig.isValid ? '✅' : '❌'}'),
                   ],
                 ),

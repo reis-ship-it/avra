@@ -11,6 +11,7 @@
 /// 
 /// Location: Settings/Account page
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -110,15 +111,15 @@ class AIImprovementImpactWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.auto_awesome,
                 color: AppColors.electricGreen,
                 size: 20,
               ),
-              const SizedBox(width: 8),
-              const Text(
+              SizedBox(width: 8),
+              Text(
                 'AI Evolution Impact',
                 style: TextStyle(
                   fontSize: 16,

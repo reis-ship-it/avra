@@ -2,12 +2,16 @@ import 'dart:developer' as developer;
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/core/models/spot_vibe.dart';
 import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
+import 'package:spots_knot/models/entity_knot.dart';
 import 'package:spots/core/models/unified_models.dart' hide UnifiedUser;
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/quantum/location_compatibility_calculator.dart';
 import 'package:spots/core/services/calling_score_calculator.dart';
 import 'package:spots/core/services/feature_flag_service.dart';
+import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart';
+import 'package:spots_knot/services/knot/entity_knot_service.dart';
+import 'package:spots_knot/services/knot/personality_knot_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Spot Vibe Matching Service
@@ -34,14 +38,23 @@ class SpotVibeMatchingService {
   final UserVibeAnalyzer _vibeAnalyzer;
   final CallingScoreCalculator? _callingScoreCalculator;
   final FeatureFlagService? _featureFlags;
+  final CrossEntityCompatibilityService? _crossEntityCompatibilityService;
+  final EntityKnotService? _entityKnotService;
+  final PersonalityKnotService? _personalityKnotService;
   
   SpotVibeMatchingService({
     required UserVibeAnalyzer vibeAnalyzer,
     CallingScoreCalculator? callingScoreCalculator,
     FeatureFlagService? featureFlags,
+    CrossEntityCompatibilityService? crossEntityCompatibilityService,
+    EntityKnotService? entityKnotService,
+    PersonalityKnotService? personalityKnotService,
   }) : _vibeAnalyzer = vibeAnalyzer,
        _callingScoreCalculator = callingScoreCalculator,
-       _featureFlags = featureFlags;
+       _featureFlags = featureFlags,
+       _crossEntityCompatibilityService = crossEntityCompatibilityService,
+       _entityKnotService = entityKnotService,
+       _personalityKnotService = personalityKnotService;
   
   /// Calculate vibe compatibility between a user and a spot
   /// Returns compatibility score (0.0 to 1.0)
@@ -83,6 +96,16 @@ class SpotVibeMatchingService {
       // Calculate vibe compatibility (personality compatibility)
       final vibeCompatibility = vibe.calculateVibeCompatibility(userVibe);
       
+      // Calculate knot compatibility bonus (optional enhancement)
+      final knotBonus = await _calculateKnotCompatibilityBonus(
+        user: user,
+        userPersonality: userPersonality,
+        spot: spot,
+      );
+      
+      // Enhanced compatibility: 85% vibe + 15% knot bonus
+      final baseCompatibility = vibeCompatibility * 0.85 + knotBonus * 0.15;
+      
       // If location information is available and feature flag is enabled, use enhanced compatibility with location entanglement
       final locationEntanglementEnabled = _featureFlags != null
           ? await _featureFlags!.isEnabled(
@@ -102,17 +125,18 @@ class SpotVibeMatchingService {
           locationB: spotLocation,
         );
         
-        // Use enhanced compatibility formula: 0.5 * vibe + 0.3 * location + 0.2 * timing
+        // Use enhanced compatibility formula: 0.5 * (vibe+knot) + 0.3 * location + 0.2 * timing
         final enhancedCompatibility = LocationCompatibilityCalculator
             .calculateEnhancedCompatibility(
-          personalityCompatibility: vibeCompatibility,
+          personalityCompatibility: baseCompatibility,
           locationCompatibility: locationCompatibility,
           timingCompatibility: timingCompatibility,
         );
         
         developer.log(
-          'Spot-User compatibility (with location): ${spot.name} <-> ${user.id}: '
+          'Spot-User compatibility (with location + knot): ${spot.name} <-> ${user.id}: '
           'vibe=${(vibeCompatibility * 100).toStringAsFixed(1)}%, '
+          'knot=${(knotBonus * 100).toStringAsFixed(1)}%, '
           'location=${(locationCompatibility * 100).toStringAsFixed(1)}%, '
           'total=${(enhancedCompatibility * 100).toStringAsFixed(1)}%',
           name: _logName,
@@ -121,14 +145,16 @@ class SpotVibeMatchingService {
         return enhancedCompatibility;
       }
       
-      // Fallback to vibe-only compatibility if location not available
+      // Fallback to vibe+knot compatibility if location not available
       developer.log(
-        'Spot-User compatibility: ${spot.name} <-> ${user.id}: '
-        '${(vibeCompatibility * 100).toStringAsFixed(1)}%',
+        'Spot-User compatibility (with knot): ${spot.name} <-> ${user.id}: '
+        'vibe=${(vibeCompatibility * 100).toStringAsFixed(1)}%, '
+        'knot=${(knotBonus * 100).toStringAsFixed(1)}%, '
+        'total=${(baseCompatibility * 100).toStringAsFixed(1)}%',
         name: _logName,
       );
       
-      return vibeCompatibility;
+      return baseCompatibility;
     } catch (e) {
       developer.log('Error calculating spot-user compatibility: $e', name: _logName);
       return 0.5; // Neutral fallback
@@ -179,6 +205,7 @@ class SpotVibeMatchingService {
           context: context,
           timing: timing,
           userPersonality: userPersonality,
+          userId: user.id, // Phase 12: For data collection
         );
         
         return callingScore.isCalled;
@@ -263,6 +290,65 @@ class SpotVibeMatchingService {
       description: spot.description,
       rating: spot.rating,
     );
+  }
+
+  /// Calculate knot compatibility bonus for spot-user matching
+  /// 
+  /// Uses CrossEntityCompatibilityService to calculate compatibility
+  /// between user personality knot and spot entity knot.
+  /// 
+  /// **Returns:** Compatibility score (0.0 to 1.0), or 0.5 (neutral) if unavailable
+  Future<double> _calculateKnotCompatibilityBonus({
+    required UnifiedUser user,
+    required PersonalityProfile userPersonality,
+    required Spot spot,
+  }) async {
+    // If knot services not available, return neutral score
+    if (_crossEntityCompatibilityService == null ||
+        _entityKnotService == null ||
+        _personalityKnotService == null) {
+      return 0.5;
+    }
+
+    try {
+      // Get user personality knot
+      final userKnot = userPersonality.personalityKnot ??
+          await _personalityKnotService!.generateKnot(userPersonality);
+
+      // Generate spot entity knot
+      final spotEntityKnot = await _entityKnotService!.generateKnotForEntity(
+        entityType: EntityType.place,
+        entity: spot,
+      );
+
+      // Calculate cross-entity compatibility
+      final compatibility = await _crossEntityCompatibilityService!
+          .calculateIntegratedCompatibility(
+        entityA: EntityKnot(
+          entityId: userPersonality.agentId,
+          entityType: EntityType.person,
+          knot: userKnot,
+          metadata: {},
+          createdAt: userKnot.createdAt,
+          lastUpdated: userKnot.lastUpdated,
+        ),
+        entityB: spotEntityKnot,
+      );
+
+      developer.log(
+        'Knot compatibility bonus for spot ${spot.name}: ${(compatibility * 100).toStringAsFixed(1)}%',
+        name: _logName,
+      );
+
+      return compatibility;
+    } catch (e) {
+      developer.log(
+        'Error calculating knot compatibility bonus: $e, using neutral score',
+        name: _logName,
+      );
+      // Return neutral score on error (don't break matching)
+      return 0.5;
+    }
   }
 }
 

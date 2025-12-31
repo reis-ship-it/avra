@@ -13,6 +13,7 @@
 /// 
 /// Location: Settings/Account page (within Federated Learning section)
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -275,9 +276,9 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
           borderRadius: BorderRadius.circular(12),
         ),
         margin: const EdgeInsets.only(bottom: 16),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: const Center(
+        child: const Padding(
+          padding: EdgeInsets.all(24),
+          child: Center(
             child: CircularProgressIndicator(
               color: AppColors.electricGreen,
             ),
@@ -429,10 +430,10 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
             color: color,
           ),
           const SizedBox(width: 12),
-          Expanded(
+          const Expanded(
             child: Text(
               'Privacy Violations',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
                 color: AppColors.textPrimary,

@@ -1,6 +1,7 @@
 /// Phase 9: UI Responsiveness & Performance Tests
 /// Ensures optimal user interface performance under various data loads
 /// OUR_GUTS.md: "Effortless, Seamless Discovery" - Smooth, responsive UI
+library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/spot.dart';
@@ -20,7 +21,7 @@ import 'package:spots/domain/usecases/spots/delete_spot_usecase.dart';
 // Local stand-in widgets to satisfy performance tests
 class SpotListWidget extends fw.StatelessWidget {
   final List<Spot> spots;
-  const SpotListWidget({fw.Key? key, required this.spots}) : super(key: key);
+  const SpotListWidget({super.key, required this.spots});
   @override
   fw.Widget build(fw.BuildContext context) {
     return ListView(children: spots.map((s)=>ListTile(title: Text(s.name), subtitle: Text(s.description))).toList());
@@ -30,13 +31,13 @@ class SearchResultsWidget extends fw.StatelessWidget {
   final List<Spot> spots;
   final String searchQuery;
   final bool isLoading;
-  const SearchResultsWidget({fw.Key? key, required this.spots, required this.searchQuery, required this.isLoading}) : super(key: key);
+  const SearchResultsWidget({super.key, required this.spots, required this.searchQuery, required this.isLoading});
   @override
   fw.Widget build(fw.BuildContext context) => SpotListWidget(spots: spots);
 }
 class ListCardWidget extends fw.StatelessWidget {
   final SpotList list;
-  const ListCardWidget({fw.Key? key, required this.list}) : super(key: key);
+  const ListCardWidget({super.key, required this.list});
   @override
   fw.Widget build(fw.BuildContext context) => Card(child: ListTile(title: Text(list.title), subtitle: Text(list.description)));
 }
@@ -201,7 +202,7 @@ void main() {
         final searchQueries = ['coffee', 'restaurant', 'park', 'store', 'service'];
         
         await tester.pumpWidget(_createTestApp(
-          child: SearchResultsWidget(
+          child: const SearchResultsWidget(
             spots: [],
             searchQuery: '',
             isLoading: false,

@@ -99,7 +99,7 @@ void main() {
       );
       
       // Act
-      final capabilities = BackendCapabilities.supabase;
+      const capabilities = BackendCapabilities.supabase;
       
       // Assert
       expect(capabilities.supportsRealtimeUpdates, isTrue);

@@ -7,7 +7,7 @@ import 'package:spots/domain/usecases/auth/sign_out_usecase.dart';
 import 'package:spots/domain/usecases/auth/sign_up_usecase.dart';
 import 'package:spots/domain/usecases/auth/update_password_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/injection_container.dart' as di;
 
@@ -105,7 +105,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // Store password temporarily in secure storage for cloud sync operations
         // This is needed for password-derived encryption key generation
         try {
-          final secureStorage = const FlutterSecureStorage();
+          const secureStorage = FlutterSecureStorage();
           await secureStorage.write(
             key: 'user_password_session_${user.id}',
             value: event.password,
@@ -117,7 +117,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           // MissingPluginException is expected in unit tests (platform channels not available)
           // Only log at debug level to avoid cluttering test output
           if (e.toString().contains('MissingPluginException')) {
-            _logger.debug('🔐 AuthBloc: Secure storage not available (expected in tests): $e',
+            _logger.debug(
+                '🔐 AuthBloc: Secure storage not available (expected in tests): $e',
                 tag: 'AuthBloc');
           } else {
             _logger.warn('🔐 AuthBloc: Failed to store password for sync: $e',
@@ -193,7 +194,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         final authState = state;
         if (authState is Authenticated) {
-          final secureStorage = const FlutterSecureStorage();
+          const secureStorage = FlutterSecureStorage();
           await secureStorage.delete(
               key: 'user_password_session_${authState.user.id}');
           _logger.debug('🔐 AuthBloc: Password cleared from secure storage',
@@ -203,7 +204,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // MissingPluginException is expected in unit tests (platform channels not available)
         // Only log at debug level to avoid cluttering test output
         if (e.toString().contains('MissingPluginException')) {
-          _logger.debug('🔐 AuthBloc: Secure storage not available (expected in tests): $e',
+          _logger.debug(
+              '🔐 AuthBloc: Secure storage not available (expected in tests): $e',
               tag: 'AuthBloc');
         } else {
           _logger.warn('🔐 AuthBloc: Failed to clear password: $e',
@@ -245,18 +247,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // Capture authenticated state BEFORE emitting AuthLoading
     // (state will be AuthLoading after emit, so we need to capture it first)
     final authState = state is Authenticated ? state as Authenticated : null;
-    
+
     // Emit loading state FIRST (before any async operations)
     // This ensures blocTest captures the state immediately
     emit(AuthLoading());
-    
+
     if (authState == null) {
       emit(AuthError('Must be authenticated to change password'));
       return;
     }
-    
-    try {
 
+    try {
       final userId = authState.user.id;
       _logger.info('🔐 AuthBloc: Updating password for user: $userId',
           tag: 'AuthBloc');
@@ -300,7 +301,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       // Update stored password in secure storage
       try {
-        final secureStorage = const FlutterSecureStorage();
+        const secureStorage = FlutterSecureStorage();
         await secureStorage.write(
           key: 'user_password_session_$userId',
           value: event.newPassword,
@@ -311,7 +312,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // MissingPluginException is expected in unit tests (platform channels not available)
         // Only log at debug level to avoid cluttering test output
         if (e.toString().contains('MissingPluginException')) {
-          _logger.debug('🔐 AuthBloc: Secure storage not available (expected in tests): $e',
+          _logger.debug(
+              '🔐 AuthBloc: Secure storage not available (expected in tests): $e',
               tag: 'AuthBloc');
         } else {
           _logger.warn(
@@ -330,7 +332,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // Catch both Exception and Error types
       _logger.error('🔐 AuthBloc: Password update error',
           error: e, tag: 'AuthBloc');
-      final errorMessage = e is Error 
+      final errorMessage = e is Error
           ? 'Failed to update password: ${e.toString()}'
           : 'Failed to update password: ${e.toString()}';
       emit(AuthError(errorMessage));

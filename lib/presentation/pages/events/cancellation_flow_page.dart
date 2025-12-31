@@ -145,7 +145,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
       appBar: AppBar(
         title: Text(
           widget.isHost ? 'Cancel Event' : 'Cancel Ticket',
-          style: TextStyle(color: AppColors.white),
+          style: const TextStyle(color: AppColors.white),
         ),
         backgroundColor: AppTheme.primaryColor,
         foregroundColor: AppColors.white,
@@ -208,7 +208,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
     final reasons = widget.isHost ? _hostReasons : _attendeeReasons;
 
     return Step(
-      title: Text(
+      title: const Text(
         'Reason for Cancellation',
         style: TextStyle(color: AppColors.textPrimary),
       ),
@@ -219,7 +219,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
             widget.isHost
                 ? 'Please select a reason for cancelling this event:'
                 : 'Please select a reason for cancelling your ticket:',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: AppColors.textSecondary,
             ),
@@ -229,7 +229,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
             return RadioListTile<String>(
               title: Text(
                 reason,
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
               ),
               value: reason,
               groupValue: _selectedReason,
@@ -252,7 +252,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
 
   Step _buildRefundPreviewStep() {
     return Step(
-      title: Text(
+      title: const Text(
         'Refund Preview',
         style: TextStyle(color: AppColors.textPrimary),
       ),
@@ -260,7 +260,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.isHost) ...[
-            Text(
+            const Text(
               'As the event host, cancelling this event will:',
               style: TextStyle(
                 fontSize: 16,
@@ -282,7 +282,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
                   : 'No penalty (cancelled more than 48 hours before event)',
             ),
           ] else ...[
-            Text(
+            const Text(
               'Refund Information:',
               style: TextStyle(
                 fontSize: 16,
@@ -321,14 +321,14 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
 
   Step _buildPolicyStep() {
     return Step(
-      title: Text(
+      title: const Text(
         'Refund Policy',
         style: TextStyle(color: AppColors.textPrimary),
       ),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Standard Refund Policy:',
             style: TextStyle(
               fontSize: 18,
@@ -364,7 +364,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
               color: AppColors.grey100,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(
+            child: const Text(
               'Note: Force majeure events (weather, emergencies) always receive full refunds.',
               style: TextStyle(
                 fontSize: 14,
@@ -382,7 +382,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
 
   Step _buildConfirmationStep() {
     return Step(
-      title: Text(
+      title: const Text(
         'Confirm Cancellation',
         style: TextStyle(color: AppColors.textPrimary),
       ),
@@ -399,10 +399,10 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                const Row(
                   children: [
                     Icon(Icons.warning, color: AppColors.error),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       'Are you sure?',
                       style: TextStyle(
@@ -418,7 +418,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
                   widget.isHost
                       ? 'Cancelling this event will notify all attendees and process refunds. This action cannot be undone.'
                       : 'Cancelling your ticket will process your refund (if applicable). This action cannot be undone.',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textPrimary,
                   ),
@@ -427,7 +427,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Summary:',
             style: TextStyle(
               fontSize: 16,
@@ -459,7 +459,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
         children: [
           const CircularProgressIndicator(),
           const SizedBox(height: 24),
-          Text(
+          const Text(
             'Processing cancellation...',
             style: TextStyle(
               fontSize: 18,
@@ -467,7 +467,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Please wait while we process your refund.',
             style: TextStyle(
               fontSize: 14,
@@ -485,7 +485,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
               ),
               child: Text(
                 _error!,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.error,
                   fontSize: 14,
                 ),
@@ -520,7 +520,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
             const SizedBox(height: 24),
             Text(
               widget.isHost ? 'Event Cancelled' : 'Ticket Cancelled',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -531,7 +531,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
               widget.isHost
                   ? 'All attendees have been notified and refunds are being processed.'
                   : 'Your cancellation has been processed.',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 color: AppColors.textSecondary,
               ),
@@ -547,7 +547,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
                 ),
                 child: Column(
                   children: [
-                    Text(
+                    const Text(
                       'Refund Amount',
                       style: TextStyle(
                         fontSize: 14,
@@ -557,7 +557,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
                     const SizedBox(height: 4),
                     Text(
                       '\$${_cancellation!.refundAmount!.toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: AppColors.electricGreen,
@@ -568,7 +568,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
                       refundStatus == RefundStatus.completed
                           ? 'Refund processed successfully'
                           : 'Refund is being processed',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -620,7 +620,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -629,7 +629,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
                 const SizedBox(height: 4),
                 Text(
                   description,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),
@@ -653,7 +653,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
             children: [
               Text(
                 time,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -661,7 +661,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
               ),
               Text(
                 refund,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
@@ -683,7 +683,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
             width: 80,
             child: Text(
               '$label:',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -692,7 +692,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
           Expanded(
             child: Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,

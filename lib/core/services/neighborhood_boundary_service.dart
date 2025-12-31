@@ -1305,7 +1305,7 @@ class NeighborhoodBoundaryService {
   ) async {
     try {
       final key = 'neighborhood_boundary_$boundaryKey';
-      final json = await _storageService.getObject<Map<String, dynamic>>(key);
+      final json = _storageService.getObject<Map<String, dynamic>>(key);
       if (json == null) return null;
       return NeighborhoodBoundary.fromJson(json);
     } catch (e) {

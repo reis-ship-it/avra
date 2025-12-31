@@ -1,5 +1,5 @@
 import 'package:spots/core/models/business_member.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/services/business_account_service.dart';
 import 'package:spots/core/services/business_member_service.dart';
 import 'package:spots/core/ai/personality_learning.dart' as pl;

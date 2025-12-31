@@ -16,6 +16,7 @@
 /// - ActionConfirmationDialog: Show confirmation before execution
 /// - ActionErrorDialog: Show errors with retry option
 /// - ActionHistoryPage: Display action history
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
@@ -59,8 +60,8 @@ void main() {
     group('End-to-End Action Execution Flow', () {
       test('should execute complete flow: parse → execute → store in history', () async {
         // Arrange
-        final command = 'Create a coffee shop list';
-        final userId = 'user123';
+        const command = 'Create a coffee shop list';
+        const userId = 'user123';
         
         // Act - Parse
         final intent = await parser.parseAction(
@@ -96,8 +97,8 @@ void main() {
       
       test('should handle create spot flow with location', () async {
         // Arrange
-        final command = 'Create a spot called "Test Coffee Shop"';
-        final userId = 'user123';
+        const command = 'Create a spot called "Test Coffee Shop"';
+        const userId = 'user123';
         // Note: In real test, would use actual Position
         // For now, we test the parsing part
         
@@ -118,8 +119,8 @@ void main() {
       
       test('should handle add spot to list flow', () async {
         // Arrange
-        final command = 'Add Central Park to my coffee shop list';
-        final userId = 'user123';
+        const command = 'Add Central Park to my coffee shop list';
+        const userId = 'user123';
         
         // Act - Parse
         final intent = await parser.parseAction(
@@ -139,7 +140,7 @@ void main() {
     group('Action History Flow', () {
       test('should store successful actions in history', () async {
         // Arrange
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'Test description',
           latitude: 37.7749,
@@ -166,7 +167,7 @@ void main() {
       
       test('should not store failed actions in history', () async {
         // Arrange
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'Test',
           latitude: 0.0,
@@ -190,7 +191,7 @@ void main() {
       
       test('should retrieve recent actions in correct order', () async {
         // Arrange
-        final intent1 = CreateSpotIntent(
+        const intent1 = CreateSpotIntent(
           name: 'Spot 1',
           description: 'Test',
           latitude: 0.0,
@@ -199,7 +200,7 @@ void main() {
           userId: 'user123',
           confidence: 0.9,
         );
-        final intent2 = CreateListIntent(
+        const intent2 = CreateListIntent(
           title: 'List 1',
           description: 'Test',
           userId: 'user123',
@@ -229,7 +230,7 @@ void main() {
     group('Undo Flow', () {
       test('should undo action and mark as undone in history', () async {
         // Arrange
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'Test',
           latitude: 0.0,
@@ -261,7 +262,7 @@ void main() {
       
       test('should not allow undo of already undone action', () async {
         // Arrange
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'Test',
           latitude: 0.0,
@@ -291,7 +292,7 @@ void main() {
       
       test('should get only undoable actions', () async {
         // Arrange
-        final intent1 = CreateSpotIntent(
+        const intent1 = CreateSpotIntent(
           name: 'Spot 1',
           description: 'Test',
           latitude: 0.0,
@@ -300,7 +301,7 @@ void main() {
           userId: 'user123',
           confidence: 0.9,
         );
-        final intent2 = CreateListIntent(
+        const intent2 = CreateListIntent(
           title: 'List 1',
           description: 'Test',
           userId: 'user123',
@@ -336,7 +337,7 @@ void main() {
     group('Error Handling Flow', () {
       test('should handle action execution errors gracefully', () async {
         // Arrange
-        final intent = CreateSpotIntent(
+        const intent = CreateSpotIntent(
           name: 'Test Spot',
           description: 'Test',
           latitude: 0.0,
@@ -365,7 +366,7 @@ void main() {
       
       test('should handle invalid action intents', () async {
         // Arrange
-        final invalidIntent = CreateSpotIntent(
+        const invalidIntent = CreateSpotIntent(
           name: '', // Invalid: empty name
           description: 'Test',
           latitude: 0.0,
@@ -386,7 +387,7 @@ void main() {
     group('Action Confirmation Flow', () {
       test('should validate action before execution', () async {
         // Arrange
-        final intent = CreateListIntent(
+        const intent = CreateListIntent(
           title: 'Test List',
           description: 'Test',
           userId: 'user123',
@@ -402,7 +403,7 @@ void main() {
       
       test('should reject invalid action intents', () async {
         // Arrange
-        final invalidIntent = CreateListIntent(
+        const invalidIntent = CreateListIntent(
           title: '', // Invalid: empty title
           description: 'Test',
           userId: 'user123',
@@ -420,8 +421,8 @@ void main() {
     group('Complete User Flow', () {
       test('should handle complete user flow: command → parse → confirm → execute → history → undo', () async {
         // Arrange
-        final command = 'Create a coffee shop list';
-        final userId = 'user123';
+        const command = 'Create a coffee shop list';
+        const userId = 'user123';
         
         // Step 1: Parse
         final intent = await parser.parseAction(command, userId: userId);

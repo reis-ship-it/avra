@@ -149,7 +149,7 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Logo/Icon
-                    Icon(
+                    const Icon(
                       Icons.business,
                       size: 64,
                       color: AppTheme.primaryColor,
@@ -256,12 +256,12 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.error_outline, color: AppColors.error),
+                            const Icon(Icons.error_outline, color: AppColors.error),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 _errorMessage!,
-                                style: TextStyle(color: AppColors.error),
+                                style: const TextStyle(color: AppColors.error),
                               ),
                             ),
                           ],
@@ -281,11 +281,11 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                         ),
                         child: Column(
                           children: [
-                            Row(
+                            const Row(
                               children: [
                                 Icon(Icons.lock_clock,
                                     color: AppColors.warning),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'Account locked',
@@ -300,7 +300,7 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                             const SizedBox(height: 4),
                             Text(
                               'Try again in ${_lockoutRemaining!.inMinutes} minutes',
-                              style: TextStyle(color: AppColors.warning),
+                              style: const TextStyle(color: AppColors.warning),
                             ),
                           ],
                         ),
@@ -312,8 +312,8 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                     if (_remainingAttempts != null &&
                         _remainingAttempts! > 0) ...[
                       Text(
-                        '${_remainingAttempts} attempt${_remainingAttempts! > 1 ? 's' : ''} remaining',
-                        style: TextStyle(
+                        '$_remainingAttempts attempt${_remainingAttempts! > 1 ? 's' : ''} remaining',
+                        style: const TextStyle(
                           color: AppColors.warning,
                           fontSize: 12,
                         ),

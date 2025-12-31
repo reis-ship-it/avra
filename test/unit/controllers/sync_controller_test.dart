@@ -4,9 +4,9 @@ import 'package:mockito/mockito.dart';
 
 import 'package:spots/core/controllers/sync_controller.dart';
 import 'package:spots/core/services/enhanced_connectivity_service.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 
 import 'sync_controller_test.mocks.dart';
 
@@ -44,7 +44,7 @@ void main() {
     group('validate', () {
       test('should return valid result for valid input', () {
         // Arrange
-        final input = SyncInput(
+        const input = SyncInput(
           userId: 'user_123',
           password: 'password123',
           scope: SyncScope.personality,
@@ -59,7 +59,7 @@ void main() {
 
       test('should return invalid result for empty userId', () {
         // Arrange
-        final input = SyncInput(
+        const input = SyncInput(
           userId: '',
           password: 'password123',
         );
@@ -74,7 +74,7 @@ void main() {
 
       test('should return invalid result for empty password', () {
         // Arrange
-        final input = SyncInput(
+        const input = SyncInput(
           userId: 'user_123',
           password: '',
         );
@@ -399,7 +399,7 @@ void main() {
           'password123',
         )).thenAnswer((_) async => {});
 
-        final input = SyncInput(
+        const input = SyncInput(
           userId: 'user_123',
           password: 'password123',
           scope: SyncScope.all,
@@ -417,7 +417,7 @@ void main() {
     group('rollback (WorkflowController interface)', () {
       test('should handle rollback gracefully (sync operations are idempotent)', () async {
         // Arrange
-        final result = SyncResult.success(
+        const result = SyncResult.success(
           syncedItems: {'personality': 'synced'},
         );
 

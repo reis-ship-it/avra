@@ -56,7 +56,7 @@ void main() {
         brandType: 'Coffee Roaster',
         contactEmail: 'brand1@coffee.com',
         verificationStatus: BrandVerificationStatus.verified,
-        categories: ['Coffee'],
+        categories: const ['Coffee'],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -67,7 +67,7 @@ void main() {
         brandType: 'Coffee Roaster',
         contactEmail: 'brand2@coffee.com',
         verificationStatus: BrandVerificationStatus.verified,
-        categories: ['Coffee'],
+        categories: const ['Coffee'],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );

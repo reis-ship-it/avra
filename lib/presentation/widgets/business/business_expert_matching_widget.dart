@@ -95,19 +95,19 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
   }
 
   Widget _buildEmptyState() {
-    return Center(
+    return const Center(
       child: Column(
         children: [
-          const Icon(Icons.people_outline, size: 64, color: AppColors.textSecondary),
-          const SizedBox(height: 16),
-          const Text(
+          Icon(Icons.people_outline, size: 64, color: AppColors.textSecondary),
+          SizedBox(height: 16),
+          Text(
             'No expert matches found',
             style: TextStyle(
               fontSize: 16,
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Try updating your required expertise or preferred communities',
             style: TextStyle(

@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:spots/core/services/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -15,6 +16,7 @@ import 'package:spots/core/services/onboarding_data_service.dart';
 import 'package:spots/core/models/onboarding_data.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/controllers/agent_initialization_controller.dart';
+import 'package:spots/presentation/widgets/knot/knot_audio_loading_widget.dart';
 import 'dart:async';
 
 class AILoadingPage extends StatefulWidget {
@@ -92,8 +94,7 @@ class _AILoadingPageState extends State<AILoadingPage>
           '🧪 Integration test mode: skipping AI loading',
           tag: 'AILoadingPage',
         );
-        // ignore: avoid_print
-        print('TEST: AILoadingPage short-circuit -> /home');
+        developer.log('TEST: AILoadingPage short-circuit -> /home', name: 'AILoadingPage');
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -494,9 +495,22 @@ class _AILoadingPageState extends State<AILoadingPage>
 
   @override
   Widget build(BuildContext context) {
+    // Get user ID for audio (if available)
+    String? userId;
+    try {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is Authenticated) {
+        userId = authState.user.id;
+      }
+    } catch (e) {
+      // User ID not available, audio will be skipped
+    }
+
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SafeArea(
+      body: Stack(
+        children: [
+          SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -573,7 +587,7 @@ class _AILoadingPageState extends State<AILoadingPage>
                             margin: const EdgeInsets.symmetric(horizontal: 4),
                             width: 8,
                             height: 8,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: AppTheme.primaryColor,
                               shape: BoxShape.circle,
                             ),
@@ -597,7 +611,7 @@ class _AILoadingPageState extends State<AILoadingPage>
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.lightbulb_outline,
                       color: AppTheme.primaryColor,
                       size: 24,
@@ -685,6 +699,14 @@ class _AILoadingPageState extends State<AILoadingPage>
             ],
           ),
         ),
+      ),
+          // Knot audio (optional, plays in background)
+          if (userId != null)
+            KnotAudioLoadingWidget(
+              userId: userId,
+              enabled: false, // Set to true when audio synthesis is complete
+            ),
+        ],
       ),
     );
   }

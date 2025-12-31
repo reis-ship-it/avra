@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/ai/privacy_protection.dart' show PrivacyProtection, AnonymizedPersonalityData, AnonymizedVibeData;
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 
 /// Privacy Protection Tests
@@ -12,7 +12,7 @@ void main() {
       test('should anonymize personality profile without errors', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         final anonymized = await PrivacyProtection.anonymizePersonalityProfile(
@@ -30,7 +30,7 @@ void main() {
       test('should ensure anonymized data contains no personal identifiers', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
 
         final anonymized = await PrivacyProtection.anonymizePersonalityProfile(
@@ -49,7 +49,7 @@ void main() {
       test('should handle different privacy levels', () async {
         const userId = 'test-user-123';
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
         final privacyLevels = [
           'MAXIMUM_ANONYMIZATION',

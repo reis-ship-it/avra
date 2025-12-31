@@ -161,7 +161,7 @@ void main() {
           host: nonExpertHost,
           startTime: now.add(const Duration(days: 1)),
           endTime: now.add(const Duration(days: 1, hours: 2)),
-          attendeeIds: ['user-1'],
+          attendeeIds: const ['user-1'],
           attendeeCount: 1,
           maxAttendees: 20,
           createdAt: testDate,

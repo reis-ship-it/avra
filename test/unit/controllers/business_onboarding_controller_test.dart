@@ -43,8 +43,8 @@ void main() {
         createdBy: 'user_123',
         isActive: true,
         isVerified: false,
-        connectedExpertIds: [],
-        members: [],
+        connectedExpertIds: const [],
+        members: const [],
       );
     });
 
@@ -99,11 +99,11 @@ void main() {
     group('completeBusinessOnboarding', () {
       test('should successfully complete onboarding without shared agent', () async {
         // Arrange
-        final expertPrefs = BusinessExpertPreferences(
+        const expertPrefs = BusinessExpertPreferences(
           preferredExpertiseCategories: ['Coffee'],
           minExpertLevel: 3,
         );
-        final patronPrefs = BusinessPatronPreferences(
+        const patronPrefs = BusinessPatronPreferences(
           preferredVibePreferences: ['Cozy', 'Social'],
         );
 
@@ -221,7 +221,7 @@ void main() {
       test('should return failure when update business account fails', () async {
         // Arrange
         final data = BusinessOnboardingData(
-          expertPreferences: BusinessExpertPreferences(),
+          expertPreferences: const BusinessExpertPreferences(),
         );
 
         when(mockBusinessAccountService.getBusinessAccount('business_123'))

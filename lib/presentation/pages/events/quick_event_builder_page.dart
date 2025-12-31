@@ -19,12 +19,12 @@ class QuickEventBuilderPage extends StatefulWidget {
   final bool isBusinessAccount; // For business-only templates
   
   const QuickEventBuilderPage({
-    Key? key,
+    super.key,
     required this.currentUser,
     this.preselectedTemplate,
     this.copyFrom,
     this.isBusinessAccount = false,
-  }) : super(key: key);
+  });
   
   @override
   State<QuickEventBuilderPage> createState() => _QuickEventBuilderPageState();
@@ -97,10 +97,10 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.close, color: AppColors.textPrimary),
+          icon: const Icon(Icons.close, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
+        title: const Text(
           'Create Event',
           style: TextStyle(color: AppColors.textPrimary),
         ),
@@ -108,7 +108,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
           if (_currentStep > 0)
             TextButton(
               onPressed: _canGoBack && !_isLoading ? _previousStep : null,
-              child: Text('Back', style: TextStyle(color: AppTheme.primaryColor)),
+              child: const Text('Back', style: TextStyle(color: AppTheme.primaryColor)),
             ),
         ],
       ),
@@ -178,7 +178,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text(
+        const Text(
           'Choose Event Type',
           style: TextStyle(
             fontSize: 28,
@@ -187,7 +187,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           'Pick a template to get started quickly',
           style: TextStyle(
             fontSize: 16,
@@ -195,7 +195,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
           ),
         ),
         const SizedBox(height: 24),
-        ...templates.map((template) => _buildTemplateCard(template)).toList(),
+        ...templates.map((template) => _buildTemplateCard(template)),
       ],
     );
   }
@@ -245,7 +245,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                 children: [
                   Text(
                     template.name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -254,7 +254,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                   const SizedBox(height: 4),
                   Text(
                     '${template.defaultDuration.inHours}h • ${template.recommendedSpotCount} spots • ${template.getPriceDisplay()}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
                     ),
@@ -272,7 +272,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                           ),
                           child: Text(
                             tag,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 10,
                               color: AppTheme.primaryColor,
                             ),
@@ -285,7 +285,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
               ),
             ),
             if (isSelected)
-              Icon(Icons.check_circle, color: AppTheme.primaryColor, size: 28),
+              const Icon(Icons.check_circle, color: AppTheme.primaryColor, size: 28),
           ],
         ),
       ),
@@ -300,7 +300,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text(
+        const Text(
           'When?',
           style: TextStyle(
             fontSize: 28,
@@ -309,7 +309,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           'Choose date and time for your event',
           style: TextStyle(
             fontSize: 16,
@@ -319,7 +319,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
         const SizedBox(height: 32),
         
         // Quick date options
-        Text(
+        const Text(
           'Quick Options',
           style: TextStyle(
             fontSize: 18,
@@ -348,7 +348,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
             padding: const EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: AppColors.grey300),
+              side: const BorderSide(color: AppColors.grey300),
             ),
           ),
         ),
@@ -383,7 +383,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                 children: [
                   Text(
                     label,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -391,7 +391,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                   ),
                   Text(
                     _formatDateTime(dateTime),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
                     ),
@@ -400,7 +400,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
               ),
             ),
             if (isSelected)
-              Icon(Icons.check_circle, color: AppTheme.primaryColor),
+              const Icon(Icons.check_circle, color: AppTheme.primaryColor),
           ],
         ),
       ),
@@ -451,7 +451,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text(
+        const Text(
           'Choose Spots',
           style: TextStyle(
             fontSize: 28,
@@ -462,7 +462,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
         const SizedBox(height: 8),
         Text(
           'Select ${_selectedTemplate?.recommendedSpotCount ?? 3} spots for your event',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             color: AppColors.textSecondary,
           ),
@@ -476,12 +476,12 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
             children: [
               Icon(Icons.location_on, size: 64, color: AppTheme.primaryColor.withValues(alpha: 0.5)),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 'Spot selection UI coming soon',
                 style: TextStyle(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'For now, spots will be selected automatically',
                 style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
               ),
@@ -515,7 +515,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text(
+        const Text(
           'Review & Publish',
           style: TextStyle(
             fontSize: 28,
@@ -524,7 +524,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           'Everything look good?',
           style: TextStyle(
             fontSize: 16,
@@ -553,7 +553,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                   Expanded(
                     child: Text(
                       event.title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -571,7 +571,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
               const SizedBox(height: 16),
               Text(
                 event.description,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                   height: 1.5,
@@ -593,7 +593,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
           const SizedBox(width: 12),
           Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textPrimary,
             ),
@@ -635,12 +635,12 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.error_outline, color: AppColors.error, size: 20),
+                    const Icon(Icons.error_outline, color: AppColors.error, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _error!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.error,
                           fontSize: 14,
                         ),

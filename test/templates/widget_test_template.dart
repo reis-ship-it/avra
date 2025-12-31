@@ -26,6 +26,7 @@
 /// ✅ DO: Consolidate related checks into single comprehensive test blocks
 ///
 /// See: docs/plans/test_refactoring/TEST_WRITING_GUIDE.md
+library;
 
 // ignore_for_file: unused_import, unused_local_variable
 

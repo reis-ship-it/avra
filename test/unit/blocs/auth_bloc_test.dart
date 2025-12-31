@@ -3,14 +3,15 @@
 /// Comprehensive testing of AuthBloc with all event→state transitions
 /// Ensures optimal development stages and deployment optimization
 /// Tests current implementation as-is without modifying production code
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots_ai/services/personality_sync_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/injection_container.dart' as di;
 import '../../helpers/bloc_test_helpers.dart';
 import '../../mocks/bloc_mock_dependencies.dart';

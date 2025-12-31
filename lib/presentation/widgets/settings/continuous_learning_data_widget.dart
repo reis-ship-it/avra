@@ -111,7 +111,7 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.error_outline,
                   color: AppColors.error,
                   size: 32,
@@ -119,7 +119,7 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.error,
                     fontSize: 14,
                   ),
@@ -280,7 +280,7 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,

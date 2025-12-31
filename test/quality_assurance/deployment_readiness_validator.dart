@@ -2,6 +2,7 @@
 /// Date: August 5, 2025 23:11:54 CDT
 /// Purpose: Comprehensive deployment readiness validation for optimal production releases
 /// Focus: Ensure maximum confidence in production deployments through rigorous validation
+library;
 
 import 'dart:io';
 import 'dart:convert';
@@ -70,7 +71,7 @@ class DeploymentReadinessValidator {
     if (healthScore.overallScore < MIN_DEPLOYMENT_SCORE) {
       passed = false;
       issues.add(
-          'Test health score ${healthScore.overallScore} below minimum ${MIN_DEPLOYMENT_SCORE}');
+          'Test health score ${healthScore.overallScore} below minimum $MIN_DEPLOYMENT_SCORE');
       recommendations
           .add('Improve test quality to achieve minimum health score');
     }
@@ -199,7 +200,7 @@ class DeploymentReadinessValidator {
     if (securityCompliance.privacyComplianceScore < MIN_SECURITY_SCORE) {
       passed = false;
       issues.add(
-          'Privacy compliance score ${securityCompliance.privacyComplianceScore} below required ${MIN_SECURITY_SCORE}');
+          'Privacy compliance score ${securityCompliance.privacyComplianceScore} below required $MIN_SECURITY_SCORE');
       recommendations.add('Address privacy protection issues in AI2AI systems');
     }
 
@@ -801,7 +802,7 @@ class DeploymentReadinessValidator {
       'validationResults': report.getValidationSummary(),
       'trend': await _calculateDeploymentReadinessTrend(),
       'nextValidation':
-          DateTime.now().add(Duration(hours: 1)).toIso8601String(),
+          DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
     };
 
     await dashboardFile.writeAsString(
@@ -1134,10 +1135,12 @@ class DeploymentReadinessValidator {
 
     // Check for required deployment docs
     if (!File('README.md').existsSync()) missing.add('README.md');
-    if (!File('docs/deployment_guide.md').existsSync())
+    if (!File('docs/deployment_guide.md').existsSync()) {
       missing.add('Deployment Guide');
-    if (!File('docs/rollback_procedures.md').existsSync())
+    }
+    if (!File('docs/rollback_procedures.md').existsSync()) {
       missing.add('Rollback Procedures');
+    }
 
     return DocumentationValidation(
       complete: missing.isEmpty,
@@ -1862,13 +1865,16 @@ class DeploymentReadinessReport {
 
     if (!healthValidation.passed) blockers.addAll(healthValidation.issues);
     if (!securityValidation.passed) blockers.addAll(securityValidation.issues);
-    if (!architectureValidation.passed)
+    if (!architectureValidation.passed) {
       blockers.addAll(architectureValidation.issues);
-    if (!integrationValidation.passed)
+    }
+    if (!integrationValidation.passed) {
       blockers.addAll(integrationValidation.issues);
+    }
     if (!aiSystemValidation.passed) blockers.addAll(aiSystemValidation.issues);
-    if (!productionValidation.passed)
+    if (!productionValidation.passed) {
       blockers.addAll(productionValidation.issues);
+    }
 
     return blockers;
   }

@@ -382,7 +382,7 @@ class PartnershipProfileService {
         final category = event?.category;
 
         // Count events in this partnership
-        final eventCount = eventPartnership.eventIds.length > 0
+        final eventCount = eventPartnership.eventIds.isNotEmpty
             ? eventPartnership.eventIds.length
             : (eventPartnership.eventId.isNotEmpty ? 1 : 0);
 

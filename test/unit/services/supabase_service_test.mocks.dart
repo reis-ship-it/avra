@@ -26,7 +26,6 @@ import 'package:web_socket_channel/web_socket_channel.dart' as _i3;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
-// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeFunctionsClient_0 extends _i1.SmartFake
     implements _i2.FunctionsClient {
@@ -322,37 +321,37 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
       ) as _i2.GoTrueClient);
 
   @override
-  set functions(_i2.FunctionsClient? value) => super.noSuchMethod(
+  set functions(_i2.FunctionsClient? _functions) => super.noSuchMethod(
         Invocation.setter(
           #functions,
-          value,
+          _functions,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set storage(_i2.SupabaseStorageClient? value) => super.noSuchMethod(
+  set storage(_i2.SupabaseStorageClient? _storage) => super.noSuchMethod(
         Invocation.setter(
           #storage,
-          value,
+          _storage,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set realtime(_i2.RealtimeClient? value) => super.noSuchMethod(
+  set realtime(_i2.RealtimeClient? _realtime) => super.noSuchMethod(
         Invocation.setter(
           #realtime,
-          value,
+          _realtime,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set rest(_i2.PostgrestClient? value) => super.noSuchMethod(
+  set rest(_i2.PostgrestClient? _rest) => super.noSuchMethod(
         Invocation.setter(
           #rest,
-          value,
+          _rest,
         ),
         returnValueForMissingStub: null,
       );
@@ -535,19 +534,19 @@ class MockGoTrueClient extends _i1.Mock implements _i2.GoTrueClient {
       ) as Map<String, String>);
 
   @override
-  set admin(_i2.GoTrueAdminApi? value) => super.noSuchMethod(
+  set admin(_i2.GoTrueAdminApi? _admin) => super.noSuchMethod(
         Invocation.setter(
           #admin,
-          value,
+          _admin,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set mfa(_i2.GoTrueMFAApi? value) => super.noSuchMethod(
+  set mfa(_i2.GoTrueMFAApi? _mfa) => super.noSuchMethod(
         Invocation.setter(
           #mfa,
-          value,
+          _mfa,
         ),
         returnValueForMissingStub: null,
       );
@@ -1369,64 +1368,64 @@ class MockRealtimeClient extends _i1.Mock implements _i2.RealtimeClient {
       ) as String);
 
   @override
-  set accessToken(String? value) => super.noSuchMethod(
+  set accessToken(String? _accessToken) => super.noSuchMethod(
         Invocation.setter(
           #accessToken,
-          value,
+          _accessToken,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set channels(List<_i2.RealtimeChannel>? value) => super.noSuchMethod(
+  set channels(List<_i2.RealtimeChannel>? _channels) => super.noSuchMethod(
         Invocation.setter(
           #channels,
-          value,
+          _channels,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set heartbeatIntervalMs(int? value) => super.noSuchMethod(
+  set heartbeatIntervalMs(int? _heartbeatIntervalMs) => super.noSuchMethod(
         Invocation.setter(
           #heartbeatIntervalMs,
-          value,
+          _heartbeatIntervalMs,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set heartbeatTimer(_i5.Timer? value) => super.noSuchMethod(
+  set heartbeatTimer(_i5.Timer? _heartbeatTimer) => super.noSuchMethod(
         Invocation.setter(
           #heartbeatTimer,
-          value,
+          _heartbeatTimer,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set pendingHeartbeatRef(String? value) => super.noSuchMethod(
+  set pendingHeartbeatRef(String? _pendingHeartbeatRef) => super.noSuchMethod(
         Invocation.setter(
           #pendingHeartbeatRef,
-          value,
+          _pendingHeartbeatRef,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set ref(int? value) => super.noSuchMethod(
+  set ref(int? _ref) => super.noSuchMethod(
         Invocation.setter(
           #ref,
-          value,
+          _ref,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set reconnectTimer(_i4.RetryTimer? value) => super.noSuchMethod(
+  set reconnectTimer(_i4.RetryTimer? _reconnectTimer) => super.noSuchMethod(
         Invocation.setter(
           #reconnectTimer,
-          value,
+          _reconnectTimer,
         ),
         returnValueForMissingStub: null,
       );
@@ -1437,94 +1436,96 @@ class MockRealtimeClient extends _i1.Mock implements _i2.RealtimeClient {
             String?,
             String?,
             dynamic,
-          )? value) =>
+          )? _logger) =>
       super.noSuchMethod(
         Invocation.setter(
           #logger,
-          value,
+          _logger,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set encode(_i2.RealtimeEncode? value) => super.noSuchMethod(
+  set encode(_i2.RealtimeEncode? _encode) => super.noSuchMethod(
         Invocation.setter(
           #encode,
-          value,
+          _encode,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set decode(_i2.RealtimeDecode? value) => super.noSuchMethod(
+  set decode(_i2.RealtimeDecode? _decode) => super.noSuchMethod(
         Invocation.setter(
           #decode,
-          value,
+          _decode,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set reconnectAfterMs(_i4.TimerCalculation? value) => super.noSuchMethod(
+  set reconnectAfterMs(_i4.TimerCalculation? _reconnectAfterMs) =>
+      super.noSuchMethod(
         Invocation.setter(
           #reconnectAfterMs,
-          value,
+          _reconnectAfterMs,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set conn(_i3.WebSocketChannel? value) => super.noSuchMethod(
+  set conn(_i3.WebSocketChannel? _conn) => super.noSuchMethod(
         Invocation.setter(
           #conn,
-          value,
+          _conn,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set sendBuffer(List<dynamic>? value) => super.noSuchMethod(
+  set sendBuffer(List<dynamic>? _sendBuffer) => super.noSuchMethod(
         Invocation.setter(
           #sendBuffer,
-          value,
+          _sendBuffer,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set stateChangeCallbacks(Map<String, List<Function>>? value) =>
+  set stateChangeCallbacks(
+          Map<String, List<Function>>? _stateChangeCallbacks) =>
       super.noSuchMethod(
         Invocation.setter(
           #stateChangeCallbacks,
-          value,
+          _stateChangeCallbacks,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set longpollerTimeout(int? value) => super.noSuchMethod(
+  set longpollerTimeout(int? _longpollerTimeout) => super.noSuchMethod(
         Invocation.setter(
           #longpollerTimeout,
-          value,
+          _longpollerTimeout,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set connState(_i2.SocketStates? value) => super.noSuchMethod(
+  set connState(_i2.SocketStates? _connState) => super.noSuchMethod(
         Invocation.setter(
           #connState,
-          value,
+          _connState,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set customAccessToken(_i5.Future<String?> Function()? value) =>
+  set customAccessToken(_i5.Future<String?> Function()? _customAccessToken) =>
       super.noSuchMethod(
         Invocation.setter(
           #customAccessToken,
-          value,
+          _customAccessToken,
         ),
         returnValueForMissingStub: null,
       );

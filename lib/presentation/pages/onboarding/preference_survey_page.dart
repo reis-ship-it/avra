@@ -220,7 +220,7 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
                 value: _getSelectedCount() / 15.0,
                 backgroundColor: AppColors.grey300,
                 valueColor:
-                    AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                    const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
               ),
               const SizedBox(height: 8),
               Text(
@@ -256,7 +256,7 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
             onChanged: (value) {

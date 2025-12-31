@@ -35,12 +35,12 @@ void main() {
     group('N-way Split Calculation Performance', () {
       test('should calculate 2-party split quickly', () async {
         final parties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-1',
             type: SplitPartyType.user,
             percentage: 50.0,
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-1',
             type: SplitPartyType.business,
             percentage: 50.0,
@@ -124,7 +124,7 @@ void main() {
           eventId: 'event-1',
           totalAmount: 100.00,
           ticketsSold: 1,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'user-1',
               type: SplitPartyType.user,

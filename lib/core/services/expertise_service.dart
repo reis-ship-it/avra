@@ -89,7 +89,7 @@ class ExpertiseService {
         currentLevel: currentLevel,
         nextLevel: null,
         progressPercentage: 100.0,
-        nextSteps: [
+        nextSteps: const [
           'Continue sharing your expertise',
           'Help others discover great spots',
           'Maintain community trust',
@@ -141,17 +141,17 @@ class ExpertiseService {
   LevelRequirements _getLevelRequirements(ExpertiseLevel level) {
     switch (level) {
       case ExpertiseLevel.local:
-        return LevelRequirements(lists: 1, reviews: 10, totalContributions: 10);
+        return const LevelRequirements(lists: 1, reviews: 10, totalContributions: 10);
       case ExpertiseLevel.city:
-        return LevelRequirements(lists: 3, reviews: 25, totalContributions: 25);
+        return const LevelRequirements(lists: 3, reviews: 25, totalContributions: 25);
       case ExpertiseLevel.regional:
-        return LevelRequirements(lists: 6, reviews: 50, totalContributions: 50);
+        return const LevelRequirements(lists: 6, reviews: 50, totalContributions: 50);
       case ExpertiseLevel.national:
-        return LevelRequirements(lists: 11, reviews: 100, totalContributions: 100);
+        return const LevelRequirements(lists: 11, reviews: 100, totalContributions: 100);
       case ExpertiseLevel.global:
-        return LevelRequirements(lists: 21, reviews: 200, totalContributions: 200);
+        return const LevelRequirements(lists: 21, reviews: 200, totalContributions: 200);
       case ExpertiseLevel.universal:
-        return LevelRequirements(lists: 50, reviews: 500, totalContributions: 500);
+        return const LevelRequirements(lists: 50, reviews: 500, totalContributions: 500);
     }
   }
 
@@ -167,12 +167,12 @@ class ExpertiseService {
 
     if (currentLists < requirements.lists) {
       final needed = requirements.lists - currentLists;
-      steps.add('Create ${needed} more ${needed == 1 ? 'respected list' : 'respected lists'}');
+      steps.add('Create $needed more ${needed == 1 ? 'respected list' : 'respected lists'}');
     }
 
     if (currentReviews < requirements.reviews) {
       final needed = requirements.reviews - currentReviews;
-      steps.add('Write ${needed} more ${needed == 1 ? 'thoughtful review' : 'thoughtful reviews'}');
+      steps.add('Write $needed more ${needed == 1 ? 'thoughtful review' : 'thoughtful reviews'}');
     }
 
     if (steps.isEmpty) {

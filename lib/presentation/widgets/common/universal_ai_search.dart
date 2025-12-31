@@ -157,8 +157,8 @@ class _UniversalAISearchState extends State<UniversalAISearch> {
                   ),
                 ),
                 if (widget.isLoading)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 8),
                     child: SizedBox(
                       width: 20,
                       height: 20,
@@ -237,16 +237,20 @@ class _UniversalAISearchState extends State<UniversalAISearch> {
   IconData _getSuggestionIcon(String suggestion) {
     if (suggestion.contains('list')) return Icons.list;
     if (suggestion.contains('add')) return Icons.add_location;
-    if (suggestion.contains('find') || suggestion.contains('restaurant'))
+    if (suggestion.contains('find') || suggestion.contains('restaurant')) {
       return Icons.search;
+    }
     if (suggestion.contains('event')) return Icons.event;
     if (suggestion.contains('user')) return Icons.people;
-    if (suggestion.contains('help') || suggestion.contains('discover'))
+    if (suggestion.contains('help') || suggestion.contains('discover')) {
       return Icons.auto_awesome;
-    if (suggestion.contains('trip') || suggestion.contains('adventure'))
+    }
+    if (suggestion.contains('trip') || suggestion.contains('adventure')) {
       return Icons.explore;
-    if (suggestion.contains('coffee') || suggestion.contains('wifi'))
+    }
+    if (suggestion.contains('coffee') || suggestion.contains('wifi')) {
       return Icons.coffee;
+    }
     if (suggestion.contains('study')) return Icons.school;
     return Icons.auto_awesome;
   }

@@ -6,6 +6,7 @@
 /// - Payment processing
 /// - Event registration
 /// - Error handling
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/controllers/payment_processing_controller.dart';
@@ -83,7 +84,7 @@ void main() {
     group('validatePayment', () {
       test('should return valid result for valid payment data', () {
         // Arrange
-        final quantity = 2;
+        const quantity = 2;
 
         // Act
         final result = controller.validatePayment(
@@ -211,7 +212,7 @@ void main() {
           status: EventStatus.upcoming,
           isPaid: true,
           price: null, // Explicitly null for paid event
-          attendeeIds: [], // Ensure user is not already registered
+          attendeeIds: const [], // Ensure user is not already registered
         );
 
         // Act
@@ -230,8 +231,8 @@ void main() {
     group('processEventPayment', () {
       test('should successfully process payment with tax', () async {
         // Arrange
-        final quantity = 2;
-        final taxCalculation = SalesTaxCalculation(
+        const quantity = 2;
+        const taxCalculation = SalesTaxCalculation(
           taxableAmount: 25.0,
           taxRate: 8.5,
           taxAmount: 2.13,
@@ -425,7 +426,7 @@ void main() {
         when(mockSalesTaxService.calculateSalesTax(
           eventId: testEvent.id,
           ticketPrice: 25.0,
-        )).thenAnswer((_) async => SalesTaxCalculation(
+        )).thenAnswer((_) async => const SalesTaxCalculation(
           taxableAmount: 25.0,
           taxRate: 0.0,
           taxAmount: 0.0,
@@ -499,7 +500,7 @@ void main() {
         when(mockSalesTaxService.calculateSalesTax(
           eventId: testEvent.id,
           ticketPrice: 25.0,
-        )).thenAnswer((_) async => SalesTaxCalculation(
+        )).thenAnswer((_) async => const SalesTaxCalculation(
           taxableAmount: 25.0,
           taxRate: 0.0,
           taxAmount: 0.0,

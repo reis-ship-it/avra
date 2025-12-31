@@ -1,6 +1,7 @@
 /// Tests for AI Thinking Indicator Widget
 ///
 /// Part of Feature Matrix Phase 1.3: LLM Full Integration
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +17,7 @@ void main() {
         (tester) async {
       // Test business logic: AI thinking indicator display and state management
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(),
           ),
@@ -40,7 +41,7 @@ void main() {
       }
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(
               compact: true,
@@ -53,7 +54,7 @@ void main() {
       expect(find.text('Crafting a personalized response'), findsNothing);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(
               showDetails: true,
@@ -67,7 +68,7 @@ void main() {
       expect(find.text('Step 2 of 5'), findsOneWidget);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(
               showDetails: false,
@@ -79,10 +80,10 @@ void main() {
       expect(find.byType(LinearProgressIndicator), findsNothing);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(
-              timeout: const Duration(milliseconds: 100),
+              timeout: Duration(milliseconds: 100),
             ),
           ),
         ),
@@ -112,7 +113,7 @@ void main() {
       expect(callbackCalled, isTrue);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(),
           ),
@@ -130,7 +131,7 @@ void main() {
         (tester) async {
       // Test business logic: AI thinking dots animation
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: AIThinkingDots(),
           ),

@@ -443,7 +443,7 @@ class PartnershipCheckoutResult extends ControllerResult {
   final EventPartnership? partnership;
   final RevenueSplit? revenueSplit;
 
-  PartnershipCheckoutResult._({
+  const PartnershipCheckoutResult._({
     required super.success,
     required super.error,
     required super.errorCode,

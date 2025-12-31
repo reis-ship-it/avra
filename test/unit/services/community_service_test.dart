@@ -55,7 +55,7 @@ void main() {
         createdAt: testDate,
         updatedAt: testDate,
         location: 'Mission District, San Francisco, CA, USA',
-        attendeeIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5'],
+        attendeeIds: const ['user-1', 'user-2', 'user-3', 'user-4', 'user-5'],
         attendeeCount: 5,
         repeatAttendeesCount: 3,
         engagementScore: 0.75,
@@ -74,7 +74,7 @@ void main() {
         createdAt: testDate,
         updatedAt: testDate,
         location: 'Mission District, San Francisco, CA, USA',
-        attendeeIds: ['user-1'],
+        attendeeIds: const ['user-1'],
         attendeeCount: 1, // Too few attendees
         repeatAttendeesCount: 0,
         engagementScore: 0.3,
@@ -93,7 +93,7 @@ void main() {
         createdAt: testDate,
         updatedAt: testDate,
         location: 'Mission District, San Francisco, CA, USA',
-        attendeeIds: [
+        attendeeIds: const [
           'user-1',
           'user-2',
           'user-3',
@@ -174,7 +174,7 @@ void main() {
           createdAt: testDate,
           updatedAt: testDate,
           location: null,
-          attendeeIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5'],
+          attendeeIds: const ['user-1', 'user-2', 'user-3', 'user-4', 'user-5'],
           attendeeCount: 5,
           repeatAttendeesCount: 3,
           engagementScore: 0.75,

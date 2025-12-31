@@ -200,7 +200,7 @@ void main() {
           location: null, // Explicitly null
           createdAt: testUser.createdAt,
           updatedAt: testUser.updatedAt,
-          expertiseMap: {'Coffee': 'city'},
+          expertiseMap: const {'Coffee': 'city'},
         );
         
         // Act

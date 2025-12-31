@@ -88,16 +88,16 @@ class ClubService {
       final club = Club.fromCommunity(
         community: community,
         leaders: [community.founderId], // Founder becomes initial leader
-        adminTeam: [],
+        adminTeam: const [],
         hierarchy: ClubHierarchy(),
-        memberRoles: {}, // All members start as regular members
-        pendingMembers: [],
-        bannedMembers: [],
+        memberRoles: const {}, // All members start as regular members
+        pendingMembers: const [],
+        bannedMembers: const [],
         organizationalMaturity: 0.5, // Starting maturity
         leadershipStability: 0.7, // Founder is stable
-        expansionLocalities: [],
-        expansionCities: [],
-        coveragePercentage: {},
+        expansionLocalities: const [],
+        expansionCities: const [],
+        coveragePercentage: const {},
       );
 
       // Save club

@@ -16,7 +16,7 @@ import 'package:spots/core/models/connection_metrics.dart' as _i16;
 import 'package:spots/core/models/expertise_level.dart' as _i20;
 import 'package:spots/core/models/expertise_pin.dart' as _i21;
 import 'package:spots/core/models/expertise_progress.dart' as _i9;
-import 'package:spots/core/models/personality_profile.dart' as _i17;
+import 'package:spots_ai/models/personality_profile.dart' as _i17;
 import 'package:spots/core/models/unified_user.dart' as _i12;
 import 'package:spots/core/models/user.dart' as _i15;
 import 'package:spots/core/monitoring/connection_monitor.dart' as _i6;
@@ -40,7 +40,6 @@ import 'package:supabase_flutter/supabase_flutter.dart' as _i8;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
-// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeAdminAuthResult_0 extends _i1.SmartFake
     implements _i2.AdminAuthResult {

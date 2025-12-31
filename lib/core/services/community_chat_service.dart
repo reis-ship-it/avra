@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/community_chat_message.dart';
+import 'package:spots_ai/models/community_chat_message.dart';
 import 'package:spots/core/models/community.dart';
 import 'package:spots/core/services/message_encryption_service.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';

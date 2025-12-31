@@ -93,8 +93,8 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Safety guidelines acknowledged'),
+          const SnackBar(
+            content: Text('Safety guidelines acknowledged'),
             backgroundColor: AppColors.electricGreen,
           ),
         );
@@ -133,9 +133,9 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
         ),
         child: Column(
           children: [
-            Icon(Icons.error_outline, color: AppColors.error),
+            const Icon(Icons.error_outline, color: AppColors.error),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               'Error loading safety guidelines',
               style: TextStyle(color: AppColors.error),
             ),
@@ -193,14 +193,14 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
             color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
+          child: const Icon(
             Icons.security,
             color: AppTheme.primaryColor,
             size: 24,
           ),
         ),
         const SizedBox(width: 12),
-        Expanded(
+        const Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -212,7 +212,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               Text(
                 'Ensure your event meets safety requirements',
                 style: TextStyle(
@@ -233,7 +233,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Safety Requirements',
           style: TextStyle(
             fontSize: 18,
@@ -270,7 +270,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
               children: [
                 Text(
                   displayName,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -280,7 +280,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
                     ),
@@ -289,7 +289,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
               ],
             ),
           ),
-          Icon(
+          const Icon(
             Icons.check_circle,
             color: AppColors.electricGreen,
             size: 20,
@@ -305,10 +305,10 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
             Icon(Icons.emergency, color: AppColors.error, size: 20),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               'Emergency Information',
               style: TextStyle(
@@ -331,7 +331,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (emergencyInfo.contacts.isNotEmpty) ...[
-                Text(
+                const Text(
                   'Emergency Contacts:',
                   style: TextStyle(
                     fontSize: 14,
@@ -344,7 +344,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
                         children: [
-                          Icon(Icons.person, size: 16, color: AppColors.textSecondary),
+                          const Icon(Icons.person, size: 16, color: AppColors.textSecondary),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Column(
@@ -352,14 +352,14 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                               children: [
                                 Text(
                                   '${contact.name} (${contact.role})',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     color: AppColors.textPrimary,
                                   ),
                                 ),
                                 Text(
                                   contact.phone,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     color: AppColors.textSecondary,
                                   ),
@@ -373,7 +373,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                 const SizedBox(height: 12),
               ],
               if (emergencyInfo.nearestHospital != null) ...[
-                Text(
+                const Text(
                   'Nearest Hospital:',
                   style: TextStyle(
                     fontSize: 14,
@@ -384,7 +384,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                 const SizedBox(height: 4),
                 Text(
                   emergencyInfo.nearestHospital!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textPrimary,
                   ),
@@ -392,7 +392,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                 if (emergencyInfo.nearestHospitalAddress != null) ...[
                   Text(
                     emergencyInfo.nearestHospitalAddress!,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -401,7 +401,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                 if (emergencyInfo.nearestHospitalPhone != null) ...[
                   Text(
                     emergencyInfo.nearestHospitalPhone!,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -410,7 +410,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                 const SizedBox(height: 12),
               ],
               if (emergencyInfo.meetingPoint != null) ...[
-                Text(
+                const Text(
                   'Emergency Meeting Point:',
                   style: TextStyle(
                     fontSize: 14,
@@ -421,7 +421,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                 const SizedBox(height: 4),
                 Text(
                   emergencyInfo.meetingPoint!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textPrimary,
                   ),
@@ -448,7 +448,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
               size: 20,
             ),
             const SizedBox(width: 8),
-            Text(
+            const Text(
               'Insurance Recommendation',
               style: TextStyle(
                 fontSize: 18,
@@ -497,7 +497,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
               const SizedBox(height: 12),
               Text(
                 insurance.explanation,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textPrimary,
                 ),
@@ -505,7 +505,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
               const SizedBox(height: 12),
               Text(
                 'Suggested Coverage: \$${insurance.suggestedCoverageAmount.toStringAsFixed(0)}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -513,7 +513,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
               ),
               if (insurance.insuranceProviders.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                Text(
+                const Text(
                   'Recommended Providers:',
                   style: TextStyle(
                     fontSize: 12,
@@ -525,11 +525,11 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                       padding: const EdgeInsets.only(bottom: 4),
                       child: Row(
                         children: [
-                          Icon(Icons.check, size: 14, color: AppColors.electricGreen),
+                          const Icon(Icons.check, size: 14, color: AppColors.electricGreen),
                           const SizedBox(width: 4),
                           Text(
                             provider,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -568,7 +568,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                   },
             activeColor: AppTheme.primaryColor,
           ),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -580,7 +580,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'By checking this box, you confirm that you understand and will comply with all safety requirements for this event.',
                   style: TextStyle(

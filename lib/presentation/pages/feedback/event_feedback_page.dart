@@ -132,8 +132,8 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Thank you for your feedback!'),
+          const SnackBar(
+            content: Text('Thank you for your feedback!'),
             backgroundColor: AppColors.electricGreen,
           ),
         );
@@ -206,12 +206,12 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline, color: AppColors.error),
+                        const Icon(Icons.error_outline, color: AppColors.error),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             _error!,
-                            style: TextStyle(color: AppColors.error),
+                            style: const TextStyle(color: AppColors.error),
                           ),
                         ),
                       ],
@@ -258,7 +258,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'How was your experience?',
             style: TextStyle(
               fontSize: 18,
@@ -269,7 +269,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
           const SizedBox(height: 8),
           Text(
             widget.event.title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -278,7 +278,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
           const SizedBox(height: 4),
           Text(
             '${_formatDateTime(widget.event.startTime)} • ${widget.event.location ?? 'Location TBD'}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
             ),
@@ -292,7 +292,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Overall Rating *',
           style: TextStyle(
             fontSize: 16,
@@ -331,7 +331,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
           Center(
             child: Text(
               '${_overallRating.toStringAsFixed(1)} out of 5',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -346,7 +346,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Category Ratings',
           style: TextStyle(
             fontSize: 16,
@@ -366,7 +366,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
                   children: [
                     Text(
                       _getCategoryDisplayName(category),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -376,7 +376,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
                       _categoryRatings[category]! > 0
                           ? '${_categoryRatings[category]!.toStringAsFixed(1)} / 5.0'
                           : 'Not rated',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -411,7 +411,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'What was great? (Optional)',
           style: TextStyle(
             fontSize: 16,
@@ -454,7 +454,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'What could be better? (Optional)',
           style: TextStyle(
             fontSize: 16,
@@ -504,7 +504,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
       child: Column(
         children: [
           SwitchListTile(
-            title: Text(
+            title: const Text(
               'Would you attend again?',
               style: TextStyle(color: AppColors.textPrimary),
             ),
@@ -517,7 +517,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
             activeColor: AppTheme.primaryColor,
           ),
           SwitchListTile(
-            title: Text(
+            title: const Text(
               'Would you recommend to others?',
               style: TextStyle(color: AppColors.textPrimary),
             ),
@@ -538,7 +538,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Additional Comments (Optional)',
           style: TextStyle(
             fontSize: 16,
@@ -554,20 +554,20 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
             hintText: 'Share any additional thoughts...',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppTheme.primaryColor),
+              borderSide: const BorderSide(color: AppTheme.primaryColor),
             ),
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: TextStyle(color: AppColors.textPrimary),
+          style: const TextStyle(color: AppColors.textPrimary),
         ),
       ],
     );

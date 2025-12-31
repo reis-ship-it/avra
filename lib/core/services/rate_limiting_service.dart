@@ -10,6 +10,7 @@
 /// - Different limits for different operations (sensitive operations have lower limits)
 /// - Time-window based rate limit reset
 /// - Rate limit information retrieval
+library;
 
 /// Rate limit information for a user-operation pair
 class RateLimitInfo {

@@ -100,13 +100,13 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.error_outline,
                       size: 64,
                       color: AppColors.error,
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'Error',
                       style: TextStyle(
                         fontSize: 20,
@@ -118,7 +118,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
                     Text(
                       _errorMessage!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -150,7 +150,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
               // Section 1: Main Metrics
               _buildSectionHeader(context, 'AI Improvement Metrics'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'See how your AI is improving over time',
                 style: TextStyle(
                   fontSize: 14,
@@ -167,7 +167,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
               // Section 2: Progress Charts
               _buildSectionHeader(context, 'Improvement Progress'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Track improvement trends over time',
                 style: TextStyle(
                   fontSize: 14,
@@ -184,7 +184,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
               // Section 3: Timeline
               _buildSectionHeader(context, 'Improvement History'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Timeline of AI improvements and milestones',
                 style: TextStyle(
                   fontSize: 14,
@@ -201,7 +201,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
               // Section 4: Impact
               _buildSectionHeader(context, 'Impact & Benefits'),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'How AI improvements benefit your experience',
                 style: TextStyle(
                   fontSize: 14,
@@ -246,11 +246,11 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'AI Self-Improvement',
                   style: TextStyle(
                     fontSize: 18,
@@ -258,7 +258,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'Watch your AI learn and improve over time',
                   style: TextStyle(
@@ -292,10 +292,10 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.info_outline,
@@ -313,7 +313,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             'Your AI continuously learns and improves from your interactions. '
             'This page shows you how your AI is evolving, including improvements '
@@ -326,7 +326,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
               height: 1.5,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Icon(
@@ -334,7 +334,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
                 color: AppColors.success,
                 size: 16,
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Text(
                 'Your data stays on your device',
                 style: TextStyle(

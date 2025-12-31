@@ -65,7 +65,7 @@ void main() {
         id: 'brand-123',
         name: 'Premium Oil Co.',
         brandType: 'Food & Beverage',
-        categories: ['Gourmet', 'Premium Products'],
+        categories: const ['Gourmet', 'Premium Products'],
         contactEmail: 'partnerships@premiumoil.com',
         verificationStatus: BrandVerificationStatus.verified,
         createdAt: testDate,

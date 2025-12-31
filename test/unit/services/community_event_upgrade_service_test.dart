@@ -192,7 +192,7 @@ void main() {
     });
 
     group('Upgrade Flow', () {
-      ExpertiseEvent _createMockExpertiseEvent(
+      ExpertiseEvent createMockExpertiseEvent(
           CommunityEvent sourceEvent, UnifiedUser sourceHost) {
         return ExpertiseEvent(
           id: 'expert-event-1',
@@ -230,7 +230,7 @@ void main() {
             .thenAnswer((invocation) async =>
                 invocation.positionalArguments[0] as CommunityEvent);
         final mockExpertiseEvent =
-            _createMockExpertiseEvent(eligibleEvent, hostWithExpertise);
+            createMockExpertiseEvent(eligibleEvent, hostWithExpertise);
         when(() => mockExpertiseEventService.createEvent(
               host: hostWithExpertise,
               title: eligibleEvent.title,

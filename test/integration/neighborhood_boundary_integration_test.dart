@@ -14,6 +14,7 @@
 /// - LargeCityDetectionService: Large city detection
 /// - Geographic hierarchy system
 /// - Spot/location services
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/neighborhood_boundary_service.dart';
@@ -59,7 +60,7 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1', 'spot-2', 'spot-3'],
+          softBorderSpots: const ['spot-1', 'spot-2', 'spot-3'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -111,7 +112,7 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
+          softBorderSpots: const ['spot-1'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -151,7 +152,7 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1', 'spot-2', 'spot-3'],
+          softBorderSpots: const ['spot-1', 'spot-2', 'spot-3'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -196,7 +197,7 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-shared'],
+          softBorderSpots: const ['spot-shared'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -229,7 +230,7 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
+          softBorderSpots: const ['spot-1'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -279,8 +280,8 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1', 'spot-2'],
-          userVisitCounts: {
+          softBorderSpots: const ['spot-1', 'spot-2'],
+          userVisitCounts: const {
             'spot-1': {'Nolita': 30, 'East Village': 5},
             'spot-2': {'Nolita': 4, 'East Village': 28},
           },
@@ -364,8 +365,8 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
-          userVisitCounts: {
+          softBorderSpots: const ['spot-1'],
+          userVisitCounts: const {
             'spot-1': {'Nolita': 25, 'East Village': 8},
           },
           createdAt: testDate,
@@ -472,7 +473,7 @@ void main() {
           boundaryType: BoundaryType.softBorder,
           coordinates: testCoordinates,
           source: 'Google Maps',
-          softBorderSpots: ['spot-1'],
+          softBorderSpots: const ['spot-1'],
           createdAt: testDate,
           updatedAt: testDate,
         );

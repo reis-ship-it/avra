@@ -27,7 +27,6 @@ import 'package:supabase_flutter/supabase_flutter.dart' as _i2;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
-// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeSupabaseClient_0 extends _i1.SmartFake
     implements _i2.SupabaseClient {
@@ -255,6 +254,42 @@ class MockLLMService extends _i1.Mock implements _i6.LLMService {
             {
               #query: query,
               #context: context,
+            },
+          ),
+        )),
+      ) as _i7.Future<String>);
+
+  @override
+  _i7.Future<String> generateWithContext({
+    required String? query,
+    required String? userId,
+    List<_i6.ChatMessage>? messages,
+    double? temperature = 0.7,
+    int? maxTokens = 500,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #generateWithContext,
+          [],
+          {
+            #query: query,
+            #userId: userId,
+            #messages: messages,
+            #temperature: temperature,
+            #maxTokens: maxTokens,
+          },
+        ),
+        returnValue: _i7.Future<String>.value(_i8.dummyValue<String>(
+          this,
+          Invocation.method(
+            #generateWithContext,
+            [],
+            {
+              #query: query,
+              #userId: userId,
+              #messages: messages,
+              #temperature: temperature,
+              #maxTokens: maxTokens,
             },
           ),
         )),

@@ -60,19 +60,19 @@ void main() {
     group('N-Way Revenue Split', () {
       test('should calculate N-way split correctly', () {
         final parties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 50.0,
             name: 'Expert User',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 30.0,
             name: 'Test Restaurant',
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'sponsor-123',
             type: SplitPartyType.sponsor,
             percentage: 20.0,
@@ -128,24 +128,24 @@ void main() {
           () {
         // Test business logic: percentage validation
         final validParties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 50.0,
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 50.0,
           ),
         ];
         final invalidParties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 50.0,
           ),
-          SplitParty(
+          const SplitParty(
             partyId: 'business-123',
             type: SplitPartyType.business,
             percentage: 40.0, // Only 90% total
@@ -219,7 +219,7 @@ void main() {
 
         // N-way split
         final parties = [
-          SplitParty(
+          const SplitParty(
             partyId: 'user-123',
             type: SplitPartyType.user,
             percentage: 100.0, // Single party = 100%

@@ -18,7 +18,7 @@ class FriendsRespectPage extends StatefulWidget {
 
 class _FriendsRespectPageState extends State<FriendsRespectPage> {
   List<String> _selectedLists = [];
-  Map<String, int> _respectCounts = {};
+  final Map<String, int> _respectCounts = {};
 
   // Enhanced mock data with user profiles
   final List<Map<String, dynamic>> _localPublicLists = [
@@ -206,7 +206,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
               children: [
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.location_on,
                       color: AppTheme.primaryColor,
                       size: 20,
@@ -279,7 +279,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.location_on,
                                         size: 12,
                                         color: AppColors.grey600,
@@ -288,7 +288,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                       Expanded(
                                         child: Text(
                                           list['location'] as String,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 11,
                                             color: AppColors.grey600,
                                           ),
@@ -297,7 +297,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                       ),
                                       Text(
                                         '${list['spots']} spots',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 11,
                                           color: AppColors.grey600,
                                         ),
@@ -344,7 +344,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                   ),
                                   const SizedBox(width: 8),
                                   // View details arrow
-                                  Icon(
+                                  const Icon(
                                     Icons.arrow_forward_ios,
                                     size: 12,
                                     color: AppColors.grey400,
@@ -396,7 +396,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
           const SizedBox(height: 1),
           Text(
             'Hosted $hostedEventsCount events at $differentSpotsCount spots',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 9,
               color: AppColors.grey600,
             ),
@@ -465,7 +465,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                         ),
                         Text(
                           'by ${list['creator']} • ${list['spots']} spots • ${list['respects']} respects',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.grey600,
                           ),
@@ -500,12 +500,12 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                       ),
                       subtitle: Text(
                         spot['description'] as String,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.grey600,
                         ),
                       ),
-                      trailing: Icon(
+                      trailing: const Icon(
                         Icons.location_on_outlined,
                         color: AppColors.grey400,
                         size: 16,

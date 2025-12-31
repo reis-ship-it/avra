@@ -150,8 +150,8 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('W-9 submitted successfully'),
+          const SnackBar(
+            content: Text('W-9 submitted successfully'),
             backgroundColor: AppColors.electricGreen,
           ),
         );
@@ -234,12 +234,12 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.error_outline, color: AppColors.error),
+                              const Icon(Icons.error_outline, color: AppColors.error),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   _error!,
-                                  style: TextStyle(color: AppColors.error),
+                                  style: const TextStyle(color: AppColors.error),
                                 ),
                               ),
                             ],
@@ -287,10 +287,10 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.info, color: AppTheme.primaryColor),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'SPOTS Tax Service - Free & Easy',
                 style: TextStyle(
@@ -302,7 +302,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
             ],
           ),
           const SizedBox(height: 12),
-          Text(
+          const Text(
             'If you earn \$600 or more in a calendar year, SPOTS will automatically handle your tax reporting. We\'ll generate your 1099-K form and file it with the IRS—all free, all easy.',
             style: TextStyle(
               fontSize: 14,
@@ -319,10 +319,10 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                const Row(
                   children: [
                     Icon(Icons.check_circle, color: AppColors.electricGreen, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       'Why choose SPOTS tax service?',
                       style: TextStyle(
@@ -348,13 +348,13 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
               color: AppColors.warning.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Icon(Icons.warning_amber, color: AppColors.warning, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       'Important: IRS Reporting Requirement',
                       style: TextStyle(
@@ -365,7 +365,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   'SPOTS is legally required to report all earnings over \$600 to the IRS, even if you don\'t submit a W-9. If you don\'t submit a W-9, the IRS will contact you directly to obtain your tax information. Submitting your W-9 now makes everything easier and ensures accurate reporting.',
                   style: TextStyle(
@@ -386,7 +386,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
       padding: const EdgeInsets.only(bottom: 4),
       child: Text(
         text,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 12,
           color: AppColors.textSecondary,
         ),
@@ -398,7 +398,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Tax Classification *',
           style: TextStyle(
             fontSize: 16,
@@ -411,11 +411,11 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
           return RadioListTile<TaxClassification>(
             title: Text(
               _getClassificationDisplayName(classification),
-              style: TextStyle(color: AppColors.textPrimary),
+              style: const TextStyle(color: AppColors.textPrimary),
             ),
             subtitle: Text(
               _getClassificationDescription(classification),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),
@@ -443,7 +443,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Social Security Number (SSN) *',
           style: TextStyle(
             fontSize: 16,
@@ -464,21 +464,21 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
             hintText: 'XXX-XX-XXXX',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppTheme.primaryColor),
+              borderSide: const BorderSide(color: AppTheme.primaryColor),
             ),
             filled: true,
             fillColor: AppColors.surface,
-            suffixIcon: Icon(Icons.lock, color: AppColors.textSecondary),
+            suffixIcon: const Icon(Icons.lock, color: AppColors.textSecondary),
           ),
-          style: TextStyle(color: AppColors.textPrimary),
+          style: const TextStyle(color: AppColors.textPrimary),
           obscureText: true,
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -492,7 +492,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
           },
         ),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           'Your SSN is encrypted and stored securely. Only the last 4 digits will be displayed after submission.',
           style: TextStyle(
             fontSize: 12,
@@ -507,7 +507,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Employer Identification Number (EIN) *',
           style: TextStyle(
             fontSize: 16,
@@ -528,20 +528,20 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
             hintText: 'XX-XXXXXXX',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppTheme.primaryColor),
+              borderSide: const BorderSide(color: AppTheme.primaryColor),
             ),
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: TextStyle(color: AppColors.textPrimary),
+          style: const TextStyle(color: AppColors.textPrimary),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'EIN is required for business classifications';
@@ -561,7 +561,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Business Name (Optional)',
           style: TextStyle(
             fontSize: 16,
@@ -576,20 +576,20 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
             hintText: 'Enter business name',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.grey300),
+              borderSide: const BorderSide(color: AppColors.grey300),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppTheme.primaryColor),
+              borderSide: const BorderSide(color: AppTheme.primaryColor),
             ),
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: TextStyle(color: AppColors.textPrimary),
+          style: const TextStyle(color: AppColors.textPrimary),
         ),
       ],
     );
@@ -605,13 +605,13 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
       ),
       child: Row(
         children: [
-          Icon(Icons.check_circle, color: AppColors.electricGreen),
+          const Icon(Icons.check_circle, color: AppColors.electricGreen),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'W-9 Submitted',
                   style: TextStyle(
                     fontSize: 16,
@@ -623,7 +623,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
                   const SizedBox(height: 4),
                   Text(
                     'Submitted on ${_formatDate(_existingProfile!.w9SubmittedAt!)}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -683,7 +683,7 @@ class _SSNFormatter extends TextInputFormatter {
     if (text.isEmpty) return newValue;
 
     String formatted = '';
-    if (text.length > 0) {
+    if (text.isNotEmpty) {
       formatted = text.substring(0, text.length > 3 ? 3 : text.length);
     }
     if (text.length > 3) {
@@ -711,7 +711,7 @@ class _EINFormatter extends TextInputFormatter {
     if (text.isEmpty) return newValue;
 
     String formatted = '';
-    if (text.length > 0) {
+    if (text.isNotEmpty) {
       formatted = text.substring(0, text.length > 2 ? 2 : text.length);
     }
     if (text.length > 2) {

@@ -4,7 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 // Phase 1: Core Personality Learning System
 import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
@@ -231,7 +231,7 @@ void main() {
         
         // Setup: Create personality and connection metrics
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final personality = PersonalityProfile.initial(agentId, userId: userId);
         final connectionMetrics = ConnectionMetrics(
           connectionId: connectionId,
@@ -241,8 +241,8 @@ void main() {
           currentCompatibility: 0.80,
           learningEffectiveness: 0.70,
           aiPleasureScore: 0.85,
-          connectionDuration: Duration(minutes: 15),
-          startTime: DateTime.now().subtract(Duration(minutes: 15)),
+          connectionDuration: const Duration(minutes: 15),
+          startTime: DateTime.now().subtract(const Duration(minutes: 15)),
           status: ConnectionStatus.active,
           learningOutcomes: {'insights_shared': 8},
           interactionHistory: [],
@@ -277,7 +277,7 @@ void main() {
           ],
           messageType: ai2ai_learning.ChatMessageType.personalitySharing,
           timestamp: DateTime.now(),
-          duration: Duration(minutes: 5),
+          duration: const Duration(minutes: 5),
           metadata: {'connection_quality': 0.8},
         );
         
@@ -352,7 +352,7 @@ void main() {
         
         // Test 1: Personality profile privacy
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
         final anonymizedProfile = await PrivacyProtection.anonymizePersonalityProfile(
           profile,
@@ -398,7 +398,7 @@ void main() {
         
         // All personality data should be locally controlled
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
         expect(profile.userId, equals(userId)); // User maintains identity control
         
@@ -421,7 +421,7 @@ void main() {
         
         // Personality should reflect authentic user preferences
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
         expect(profile.authenticity, greaterThanOrEqualTo(0.5)); // Initial authenticity baseline (0.5)
         
@@ -447,7 +447,7 @@ void main() {
         
         // AI2AI connections should build community
         // Phase 8.3: Use agentId for privacy protection
-        final agentId = 'agent_$userId';
+        const agentId = 'agent_$userId';
         final profile = PersonalityProfile.initial(agentId, userId: userId);
         final vibe = await vibeAnalyzer.compileUserVibe(userId, profile);
         
@@ -469,7 +469,7 @@ void main() {
           ],
           messageType: ai2ai_learning.ChatMessageType.insightExchange,
           timestamp: DateTime.now(),
-          duration: Duration(minutes: 3),
+          duration: const Duration(minutes: 3),
           metadata: {'community_focus': true},
         );
         
@@ -481,8 +481,8 @@ void main() {
           currentCompatibility: 0.8,
           learningEffectiveness: 0.75,
           aiPleasureScore: 0.85,
-          connectionDuration: Duration(minutes: 3),
-          startTime: DateTime.now().subtract(Duration(minutes: 3)),
+          connectionDuration: const Duration(minutes: 3),
+          startTime: DateTime.now().subtract(const Duration(minutes: 3)),
           status: ConnectionStatus.active,
           learningOutcomes: {'community_insights': 1},
           interactionHistory: [],

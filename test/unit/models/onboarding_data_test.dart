@@ -8,6 +8,7 @@
 /// - CopyWith: Creating modified copies
 /// - AgentId Format: Privacy protection validation
 /// - Edge Cases: Null values, empty collections, invalid data
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/onboarding_data.dart';

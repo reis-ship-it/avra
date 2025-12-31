@@ -45,7 +45,7 @@ void main() {
         unitPrice: 15.00,
         totalSales: 0.0,
         platformFee: 0.0,
-        sales: [],
+        sales: const [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -222,7 +222,7 @@ void main() {
           eventId: 'event-123',
           totalAmount: 150.00,
           ticketsSold: 10,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'brand-123',
               type: SplitPartyType.sponsor,

@@ -41,7 +41,7 @@ class FederatedLearningPage extends StatelessWidget {
           // Section 2: Active Rounds
           _buildSectionHeader(context, 'Active Learning Rounds'),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'See what your AI is learning right now',
             style: TextStyle(
               fontSize: 14,
@@ -55,7 +55,7 @@ class FederatedLearningPage extends StatelessWidget {
           // Section 3: Privacy Metrics
           _buildSectionHeader(context, 'Your Privacy Metrics'),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'See how your privacy is protected',
             style: TextStyle(
               fontSize: 14,
@@ -69,7 +69,7 @@ class FederatedLearningPage extends StatelessWidget {
           // Section 4: History
           _buildSectionHeader(context, 'Participation History'),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Your contributions to AI improvement',
             style: TextStyle(
               fontSize: 14,
@@ -109,11 +109,11 @@ class FederatedLearningPage extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Privacy-Preserving AI Training',
                   style: TextStyle(
                     fontSize: 18,
@@ -121,7 +121,7 @@ class FederatedLearningPage extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'Help improve AI without sharing your data',
                   style: TextStyle(
@@ -155,10 +155,10 @@ class FederatedLearningPage extends StatelessWidget {
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.info_outline,
@@ -176,7 +176,7 @@ class FederatedLearningPage extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             'Federated learning is a privacy-preserving approach to AI training. '
             'Your device trains a local model on your data, then sends only encrypted '
@@ -188,7 +188,7 @@ class FederatedLearningPage extends StatelessWidget {
               height: 1.5,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Icon(
@@ -196,7 +196,7 @@ class FederatedLearningPage extends StatelessWidget {
                 color: AppColors.success,
                 size: 16,
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Text(
                 'Your data never leaves your device',
                 style: TextStyle(

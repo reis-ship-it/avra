@@ -43,14 +43,14 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                const Row(
                   children: [
                     Icon(
                       Icons.handshake,
                       color: AppTheme.primaryColor,
                       size: 24,
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Text(
                       'Partnership Boost',
                       style: TextStyle(
@@ -64,7 +64,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                 if (onViewPartnerships != null)
                   TextButton(
                     onPressed: onViewPartnerships,
-                    child: Text(
+                    child: const Text(
                       'View All',
                       style: TextStyle(
                         color: AppTheme.primaryColor,
@@ -93,7 +93,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Total Boost',
                         style: TextStyle(
                           fontSize: 12,
@@ -103,7 +103,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         '+${(totalBoost * 100).toStringAsFixed(1)}%',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: AppTheme.primaryColor,
@@ -111,7 +111,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Icon(
+                  const Icon(
                     Icons.trending_up,
                     color: AppTheme.primaryColor,
                     size: 32,
@@ -148,7 +148,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
             // Category Breakdown (if available)
             if (boostByCategory.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 'Boost by Category',
                 style: TextStyle(
                   fontSize: 14,
@@ -165,14 +165,14 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                     children: [
                       Text(
                         entry.key,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
                       ),
                       Text(
                         '+${(entry.value * 100).toStringAsFixed(1)}%',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: AppTheme.primaryColor,
@@ -181,7 +181,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
             ],
 
             // Info Text
@@ -192,14 +192,14 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                 color: AppColors.grey100,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(
                     Icons.info_outline,
                     size: 16,
                     color: AppColors.textSecondary,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Partnerships boost your expertise in related categories. '
@@ -239,7 +239,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 10,
                   color: AppColors.textSecondary,
                 ),

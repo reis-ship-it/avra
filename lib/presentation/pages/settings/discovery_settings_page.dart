@@ -14,6 +14,7 @@
 /// - Privacy explanations
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/services/storage_service.dart';
@@ -99,30 +100,30 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.white,
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.radar,
               size: 32,
               color: AppColors.electricGreen,
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Device Discovery',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'Find nearby SPOTS-enabled devices',
                   style: TextStyle(
@@ -158,7 +159,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           _discoveryEnabled
               ? 'Actively discovering nearby devices'
               : 'Discovery is turned off',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             color: AppColors.textSecondary,
           ),
@@ -183,8 +184,8 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(32, 24, 32, 12),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(32, 24, 32, 12),
           child: Text(
             'Discovery Methods',
             style: TextStyle(
@@ -254,8 +255,8 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(32, 24, 32, 12),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(32, 24, 32, 12),
           child: Row(
             children: [
               Text(
@@ -266,7 +267,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Icon(
                 Icons.lock_outline,
                 size: 20,
@@ -323,8 +324,8 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(32, 24, 32, 12),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(32, 24, 32, 12),
           child: Text(
             'Advanced',
             style: TextStyle(
@@ -371,7 +372,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -381,7 +382,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                 size: 20,
                 color: AppColors.warning,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'About Discovery',
                 style: TextStyle(
@@ -392,7 +393,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             '• Discovery uses device radios (WiFi/Bluetooth) and may affect battery life\n'
             '• Only SPOTS-enabled devices can be discovered\n'
@@ -414,14 +415,14 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
+        title: const Row(
           children: [
             Icon(
               Icons.lock_outline,
               color: AppColors.electricGreen,
             ),
-            const SizedBox(width: 12),
-            const Text('Privacy & Security'),
+            SizedBox(width: 12),
+            Text('Privacy & Security'),
           ],
         ),
         content: SingleChildScrollView(
@@ -464,14 +465,14 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                   color: AppColors.electricGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(
                       Icons.check_circle,
                       color: AppColors.electricGreen,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'All discovery follows ai2ai privacy principles from OUR_GUTS.md',
@@ -521,7 +522,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
               const SizedBox(height: 4),
               Text(
                 description,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
                   color: AppColors.textSecondary,
                 ),

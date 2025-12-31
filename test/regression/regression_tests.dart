@@ -5,6 +5,7 @@
 /// 
 /// Purpose: Test previously fixed bugs to ensure they don't regress
 /// Tests edge cases, error scenarios, and data validation
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import '../fixtures/model_factories.dart';
@@ -146,7 +147,7 @@ void main() {
         // This bug was fixed by using actual user ID instead of hardcoded demo user ID
         // Test that user ID is properly stored and retrieved
         
-        final userId = 'actual-user-123';
+        const userId = 'actual-user-123';
         final user = ModelFactories.createTestUser(
           id: userId,
           followedLists: ['list-1', 'list-2'],
@@ -159,7 +160,7 @@ void main() {
       });
 
       test('REGRESSION: Respected lists are associated with correct user', () {
-        final userId = 'user-456';
+        const userId = 'user-456';
         final list = ModelFactories.createTestList(
           curatorId: userId,
         );
@@ -274,7 +275,7 @@ void main() {
       });
 
       test('REGRESSION: Relationships are maintained', () {
-        final userId = 'user-123';
+        const userId = 'user-123';
         final list = ModelFactories.createTestList(
           curatorId: userId,
           spotIds: ['spot-1', 'spot-2'],

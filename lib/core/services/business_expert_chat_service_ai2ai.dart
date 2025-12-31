@@ -8,6 +8,7 @@ import 'package:spots/core/models/business_expert_message.dart';
 import 'package:spots/core/services/partnership_service.dart';
 import 'package:spots/core/services/business_account_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/injection_container.dart' as di;
 import 'package:uuid/uuid.dart';
 import 'package:sembast/sembast.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
@@ -38,11 +39,24 @@ class BusinessExpertChatServiceAI2AI {
     PartnershipService? partnershipService,
     BusinessAccountService? businessService,
     AgentIdService? agentIdService,
-  })  : _ai2aiProtocol = ai2aiProtocol ?? ai2ai.AnonymousCommunicationProtocol(),
+  })  : _ai2aiProtocol = ai2aiProtocol ?? _createDefaultProtocol(),
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _partnershipService = partnershipService,
         _businessService = businessService,
-        _agentIdService = agentIdService ?? AgentIdService();
+        _agentIdService = agentIdService ?? di.sl<AgentIdService>();
+
+  static ai2ai.AnonymousCommunicationProtocol _createDefaultProtocol() {
+    // Try to get from DI - protocol must be registered
+    if (di.sl.isRegistered<ai2ai.AnonymousCommunicationProtocol>()) {
+      return di.sl<ai2ai.AnonymousCommunicationProtocol>();
+    }
+    
+    // If not registered, throw error - protocol must be provided via DI
+    throw ArgumentError(
+      'AnonymousCommunicationProtocol must be registered in dependency injection. '
+      'It requires encryptionService, supabase, atomicClock, and anonymizationService.'
+    );
+  }
 
   /// Send a message from business to expert or vice versa
   /// 

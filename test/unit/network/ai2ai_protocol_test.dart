@@ -2,25 +2,52 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/network/ai2ai_protocol.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/core/models/user_vibe.dart';
+import 'package:spots/core/services/message_encryption_service.dart';
 import 'dart:typed_data';
 import 'dart:convert';
+
+/// Mock MessageEncryptionService for testing
+class MockMessageEncryptionService implements MessageEncryptionService {
+  @override
+  EncryptionType get encryptionType => EncryptionType.aes256gcm;
+
+  @override
+  Future<EncryptedMessage> encrypt(String plaintext, String recipientId) async {
+    // Simple mock: just encode to bytes
+    return EncryptedMessage(
+      encryptedContent: Uint8List.fromList(utf8.encode(plaintext)),
+      encryptionType: encryptionType,
+    );
+  }
+
+  @override
+  Future<String> decrypt(EncryptedMessage encrypted, String senderId) async {
+    // Simple mock: just decode from bytes
+    return utf8.decode(encrypted.encryptedContent);
+  }
+}
 
 void main() {
   group('AI2AIProtocol', () {
     late AI2AIProtocol protocol;
     late Uint8List encryptionKey;
+    late MessageEncryptionService mockEncryptionService;
 
     setUp(() {
       // Create a test encryption key (32 bytes for AES-256)
       encryptionKey = Uint8List.fromList(
         List.generate(32, (i) => (i + 1) % 256),
       );
-      protocol = AI2AIProtocol(encryptionKey: encryptionKey);
+      mockEncryptionService = MockMessageEncryptionService();
+      protocol = AI2AIProtocol(
+        encryptionService: mockEncryptionService,
+        encryptionKey: encryptionKey,
+      );
     });
 
     group('encodeMessage', () {
-      test('should encode a message successfully', () {
-        final message = protocol.encodeMessage(
+      test('should encode a message successfully', () async {
+        final message = await protocol.encodeMessage(
           type: MessageType.heartbeat,
           payload: {'timestamp': DateTime.now().toIso8601String()},
           senderNodeId: 'node1',
@@ -32,8 +59,8 @@ void main() {
         expect(message.payload, isNotEmpty);
       });
 
-      test('should include recipient ID when provided', () {
-        final message = protocol.encodeMessage(
+      test('should include recipient ID when provided', () async {
+        final message = await protocol.encodeMessage(
           type: MessageType.connectionRequest,
           payload: {},
           senderNodeId: 'node1',
@@ -45,8 +72,8 @@ void main() {
     });
 
     group('decodeMessage', () {
-      test('should decode a valid message', () {
-        final originalMessage = protocol.encodeMessage(
+      test('should decode a valid message', () async {
+        final originalMessage = await protocol.encodeMessage(
           type: MessageType.heartbeat,
           payload: {'test': 'value'},
           senderNodeId: 'node1',
@@ -55,7 +82,8 @@ void main() {
         // Convert message to bytes (simulating transmission)
         final json = originalMessage.toJson();
         final jsonString = json.toString();
-        final bytes = Uint8List.fromList(jsonString.codeUnits);
+        // Note: bytes would be used in actual decodeMessage test
+        // final bytes = Uint8List.fromList(jsonString.codeUnits);
 
         // Note: In real implementation, decodeMessage would parse the protocol packet
         // For testing, we verify the encoding works correctly
@@ -73,7 +101,7 @@ void main() {
         });
         final anonymizedVibe = await PrivacyProtection.anonymizeUserVibe(vibe);
 
-        final message = protocol.createConnectionRequest(
+        final message = await protocol.createConnectionRequest(
           senderNodeId: 'node1',
           recipientNodeId: 'node2',
           senderVibe: anonymizedVibe,
@@ -88,8 +116,8 @@ void main() {
     });
 
     group('createConnectionResponse', () {
-      test('should create accepted connection response', () {
-        final message = protocol.createConnectionResponse(
+      test('should create accepted connection response', () async {
+        final message = await protocol.createConnectionResponse(
           senderNodeId: 'node2',
           recipientNodeId: 'node1',
           requestId: 'req123',
@@ -103,8 +131,8 @@ void main() {
         expect(message.payload['requestId'], equals('req123'));
       });
 
-      test('should create rejected connection response', () {
-        final message = protocol.createConnectionResponse(
+      test('should create rejected connection response', () async {
+        final message = await protocol.createConnectionResponse(
           senderNodeId: 'node2',
           recipientNodeId: 'node1',
           requestId: 'req123',
@@ -117,8 +145,8 @@ void main() {
     });
 
     group('createLearningExchange', () {
-      test('should create learning exchange message', () {
-        final message = protocol.createLearningExchange(
+      test('should create learning exchange message', () async {
+        final message = await protocol.createLearningExchange(
           senderNodeId: 'node1',
           recipientNodeId: 'node2',
           learningData: {
@@ -139,8 +167,8 @@ void main() {
     });
 
     group('createHeartbeat', () {
-      test('should create heartbeat message', () {
-        final message = protocol.createHeartbeat(
+      test('should create heartbeat message', () async {
+        final message = await protocol.createHeartbeat(
           senderNodeId: 'node1',
         );
 
@@ -151,11 +179,9 @@ void main() {
     });
 
     group('Encryption/Decryption', () {
-      test('should encrypt and decrypt data correctly', () {
-        final originalData = Uint8List.fromList(utf8.encode('Test message data'));
-        
+      test('should encrypt and decrypt data correctly', () async {
         // Encrypt
-        final encrypted = protocol.encodeMessage(
+        final encrypted = await protocol.encodeMessage(
           type: MessageType.heartbeat,
           payload: {'data': 'Test message data'},
           senderNodeId: 'node1',
@@ -168,17 +194,17 @@ void main() {
         expect(encrypted.senderId, equals('node1'));
       });
 
-      test('should produce different encrypted values for same data', () {
+      test('should produce different encrypted values for same data', () async {
         final payload = {'test': 'data'};
         
         // Encode same message twice
-        final message1 = protocol.encodeMessage(
+        final message1 = await protocol.encodeMessage(
           type: MessageType.heartbeat,
           payload: payload,
           senderNodeId: 'node1',
         );
         
-        final message2 = protocol.encodeMessage(
+        final message2 = await protocol.encodeMessage(
           type: MessageType.heartbeat,
           payload: payload,
           senderNodeId: 'node1',
@@ -191,10 +217,13 @@ void main() {
         // But we verify encryption is working by successful message creation
       });
 
-      test('should handle encryption with null key (no encryption)', () {
-        final protocolNoKey = AI2AIProtocol(encryptionKey: null);
+      test('should handle encryption with null key (no encryption)', () async {
+        final protocolNoKey = AI2AIProtocol(
+          encryptionService: mockEncryptionService,
+          encryptionKey: null,
+        );
         
-        final message = protocolNoKey.encodeMessage(
+        final message = await protocolNoKey.encodeMessage(
           type: MessageType.heartbeat,
           payload: {'test': 'data'},
           senderNodeId: 'node1',

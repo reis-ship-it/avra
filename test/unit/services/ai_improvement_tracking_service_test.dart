@@ -93,7 +93,7 @@ void main() {
         final history1 = service!.getHistory(userId: userId);
         expect(history1, isA<List>());
 
-        final timeWindow = const Duration(days: 30);
+        const timeWindow = Duration(days: 30);
         final history2 =
             service!.getHistory(userId: userId, timeWindow: timeWindow);
         expect(history2, isA<List>());
@@ -198,12 +198,12 @@ void main() {
         expect(metrics.userId, emptyUserId);
 
         const userId = 'test-user-1';
-        final longTimeWindow = const Duration(days: 365);
+        const longTimeWindow = Duration(days: 365);
         final history1 =
             service!.getHistory(userId: userId, timeWindow: longTimeWindow);
         expect(history1, isA<List>());
 
-        final zeroTimeWindow = const Duration(seconds: 0);
+        const zeroTimeWindow = Duration(seconds: 0);
         final history2 =
             service!.getHistory(userId: userId, timeWindow: zeroTimeWindow);
         expect(history2, isA<List>());

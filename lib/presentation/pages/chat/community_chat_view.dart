@@ -7,6 +7,7 @@
 /// 
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
+library;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -48,8 +49,8 @@ class _CommunityChatViewState extends State<CommunityChatView> {
   bool _isSending = false;
   String? _userId;
   Community? _community;
-  Map<String, String> _senderNames = {}; // Cache sender names
-  Map<String, String?> _senderPhotoUrls = {}; // Cache sender photo URLs
+  final Map<String, String> _senderNames = {}; // Cache sender names
+  final Map<String, String?> _senderPhotoUrls = {}; // Cache sender photo URLs
   String _searchQuery = '';
 
   @override
@@ -266,9 +267,9 @@ class _CommunityChatViewState extends State<CommunityChatView> {
                     future: _nameResolver.getUserDisplayName(memberId),
                     builder: (context, snapshot) {
                       return ListTile(
-                        leading: CircleAvatar(
+                        leading: const CircleAvatar(
                           backgroundColor: AppColors.grey300,
-                          child: const Icon(Icons.person),
+                          child: Icon(Icons.person),
                         ),
                         title: Text(
                           snapshot.data ?? memberId,
@@ -311,10 +312,10 @@ class _CommunityChatViewState extends State<CommunityChatView> {
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 16,
               backgroundColor: AppTheme.primaryColor,
-              child: const Icon(
+              child: Icon(
                 Icons.group,
                 size: 16,
                 color: AppColors.white,
@@ -335,7 +336,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
                       onTap: () => _showMemberList(context),
                       child: Text(
                         '${_community!.memberCount} members',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.normal,
                           color: AppTheme.primaryColor,
@@ -382,14 +383,14 @@ class _CommunityChatViewState extends State<CommunityChatView> {
                             _searchQuery.isNotEmpty
                                 ? 'No messages found'
                                 : 'No messages yet',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 16,
                             ),
                           ),
                           if (_searchQuery.isEmpty) ...[
                             const SizedBox(height: 8),
-                            Text(
+                            const Text(
                               'Start the conversation!',
                               style: TextStyle(
                                 color: AppColors.textSecondary,
@@ -449,7 +450,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
                           hintText: 'Type a message...',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(color: AppColors.grey300),
+                            borderSide: const BorderSide(color: AppColors.grey300),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -463,7 +464,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
                     ),
                     const SizedBox(width: 8),
                     IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.send,
                         color: AppTheme.primaryColor,
                       ),

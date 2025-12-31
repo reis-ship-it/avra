@@ -97,8 +97,8 @@ class _AIChatBarState extends State<AIChatBar> {
               ),
             ),
             if (widget.isLoading)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
+              const Padding(
+                padding: EdgeInsets.only(right: 8),
                 child: SizedBox(
                   width: 20,
                   height: 20,

@@ -60,14 +60,14 @@ class ExpansionTimelineWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          Row(
+          const Row(
             children: [
               Icon(
                 Icons.timeline,
                 color: AppTheme.primaryColor,
                 size: 24,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Text(
                 'Expansion Timeline',
                 style: TextStyle(
@@ -93,7 +93,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
           // Expansion History
           if (expansionHistory.isNotEmpty) ...[
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Expansion Events',
               style: TextStyle(
                 fontSize: 16,
@@ -121,7 +121,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Coverage Milestones',
               style: TextStyle(
                 fontSize: 16,
@@ -146,14 +146,14 @@ class ExpansionTimelineWidget extends StatelessWidget {
                 color: AppColors.grey100,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(
                     Icons.info_outline,
                     size: 20,
                     color: AppColors.textSecondary,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'No expansion history available yet',
@@ -232,7 +232,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -241,7 +241,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
@@ -314,7 +314,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                     Expanded(
                       child: Text(
                         locality,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
@@ -327,7 +327,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     _formatTimestamp(timestamp),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -341,7 +341,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                         child: LinearProgressIndicator(
                           value: coverage,
                           backgroundColor: AppColors.grey300,
-                          valueColor: AlwaysStoppedAnimation<Color>(
+                          valueColor: const AlwaysStoppedAnimation<Color>(
                             AppTheme.primaryColor,
                           ),
                         ),
@@ -349,7 +349,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         '${(coverage * 100).toStringAsFixed(0)}%',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: AppTheme.primaryColor,
@@ -363,7 +363,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     '${eventsByLocality[locality]!.length} event(s)',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 11,
                       color: AppColors.textSecondary,
                     ),
@@ -373,7 +373,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Commute from ${commutePatterns[locality]!.length} locality(ies)',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 11,
                       color: AppColors.textSecondary,
                     ),
@@ -411,7 +411,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppTheme.primaryColor,
               shape: BoxShape.circle,
             ),
@@ -430,7 +430,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                   children: [
                     Text(
                       displayName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -443,7 +443,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                         color: AppTheme.primaryColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Text(
+                      child: const Text(
                         '75% ACHIEVED',
                         style: TextStyle(
                           fontSize: 9,
@@ -458,7 +458,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     _formatTimestamp(timestamp),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -468,7 +468,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     '${(coverage * 100).toStringAsFixed(0)}% coverage',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.primaryColor,

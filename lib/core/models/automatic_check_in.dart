@@ -101,7 +101,7 @@ class AutomaticCheckIn extends Equatable {
   /// Check out from automatic check-in
   AutomaticCheckIn checkOut({DateTime? checkOutTime}) {
     final checkout = checkOutTime ?? DateTime.now();
-    final dwell = checkout.difference(this.checkInTime);
+    final dwell = checkout.difference(checkInTime);
     // Calculate quality score using the dwell time we just calculated
     final quality = _calculateQualityScoreFromDuration(dwell);
 

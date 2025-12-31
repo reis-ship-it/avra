@@ -99,7 +99,7 @@ class _UserDataViewerPageState extends State<UserDataViewerPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.search, size: 64, color: AppColors.grey500),
+                      const Icon(Icons.search, size: 64, color: AppColors.grey500),
                       const SizedBox(height: 16),
                       Text(
                         'Search for users to view their data',
@@ -116,7 +116,7 @@ class _UserDataViewerPageState extends State<UserDataViewerPage> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.privacy_tip, color: AppColors.electricGreen, size: 20),
+                            const Icon(Icons.privacy_tip, color: AppColors.electricGreen, size: 20),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(

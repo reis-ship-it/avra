@@ -71,11 +71,11 @@ class _BusinessExpertDiscoveryPageState extends State<BusinessExpertDiscoveryPag
             if (expert.compatibilityScore != null) ...[
               Row(
                 children: [
-                  Icon(Icons.favorite, size: 16, color: AppColors.success),
+                  const Icon(Icons.favorite, size: 16, color: AppColors.success),
                   const SizedBox(width: 4),
                   Text(
                     'Compatibility: ${(expert.compatibilityScore! * 100).toStringAsFixed(0)}%',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.success,
                       fontWeight: FontWeight.bold,
                     ),
@@ -180,12 +180,12 @@ class _BusinessExpertDiscoveryPageState extends State<BusinessExpertDiscoveryPag
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.error_outline,
+                        const Icon(Icons.error_outline,
                             size: 64, color: AppColors.error),
                         const SizedBox(height: 16),
                         Text(
                           _errorMessage!,
-                          style: TextStyle(color: AppColors.error),
+                          style: const TextStyle(color: AppColors.error),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
@@ -202,10 +202,10 @@ class _BusinessExpertDiscoveryPageState extends State<BusinessExpertDiscoveryPag
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.search_off,
+                          const Icon(Icons.search_off,
                               size: 64, color: AppColors.textSecondary),
                           const SizedBox(height: 16),
-                          Text(
+                          const Text(
                             'No experts found',
                             style: TextStyle(
                               color: AppColors.textSecondary,
@@ -213,7 +213,7 @@ class _BusinessExpertDiscoveryPageState extends State<BusinessExpertDiscoveryPag
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
+                          const Text(
                             'Try adjusting your compatibility threshold',
                             style: TextStyle(
                               color: AppColors.textSecondary,
@@ -263,7 +263,7 @@ class _BusinessExpertDiscoveryPageState extends State<BusinessExpertDiscoveryPag
                   CircleAvatar(
                     radius: 24,
                     backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-                    child: Icon(
+                    child: const Icon(
                       Icons.person,
                       color: AppTheme.primaryColor,
                     ),
@@ -283,7 +283,7 @@ class _BusinessExpertDiscoveryPageState extends State<BusinessExpertDiscoveryPag
                         if (expert.metadata?['expertise'] != null)
                           Text(
                             expert.metadata!['expertise'] as String,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
                             ),

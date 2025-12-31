@@ -39,7 +39,7 @@ void main() {
           communityCount: 1,
           externalCount: 0,
           totalCount: 1,
-          searchDuration: Duration(milliseconds: 100),
+          searchDuration: const Duration(milliseconds: 100),
           sources: {'community': 1},
           metadata: [],
         );
@@ -74,7 +74,7 @@ void main() {
           communityCount: 5,
           externalCount: 10,
           totalCount: 5, // Only community results returned
-          searchDuration: Duration(milliseconds: 100),
+          searchDuration: const Duration(milliseconds: 100),
           sources: {'community': 5},
           metadata: [],
         );
@@ -103,7 +103,7 @@ void main() {
           communityCount: 3,
           externalCount: 2,
           totalCount: 5,
-          searchDuration: Duration(milliseconds: 150),
+          searchDuration: const Duration(milliseconds: 150),
           sources: {'community': 3, 'external': 2},
           metadata: [],
         );

@@ -10,7 +10,7 @@ import 'package:spots/core/services/llm_service.dart' as llm
         LLMContext,
         OfflineException,
         DataCenterFailureException;
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/ai/personality_learning.dart' as pl;
@@ -233,24 +233,63 @@ class AICommandProcessor {
           }
 
           String response = '';
-          // Phase 1 Integration: Use streaming if requested
-          if (useStreaming) {
-            final stream = service.chatStream(
-              messages: [
-                llm.ChatMessage(role: llm.ChatRole.user, content: command)
-              ],
-              context: enhancedContext,
-            );
+          
+          // Phase 11 Section 5: Use generateWithContext() for structured facts when userId available
+          if (userId != null) {
+            try {
+              // Try using generateWithContext() which automatically includes structured facts
+              response = await service.generateWithContext(
+                query: command,
+                userId: userId,
+                temperature: 0.7,
+                maxTokens: 500,
+              );
+            } catch (e) {
+              developer.log(
+                'generateWithContext failed, falling back to standard methods: $e',
+                name: _logName,
+              );
+              // Fallback to standard methods if generateWithContext fails
+              if (useStreaming) {
+                final stream = service.chatStream(
+                  messages: [
+                    llm.ChatMessage(role: llm.ChatRole.user, content: command)
+                  ],
+                  context: enhancedContext,
+                );
 
-            // Collect the final response
-            await for (final chunk in stream) {
-              response = chunk;
+                // Collect the final response
+                await for (final chunk in stream) {
+                  response = chunk;
+                }
+              } else {
+                response = await service.generateRecommendation(
+                  userQuery: command,
+                  userContext: enhancedContext,
+                );
+              }
             }
           } else {
-            response = await service.generateRecommendation(
-              userQuery: command,
-              userContext: enhancedContext,
-            );
+            // No userId available, use standard methods
+            // Phase 1 Integration: Use streaming if requested
+            if (useStreaming) {
+              final stream = service.chatStream(
+                messages: [
+                  llm.ChatMessage(role: llm.ChatRole.user, content: command)
+                ],
+                context: enhancedContext,
+              );
+
+              // Collect the final response
+              await for (final chunk in stream) {
+                response = chunk;
+              }
+            } else {
+              response = await service.generateRecommendation(
+                userQuery: command,
+                userContext: enhancedContext,
+              );
+            }
           }
 
           return response;

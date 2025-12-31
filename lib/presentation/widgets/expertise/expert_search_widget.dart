@@ -159,11 +159,11 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
+    return const Center(
       child: Column(
         children: [
-          const Icon(Icons.search_off, size: 64, color: AppColors.textSecondary),
-          const SizedBox(height: 16),
+          Icon(Icons.search_off, size: 64, color: AppColors.textSecondary),
+          SizedBox(height: 16),
           Text(
             'No experts found',
             style: TextStyle(
@@ -171,7 +171,7 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Try adjusting your search criteria',
             style: TextStyle(
@@ -221,7 +221,7 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
             if (result.location != null)
               Text(
                 result.location!,
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
               ),
             const SizedBox(height: 4),
             Wrap(
@@ -239,13 +239,13 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
           children: [
             Text(
               '${(result.relevanceScore * 100).toStringAsFixed(0)}%',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: AppColors.electricGreen,
               ),
             ),
-            Text(
+            const Text(
               'match',
               style: TextStyle(
                 fontSize: 10,

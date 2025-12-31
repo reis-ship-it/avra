@@ -110,8 +110,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
         }
         
         // If UnifiedUser.fromJson didn't work, create UnifiedUser manually
-        if (user == null) {
-          user = UnifiedUser(
+        user ??= UnifiedUser(
             id: authState.user.id,
             email: authState.user.email,
             displayName: authState.user.displayName ?? authState.user.name,
@@ -122,7 +121,6 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
             isOnline: authState.user.isOnline ?? false,
             expertiseMap: expertiseMap, // Loaded from database
           );
-        }
       }
 
       if (user != null) {
@@ -234,9 +232,9 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
   }
 
   Widget _buildNotAuthenticatedState() {
-    return Center(
+    return const Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -245,7 +243,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
               size: 64,
               color: AppColors.textSecondary,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'Please sign in to view your expertise',
               style: TextStyle(
@@ -272,14 +270,14 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.grey200),
             ),
-            child: Column(
+            child: const Column(
               children: [
                 Icon(
                   Icons.stars_outlined,
                   size: 48,
                   color: AppColors.textSecondary,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   'No Expertise Yet',
                   style: TextStyle(
@@ -288,7 +286,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   'Start contributing to earn expertise pins! Create lists, review spots, and share your knowledge.',
                   style: TextStyle(
@@ -345,7 +343,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
           const SizedBox(height: 24),
 
           // Category Breakdown
-          Text(
+          const Text(
             'Expertise by Category',
             style: TextStyle(
               fontSize: 18,
@@ -372,7 +370,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
           // Progress Section
           if (_progressMap != null && _progressMap!.isNotEmpty) ...[
             const SizedBox(height: 24),
-            Text(
+            const Text(
               'Progress to Next Level',
               style: TextStyle(
                 fontSize: 18,
@@ -438,7 +436,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                     children: [
                       Text(
                         primaryPin.category,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -454,7 +452,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                           const SizedBox(width: 4),
                           Text(
                             '${primaryPin.level.displayName} Level',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
                             ),
@@ -463,7 +461,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                             const SizedBox(width: 8),
                             Text(
                               '• ${primaryPin.location}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
                               ),
@@ -486,7 +484,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                   ),
                   child: Text(
                     primaryPin.level.displayName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.primaryColor,
@@ -505,7 +503,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
             // Unlocked Features
             if (primaryPin.unlockedFeatures.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 'Unlocked Features',
                 style: TextStyle(
                   fontSize: 12,
@@ -524,7 +522,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                       style: const TextStyle(fontSize: 10),
                     ),
                     backgroundColor: AppColors.grey100,
-                    side: BorderSide(color: AppColors.grey300),
+                    side: const BorderSide(color: AppColors.grey300),
                   );
                 }).toList(),
               ),
@@ -534,7 +532,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
             const SizedBox(height: 12),
             Text(
               'Earned: ${_formatDate(primaryPin.earnedAt)}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),
@@ -614,14 +612,14 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.info_outline,
                   color: AppTheme.primaryColor,
                   size: 20,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   'How Expertise Works',
                   style: TextStyle(
@@ -633,7 +631,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
               ],
             ),
             const SizedBox(height: 12),
-            Text(
+            const Text(
               'Expertise is earned through authentic contributions:',
               style: TextStyle(
                 fontSize: 14,
@@ -669,7 +667,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),

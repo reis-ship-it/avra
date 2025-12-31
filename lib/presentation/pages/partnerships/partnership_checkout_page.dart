@@ -120,7 +120,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                           children: [
                             Text(
                               widget.event.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -129,7 +129,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                             const SizedBox(height: 4),
                             Text(
                               widget.event.getEventTypeDisplayName(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
                               ),
@@ -148,16 +148,16 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                   // Partnership Info
                   if (isPartnershipEvent && widget.partnership!.business != null) ...[
                     const SizedBox(height: 12),
-                    Divider(color: AppColors.grey300),
+                    const Divider(color: AppColors.grey300),
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        Icon(Icons.handshake, size: 18, color: AppTheme.primaryColor),
+                        const Icon(Icons.handshake, size: 18, color: AppTheme.primaryColor),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             'Partnership Event with ${widget.partnership!.business!.name}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               color: AppColors.textPrimary,
@@ -192,7 +192,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Order Summary',
                     style: TextStyle(
                       fontSize: 20,
@@ -206,7 +206,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Ticket Price',
                         style: TextStyle(
                           fontSize: 16,
@@ -215,7 +215,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                       ),
                       Text(
                         '\$${ticketPrice.toStringAsFixed(2)}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
@@ -229,7 +229,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Quantity',
                         style: TextStyle(
                           fontSize: 16,
@@ -262,7 +262,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                             ),
                             child: Text(
                               '$_quantity',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -295,7 +295,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
                         'Only $availableTickets tickets remaining!',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppTheme.warningColor,
                           fontWeight: FontWeight.w500,
@@ -304,14 +304,14 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                     ),
 
                   const SizedBox(height: 16),
-                  Divider(color: AppColors.grey300),
+                  const Divider(color: AppColors.grey300),
                   const SizedBox(height: 16),
 
                   // Total
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Total',
                         style: TextStyle(
                           fontSize: 20,
@@ -321,7 +321,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                       ),
                       Text(
                         '\$${totalAmount.toStringAsFixed(2)}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: AppTheme.primaryColor,
@@ -368,12 +368,12 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: AppColors.error),
+                      const Icon(Icons.error_outline, color: AppColors.error),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontSize: 14,
                           ),
@@ -402,7 +402,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textPrimary,
               ),

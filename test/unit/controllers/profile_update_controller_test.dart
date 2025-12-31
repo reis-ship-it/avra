@@ -6,8 +6,6 @@ import 'package:spots/core/controllers/profile_update_controller.dart';
 import 'package:spots/domain/repositories/auth_repository.dart';
 import 'package:spots/core/services/atomic_clock_service.dart';
 import 'package:spots/core/models/user.dart';
-import 'package:spots/core/models/personality_profile.dart';
-import 'package:spots/core/models/preferences_profile.dart';
 import 'package:spots/core/models/atomic_timestamp.dart';
 
 import 'profile_update_controller_test.mocks.dart';

@@ -24,13 +24,13 @@ void main() {
     late StripeConfig invalidConfig;
 
     setUp(() {
-      validConfig = StripeConfig(
+      validConfig = const StripeConfig(
         publishableKey: 'pk_test_1234567890abcdef',
         merchantIdentifier: 'merchant.com.spots',
         isTestMode: true,
       );
 
-      invalidConfig = StripeConfig(
+      invalidConfig = const StripeConfig(
         publishableKey: '',
         isTestMode: true,
       );
@@ -136,19 +136,19 @@ void main() {
           'should accept valid publishable key, reject empty publishable key, or accept merchant identifier',
           () {
         // Test business logic: configuration validation
-        final config1 = StripeConfig(
+        const config1 = StripeConfig(
           publishableKey: 'pk_test_validkey',
           isTestMode: true,
         );
         expect(config1.isValid, true);
 
-        final config2 = StripeConfig(
+        const config2 = StripeConfig(
           publishableKey: '',
           isTestMode: true,
         );
         expect(config2.isValid, false);
 
-        final config3 = StripeConfig(
+        const config3 = StripeConfig(
           publishableKey: 'pk_test_validkey',
           merchantIdentifier: 'merchant.com.spots',
           isTestMode: true,

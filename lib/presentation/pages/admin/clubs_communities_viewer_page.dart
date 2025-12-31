@@ -26,7 +26,7 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
   // Filter state
   final TextEditingController _memberFilterController = TextEditingController();
   bool _showOnlyWithFollowing = false;
-  int _minFollowers = 1;
+  final int _minFollowers = 1;
   String? _selectedCategory;
   
   // Following data
@@ -165,7 +165,7 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
           ),
           child: Row(
             children: [
-              Icon(Icons.privacy_tip, color: AppColors.electricGreen, size: 20),
+              const Icon(Icons.privacy_tip, color: AppColors.electricGreen, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -235,7 +235,7 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                       _applyFilters();
                     },
                   ),
-                  Expanded(
+                  const Expanded(
                     child: Text('Only show clubs/communities with members who have a following'),
                   ),
                 ],
@@ -281,7 +281,7 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.group,
                             size: 64,
                             color: AppColors.grey500,

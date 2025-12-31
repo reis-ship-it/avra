@@ -113,20 +113,20 @@ void main() {
       await node2.initialize();
       
       // Get initial timestamps
-      final t1_initial = await node1.getAtomicTimestamp();
-      final t2_initial = await node2.getAtomicTimestamp();
+      final t1Initial = await node1.getAtomicTimestamp();
+      final t2Initial = await node2.getAtomicTimestamp();
       
-      final initialDiff = (t1_initial.serverTime
-          .difference(t2_initial.serverTime).inMilliseconds).abs();
+      final initialDiff = (t1Initial.serverTime
+          .difference(t2Initial.serverTime).inMilliseconds).abs();
       
       // Wait and check again
       await Future.delayed(const Duration(milliseconds: 100));
       
-      final t1_later = await node1.getAtomicTimestamp();
-      final t2_later = await node2.getAtomicTimestamp();
+      final t1Later = await node1.getAtomicTimestamp();
+      final t2Later = await node2.getAtomicTimestamp();
       
-      final laterDiff = (t1_later.serverTime
-          .difference(t2_later.serverTime).inMilliseconds).abs();
+      final laterDiff = (t1Later.serverTime
+          .difference(t2Later.serverTime).inMilliseconds).abs();
       
       // Difference should be stable (within reasonable range)
       expect(laterDiff, lessThan(1000));

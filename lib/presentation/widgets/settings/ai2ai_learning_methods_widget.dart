@@ -9,6 +9,7 @@
 /// - Visual indicators for method performance
 /// 
 /// Uses AppColors/AppTheme for 100% design token compliance.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -150,7 +151,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.error_outline,
                   color: AppColors.error,
                   size: 32,
@@ -158,7 +159,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.error,
                     fontSize: 14,
                   ),
@@ -229,8 +230,8 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
   }
 
   Widget _buildEmptyState() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
       child: Center(
         child: Column(
           children: [
@@ -239,7 +240,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
               color: AppColors.textSecondary,
               size: 48,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'No active learning methods',
               style: TextStyle(
@@ -247,7 +248,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               'Start AI2AI connections to begin learning',
               style: TextStyle(
@@ -294,7 +295,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
           const SizedBox(height: 8),
           Text(
             method.description,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
             ),
@@ -306,7 +307,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Effectiveness',
                       style: TextStyle(
                         fontSize: 12,
@@ -325,7 +326,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
                     const SizedBox(height: 4),
                     Text(
                       '${(method.effectivenessScore * 100).toStringAsFixed(0)}%',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -338,7 +339,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
+                  const Text(
                     'Last Active',
                     style: TextStyle(
                       fontSize: 12,
@@ -348,7 +349,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
                   const SizedBox(height: 4),
                   Text(
                     _formatLastActive(method.lastActive),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),

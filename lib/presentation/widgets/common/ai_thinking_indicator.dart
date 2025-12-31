@@ -10,6 +10,7 @@
 /// - Timeout handling with helpful messages
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -139,7 +140,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
                       const SizedBox(height: 6),
                       Text(
                         _getStageDescription(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 13,
                           color: AppColors.textSecondary,
                         ),
@@ -173,7 +174,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
           const SizedBox(width: 8),
           Text(
             _getStageTitle(),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: AppColors.electricGreen,
@@ -192,7 +193,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
           opacity: _pulseAnimation.value,
           child: Container(
             padding: EdgeInsets.all(size * 0.25),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
                   AppColors.electricGreen,
@@ -223,7 +224,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
             value: progress,
             minHeight: 6,
             backgroundColor: AppColors.grey200,
-            valueColor: AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
           ),
         ),
         const SizedBox(height: 8),
@@ -232,14 +233,14 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
           children: [
             Text(
               _getProgressLabel(),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 11,
                 color: AppColors.textSecondary,
               ),
             ),
             Text(
               '${(progress * 100).toInt()}%',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
                 color: AppColors.electricGreen,
@@ -263,14 +264,14 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
           width: 1,
         ),
       ),
-      child: Row(
+      child: const Row(
         children: [
           Icon(
             Icons.access_time,
             color: AppColors.warning,
             size: 24,
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,7 +284,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'The AI is still thinking. This might take a moment...',
                   style: TextStyle(

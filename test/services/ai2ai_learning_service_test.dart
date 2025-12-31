@@ -16,6 +16,7 @@
 /// - AI2AIChatAnalyzer: Backend analyzer
 /// - PersonalityLearning: Personality learning backend
 /// - SharedPreferences: Storage backend
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/ai2ai_learning_service.dart';

@@ -25,7 +25,7 @@ void main() {
           id: 'phase-1',
           name: PhaseName.bootstrap,
           userCountThreshold: 1000,
-          saturationFactors: SaturationFactors(),
+          saturationFactors: const SaturationFactors(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -43,11 +43,11 @@ void main() {
           id: 'phase-1',
           name: PhaseName.growth,
           userCountThreshold: 10000,
-          categoryMultipliers: {
+          categoryMultipliers: const {
             'Coffee': 1.5,
             'Food': 1.2,
           },
-          saturationFactors: SaturationFactors(),
+          saturationFactors: const SaturationFactors(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -67,8 +67,8 @@ void main() {
           id: 'phase-1',
           name: PhaseName.growth,
           userCountThreshold: 10000,
-          categoryMultipliers: {'Coffee': 1.5},
-          saturationFactors: SaturationFactors(),
+          categoryMultipliers: const {'Coffee': 1.5},
+          saturationFactors: const SaturationFactors(),
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -109,7 +109,7 @@ void main() {
           'should get multiplier based on saturation ratio and serialize correctly',
           () {
         // Test business logic: multiplier calculation and JSON serialization
-        final factors = SaturationFactors();
+        const factors = SaturationFactors();
 
         expect(factors.getMultiplierForSaturation(0.005), equals(0.8)); // Low
         expect(

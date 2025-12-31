@@ -67,9 +67,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
       var metrics = await _analysisService.getEventMetrics(widget.event.id);
       
       // If no metrics exist, analyze the event
-      if (metrics == null) {
-        metrics = await _analysisService.analyzeEventSuccess(widget.event.id);
-      }
+      metrics ??= await _analysisService.analyzeEventSuccess(widget.event.id);
 
       setState(() {
         _metrics = metrics;
@@ -112,11 +110,11 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: AppColors.error),
+            const Icon(Icons.error_outline, size: 64, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               _error!,
-              style: TextStyle(color: AppColors.error),
+              style: const TextStyle(color: AppColors.error),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -234,7 +232,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
                 const SizedBox(height: 4),
                 Text(
                   widget.event.title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
@@ -251,7 +249,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Key Metrics',
           style: TextStyle(
             fontSize: 20,
@@ -335,7 +333,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
               Expanded(
                 child: Text(
                   label,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
@@ -346,7 +344,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -354,7 +352,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
           ),
           Text(
             subtitle,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: AppColors.textSecondary,
             ),
@@ -397,7 +395,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
             children: [
               Icon(Icons.trending_up, color: npsColor),
               const SizedBox(width: 8),
-              Text(
+              const Text(
                 'Net Promoter Score (NPS)',
                 style: TextStyle(
                   fontSize: 18,
@@ -434,7 +432,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
                     const SizedBox(height: 4),
                     Text(
                       '${_metrics!.attendeesWhoWouldRecommend} would recommend',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -490,7 +488,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
             ],
           ),
           const SizedBox(height: 8),
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('-100', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
@@ -515,10 +513,10 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.check_circle, color: AppColors.electricGreen),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Success Factors',
                 style: TextStyle(
@@ -535,12 +533,12 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
-                  Icon(Icons.check, size: 16, color: AppColors.electricGreen),
+                  const Icon(Icons.check, size: 16, color: AppColors.electricGreen),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       factor,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
                       ),
@@ -566,10 +564,10 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.trending_up, color: AppTheme.warningColor),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Improvement Areas',
                 style: TextStyle(
@@ -586,12 +584,12 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
-                  Icon(Icons.arrow_forward, size: 16, color: AppTheme.warningColor),
+                  const Icon(Icons.arrow_forward, size: 16, color: AppTheme.warningColor),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       area,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
                       ),
@@ -617,10 +615,10 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.handshake, color: AppTheme.primaryColor),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Partner Satisfaction',
                 style: TextStyle(
@@ -640,7 +638,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
                   Expanded(
                     child: Text(
                       'Partner ${entry.key.substring(0, 8)}...',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
                       ),
@@ -662,7 +660,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
                       const SizedBox(width: 8),
                       Text(
                         entry.value.toStringAsFixed(1),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
@@ -682,10 +680,10 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
                 color: AppColors.electricGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(Icons.check_circle, color: AppColors.electricGreen, size: 20),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
                     'Partners would collaborate again',
                     style: TextStyle(
@@ -716,10 +714,10 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.lightbulb, color: AppTheme.primaryColor),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Actionable Recommendations',
                 style: TextStyle(
@@ -737,12 +735,12 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.arrow_forward, size: 16, color: AppTheme.primaryColor),
+                  const Icon(Icons.arrow_forward, size: 16, color: AppTheme.primaryColor),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       recommendation,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
                       ),

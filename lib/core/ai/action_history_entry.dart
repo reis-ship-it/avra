@@ -8,6 +8,7 @@
 /// - Timestamp of execution
 /// - Whether the action can be undone
 /// - Whether the action has been undone
+library;
 
 import 'package:spots/core/ai/action_models.dart';
 

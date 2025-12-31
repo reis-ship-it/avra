@@ -19,7 +19,7 @@ void main() {
         stripeSessionId: 'stripe_session_123',
         createdAt: DateTime.now(),
         expiresAt: DateTime.now().add(const Duration(days: 7)),
-        metadata: {'verificationType': 'document_and_selfie'},
+        metadata: const {'verificationType': 'document_and_selfie'},
       );
 
       expect(session.userId, equals('user-456'));
@@ -135,7 +135,7 @@ void main() {
         userId: 'u1',
         status: VerificationStatus.pending,
         createdAt: DateTime.now(),
-        metadata: {'verificationType': 'document'},
+        metadata: const {'verificationType': 'document'},
       );
 
       final selfieSession = VerificationSession(
@@ -143,7 +143,7 @@ void main() {
         userId: 'u2',
         status: VerificationStatus.pending,
         createdAt: DateTime.now(),
-        metadata: {'verificationType': 'selfie'},
+        metadata: const {'verificationType': 'selfie'},
       );
 
       final documentAndSelfieSession = VerificationSession(
@@ -151,7 +151,7 @@ void main() {
         userId: 'u3',
         status: VerificationStatus.pending,
         createdAt: DateTime.now(),
-        metadata: {'verificationType': 'document_and_selfie'},
+        metadata: const {'verificationType': 'document_and_selfie'},
       );
 
       expect(documentSession.metadata['verificationType'], equals('document'));

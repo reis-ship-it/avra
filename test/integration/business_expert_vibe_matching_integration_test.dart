@@ -45,7 +45,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           createdBy: 'user-1',
-          requiredExpertise: ['food'],
+          requiredExpertise: const ['food'],
         );
 
         // Create local expert with required expertise
@@ -78,7 +78,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           createdBy: 'user-2',
-          requiredExpertise: ['coffee'],
+          requiredExpertise: const ['coffee'],
         );
 
         // Create local expert
@@ -110,7 +110,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           createdBy: 'user-3',
-          requiredExpertise: ['events'],
+          requiredExpertise: const ['events'],
         );
 
         // Create expert with known expertise level
@@ -150,7 +150,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           createdBy: 'user-4',
-          requiredExpertise: ['music'],
+          requiredExpertise: const ['music'],
         );
 
         // Find experts
@@ -180,7 +180,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           createdBy: 'user-5',
-          requiredExpertise: ['consulting'],
+          requiredExpertise: const ['consulting'],
           preferredLocation: 'San Francisco',
         );
 
@@ -209,7 +209,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           createdBy: 'user-6',
-          requiredExpertise: ['local'],
+          requiredExpertise: const ['local'],
           preferredLocation: 'Oakland',
         );
 
@@ -238,7 +238,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           createdBy: 'user-7',
-          requiredExpertise: ['remote'],
+          requiredExpertise: const ['remote'],
           preferredLocation: 'San Francisco',
         );
 
@@ -269,7 +269,7 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           createdBy: 'user-8',
-          requiredExpertise: ['vibe'],
+          requiredExpertise: const ['vibe'],
         );
 
         // Find experts

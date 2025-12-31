@@ -5,11 +5,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/ai/personality_learning.dart' as pl;
 import 'package:spots/core/services/config_service.dart';
+import 'package:spots/core/ai/facts_index.dart';
 import 'package:http/http.dart' as http;
 
 /// LLM Service for Google Gemini integration
@@ -278,6 +279,85 @@ class LLMService {
       context: context,
       maxTokens: 300,
     );
+  }
+  
+  /// Generate LLM response with structured facts context
+  /// 
+  /// Phase 11 Section 5: Retrieval + LLM Fusion
+  /// Retrieves structured facts from FactsIndex and personality profile,
+  /// then prepares distilled context for LLM.
+  /// 
+  /// [query] - User query
+  /// [userId] - Authenticated user ID
+  /// [messages] - Optional conversation history (if provided, uses chat() with history)
+  /// [temperature] - Controls randomness (0.0-1.0), default 0.7
+  /// [maxTokens] - Maximum tokens in response, default 500
+  /// 
+  /// Returns LLM-generated response with enriched context
+  /// 
+  /// Note: If [messages] is provided, uses conversation history. Otherwise, uses single query.
+  Future<String> generateWithContext({
+    required String query,
+    required String userId,
+    List<ChatMessage>? messages,
+    double temperature = 0.7,
+    int maxTokens = 500,
+  }) async {
+    try {
+      developer.log('Generating with structured facts context for user: $userId', name: _logName);
+      
+      // Get dependencies from GetIt (already imported)
+      final factsIndex = GetIt.instance<FactsIndex>();
+      final personalityLearning = GetIt.instance<pl.PersonalityLearning>();
+      
+      // Step 1: Retrieve structured facts
+      final facts = await factsIndex.retrieveFacts(userId: userId);
+      
+      // Step 2: Get dimension scores (from PersonalityProfile)
+      final profile = await personalityLearning.getCurrentPersonality(userId);
+      final dimensionScores = profile?.dimensions ?? {};
+      
+      // Step 3: Prepare distilled context for LLM
+      final context = LLMContext(
+        userId: userId,
+        preferences: {
+          'traits': facts.traits,
+          'places': facts.places,
+          'social_graph': facts.socialGraph,
+          'dimension_scores': dimensionScores,
+        },
+        personality: profile,
+      );
+      
+      // Step 4: Call LLM with distilled context
+      // Use conversation history if provided, otherwise use single query
+      final messagesToSend = messages ?? [
+        ChatMessage(role: ChatRole.user, content: query),
+      ];
+      
+      return await chat(
+        messages: messagesToSend,
+        context: context,
+        temperature: temperature,
+        maxTokens: maxTokens,
+      );
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error generating with context: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+      // Fallback to basic chat without structured context
+      final messagesToSend = messages ?? [
+        ChatMessage(role: ChatRole.user, content: query),
+      ];
+      return await chat(
+        messages: messagesToSend,
+        temperature: temperature,
+        maxTokens: maxTokens,
+      );
+    }
   }
   
   /// Chat with the LLM using streaming for real-time response display

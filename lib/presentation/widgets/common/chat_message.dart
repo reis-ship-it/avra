@@ -24,10 +24,10 @@ class ChatMessage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) ...[
-            CircleAvatar(
+            const CircleAvatar(
               radius: 16,
               backgroundColor: AppTheme.primaryColor,
-              child: const Icon(
+              child: Icon(
                 Icons.smart_toy,
                 size: 16,
                 color: AppColors.white,
@@ -72,10 +72,10 @@ class ChatMessage extends StatelessWidget {
           ),
           if (isUser) ...[
             const SizedBox(width: 8),
-            CircleAvatar(
+            const CircleAvatar(
               radius: 16,
               backgroundColor: AppColors.grey300,
-              child: const Icon(
+              child: Icon(
                 Icons.person,
                 size: 16,
                 color: AppColors.white,

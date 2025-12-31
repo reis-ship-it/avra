@@ -158,7 +158,7 @@ class NeighborhoodBoundary extends Equatable {
     } catch (_) {}
     // #endregion
 
-    List<CoordinatePoint> _parseCoordinates(dynamic raw) {
+    List<CoordinatePoint> parseCoordinates(dynamic raw) {
       if (raw == null) return const [];
       if (raw is List) {
         return raw.map((c) {
@@ -179,7 +179,7 @@ class NeighborhoodBoundary extends Equatable {
         (e) => e.name == json['boundaryType'],
         orElse: () => BoundaryType.softBorder,
       ),
-      coordinates: _parseCoordinates(json['coordinates']),
+      coordinates: parseCoordinates(json['coordinates']),
       source: json['source'] as String? ?? 'Google Maps',
       softBorderSpots: (json['softBorderSpots'] as List<dynamic>?)
               ?.map((s) => s as String)

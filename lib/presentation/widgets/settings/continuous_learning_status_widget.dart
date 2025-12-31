@@ -109,7 +109,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.error_outline,
                   color: AppColors.error,
                   size: 32,
@@ -117,7 +117,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.error,
                     fontSize: 14,
                   ),
@@ -212,7 +212,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
                           _status!.isActive
                               ? 'Learning is in progress'
                               : 'Learning is paused',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
                           ),
@@ -275,7 +275,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.play_circle_outline,
                               size: 16,
                               color: AppColors.primary,
@@ -316,7 +316,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
         Expanded(
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
             ),

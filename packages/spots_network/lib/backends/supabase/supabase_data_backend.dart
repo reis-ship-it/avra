@@ -449,7 +449,7 @@ class SupabaseDataBackend implements DataBackend {
       final updatedList = list.copyWith(spotIds: updatedSpotIds);
       final updateResponse = await updateSpotList(updatedList);
       if (!updateResponse.success) {
-        return updateResponse.map((_) => null);
+        return updateResponse.map((_) {});
       }
       
       return ApiResponse.success(null);
@@ -472,7 +472,7 @@ class SupabaseDataBackend implements DataBackend {
       final updatedList = list.copyWith(spotIds: updatedSpotIds);
       final updateResponse = await updateSpotList(updatedList);
       if (!updateResponse.success) {
-        return updateResponse.map((_) => null);
+        return updateResponse.map((_) {});
       }
       
       return ApiResponse.success(null);
@@ -493,7 +493,7 @@ class SupabaseDataBackend implements DataBackend {
       final spotIds = list.spotIds;
       
       if (spotIds.isEmpty) {
-        return ApiResponse.success([]);
+        return ApiResponse.success(const []);
       }
       
       final batchResponse = await batchGet<Spot>(
@@ -642,7 +642,7 @@ class SupabaseDataBackend implements DataBackend {
       final updatedList = list.copyWith(followers: updatedFollowers);
       final updateResponse = await updateSpotList(updatedList);
       if (!updateResponse.success) {
-        return updateResponse.map((_) => null);
+        return updateResponse.map((_) {});
       }
       return ApiResponse.success(null);
     } catch (e) {

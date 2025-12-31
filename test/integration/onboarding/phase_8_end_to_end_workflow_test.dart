@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/models/personality_profile.dart';
-import 'package:spots/core/models/preferences_profile.dart';
 import 'package:spots/core/services/onboarding_data_service.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';

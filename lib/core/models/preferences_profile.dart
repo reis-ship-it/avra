@@ -104,7 +104,7 @@ class PreferencesProfile extends Equatable {
       
       // Each subcategory gets a weight based on being selected
       // Weight = 0.7 (base) + 0.1 per subcategory (up to 0.9 max)
-      final baseWeight = 0.7;
+      const baseWeight = 0.7;
       final subcategoryWeight = (subcategories.length * 0.1).clamp(0.0, 0.2);
       final categoryWeight = (baseWeight + subcategoryWeight).clamp(0.0, 1.0);
       

@@ -27,7 +27,7 @@ void main() {
     group('OUR_GUTS.md Compliance', () {
       test('marks external data with clear source indicators', () async {
         // Mock successful response (New API format)
-        final mockResponse = '''
+        const mockResponse = '''
         {
           "places": [
             {
@@ -65,7 +65,7 @@ void main() {
       });
 
       test('maintains authenticity over algorithms principle', () async {
-        final mockResponse = '''
+        const mockResponse = '''
         {
           "places": [
             {
@@ -103,7 +103,7 @@ void main() {
 
     group('Performance and Reliability', () {
       test('implements caching for performance', () async {
-        final mockResponse = '''
+        const mockResponse = '''
         {
           "places": [
             {
@@ -166,7 +166,7 @@ void main() {
 
     group('Google Places API (New) Functionality', () {
       test('searches places with location bias', () async {
-        final mockResponse = '''
+        const mockResponse = '''
         {
           "places": [
             {
@@ -203,7 +203,7 @@ void main() {
       });
 
       test('searches nearby places', () async {
-        final mockResponse = '''
+        const mockResponse = '''
         {
           "places": [
             {
@@ -240,7 +240,7 @@ void main() {
       });
 
       test('gets place details', () async {
-        final mockResponse = '''
+        const mockResponse = '''
         {
           "id": "places/detailed_place",
           "displayName": {

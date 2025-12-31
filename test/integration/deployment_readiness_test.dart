@@ -50,7 +50,7 @@ void main() {
       try {
         final logFile = File('/Users/reisgordon/SPOTS/.cursor/debug.log');
         await logFile.writeAsString('', mode: FileMode.write);
-        await logFile.writeAsString(jsonEncode({
+        await logFile.writeAsString('${jsonEncode({
           'sessionId': 'debug-session',
           'runId': 'setup',
           'hypothesisId': 'A',
@@ -58,7 +58,7 @@ void main() {
           'message': 'setUpAll started',
           'data': {'timestamp': DateTime.now().millisecondsSinceEpoch},
           'timestamp': DateTime.now().millisecondsSinceEpoch,
-        }) + '\n', mode: FileMode.append);
+        })}\n', mode: FileMode.append);
       } catch (_) {}
       // #endregion agent log
 
@@ -69,7 +69,7 @@ void main() {
       // #region agent log
       try {
         final logFile = File('/Users/reisgordon/SPOTS/.cursor/debug.log');
-        await logFile.writeAsString(jsonEncode({
+        await logFile.writeAsString('${jsonEncode({
           'sessionId': 'debug-session',
           'runId': 'setup',
           'hypothesisId': 'A',
@@ -77,7 +77,7 @@ void main() {
           'message': 'DI init starting',
           'data': {'timestamp': DateTime.now().millisecondsSinceEpoch},
           'timestamp': DateTime.now().millisecondsSinceEpoch,
-        }) + '\n', mode: FileMode.append);
+        })}\n', mode: FileMode.append);
       } catch (_) {}
       // #endregion agent log
 
@@ -86,7 +86,7 @@ void main() {
         // #region agent log
         try {
           final logFile = File('/Users/reisgordon/SPOTS/.cursor/debug.log');
-          await logFile.writeAsString(jsonEncode({
+          await logFile.writeAsString('${jsonEncode({
             'sessionId': 'debug-session',
             'runId': 'setup',
             'hypothesisId': 'A',
@@ -97,7 +97,7 @@ void main() {
               'timestamp': DateTime.now().millisecondsSinceEpoch,
             },
             'timestamp': DateTime.now().millisecondsSinceEpoch,
-          }) + '\n', mode: FileMode.append);
+          })}\n', mode: FileMode.append);
         } catch (_) {}
         // #endregion agent log
       } catch (e) {
@@ -105,7 +105,7 @@ void main() {
         // #region agent log
         try {
           final logFile = File('/Users/reisgordon/SPOTS/.cursor/debug.log');
-          await logFile.writeAsString(jsonEncode({
+          await logFile.writeAsString('${jsonEncode({
             'sessionId': 'debug-session',
             'runId': 'setup',
             'hypothesisId': 'A',
@@ -113,7 +113,7 @@ void main() {
             'message': 'DI init failed',
             'data': {'error': e.toString(), 'timestamp': DateTime.now().millisecondsSinceEpoch},
             'timestamp': DateTime.now().millisecondsSinceEpoch,
-          }) + '\n', mode: FileMode.append);
+          })}\n', mode: FileMode.append);
         } catch (_) {}
         // #endregion agent log
         print('⚠️  DI initialization failed in test: $e');
@@ -140,7 +140,7 @@ void main() {
       // #region agent log
       try {
         final logFile = File('/Users/reisgordon/SPOTS/.cursor/debug.log');
-        await logFile.writeAsString(jsonEncode({
+        await logFile.writeAsString('${jsonEncode({
           'sessionId': 'debug-session',
           'runId': 'setup',
           'hypothesisId': 'A',
@@ -148,7 +148,7 @@ void main() {
           'message': 'setUpAll completed',
           'data': {'timestamp': DateTime.now().millisecondsSinceEpoch},
           'timestamp': DateTime.now().millisecondsSinceEpoch,
-        }) + '\n', mode: FileMode.append);
+        })}\n', mode: FileMode.append);
       } catch (_) {}
       // #endregion agent log
     });
@@ -759,17 +759,17 @@ Future<void> _validateUserExperienceWithoutWidget(
   DeploymentReadinessReport report,
 ) async {
   // Test 1: Accessibility Compliance (simulated)
-  final accessibilityScore = 0.95;
+  const accessibilityScore = 0.95;
   expect(accessibilityScore, greaterThanOrEqualTo(0.9),
       reason: 'Accessibility score must be ≥90%');
 
   // Test 2: Usability Metrics (simulated)
-  final usabilityScore = 0.90;
+  const usabilityScore = 0.90;
   expect(usabilityScore, greaterThanOrEqualTo(0.85),
       reason: 'Usability score must be ≥85%');
 
   // Test 3: Performance Perception (simulated)
-  final performancePerception = 0.85;
+  const performancePerception = 0.85;
   expect(performancePerception, greaterThanOrEqualTo(0.8),
       reason: 'Performance perception must be ≥80%');
 

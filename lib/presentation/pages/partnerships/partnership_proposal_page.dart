@@ -170,8 +170,8 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
+            const Padding(
+              padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -183,7 +183,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'Partner with businesses to host events together',
                     style: TextStyle(
@@ -202,16 +202,16 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                 controller: _searchController,
                 decoration: InputDecoration(
                   hintText: '🔍 Search businesses...',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
                   fillColor: AppColors.grey100,
-                  prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+                  prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
-                          icon: Icon(Icons.clear, color: AppColors.textSecondary),
+                          icon: const Icon(Icons.clear, color: AppColors.textSecondary),
                           onPressed: () {
                             _searchController.clear();
                             _searchBusinesses('');
@@ -219,7 +219,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                         )
                       : null,
                 ),
-                style: TextStyle(color: AppColors.textPrimary),
+                style: const TextStyle(color: AppColors.textPrimary),
                 onChanged: _searchBusinesses,
               ),
             ),
@@ -228,8 +228,8 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
 
             // Search Results or Suggestions
             if (_searchController.text.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'Search Results',
                   style: TextStyle(
@@ -243,8 +243,8 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
               if (_isLoading)
                 const Center(child: CircularProgressIndicator())
               else if (_searchResults.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(32),
+                const Padding(
+                  padding: EdgeInsets.all(32),
                   child: Center(
                     child: Text(
                       'No businesses found',
@@ -260,8 +260,8 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                       null, // No compatibility score for search results
                     )),
             ] else ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'Suggested Partners (Vibe Match)',
                   style: TextStyle(
@@ -286,7 +286,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                           color: AppColors.textSecondary.withValues(alpha: 0.5),
                         ),
                         const SizedBox(height: 16),
-                        Text(
+                        const Text(
                           'No suggested partners yet',
                           style: TextStyle(
                             fontSize: 16,
@@ -295,7 +295,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
+                        const Text(
                           'Try searching for businesses or check back later',
                           style: TextStyle(
                             fontSize: 14,
@@ -352,7 +352,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                               fit: BoxFit.cover,
                             ),
                           )
-                        : Icon(
+                        : const Icon(
                             Icons.business,
                             color: AppTheme.primaryColor,
                             size: 24,
@@ -365,7 +365,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                       children: [
                         Text(
                           business.name,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -375,7 +375,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                           const SizedBox(height: 4),
                           Text(
                             business.categories.join(', '),
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -399,7 +399,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textPrimary,
-                        side: BorderSide(color: AppColors.grey300),
+                        side: const BorderSide(color: AppColors.grey300),
                       ),
                       child: const Text('View Profile'),
                     ),
@@ -598,7 +598,7 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                             color: AppTheme.primaryColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.business,
                             color: AppTheme.primaryColor,
                             size: 24,
@@ -611,7 +611,7 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                             children: [
                               Text(
                                 widget.business.name,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.textPrimary,
@@ -632,7 +632,7 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                 const SizedBox(height: 24),
 
                 // Partnership Type
-                Text(
+                const Text(
                   'Partnership Type',
                   style: TextStyle(
                     fontSize: 18,
@@ -678,7 +678,7 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                 const SizedBox(height: 24),
 
                 // Revenue Split
-                Text(
+                const Text(
                   'Revenue Split',
                   style: TextStyle(
                     fontSize: 18,
@@ -692,7 +692,7 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                     Expanded(
                       child: Column(
                         children: [
-                          Text(
+                          const Text(
                             'You',
                             style: TextStyle(
                               fontSize: 14,
@@ -701,7 +701,7 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                           ),
                           Text(
                             '${_userPercentage.toStringAsFixed(0)}%',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: AppTheme.primaryColor,
@@ -715,7 +715,7 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                         children: [
                           Text(
                             widget.business.name,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
                             ),
@@ -724,7 +724,7 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                           ),
                           Text(
                             '${_businessPercentage.toStringAsFixed(0)}%',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: AppTheme.primaryColor,
@@ -752,7 +752,7 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                 const SizedBox(height: 24),
 
                 // Responsibilities
-                Text(
+                const Text(
                   'Responsibilities',
                   style: TextStyle(
                     fontSize: 18,
@@ -778,7 +778,7 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                 const SizedBox(height: 24),
 
                 // Custom Terms
-                Text(
+                const Text(
                   'Custom Terms (Optional)',
                   style: TextStyle(
                     fontSize: 18,
@@ -792,14 +792,14 @@ class _PartnershipProposalFormPageState extends State<PartnershipProposalFormPag
                   maxLines: 4,
                   decoration: InputDecoration(
                     hintText: 'Add any additional terms or notes...',
-                    hintStyle: TextStyle(color: AppColors.textHint),
+                    hintStyle: const TextStyle(color: AppColors.textHint),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
                     fillColor: AppColors.grey100,
                   ),
-                  style: TextStyle(color: AppColors.textPrimary),
+                  style: const TextStyle(color: AppColors.textPrimary),
                 ),
 
                 const SizedBox(height: 32),

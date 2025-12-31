@@ -260,7 +260,7 @@ void main() {
       });
 
       test('should have trust levels in correct progression', () {
-        final levels = TrustLevel.values;
+        const levels = TrustLevel.values;
         for (int i = 0; i < levels.length - 1; i++) {
           expect(levels[i].index, lessThan(levels[i + 1].index));
         }

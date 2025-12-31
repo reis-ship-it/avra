@@ -1,6 +1,7 @@
 /// Tests for Streaming Response Widget
 ///
 /// Part of Feature Matrix Phase 1.3: LLM Full Integration
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -120,11 +121,11 @@ void main() {
         (tester) async {
       // Test business logic: typing text widget animation
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TypingTextWidget(
               text: 'Hello World',
-              typingSpeed: const Duration(milliseconds: 10),
+              typingSpeed: Duration(milliseconds: 10),
             ),
           ),
         ),
@@ -157,7 +158,7 @@ void main() {
     testWidgets('should render animated dots', (tester) async {
       // Test business logic: typing indicator animation
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TypingIndicator(),
           ),

@@ -561,7 +561,7 @@ class EdgeComputingManager {
       nodeId: nodeId,
       cpuUsage: 0.65,
       memoryUsage: 0.70,
-      networkLatency: Duration(milliseconds: 45),
+      networkLatency: const Duration(milliseconds: 45),
       cacheHitRate: 0.85,
       throughput: 150.0,
       availability: 0.999,
@@ -662,7 +662,7 @@ class EdgeComputingManager {
   Future<void> _loadMLModels(EdgeMLProcessor processor, List<String> models) async {}
   Future<CacheAnalysis> _analyzeCacheUsage(EdgeCache cache) async => CacheAnalysis(patterns: {});
   Future<List<String>> _identifyHotData(EdgeCache cache, CacheAnalysis analysis) async => [];
-  Future<CacheOptimization> _optimizeCacheAllocation(EdgeCache cache, List<String> hotData) async => CacheOptimization(optimizations: [], hitRateImprovement: 0.1, latencyReduction: Duration(milliseconds: 10), memoryEfficiencyGain: 0.05, prefetchedItems: 5);
+  Future<CacheOptimization> _optimizeCacheAllocation(EdgeCache cache, List<String> hotData) async => CacheOptimization(optimizations: [], hitRateImprovement: 0.1, latencyReduction: const Duration(milliseconds: 10), memoryEfficiencyGain: 0.05, prefetchedItems: 5);
   Future<void> _applyCacheOptimizations(EdgeCache cache, CacheOptimization optimization) async {}
   Future<void> _prefetchPredictedData(EdgeCache cache, CacheAnalysis analysis) async {}
   Future<void> _cleanupStaleData(EdgeCache cache) async {}
@@ -672,7 +672,7 @@ class EdgeComputingManager {
   Future<QualityOptimizationResult> _optimizeAdaptiveQuality(String nodeId, BandwidthAnalysis analysis) async => QualityOptimizationResult(improvement: 0.10, savings: 5.3);
   double _calculateNetworkEfficiencyGain(Map<String, NodeBandwidthOptimization> optimizations) => 0.18;
   Future<SLACompliance> _checkSLACompliance(Map<String, EdgeNodePerformance> performances) async => SLACompliance(compliant: true, score: 0.96);
-  Duration _calculateAverageLatency(Map<String, EdgeNodePerformance> performances) => Duration(milliseconds: 55);
+  Duration _calculateAverageLatency(Map<String, EdgeNodePerformance> performances) => const Duration(milliseconds: 55);
   double _calculateCacheEfficiency(Map<String, EdgeNodePerformance> performances) => 0.82;
   double _calculateBandwidthUtilization(Map<String, EdgeNodePerformance> performances) => 0.68;
   Future<SecurityOperationResult> _enableEdgeEncryption(EdgeNode node, EdgeSecurityConfiguration config) async => SecurityOperationResult(success: true);
@@ -685,7 +685,7 @@ class EdgeComputingManager {
   
   String _generateClusterId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return 'edge_cluster_${timestamp}';
+    return 'edge_cluster_$timestamp';
   }
 }
 
@@ -846,7 +846,7 @@ class EdgeMLProcessor {
   
   Future<dynamic> processInference(MLInferenceRequest request) async {
     // Simulate ML processing
-    await Future.delayed(Duration(milliseconds: 50));
+    await Future.delayed(const Duration(milliseconds: 50));
     return {'prediction': 0.85, 'confidence': 0.92};
   }
 }

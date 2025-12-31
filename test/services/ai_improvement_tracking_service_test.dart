@@ -14,6 +14,7 @@
 /// Dependencies:
 /// - GetStorage: For persistence
 /// - AISelfImprovementSystem: For metrics calculation (mocked)
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/ai_improvement_tracking_service.dart';
@@ -256,7 +257,7 @@ void main() {
         if (service == null) return;
         // Arrange
         const userId = 'test_user';
-        final timeWindow = const Duration(days: 7);
+        const timeWindow = Duration(days: 7);
         
         // Act
         final history = service!.getHistory(

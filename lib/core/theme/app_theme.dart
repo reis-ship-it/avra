@@ -16,7 +16,7 @@ class AppTheme {
 
   // Light Theme
   static ThemeData get lightTheme {
-    final colorScheme = const ColorScheme(
+    const colorScheme = ColorScheme(
       brightness: Brightness.light,
       primary: AppColors.electricGreen,
       onPrimary: AppColors.black,
@@ -128,7 +128,7 @@ class AppTheme {
 
   // Dark Theme
   static ThemeData get darkTheme {
-    final colorScheme = const ColorScheme(
+    const colorScheme = ColorScheme(
       brightness: Brightness.dark,
       primary: AppColors.electricGreen,
       onPrimary: AppColors.black,

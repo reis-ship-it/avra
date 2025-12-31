@@ -8,6 +8,7 @@
 /// - Delete Operations: Removing onboarding data
 /// - Privacy Protection: userId → agentId conversion validation
 /// - Error Handling: Invalid data, missing data, storage errors
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -282,7 +283,7 @@ void main() {
     group('Privacy Protection - AgentId Conversion', () {
       test('should always use agentId for storage regardless of input agentId', () async {
         // Arrange
-        final differentAgentId = 'agent_different123';
+        const differentAgentId = 'agent_different123';
         when(() => mockAgentIdService.getUserAgentId(testUserId))
             .thenAnswer((_) async => differentAgentId);
 

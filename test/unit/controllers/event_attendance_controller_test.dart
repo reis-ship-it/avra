@@ -11,7 +11,6 @@ import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/payment.dart';
 import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/models/expertise_level.dart';
 
 import 'event_attendance_controller_test.mocks.dart';
 
@@ -69,7 +68,7 @@ void main() {
         status: EventStatus.upcoming,
         createdAt: now,
         updatedAt: now,
-        attendeeIds: [],
+        attendeeIds: const [],
         attendeeCount: 0,
       );
 

@@ -8,9 +8,9 @@ class DoorJourneyWidget extends StatelessWidget {
   final UsagePattern usagePattern;
   
   const DoorJourneyWidget({
-    Key? key,
+    super.key,
     required this.usagePattern,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -23,10 +23,10 @@ class DoorJourneyWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.vpn_key, color: AppColors.primary, size: 24),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Text(
                 'Your Door Journey',
                 style: TextStyle(
@@ -38,7 +38,7 @@ class DoorJourneyWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Doors you\'ve opened with your key:',
             style: TextStyle(
               fontSize: 14,
@@ -108,7 +108,7 @@ class DoorJourneyWidget extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
@@ -116,7 +116,7 @@ class DoorJourneyWidget extends StatelessWidget {
                 ),
                 Text(
                   '$count opened',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
@@ -148,7 +148,7 @@ class DoorJourneyWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Your key adapts to you',
                   style: TextStyle(
                     fontSize: 12,
@@ -158,7 +158,7 @@ class DoorJourneyWidget extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   modeInfo.description,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
@@ -220,10 +220,10 @@ class DoorJourneyCompact extends StatelessWidget {
   final VoidCallback? onTap;
   
   const DoorJourneyCompact({
-    Key? key,
+    super.key,
     required this.usagePattern,
     this.onTap,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -238,13 +238,13 @@ class DoorJourneyCompact extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.vpn_key, color: AppColors.primary, size: 20),
+            const Icon(Icons.vpn_key, color: AppColors.primary, size: 20),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Your Key Journey',
                     style: TextStyle(
                       fontSize: 14,
@@ -254,7 +254,7 @@ class DoorJourneyCompact extends StatelessWidget {
                   ),
                   Text(
                     '${usagePattern.openedDoorTypes.length} door types opened',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -262,7 +262,7 @@ class DoorJourneyCompact extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: AppColors.textSecondary),
+            const Icon(Icons.chevron_right, color: AppColors.textSecondary),
           ],
         ),
       ),

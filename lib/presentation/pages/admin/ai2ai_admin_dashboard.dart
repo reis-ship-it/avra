@@ -191,7 +191,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
                   Container(
                     width: 8,
                     height: 8,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: AppColors.success,
                       shape: BoxShape.circle,
                     ),
@@ -232,9 +232,9 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 48, color: AppColors.error),
+            const Icon(Icons.error_outline, size: 48, color: AppColors.error),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Error Loading Dashboard',
               style: TextStyle(fontSize: 18, color: AppColors.error),
             ),
@@ -244,7 +244,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
               child: Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary),
+                style: const TextStyle(color: AppColors.textSecondary),
               ),
             ),
             const SizedBox(height: 24),
@@ -271,11 +271,11 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Icon(Icons.access_time, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.access_time, size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Text(
                       'Last update: ${_formatTime(_lastUpdate!)}',
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -293,12 +293,12 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.warning_amber, color: AppColors.error, size: 20),
+                    const Icon(Icons.warning_amber, color: AppColors.error, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _errorMessage!,
-                        style: TextStyle(color: AppColors.error, fontSize: 12),
+                        style: const TextStyle(color: AppColors.error, fontSize: 12),
                       ),
                     ),
                     TextButton(
@@ -398,16 +398,16 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            Icon(Icons.info_outline, size: 48, color: AppColors.textSecondary),
+            const Icon(Icons.info_outline, size: 48, color: AppColors.textSecondary),
             const SizedBox(height: 16),
             Text(
               title,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
             ),
             const SizedBox(height: 8),
             Text(
               message,
-              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+              style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
           ],

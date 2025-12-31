@@ -42,7 +42,7 @@ class UserConnectionsDisplay extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.link_off,
                         size: 48,
                         color: AppColors.textSecondary,

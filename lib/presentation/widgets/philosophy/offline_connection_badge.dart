@@ -8,10 +8,10 @@ class OfflineConnectionBadge extends StatelessWidget {
   final int? queuedConnectionsCount;
   
   const OfflineConnectionBadge({
-    Key? key,
+    super.key,
     required this.isOffline,
     this.queuedConnectionsCount,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -62,10 +62,10 @@ class OfflineConnectionIcon extends StatelessWidget {
   final VoidCallback? onTap;
   
   const OfflineConnectionIcon({
-    Key? key,
+    super.key,
     required this.isOffline,
     this.onTap,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -74,7 +74,7 @@ class OfflineConnectionIcon extends StatelessWidget {
     }
     
     return IconButton(
-      icon: Icon(
+      icon: const Icon(
         Icons.cloud_off,
         color: AppColors.warning,
       ),
@@ -88,14 +88,14 @@ class OfflineConnectionIcon extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.cloud_off, color: AppColors.warning),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Text('Working Offline', style: TextStyle(color: AppColors.textPrimary)),
           ],
         ),
-        content: Text(
+        content: const Text(
           'Your key still works!\n\n'
           '✅ AI learns with you\n'
           '✅ AI2AI connections work\n'
@@ -108,7 +108,7 @@ class OfflineConnectionIcon extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Got it', style: TextStyle(color: AppColors.primary)),
+            child: const Text('Got it', style: TextStyle(color: AppColors.primary)),
           ),
         ],
       ),

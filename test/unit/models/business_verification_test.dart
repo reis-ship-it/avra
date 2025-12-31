@@ -133,7 +133,7 @@ void main() {
 
     group('JSON Serialization', () {
       test('should serialize and deserialize without data loss', () {
-        final verifiedAt = testDate.add(Duration(days: 1));
+        final verifiedAt = testDate.add(const Duration(days: 1));
         final verification = BusinessVerification(
           id: 'verification-123',
           businessAccountId: 'business-123',

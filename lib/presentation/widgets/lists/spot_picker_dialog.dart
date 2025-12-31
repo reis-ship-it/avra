@@ -137,7 +137,7 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.9,
         height: MediaQuery.of(context).size.height * 0.8,
         child: Column(
@@ -212,7 +212,7 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.error_outline,
                             size: 64,
                             color: AppTheme.errorColor,
@@ -300,7 +300,7 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.location_off,
                               size: 64,
                               color: AppColors.grey400,
@@ -364,7 +364,7 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                                         const SizedBox(height: 4),
                                         Row(
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.category,
                                               size: 14,
                                               color: AppColors.grey600,
@@ -385,7 +385,7 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                                           const SizedBox(height: 4),
                                           Row(
                                             children: [
-                                              Icon(
+                                              const Icon(
                                                 Icons.location_on,
                                                 size: 14,
                                                 color: AppColors.grey600,

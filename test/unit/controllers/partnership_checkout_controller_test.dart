@@ -14,7 +14,6 @@ import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/payment.dart';
 import 'package:spots/core/models/payment_status.dart';
 import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/models/expertise_level.dart';
 
 import 'partnership_checkout_controller_test.mocks.dart';
 
@@ -103,7 +102,7 @@ void main() {
       partnershipId: 'partnership_123',
       totalAmount: 50.0,
       ticketsSold: 2,
-      parties: [
+      parties: const [
         SplitParty(
           partyId: 'host_123',
           type: SplitPartyType.user,
@@ -128,7 +127,7 @@ void main() {
       updatedAt: now,
     );
 
-    final testTaxCalculation = SalesTaxCalculation(
+    const testTaxCalculation = SalesTaxCalculation(
       taxableAmount: 50.0,
       taxRate: 8.5,
       taxAmount: 4.25,

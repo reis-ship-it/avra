@@ -13,6 +13,7 @@
 ///
 /// Dependencies:
 /// - AIImprovementTrackingService: For milestone data
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -437,7 +438,7 @@ class MockAIImprovementTrackingService implements AIImprovementTrackingService {
   }
 
   @override
-  Stream<AIImprovementMetrics> get metricsStream => Stream.empty();
+  Stream<AIImprovementMetrics> get metricsStream => const Stream.empty();
 
   @override
   List<AIImprovementSnapshot> getHistory({

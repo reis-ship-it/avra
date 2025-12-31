@@ -50,17 +50,17 @@ void main() {
           'should grant local expertise for neighboring locality expansion, or not grant expertise if locality not expanded',
           () async {
         // Test business logic: locality expertise granting based on threshold
-        final clubId = 'club-1';
-        final category = 'Coffee';
-        final originalLocality = 'Mission District, San Francisco';
-        final newLocality = 'Williamsburg, Brooklyn';
+        const clubId = 'club-1';
+        const category = 'Coffee';
+        const originalLocality = 'Mission District, San Francisco';
+        const newLocality = 'Williamsburg, Brooklyn';
 
         final expansion1 = GeographicExpansion(
           id: 'expansion-1',
           clubId: clubId,
           isClub: true,
           originalLocality: originalLocality,
-          expandedLocalities: [newLocality],
+          expandedLocalities: const [newLocality],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -80,7 +80,7 @@ void main() {
           clubId: clubId,
           isClub: true,
           originalLocality: originalLocality,
-          expandedLocalities: [],
+          expandedLocalities: const [],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -102,17 +102,17 @@ void main() {
           'should grant city expertise when 75% city coverage reached, or not grant if 75% threshold not reached',
           () async {
         // Test business logic: city expertise granting based on threshold
-        final clubId = 'club-1';
-        final category = 'Coffee';
-        final city = 'Brooklyn';
+        const clubId = 'club-1';
+        const category = 'Coffee';
+        const city = 'Brooklyn';
 
         final expansion1 = GeographicExpansion(
           id: 'expansion-1',
           clubId: clubId,
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedCities: [city],
-          cityCoverage: {city: 0.8},
+          expandedCities: const [city],
+          cityCoverage: const {city: 0.8},
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -132,8 +132,8 @@ void main() {
           clubId: clubId,
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedCities: [city],
-          cityCoverage: {city: 0.6},
+          expandedCities: const [city],
+          cityCoverage: const {city: 0.6},
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -155,17 +155,17 @@ void main() {
           'should grant state expertise when 75% state coverage reached, or not grant if 75% threshold not reached',
           () async {
         // Test business logic: state expertise granting based on threshold
-        final clubId = 'club-1';
-        final category = 'Coffee';
-        final state = 'New York';
+        const clubId = 'club-1';
+        const category = 'Coffee';
+        const state = 'New York';
 
         final expansion1 = GeographicExpansion(
           id: 'expansion-1',
           clubId: clubId,
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedStates: [state],
-          stateCoverage: {state: 0.8},
+          expandedStates: const [state],
+          stateCoverage: const {state: 0.8},
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -185,7 +185,7 @@ void main() {
           clubId: clubId,
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedStates: [state],
+          expandedStates: const [state],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -207,17 +207,17 @@ void main() {
           'should grant nation expertise when 75% nation coverage reached, or not grant if 75% threshold not reached',
           () async {
         // Test business logic: nation expertise granting based on threshold
-        final clubId = 'club-1';
-        final category = 'Coffee';
-        final nation = 'United States';
+        const clubId = 'club-1';
+        const category = 'Coffee';
+        const nation = 'United States';
 
         final expansion1 = GeographicExpansion(
           id: 'expansion-1',
           clubId: clubId,
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedNations: [nation],
-          nationCoverage: {nation: 0.8},
+          expandedNations: const [nation],
+          nationCoverage: const {nation: 0.8},
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -238,7 +238,7 @@ void main() {
           clubId: clubId,
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedNations: [nation],
+          expandedNations: const [nation],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -261,8 +261,8 @@ void main() {
           'should grant global expertise when 75% global coverage reached, or not grant if 75% threshold not reached',
           () async {
         // Test business logic: global expertise granting based on threshold
-        final clubId = 'club-1';
-        final category = 'Coffee';
+        const clubId = 'club-1';
+        const category = 'Coffee';
 
         final expansion1 = GeographicExpansion(
           id: 'expansion-1',
@@ -309,14 +309,14 @@ void main() {
           'should grant universal expertise when 75% universe coverage reached',
           () async {
         // Test business logic: universal expertise granting
-        final clubId = 'club-1';
-        final category = 'Coffee';
+        const clubId = 'club-1';
+        const category = 'Coffee';
         final expansion = GeographicExpansion(
           id: 'expansion-1',
           clubId: clubId,
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedNations: ['USA', 'Canada', 'Mexico'],
+          expandedNations: const ['USA', 'Canada', 'Mexico'],
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -338,17 +338,17 @@ void main() {
           'should grant expertise from expansion when thresholds met and preserve existing expertise when granting new expertise',
           () async {
         // Test business logic: main expertise granting method with threshold checking and expertise preservation
-        final clubId = 'club-1';
-        final category = 'Coffee';
-        final city = 'Brooklyn';
+        const clubId = 'club-1';
+        const category = 'Coffee';
+        const city = 'Brooklyn';
 
         final expansion1 = GeographicExpansion(
           id: 'expansion-1',
           clubId: clubId,
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedCities: [city],
-          cityCoverage: {city: 0.8},
+          expandedCities: const [city],
+          cityCoverage: const {city: 0.8},
           createdAt: testDate,
           updatedAt: testDate,
         );
@@ -405,16 +405,16 @@ void main() {
       test('should use GeographicExpansionService to check thresholds',
           () async {
         // Test business logic: integration with GeographicExpansionService
-        final clubId = 'club-1';
-        final category = 'Coffee';
-        final city = 'Brooklyn';
+        const clubId = 'club-1';
+        const category = 'Coffee';
+        const city = 'Brooklyn';
         final expansion = GeographicExpansion(
           id: 'expansion-1',
           clubId: clubId,
           isClub: true,
           originalLocality: 'Mission District, San Francisco',
-          expandedCities: [city],
-          cityCoverage: {
+          expandedCities: const [city],
+          cityCoverage: const {
             city: 0.8,
           },
           createdAt: testDate,

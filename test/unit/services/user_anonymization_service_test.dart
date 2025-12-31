@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/user_anonymization_service.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {

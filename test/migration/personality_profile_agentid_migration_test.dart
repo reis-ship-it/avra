@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/storage_service.dart';
@@ -33,8 +33,8 @@ void main() {
   group('Phase 8.3: PersonalityProfile agentId Migration', () {
     test('PersonalityProfile.initial() creates profile with agentId', () async {
       // Arrange
-      final agentId = 'agent_test_123';
-      final userId = 'user_test_123';
+      const agentId = 'agent_test_123';
+      const userId = 'user_test_123';
 
       // Act
       final profile = PersonalityProfile.initial(agentId, userId: userId);
@@ -92,8 +92,8 @@ void main() {
 
     test('PersonalityProfile.toJson() includes both agentId and userId', () {
       // Arrange
-      final agentId = 'agent_test_456';
-      final userId = 'user_test_456';
+      const agentId = 'agent_test_456';
+      const userId = 'user_test_456';
       final profile = PersonalityProfile.initial(agentId, userId: userId);
 
       // Act
@@ -106,7 +106,7 @@ void main() {
 
     test('PersonalityProfile equality uses agentId', () {
       // Arrange
-      final agentId = 'agent_test_789';
+      const agentId = 'agent_test_789';
       final profile1 = PersonalityProfile.initial(agentId);
       final profile2 = PersonalityProfile.initial(agentId);
 
@@ -125,7 +125,7 @@ void main() {
       MockGetStorage.reset();
       final prefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
       final learning = PersonalityLearning.withPrefs(prefs);
-      final userId = 'test_user_migration';
+      const userId = 'test_user_migration';
       
       // Get agentId
       final agentIdService = AgentIdService();
@@ -158,7 +158,7 @@ void main() {
       MockGetStorage.reset();
       final prefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
       final learning = PersonalityLearning.withPrefs(prefs);
-      final userId = 'test_user_legacy';
+      const userId = 'test_user_legacy';
       
       // Get agentId
       final agentIdService = AgentIdService();
@@ -213,7 +213,7 @@ void main() {
       MockGetStorage.reset();
       final prefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
       final learning = PersonalityLearning.withPrefs(prefs);
-      final userId = 'test_user_onboarding';
+      const userId = 'test_user_onboarding';
       
       // Get agentId
       final agentIdService = AgentIdService();

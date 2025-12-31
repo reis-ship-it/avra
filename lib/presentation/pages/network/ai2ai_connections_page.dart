@@ -12,6 +12,7 @@
 /// Integrates with Connection Orchestrator for real-time status synchronization.
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -286,7 +287,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Network Statistics',
               style: TextStyle(
                 fontSize: 16,
@@ -351,7 +352,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color: AppColors.textSecondary,
           ),
@@ -394,7 +395,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
                 color: AppColors.electricGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.info_outline,
                 color: AppColors.electricGreen,
               ),
@@ -417,13 +418,13 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.radar_outlined,
                 size: 80,
                 color: AppColors.grey300,
               ),
               const SizedBox(height: 24),
-              Text(
+              const Text(
                 'Discovery is off',
                 style: TextStyle(
                   fontSize: 20,
@@ -432,7 +433,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
+              const Text(
                 'Start discovery to find nearby SPOTS devices',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -487,14 +488,14 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
+        title: const Row(
           children: [
             Icon(
               Icons.psychology,
               color: AppColors.electricGreen,
             ),
-            const SizedBox(width: 12),
-            const Text('AI2AI Discovery'),
+            SizedBox(width: 12),
+            Text('AI2AI Discovery'),
           ],
         ),
         content: SingleChildScrollView(
@@ -529,14 +530,14 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
                   color: AppColors.electricGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(
                       Icons.verified_user,
                       color: AppColors.electricGreen,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'All interactions follow ai2ai principles from OUR_GUTS.md',
@@ -568,7 +569,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
+          const Icon(
             Icons.check_circle,
             size: 18,
             color: AppColors.electricGreen,
@@ -577,7 +578,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),

@@ -15,7 +15,7 @@ import 'package:spots/core/controllers/social_media_data_collection_controller.d
 import 'package:spots/core/models/multi_path_expertise.dart' as _i10;
 import 'package:spots/core/models/onboarding_data.dart' as _i13;
 import 'package:spots/core/models/outcome_result.dart' as _i11;
-import 'package:spots/core/models/personality_profile.dart' as _i4;
+import 'package:spots_ai/models/personality_profile.dart' as _i4;
 import 'package:spots/core/models/preferences_profile.dart' as _i6;
 import 'package:spots/core/models/social_media_connection.dart' as _i9;
 import 'package:spots/core/models/spot.dart' as _i14;
@@ -24,7 +24,7 @@ import 'package:spots/core/services/onboarding_place_list_generator.dart'
     as _i7;
 import 'package:spots/core/services/onboarding_recommendation_service.dart'
     as _i15;
-import 'package:spots/core/services/personality_sync_service.dart' as _i16;
+import 'package:spots_ai/services/personality_sync_service.dart' as _i16;
 import 'package:spots/core/services/preferences_profile_service.dart' as _i12;
 
 // ignore_for_file: type=lint
@@ -40,7 +40,6 @@ import 'package:spots/core/services/preferences_profile_service.dart' as _i12;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
-// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeSocialMediaDataResult_0 extends _i1.SmartFake
     implements _i2.SocialMediaDataResult {
@@ -242,11 +241,11 @@ class MockPersonalityLearning extends _i1.Mock
           dynamic Function(
             String,
             _i4.PersonalityProfile,
-          )? value) =>
+          )? _onPersonalityEvolved) =>
       super.noSuchMethod(
         Invocation.setter(
           #onPersonalityEvolved,
-          value,
+          _onPersonalityEvolved,
         ),
         returnValueForMissingStub: null,
       );

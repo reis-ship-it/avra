@@ -3,6 +3,7 @@
 /// Comprehensive testing of HybridSearchBloc with AI-powered search, caching, and performance optimization
 /// Ensures optimal development stages and deployment optimization
 /// Tests current implementation as-is without modifying production code
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -468,7 +469,7 @@ void main() {
           externalCount: 2,
           totalCount: 5,
           searchDuration: const Duration(milliseconds: 100),
-          sources: {'community': 3, 'external': 2},
+          sources: const {'community': 3, 'external': 2},
         ),
         build: () => hybridSearchBloc,
         act: (bloc) => bloc.add(ClearHybridSearch()),
@@ -516,7 +517,7 @@ void main() {
           externalCount: 2,
           totalCount: 5,
           searchDuration: const Duration(milliseconds: 100),
-          sources: {'community': 3, 'external': 2},
+          sources: const {'community': 3, 'external': 2},
         ),
         build: () => hybridSearchBloc,
         act: (bloc) => bloc.add(ToggleExternalDataSources(false)),
@@ -537,7 +538,7 @@ void main() {
           externalCount: 2,
           totalCount: 5,
           searchDuration: const Duration(milliseconds: 100),
-          sources: {'community': 3, 'external': 2},
+          sources: const {'community': 3, 'external': 2},
         ),
         build: () => hybridSearchBloc,
         act: (bloc) => bloc.add(ToggleExternalDataSources(false)),
@@ -629,7 +630,7 @@ void main() {
           externalCount: 2,
           totalCount: 5,
           searchDuration: const Duration(milliseconds: 100),
-          sources: {'community': 3, 'external': 2},
+          sources: const {'community': 3, 'external': 2},
         ),
         build: () => hybridSearchBloc,
         act: (bloc) => bloc.add(ClearSearchCache()),
@@ -662,7 +663,7 @@ void main() {
           externalCount: 3,
           totalCount: 10,
           searchDuration: const Duration(milliseconds: 150),
-          sources: {'community': 7, 'external': 3},
+          sources: const {'community': 7, 'external': 3},
         );
 
         expect(state.communityRatio, equals(0.7));
@@ -671,12 +672,12 @@ void main() {
 
       test('HybridSearchLoaded handles zero total count', () {
         final state = HybridSearchLoaded(
-          spots: [],
+          spots: const [],
           communityCount: 0,
           externalCount: 0,
           totalCount: 0,
           searchDuration: const Duration(milliseconds: 50),
-          sources: {},
+          sources: const {},
         );
 
         expect(state.communityRatio, equals(1.0));
@@ -690,7 +691,7 @@ void main() {
           externalCount: 7,
           totalCount: 10,
           searchDuration: const Duration(milliseconds: 150),
-          sources: {'community': 3, 'external': 7},
+          sources: const {'community': 3, 'external': 7},
         );
 
         expect(state.communityRatio, equals(0.3));

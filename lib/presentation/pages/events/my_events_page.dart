@@ -134,10 +134,10 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
           labelColor: AppColors.white,
           unselectedLabelColor: AppColors.white.withValues(alpha: 0.7),
           indicatorColor: AppColors.white,
-          tabs: [
-            const Tab(text: 'Hosting', icon: Icon(Icons.event)),
-            const Tab(text: 'Attending', icon: Icon(Icons.event_available)),
-            const Tab(text: 'Past', icon: Icon(Icons.history)),
+          tabs: const [
+            Tab(text: 'Hosting', icon: Icon(Icons.event)),
+            Tab(text: 'Attending', icon: Icon(Icons.event_available)),
+            Tab(text: 'Past', icon: Icon(Icons.history)),
           ],
         ),
       ),
@@ -161,7 +161,7 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 64,
               color: AppColors.textSecondary,
@@ -169,7 +169,7 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
             const SizedBox(height: 16),
             Text(
               _error!,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 color: AppColors.textSecondary,
               ),
@@ -333,7 +333,7 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
                           children: [
                             Text(
                               event.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -342,7 +342,7 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
                             const SizedBox(height: 4),
                             Text(
                               '${_formatPastDate(event.startTime)} • ${event.category}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
                               ),
@@ -358,7 +358,7 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
                         ),
                         child: Text(
                           event.host.id == _currentUser?.id ? 'Hosted' : 'Attended',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textSecondary,
@@ -370,7 +370,7 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
                   const SizedBox(height: 8),
                   Text(
                     event.description,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
                     ),
@@ -380,23 +380,23 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.people, size: 16, color: AppColors.textSecondary),
+                      const Icon(Icons.people, size: 16, color: AppColors.textSecondary),
                       const SizedBox(width: 4),
                       Text(
                         '${event.attendeeCount} ${event.attendeeCount == 1 ? 'attendee' : 'attendees'}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
                       ),
                       if (event.location != null) ...[
                         const SizedBox(width: 16),
-                        Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
+                        const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             event.location!,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -422,7 +422,7 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
                       label: const Text('Leave Feedback'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.primaryColor,
-                        side: BorderSide(color: AppTheme.primaryColor),
+                        side: const BorderSide(color: AppTheme.primaryColor),
                         minimumSize: const Size(double.infinity, 40),
                       ),
                     ),
@@ -457,7 +457,7 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
             const SizedBox(height: 16),
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -466,7 +466,7 @@ class _MyEventsPageState extends State<MyEventsPage> with SingleTickerProviderSt
             const SizedBox(height: 8),
             Text(
               message,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),

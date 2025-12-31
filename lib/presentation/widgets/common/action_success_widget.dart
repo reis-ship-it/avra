@@ -11,6 +11,7 @@
 /// - Auto-dismiss option
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -167,7 +168,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [
             AppColors.electricGreen,
             AppColors.success,
@@ -223,7 +224,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
             Text(
               widget.result.successMessage ?? widget.result.errorMessage ?? '',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 13,
                 color: AppColors.textSecondary,
               ),
@@ -246,7 +247,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
               color: AppColors.electricGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.list_alt,
               color: AppColors.electricGreen,
               size: 24,
@@ -268,7 +269,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
                 if (intent.description.isNotEmpty)
                   Text(
                     intent.description,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -289,7 +290,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
               color: AppColors.electricGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.place,
               color: AppColors.electricGreen,
               size: 24,
@@ -310,7 +311,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
                 ),
                 Text(
                   intent.category,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
@@ -338,7 +339,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
             ),
           ),
           const SizedBox(width: 12),
-          Icon(
+          const Icon(
             Icons.arrow_forward,
             size: 18,
             color: AppColors.textSecondary,
@@ -358,7 +359,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       );
     }
     
-    return Text(
+    return const Text(
       'Action completed successfully',
       style: TextStyle(
         fontSize: 14,
@@ -396,7 +397,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
               label: const Text('View'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.electricGreen,
-                side: BorderSide(color: AppColors.electricGreen),
+                side: const BorderSide(color: AppColors.electricGreen),
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -440,7 +441,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.undo,
                 size: 18,
                 color: AppColors.warning,
@@ -448,7 +449,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
               const SizedBox(width: 8),
               Text(
                 'Can undo in ${_undoSecondsRemaining}s',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),

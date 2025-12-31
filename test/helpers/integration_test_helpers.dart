@@ -1023,7 +1023,7 @@ class IntegrationTestConstants {
       state: state,
       country: country,
       allowedLocalities: [locality],
-      allowedCities: [],
+      allowedCities: const [],
       createdAt: now,
       updatedAt: now,
     );
@@ -1064,8 +1064,8 @@ class IntegrationTestConstants {
       level: level,
       state: state,
       country: country,
-      allowedLocalities: [],
-      allowedCities: [],
+      allowedLocalities: const [],
+      allowedCities: const [],
       createdAt: now,
       updatedAt: now,
     );

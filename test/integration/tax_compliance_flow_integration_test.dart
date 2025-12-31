@@ -10,9 +10,9 @@ import 'package:spots/core/models/tax_profile.dart';
 void main() {
   group('Tax Compliance Flow Integration Tests', () {
     test('should generate tax document when earnings exceed threshold', () {
-      final earnings = 1500.00;
-      final threshold = 600.00;
-      final needsDocument = earnings >= threshold;
+      const earnings = 1500.00;
+      const threshold = 600.00;
+      const needsDocument = earnings >= threshold;
 
       if (needsDocument) {
         final taxDoc = TaxDocument(
@@ -127,14 +127,14 @@ void main() {
 
     test('should apply 600 minimum earnings threshold correctly', () {
       // Test business logic: threshold calculation
-      final belowThreshold = 500.00;
-      final atThreshold = 600.00;
-      final aboveThreshold = 700.00;
+      const belowThreshold = 500.00;
+      const atThreshold = 600.00;
+      const aboveThreshold = 700.00;
       const threshold = 600.00;
 
-      final needsDocBelow = belowThreshold >= threshold;
-      final needsDocAt = atThreshold >= threshold;
-      final needsDocAbove = aboveThreshold >= threshold;
+      const needsDocBelow = belowThreshold >= threshold;
+      const needsDocAt = atThreshold >= threshold;
+      const needsDocAbove = aboveThreshold >= threshold;
 
       // Test threshold logic
       expect(needsDocBelow, isFalse,

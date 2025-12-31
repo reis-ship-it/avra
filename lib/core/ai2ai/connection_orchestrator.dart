@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots/core/services/ai2ai_realtime_service.dart';
+import 'package:spots_ai/services/ai2ai_realtime_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/core/ai2ai/aipersonality_node.dart';
 import 'package:spots/core/ai2ai/orchestrator_components.dart';
@@ -17,6 +17,9 @@ import 'package:spots/core/network/personality_advertising_service.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/anonymous_user.dart';
 import 'package:spots/core/services/user_anonymization_service.dart';
+import 'package:spots_knot/services/knot/knot_weaving_service.dart';
+import 'package:spots_knot/services/knot/knot_storage_service.dart';
+import 'package:spots_knot/models/knot/braided_knot.dart';
 import 'package:spots_network/spots_network.dart';
 
 /// OUR_GUTS.md: "AI2AI vibe-based connections that enable cross-personality learning while preserving privacy"
@@ -37,6 +40,10 @@ class VibeConnectionOrchestrator {
   final UserAnonymizationService? _anonymizationService;
   final AppLogger _logger =
       const AppLogger(defaultTag: 'AI2AI', minimumLevel: LogLevel.debug);
+
+  // Phase 2: Knot Weaving Integration
+  final KnotWeavingService? _knotWeavingService;
+  final KnotStorageService? _knotStorageService;
 
   // Connection state management
   final Map<String, ConnectionMetrics> _activeConnections = {};
@@ -73,6 +80,9 @@ class VibeConnectionOrchestrator {
     PersonalityAdvertisingService? advertisingService,
     UserAnonymizationService? anonymizationService,
     PersonalityLearning? personalityLearning, // NEW: For offline AI2AI learning
+    // Phase 2: Knot Weaving Integration
+    KnotWeavingService? knotWeavingService,
+    KnotStorageService? knotStorageService,
   })  : _vibeAnalyzer = vibeAnalyzer,
         _connectivity = connectivity,
         _realtimeService = realtimeService,
@@ -80,6 +90,8 @@ class VibeConnectionOrchestrator {
         _protocol = protocol,
         _advertisingService = advertisingService,
         _anonymizationService = anonymizationService,
+        _knotWeavingService = knotWeavingService,
+        _knotStorageService = knotStorageService,
         _discoveryManager = DiscoveryManager(
             connectivity: connectivity, vibeAnalyzer: vibeAnalyzer),
         _connectionManager = ConnectionManager(
@@ -342,8 +354,14 @@ class VibeConnectionOrchestrator {
         localUserId,
         localPersonality,
         remoteNode,
-        (localVibe, remote, comp, metrics) =>
-            _performConnectionEstablishment(localVibe, remote, comp, metrics),
+        (localVibe, remote, comp, metrics) => _performConnectionEstablishment(
+          localVibe,
+          remote,
+          comp,
+          metrics,
+          localPersonality.agentId,
+          remoteNode.nodeId,
+        ),
       );
 
       if (establishedConnection != null) {
@@ -520,7 +538,7 @@ class VibeConnectionOrchestrator {
     _logger.info('Starting AI2AI discovery process', tag: _logName);
 
     // Start periodic discovery
-    _discoveryTimer = Timer.periodic(Duration(minutes: 2), (timer) async {
+    _discoveryTimer = Timer.periodic(const Duration(minutes: 2), (timer) async {
       try {
         await discoverNearbyAIPersonalities(userId, personality);
       } catch (e) {
@@ -537,7 +555,7 @@ class VibeConnectionOrchestrator {
     _logger.info('Starting connection maintenance process', tag: _logName);
 
     _connectionMaintenanceTimer =
-        Timer.periodic(Duration(seconds: 30), (timer) async {
+        Timer.periodic(const Duration(seconds: 30), (timer) async {
       try {
         await manageActiveConnections();
       } catch (e) {
@@ -647,7 +665,7 @@ class VibeConnectionOrchestrator {
     }
 
     // Clean up old discovered nodes (older than 10 minutes)
-    final cutoff = DateTime.now().subtract(Duration(minutes: 10));
+    final cutoff = DateTime.now().subtract(const Duration(minutes: 10));
     final expiredNodes = _discoveredNodes.entries
         .where((entry) => entry.value.lastSeen.isBefore(cutoff))
         .map((entry) => entry.key)
@@ -731,7 +749,7 @@ class VibeConnectionOrchestrator {
 
   void _setCooldown(String nodeId) {
     _connectionCooldowns[nodeId] = DateTime.now()
-        .add(Duration(seconds: VibeConstants.connectionCooldownSeconds));
+        .add(const Duration(seconds: VibeConstants.connectionCooldownSeconds));
   }
 
   /// Determine if a connection is worthy based on compatibility thresholds
@@ -757,13 +775,15 @@ class VibeConnectionOrchestrator {
     AIPersonalityNode remoteNode,
     VibeCompatibilityResult compatibility,
     ConnectionMetrics initialMetrics,
+    String localAgentId,
+    String remoteAgentId,
   ) async {
     try {
       // Use protocol to encode initial connection message if available
       if (_protocol != null) {
         try {
           // Encode connection establishment message via protocol
-          final connectionMessage = _protocol!.encodeMessage(
+          final connectionMessage = await _protocol!.encodeMessage(
             type: MessageType.connectionRequest,
             payload: {
               'local_vibe_archetype': localVibe.getVibeArchetype(),
@@ -789,7 +809,7 @@ class VibeConnectionOrchestrator {
       }
 
       // Simulate connection establishment process
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 200));
 
       // Create initial interaction event
       final initialInteraction = InteractionEvent.success(
@@ -801,13 +821,63 @@ class VibeConnectionOrchestrator {
         },
       );
 
+      // Phase 2: Create braided knot for connection
+      BraidedKnot? braidedKnot;
+      if (_knotWeavingService != null && _knotStorageService != null) {
+        try {
+          // Get personality knots for both agents
+          final localKnot = await _knotStorageService!.loadKnot(localAgentId);
+          final remoteKnot = await _knotStorageService!.loadKnot(remoteAgentId);
+
+          if (localKnot != null && remoteKnot != null) {
+            // Create braided knot (default to friendship relationship type)
+            braidedKnot = await _knotWeavingService!.weaveKnots(
+              knotA: localKnot,
+              knotB: remoteKnot,
+              relationshipType: RelationshipType.friendship,
+            );
+
+            // Store braided knot
+            await _knotStorageService!.saveBraidedKnot(
+              connectionId: initialMetrics.connectionId,
+              braidedKnot: braidedKnot,
+            );
+
+            // #region agent log
+            _logger.info(
+              'Braided knot created for connection: ${initialMetrics.connectionId}',
+              tag: _logName,
+            );
+            // #endregion
+          } else {
+            // #region agent log
+            _logger.debug(
+              'Knots not available for braiding (local: ${localKnot != null}, remote: ${remoteKnot != null})',
+              tag: _logName,
+            );
+            // #endregion
+          }
+        } catch (e) {
+          // #region agent log
+          _logger.warn(
+            'Error creating braided knot: $e, continuing without braided knot',
+            tag: _logName,
+          );
+          // #endregion
+          // Continue without braided knot - connection can still be established
+        }
+      }
+
       // Update connection with initial interaction
-      return initialMetrics.updateDuringInteraction(
+      final updatedMetrics = initialMetrics.updateDuringInteraction(
         newInteraction: initialInteraction,
         additionalOutcomes: {
           'successful_exchanges': 1,
+          if (braidedKnot != null) 'braided_knot_id': braidedKnot.id,
         },
       );
+
+      return updatedMetrics;
     } catch (e) {
       // #region agent log
       _logger.error('Error in connection establishment',
@@ -837,7 +907,7 @@ class VibeConnectionOrchestrator {
 
       // Log connection summary
       final summary = completedConnection.getSummary();
-      _logger.info('Connection completed: ${summary}', tag: _logName);
+      _logger.info('Connection completed: $summary', tag: _logName);
 
       return completedConnection;
     } catch (e) {

@@ -11,6 +11,7 @@
 /// - Auto-dismisses when back online
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -88,26 +89,26 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
                 color: AppColors.warning.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.cloud_off,
                 color: AppColors.warning,
                 size: 24,
               ),
             ),
             const SizedBox(width: 16),
-            Expanded(
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Limited Functionality',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'You\'re offline. Some features are unavailable.',
                     style: TextStyle(
@@ -193,7 +194,7 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
             const SizedBox(width: 8),
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -206,7 +207,7 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
           padding: const EdgeInsets.only(left: 26, bottom: 6),
           child: Text(
             '• $feature',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 13,
               color: AppColors.textSecondary,
             ),
@@ -223,14 +224,14 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
         color: AppColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
+      child: const Row(
         children: [
           Icon(
             Icons.lightbulb_outline,
             size: 18,
             color: AppColors.primary,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               'Connect to WiFi or mobile data to access all features',
@@ -290,13 +291,13 @@ class OfflineBanner extends StatelessWidget {
         color: AppColors.warning.withValues(alpha: 0.2),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.cloud_off,
               size: 18,
               color: AppColors.warning,
             ),
             const SizedBox(width: 12),
-            Expanded(
+            const Expanded(
               child: Text(
                 'Offline mode • Limited functionality',
                 style: TextStyle(
@@ -307,7 +308,7 @@ class OfflineBanner extends StatelessWidget {
               ),
             ),
             if (onTap != null)
-              Icon(
+              const Icon(
                 Icons.info_outline,
                 size: 18,
                 color: AppColors.textSecondary,

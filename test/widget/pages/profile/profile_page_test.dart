@@ -24,7 +24,11 @@ void main() {
         child: const ProfilePage(),
         authBloc: mockAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await tester.pumpWidget(widget);
+      await tester.pump(); // Initial build
+      await tester.pump(const Duration(milliseconds: 100)); // Wait for async operations
+      // Use pump with timeout instead of pumpAndSettle to avoid infinite animations
+      await tester.pump(const Duration(seconds: 1));
       expect(find.byType(ProfilePage), findsOneWidget);
     });
   });

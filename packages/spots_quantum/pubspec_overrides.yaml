@@ -1,0 +1,10 @@
+# melos_managed_dependency_overrides: spots_core,spots_knot,spots_ml,spots_ai
+dependency_overrides:
+  spots_ai:
+    path: ../spots_ai
+  spots_core:
+    path: ../spots_core
+  spots_knot:
+    path: ../spots_knot
+  spots_ml:
+    path: ../spots_ml

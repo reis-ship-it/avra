@@ -28,6 +28,7 @@
 /// 3. Replace ExpectedResultType with actual return types
 /// 4. Replace placeholder values with actual test data
 /// 5. Remove this comment block once customized
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

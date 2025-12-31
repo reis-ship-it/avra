@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/monitoring/connection_monitor.dart';
 import 'package:spots/core/ai/ai2ai_learning.dart';
 import 'package:spots/core/theme/app_theme.dart';

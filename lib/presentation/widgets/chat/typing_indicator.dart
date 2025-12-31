@@ -4,6 +4,7 @@
 /// 
 /// Phase 3 Enhancement: Typing Indicators
 /// Date: December 2025
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -45,10 +46,10 @@ class _TypingIndicatorState extends State<TypingIndicator>
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          CircleAvatar(
+          const CircleAvatar(
             radius: 16,
             backgroundColor: AppColors.grey300,
-            child: const Icon(
+            child: Icon(
               Icons.person,
               size: 16,
               color: AppColors.white,
@@ -86,7 +87,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
             const SizedBox(width: 8),
             Text(
               '${widget.senderName} is typing...',
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 12,
                 fontStyle: FontStyle.italic,

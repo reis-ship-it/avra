@@ -6,6 +6,7 @@
 /// - _getExpertCuratedListsForCategory() - Tested via getExpertCuratedLists
 /// - _getTopExpertSpots() - Tested via getExpertRecommendations
 /// - _getLocalExpertiseForUser() - Tested via getExpertRecommendations and getExpertCuratedLists
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/expert_recommendations_service.dart';

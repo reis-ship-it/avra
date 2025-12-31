@@ -79,8 +79,8 @@ class _EditListPageState extends State<EditListPage> {
 
       Navigator.pop(context, updatedList);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('List updated successfully'),
+        const SnackBar(
+          content: Text('List updated successfully'),
           backgroundColor: AppTheme.successColor,
         ),
       );

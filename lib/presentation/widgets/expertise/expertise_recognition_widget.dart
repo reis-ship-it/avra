@@ -81,10 +81,10 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: const Column(
         children: [
-          const Icon(Icons.favorite_border, size: 48, color: AppColors.textSecondary),
-          const SizedBox(height: 16),
+          Icon(Icons.favorite_border, size: 48, color: AppColors.textSecondary),
+          SizedBox(height: 16),
           Text(
             'No recognition yet',
             style: TextStyle(
@@ -92,7 +92,7 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Be the first to recognize this expert!',
             style: TextStyle(
@@ -155,7 +155,7 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               _formatDate(recognition.createdAt),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),
@@ -232,15 +232,15 @@ class FeaturedExpertWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Row(
+          const Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.star,
                 color: AppColors.electricGreen,
                 size: 24,
               ),
-              const SizedBox(width: 8),
-              const Text(
+              SizedBox(width: 8),
+              Text(
                 'Featured Expert',
                 style: TextStyle(
                   fontSize: 18,
@@ -278,7 +278,7 @@ class FeaturedExpertWidget extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${featuredExpert.recognitionCount} recognitions',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),

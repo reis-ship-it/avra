@@ -14,6 +14,7 @@
 /// - Privacy-preserving personality indicators
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
@@ -121,9 +122,9 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
   }
   
   Widget _buildEmptyState() {
-    return Center(
+    return const Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -132,7 +133,7 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
               size: 64,
               color: AppColors.grey300,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'No devices discovered',
               style: TextStyle(
@@ -141,7 +142,7 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'Make sure discovery is enabled and nearby devices are active',
               textAlign: TextAlign.center,
@@ -266,7 +267,7 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [
             AppColors.electricGreen,
             AppColors.primary,
@@ -274,18 +275,18 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+      child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.psychology,
             size: 16,
             color: AppColors.white,
           ),
-          const SizedBox(width: 6),
+          SizedBox(width: 6),
           Text(
             'AI Enabled',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: AppColors.white,

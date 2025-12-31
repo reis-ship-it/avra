@@ -108,7 +108,7 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header
-                    Text(
+                    const Text(
                       'Your Partnerships',
                       style: TextStyle(
                         fontSize: 24,
@@ -117,7 +117,7 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       'Manage your partnerships and visibility settings',
                       style: TextStyle(
                         fontSize: 14,
@@ -178,14 +178,14 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.trending_up,
                   color: AppTheme.primaryColor,
                   size: 24,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Text(
                   'Expertise Boost',
                   style: TextStyle(
@@ -197,7 +197,7 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
               ],
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Your partnerships contribute to your expertise calculation. '
               'Active and completed partnerships boost your expertise in related categories.',
               style: TextStyle(

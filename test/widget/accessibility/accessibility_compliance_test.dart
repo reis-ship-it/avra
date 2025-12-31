@@ -134,9 +134,9 @@ void main() {
           home: Scaffold(
             body: Column(
               children: [
-                TextField(
-                  key: const Key('test_field'),
-                  decoration: const InputDecoration(
+                const TextField(
+                  key: Key('test_field'),
+                  decoration: InputDecoration(
                     labelText: 'Test Field',
                     hintText: 'Enter text',
                   ),
@@ -174,8 +174,8 @@ void main() {
                   onPressed: () {},
                   child: const Text('Button'),
                 ),
-                TextField(
-                  decoration: const InputDecoration(
+                const TextField(
+                  decoration: InputDecoration(
                     labelText: 'Input',
                   ),
                 ),

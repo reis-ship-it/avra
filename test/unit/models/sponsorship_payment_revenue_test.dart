@@ -22,7 +22,7 @@ import '../../helpers/test_helpers.dart';
 /// - Hybrid sponsorship revenue splits
 void main() {
   // #region agent log
-  void _dbgLog({
+  void dbgLog({
     required String runId,
     required String hypothesisId,
     required String location,
@@ -127,12 +127,12 @@ void main() {
           totalAmount: 1000.00,
           ticketsSold: 20,
           parties: [
-            SplitParty(
+            const SplitParty(
               partyId: 'user-123',
               type: SplitPartyType.user,
               percentage: 50.0,
             ),
-            SplitParty(
+            const SplitParty(
               partyId: 'business-123',
               type: SplitPartyType.business,
               percentage: 30.0,
@@ -172,7 +172,7 @@ void main() {
           eventId: 'event-456',
           totalAmount: 2000.00,
           ticketsSold: 25,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'user-123',
               type: SplitPartyType.user,
@@ -227,7 +227,7 @@ void main() {
           unitPrice: 25.00,
           totalSales: 375.00,
           platformFee: 37.50,
-          revenueDistribution: {
+          revenueDistribution: const {
             'brand-789': 202.50, // 60% of net
             'user-123': 84.38,   // 25% of net
             'business-123': 50.62, // 15% of net
@@ -269,8 +269,8 @@ void main() {
         final multiParty = MultiPartySponsorship(
           id: 'multi-sponsor-123',
           eventId: 'event-456',
-          brandIds: ['brand-1', 'brand-2'],
-          revenueSplitConfiguration: {
+          brandIds: const ['brand-1', 'brand-2'],
+          revenueSplitConfiguration: const {
             'brand-1': 60.0,
             'brand-2': 40.0,
           },
@@ -285,7 +285,7 @@ void main() {
           eventId: 'event-456',
           totalAmount: 2000.00,
           ticketsSold: 25,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'user-123',
               type: SplitPartyType.user,
@@ -345,7 +345,7 @@ void main() {
           eventId: 'event-456',
           totalAmount: 1500.00,
           ticketsSold: 20,
-          parties: [
+          parties: const [
             SplitParty(
               partyId: 'user-123',
               type: SplitPartyType.user,
@@ -373,7 +373,7 @@ void main() {
           unitPrice: 25.00,
           totalSales: 375.00,
           platformFee: 37.50,
-          revenueDistribution: {
+          revenueDistribution: const {
             'brand-789': 202.50,
             'user-123': 84.38,
             'business-123': 50.62,

@@ -12,6 +12,7 @@
 /// - Search by action description
 /// 
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/ai/action_history_entry.dart' as entry;
@@ -127,14 +128,14 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
             Text('Undo Action'),
           ],
         ),
-        content: Text(
+        content: const Text(
           'Are you sure you want to undo this action? This cannot be reversed.',
           style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(
+            child: const Text(
               'Cancel',
               style: TextStyle(color: AppColors.textSecondary),
             ),
@@ -212,7 +213,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
   Widget _buildFilters() {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.surface,
         border: Border(
           bottom: BorderSide(
@@ -245,15 +246,15 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
               fillColor: AppColors.grey100,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.grey300),
+                borderSide: const BorderSide(color: AppColors.grey300),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.grey300),
+                borderSide: const BorderSide(color: AppColors.grey300),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.electricGreen, width: 2),
+                borderSide: const BorderSide(color: AppColors.electricGreen, width: 2),
               ),
             ),
             onChanged: (value) {
@@ -409,7 +410,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -418,7 +419,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
             size: 64,
             color: AppColors.grey400,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'No action history',
             style: TextStyle(
@@ -427,7 +428,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Actions executed by AI will appear here',
             style: TextStyle(

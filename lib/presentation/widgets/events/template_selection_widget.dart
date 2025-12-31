@@ -103,24 +103,24 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
           child: TextField(
             decoration: InputDecoration(
               hintText: 'Search templates...',
-              hintStyle: TextStyle(color: AppColors.textHint),
-              prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+              hintStyle: const TextStyle(color: AppColors.textHint),
+              prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
               filled: true,
               fillColor: AppColors.grey100,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.grey300),
+                borderSide: const BorderSide(color: AppColors.grey300),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.grey300),
+                borderSide: const BorderSide(color: AppColors.grey300),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
-            style: TextStyle(color: AppColors.textPrimary),
+            style: const TextStyle(color: AppColors.textPrimary),
             onChanged: (value) {
               setState(() {
                 _searchQuery = value.isEmpty ? null : value;
@@ -187,13 +187,13 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.description_outlined,
               size: 64,
               color: AppColors.textSecondary,
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'No templates found',
               style: TextStyle(
                 fontSize: 18,
@@ -206,7 +206,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
               _searchQuery != null || _selectedCategoryFilter != null
                   ? 'Try adjusting your filters'
                   : 'Templates will appear here',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -259,7 +259,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
                       children: [
                         Text(
                         template.name,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -268,7 +268,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
                         const SizedBox(height: 4),
                         Text(
                           template.category,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
                           ),
@@ -306,7 +306,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
                 template.descriptionTemplate.length > 150
                     ? '${template.descriptionTemplate.substring(0, 150)}...'
                     : template.descriptionTemplate,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                   height: 1.4,
@@ -320,32 +320,32 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
               // Template Details
               Row(
                 children: [
-                  Icon(Icons.access_time, size: 14, color: AppColors.textSecondary),
+                  const Icon(Icons.access_time, size: 14, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     '${template.defaultDuration.inHours}h ${template.defaultDuration.inMinutes % 60}m',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Icon(Icons.people, size: 14, color: AppColors.textSecondary),
+                  const Icon(Icons.people, size: 14, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     'Up to ${template.defaultMaxAttendees}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   if (template.recommendedSpotCount > 0) ...[
                     const SizedBox(width: 16),
-                    Icon(Icons.place, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.place, size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Text(
                       '${template.recommendedSpotCount} ${template.recommendedSpotCount == 1 ? 'spot' : 'spots'}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -369,7 +369,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
                       ),
                       child: Text(
                         tag,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 10,
                           color: AppColors.textSecondary,
                         ),

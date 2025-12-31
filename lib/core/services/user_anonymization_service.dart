@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/anonymous_user.dart';
-import 'package:spots/core/models/personality_profile.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/services/location_obfuscation_service.dart';
 
 /// User Anonymization Service
