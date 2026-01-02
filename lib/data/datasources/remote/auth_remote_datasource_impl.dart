@@ -13,29 +13,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return null;
     }
   }
-  
+
   @override
   Future<local.User?> signIn(String email, String password) async {
     final auth = _auth;
     if (auth == null) return null;
-    try {
-      final coreUser = await auth.signInWithEmailPassword(email, password);
-      return coreUser == null ? null : _toLocalUser(coreUser);
-    } catch (_) {
-      return null;
-    }
+    final coreUser = await auth.signInWithEmailPassword(email, password);
+    return coreUser == null ? null : _toLocalUser(coreUser);
   }
 
   @override
   Future<local.User?> signUp(String email, String password, String name) async {
     final auth = _auth;
     if (auth == null) return null;
-    try {
-      final coreUser = await auth.registerWithEmailPassword(email, password, name);
-      return coreUser == null ? null : _toLocalUser(coreUser);
-    } catch (_) {
-      return null;
-    }
+    final coreUser =
+        await auth.registerWithEmailPassword(email, password, name);
+    return coreUser == null ? null : _toLocalUser(coreUser);
   }
 
   @override

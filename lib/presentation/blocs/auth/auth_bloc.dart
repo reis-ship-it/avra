@@ -1,4 +1,5 @@
 import 'package:spots/core/services/logger.dart';
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/models/user.dart';
 import 'package:spots/domain/usecases/auth/get_current_user_usecase.dart';
@@ -8,7 +9,10 @@ import 'package:spots/domain/usecases/auth/sign_up_usecase.dart';
 import 'package:spots/domain/usecases/auth/update_password_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/ai/personality_learning.dart';
+import 'package:spots/core/ai2ai/connection_orchestrator.dart';
+import 'package:spots/core/services/storage_service.dart' show StorageService;
 import 'package:spots/injection_container.dart' as di;
 
 // Events
@@ -85,15 +89,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<UpdatePasswordRequested>(_onUpdatePasswordRequested);
   }
 
+  /// Normalize a login identifier into an email address.
+  ///
+  /// The app supports logging in using either:
+  /// - an email (`user@example.com`)
+  /// - a username (`reis`) which maps to a deterministic dev email (`reis@spots.app`)
+  ///
+  /// This keeps the backend auth model simple (email+password) while allowing a
+  /// friendlier UX on the login page.
+  String _normalizeEmailOrUsername(String value) {
+    final v = value.trim();
+    if (v.isEmpty) return v;
+    if (v.contains('@')) return v;
+    final safe = v.toLowerCase().replaceAll(RegExp(r'\s+'), '');
+    return '$safe@spots.app';
+  }
+
   Future<void> _onSignInRequested(
     SignInRequested event,
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
     try {
+      final normalizedEmail = _normalizeEmailOrUsername(event.email);
       _logger.info('🔐 AuthBloc: Attempting sign in for ${event.email}',
           tag: 'AuthBloc');
-      final user = await signInUseCase(event.email, event.password);
+      final user = await signInUseCase(normalizedEmail, event.password);
       _logger.debug(
           '🔐 AuthBloc: Sign in result - user: ${user?.email ?? 'null'}',
           tag: 'AuthBloc');
@@ -102,59 +123,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _logger.info('🔐 AuthBloc: User authenticated successfully',
             tag: 'AuthBloc');
 
-        // Store password temporarily in secure storage for cloud sync operations
-        // This is needed for password-derived encryption key generation
-        try {
-          const secureStorage = FlutterSecureStorage();
-          await secureStorage.write(
-            key: 'user_password_session_${user.id}',
-            value: event.password,
-          );
-          _logger.debug(
-              '🔐 AuthBloc: Password stored in secure storage for sync',
-              tag: 'AuthBloc');
-        } catch (e) {
-          // MissingPluginException is expected in unit tests (platform channels not available)
-          // Only log at debug level to avoid cluttering test output
-          if (e.toString().contains('MissingPluginException')) {
-            _logger.debug(
-                '🔐 AuthBloc: Secure storage not available (expected in tests): $e',
-                tag: 'AuthBloc');
-          } else {
-            _logger.warn('🔐 AuthBloc: Failed to store password for sync: $e',
-                tag: 'AuthBloc');
-          }
-          // Don't block login if password storage fails
-        }
-
-        // Attempt to load personality from cloud if sync is enabled
-        try {
-          final syncService = di.sl<PersonalitySyncService>();
-          final syncEnabled = await syncService.isCloudSyncEnabled(user.id);
-
-          if (syncEnabled) {
-            _logger.info(
-                '☁️ AuthBloc: Cloud sync enabled, initializing personality with cloud load...',
-                tag: 'AuthBloc');
-            // Initialize personality with password to enable cloud loading
-            final personalityLearning = di.sl<PersonalityLearning>();
-            await personalityLearning.initializePersonality(user.id,
-                password: event.password);
-            _logger.info(
-                '✅ AuthBloc: Personality initialized (may have loaded from cloud)',
-                tag: 'AuthBloc');
-          } else {
-            // Still initialize personality (local only)
-            final personalityLearning = di.sl<PersonalityLearning>();
-            await personalityLearning.initializePersonality(user.id);
-          }
-        } catch (e) {
-          _logger.warn('⚠️ AuthBloc: Error loading cloud profile: $e',
-              tag: 'AuthBloc');
-          // Don't block login if cloud sync fails
-        }
-
+        // Emit authenticated ASAP so routing/UI can proceed immediately.
+        // All heavy post-login initialization runs in the background.
         emit(Authenticated(user: user, isOffline: isOffline));
+
+        unawaited(_postLoginInit(
+          user: user,
+          password: event.password,
+          allowCloudLoad: true,
+        ));
+
+        return;
       } else {
         _logger.warn('🔐 AuthBloc: User authentication failed - null user',
             tag: 'AuthBloc');
@@ -162,7 +141,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (e) {
       _logger.error('🔐 AuthBloc: Sign in error', error: e, tag: 'AuthBloc');
-      emit(AuthError(e.toString()));
+      final msg = e.toString();
+      if (msg.contains('email_not_confirmed') ||
+          msg.toLowerCase().contains('email not confirmed')) {
+        emit(AuthError(
+            'Email not confirmed. Ask support to confirm your account (dev: confirm the user in Supabase) and try again.'));
+      } else {
+        emit(AuthError(msg));
+      }
     }
   }
 
@@ -215,6 +201,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
 
       await signOutUseCase();
+
+      // Ensure AI2AI background work is stopped on sign out.
+      try {
+        final orchestrator = di.sl<VibeConnectionOrchestrator>();
+        await orchestrator.shutdown();
+      } catch (e) {
+        _logger.debug('AuthBloc: Orchestrator shutdown skipped: $e',
+            tag: 'AuthBloc');
+      }
+
       emit(Unauthenticated());
     } catch (e) {
       _logger.error('🔐 AuthBloc: Sign out error', error: e, tag: 'AuthBloc');
@@ -232,11 +228,94 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user != null) {
         final isOffline = user.isOnline == false;
         emit(Authenticated(user: user, isOffline: isOffline));
+
+        // Background init (no password available during auth-check).
+        unawaited(_postLoginInit(
+          user: user,
+          password: null,
+          allowCloudLoad: false,
+        ));
       } else {
         emit(Unauthenticated());
       }
     } catch (e) {
       emit(Unauthenticated());
+    }
+  }
+
+  Future<void> _postLoginInit({
+    required User user,
+    required String? password,
+    required bool allowCloudLoad,
+  }) async {
+    // Store password temporarily in secure storage for cloud sync operations.
+    if (password != null && password.isNotEmpty) {
+      try {
+        const secureStorage = FlutterSecureStorage();
+        await secureStorage.write(
+          key: 'user_password_session_${user.id}',
+          value: password,
+        );
+        _logger.debug('🔐 AuthBloc: Password stored in secure storage for sync',
+            tag: 'AuthBloc');
+      } catch (e) {
+        // MissingPluginException is expected in unit tests (platform channels not available)
+        if (e.toString().contains('MissingPluginException')) {
+          _logger.debug(
+              '🔐 AuthBloc: Secure storage not available (expected in tests): $e',
+              tag: 'AuthBloc');
+        } else {
+          _logger.warn('🔐 AuthBloc: Failed to store password for sync: $e',
+              tag: 'AuthBloc');
+        }
+      }
+    }
+
+    // Initialize personality (cloud load if enabled and we have a password).
+    PersonalityProfile? profile;
+    try {
+      final personalityLearning = di.sl<PersonalityLearning>();
+      if (allowCloudLoad && password != null && password.isNotEmpty) {
+        final syncService = di.sl<PersonalitySyncService>();
+        final syncEnabled = await syncService.isCloudSyncEnabled(user.id);
+        if (syncEnabled) {
+          _logger.info(
+              '☁️ AuthBloc: Cloud sync enabled, initializing personality with cloud load...',
+              tag: 'AuthBloc');
+          profile = await personalityLearning.initializePersonality(
+            user.id,
+            password: password,
+          );
+          _logger.info(
+              '✅ AuthBloc: Personality initialized (may have loaded from cloud)',
+              tag: 'AuthBloc');
+        } else {
+          profile = await personalityLearning.initializePersonality(user.id);
+        }
+      } else {
+        profile = await personalityLearning.initializePersonality(user.id);
+      }
+    } catch (e) {
+      _logger.warn('⚠️ AuthBloc: Personality init failed/skipped: $e',
+          tag: 'AuthBloc');
+    }
+
+    // Start/stop AI2AI orchestration based on the discovery switch.
+    try {
+      final discoveryEnabled =
+          StorageService.instance.getBool('discovery_enabled') ?? false;
+      final orchestrator = di.sl<VibeConnectionOrchestrator>();
+      if (!discoveryEnabled) {
+        await orchestrator.shutdown();
+      } else {
+        final personalityLearning = di.sl<PersonalityLearning>();
+        profile ??= await personalityLearning.getCurrentPersonality(user.id) ??
+            await personalityLearning.initializePersonality(user.id);
+        await orchestrator.initializeOrchestration(user.id, profile);
+      }
+    } catch (e) {
+      _logger.debug('AuthBloc: AI2AI post-login init skipped: $e',
+          tag: 'AuthBloc');
     }
   }
 

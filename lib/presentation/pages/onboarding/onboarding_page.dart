@@ -1,9 +1,17 @@
+import 'dart:developer' as developer;
+
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:go_router/go_router.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spots/core/services/device_capability_service.dart';
+import 'package:spots/core/services/local_llm/local_llm_auto_install_service.dart';
+import 'package:spots/core/services/local_llm/local_llm_provisioning_state_service.dart';
+import 'package:spots/core/services/on_device_ai_capability_gate.dart';
+import 'package:spots/core/theme/colors.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/presentation/pages/onboarding/favorite_places_page.dart';
 import 'package:spots/presentation/pages/onboarding/friends_respect_page.dart';
@@ -22,6 +30,7 @@ import 'package:spots/core/models/onboarding_data.dart';
 import 'package:spots/core/services/social_media_connection_service.dart';
 import 'package:spots/core/controllers/onboarding_flow_controller.dart';
 import 'package:spots/injection_container.dart' as di;
+import 'package:spots/core/services/ledgers/proof_run_service_v0.dart';
 
 enum OnboardingStepType {
   welcome,
@@ -176,6 +185,43 @@ class _OnboardingPageState extends State<OnboardingPage> {
         title: const Text('Welcome to SPOTS'),
         automaticallyImplyLeading: false,
         actions: [
+          if (kDebugMode)
+            IconButton(
+              icon: const Icon(Icons.fact_check_outlined),
+              tooltip: 'Start proof run (debug)',
+              onPressed: () async {
+                try {
+                  final proof = GetIt.instance<ProofRunServiceV0>();
+                  final existing = proof.getActiveRunId();
+                  final runId = existing ?? await proof.startRun(payload: const {
+                    'started_from': 'onboarding',
+                  });
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Proof run active: ${runId.substring(0, 8)}…',
+                      ),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                } catch (e, st) {
+                  developer.log(
+                    'Failed starting proof run from onboarding',
+                    name: 'OnboardingPage',
+                    error: e,
+                    stackTrace: st,
+                  );
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Proof run start failed: $e'),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+              },
+            ),
           TextButton(
             onPressed: _currentPage > 0 && !_isCompleting
                 ? () {
@@ -267,6 +313,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
             });
           },
           favoritePlaces: _favoritePlaces,
+          userId: _getUserIdOrNull(),
+          userHomebase: _selectedHomebase,
         );
       case OnboardingStepType.preferences:
         return PreferenceSurveyPage(
@@ -285,6 +333,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               _baselineLists = lists;
             });
           },
+          userId: _getUserIdOrNull(),
           userName: _getUserName(),
           userPreferences: _preferences,
           userFavoritePlaces: _favoritePlaces,
@@ -297,6 +346,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             });
           },
           respectedLists: _respectedFriends,
+          userId: _getUserIdOrNull(),
         );
       case OnboardingStepType.permissions:
         return _PermissionsAndLegalPage(
@@ -397,6 +447,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
   String _getUserName() {
     final authState = context.read<AuthBloc>().state;
     return authState is Authenticated ? authState.user.name : 'User';
+  }
+
+  String? _getUserIdOrNull() {
+    final authState = context.read<AuthBloc>().state;
+    return authState is Authenticated ? authState.user.id : null;
   }
 
   bool _canProceedToNextStep() {
@@ -595,6 +650,33 @@ class _OnboardingPageState extends State<OnboardingPage> {
       _logger.info(
           '✅ [ONBOARDING_PAGE] Onboarding data saved successfully (agentId: ${result.agentId?.substring(0, 10)}...)',
           tag: 'Onboarding');
+
+      // Proof run (debug): if a run is active, record that onboarding completed.
+      if (kDebugMode) {
+        try {
+          final proof = GetIt.instance<ProofRunServiceV0>();
+          final runId = proof.getActiveRunId();
+          if (runId != null && runId.isNotEmpty) {
+            await proof.recordMilestone(
+              runId: runId,
+              eventType: 'proof_onboarding_completed',
+              payload: <String, Object?>{
+                'homebase_set': _selectedHomebase != null,
+                'favorite_places_count': _favoritePlaces.length,
+                'baseline_lists_count': _baselineLists.length,
+                'respected_friends_count': _respectedFriends.length,
+              },
+            );
+          }
+        } catch (e, st) {
+          developer.log(
+            'Proof run onboarding receipt failed (non-fatal): $e',
+            name: 'OnboardingPage',
+            error: e,
+            stackTrace: st,
+          );
+        }
+      }
 
       // Ensure widget is still mounted before navigation
       if (!mounted) {
@@ -1006,11 +1088,29 @@ class _ConnectAndDiscoverPage extends StatefulWidget {
 
 class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
   bool _discoveryEnabled = false;
+  bool _offlineLlmEnabled = false;
+  bool _offlineLlmEligible = false;
+  OfflineLlmTier _recommendedTier = OfflineLlmTier.none;
+  late final LocalLlmProvisioningStateService _provisioning;
+  late final Stream<LocalLlmProvisioningState> _provisioningStream;
+  late final Stream<LocalLlmProvisioningState> _provisioningStreamWithInitial;
 
   @override
   void initState() {
     super.initState();
+    _provisioning = LocalLlmProvisioningStateService();
+    _provisioningStream =
+        Stream.periodic(const Duration(seconds: 2)).asyncMap((_) {
+      return _provisioning.getState();
+    });
+    _provisioningStreamWithInitial = _createProvisioningStreamWithInitial();
     _loadDiscoveryPreference();
+    _loadOfflineLlmPreferenceAndEligibility();
+  }
+
+  Stream<LocalLlmProvisioningState> _createProvisioningStreamWithInitial() async* {
+    yield await _provisioning.getState();
+    yield* _provisioningStream;
   }
 
   Future<void> _loadDiscoveryPreference() async {
@@ -1033,7 +1133,65 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
       await storageService.setBool('discovery_enabled', value);
     } catch (e) {
       // Log but don't block - this is optional
-      debugPrint('Failed to save discovery preference: $e');
+      developer.log('Failed to save discovery preference: $e',
+          name: '_ConnectAndDiscoverPage');
+    }
+  }
+
+  Future<void> _loadOfflineLlmPreferenceAndEligibility() async {
+    try {
+      final prefs = await SharedPreferencesCompat.getInstance();
+
+      // Capability gate (best-effort).
+      final caps = await DeviceCapabilityService().getCapabilities();
+      final gateResult = OnDeviceAiCapabilityGate().evaluate(caps);
+      final recommended = gateResult.recommendedTier;
+      final eligible = recommended != OfflineLlmTier.none;
+
+      // Opt-out default: if eligible, default enabled unless user disabled.
+      final hasUserChoice =
+          prefs.containsKey('offline_llm_enabled_v1');
+      bool enabled = prefs.getBool('offline_llm_enabled_v1') ?? false;
+      if (!hasUserChoice) {
+        enabled = eligible;
+        await prefs.setBool('offline_llm_enabled_v1', enabled);
+      }
+
+      if (mounted) {
+        setState(() {
+          _offlineLlmEligible = eligible;
+          _recommendedTier = recommended;
+          _offlineLlmEnabled = enabled;
+        });
+      }
+
+      // Best-effort: kick auto-install so it can queue for Wi‑Fi.
+      if (enabled && eligible) {
+        await LocalLlmAutoInstallService().maybeAutoInstall();
+      }
+    } catch (e, st) {
+      developer.log('Failed to load offline LLM onboarding state: $e',
+          name: '_ConnectAndDiscoverPage', error: e, stackTrace: st);
+    }
+  }
+
+  Future<void> _setOfflineLlmEnabled(bool value) async {
+    try {
+      final prefs = await SharedPreferencesCompat.getInstance();
+      await prefs.setBool('offline_llm_enabled_v1', value);
+
+      if (mounted) {
+        setState(() {
+          _offlineLlmEnabled = value;
+        });
+      }
+
+      if (value && _offlineLlmEligible) {
+        await LocalLlmAutoInstallService().maybeAutoInstall();
+      }
+    } catch (e, st) {
+      developer.log('Failed to set offline LLM preference: $e',
+          name: '_ConnectAndDiscoverPage', error: e, stackTrace: st);
     }
   }
 
@@ -1070,9 +1228,113 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
             ),
           ),
           const SizedBox(height: 16),
+          Card(
+            child: SwitchListTile(
+              title: const Text('Enable Offline AI (downloads on Wi‑Fi)'),
+              subtitle: Text(
+                _offlineLlmEligible
+                    ? 'Recommended tier: ${_recommendedTier.name}. You can chat offline once installed.'
+                    : 'Not available on this device.',
+              ),
+              value: _offlineLlmEnabled,
+              onChanged: _offlineLlmEligible
+                  ? (value) async {
+                      await _setOfflineLlmEnabled(value);
+                    }
+                  : null,
+            ),
+          ),
+          const SizedBox(height: 12),
+          StreamBuilder<LocalLlmProvisioningState>(
+            stream: _provisioningStreamWithInitial,
+            builder: (context, snapshot) {
+              final s = snapshot.data;
+              final phase = s?.phase ?? LocalLlmProvisioningPhase.idle;
+              final installed = s?.packStatus.isInstalled ?? false;
+              final progress = s?.progressFraction;
+
+              String text;
+              if (!_offlineLlmEligible) {
+                text = 'Offline AI: not eligible on this device.';
+              } else if (!_offlineLlmEnabled) {
+                text = 'Offline AI: disabled (opt-out).';
+              } else if (installed) {
+                final packId = s?.packStatus.activePackId ?? 'unknown';
+                if (phase == LocalLlmProvisioningPhase.downloading) {
+                  final pct =
+                      (progress != null) ? (progress * 100).round() : null;
+                  text = pct != null
+                      ? 'Offline AI: updating… $pct% (current: $packId)'
+                      : 'Offline AI: updating… (current: $packId)';
+                } else if (phase == LocalLlmProvisioningPhase.error) {
+                  final err = s?.lastError ?? 'Unknown error';
+                  text = 'Offline AI: installed ($packId) — update error ($err).';
+                } else {
+                  text = 'Offline AI: installed ($packId).';
+                }
+              } else {
+                switch (phase) {
+                  case LocalLlmProvisioningPhase.queuedWifi:
+                    text =
+                        'Offline AI: queued for Wi‑Fi download (can take a while).';
+                    break;
+                  case LocalLlmProvisioningPhase.queuedCharging:
+                    text = 'Offline AI: queued until your device is charging.';
+                    break;
+                  case LocalLlmProvisioningPhase.queuedIdle:
+                    text = 'Offline AI: queued until you are charging + idle.';
+                    break;
+                  case LocalLlmProvisioningPhase.downloading:
+                    final pct = (progress != null) ? (progress * 100).round() : null;
+                    text = pct != null
+                        ? 'Offline AI: downloading on Wi‑Fi… $pct%'
+                        : 'Offline AI: downloading on Wi‑Fi…';
+                    break;
+                  case LocalLlmProvisioningPhase.error:
+                    final err = s?.lastError ?? 'Unknown error';
+                    text = 'Offline AI: error ($err).';
+                    break;
+                  case LocalLlmProvisioningPhase.installed:
+                    text = 'Offline AI: installed.';
+                    break;
+                  case LocalLlmProvisioningPhase.idle:
+                    text = 'Offline AI: waiting to start.';
+                    break;
+                }
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    text,
+                    style:
+                        const TextStyle(fontSize: 12, color: AppColors.grey600),
+                  ),
+                  if (phase == LocalLlmProvisioningPhase.downloading &&
+                      progress != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: LinearProgressIndicator(
+                          value: progress.clamp(0.0, 1.0),
+                          minHeight: 6,
+                          backgroundColor: AppColors.grey200,
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            AppColors.electricGreen,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 16),
           const Text(
             'When enabled, your anonymized personality data will be used to discover compatible AI personalities nearby. All connections are privacy-preserving and go through the AI layer.',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+            style: TextStyle(fontSize: 12, color: AppColors.grey600),
           ),
         ],
       ),

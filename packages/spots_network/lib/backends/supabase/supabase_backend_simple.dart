@@ -1,5 +1,7 @@
-import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'dart:async';
+import 'dart:developer' as developer;
+
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import '../../interfaces/backend_interface.dart';
 import '../../interfaces/auth_backend.dart';
 import '../../interfaces/data_backend.dart';
@@ -142,9 +144,14 @@ class SupabaseAuthBackendSimple implements AuthBackend {
         return _convertSupabaseUser(response.user!);
       }
       return null;
-    } catch (e) {
-      print('Sign in failed: $e');
-      return null;
+    } catch (e, st) {
+      developer.log(
+        'Sign in failed',
+        name: 'SupabaseAuthBackendSimple',
+        error: e,
+        stackTrace: st,
+      );
+      rethrow;
     }
   }
 
@@ -165,9 +172,14 @@ class SupabaseAuthBackendSimple implements AuthBackend {
         return _convertSupabaseUser(response.user!);
       }
       return null;
-    } catch (e) {
-      print('Sign up failed: $e');
-      return null;
+    } catch (e, st) {
+      developer.log(
+        'Sign up failed',
+        name: 'SupabaseAuthBackendSimple',
+        error: e,
+        stackTrace: st,
+      );
+      rethrow;
     }
   }
 
@@ -175,8 +187,13 @@ class SupabaseAuthBackendSimple implements AuthBackend {
   Future<void> signOut() async {
     try {
       await _client.auth.signOut();
-    } catch (e) {
-      print('Sign out failed: $e');
+    } catch (e, st) {
+      developer.log(
+        'Sign out failed',
+        name: 'SupabaseAuthBackendSimple',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -188,8 +205,13 @@ class SupabaseAuthBackendSimple implements AuthBackend {
         return _convertSupabaseUser(user);
       }
       return null;
-    } catch (e) {
-      print('Get current user failed: $e');
+    } catch (e, st) {
+      developer.log(
+        'Get current user failed',
+        name: 'SupabaseAuthBackendSimple',
+        error: e,
+        stackTrace: st,
+      );
       return null;
     }
   }
@@ -206,8 +228,13 @@ class SupabaseAuthBackendSimple implements AuthBackend {
   Future<void> sendPasswordReset(String email) async {
     try {
       await _client.auth.resetPasswordForEmail(email);
-    } catch (e) {
-      print('Send password reset failed: $e');
+    } catch (e, st) {
+      developer.log(
+        'Send password reset failed',
+        name: 'SupabaseAuthBackendSimple',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -218,8 +245,13 @@ class SupabaseAuthBackendSimple implements AuthBackend {
   ) async {
     try {
       await _client.auth.updateUser(supa.UserAttributes(password: newPassword));
-    } catch (e) {
-      print('Update password failed: $e');
+    } catch (e, st) {
+      developer.log(
+        'Update password failed',
+        name: 'SupabaseAuthBackendSimple',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -227,8 +259,13 @@ class SupabaseAuthBackendSimple implements AuthBackend {
   Future<void> updateEmail(String newEmail) async {
     try {
       await _client.auth.updateUser(supa.UserAttributes(email: newEmail));
-    } catch (e) {
-      print('Update email failed: $e');
+    } catch (e, st) {
+      developer.log(
+        'Update email failed',
+        name: 'SupabaseAuthBackendSimple',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 

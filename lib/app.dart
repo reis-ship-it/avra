@@ -15,7 +15,7 @@ class SpotsApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (context) => di.sl<AuthBloc>(),
+          create: (context) => di.sl<AuthBloc>()..add(AuthCheckRequested()),
         ),
         BlocProvider<SpotsBloc>(
           create: (context) => di.sl<SpotsBloc>(),

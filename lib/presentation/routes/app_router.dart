@@ -44,6 +44,7 @@ import 'package:spots/presentation/pages/network/ai2ai_connections_page.dart';
 import 'package:spots/presentation/pages/settings/discovery_settings_page.dart';
 // Phase 2.1: Federated Learning
 import 'package:spots/presentation/pages/settings/federated_learning_page.dart';
+import 'package:spots/presentation/pages/settings/on_device_ai_settings_page.dart';
 // Phase 7, Week 37: AI Self-Improvement Visibility
 import 'package:spots/presentation/pages/settings/ai_improvement_page.dart';
 // Phase 7, Week 38: AI2AI Learning Methods UI
@@ -52,6 +53,10 @@ import 'package:spots/presentation/pages/settings/ai2ai_learning_methods_page.da
 import 'package:spots/presentation/pages/settings/continuous_learning_page.dart';
 // Phase 4.5: Partnerships Page
 import 'package:spots/presentation/pages/profile/partnerships_page.dart';
+import 'package:spots/presentation/pages/debug/geo_area_evolution_debug_page.dart';
+import 'package:spots/presentation/pages/debug/proof_run_page.dart';
+import 'package:spots/presentation/pages/receipts/receipt_detail_page.dart';
+import 'package:spots/presentation/pages/receipts/receipts_page.dart';
 // Phase 10: Social Media Integration - Friend Discovery
 import 'package:spots/presentation/pages/social/friend_discovery_page.dart';
 // Phase 10: Social Media Integration - Public Handles
@@ -59,6 +64,7 @@ import 'package:spots/presentation/pages/settings/public_handles_page.dart';
 import 'package:spots/presentation/pages/admin/learning_analytics_page.dart';
 // Phase 6, Week 29: Communities & Clubs
 import 'package:spots/presentation/pages/communities/community_page.dart';
+import 'package:spots/presentation/pages/communities/communities_discover_page.dart';
 import 'package:spots/presentation/pages/clubs/club_page.dart';
 // Detail Pages
 import 'package:spots/presentation/pages/lists/list_details_page.dart';
@@ -90,6 +96,7 @@ class AppRouter {
     const bool autoDriveSupabase =
         bool.fromEnvironment('AUTO_DRIVE_SUPABASE_TEST');
     const bool isIntegrationTest = bool.fromEnvironment('FLUTTER_TEST');
+    const bool enableProofRun = bool.fromEnvironment('ENABLE_PROOF_RUN');
 
     // Safely get Firebase Analytics - may be null if Firebase isn't initialized
     FirebaseAnalytics? analytics;
@@ -371,6 +378,19 @@ class AppRouter {
               path: 'profile/ai-status',
               builder: (c, s) => const AIPersonalityStatusPage(),
             ),
+            GoRoute(
+              path: 'profile/receipts',
+              builder: (c, s) => const ReceiptsPage(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (c, s) {
+                    final id = s.pathParameters['id']!;
+                    return ReceiptDetailPage(ledgerRowId: id);
+                  },
+                ),
+              ],
+            ),
             // Phase 3: Unified Chat
             GoRoute(
               path: 'chat',
@@ -418,6 +438,10 @@ class AppRouter {
                 final id = s.pathParameters['id']!;
                 return CommunityPage(communityId: id);
               },
+            ),
+            GoRoute(
+              path: 'communities/discover',
+              builder: (c, s) => const CommunitiesDiscoverPage(),
             ),
             GoRoute(
               path: 'club/:id',
@@ -607,6 +631,26 @@ class AppRouter {
             GoRoute(
               path: 'federated-learning',
               builder: (c, s) => const FederatedLearningPage(),
+            ),
+            GoRoute(
+              path: 'on-device-ai',
+              builder: (c, s) => const OnDeviceAiSettingsPage(),
+            ),
+            GoRoute(
+              path: 'proof-run',
+              redirect: (context, state) {
+                if (kDebugMode || enableProofRun) return null;
+                return '/home';
+              },
+              builder: (c, s) => const ProofRunPage(),
+            ),
+            GoRoute(
+              path: 'geo-area-debug',
+              redirect: (context, state) {
+                if (kDebugMode) return null;
+                return '/home';
+              },
+              builder: (c, s) => const GeoAreaEvolutionDebugPage(),
             ),
             // Phase 7, Week 37: AI Self-Improvement Visibility
             GoRoute(

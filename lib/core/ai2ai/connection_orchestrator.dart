@@ -1,6 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb, visibleForTesting;
+import 'package:flutter/widgets.dart' show WidgetsBinding;
+import 'package:crypto/crypto.dart';
+import 'package:spots/core/services/supabase_service.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:spots/core/crypto/signal/signal_key_manager.dart';
+import 'package:spots/core/crypto/signal/signal_types.dart';
 import 'package:spots/core/models/user_vibe.dart';
+import 'package:spots/core/services/agent_happiness_service.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
@@ -11,22 +22,150 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/core/ai2ai/aipersonality_node.dart';
 import 'package:spots/core/ai2ai/orchestrator_components.dart';
 import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/network/device_discovery.dart';
-import 'package:spots/core/network/ai2ai_protocol.dart';
-import 'package:spots/core/network/personality_advertising_service.dart';
+import 'package:spots/core/services/storage_service.dart'
+    show SharedPreferencesCompat;
+import 'package:spots/core/ai2ai/battery_adaptive_ble_scheduler.dart';
+import 'package:spots/core/ai2ai/embedding_delta_collector.dart';
+import 'package:spots/core/ai2ai/federated_learning_codec.dart';
+import 'package:spots/core/ai2ai/room_coherence_engine.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/anonymous_user.dart';
 import 'package:spots/core/services/user_anonymization_service.dart';
+import 'package:spots/core/ml/onnx_dimension_scorer.dart';
 import 'package:spots_knot/services/knot/knot_weaving_service.dart';
 import 'package:spots_knot/services/knot/knot_storage_service.dart';
 import 'package:spots_knot/models/knot/braided_knot.dart';
+import 'package:spots/core/services/ledgers/ledger_audit_v0.dart';
+import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
 import 'package:spots_network/spots_network.dart';
+import 'package:uuid/uuid.dart';
+
+class _HotLatencySummary {
+  final int count;
+  final int p50;
+  final int p95;
+
+  const _HotLatencySummary({
+    required this.count,
+    required this.p50,
+    required this.p95,
+  });
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'count': count,
+        'p50_ms': p50,
+        'p95_ms': p95,
+      };
+}
+
+/// Minimal ring-buffer latency collector.
+///
+/// Keeps the last N samples and computes p50/p95 on demand.
+class _HotLatencyWindow {
+  final int maxSamples;
+  final List<int> _samples = <int>[];
+  int _cursor = 0;
+
+  _HotLatencyWindow({required this.maxSamples});
+
+  void add(int ms) {
+    if (ms < 0) return;
+    if (_samples.length < maxSamples) {
+      _samples.add(ms);
+      return;
+    }
+    _samples[_cursor] = ms;
+    _cursor = (_cursor + 1) % maxSamples;
+  }
+
+  _HotLatencySummary summary() {
+    if (_samples.isEmpty) {
+      return const _HotLatencySummary(count: 0, p50: 0, p95: 0);
+    }
+    final sorted = List<int>.from(_samples)..sort();
+    int pick(double q) {
+      final idx = ((sorted.length - 1) * q).round().clamp(0, sorted.length - 1);
+      return sorted[idx];
+    }
+
+    return _HotLatencySummary(
+      count: sorted.length,
+      p50: pick(0.50),
+      p95: pick(0.95),
+    );
+  }
+}
+
+class _EventModeCandidate {
+  final DiscoveredDevice device;
+  final String nodeTagKey;
+  final bool remoteConnectOk;
+
+  const _EventModeCandidate({
+    required this.device,
+    required this.nodeTagKey,
+    required this.remoteConnectOk,
+  });
+}
+
+class _EventModeBufferedLearningInsight {
+  final String source; // "passive" | "inbox"
+  final String? insightId;
+  final String senderDeviceId;
+  final DateTime receivedAt;
+  final double learningQuality;
+  final Map<String, double> deltas;
+
+  const _EventModeBufferedLearningInsight({
+    required this.source,
+    required this.insightId,
+    required this.senderDeviceId,
+    required this.receivedAt,
+    required this.learningQuality,
+    required this.deltas,
+  });
+}
 
 /// OUR_GUTS.md: "AI2AI vibe-based connections that enable cross-personality learning while preserving privacy"
 /// Comprehensive connection orchestrator that manages AI2AI personality matching and learning
 /// Enhanced with Supabase Realtime for live AI2AI communication
 class VibeConnectionOrchestrator {
   static const String _logName = 'VibeConnectionOrchestrator';
+  static const bool _allowBleSideEffectsInTests = bool.fromEnvironment(
+    'SPOTS_ALLOW_BLE_SIDE_EFFECTS_IN_TESTS',
+    defaultValue: false,
+  );
+  static const bool _allowBleSideEffectsOnIos = bool.fromEnvironment(
+    'SPOTS_ALLOW_IOS_BLE_SIDE_EFFECTS',
+    defaultValue: false,
+  );
+
+  bool get _isTestBinding {
+    // Avoid importing flutter_test into production code; detect by binding type name.
+    try {
+      final bindingType = WidgetsBinding.instance.runtimeType.toString();
+      return bindingType.contains('TestWidgetsFlutterBinding') ||
+          bindingType.contains('AutomatedTestWidgetsFlutterBinding') ||
+          bindingType.contains('IntegrationTestWidgetsFlutterBinding');
+    } catch (_) {
+      return false;
+    }
+  }
+
+  bool get _allowBleSideEffects {
+    // BLE side-effects (MethodChannels, Timer.periodic loops, BLE connects) can
+    // make tests flaky/hang. Default: OFF in tests unless explicitly enabled.
+    if (!kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.iOS &&
+        !_allowBleSideEffectsOnIos) {
+      // iOS simulator (and many dev runs) cannot safely support BLE peripheral
+      // advertising. The CoreBluetooth stack can hard-crash if restoration is
+      // configured without the right delegate hooks. Default: disable BLE
+      // side-effects on iOS unless explicitly enabled.
+      return false;
+    }
+    return !_isTestBinding || _allowBleSideEffectsInTests;
+  }
 
   final UserVibeAnalyzer _vibeAnalyzer;
   final Connectivity _connectivity;
@@ -38,6 +177,8 @@ class VibeConnectionOrchestrator {
   final AI2AIProtocol? _protocol;
   final PersonalityAdvertisingService? _advertisingService;
   final UserAnonymizationService? _anonymizationService;
+  final SignalKeyManager? _signalKeyManager;
+  final SharedPreferencesCompat _prefs;
   final AppLogger _logger =
       const AppLogger(defaultTag: 'AI2AI', minimumLevel: LogLevel.debug);
 
@@ -60,6 +201,193 @@ class VibeConnectionOrchestrator {
   bool _isInitialized = false;
   Timer? _discoveryTimer;
   Timer? _connectionMaintenanceTimer;
+  Timer? _bleInboxPoller;
+  BatteryAdaptiveBleScheduler? _batteryScheduler;
+
+  Timer? _federatedCloudSyncTimer;
+  StreamSubscription<List<ConnectivityResult>>? _federatedCloudConnectivitySub;
+  int _lastFederatedCloudSyncAttemptMs = 0;
+
+  // Stable node id used for offline BLE addressing + Signal session keys.
+  // Rotates periodically (privacy), stable within a window (correctness).
+  late String _localBleNodeId;
+
+  // Map discovered deviceId -> peer node id (from BLE stream-1 prekey payload).
+  final Map<String, String> _peerNodeIdByDeviceId = {};
+
+  // Replay protection (best-effort): sha256(packet) -> expiresAtMs
+  final Map<String, int> _seenBleMessageHashes = {};
+  int _lastSeenHashesPersistMs = 0;
+
+  // AI2AI learning throttling to avoid rapid drift from nearby noise.
+  final Map<String, DateTime> _lastAi2AiLearningAtByPeerId = {};
+
+  // ========================================================================
+  // Event Mode (broadcast-first) state
+  // ========================================================================
+  static const String _prefsKeyEventModeEnabled = 'event_mode_enabled';
+  static const int _eventEpochMs = 5 * 60 * 1000;
+  static const int _eventCheckInWindowMs = 30 * 1000;
+  static const int _eventInitiatorEligibilityPct = 20;
+  static const int _eventMaxDeepSyncPerEvent = 8;
+  static const int _eventPerNodeDeepSyncCooldownMs = 60 * 60 * 1000; // 60 min
+
+  final RoomCoherenceEngine _roomCoherenceEngine = RoomCoherenceEngine();
+  int _eventModeLastEpochAttempted = -1;
+  bool _eventModeCheckInRunning = false;
+  int _eventModeDeepSyncCount = 0;
+  final Map<String, int> _eventModeLastDeepSyncAtMsByNodeTag = <String, int>{};
+  final Map<String, int> _eventModeFamiliarityByNodeTag = <String, int>{};
+  final List<_EventModeBufferedLearningInsight> _eventModeLearningBuffer =
+      <_EventModeBufferedLearningInsight>[];
+  bool _lastAdvertisedEventModeEnabled = false;
+  bool _lastAdvertisedConnectOk = false;
+  bool _lastAdvertisedBrownout = false;
+
+  late String _localNodeTagKey;
+
+  // Track current authenticated user for background learning application.
+  String? _currentUserId;
+  PersonalityProfile? _currentPersonality;
+
+  // ========================================================================
+  // Walk-by hot path (continuous scan)
+  // ========================================================================
+  static const int _hotRssiThresholdDbm = -75; // ~3m-ish in typical indoor BLE
+  static const Duration _hotDeviceCooldown = Duration(seconds: 20);
+  static const Duration _hotScanWindow = Duration(seconds: 4);
+  static const Duration _hotDeviceTimeout = Duration(seconds: 30);
+
+  final List<DiscoveredDevice> _hotQueue = <DiscoveredDevice>[];
+  final Set<String> _hotQueuedDeviceIds = <String>{};
+  bool _hotWorkerRunning = false;
+  final Map<String, int> _lastHotProcessedAtMsByDeviceId = <String, int>{};
+  final Map<String, int> _hotEnqueuedAtMsByDeviceId = <String, int>{};
+
+  // Hot-path latency metrics (lightweight, in-memory ring buffers).
+  static const int _hotMetricsWindowSize = 120;
+  static const Duration _hotMetricsLogInterval = Duration(seconds: 30);
+  final _HotLatencyWindow _hotQueueWaitMs =
+      _HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
+  final _HotLatencyWindow _hotTotalMs =
+      _HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
+  final _HotLatencyWindow _hotSessionOpenMs =
+      _HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
+  final _HotLatencyWindow _hotVibeReadMs =
+      _HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
+  final _HotLatencyWindow _hotCompatMs =
+      _HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
+  int _lastHotMetricsLogAtMs = 0;
+
+  // ------------------------------------------------------------------------
+  // Testing hooks (no real BLE required)
+  // ------------------------------------------------------------------------
+
+  /// Snapshot of currently known nearby AI nodes (for tests/debug tooling).
+  @visibleForTesting
+  List<AIPersonalityNode> debugDiscoveredNodesSnapshot() {
+    return _discoveredNodes.values.toList();
+  }
+
+  /// Deterministic, no-BLE simulation of the walk-by hot path.
+  ///
+  /// This bypasses platform BLE and uses `device.personalityData` only.
+  /// Intended for unit tests / CI validation when hardware isn’t available.
+  @visibleForTesting
+  Future<void> debugSimulateWalkByHotPath({
+    required String userId,
+    required PersonalityProfile personality,
+    required List<DiscoveredDevice> devices,
+  }) async {
+    _currentUserId = userId;
+    _currentPersonality = personality;
+
+    final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
+    if (!discoveryEnabled) return;
+
+    final localVibe = _buildDeterministicUserVibeForTesting(
+      userId: userId,
+      personality: personality,
+    );
+
+    for (final device in devices) {
+      if (device.type != DeviceType.bluetooth) continue;
+      final rssi = device.signalStrength;
+      if (rssi == null || rssi < _hotRssiThresholdDbm) continue;
+      final personalityData = device.personalityData;
+      if (personalityData == null) continue;
+
+      final vibe = _createVibeFromAnonymizedData(personalityData);
+      final trustScore = device.proximityScore * 0.7 + 0.3;
+
+      final node = AIPersonalityNode(
+        nodeId: device.deviceId,
+        vibe: vibe,
+        lastSeen: device.discoveredAt,
+        trustScore: trustScore,
+        learningHistory: {},
+      );
+
+      final compatibility =
+          await _vibeAnalyzer.analyzeVibeCompatibility(localVibe, node.vibe);
+      if (!_isConnectionWorthy(compatibility)) continue;
+
+      _updateDiscoveredNodes(<AIPersonalityNode>[node]);
+    }
+  }
+
+  UserVibe _buildDeterministicUserVibeForTesting({
+    required String userId,
+    required PersonalityProfile personality,
+  }) {
+    // Use the personality dimensions directly, with missing dimensions defaulted.
+    final dims = <String, double>{};
+    for (final d in VibeConstants.coreDimensions) {
+      dims[d] =
+          (personality.dimensions[d] ?? VibeConstants.defaultDimensionValue)
+              .clamp(0.0, 1.0);
+    }
+
+    final energy = ((dims['exploration_eagerness'] ?? 0.5) +
+            (dims['temporal_flexibility'] ?? 0.5) +
+            (dims['location_adventurousness'] ?? 0.5)) /
+        3.0;
+    final social = ((dims['community_orientation'] ?? 0.5) +
+            (dims['social_discovery_style'] ?? 0.5) +
+            (dims['trust_network_reliance'] ?? 0.5)) /
+        3.0;
+    final exploration = ((dims['exploration_eagerness'] ?? 0.5) +
+            (dims['location_adventurousness'] ?? 0.5) +
+            (1.0 - (dims['authenticity_preference'] ?? 0.5))) /
+        3.0;
+
+    final now = DateTime.now();
+    return UserVibe(
+      hashedSignature: 'test_sig_$userId',
+      anonymizedDimensions: dims,
+      overallEnergy: energy.clamp(0.0, 1.0),
+      socialPreference: social.clamp(0.0, 1.0),
+      explorationTendency: exploration.clamp(0.0, 1.0),
+      createdAt: now,
+      expiresAt: now.add(const Duration(days: 1)),
+      privacyLevel: 1.0,
+      temporalContext: 'test',
+    );
+  }
+
+  // Dedupe learning insights: insightId -> expiresAtMs
+  final Map<String, int> _seenLearningInsightIds = {};
+  int _lastSeenInsightsPersistMs = 0;
+
+  static const _prefsKeyBleNodeId = 'ble_node_id_v1';
+  static const _prefsKeyBleNodeIdExpiresAtMs = 'ble_node_id_expires_at_ms_v1';
+  static const _prefsKeySeenBleHashes = 'ble_seen_hashes_v1';
+  static const _prefsKeyAi2AiLearningEnabled = 'ai2ai_learning_enabled';
+  static const _prefsKeySeenLearningInsightIds =
+      'ai2ai_seen_learning_insights_v1';
+  static const _prefsKeyFederatedLearningParticipation =
+      'federated_learning_participation';
+  static const _prefsKeyFederatedCloudQueue = 'ai2ai_federated_cloud_queue_v1';
 
   // Realtime event streams (managed by RealtimeCoordinator)
   // Note: Subscriptions are created and managed by _realtimeCoordinator.setup()
@@ -79,6 +407,8 @@ class VibeConnectionOrchestrator {
     AI2AIProtocol? protocol,
     PersonalityAdvertisingService? advertisingService,
     UserAnonymizationService? anonymizationService,
+    SignalKeyManager? signalKeyManager,
+    required SharedPreferencesCompat prefs,
     PersonalityLearning? personalityLearning, // NEW: For offline AI2AI learning
     // Phase 2: Knot Weaving Integration
     KnotWeavingService? knotWeavingService,
@@ -90,6 +420,8 @@ class VibeConnectionOrchestrator {
         _protocol = protocol,
         _advertisingService = advertisingService,
         _anonymizationService = anonymizationService,
+        _signalKeyManager = signalKeyManager,
+        _prefs = prefs,
         _knotWeavingService = knotWeavingService,
         _knotStorageService = knotStorageService,
         _discoveryManager = DiscoveryManager(
@@ -120,15 +452,27 @@ class VibeConnectionOrchestrator {
       return;
     }
 
+    // Respect the user-controlled discovery switch.
+    final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
+    if (!discoveryEnabled) return;
+
+    // Keep a current reference for fast-path compatibility checks.
+    _currentPersonality = updatedPersonality;
+
     try {
       _logger.info(
           'Updating personality advertising after evolution (generation ${updatedPersonality.evolutionGeneration})',
           tag: _logName);
 
+      final eventModeEnabled = _isEventModeEnabled();
       final success = await _advertisingService!.updatePersonalityData(
         userId,
         updatedPersonality,
         _vibeAnalyzer,
+        nodeId: _localBleNodeId,
+        eventModeEnabled: eventModeEnabled,
+        connectOk: _lastAdvertisedConnectOk,
+        brownout: _lastAdvertisedBrownout,
       );
 
       if (success) {
@@ -163,6 +507,93 @@ class VibeConnectionOrchestrator {
       _logger.info('Initializing orchestration for user: $userId',
           tag: _logName);
 
+      // Respect the user-controlled discovery switch.
+      // If disabled, do not start advertising, scanning, or background timers.
+      final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
+      if (!discoveryEnabled) {
+        _logger.info(
+          'AI2AI discovery is disabled by user setting; skipping orchestration init',
+          tag: _logName,
+        );
+        if (LedgerAuditV0.isEnabled) {
+          unawaited(LedgerAuditV0.tryAppend(
+            domain: LedgerDomainV0.deviceCapability,
+            eventType: 'ai2ai_orchestration_init_skipped',
+            occurredAt: DateTime.now(),
+            entityType: 'user',
+            entityId: userId,
+            payload: <String, Object?>{
+              'reason': 'discovery_disabled',
+            },
+          ));
+        }
+        return;
+      }
+
+      _currentUserId = userId;
+      _currentPersonality = personality;
+
+      // Ensure stable (rotating) offline BLE node id + load replay protection state.
+      await _ensureLocalBleNodeId();
+      _loadSeenBleHashes();
+      _loadSeenLearningInsightIds();
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_orchestration_init_started',
+          occurredAt: DateTime.now(),
+          entityType: 'user',
+          entityId: userId,
+          payload: <String, Object?>{
+            'allow_ble_side_effects': _allowBleSideEffects,
+            'is_test_binding': _isTestBinding,
+            'is_web': kIsWeb,
+            'platform': defaultTargetPlatform.name,
+            'ble_node_id': _localBleNodeId,
+          },
+        ));
+      }
+
+      // Android-only: keep BLE work alive in the background.
+      // Note: Android requires a foreground service notification; cannot be truly "silent".
+      if (_allowBleSideEffects &&
+          !kIsWeb &&
+          defaultTargetPlatform == TargetPlatform.android) {
+        final started = await BleForegroundService.startService();
+        if (started) {
+          _logger.info('Android BLE foreground service started', tag: _logName);
+          if (LedgerAuditV0.isEnabled) {
+            unawaited(LedgerAuditV0.tryAppend(
+              domain: LedgerDomainV0.deviceCapability,
+              eventType: 'ai2ai_ble_foreground_service_started',
+              occurredAt: DateTime.now(),
+              payload: const <String, Object?>{
+                'platform': 'android',
+              },
+            ));
+          }
+        } else {
+          _logger.warn('Android BLE foreground service failed to start',
+              tag: _logName);
+          if (LedgerAuditV0.isEnabled) {
+            unawaited(LedgerAuditV0.tryAppend(
+              domain: LedgerDomainV0.deviceCapability,
+              eventType: 'ai2ai_ble_foreground_service_failed',
+              occurredAt: DateTime.now(),
+              payload: const <String, Object?>{
+                'platform': 'android',
+              },
+            ));
+          }
+        }
+      }
+
+      // Publish Signal prekey payload for offline bootstrap (Mode 2).
+      // This is best-effort: if Signal isn't initialized yet, advertising can still proceed.
+      if (_allowBleSideEffects) {
+        await _publishSignalPreKeyPayloadIfAvailable();
+      }
+
       // Initialize realtime service if available
       if (_realtimeService != null) {
         final realtimeInitialized = await _realtimeService!.initialize();
@@ -174,12 +605,18 @@ class VibeConnectionOrchestrator {
         }
       }
 
-      // Start personality advertising (make this device discoverable)
-      if (_advertisingService != null) {
+      // Start personality advertising (make this device discoverable).
+      // BLE side-effects are disabled by default on iOS (simulator safety).
+      if (_allowBleSideEffects && _advertisingService != null) {
+        final eventModeEnabled = _isEventModeEnabled();
         final advertisingStarted = await _advertisingService!.startAdvertising(
           userId,
           personality,
           _vibeAnalyzer,
+          nodeId: _localBleNodeId,
+          eventModeEnabled: eventModeEnabled,
+          connectOk: false,
+          brownout: false,
         );
         if (advertisingStarted) {
           _logger.info('Personality advertising started', tag: _logName);
@@ -189,25 +626,878 @@ class VibeConnectionOrchestrator {
         }
       }
 
-      // Start device discovery (find other devices)
-      if (_deviceDiscovery != null) {
-        await _deviceDiscovery!.startDiscovery();
+      // Start device discovery (find other devices).
+      if (_allowBleSideEffects && _deviceDiscovery != null) {
+        // Continuous scanning: back-to-back scan windows (walk-by capture).
+        _deviceDiscovery!.onDevicesDiscovered(_onDevicesDiscoveredHotPath);
+        await _deviceDiscovery!.startDiscovery(
+          scanInterval: Duration.zero,
+          scanWindow: _hotScanWindow,
+          deviceTimeout: _hotDeviceTimeout,
+        );
         _logger.info('Device discovery started', tag: _logName);
+
+        // Battery-adaptive scan scheduling (best-effort).
+        _batteryScheduler?.stop();
+        _batteryScheduler = BatteryAdaptiveBleScheduler(
+          discovery: _deviceDiscovery!,
+          prefs: _prefs,
+        );
+        await _batteryScheduler!.start();
       }
 
-      // Start AI2AI discovery process
-      await _startAI2AIDiscovery(userId, personality);
+      // Start AI2AI discovery process (BLE-only; skip when BLE side-effects are disabled).
+      if (_allowBleSideEffects) {
+        await _startAI2AIDiscovery(userId, personality);
+      } else {
+        _logger.info(
+          'BLE side-effects disabled; skipping AI2AI discovery timers',
+          tag: _logName,
+        );
+      }
+
+      // Start processing incoming BLE inbox messages (silent background).
+      if (_allowBleSideEffects) {
+        _startBleInboxProcessing();
+      }
+
+      // Start federated (hybrid) sync:
+      // - Pattern 1: BLE gossip happens opportunistically via learningInsight messages
+      // - Pattern 2: Optional cloud aggregation when online (edge function)
+      _startFederatedCloudSync();
 
       // Begin connection maintenance
       await _startConnectionMaintenance();
 
       _isInitialized = true;
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_orchestration_init_completed',
+          occurredAt: DateTime.now(),
+          entityType: 'user',
+          entityId: userId,
+          payload: const <String, Object?>{
+            'ok': true,
+          },
+        ));
+      }
       _logger.info('Orchestration initialized successfully', tag: _logName);
     } catch (e) {
       _logger.error('Error initializing AI2AI orchestration',
           error: e, tag: _logName);
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_orchestration_init_failed',
+          occurredAt: DateTime.now(),
+          entityType: 'user',
+          entityId: userId,
+          payload: <String, Object?>{
+            'error': e.toString(),
+          },
+        ));
+      }
       throw AI2AIConnectionException('Failed to initialize orchestration: $e');
     }
+  }
+
+  void _onDevicesDiscoveredHotPath(List<DiscoveredDevice> devices) {
+    if (!_allowBleSideEffects) return;
+
+    // Respect the user-controlled discovery switch.
+    final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
+    if (!discoveryEnabled) return;
+
+    final eventModeEnabled = _isEventModeEnabled();
+
+    // If Event Mode was disabled, clear advertised flags once (best-effort).
+    if (!eventModeEnabled && _lastAdvertisedEventModeEnabled) {
+      unawaited(_maybeUpdateEventModeBroadcastFlags(
+        eventModeEnabled: false,
+        connectOk: false,
+        brownout: false,
+      ));
+    }
+
+    // Event Mode: broadcast-first (no hot-path connections except check-ins).
+    if (eventModeEnabled) {
+      unawaited(_handleEventModeScanWindow(devices));
+      return;
+    }
+
+    // Hot path is BLE-only (walk-by capture). Other transports can be handled by
+    // the slower, general discovery pipeline.
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    var sawHotCandidate = false;
+    for (final device in devices) {
+      if (device.type != DeviceType.bluetooth) continue;
+
+      final rssi = device.signalStrength;
+      if (rssi == null || rssi < _hotRssiThresholdDbm) continue;
+      sawHotCandidate = true;
+
+      final lastMs = _lastHotProcessedAtMsByDeviceId[device.deviceId];
+      if (lastMs != null &&
+          nowMs - lastMs < _hotDeviceCooldown.inMilliseconds) {
+        continue;
+      }
+
+      if (_hotQueuedDeviceIds.add(device.deviceId)) {
+        _hotQueue.add(device);
+        _hotEnqueuedAtMsByDeviceId[device.deviceId] = nowMs;
+      }
+    }
+
+    // If we’re seeing strong RSSI results, temporarily boost scan cadence.
+    if (sawHotCandidate) {
+      _batteryScheduler?.notifyHotOpportunity();
+    }
+    _batteryScheduler?.notifyDiscoverySample(
+      discoveredCount: devices.length,
+      sawHotCandidate: sawHotCandidate,
+    );
+
+    if (_hotWorkerRunning || _hotQueue.isEmpty) return;
+    _hotWorkerRunning = true;
+    unawaited(_runHotWorker());
+  }
+
+  bool _isEventModeEnabled() =>
+      (_prefs.getBool(_prefsKeyEventModeEnabled) ?? false) == true;
+
+  Future<void> _handleEventModeScanWindow(List<DiscoveredDevice> devices) async {
+    if (!_allowBleSideEffects) return;
+
+    final userId = _currentUserId;
+    final personality = _currentPersonality;
+    if (userId == null || personality == null) return;
+
+    final now = DateTime.now();
+    final nowMs = now.millisecondsSinceEpoch;
+
+    // If Event Mode was just turned on, reset per-event budgets.
+    if (!_lastAdvertisedEventModeEnabled) {
+      _eventModeDeepSyncCount = 0;
+      _eventModeLastDeepSyncAtMsByNodeTag.clear();
+      _eventModeLastEpochAttempted = -1;
+      _eventModeCheckInRunning = false;
+    }
+
+    final frames = <RoomCoherenceFrame>[];
+    final candidates = <_EventModeCandidate>[];
+
+    var sawHotCandidate = false;
+    for (final device in devices) {
+      if (device.type != DeviceType.bluetooth) continue;
+
+      final rssi = device.signalStrength;
+      if (rssi != null && rssi >= _hotRssiThresholdDbm) {
+        sawHotCandidate = true;
+      }
+
+      final frameMeta = device.metadata['spots_frame_v1'];
+      if (frameMeta is! Map) continue;
+
+      final nodeTagRaw = frameMeta['node_tag'];
+      final dimsQRaw = frameMeta['dims_q'];
+      if (nodeTagRaw is! List || dimsQRaw is! List) continue;
+
+      final nodeTag = nodeTagRaw.map((e) => (e as num).toInt()).toList();
+      final dimsQ = dimsQRaw.map((e) => (e as num).toInt()).toList();
+      if (nodeTag.length != 4 || dimsQ.length != 12) continue;
+
+      final nodeTagKey = _nodeTagKeyFromBytes(nodeTag);
+      final remoteConnectOk = frameMeta['connect_ok'] == true;
+
+      frames.add(RoomCoherenceFrame(nodeTag: nodeTag, dimsQ: dimsQ));
+      candidates.add(_EventModeCandidate(
+        device: device,
+        nodeTagKey: nodeTagKey,
+        remoteConnectOk: remoteConnectOk,
+      ));
+
+      final prev = _eventModeFamiliarityByNodeTag[nodeTagKey] ?? 0;
+      _eventModeFamiliarityByNodeTag[nodeTagKey] = (prev + 1).clamp(0, 10000);
+    }
+
+    _batteryScheduler?.notifyDiscoverySample(
+      discoveredCount: devices.length,
+      sawHotCandidate: sawHotCandidate,
+    );
+    if (sawHotCandidate) {
+      _batteryScheduler?.notifyHotOpportunity();
+    }
+
+    final room = _roomCoherenceEngine.observeWindowFrames(
+      observedAt: now,
+      frames: frames,
+    );
+
+    // Ambient dense behaves like brownout (no arming).
+    final brownout = room.densityClass == RoomDensityClass.ambientDense;
+
+    final inCheckInWindow = (nowMs % _eventEpochMs) < _eventCheckInWindowMs;
+    final connectOk = inCheckInWindow &&
+        room.linger &&
+        !brownout &&
+        _eventModeDeepSyncCount < _eventMaxDeepSyncPerEvent;
+
+    await _maybeUpdateEventModeBroadcastFlags(
+      eventModeEnabled: true,
+      connectOk: connectOk,
+      brownout: brownout,
+    );
+
+    if (!connectOk) return;
+    if (brownout) return;
+
+    // Only attempt one deep sync per epoch.
+    final epoch = nowMs ~/ _eventEpochMs;
+    if (_eventModeLastEpochAttempted == epoch) return;
+    if (_eventModeCheckInRunning) return;
+
+    // Deterministic initiator: only a small fraction may initiate in a window.
+    if (!_eventModeMayInitiate(epoch: epoch)) return;
+
+    final target = _pickEventModeTarget(
+      candidates: candidates,
+      nowMs: nowMs,
+      epoch: epoch,
+    );
+    if (target == null) return;
+
+    _eventModeLastEpochAttempted = epoch;
+    _eventModeCheckInRunning = true;
+    try {
+      final jitterMs = _eventModeJitterMs(epoch: epoch);
+      if (jitterMs > 0) {
+        await Future<void>.delayed(Duration(milliseconds: jitterMs));
+      }
+
+      // Ensure we still have time left in the window after jitter.
+      final postJitterMs = DateTime.now().millisecondsSinceEpoch;
+      if ((postJitterMs % _eventEpochMs) >= _eventCheckInWindowMs) {
+        return;
+      }
+
+      await _processHotDevice(target.device);
+      _eventModeDeepSyncCount += 1;
+      _eventModeLastDeepSyncAtMsByNodeTag[target.nodeTagKey] = postJitterMs;
+    } finally {
+      _eventModeCheckInRunning = false;
+    }
+  }
+
+  Future<void> _maybeUpdateEventModeBroadcastFlags({
+    required bool eventModeEnabled,
+    required bool connectOk,
+    required bool brownout,
+  }) async {
+    final userId = _currentUserId;
+    final personality = _currentPersonality;
+    final advertising = _advertisingService;
+    if (userId == null || personality == null || advertising == null) return;
+
+    if (_lastAdvertisedEventModeEnabled == eventModeEnabled &&
+        _lastAdvertisedConnectOk == connectOk &&
+        _lastAdvertisedBrownout == brownout) {
+      return;
+    }
+
+    _lastAdvertisedEventModeEnabled = eventModeEnabled;
+    _lastAdvertisedConnectOk = connectOk;
+    _lastAdvertisedBrownout = brownout;
+
+    await advertising.updateServiceDataFrameV1Flags(
+      nodeId: _localBleNodeId,
+      eventModeEnabled: eventModeEnabled,
+      connectOk: connectOk,
+      brownout: brownout,
+    );
+  }
+
+  bool _eventModeMayInitiate({required int epoch}) {
+    // eligibility = hash(node_id + epoch) % 100
+    final v = _hashMod(
+      '$_localBleNodeId:$epoch',
+      mod: 100,
+    );
+    return v < _eventInitiatorEligibilityPct;
+  }
+
+  int _eventModeJitterMs({required int epoch}) {
+    // jitter_ms = hash(node_id + epoch) % 1500
+    return _hashMod('$_localBleNodeId:$epoch', mod: 1500);
+  }
+
+  int _hashU32(String input) {
+    final bytes = sha256.convert(utf8.encode(input)).bytes;
+    return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+  }
+
+  int _hashMod(String input, {required int mod}) {
+    final v = _hashU32(input) & 0x7FFFFFFF;
+    return v % mod;
+  }
+
+  _EventModeCandidate? _pickEventModeTarget({
+    required List<_EventModeCandidate> candidates,
+    required int nowMs,
+    required int epoch,
+  }) {
+    // Must be two-sided opt-in.
+    final eligible = candidates
+        .where((c) => c.remoteConnectOk)
+        .where((c) => _eventModeIsTieBreakInitiator(
+              remoteNodeTagKey: c.nodeTagKey,
+              epoch: epoch,
+            ))
+        .where((c) {
+          final last = _eventModeLastDeepSyncAtMsByNodeTag[c.nodeTagKey];
+          if (last == null) return true;
+          return (nowMs - last) >= _eventPerNodeDeepSyncCooldownMs;
+        })
+        .toList();
+    if (eligible.isEmpty) return null;
+
+    eligible.sort((a, b) {
+      final fa = _eventModeFamiliarityByNodeTag[a.nodeTagKey] ?? 0;
+      final fb = _eventModeFamiliarityByNodeTag[b.nodeTagKey] ?? 0;
+      return fb.compareTo(fa);
+    });
+
+    return eligible.first;
+  }
+
+  bool _eventModeIsTieBreakInitiator({
+    required String remoteNodeTagKey,
+    required int epoch,
+  }) {
+    // Symmetric tie-break: each side compares
+    // hash(local + remote + epoch) vs hash(remote + local + epoch).
+    final localFirst = _hashU32('$_localNodeTagKey:$remoteNodeTagKey:$epoch');
+    final remoteFirst = _hashU32('$remoteNodeTagKey:$_localNodeTagKey:$epoch');
+    return localFirst < remoteFirst;
+  }
+
+  void _bufferEventLearningInsight(_EventModeBufferedLearningInsight insight) {
+    // In-memory buffer only (v1). This prevents event-time personality writes,
+    // while still preserving observations for post-event consolidation.
+    const maxItems = 500;
+    if (_eventModeLearningBuffer.length >= maxItems) {
+      _eventModeLearningBuffer.removeAt(0);
+    }
+    _eventModeLearningBuffer.add(insight);
+  }
+
+  Future<void> _runHotWorker() async {
+    try {
+      while (_hotQueue.isNotEmpty) {
+        // Stop immediately if the switch is turned off mid-loop.
+        final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
+        if (!discoveryEnabled) return;
+
+        final device = _hotQueue.removeAt(0);
+        _hotQueuedDeviceIds.remove(device.deviceId);
+        _lastHotProcessedAtMsByDeviceId[device.deviceId] =
+            DateTime.now().millisecondsSinceEpoch;
+
+        final enqMs = _hotEnqueuedAtMsByDeviceId.remove(device.deviceId);
+        if (enqMs != null) {
+          final waitMs = DateTime.now().millisecondsSinceEpoch - enqMs;
+          _hotQueueWaitMs.add(waitMs);
+        }
+
+        await _processHotDevice(device);
+      }
+    } finally {
+      _hotWorkerRunning = false;
+    }
+  }
+
+  Future<void> _processHotDevice(DiscoveredDevice device) async {
+    final userId = _currentUserId;
+    final personality = _currentPersonality;
+    if (userId == null || personality == null) return;
+
+    final totalSw = Stopwatch()..start();
+    try {
+      final localVibe =
+          await _vibeAnalyzer.compileUserVibe(userId, personality);
+
+      AnonymizedVibeData? personalityData = device.personalityData;
+
+      BleGattSession? session;
+      if (_allowBleSideEffects && device.type == DeviceType.bluetooth) {
+        try {
+          final openSw = Stopwatch()..start();
+          session =
+              await BleConnectionPool.instance.openSession(device: device);
+          openSw.stop();
+          _hotSessionOpenMs.add(openSw.elapsedMilliseconds);
+
+          if (personalityData == null) {
+            final vibeReadSw = Stopwatch()..start();
+            final vibeBytes = await session.readStreamPayload(streamId: 0);
+            vibeReadSw.stop();
+            _hotVibeReadMs.add(vibeReadSw.elapsedMilliseconds);
+            if (vibeBytes != null && vibeBytes.isNotEmpty) {
+              final jsonString = utf8.decode(vibeBytes);
+              personalityData = PersonalityDataCodec.decodeFromJson(jsonString);
+            }
+          }
+
+          // Prime prekeys + send silent bootstrap under the same lease.
+          await _primeOfflineSignalPreKeyBundleInSession(
+            device: device,
+            session: session,
+          );
+        } catch (e) {
+          _logger.debug(
+              'Hot-path BLE session failed for ${device.deviceId}: $e',
+              tag: _logName);
+        } finally {
+          try {
+            await session?.close();
+          } catch (_) {
+            // Ignore.
+          }
+        }
+      }
+
+      // If we still don't have vibe, do a best-effort follow-up read.
+      // (May connect again; keep this best-effort and bounded by cooldown.)
+      personalityData ??=
+          await _deviceDiscovery?.extractPersonalityData(device);
+      if (personalityData == null) return;
+
+      final vibe = _createVibeFromAnonymizedData(personalityData);
+
+      final proximityScore =
+          _deviceDiscovery?.calculateProximity(device) ?? 0.5;
+      final trustScore = proximityScore * 0.7 + 0.3;
+
+      final node = AIPersonalityNode(
+        nodeId: device.deviceId,
+        vibe: vibe,
+        lastSeen: device.discoveredAt,
+        trustScore: trustScore,
+        learningHistory: {},
+      );
+
+      final compatSw = Stopwatch()..start();
+      final compatibility =
+          await _vibeAnalyzer.analyzeVibeCompatibility(localVibe, node.vibe);
+      compatSw.stop();
+      _hotCompatMs.add(compatSw.elapsedMilliseconds);
+      if (!_isConnectionWorthy(compatibility)) return;
+
+      _updateDiscoveredNodes(<AIPersonalityNode>[node]);
+
+      unawaited(_maybeApplyPassiveAi2AiLearning(
+        userId: userId,
+        localPersonality: personality,
+        nodes: <AIPersonalityNode>[node],
+        compatibilityByNodeId: <String, VibeCompatibilityResult>{
+          node.nodeId: compatibility,
+        },
+      ));
+    } catch (e) {
+      _logger.debug('Hot-path processing failed for ${device.deviceId}: $e',
+          tag: _logName);
+    } finally {
+      totalSw.stop();
+      _hotTotalMs.add(totalSw.elapsedMilliseconds);
+      _maybeLogHotMetrics();
+    }
+  }
+
+  void _maybeLogHotMetrics() {
+    // Throttle logs so they’re useful, not noisy.
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    if (nowMs - _lastHotMetricsLogAtMs <
+        _hotMetricsLogInterval.inMilliseconds) {
+      return;
+    }
+    _lastHotMetricsLogAtMs = nowMs;
+
+    final total = _hotTotalMs.summary();
+    if (total.count == 0) return;
+
+    final q = _hotQueueWaitMs.summary();
+    final open = _hotSessionOpenMs.summary();
+    final vibe = _hotVibeReadMs.summary();
+    final compat = _hotCompatMs.summary();
+
+    _logger.debug(
+      'HotPath latency ms '
+      '(n=${total.count}) '
+      'queue(p50=${q.p50},p95=${q.p95}) '
+      'open(p50=${open.p50},p95=${open.p95}) '
+      'vibe(p50=${vibe.p50},p95=${vibe.p95}) '
+      'compat(p50=${compat.p50},p95=${compat.p95}) '
+      'total(p50=${total.p50},p95=${total.p95})',
+      tag: _logName,
+    );
+    if (LedgerAuditV0.isEnabled) {
+      unawaited(LedgerAuditV0.tryAppend(
+        domain: LedgerDomainV0.deviceCapability,
+        eventType: 'ai2ai_hotpath_latency_summary',
+        occurredAt: DateTime.now(),
+        payload: debugHotPathLatencySummary().cast<String, Object?>(),
+      ));
+    }
+  }
+
+  @visibleForTesting
+  Map<String, dynamic> debugHotPathLatencySummary() {
+    final total = _hotTotalMs.summary();
+    final q = _hotQueueWaitMs.summary();
+    final open = _hotSessionOpenMs.summary();
+    final vibe = _hotVibeReadMs.summary();
+    final compat = _hotCompatMs.summary();
+
+    return <String, dynamic>{
+      'count': total.count,
+      'queue': q.toJson(),
+      'open': open.toJson(),
+      'vibe': vibe.toJson(),
+      'compat': compat.toJson(),
+      'total': total.toJson(),
+    };
+  }
+
+  Future<void> _ensureLocalBleNodeId() async {
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final storedId = _prefs.getString(_prefsKeyBleNodeId);
+    final expiresAtMs = _prefs.getInt(_prefsKeyBleNodeIdExpiresAtMs) ?? 0;
+
+    if (storedId != null && storedId.isNotEmpty && expiresAtMs > nowMs) {
+      _localBleNodeId = storedId;
+      _refreshLocalNodeTag();
+      return;
+    }
+
+    _localBleNodeId = const Uuid().v4();
+    final newExpiresAtMs =
+        DateTime.now().add(const Duration(hours: 24)).millisecondsSinceEpoch;
+    await _prefs.setString(_prefsKeyBleNodeId, _localBleNodeId);
+    await _prefs.setInt(_prefsKeyBleNodeIdExpiresAtMs, newExpiresAtMs);
+    _refreshLocalNodeTag();
+  }
+
+  void _refreshLocalNodeTag() {
+    _localNodeTagKey =
+        _nodeTagKeyFromBytes(_computeNodeTagBytes(_localBleNodeId));
+  }
+
+  static List<int> _computeNodeTagBytes(String nodeId) {
+    final digest = sha256.convert(utf8.encode(nodeId));
+    return digest.bytes.sublist(0, 4);
+  }
+
+  static String _nodeTagKeyFromBytes(List<int> bytes4) {
+    if (bytes4.length < 4) return bytes4.join(',');
+    return '${bytes4[0]}-${bytes4[1]}-${bytes4[2]}-${bytes4[3]}';
+  }
+
+  void _loadSeenBleHashes() {
+    if (_seenBleMessageHashes.isNotEmpty) return;
+    final list = _prefs.getStringList(_prefsKeySeenBleHashes) ?? const [];
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    for (final item in list) {
+      final parts = item.split(':');
+      if (parts.length != 2) continue;
+      final hash = parts[0];
+      final expiresAt = int.tryParse(parts[1]) ?? 0;
+      if (hash.isEmpty || expiresAt <= nowMs) continue;
+      _seenBleMessageHashes[hash] = expiresAt;
+    }
+  }
+
+  Future<void> _persistSeenBleHashesIfNeeded() async {
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    if (nowMs - _lastSeenHashesPersistMs < 15 * 1000) return;
+    _lastSeenHashesPersistMs = nowMs;
+
+    _seenBleMessageHashes.removeWhere((_, exp) => exp <= nowMs);
+    final entries = _seenBleMessageHashes.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final capped = entries.take(200).toList();
+
+    final list = capped.map((e) => '${e.key}:${e.value}').toList();
+    await _prefs.setStringList(_prefsKeySeenBleHashes, list);
+  }
+
+  Future<void> _maybeApplyPassiveAi2AiLearning({
+    required String userId,
+    required PersonalityProfile localPersonality,
+    required List<AIPersonalityNode> nodes,
+    required Map<String, VibeCompatibilityResult> compatibilityByNodeId,
+  }) async {
+    // Gate behind explicit user preference (default: enabled).
+    final learningEnabled =
+        _prefs.getBool(_prefsKeyAi2AiLearningEnabled) ?? true;
+    if (!learningEnabled) return;
+
+    final personalityLearning = _connectionManager.personalityLearning;
+    if (personalityLearning == null) return;
+
+    final eventModeEnabled = _isEventModeEnabled();
+
+    final now = DateTime.now();
+    const minIntervalPerPeer = Duration(minutes: 20);
+
+    for (final node in nodes) {
+      final last = _lastAi2AiLearningAtByPeerId[node.nodeId];
+      if (last != null && now.difference(last) < minIntervalPerPeer) {
+        continue;
+      }
+
+      final remoteDims = node.vibe.anonymizedDimensions;
+      final localDims = localPersonality.dimensions;
+      final deltas = <String, double>{};
+
+      // Conservative: only learn from strong, repeated signals (anonymized data is noisy).
+      for (final dimension in VibeConstants.coreDimensions) {
+        final localValue =
+            localDims[dimension] ?? VibeConstants.defaultDimensionValue;
+        final remoteValue = remoteDims[dimension];
+        if (remoteValue == null) continue;
+
+        final diff = remoteValue - localValue;
+        if (diff.abs() < 0.22) continue;
+        deltas[dimension] = diff;
+      }
+
+      if (deltas.isEmpty) continue;
+
+      final compat = compatibilityByNodeId[node.nodeId];
+      final learningQuality = compat != null
+          ? (compat.basicCompatibility * 0.6 + compat.aiPleasurePotential * 0.4)
+              .clamp(0.0, 1.0)
+          : 0.5;
+
+      // If the match itself isn't strong, skip learning to prevent drift.
+      if (learningQuality < 0.65) continue;
+
+      final insight = AI2AILearningInsight(
+        type: AI2AIInsightType.dimensionDiscovery,
+        dimensionInsights: deltas,
+        learningQuality: learningQuality,
+        timestamp: now,
+      );
+
+      try {
+        if (eventModeEnabled) {
+          _bufferEventLearningInsight(_EventModeBufferedLearningInsight(
+            source: 'passive',
+            insightId: null,
+            senderDeviceId: node.nodeId,
+            receivedAt: now,
+            learningQuality: learningQuality,
+            deltas: deltas,
+          ));
+          _lastAi2AiLearningAtByPeerId[node.nodeId] = now;
+          continue;
+        }
+
+        await personalityLearning.evolveFromAI2AILearning(
+          userId,
+          insight,
+        );
+        _lastAi2AiLearningAtByPeerId[node.nodeId] = now;
+
+        // V1 "real" AI2AI learning exchange:
+        // send the insight to the peer over the encrypted, ACK-confirmed BLE channel.
+        await _sendLearningInsightToPeer(
+          peerId: node.nodeId,
+          insight: insight,
+          learningQuality: learningQuality,
+        );
+      } catch (e) {
+        _logger.debug('AI2AI passive learning skipped for ${node.nodeId}: $e',
+            tag: _logName);
+      }
+    }
+  }
+
+  Future<void> _sendLearningInsightToPeer({
+    required String peerId,
+    required AI2AILearningInsight insight,
+    required double learningQuality,
+  }) async {
+    if (!_allowBleSideEffects) return;
+    if (_isEventModeEnabled()) return;
+    final protocol = _protocol;
+    if (protocol == null) return;
+
+    final device = _deviceDiscovery?.getDevice(peerId);
+    if (device == null) return;
+
+    // Only implemented over physical BLE transport in v1.
+    if (device.type != DeviceType.bluetooth) return;
+
+    // Respect user setting.
+    final learningEnabled =
+        _prefs.getBool(_prefsKeyAi2AiLearningEnabled) ?? true;
+    if (!learningEnabled) return;
+
+    final recipientId =
+        _peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
+    final insightId = const Uuid().v4();
+    const ttlMs = 60 * 60 * 1000; // 1 hour
+
+    // Payload schema v1 (kept intentionally small and bounded).
+    final payload = <String, dynamic>{
+      'schema_version': 1,
+      'insight_id': insightId,
+      'created_at': DateTime.now().toUtc().toIso8601String(),
+      'ttl_ms': ttlMs,
+      'learning_quality': learningQuality,
+      'insight_type': insight.type.name,
+      // Gossip fields (optional; ignored by older builds).
+      'origin_id': _localBleNodeId,
+      'hop': 0,
+      'dimension_insights': insight.dimensionInsights.map(
+        (k, v) => MapEntry(k, v.clamp(-0.35, 0.35)),
+      ),
+    };
+
+    try {
+      // Pattern 2: queue for optional cloud aggregation.
+      await _enqueueFederatedDeltaForCloudFromInsightPayload(payload);
+
+      final packetBytes = await protocol.encodePacketBytes(
+        type: MessageType.learningInsight,
+        payload: payload,
+        senderNodeId: _localBleNodeId,
+        recipientNodeId: recipientId,
+      );
+
+      // Best-effort, acked send (batch API uses ACK stream).
+      final results = await sendBlePacketsBatch(
+        device: device,
+        senderId: _localBleNodeId,
+        packetBytesList: <Uint8List>[packetBytes],
+      );
+      final ok = results.isNotEmpty && results.first;
+      if (ok) {
+        _logger.debug('Sent learning insight to $peerId', tag: _logName);
+      }
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_learning_insight_sent',
+          occurredAt: DateTime.now(),
+          payload: <String, Object?>{
+            'ok': ok,
+            'peer_id': peerId,
+            'recipient_id': recipientId,
+            'insight_id': insightId,
+            'schema_version': 1,
+            'learning_quality': learningQuality,
+            'delta_dimensions_count': insight.dimensionInsights.length,
+          },
+        ));
+      }
+    } catch (e) {
+      _logger.debug('Failed to send learning insight to $peerId: $e',
+          tag: _logName);
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_learning_insight_send_failed',
+          occurredAt: DateTime.now(),
+          payload: <String, Object?>{
+            'peer_id': peerId,
+            'recipient_id': recipientId,
+            'insight_id': insightId,
+            'error': e.toString(),
+          },
+        ));
+      }
+    }
+  }
+
+  Future<void> _publishSignalPreKeyPayloadIfAvailable() async {
+    // Avoid relying on field promotion (some packages still compile with
+    // language versions where it isn't available).
+    final signalKeyManager = _signalKeyManager;
+    if (signalKeyManager == null) return;
+    try {
+      final bundle = await signalKeyManager.generatePreKeyBundle();
+      final payloadJson = <String, dynamic>{
+        'version': 1,
+        'created_at': DateTime.now().toUtc().toIso8601String(),
+        'node_id': _localBleNodeId,
+        'prekey_bundle': _signalPreKeyBundleToJson(bundle),
+      };
+      final bytes = Uint8List.fromList(utf8.encode(jsonEncode(payloadJson)));
+      final ok = await BlePeripheral.updatePreKeyPayload(payload: bytes);
+      if (ok) {
+        _logger.info('Published Signal prekey payload over BLE', tag: _logName);
+        if (LedgerAuditV0.isEnabled) {
+          unawaited(LedgerAuditV0.tryAppend(
+            domain: LedgerDomainV0.deviceCapability,
+            eventType: 'ai2ai_ble_prekey_payload_published',
+            occurredAt: DateTime.now(),
+            payload: <String, Object?>{
+              'ok': true,
+              'bytes_len': bytes.length,
+              'schema_version': 1,
+            },
+          ));
+        }
+      } else {
+        _logger.warn('Failed to publish Signal prekey payload over BLE',
+            tag: _logName);
+        if (LedgerAuditV0.isEnabled) {
+          unawaited(LedgerAuditV0.tryAppend(
+            domain: LedgerDomainV0.deviceCapability,
+            eventType: 'ai2ai_ble_prekey_payload_publish_failed',
+            occurredAt: DateTime.now(),
+            payload: <String, Object?>{
+              'ok': false,
+              'bytes_len': bytes.length,
+              'schema_version': 1,
+            },
+          ));
+        }
+      }
+    } catch (e) {
+      _logger.warn('Error publishing Signal prekey payload over BLE: $e',
+          tag: _logName);
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_ble_prekey_payload_publish_error',
+          occurredAt: DateTime.now(),
+          payload: <String, Object?>{
+            'error': e.toString(),
+          },
+        ));
+      }
+    }
+  }
+
+  Map<String, dynamic> _signalPreKeyBundleToJson(SignalPreKeyBundle bundle) {
+    // Ensure JSON-encodable output (Uint8List -> List<int>).
+    return <String, dynamic>{
+      'preKeyId': bundle.preKeyId,
+      'signedPreKey': bundle.signedPreKey.toList(),
+      'signedPreKeyId': bundle.signedPreKeyId,
+      'signature': bundle.signature.toList(),
+      'identityKey': bundle.identityKey.toList(),
+      'oneTimePreKey': bundle.oneTimePreKey?.toList(),
+      'oneTimePreKeyId': bundle.oneTimePreKeyId,
+      'registrationId': bundle.registrationId,
+      'deviceId': bundle.deviceId,
+      'kyberPreKeyId': bundle.kyberPreKeyId,
+      'kyberPreKey': bundle.kyberPreKey?.toList(),
+      'kyberPreKeySignature': bundle.kyberPreKeySignature?.toList(),
+    };
   }
 
   /// Discover nearby AI personalities for potential connections
@@ -220,15 +1510,16 @@ class VibeConnectionOrchestrator {
       return _discoveredNodes.values.toList();
     }
 
-    // Check connectivity before discovery
+    // Connectivity should NOT block offline-first physical discovery.
+    // It only affects whether realtime/cloud discovery is viable.
     try {
       final connectivityResults = await _connectivity.checkConnectivity();
       if (!_isConnected(connectivityResults)) {
         // #region agent log
-        _logger.warn('No connectivity available, skipping discovery',
+        _logger.info(
+            'No connectivity available, proceeding with offline discovery',
             tag: _logName);
         // #endregion
-        return [];
       }
     } catch (e) {
       // #region agent log
@@ -268,6 +1559,18 @@ class VibeConnectionOrchestrator {
         // #endregion
 
         _updateDiscoveredNodes(worthyNodes);
+
+        // Passive, on-device AI2AI learning from nearby compatible peers.
+        // Fire-and-forget: discovery should not block on learning updates.
+        Future<void>(() async {
+          await _maybeApplyPassiveAi2AiLearning(
+            userId: userId,
+            localPersonality: personality,
+            nodes: worthyNodes,
+            compatibilityByNodeId: compatibilityResults,
+          );
+        });
+
         return worthyNodes;
       }
 
@@ -473,6 +1776,21 @@ class VibeConnectionOrchestrator {
 
       _logger.debug('AI pleasure score: ${(finalScore * 100).round()}%',
           tag: _logName);
+
+      // Feed agent happiness (used to prioritize on-device training and guard
+      // against upstream regressions).
+      try {
+        final happiness = AgentHappinessService(prefs: _prefs);
+        await happiness.recordSignal(
+          source: 'ai2ai_pleasure',
+          score: finalScore,
+          metadata: <String, dynamic>{
+            'connection_id': connection.connectionId,
+          },
+        );
+      } catch (_) {
+        // Ignore.
+      }
       return finalScore;
     } catch (e) {
       _logger.error('Error calculating AI pleasure score',
@@ -512,6 +1830,37 @@ class VibeConnectionOrchestrator {
     // Cancel timers
     _discoveryTimer?.cancel();
     _connectionMaintenanceTimer?.cancel();
+    _bleInboxPoller?.cancel();
+    _federatedCloudSyncTimer?.cancel();
+    await _federatedCloudConnectivitySub?.cancel();
+    _federatedCloudConnectivitySub = null;
+    await _batteryScheduler?.stop();
+    _batteryScheduler = null;
+
+    // Stop discovery + advertising (best-effort).
+    try {
+      _deviceDiscovery?.stopDiscovery();
+    } catch (e) {
+      _logger.debug('Error stopping device discovery: $e', tag: _logName);
+    }
+    try {
+      await _advertisingService?.stopAdvertising();
+    } catch (e) {
+      _logger.debug('Error stopping personality advertising: $e',
+          tag: _logName);
+    }
+
+    // Android-only: stop BLE foreground runtime if we started it.
+    if (_allowBleSideEffects &&
+        !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        await BleForegroundService.stopService();
+      } catch (e) {
+        _logger.debug('Error stopping Android BLE foreground service: $e',
+            tag: _logName);
+      }
+    }
 
     // Complete all active connections
     final activeConnectionIds = _activeConnections.keys.toList();
@@ -528,8 +1877,427 @@ class VibeConnectionOrchestrator {
     _pendingConnections.clear();
     _nearbyVibes.clear();
     _discoveredNodes.clear();
+    _currentUserId = null;
 
     _logger.info('Shutdown completed', tag: _logName);
+  }
+
+  void _startBleInboxProcessing() {
+    if (!_allowBleSideEffects) return;
+    _bleInboxPoller?.cancel();
+    _bleInboxPoller = Timer.periodic(const Duration(seconds: 2), (_) async {
+      final protocol = _protocol;
+      if (protocol == null) return;
+
+      try {
+        final messages = await BleInbox.pollMessages(maxMessages: 50);
+        if (messages.isEmpty) return;
+
+        for (final msg in messages) {
+          // Replay protection: drop duplicates within a short window.
+          final hash = sha256.convert(msg.data).toString();
+          final nowMs = DateTime.now().millisecondsSinceEpoch;
+          final existingExpiry = _seenBleMessageHashes[hash];
+          if (existingExpiry != null && existingExpiry > nowMs) {
+            continue;
+          }
+          _seenBleMessageHashes[hash] =
+              nowMs + const Duration(minutes: 10).inMilliseconds;
+
+          // Decoding triggers Signal decrypt + session creation for PreKey messages.
+          final decoded = await protocol.decodeMessage(msg.data, msg.senderId);
+          if (decoded == null) continue;
+
+          if (decoded.type == MessageType.learningInsight) {
+            await _handleIncomingLearningInsight(decoded);
+          }
+        }
+
+        await _persistSeenBleHashesIfNeeded();
+        await _persistSeenLearningInsightIdsIfNeeded();
+      } catch (e) {
+        _logger.warn('BLE inbox processing error: $e', tag: _logName);
+      }
+    });
+  }
+
+  bool _isFederatedLearningParticipationEnabled() {
+    return _prefs.getBool(_prefsKeyFederatedLearningParticipation) ?? true;
+  }
+
+  void _startFederatedCloudSync() {
+    // Best-effort: no-op if not configured; safe to call multiple times.
+    _federatedCloudSyncTimer?.cancel();
+    unawaited(_federatedCloudConnectivitySub?.cancel());
+    _federatedCloudConnectivitySub = null;
+
+    _federatedCloudConnectivitySub =
+        _connectivity.onConnectivityChanged.listen((results) {
+      final isOnline = results.any((r) => r != ConnectivityResult.none);
+      if (!isOnline) return;
+      unawaited(_syncFederatedCloudQueue());
+    });
+
+    // Periodic retry, even if connectivity stream is noisy on some platforms.
+    _federatedCloudSyncTimer =
+        Timer.periodic(const Duration(minutes: 10), (_) async {
+      unawaited(_syncFederatedCloudQueue());
+    });
+  }
+
+  Future<void> _enqueueFederatedDeltaForCloudFromInsightPayload(
+    Map<String, dynamic> payload,
+  ) async {
+    if (!_isFederatedLearningParticipationEnabled()) return;
+
+    try {
+      final entry =
+          buildCloudDeltaEntryFromLearningInsightPayload(payload: payload);
+      if (entry == null) return;
+      final insightId = entry['id'] as String?;
+      if (insightId == null || insightId.isEmpty) return;
+
+      final existing =
+          _prefs.getStringList(_prefsKeyFederatedCloudQueue) ?? const [];
+      final next = <String>[];
+      var seenId = false;
+      for (final s in existing) {
+        // Basic dedupe by `id` without needing to decode everything.
+        if (cloudDeltaEntryContainsId(jsonString: s, id: insightId)) {
+          seenId = true;
+        }
+        next.add(s);
+      }
+      if (!seenId) {
+        next.add(jsonEncode(entry));
+      }
+
+      // Cap queue size (FIFO) to keep storage bounded.
+      final capped =
+          next.length <= 200 ? next : next.sublist(next.length - 200);
+      await _prefs.setStringList(_prefsKeyFederatedCloudQueue, capped);
+    } catch (e) {
+      _logger.debug('Failed to enqueue federated delta for cloud: $e',
+          tag: _logName);
+    }
+  }
+
+  Future<void> _syncFederatedCloudQueue() async {
+    if (!_isFederatedLearningParticipationEnabled()) return;
+
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    // Avoid spamming edge function if multiple triggers happen at once.
+    if (nowMs - _lastFederatedCloudSyncAttemptMs < 30 * 1000) return;
+    _lastFederatedCloudSyncAttemptMs = nowMs;
+
+    final supabase = SupabaseService();
+    if (!supabase.isAvailable) return;
+    final user = supabase.currentUser;
+    if (user == null) return;
+
+    final list = _prefs.getStringList(_prefsKeyFederatedCloudQueue) ?? const [];
+    if (list.isEmpty) return;
+
+    final batch = <Map<String, dynamic>>[];
+    final remaining = <String>[];
+
+    // Upload up to 50 entries at a time.
+    for (final s in list) {
+      if (batch.length >= 50) {
+        remaining.add(s);
+        continue;
+      }
+      try {
+        final decoded = jsonDecode(s) as Map<String, dynamic>;
+        batch.add(decoded);
+      } catch (_) {
+        // Drop unparseable entries.
+      }
+    }
+
+    if (batch.isEmpty) {
+      await _prefs.setStringList(_prefsKeyFederatedCloudQueue, remaining);
+      return;
+    }
+
+    try {
+      final res = await supabase.client.functions.invoke(
+        'federated-sync',
+        body: <String, dynamic>{
+          'schema_version': 1,
+          'source': 'ai2ai_ble',
+          'deltas': batch,
+        },
+      );
+
+      final status = res.status;
+      if (status != 200) {
+        _logger.debug('Federated sync failed: HTTP $status', tag: _logName);
+        return;
+      }
+
+      // Optional: apply returned global average deltas as a lightweight "prior"
+      // to on-device scoring. This makes the cloud aggregation path real without
+      // requiring full model weight updates.
+      try {
+        final decoded =
+            res.data is String ? jsonDecode(res.data as String) : res.data;
+        if (decoded is Map) {
+          final global = decoded['global_average_deltas'];
+          if (global is Map) {
+            final priors = <EmbeddingDelta>[];
+            for (final entry in global.entries) {
+              final category = entry.key?.toString() ?? 'general';
+              final value = entry.value;
+              if (value is! List) continue;
+              final vec = value
+                  .whereType<num>()
+                  .map((n) => n.toDouble().clamp(-0.35, 0.35))
+                  .toList();
+              if (vec.isEmpty) continue;
+              priors.add(EmbeddingDelta(
+                delta: vec,
+                timestamp: DateTime.now(),
+                category: category,
+              ));
+            }
+            if (priors.isNotEmpty) {
+              await OnnxDimensionScorer().updateWithDeltas(priors);
+            }
+          }
+        }
+      } catch (e) {
+        _logger.debug('Federated priors apply failed (non-blocking): $e',
+            tag: _logName);
+      }
+
+      // Success: remove the uploaded batch from the queue.
+      await _prefs.setStringList(_prefsKeyFederatedCloudQueue, remaining);
+    } catch (e) {
+      _logger.debug('Federated sync exception: $e', tag: _logName);
+    }
+  }
+
+  void _loadSeenLearningInsightIds() {
+    if (_seenLearningInsightIds.isNotEmpty) return;
+    final list =
+        _prefs.getStringList(_prefsKeySeenLearningInsightIds) ?? const [];
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    for (final item in list) {
+      final parts = item.split(':');
+      if (parts.length != 2) continue;
+      final id = parts[0];
+      final expiresAt = int.tryParse(parts[1]) ?? 0;
+      if (id.isEmpty || expiresAt <= nowMs) continue;
+      _seenLearningInsightIds[id] = expiresAt;
+    }
+  }
+
+  Future<void> _persistSeenLearningInsightIdsIfNeeded() async {
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    if (nowMs - _lastSeenInsightsPersistMs < 15 * 1000) return;
+    _lastSeenInsightsPersistMs = nowMs;
+
+    _seenLearningInsightIds.removeWhere((_, exp) => exp <= nowMs);
+    final entries = _seenLearningInsightIds.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final capped = entries.take(200).toList();
+    final list = capped.map((e) => '${e.key}:${e.value}').toList();
+    await _prefs.setStringList(_prefsKeySeenLearningInsightIds, list);
+  }
+
+  Future<void> _handleIncomingLearningInsight(ProtocolMessage message) async {
+    // Respect user setting.
+    final learningEnabled =
+        _prefs.getBool(_prefsKeyAi2AiLearningEnabled) ?? true;
+    if (!learningEnabled) return;
+
+    final userId = _currentUserId;
+    final personalityLearning = _connectionManager.personalityLearning;
+    if (userId == null || personalityLearning == null) return;
+
+    try {
+      final payload = message.payload;
+      final schemaVersion = payload['schema_version'] as int?;
+      if (schemaVersion != 1) return;
+
+      final insightId = payload['insight_id'] as String?;
+      if (insightId == null || insightId.isEmpty) return;
+
+      final createdAtStr = payload['created_at'] as String?;
+      final ttlMs = (payload['ttl_ms'] as num?)?.toInt() ?? 0;
+      if (createdAtStr == null || ttlMs <= 0 || ttlMs > 6 * 60 * 60 * 1000) {
+        // Cap TTL to 6h.
+        return;
+      }
+
+      final createdAt = DateTime.tryParse(createdAtStr);
+      if (createdAt == null) return;
+      final expiresAtMs = createdAt.millisecondsSinceEpoch + ttlMs;
+      final nowMs = DateTime.now().millisecondsSinceEpoch;
+      if (expiresAtMs <= nowMs) return;
+
+      // Dedupe.
+      final seenExpiry = _seenLearningInsightIds[insightId];
+      if (seenExpiry != null && seenExpiry > nowMs) return;
+      _seenLearningInsightIds[insightId] = expiresAtMs;
+
+      final learningQuality =
+          (payload['learning_quality'] as num?)?.toDouble() ?? 0.0;
+      if (learningQuality < 0.65) return;
+
+      final originId = payload['origin_id'] as String? ?? message.senderId;
+      final hop = (payload['hop'] as num?)?.toInt() ?? 0;
+      // Hard cap: do not allow uncontrolled propagation.
+      if (hop < 0 || hop > 2) return;
+
+      final insightsRaw = payload['dimension_insights'];
+      if (insightsRaw is! Map) return;
+      final deltas = <String, double>{};
+      for (final entry in insightsRaw.entries) {
+        final k = entry.key;
+        final v = entry.value;
+        if (k is! String) continue;
+        if (!VibeConstants.coreDimensions.contains(k)) continue;
+        if (v is! num) continue;
+        final dv = v.toDouble();
+        if (dv.abs() > 0.35) continue; // hard cap
+        deltas[k] = dv;
+      }
+      if (deltas.isEmpty) return;
+
+      // Throttle per sender.
+      final now = DateTime.now();
+      final sender = message.senderId;
+      final last = _lastAi2AiLearningAtByPeerId[sender];
+      if (last != null && now.difference(last) < const Duration(minutes: 20)) {
+        return;
+      }
+
+      final insight = AI2AILearningInsight(
+        type: AI2AIInsightType.dimensionDiscovery,
+        dimensionInsights: deltas,
+        learningQuality: learningQuality,
+        timestamp: now,
+      );
+
+      if (_isEventModeEnabled()) {
+        _bufferEventLearningInsight(_EventModeBufferedLearningInsight(
+          source: 'inbox',
+          insightId: insightId,
+          senderDeviceId: sender,
+          receivedAt: now,
+          learningQuality: learningQuality,
+          deltas: deltas,
+        ));
+        _lastAi2AiLearningAtByPeerId[sender] = now;
+        return;
+      }
+
+      await personalityLearning.evolveFromAI2AILearning(userId, insight);
+      _lastAi2AiLearningAtByPeerId[sender] = now;
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_learning_insight_received',
+          occurredAt: DateTime.now(),
+          payload: <String, Object?>{
+            'insight_id': insightId,
+            'sender_device_id': sender,
+            'origin_id': originId,
+            'hop': hop,
+            'schema_version': 1,
+            'learning_quality': learningQuality,
+            'delta_dimensions_count': deltas.length,
+          },
+        ));
+      }
+
+      // Pattern 1: BLE gossip forwarding (limited-hop) to improve offline propagation.
+      unawaited(_maybeForwardLearningInsightGossip(
+        payload: payload,
+        originId: originId,
+        hop: hop,
+        receivedFromDeviceId: sender,
+      ));
+    } catch (e) {
+      _logger.debug('Failed to apply incoming learning insight: $e',
+          tag: _logName);
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_learning_insight_receive_failed',
+          occurredAt: DateTime.now(),
+          payload: <String, Object?>{
+            'sender_device_id': message.senderId,
+            'error': e.toString(),
+          },
+        ));
+      }
+    }
+  }
+
+  Future<void> _maybeForwardLearningInsightGossip({
+    required Map<String, dynamic> payload,
+    required String originId,
+    required int hop,
+    required String receivedFromDeviceId,
+  }) async {
+    // Forwarding is *optional* federated behavior (distinct from direct AI2AI learning).
+    if (!_allowBleSideEffects) return;
+    if (!_isFederatedLearningParticipationEnabled()) return;
+
+    // Limit to a single hop by default to avoid runaway propagation.
+    if (hop >= 1) return;
+
+    // Never forward our own-origin updates (it would just amplify duplicates).
+    if (originId == _localBleNodeId) return;
+
+    final protocol = _protocol;
+    if (protocol == null) return;
+
+    final discovery = _deviceDiscovery;
+    if (discovery == null) return;
+
+    // Choose up to 2 nearby devices to forward to (best-effort).
+    final candidates = _discoveredNodes.values
+        .map((n) => n.nodeId)
+        .where((id) => id != receivedFromDeviceId && id != originId)
+        .take(2)
+        .toList();
+
+    if (candidates.isEmpty) return;
+
+    try {
+      final forwardedPayload = Map<String, dynamic>.from(payload);
+      forwardedPayload['hop'] = hop + 1;
+      forwardedPayload['origin_id'] = originId;
+
+      for (final peerId in candidates) {
+        final device = discovery.getDevice(peerId);
+        if (device == null) continue;
+        if (device.type != DeviceType.bluetooth) continue;
+
+        final recipientId =
+            _peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
+        final packetBytes = await protocol.encodePacketBytes(
+          type: MessageType.learningInsight,
+          payload: forwardedPayload,
+          senderNodeId: _localBleNodeId,
+          recipientNodeId: recipientId,
+        );
+
+        // Best-effort ACK-confirmed send.
+        await sendBlePacketsBatch(
+          device: device,
+          senderId: _localBleNodeId,
+          packetBytesList: <Uint8List>[packetBytes],
+        );
+      }
+    } catch (e) {
+      _logger.debug('Learning insight gossip forward failed: $e',
+          tag: _logName);
+    }
   }
 
   // Private helper methods
@@ -584,10 +2352,51 @@ class VibeConnectionOrchestrator {
         // Convert discovered devices to AI personality nodes
         final nodes = <AIPersonalityNode>[];
         for (final device in devices) {
-          // Extract personality data from device
-          final personalityData =
+          // Prefer a single BLE "lease" per device (no interleaving) so we can:
+          // read vibe (stream 0), read prekey (stream 1), and send bootstrap in one session.
+          AnonymizedVibeData? personalityData = device.personalityData;
+          BleGattSession? session;
+          if (_allowBleSideEffects && device.type == DeviceType.bluetooth) {
+            try {
+              session = await BleConnectionPool.instance.openSession(
+                device: device,
+              );
+
+              if (personalityData == null) {
+                final vibeBytes =
+                    await session.readStreamPayload(streamId: 0); // vibe stream
+                if (vibeBytes != null && vibeBytes.isNotEmpty) {
+                  final jsonString = utf8.decode(vibeBytes);
+                  personalityData =
+                      PersonalityDataCodec.decodeFromJson(jsonString);
+                }
+              }
+
+              // Prime Signal prekeys + send silent bootstrap under the same lease.
+              await _primeOfflineSignalPreKeyBundleInSession(
+                device: device,
+                session: session,
+              );
+            } catch (e) {
+              // If session acquisition fails, fall back to legacy per-call behavior.
+              _logger.warn('BLE session failed for ${device.deviceId}: $e',
+                  tag: _logName);
+            } finally {
+              try {
+                await session?.close();
+              } catch (_) {
+                // Ignore.
+              }
+            }
+          }
+
+          // Fallback: original extraction path (may do its own BLE read).
+          personalityData ??=
               await _deviceDiscovery!.extractPersonalityData(device);
-          if (personalityData == null) continue;
+          if (personalityData == null) {
+            // Even if we couldn't build a node, we may still have primed prekeys above.
+            continue;
+          }
 
           // Create vibe from anonymized data
           final vibe = _createVibeFromAnonymizedData(personalityData);
@@ -637,6 +2446,105 @@ class VibeConnectionOrchestrator {
     _logger.warn('No discovery method available, returning empty list',
         tag: _logName);
     return [];
+  }
+
+  Future<void> _primeOfflineSignalPreKeyBundleInSession({
+    required DiscoveredDevice device,
+    required BleGattSession session,
+  }) async {
+    if (!_allowBleSideEffects) return;
+    final signalKeyManager = _signalKeyManager;
+    final protocol = _protocol;
+    if (signalKeyManager == null || protocol == null) return;
+
+    try {
+      // Stream 1 = Signal prekey payload.
+      final bytes = await session.readStreamPayload(streamId: 1);
+      if (bytes == null || bytes.isEmpty) return;
+
+      final decoded = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+      final peerNodeId = decoded['node_id'] as String?;
+      final bundleJson = decoded['prekey_bundle'] as Map<String, dynamic>?;
+      if (bundleJson == null) return;
+
+      final bundle = SignalPreKeyBundle.fromJson(bundleJson);
+      final recipientId = (peerNodeId != null && peerNodeId.isNotEmpty)
+          ? peerNodeId
+          : device.deviceId;
+      if (peerNodeId != null && peerNodeId.isNotEmpty) {
+        _peerNodeIdByDeviceId[device.deviceId] = peerNodeId;
+      }
+      await signalKeyManager.cacheRemotePreKeyBundle(
+        recipientId: recipientId,
+        preKeyBundle: bundle,
+      );
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_signal_prekey_cached_from_peer',
+          occurredAt: DateTime.now(),
+          payload: <String, Object?>{
+            'device_id': device.deviceId,
+            'peer_node_id': peerNodeId ?? '',
+            'recipient_id': recipientId,
+            'stream_id': 1,
+            'bytes_len': bytes.length,
+          },
+        ));
+      }
+
+      // Send a tiny encrypted message to force the receiver to establish
+      // a Signal session by decrypting a PreKey message (Mode 2).
+      final packetBytes = await protocol.encodePacketBytes(
+        type: MessageType.heartbeat,
+        payload: <String, dynamic>{
+          't': DateTime.now().toUtc().toIso8601String(),
+          'kind': 'silent_signal_bootstrap',
+        },
+        senderNodeId: _localBleNodeId,
+        recipientNodeId: recipientId,
+      );
+
+      final results = await session.sendPacketsBatch(
+        senderId: _localBleNodeId,
+        packetBytesList: <Uint8List>[packetBytes],
+      );
+      final ok = results.isNotEmpty && results.first;
+      if (ok) {
+        _logger.debug(
+          'Sent silent Signal bootstrap packet (session) to ${device.deviceId}',
+          tag: _logName,
+        );
+      }
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_silent_bootstrap_sent',
+          occurredAt: DateTime.now(),
+          payload: <String, Object?>{
+            'ok': ok,
+            'device_id': device.deviceId,
+            'recipient_id': recipientId,
+            'message_type': 'heartbeat',
+            'kind': 'silent_signal_bootstrap',
+          },
+        ));
+      }
+    } catch (e) {
+      _logger.warn('Failed to prime offline Signal in session: $e',
+          tag: _logName);
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.deviceCapability,
+          eventType: 'ai2ai_offline_signal_prime_failed',
+          occurredAt: DateTime.now(),
+          payload: <String, Object?>{
+            'device_id': device.deviceId,
+            'error': e.toString(),
+          },
+        ));
+      }
+    }
   }
 
   /// Create UserVibe from AnonymizedVibeData

@@ -13,18 +13,9 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  bool _hasTriggeredAuthCheck = false;
-
   @override
   void initState() {
     super.initState();
-    // Trigger auth check once when widget initializes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && !_hasTriggeredAuthCheck) {
-        _hasTriggeredAuthCheck = true;
-        context.read<AuthBloc>().add(AuthCheckRequested());
-      }
-    });
   }
 
   @override

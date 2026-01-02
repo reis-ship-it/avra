@@ -3,6 +3,7 @@
 **Date:** November 30, 2025, 9:54 PM CST  
 **Purpose:** Real-time status tracking for agent dependencies and communication  
 **Status:** 🟢 Active - Phase 6 Complete, Phase 7 Section 47-48 Complete, Section 51-52 IN PROGRESS (Section 49-50 Deferred)
+**Last Updated:** January 1, 2026 (Master Plan status made canonical here; removed duplicated status snapshots elsewhere)
 
 ---
 
@@ -22,7 +23,195 @@ This file tracks:
 
 ---
 
+## 🧭 **Master Plan Status (Single Source of Truth)**
+
+To avoid drift and contradictory “status snapshots” across docs:
+
+- **Execution plan/spec:** `docs/MASTER_PLAN.md`
+- **Plan registry:** `docs/MASTER_PLAN_TRACKER.md`
+- **Canonical status/progress:** **this file** (`docs/agents/status/status_tracker.md`)
+
+**Rule:** If you need to know “what’s in progress / complete / blocked,” check here. Do not duplicate status tables in the Master Plan doc.
+
 ## 📊 **Current Status**
+
+### **Master Plan Update: Phase 22 — Outside Data‑Buyer Insights (DP export)**
+**Status:** ✅ **Deployed + verified end-to-end** (migrations applied, function deployed, sample export run, deny-list checked)  
+**Primary plan doc:** `docs/plans/architecture/OUTSIDE_DATA_BUYER_INSIGHTS_DATA_CONTRACT_V1.md`
+
+**Implementation artifacts (source of truth):**
+- DB migrations:
+  - `supabase/migrations/030_outside_buyer_insights_v1.sql`
+  - `supabase/migrations/031_outside_buyer_insights_cache_v1.sql`
+  - `supabase/migrations/032_outside_buyer_intersection_hardening_and_monitoring.sql`
+  - `supabase/migrations/034_outside_buyer_hour_week_and_city_buckets.sql`
+  - `supabase/migrations/035_interaction_events_userid_rls_and_drop_plain_mappings.sql`
+  - `supabase/migrations/036_outside_buyer_precompute_cron.sql`
+  - `supabase/migrations/037_city_code_population_pipeline.sql`
+  - `supabase/migrations/038_outside_buyer_ops_dashboards_and_alerts.sql`
+  - `supabase/migrations/039_atomic_clock_server_time_rpc.sql`
+  - `supabase/migrations/044_atomic_clock_server_time_rpc_anon.sql`
+  - `supabase/migrations/040_atomic_timing_policies_v1.sql`
+  - `supabase/migrations/041_outside_buyer_precompute_policy_hook.sql`
+  - `supabase/migrations/042_geo_hierarchy_localities_v1.sql`
+  - `supabase/migrations/043_geo_hierarchy_public_read_rpcs.sql`
+  - `supabase/migrations/045_geo_lookup_place_codes_v1.sql`
+  - `supabase/migrations/046_geo_city_geohash3_bounds_v1.sql`
+  - `supabase/migrations/047_geo_locality_shapes_v1.sql`
+- Edge function: `supabase/functions/outside-buyer-insights/index.ts`
+- Edge function: `supabase/functions/atomic-timing-orchestrator/index.ts`
+- Buyer runbook: `docs/agents/protocols/OUTSIDE_BUYER_EXPORT_RUNBOOK.md`
+- Contract validator: `lib/core/services/outside_buyer/outside_buyer_insights_v1_validator.dart`
+- Unit tests: `test/unit/services/outside_buyer_insights_v1_validator_test.dart`
+
+### **Master Plan Update: Phase 23 — AI2AI Walk‑By BLE Optimization (continuous scan + hot‑path latency)**
+**Status:** ✅ **Implemented in repo** (pending real-device validation for RF/OS variance)  
+**Primary plan doc(s):**
+- `docs/plans/offline_ai2ai/OFFLINE_AI2AI_IMPLEMENTATION_PLAN.md`
+- `docs/plans/ai2ai_system/BLE_BACKGROUND_USAGE_IMPROVEMENT_PLAN.md`
+**Work log:** `docs/agents/reports/agent_cursor/phase_23/2026-01-02_ble_signal_ledgers_receipts_backup_plan_execution_complete.md`
+
+**Implementation artifacts (source of truth):**
+- Continuous scan loop + scan window param:
+  - `packages/spots_network/lib/network/device_discovery.dart`
+  - `packages/spots_network/lib/network/device_discovery_android.dart`
+  - `packages/spots_network/lib/network/device_discovery_ios.dart`
+- Battery-adaptive scheduling (tiered scan policy; runtime updates):
+  - `lib/core/ai2ai/battery_adaptive_ble_scheduler.dart`
+  - `test/unit/ai2ai/battery_adaptive_ble_scheduler_policy_test.dart`
+- Walk-by hot path (RSSI-gated, cooldowned, session-based) + runtime latency metrics (p50/p95):
+  - `lib/core/ai2ai/connection_orchestrator.dart`
+- Hybrid federated learning (Pattern 1: BLE gossip; Pattern 2: optional cloud aggregation):
+  - `lib/core/ai2ai/connection_orchestrator.dart` (origin_id/hop gossip + cloud queue/sync)
+  - `lib/core/ai2ai/federated_learning_codec.dart`
+  - `supabase/functions/federated-sync/index.ts`
+  - `supabase/migrations/036_federated_embedding_deltas_v1.sql`
+  - `test/unit/ai2ai/federated_learning_codec_test.dart`
+- Hardware-free CI regression test (simulated walk-by; no BLE radio required):
+  - `test/unit/ai2ai/walkby_hotpath_simulation_test.dart`
+- Hardware-free fast loop surface (focused suite):
+  - `test/suites/ble_signal_suite.sh` (includes walk-by simulation)
+  - Protocol: `docs/agents/protocols/BLE_SIGNAL_DEV_LOOP.md`
+
+**Skeptic-proof proof run bundle (iOS simulator):**
+- **Status:** ✅ **Captured + bundled**
+- **Report:** `docs/agents/reports/agent_cursor/phase_23/2026-01-02_proof_run_skeptic_bundle_ios_sim_complete.md`
+- **Latest bundle:** `reports/proof_runs/2026-01-02_15-19-59_proof_run_9b6f3cf8-9e0b-498c-9333-dcd4d6c2fec1.zip`
+- **Truth note:** AI2AI encounter is **simulated** (iOS simulator; no BLE transport).
+
+### **Master Plan Update: Paperwork + Legal Receipts (tax + disputes + legal acceptance)**
+**Status:** ✅ **Implemented in repo + applied to Supabase**  
+**Goal:** “Receipts you can show” for legal/paperwork flows; retention locks for sensitive uploads.
+
+**Implementation artifacts (source of truth):**
+- Protocol: `docs/agents/protocols/PAPERWORK_DOCUMENTS_RETENTION_AND_LEDGER_RECEIPTS.md`
+- Signed receipt loop (ledger receipts UI + verifier):
+  - `supabase/migrations/060_ledger_receipts_v0.sql`
+  - `supabase/functions/ledger-receipts-v0/index.ts`
+  - `lib/presentation/pages/receipts/receipts_page.dart`
+  - `lib/presentation/pages/receipts/receipt_detail_page.dart`
+- Tax docs (storage + retention):
+  - `supabase/migrations/061_tax_documents_supabase_storage_v1.sql`
+  - `supabase/migrations/062_tax_documents_retention_lock_v1.sql`
+  - `lib/core/services/tax_document_storage_service.dart`
+- Paperwork docs bucket (storage + retention; dispute evidence upload target):
+  - `supabase/migrations/063_paperwork_documents_bucket_v1.sql`
+  - Applied migration record: `paperwork_documents_bucket_v1` (20260102211209)
+- Dispute evidence upload + display:
+  - `lib/core/services/disputes/dispute_evidence_storage_service.dart`
+  - `lib/presentation/pages/disputes/dispute_submission_page.dart`
+  - `lib/presentation/pages/disputes/dispute_status_page.dart`
+
+### **Master Plan Update: Phases 8 / 11 / 12 (execution slice) — AI learning journey “planned → real”**
+**Status:** ✅ **Implemented in repo**; ⚠️ pending real-device validation for BLE/OS variance + Signal native runtime  
+**Primary reference map:** `docs/agents/guides/AI_LEARNING_USER_JOURNEY_MAP.md`  
+**Work log (source of truth):** `docs/agents/reports/agent_cursor/phase_8/2026-01-02_ai_learning_journey_plan_execution_complete.md`
+
+**Implementation artifacts (high signal):**
+- **Device-first onboarding truth (local mapping; cloud mirrors):**
+  - `lib/core/services/onboarding_dimension_mapper.dart`
+  - `lib/core/services/onboarding_aggregation_service.dart` (`mappingSource: device`)
+  - Acceptance test: `test/unit/services/onboarding_aggregation_device_first_acceptance_test.dart`
+- **Onboarding runtime resilience (best-effort knot):**
+  - `lib/presentation/pages/onboarding/knot_discovery_page.dart`
+- **Cloud LLM failover routing:**
+  - `lib/core/services/llm_service.dart` (`CloudFailoverBackend`, `CloudGeminiGenerationBackend`)
+  - Test: `test/unit/services/llm_cloud_failover_backend_test.dart`
+- **Federated deltas made workable (12D contract + personalization overlay):**
+  - `lib/core/ai2ai/embedding_delta_collector.dart`
+  - `lib/core/ml/onnx_dimension_scorer.dart`
+  - Tests:
+    - `test/unit/ai2ai/embedding_delta_collector_test.dart`
+    - `test/unit/ml/onnx_dimension_scorer_personalization_overlay_test.dart`
+- **Optional cloud aggregation → priors applied locally:**
+  - `lib/core/ai2ai/connection_orchestrator.dart` (applies `global_average_deltas` from `federated-sync`)
+  - `supabase/functions/federated-sync/index.ts`
+
+**Device validation checklist (BLE/OS variance + Signal native runtime):**
+- **Setup (required)**
+  - Two physical devices (A + B) on the same build.
+  - Both devices **signed in** (Supabase auth) and app opened in foreground.
+  - Permissions granted:
+    - Android: Bluetooth scan/connect + Location (required for scanning), “Nearby devices” if prompted.
+    - iOS: Bluetooth permission prompt accepted (and keep app foreground for initial validation).
+- **Phase 8 (Onboarding truth + resilience)**
+  - Complete onboarding on both devices.
+  - Confirm onboarding is not blocked by knot runtime (knot page should continue even if knot unavailable).
+  - Confirm “Offline AI” is **opt-out** on eligible devices (defaults enabled unless user disables).
+- **Phase 11 (Chat routing + cloud failover)**
+  - While online: verify chat returns a response (cloud path).
+  - Optional: temporarily induce cloud failure (e.g., disable network mid-request) and confirm behavior degrades gracefully (no crash; error surfaced or fallback response).
+- **Phase 23 (AI2AI discovery + encrypted learning insight delivery)**
+  - Enable AI2AI discovery on both devices.
+  - Place devices within ~1–3m for up to ~60s and confirm each sees the other in AI2AI UI.
+  - Confirm a **non-placeholder** vibe/compatibility score is shown (truthful kernel; knot may degrade to quantum-only).
+  - Trigger any available “connect/learn” interaction (if present in UI) and confirm:
+    - No exceptions/crashes.
+    - Evidence of a received insight being applied (e.g., updated last interaction / logs).
+- **Federated (optional cloud path)**
+  - With internet enabled, after at least one AI2AI learning event, wait ~30–60s.
+  - Confirm the federated cloud queue sync runs without errors (best-effort; non-blocking).
+- **Pass criteria**
+  - No crashes.
+  - Discovery works (devices appear).
+  - Compatibility/vibe score is not a constant placeholder.
+  - Learning insight handling is stable (no drift overflow/underflow; clamping is expected).
+  - Cloud LLM path functions; failover is non-fatal.
+
+### **Master Plan Update: Phase 14 (partial) — Community stream key rotation (seamless membership)**
+**Status:** ✅ **Implemented + deployed to Supabase** (members stay in automatically; no user-visible “rejoin”)  
+**Primary plan context:** Phase 14 “Sender Keys” group messaging (community chat)  
+**Why:** admins can rotate sender keys without dropping honest members; revocations can still use hard rotation (no grace).
+
+**Pending validation (blocked on hardware availability): Cross-platform 2-device Signal DM smoke over real transport**
+- **Status**: ⏳ Ready in repo; waiting on iOS + Android physical devices
+- **Goal**: Prove iOS↔Android Signal DM encrypt/decrypt over the *actual* Supabase “payloadless realtime” transport:
+  - Ciphertext → `public.dm_message_blobs` (RLS: recipient-only read)
+  - Notify → `public.dm_notifications` (realtime insert; payload = message_id only)
+- **Artifacts**
+  - Integration test: `integration_test/signal_two_device_transport_smoke_test.dart`
+  - Runner script: `scripts/smoke/run_signal_two_device_transport_smoke.sh`
+- **Run (when devices available)**:
+  - Requires: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, two device ids (`flutter devices`), and two test accounts.
+  - Optional: set `SIGNAL_SMOKE_COMMUNITY_ID` to also exercise community stream + sender-key flow.
+  - Audit receipts: runner sets `SPOTS_LEDGER_AUDIT=true` and `SPOTS_LEDGER_AUDIT_CORRELATION_ID=$RUN_ID` so the run can be queried as a single ordered trail in `ledger_events_v0`.
+  - Expected ordering checklist: `docs/agents/reports/agent_cursor/phase_23/2026-01-02_ble_signal_ledgers_receipts_backup_plan_execution_complete.md`
+
+**Repo changes (source of truth):**
+- Client “silent refresh” + anti-stale behavior:
+  - `lib/core/services/community_sender_key_service.dart`
+  - `lib/core/services/community_chat_service.dart`
+- DB migrations added:
+  - `supabase/migrations/032_community_sender_key_rotation_grace_window.sql`
+  - `supabase/migrations/033_community_message_blobs_member_rls.sql`
+
+**Supabase deploy verification (SPOTS_ project):**
+- ✅ Migration applied: `community_sender_key_rotation_grace_window`
+- ✅ Migration applied: `community_message_blobs_member_rls`
+- ✅ Live E2E smoke test: 2-user send/receive, rotate key, refresh membership, decrypt OK.
+
+**Planned follow-up (UI/UX):**
+- ⏳ Add “Rotate community key” admin action button in community chat UI (soft vs hard rotation, confirmation UX, grace picker).
 
 ### **Agent 1: Backend & Integration**
 **Current Phase:** Phase 7 - Feature Matrix Completion (Section 51-52 / 7.6.1-2)  
@@ -800,6 +989,13 @@ This file tracks:
   - Zero linter errors ✅
   - Responsive and accessible ✅
   - Created completion report (`week_29_agent_2_completion.md`) ✅
+  - Addendum (2026-01-01): ✅ Community discovery ranking surfaced + persistence-backed candidates + privacy-safe centroid ✅
+    - Added `/communities/discover` page and route (ranked by combined true compatibility) ✅
+    - Added Discover CTA when browsing Events in Clubs/Communities scope ✅
+    - Community listing now hydrates/persists via `StorageService` (so discovery has candidates) ✅
+    - Added privacy-safe `vibeCentroidDimensions` to Community + centroid-based quantum term preference ✅
+    - Cached true compatibility scores (short TTL) to reduce recomputation ✅
+    - Added ranking unit test asserting centroid drives ordering ✅
 - Week 31: ✅ COMPLETE - UI/UX & Golden Expert (Phase 4)
   - Fixed syntax error in ExpertiseCoverageWidget (removed duplicate constructor) ✅
   - Polished ClubPage: enhanced loading states, improved error handling, added accessibility (Semantics), responsive design, visual polish ✅
@@ -1894,6 +2090,56 @@ If you're waiting for a dependency:
   - All tests follow existing patterns ✅
   - Test coverage > 90% expected when implementation complete ✅
   - Created completion report ✅
+
+**Previous Update:** January 1, 2026  
+**Updated By:** Agent (Cursor)  
+**What Changed:**
+- Test stabilization + contract drift fixes ✅
+  - Stabilized `dialogs_and_permissions_test.dart` (hit-testable taps, explicit dialog teardown, no pumpAndSettle timeouts) ✅
+  - Fixed `knot_recommendation_integration_test.dart` to match current `SpotVibeMatchingService` API (removed stale constructor arg) ✅
+  - Verified local LLM signed manifest verification test passes; keygen script runnable (no secrets logged) ✅
+  - Fixed `club_service_test.dart` founder-only-leader removal expectation (correct state + async throw expectation) ✅
+  - Report: `docs/agents/reports/agent_cursor/phase_6/2026-01-01_test_stabilization_knot_llm_manifest.md` ✅
+
+**Previous Update:** January 2, 2026  
+**Updated By:** Agent (Cursor)  
+**What Changed:**
+- Phase 8 ✅ COMPLETE — Onboarding ↔ local model-pack download ↔ post-install bootstrap enhancements (quality + UX + safety) ✅
+  - Added post-install **refinement picks UI** (Settings) and persistence-backed prompt regeneration ✅
+  - Added **download progress tracking** (received/total) and onboarding UI progress bar + percent ✅
+  - Tightened auto-install gating: **Wi‑Fi + charging/full + idle window** (00:00–06:00 local) with queued phases ✅
+  - Added best-effort **trusted pack update checks** (release-only, once per 24h, same safe gates) + pack manager idempotency ✅
+  - Persisted **structured local memory** (`LocalLlmMemoryProfile`) alongside rendered system prompt ✅
+  - Expanded onboarding suggestion provenance logging beyond baseline lists (favorite places + AI loading list generation) ✅
+  - Report: `docs/agents/reports/agent_cursor/phase_8/2026-01-02_onboarding_local_llm_download_bootstrap_enhancements.md` ✅
+
+**Previous Update:** January 1, 2026  
+**Updated By:** Agent (Cursor)  
+**What Changed:**
+- Addendum ✅ - Community discovery ranking (true compatibility) now user-visible and persistence-backed
+  - Added `CommunitiesDiscoverPage` (`/communities/discover`) ✅
+  - Added Discover CTA in `EventsBrowsePage` for Clubs/Communities scope ✅
+  - `CommunityService` now hydrates/persists community list via `StorageService` (`communities:all_v1`) ✅
+  - `Community` now stores `vibeCentroidDimensions` + contributor count for privacy-safe quantum centroid ✅
+  - Quantum term now prefers the stored centroid (non-neutral in production) ✅
+  - `KnotCommunityService` now uses `CommunityService.getAllCommunities()` (no longer empty) ✅
+  - Added TTL caching for true compatibility scores + ranking unit test ✅
+  - Docs updated: `MASTER_PLAN_APPENDIX.md`, service matrix, navigation flowchart ✅
+
+**Previous Update:** January 2, 2026  
+**Updated By:** Agent (Cursor)  
+**What Changed:**
+- Section 29 (6.8) ✅ COMPLETE — Communities “true compatibility” polish + join UX + centroid lifecycle + backend prep
+  - Join directly from discover (Join button + loading state + optimistic remove) ✅
+  - True-compatibility breakdown exposed to UI (quantum/topological/weave + combined) ✅
+  - Bounded concurrency scoring for discovery ranking (avoid unbounded parallelism) ✅
+  - Centroid lifecycle is deterministic on join/leave via per-member anonymized contributions + quantization ✅
+  - Atomic timing alignment: community timestamps now use `AtomicClockService` best-effort ✅
+  - Supabase backend prep behind feature flag:
+    - Migration: `supabase/migrations/057_communities_v1_memberships_and_vibe_contributions.sql` ✅
+    - Repository layer + DI: `CommunityRepository` + local + Supabase + hybrid (`communities_supabase_sync_v1`) ✅
+    - Unit tests: `test/unit/repositories/local_community_repository_test.dart` ✅
+  - Navigation: Communities are now first-class under Home → Explore → Communities ✅
 
 **Previous Update:** November 25, 2025, 1:25 AM CST  
 **Updated By:** Agent 2  

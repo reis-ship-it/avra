@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase show User;
 import 'package:spots_core/spots_core.dart';
@@ -7,22 +9,22 @@ import '../../interfaces/auth_backend.dart';
 class SupabaseAuthBackend implements AuthBackend {
   final SupabaseClient _client;
   bool _isInitialized = false;
-  
+
   SupabaseAuthBackend(this._client);
-  
+
   @override
   bool get isInitialized => _isInitialized;
-  
+
   @override
   Future<void> initialize(Map<String, dynamic> config) async {
     _isInitialized = true;
   }
-  
+
   @override
   Future<void> dispose() async {
     _isInitialized = false;
   }
-  
+
   @override
   Future<User?> signInWithEmailPassword(String email, String password) async {
     try {
@@ -30,20 +32,26 @@ class SupabaseAuthBackend implements AuthBackend {
         email: email,
         password: password,
       );
-      
+
       if (response.user != null) {
         return _convertSupabaseUser(response.user!);
       }
       return null;
-    } catch (e) {
-      return null;
+    } catch (e, st) {
+      developer.log(
+        'Sign in failed',
+        name: 'SupabaseAuthBackend',
+        error: e,
+        stackTrace: st,
+      );
+      rethrow;
     }
   }
-  
+
   @override
   Future<User?> registerWithEmailPassword(
-    String email, 
-    String password, 
+    String email,
+    String password,
     String name,
   ) async {
     try {
@@ -52,21 +60,27 @@ class SupabaseAuthBackend implements AuthBackend {
         password: password,
         data: {'name': name},
       );
-      
+
       if (response.user != null) {
         return _convertSupabaseUser(response.user!);
       }
       return null;
-    } catch (e) {
-      return null;
+    } catch (e, st) {
+      developer.log(
+        'Sign up failed',
+        name: 'SupabaseAuthBackend',
+        error: e,
+        stackTrace: st,
+      );
+      rethrow;
     }
   }
-  
+
   @override
   Future<void> signOut() async {
     await _client.auth.signOut();
   }
-  
+
   @override
   Future<User?> getCurrentUser() async {
     try {
@@ -75,11 +89,17 @@ class SupabaseAuthBackend implements AuthBackend {
         return _convertSupabaseUser(user);
       }
       return null;
-    } catch (e) {
+    } catch (e, st) {
+      developer.log(
+        'Get current user failed',
+        name: 'SupabaseAuthBackend',
+        error: e,
+        stackTrace: st,
+      );
       return null;
     }
   }
-  
+
   @override
   Stream<User?> authStateChanges() {
     return _client.auth.onAuthStateChange.map((event) {
@@ -87,27 +107,26 @@ class SupabaseAuthBackend implements AuthBackend {
       return user != null ? _convertSupabaseUser(user) : null;
     });
   }
-  
+
   @override
   Future<void> sendPasswordReset(String email) async {
     await _client.auth.resetPasswordForEmail(email);
   }
-  
+
   @override
-  Future<void> updatePassword(String currentPassword, String newPassword) async {
+  Future<void> updatePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
     // Supabase doesn't require current password for update
-    await _client.auth.updateUser(
-      UserAttributes(password: newPassword),
-    );
+    await _client.auth.updateUser(UserAttributes(password: newPassword));
   }
-  
+
   @override
   Future<void> updateEmail(String newEmail) async {
-    await _client.auth.updateUser(
-      UserAttributes(email: newEmail),
-    );
+    await _client.auth.updateUser(UserAttributes(email: newEmail));
   }
-  
+
   @override
   Future<void> deleteAccount() async {
     // Note: This requires admin privileges or user confirmation
@@ -115,24 +134,24 @@ class SupabaseAuthBackend implements AuthBackend {
     // You would need to implement this via a database function or admin API
     throw UnimplementedError('Account deletion requires admin API');
   }
-  
+
   @override
   Future<bool> isSignedIn() async {
     final user = _client.auth.currentUser;
     return user != null;
   }
-  
+
   @override
   Future<void> refreshToken() async {
     await _client.auth.refreshSession();
   }
-  
+
   @override
   Future<String?> getAuthToken() async {
     final session = _client.auth.currentSession;
     return session?.accessToken;
   }
-  
+
   @override
   Future<User?> updateUserProfile(User user) async {
     try {
@@ -157,7 +176,7 @@ class SupabaseAuthBackend implements AuthBackend {
           },
         ),
       );
-      
+
       if (response.user != null) {
         return _convertSupabaseUser(response.user!);
       }
@@ -166,7 +185,7 @@ class SupabaseAuthBackend implements AuthBackend {
       return null;
     }
   }
-  
+
   @override
   Future<void> verifyEmail() async {
     await _client.auth.resend(
@@ -174,13 +193,13 @@ class SupabaseAuthBackend implements AuthBackend {
       email: _client.auth.currentUser?.email,
     );
   }
-  
+
   @override
   Future<bool> isEmailVerified() async {
     final user = _client.auth.currentUser;
     return user?.emailConfirmedAt != null;
   }
-  
+
   @override
   Future<User?> signInWithGoogle() async {
     try {
@@ -195,7 +214,7 @@ class SupabaseAuthBackend implements AuthBackend {
       return null;
     }
   }
-  
+
   @override
   Future<User?> signInWithApple() async {
     try {
@@ -208,7 +227,7 @@ class SupabaseAuthBackend implements AuthBackend {
       return null;
     }
   }
-  
+
   @override
   Future<User?> signInWithFacebook() async {
     try {
@@ -221,7 +240,7 @@ class SupabaseAuthBackend implements AuthBackend {
       return null;
     }
   }
-  
+
   @override
   Future<User?> signInAnonymously() async {
     try {
@@ -234,30 +253,30 @@ class SupabaseAuthBackend implements AuthBackend {
       return null;
     }
   }
-  
+
   @override
   Future<void> enableMFA() async {
     // Supabase MFA implementation would go here
     throw UnimplementedError('MFA not implemented yet');
   }
-  
+
   @override
   Future<void> disableMFA() async {
     // Supabase MFA implementation would go here
     throw UnimplementedError('MFA not implemented yet');
   }
-  
+
   @override
   Future<bool> isMFAEnabled() async {
     // Supabase MFA implementation would go here
     return false;
   }
-  
+
   /// Convert Supabase User to spots_core User model
   User _convertSupabaseUser(supabase.User supabaseUser) {
     final metadata = supabaseUser.userMetadata ?? {};
     final appMetadata = supabaseUser.appMetadata ?? {};
-    
+
     // Parse role from metadata
     UserRole role = UserRole.follower;
     if (appMetadata['role'] != null) {
@@ -270,7 +289,7 @@ class SupabaseAuthBackend implements AuthBackend {
         role = UserRole.follower;
       }
     }
-    
+
     return User(
       id: supabaseUser.id,
       email: supabaseUser.email ?? '',
@@ -281,9 +300,7 @@ class SupabaseAuthBackend implements AuthBackend {
       followedLists: List<String>.from(
         metadata['followedLists'] as List? ?? [],
       ),
-      curatedLists: List<String>.from(
-        metadata['curatedLists'] as List? ?? [],
-      ),
+      curatedLists: List<String>.from(metadata['curatedLists'] as List? ?? []),
       collaboratedLists: List<String>.from(
         metadata['collaboratedLists'] as List? ?? [],
       ),
@@ -293,14 +310,12 @@ class SupabaseAuthBackend implements AuthBackend {
       bio: metadata['bio'] as String?,
       location: metadata['location'] as String?,
       tags: List<String>.from(metadata['tags'] as List? ?? []),
-      expertise: Map<String, String>.from(
-        metadata['expertise'] as Map? ?? {},
-      ),
+      expertise: Map<String, String>.from(metadata['expertise'] as Map? ?? {}),
       friends: List<String>.from(metadata['friends'] as List? ?? []),
       isOnline: null, // Would need to be tracked separately
     );
   }
-  
+
   /// Parse DateTime from various formats
   DateTime? _parseDateTime(dynamic value) {
     if (value == null) return null;

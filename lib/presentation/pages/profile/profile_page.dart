@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:spots/core/theme/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
@@ -41,10 +42,12 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final _agentIdService = GetIt.instance<AgentIdService>();
-  final _knotStorageService = GetIt.instance<KnotStorageService>();
-  final _dynamicKnotService = GetIt.instance<DynamicKnotService>();
-  final _wearableDataService = GetIt.instance<WearableDataService>();
+  // These services are provided via DI in the app. In widget tests or partial
+  // runtimes, they may not be registered, so we resolve them defensively.
+  AgentIdService? _agentIdService;
+  KnotStorageService? _knotStorageService;
+  DynamicKnotService? _dynamicKnotService;
+  WearableDataService? _wearableDataService;
   
   DynamicKnot? _dynamicKnot;
   bool _isLoadingKnot = false;
@@ -52,12 +55,63 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    _tryResolveKnotServices();
     _loadDynamicKnot();
+  }
+
+  void _tryResolveKnotServices() {
+    try {
+      _agentIdService = GetIt.instance<AgentIdService>();
+    } catch (e, st) {
+      developer.log(
+        'AgentIdService not registered; dynamic knot disabled',
+        name: 'ProfilePage',
+        error: e,
+        stackTrace: st,
+      );
+    }
+    try {
+      _knotStorageService = GetIt.instance<KnotStorageService>();
+    } catch (e, st) {
+      developer.log(
+        'KnotStorageService not registered; dynamic knot disabled',
+        name: 'ProfilePage',
+        error: e,
+        stackTrace: st,
+      );
+    }
+    try {
+      _dynamicKnotService = GetIt.instance<DynamicKnotService>();
+    } catch (e, st) {
+      developer.log(
+        'DynamicKnotService not registered; dynamic knot disabled',
+        name: 'ProfilePage',
+        error: e,
+        stackTrace: st,
+      );
+    }
+    try {
+      _wearableDataService = GetIt.instance<WearableDataService>();
+    } catch (e, st) {
+      developer.log(
+        'WearableDataService not registered; dynamic knot disabled',
+        name: 'ProfilePage',
+        error: e,
+        stackTrace: st,
+      );
+    }
   }
   
   Future<void> _loadDynamicKnot() async {
     final authState = context.read<AuthBloc>().state;
     if (authState is! Authenticated) return;
+
+    if (_agentIdService == null ||
+        _knotStorageService == null ||
+        _dynamicKnotService == null ||
+        _wearableDataService == null) {
+      return;
+    }
     
     setState(() {
       _isLoadingKnot = true;
@@ -65,19 +119,19 @@ class _ProfilePageState extends State<ProfilePage> {
     
     try {
       final userId = authState.user.id;
-      final agentId = await _agentIdService.getUserAgentId(userId);
+      final agentId = await _agentIdService!.getUserAgentId(userId);
       
       // Load knot from storage
-      final knot = await _knotStorageService.loadKnot(agentId);
+      final knot = await _knotStorageService!.loadKnot(agentId);
       
       if (knot != null) {
         // Get mood/energy/stress from wearables, fallback to defaults
-        final mood = await _wearableDataService.getCurrentMood();
-        final energy = await _wearableDataService.getCurrentEnergy();
-        final stress = await _wearableDataService.getCurrentStress();
+        final mood = await _wearableDataService!.getCurrentMood();
+        final energy = await _wearableDataService!.getCurrentEnergy();
+        final stress = await _wearableDataService!.getCurrentStress();
         
         // Create dynamic knot
-        final dynamicKnot = _dynamicKnotService.updateKnotWithCurrentState(
+        final dynamicKnot = _dynamicKnotService!.updateKnotWithCurrentState(
           baseKnot: knot,
           mood: mood,
           energy: energy,
@@ -401,6 +455,34 @@ class _ProfilePageState extends State<ProfilePage> {
                     subtitle: 'Privacy-preserving AI training',
                     onTap: () {
                       context.go('/federated-learning');
+                    },
+                  ),
+                  _buildSettingsItem(
+                    context,
+                    icon: Icons.smart_toy_outlined,
+                    title: 'On-Device AI',
+                    subtitle: 'Offline LLM + scheduled learning (device-gated)',
+                    onTap: () {
+                      context.go('/on-device-ai');
+                    },
+                  ),
+                  if (kDebugMode)
+                    _buildSettingsItem(
+                      context,
+                      icon: Icons.fact_check_outlined,
+                      title: 'Proof Run (debug)',
+                      subtitle: 'Video + logs + ledger receipts exporter',
+                      onTap: () {
+                        context.go('/proof-run');
+                      },
+                    ),
+                  _buildSettingsItem(
+                    context,
+                    icon: Icons.receipt,
+                    title: 'Receipts',
+                    subtitle: 'View verifiable receipts (audit trail)',
+                    onTap: () {
+                      context.go('/profile/receipts');
                     },
                   ),
                   // Phase 7, Week 37: AI Self-Improvement Visibility

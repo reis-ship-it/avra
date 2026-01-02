@@ -9,6 +9,7 @@ import 'package:spots/injection_container_ai.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sembast/sembast.dart';
+import 'package:spots/core/services/geo_hierarchy_service.dart';
 
 // Database
 // Note: SembastDatabase is now initialized in registerCoreServices() (injection_container_core.dart)
@@ -92,6 +93,9 @@ import 'package:spots/core/services/enhanced_connectivity_service.dart';
 import 'package:spots/core/services/geographic_scope_service.dart';
 // Business Chat Services (AI2AI routing)
 import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:spots/core/services/ledgers/ledger_receipts_service_v0.dart';
+import 'package:spots/core/services/ledgers/proof_run_service_v0.dart';
 import 'package:spots/core/services/message_encryption_service.dart';
 import 'package:spots/core/services/business_shared_agent_service.dart';
 // Onboarding & Agent Creation Services (Phase 1: Foundation)
@@ -122,6 +126,9 @@ import 'package:spots/core/controllers/partnership_proposal_controller.dart';
 import 'package:spots/core/controllers/profile_update_controller.dart';
 import 'package:spots/core/controllers/sponsorship_checkout_controller.dart';
 import 'package:spots/core/services/cancellation_service.dart';
+import 'package:spots/core/services/tax_document_storage_service.dart';
+import 'package:spots/core/services/dispute_resolution_service.dart';
+import 'package:spots/core/services/disputes/dispute_evidence_storage_service.dart';
 import 'package:spots/core/controllers/sync_controller.dart';
 import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
 
@@ -168,7 +175,12 @@ import 'package:spots/core/services/sales_tax_service.dart';
 import 'package:spots_ai/services/personality_sync_service.dart';
 import 'package:spots/core/services/community_service.dart';
 import 'package:spots/core/services/geographic_expansion_service.dart';
+import 'package:spots/core/services/feature_flag_service.dart';
 import 'package:spots/core/ai/facts_index.dart';
+import 'package:spots/data/repositories/hybrid_community_repository.dart';
+import 'package:spots/data/repositories/local_community_repository.dart';
+import 'package:spots/data/repositories/supabase_community_repository.dart';
+import 'package:spots/domain/repositories/community_repository.dart';
 // Phase 12: Neural Network Implementation
 import 'package:spots/core/services/calling_score_data_collector.dart';
 import 'package:spots/core/services/calling_score_calculator.dart';
@@ -195,6 +207,13 @@ import 'package:spots/core/services/signal_protocol_encryption_service.dart';
 import 'package:spots/core/services/secure_mapping_encryption_service.dart';
 import 'package:spots/core/services/agent_id_migration_service.dart';
 import 'package:spots/core/services/mapping_key_rotation_service.dart';
+import 'package:spots/core/services/locality_agents/locality_agent_engine.dart';
+import 'package:spots/core/services/locality_agents/locality_agent_global_repository.dart';
+import 'package:spots/core/services/locality_agents/locality_agent_ingestion_service_v1.dart';
+import 'package:spots/core/services/locality_agents/locality_agent_local_store.dart';
+import 'package:spots/core/services/locality_agents/locality_agent_update_emitter_v1.dart';
+import 'package:spots/core/services/locality_agents/locality_geofence_planner.dart';
+import 'package:spots/core/services/locality_agents/os_geofence_registrar.dart';
 
 final sl = GetIt.instance;
 
@@ -226,12 +245,55 @@ Future<void> init() async {
   sl.registerLazySingleton<ListsRemoteDataSource>(
       () => ListsRemoteDataSourceImpl());
 
+  // Tax document storage (middle-ground):
+  // - Prefer Supabase Storage (private, per-user bucket) for new uploads.
+  // - Keep Firebase Analytics intact; Firebase Storage remains supported for legacy URLs.
+  if (!sl.isRegistered<TaxDocumentStorageService>()) {
+    sl.registerLazySingleton<TaxDocumentStorageService>(
+      () => TaxDocumentStorageService(
+        supabaseService: sl.isRegistered<SupabaseService>()
+            ? sl<SupabaseService>()
+            : SupabaseService(),
+        useSupabase: true,
+        // We don't inject FirebaseStorage here to keep DI safe in runtimes where Firebase isn't initialized.
+        // Legacy Firebase URLs can still be opened by URL launcher, and Firebase Storage can be wired later if needed.
+        useFirebase: true,
+      ),
+    );
+  }
+
+  // Paperwork documents (retention-locked):
+  // - Dispute evidence uploads go into `paperwork-documents` bucket (private)
+  if (!sl.isRegistered<DisputeEvidenceStorageService>()) {
+    sl.registerLazySingleton<DisputeEvidenceStorageService>(
+      () => DisputeEvidenceStorageService(
+        supabaseService: sl<SupabaseService>(),
+        ledger: sl<LedgerRecorderServiceV0>(),
+      ),
+    );
+  }
+
+  // Disputes (in-memory v0). Must be a singleton so submission + status pages
+  // can read the same dispute state in this temporary implementation.
+  if (!sl.isRegistered<DisputeResolutionService>()) {
+    sl.registerLazySingleton<DisputeResolutionService>(
+      () => DisputeResolutionService(
+        eventService: sl<ExpertiseEventService>(),
+      ),
+    );
+  }
+
   // Google Places Cache Service (for offline caching)
   sl.registerLazySingleton<GooglePlacesCacheService>(
       () => GooglePlacesCacheService());
 
   // Get Google Places API key from config
   final googlePlacesApiKey = GooglePlacesConfig.getApiKey();
+  if (googlePlacesApiKey.isEmpty) {
+    logger.warn(
+      '⚠️ [DI] GOOGLE_PLACES_API_KEY is not set; Google Places calls will return empty results until provided via --dart-define',
+    );
+  }
 
   // Google Place ID Finder Service (New API)
   sl.registerLazySingleton<GooglePlaceIdFinderServiceNew>(
@@ -348,6 +410,61 @@ Future<void> init() async {
   sl.registerLazySingleton(() => BusinessAccountService());
   logger.debug('✅ [DI] BusinessAccountService registered (shared)');
 
+  // ============================================================================
+  // LEDGER PREREQS (must be registered before Event/Payment modules)
+  // ============================================================================
+  // These are needed early because v0 ledger writers are now called by foundational services
+  // (events, partnerships, communities) and must not depend on late registration ordering.
+  if (!sl.isRegistered<FlutterSecureStorage>()) {
+    sl.registerLazySingleton<FlutterSecureStorage>(
+      () => const FlutterSecureStorage(
+        aOptions: AndroidOptions(),
+        iOptions: IOSOptions(
+          accessibility: KeychainAccessibility.first_unlock_this_device,
+        ),
+      ),
+    );
+  }
+  if (!sl.isRegistered<SecureMappingEncryptionService>()) {
+    sl.registerLazySingleton<SecureMappingEncryptionService>(
+      () => SecureMappingEncryptionService(
+        secureStorage: sl<FlutterSecureStorage>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<AgentIdService>()) {
+    sl.registerLazySingleton(() => AgentIdService(
+          encryptionService: sl<SecureMappingEncryptionService>(),
+          businessService: sl<BusinessAccountService>(),
+        ));
+  }
+  if (!sl.isRegistered<LedgerRecorderServiceV0>()) {
+    sl.registerLazySingleton<LedgerRecorderServiceV0>(
+      () => LedgerRecorderServiceV0(
+        supabaseService: sl<SupabaseService>(),
+        agentIdService: sl<AgentIdService>(),
+        storage: sl<StorageService>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<LedgerReceiptsServiceV0>()) {
+    sl.registerLazySingleton<LedgerReceiptsServiceV0>(
+      () => LedgerReceiptsServiceV0(
+        supabaseService: sl<SupabaseService>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<ProofRunServiceV0>()) {
+    // Debug-only: skeptic-proof bundle receipts + export.
+    sl.registerLazySingleton<ProofRunServiceV0>(
+      () => ProofRunServiceV0(
+        ledger: sl<LedgerRecorderServiceV0>(),
+        supabase: sl<SupabaseService>(),
+        prefs: sl<SharedPreferencesCompat>(),
+      ),
+    );
+  }
+
   // 2. BusinessService (depends on BusinessAccountService)
   sl.registerLazySingleton<BusinessService>(() => BusinessService(
         accountService: sl<BusinessAccountService>(),
@@ -355,8 +472,9 @@ Future<void> init() async {
   logger.debug('✅ [DI] BusinessService registered (shared)');
 
   // 3. ExpertiseEventService (foundational event service - used by Payment, AI)
-  sl.registerLazySingleton<ExpertiseEventService>(
-      () => ExpertiseEventService());
+  sl.registerLazySingleton<ExpertiseEventService>(() => ExpertiseEventService(
+        ledgerRecorder: sl<LedgerRecorderServiceV0>(),
+      ));
   logger.debug('✅ [DI] ExpertiseEventService registered (shared)');
 
   logger.debug(
@@ -375,11 +493,32 @@ Future<void> init() async {
   await registerKnotServices(sl);
   logger.debug('✅ [DI] Knot services registered');
 
+  // Community repository (local-first, optional Supabase sync behind feature flag).
+  if (!sl.isRegistered<CommunityRepository>()) {
+    sl.registerLazySingleton<CommunityRepository>(
+        () => HybridCommunityRepository(
+              local: LocalCommunityRepository(
+                storageService: sl<StorageService>(),
+              ),
+              remote: SupabaseCommunityRepository(
+                supabaseService: sl.isRegistered<SupabaseService>()
+                    ? sl<SupabaseService>()
+                    : SupabaseService(),
+              ),
+              featureFlags: sl<FeatureFlagService>(),
+            ));
+    logger.debug('✅ [DI] CommunityRepository registered (hybrid)');
+  }
+
   // Register CommunityService after Knot module (it has optional Knot dependencies)
   sl.registerLazySingleton(() => CommunityService(
         expansionService: GeographicExpansionService(),
         knotFabricService: sl<KnotFabricService>(),
         knotStorageService: sl<KnotStorageService>(),
+        storageService: sl<StorageService>(),
+        atomicClockService: sl<AtomicClockService>(),
+        repository: sl<CommunityRepository>(),
+        ledgerRecorder: sl<LedgerRecorderServiceV0>(),
       ));
   logger
       .debug('✅ [DI] CommunityService registered (shared, after Knot module)');
@@ -425,21 +564,6 @@ Future<void> init() async {
   // ============================================================================
   // Note: These services are foundational infrastructure and remain in main container
 
-  // Secure Mapping Encryption Service (for encrypting userId ↔ agentId mappings)
-  sl.registerLazySingleton<FlutterSecureStorage>(
-    () => const FlutterSecureStorage(
-      aOptions: AndroidOptions(),
-      iOptions: IOSOptions(
-        accessibility: KeychainAccessibility.first_unlock_this_device,
-      ),
-    ),
-  );
-  sl.registerLazySingleton<SecureMappingEncryptionService>(
-    () => SecureMappingEncryptionService(
-      secureStorage: sl<FlutterSecureStorage>(),
-    ),
-  );
-
   // Agent ID Migration Service (for migrating plaintext mappings to encrypted)
   sl.registerLazySingleton<AgentIdMigrationService>(
     () => AgentIdMigrationService(
@@ -447,12 +571,6 @@ Future<void> init() async {
       encryptionService: sl<SecureMappingEncryptionService>(),
     ),
   );
-
-  // Agent ID Service (for ai2ai network routing)
-  sl.registerLazySingleton(() => AgentIdService(
-        encryptionService: sl<SecureMappingEncryptionService>(),
-        businessService: sl<BusinessAccountService>(),
-      ));
 
   // Mapping Key Rotation Service (for rotating encryption keys)
   sl.registerLazySingleton<MappingKeyRotationService>(
@@ -484,6 +602,65 @@ Future<void> init() async {
         agentIdService: sl<AgentIdService>(),
       ));
 
+  // ============================================================================
+  // Locality Agents (v1) - geohash-keyed locality learning layer
+  // ============================================================================
+  if (!sl.isRegistered<LocalityAgentGlobalRepositoryV1>()) {
+    sl.registerLazySingleton<LocalityAgentGlobalRepositoryV1>(
+      () => LocalityAgentGlobalRepositoryV1(
+        supabaseService: sl<SupabaseService>(),
+        storage: sl<StorageService>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<LocalityAgentLocalStoreV1>()) {
+    sl.registerLazySingleton<LocalityAgentLocalStoreV1>(
+      () => LocalityAgentLocalStoreV1(storage: sl<StorageService>()),
+    );
+  }
+  if (!sl.isRegistered<LocalityAgentEngineV1>()) {
+    sl.registerLazySingleton<LocalityAgentEngineV1>(
+      () => LocalityAgentEngineV1(
+        globalRepo: sl<LocalityAgentGlobalRepositoryV1>(),
+        localStore: sl<LocalityAgentLocalStoreV1>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<LocalityAgentUpdateEmitterV1>()) {
+    sl.registerLazySingleton<LocalityAgentUpdateEmitterV1>(
+      () => LocalityAgentUpdateEmitterV1(
+        supabaseService: sl<SupabaseService>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<LocalityAgentIngestionServiceV1>()) {
+    sl.registerLazySingleton<LocalityAgentIngestionServiceV1>(
+      () => LocalityAgentIngestionServiceV1(
+        agentIdService: sl<AgentIdService>(),
+        geoHierarchyService: sl<GeoHierarchyService>(),
+        prefs: sl.isRegistered<SharedPreferencesCompat>()
+            ? sl<SharedPreferencesCompat>()
+            : null,
+        spotsLocalDataSource: sl<SpotsLocalDataSource>(),
+        engine: sl<LocalityAgentEngineV1>(),
+        emitter: sl<LocalityAgentUpdateEmitterV1>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<OsGeofenceRegistrarV1>()) {
+    sl.registerLazySingleton<OsGeofenceRegistrarV1>(
+      () => NoopOsGeofenceRegistrarV1(),
+    );
+  }
+  if (!sl.isRegistered<LocalityGeofencePlannerV1>()) {
+    sl.registerLazySingleton<LocalityGeofencePlannerV1>(
+      () => LocalityGeofencePlannerV1(
+        storage: sl<StorageService>(),
+        registrar: sl<OsGeofenceRegistrarV1>(),
+      ),
+    );
+  }
+
   // Event Creation Controller (Phase 8.11)
   sl.registerLazySingleton(() => EventCreationController(
         eventService: sl<ExpertiseEventService>(),
@@ -496,10 +673,13 @@ Future<void> init() async {
       ));
 
   // Payment Processing Controller (Phase 8.11)
-  sl.registerLazySingleton(() => PaymentProcessingController(
-        salesTaxService: sl<SalesTaxService>(),
-        paymentEventService: sl<PaymentEventService>(),
-      ));
+  if (!sl.isRegistered<PaymentProcessingController>()) {
+    sl.registerLazySingleton<PaymentProcessingController>(
+        () => PaymentProcessingController(
+              salesTaxService: sl<SalesTaxService>(),
+              paymentEventService: sl<PaymentEventService>(),
+            ));
+  }
 
   // AI Recommendation Controller (Phase 8.11)
   sl.registerLazySingleton(() => AIRecommendationController(
@@ -554,9 +734,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CheckoutController(
         paymentController: sl<PaymentProcessingController>(),
         salesTaxService: sl<SalesTaxService>(),
-        legalService: LegalDocumentService(
-          eventService: sl<ExpertiseEventService>(),
-        ),
+        legalService: sl<LegalDocumentService>(),
         eventService: sl<ExpertiseEventService>(),
       ));
 
@@ -596,18 +774,16 @@ Future<void> init() async {
       // Get Signal Protocol service (may not be initialized yet)
       final signalProtocolService = sl<SignalProtocolService>();
 
-      // Get services needed for agent ID resolution
-      final agentIdService = sl<AgentIdService>();
       final supabaseService = sl<SupabaseService>();
+      final atomicClock = sl<AtomicClockService>();
 
       // Create Signal Protocol Encryption Service (will be used if Signal Protocol is available)
-      // Agent ID is resolved lazily from the current authenticated user
       SignalProtocolEncryptionService? signalProtocolEncryptionService;
       try {
         signalProtocolEncryptionService = SignalProtocolEncryptionService(
           signalProtocol: signalProtocolService,
-          agentIdService: agentIdService,
           supabaseService: supabaseService,
+          atomicClock: atomicClock,
         );
       } catch (e) {
         logger.warn(
@@ -622,7 +798,7 @@ Future<void> init() async {
     },
   );
 
-  // Note: AI/network services (chat services, business services, admin services, payment services, 
+  // Note: AI/network services (chat services, business services, admin services, payment services,
   // AI learning services, etc.) are registered in their respective domain modules
 
   // ============================================================================

@@ -101,15 +101,22 @@ class _LoginPageState extends State<LoginPage> {
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.email),
+                          labelText: 'Email or username',
+                          prefixIcon: Icon(Icons.person_outline),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
+                            return 'Please enter your email or username';
                           }
-                          if (!value.contains('@')) {
-                            return 'Please enter a valid email';
+                          final v = value.trim();
+                          if (v.contains('@')) {
+                            return null; // basic email accepted
+                          }
+                          // Username: allow simple handles (3+ chars).
+                          final ok =
+                              RegExp(r'^[a-zA-Z0-9._-]{3,}$').hasMatch(v);
+                          if (!ok) {
+                            return 'Username must be 3+ chars (letters/numbers/._-)';
                           }
                           return null;
                         },
@@ -152,10 +159,11 @@ class _LoginPageState extends State<LoginPage> {
                       // Login Button
                       BlocBuilder<AuthBloc, AuthState>(
                         builder: (context, state) {
+                          final isLoading =
+                              state is AuthLoading || _isSubmitting;
                           return ElevatedButton(
-                            onPressed:
-                                state is AuthLoading ? null : _handleLogin,
-                            child: state is AuthLoading
+                            onPressed: isLoading ? null : _handleLogin,
+                            child: isLoading
                                 ? const SizedBox(
                                     height: 20,
                                     width: 20,

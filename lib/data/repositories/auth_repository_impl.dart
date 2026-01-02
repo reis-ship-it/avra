@@ -3,163 +3,142 @@ import 'package:spots/core/models/user.dart';
 import 'package:spots/data/datasources/local/auth_local_datasource.dart';
 import 'package:spots/data/datasources/remote/auth_remote_datasource.dart';
 import 'package:spots/domain/repositories/auth_repository.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:spots/data/repositories/repository_patterns.dart';
 
-class AuthRepositoryImpl implements AuthRepository {
+/// Auth Repository Implementation
+///
+/// Uses different patterns per operation:
+/// - Sign In/Sign Up: Online-first (requires server)
+/// - Get Current User: Offline-first (can work with cached credentials)
+/// - Update User: Offline-first (local-first with sync)
+/// - Update Password: Remote-only (requires online)
+class AuthRepositoryImpl extends SimplifiedRepositoryBase
+    implements AuthRepository {
   final AuthLocalDataSource? localDataSource;
   final AuthRemoteDataSource? remoteDataSource;
-  final Connectivity? connectivity;
 
   AuthRepositoryImpl({
+    super.connectivity,
     this.localDataSource,
     this.remoteDataSource,
-    this.connectivity,
   });
 
   @override
   Future<User?> signIn(String email, String password) async {
+    developer.log('🔐 AuthRepository: Starting sign in for $email');
+
     try {
-      developer.log('🔐 AuthRepository: Starting sign in for $email');
-
-      // Check connectivity first - offline-first approach
-      final connectivityResult =
-          await connectivity?.checkConnectivity() ?? [ConnectivityResult.none];
-      final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-
-      if (isOnline && remoteDataSource != null) {
-        developer.log('🔐 AuthRepository: Trying remote sign in');
-        final user = await remoteDataSource!.signIn(email, password);
-        if (user != null) {
-          developer.log('🔐 AuthRepository: Remote sign in successful');
-          await localDataSource?.saveUser(user);
-          return user;
-        }
+      // Auth should attempt remote even if connectivity checks are flaky.
+      // Some environments can throw during Connectivity.checkConnectivity(); do not
+      // treat that as definitive offline for sign-in.
+      if (remoteDataSource == null) {
+        throw Exception(
+            'Remote data source not available (backend not initialized)');
       }
 
-      // Use local sign in (either offline or remote failed)
-      developer.log('🔐 AuthRepository: Trying local sign in');
+      developer.log('🔐 AuthRepository: Trying remote sign in');
+      final user = await remoteDataSource!.signIn(email, password);
+      if (user != null) {
+        developer.log('🔐 AuthRepository: Remote sign in successful');
+        await localDataSource?.saveUser(user);
+        return user;
+      }
+
       developer.log(
-          '🔐 AuthRepository: localDataSource is ${localDataSource == null ? 'null' : 'not null'}');
+          '🔐 AuthRepository: Remote sign in returned null; trying local fallback');
       final localUser = await localDataSource?.signIn(email, password);
       developer.log(
           '🔐 AuthRepository: Local sign in result: ${localUser?.email ?? 'null'}');
       return localUser;
     } catch (e) {
       developer.log('🔐 AuthRepository: Sign in error: $e');
-      developer.log('Online sign in failed: $e', name: 'AuthRepository');
-      // Fallback to local
-      return await localDataSource?.signIn(email, password);
+      developer.log('Sign in failed: $e', name: 'AuthRepository');
+      // Final fallback to local
+      final localUser = await localDataSource?.signIn(email, password);
+      if (localUser != null) return localUser;
+      // Surface the root cause if local fallback is not available.
+      rethrow;
     }
   }
 
   @override
   Future<User?> signUp(String email, String password, String name) async {
-    // Check connectivity first
-    final connectivityResult =
-        await connectivity?.checkConnectivity() ?? [ConnectivityResult.none];
-    final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-
-    if (!isOnline) {
+    // Sign up is remote-only, but do not rely on Connectivity checks which may be flaky.
+    if (remoteDataSource == null) {
       throw Exception(
-          'Cannot sign up while offline. Please connect to the internet to create a new account.');
+          'Remote data source not available (backend not initialized)');
     }
 
-    try {
-      // Online sign up
-      if (remoteDataSource != null) {
-        final user = await remoteDataSource!.signUp(email, password, name);
-        if (user != null) {
-          await localDataSource?.saveUser(user);
-          return user;
-        }
-      }
-
-      // If remote signup failed, create local user
-      final now = DateTime.now();
-      final user = User(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        email: email,
-        name: name,
-        role: UserRole.user,
-        createdAt: now,
-        updatedAt: now,
-      );
-      return await localDataSource?.signUp(email, password, user);
-    } catch (e) {
-      developer.log('Online sign up failed: $e', name: 'AuthRepository');
-      // Try local sign up as fallback
-      final now = DateTime.now();
-      final user = User(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        email: email,
-        name: name,
-        role: UserRole.user,
-        createdAt: now,
-        updatedAt: now,
-      );
-      return await localDataSource?.signUp(email, password, user);
+    final user = await remoteDataSource!.signUp(email, password, name);
+    if (user != null) {
+      await localDataSource?.saveUser(user);
     }
+    return user;
   }
 
   @override
   Future<void> signOut() async {
     try {
-      // Try remote sign out first
-      if (remoteDataSource != null) {
-        await remoteDataSource!.signOut();
+      // Try remote sign out first, but always clear local data regardless
+      if (remoteDataSource != null && await isOnline) {
+        try {
+          await remoteDataSource!.signOut();
+        } catch (e) {
+          developer.log('Remote sign out failed: $e', name: 'AuthRepository');
+          // Continue to clear local data even if remote fails
+        }
       }
 
       // Always clear local data
       await localDataSource?.clearUser();
     } catch (e) {
-      developer.log('Online sign out failed: $e', name: 'AuthRepository');
-      // Still clear local data
+      developer.log('Sign out error: $e', name: 'AuthRepository');
+      // Still try to clear local data
       await localDataSource?.clearUser();
     }
   }
 
   @override
   Future<User?> getCurrentUser() async {
+    // Auth state should be able to hydrate from the remote session even when
+    // connectivity checks are flaky (e.g., simulator / plugin edge-cases).
+    //
+    // Strategy:
+    // - Try remote first (best-effort).
+    // - Fall back to local cached user if remote is unavailable/fails.
     try {
-      // Try to get from remote first
       if (remoteDataSource != null) {
-        final user = await remoteDataSource!.getCurrentUser();
-        if (user != null) {
-          await localDataSource?.saveUser(user);
-          return user;
+        final remoteUser = await remoteDataSource!.getCurrentUser();
+        if (remoteUser != null) {
+          await localDataSource?.saveUser(remoteUser);
+          return remoteUser;
         }
       }
-
-      // Fallback to local
-      return await localDataSource?.getCurrentUser();
     } catch (e) {
-      developer.log('Error getting remote user: $e', name: 'AuthRepository');
-      // Fallback to local
-      return await localDataSource?.getCurrentUser();
+      developer.log('Get current user (remote) failed: $e',
+          name: 'AuthRepository');
     }
+
+    return await (localDataSource?.getCurrentUser() ?? Future.value(null));
   }
 
   @override
   Future<User?> updateCurrentUser(User user) async {
-    try {
-      // Try remote update first
-      if (remoteDataSource != null) {
-        final updatedUser = await remoteDataSource!.updateUser(user);
-        if (updatedUser != null) {
-          await localDataSource?.saveUser(updatedUser);
-          return updatedUser;
+    // Offline-first: update local immediately, sync to remote if online
+    return await executeOfflineFirst<User?>(
+      localOperation: () async {
+        await localDataSource?.saveUser(user);
+        return user;
+      },
+      remoteOperation: remoteDataSource != null
+          ? () => remoteDataSource!.updateUser(user)
+          : null,
+      syncToLocal: (remoteUser) async {
+        if (remoteUser != null) {
+          await localDataSource?.saveUser(remoteUser);
         }
-      }
-
-      // Fallback to local update
-      await localDataSource?.saveUser(user);
-      return user;
-    } catch (e) {
-      developer.log('Error getting current user: $e', name: 'AuthRepository');
-      // Fallback to local update
-      await localDataSource?.saveUser(user);
-      return user;
-    }
+      },
+    );
   }
 
   @override
@@ -175,19 +154,17 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> updatePassword(
       String currentPassword, String newPassword) async {
-    try {
-      // Try remote update first
-      if (remoteDataSource != null) {
+    // Password update requires online connection
+    if (remoteDataSource == null) {
+      throw Exception(
+          'Cannot update password: remote data source not available');
+    }
+
+    await executeRemoteOnly<void>(
+      remoteOperation: () async {
         await remoteDataSource!.updatePassword(currentPassword, newPassword);
         developer.log('Password updated successfully', name: 'AuthRepository');
-        return;
-      }
-
-      // If no remote, throw error (password update requires online)
-      throw Exception('Cannot update password while offline');
-    } catch (e) {
-      developer.log('Password update failed: $e', name: 'AuthRepository');
-      rethrow;
-    }
+      },
+    );
   }
 }
