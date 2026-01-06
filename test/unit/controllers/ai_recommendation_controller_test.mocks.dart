@@ -11,12 +11,12 @@ import 'package:spots/core/ai/personality_learning.dart' as _i3;
 import 'package:spots/core/models/multi_path_expertise.dart' as _i6;
 import 'package:spots/core/models/onboarding_data.dart' as _i9;
 import 'package:spots/core/models/outcome_result.dart' as _i7;
-import 'package:spots_ai/models/personality_profile.dart' as _i2;
 import 'package:spots/core/models/preferences_profile.dart' as _i4;
 import 'package:spots/core/models/unified_user.dart' as _i11;
 import 'package:spots/core/services/agent_id_service.dart' as _i12;
 import 'package:spots/core/services/event_recommendation_service.dart' as _i10;
 import 'package:spots/core/services/preferences_profile_service.dart' as _i8;
+import 'package:spots_ai/models/personality_profile.dart' as _i2;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -545,6 +545,40 @@ class MockAgentIdService extends _i1.Mock implements _i12.AgentIdService {
           ),
         )),
       ) as _i5.Future<String>);
+
+  @override
+  _i5.Future<void> rotateMappingEncryptionKey(
+    String? userId, {
+    _i12.EncryptedMapping? existingEncryptedMapping,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #rotateMappingEncryptionKey,
+          [userId],
+          {#existingEncryptedMapping: existingEncryptedMapping},
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  void clearCache() => super.noSuchMethod(
+        Invocation.method(
+          #clearCache,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i5.Future<void> flushAuditLogs() => (super.noSuchMethod(
+        Invocation.method(
+          #flushAuditLogs,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
   _i5.Future<String> getBusinessAgentId(String? businessId) =>

@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:math';
 import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:spots/core/monitoring/connection_monitor.dart';
+import 'package:spots/core/services/ledgers/ledger_audit_v0.dart';
+import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
 
 /// OUR_GUTS.md: "Network analytics that monitor AI2AI personality network health while preserving privacy"
 /// Comprehensive network analytics system for monitoring AI2AI personality learning effectiveness
@@ -18,6 +21,13 @@ class NetworkAnalytics {
   
   // ignore: unused_field
   final SharedPreferencesCompat _prefs; // Reserved for future persistent storage integration
+  final ConnectionMonitor? _connectionMonitor;
+
+  // Stream controllers + timers for periodic updates (admin dashboard).
+  StreamController<NetworkHealthReport>? _networkHealthStreamController;
+  Timer? _networkHealthTimer;
+  StreamController<RealTimeMetrics>? _realTimeMetricsStreamController;
+  Timer? _realTimeMetricsTimer;
   
   // Analytics state
   // ignore: unused_field
@@ -26,7 +36,26 @@ class NetworkAnalytics {
   // ignore: unused_field
   final Map<String, SystemHealthIndicator> _healthIndicators = {}; // Reserved for future health monitoring
   
-  NetworkAnalytics({required SharedPreferencesCompat prefs}) : _prefs = prefs;
+  NetworkAnalytics({
+    required SharedPreferencesCompat prefs,
+    ConnectionMonitor? connectionMonitor,
+  })  : _prefs = prefs,
+        _connectionMonitor = connectionMonitor;
+
+  /// Cancel all periodic update timers and close stream controllers.
+  ///
+  /// This is important for widget tests to avoid leaving pending timers.
+  void disposeStreams() {
+    _networkHealthTimer?.cancel();
+    _networkHealthTimer = null;
+    _networkHealthStreamController?.close();
+    _networkHealthStreamController = null;
+
+    _realTimeMetricsTimer?.cancel();
+    _realTimeMetricsTimer = null;
+    _realTimeMetricsStreamController?.close();
+    _realTimeMetricsStreamController = null;
+  }
   
   /// Analyze overall network health and performance
   Future<NetworkHealthReport> analyzeNetworkHealth() async {
@@ -48,6 +77,9 @@ class NetworkAnalytics {
       // Calculate network stability and reliability
       final stabilityMetrics = await _calculateNetworkStability(currentMetrics);
       
+      // Aggregate AI Pleasure across active sessions (Phase 20.1)
+      final aiPleasureAverage = await _calculateAIPleasureAverage();
+
       // Identify potential bottlenecks or issues
       final performanceIssues = await _identifyPerformanceIssues(currentMetrics);
       
@@ -64,6 +96,7 @@ class NetworkAnalytics {
           learningEffectiveness,
           privacyMetrics,
           stabilityMetrics,
+          aiPleasureAverage: aiPleasureAverage,
         ),
         connectionQuality: connectionQuality,
         learningEffectiveness: learningEffectiveness,
@@ -73,11 +106,28 @@ class NetworkAnalytics {
         optimizationRecommendations: optimizationRecommendations,
         totalActiveConnections: currentMetrics.activeConnections,
         networkUtilization: currentMetrics.networkUtilization,
+        aiPleasureAverage: aiPleasureAverage,
         analysisTimestamp: DateTime.now(),
       );
       
       // Store health report for historical analysis
       await _storeHealthReport(healthReport);
+
+      // Best-effort receipts for device-free audits (Ledgers v0)
+      await LedgerAuditV0.tryAppend(
+        domain: LedgerDomainV0.deviceCapability,
+        eventType: 'ai2ai_network_health_report_generated',
+        occurredAt: healthReport.analysisTimestamp,
+        entityType: 'network',
+        entityId: 'ai2ai',
+        payload: <String, Object?>{
+          'schema_version': 0,
+          'overall_health_score': healthReport.overallHealthScore,
+          'total_active_connections': healthReport.totalActiveConnections,
+          'network_utilization': healthReport.networkUtilization,
+          'ai_pleasure_average': healthReport.aiPleasureAverage,
+        },
+      );
       
       developer.log('Network health analysis completed (score: ${(healthReport.overallHealthScore * 100).round()}%)', name: _logName);
       return healthReport;
@@ -394,19 +444,47 @@ class NetworkAnalytics {
     
     return recommendations;
   }
+
+  Future<double> _calculateAIPleasureAverage() async {
+    try {
+      final monitor = _connectionMonitor ?? ConnectionMonitor(prefs: _prefs);
+      return monitor.calculateAiPleasureAverage(defaultValue: 0.5);
+    } catch (e) {
+      developer.log('Failed to calculate AI pleasure average: $e', name: _logName);
+      return 0.5;
+    }
+  }
+
+  static double calculateOverallHealthScoreV1({
+    required ConnectionQualityMetrics connectionQuality,
+    required LearningEffectivenessMetrics learningEffectiveness,
+    required PrivacyMetrics privacyMetrics,
+    required NetworkStabilityMetrics stabilityMetrics,
+    required double aiPleasureAverage,
+  }) {
+    return (
+      connectionQuality.averageCompatibility * 0.25 +
+      learningEffectiveness.overallEffectiveness * 0.25 +
+      privacyMetrics.complianceRate * 0.20 +
+      stabilityMetrics.uptime * 0.20 +
+      aiPleasureAverage.clamp(0.0, 1.0) * 0.10
+    ).clamp(0.0, 1.0);
+  }
   
   double _calculateOverallHealthScore(
     ConnectionQualityMetrics connectionQuality,
     LearningEffectivenessMetrics learningEffectiveness,
     PrivacyMetrics privacyMetrics,
     NetworkStabilityMetrics stabilityMetrics,
+    {required double aiPleasureAverage}
   ) {
-    return (
-      connectionQuality.averageCompatibility * 0.25 +
-      learningEffectiveness.overallEffectiveness * 0.25 +
-      privacyMetrics.complianceRate * 0.25 +
-      stabilityMetrics.uptime * 0.25
-    ).clamp(0.0, 1.0);
+    return calculateOverallHealthScoreV1(
+      connectionQuality: connectionQuality,
+      learningEffectiveness: learningEffectiveness,
+      privacyMetrics: privacyMetrics,
+      stabilityMetrics: stabilityMetrics,
+      aiPleasureAverage: aiPleasureAverage,
+    );
   }
   
   Future<void> _storeHealthReport(NetworkHealthReport report) async {
@@ -665,46 +743,66 @@ class NetworkAnalytics {
   
   /// Stream network health updates
   /// Emits initial value immediately, then periodic updates every 5-10 seconds
-  Stream<NetworkHealthReport> streamNetworkHealth() async* {
-    // Emit initial value immediately
-    try {
-      yield await analyzeNetworkHealth();
-    } catch (e) {
-      developer.log('Error in streamNetworkHealth initial value: $e', name: _logName);
-      yield NetworkHealthReport.degraded();
-    }
-    
-    // Then emit periodic updates every 8 seconds
-    await for (final _ in Stream.periodic(const Duration(seconds: 8), (_) => null)) {
+  Stream<NetworkHealthReport> streamNetworkHealth() {
+    _networkHealthStreamController ??=
+        StreamController<NetworkHealthReport>.broadcast();
+
+    final controller = _networkHealthStreamController!;
+
+    Future<void> emitOnce() async {
+      if (controller.isClosed) return;
       try {
-        yield await analyzeNetworkHealth();
+        controller.add(await analyzeNetworkHealth());
       } catch (e) {
-        developer.log('Error in streamNetworkHealth periodic update: $e', name: _logName);
-        yield NetworkHealthReport.degraded();
+        developer.log('Error in streamNetworkHealth emit: $e', name: _logName);
+        if (!controller.isClosed) {
+          controller.add(NetworkHealthReport.degraded());
+        }
       }
     }
+
+    // Emit initial value immediately.
+    unawaited(emitOnce());
+
+    // Start periodic updates (single timer; cancelled on disposeStreams()).
+    _networkHealthTimer ??= Timer.periodic(
+      const Duration(seconds: 8),
+      (_) => unawaited(emitOnce()),
+    );
+
+    return controller.stream;
   }
   
   /// Stream real-time metrics updates
   /// Emits initial value immediately, then periodic updates every 5-10 seconds
-  Stream<RealTimeMetrics> streamRealTimeMetrics() async* {
-    // Emit initial value immediately
-    try {
-      yield await collectRealTimeMetrics();
-    } catch (e) {
-      developer.log('Error in streamRealTimeMetrics initial value: $e', name: _logName);
-      yield RealTimeMetrics.zero();
-    }
-    
-    // Then emit periodic updates every 7 seconds
-    await for (final _ in Stream.periodic(const Duration(seconds: 7), (_) => null)) {
+  Stream<RealTimeMetrics> streamRealTimeMetrics() {
+    _realTimeMetricsStreamController ??=
+        StreamController<RealTimeMetrics>.broadcast();
+
+    final controller = _realTimeMetricsStreamController!;
+
+    Future<void> emitOnce() async {
+      if (controller.isClosed) return;
       try {
-        yield await collectRealTimeMetrics();
+        controller.add(await collectRealTimeMetrics());
       } catch (e) {
-        developer.log('Error in streamRealTimeMetrics periodic update: $e', name: _logName);
-        yield RealTimeMetrics.zero();
+        developer.log('Error in streamRealTimeMetrics emit: $e', name: _logName);
+        if (!controller.isClosed) {
+          controller.add(RealTimeMetrics.zero());
+        }
       }
     }
+
+    // Emit initial value immediately.
+    unawaited(emitOnce());
+
+    // Start periodic updates (single timer; cancelled on disposeStreams()).
+    _realTimeMetricsTimer ??= Timer.periodic(
+      const Duration(seconds: 7),
+      (_) => unawaited(emitOnce()),
+    );
+
+    return controller.stream;
   }
 }
 
@@ -737,6 +835,7 @@ class NetworkHealthReport {
   final List<OptimizationRecommendation> optimizationRecommendations;
   final int totalActiveConnections;
   final double networkUtilization;
+  final double aiPleasureAverage;
   final DateTime analysisTimestamp;
   
   NetworkHealthReport({
@@ -749,6 +848,7 @@ class NetworkHealthReport {
     required this.optimizationRecommendations,
     required this.totalActiveConnections,
     required this.networkUtilization,
+    required this.aiPleasureAverage,
     required this.analysisTimestamp,
   });
   
@@ -763,6 +863,7 @@ class NetworkHealthReport {
       optimizationRecommendations: [],
       totalActiveConnections: 0,
       networkUtilization: 0.0,
+      aiPleasureAverage: 0.5,
       analysisTimestamp: DateTime.now(),
     );
   }

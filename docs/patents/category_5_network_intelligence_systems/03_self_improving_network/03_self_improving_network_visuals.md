@@ -4,7 +4,79 @@
 
 ---
 
-## 1. System Architecture
+
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: System Architecture.
+- **FIG. 6**: Connection Success Learning Flow.
+- **FIG. 7**: Privacy-Preserving Aggregation.
+- **FIG. 8**: Collective Intelligence Emergence.
+- **FIG. 9**: Continuous Learning Loop.
+- **FIG. 10**: Network Intelligence Scaling.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Self-Improving Network Architecture with Collective Intelligence implementation.
+
+In the illustrated embodiment, a computing device receives input signals and stored profile/state data; constructs an internal representation; and applies representation construction and scoring/decision logic to produce an output score/decision and optional stored record.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- System Architecture.
+- Connection Success Learning Flow.
+- Privacy-Preserving Aggregation.
+- Collective Intelligence Emergence.
+- Continuous Learning Loop.
+- Network Intelligence Scaling.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Self-Improving Network Architecture with Collective Intelligence implementation.
+
+1. Learning from connection success by analyzing successful vs. unsuccessful connections.
+2. Recognizing network patterns by aggregating privacy-preserving data from individual AIs.
+3. Generating collective intelligence insights from network-wide pattern analysis.
+4. Preserving privacy through aggregate-only data collection with differential privacy noise.
+5. Implementing continuous learning loop that updates network intelligence based on outcomes.
+6. Improving recommendations based on updated network patterns.
+7. Scaling network intelligence with network size through collective learning.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Self-Improving Network Architecture with Collective Intelligence implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- InputSignals: {signals[ ], observedAt, source}
+- RepresentationState: {features, parameters, version}
+- ConstraintPolicy: {thresholds, privacy/timing rules}
+- ComputationResult: {score/decision, confidence (optional)}
+- LocalStoreRecord: {id, createdAt, payload}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Self-Improving Network Architecture with Collective Intelligence implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+- Privacy/validation module (on-device)
+
+Example sequence:
+1. Client device gathers inputs and constructs a representation/state.
+2. Client device applies core computation and constraints.
+3. Client device emits an output and stores a record as needed.
+
+### FIG. 5 — System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -48,7 +120,8 @@
 
 ---
 
-## 2. Connection Success Learning Flow
+### FIG. 6 — Connection Success Learning Flow
+
 
 ```
                     START
@@ -95,7 +168,8 @@
 
 ---
 
-## 3. Privacy-Preserving Aggregation
+### FIG. 7 — Privacy-Preserving Aggregation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -136,7 +210,8 @@
 
 ---
 
-## 4. Collective Intelligence Emergence
+### FIG. 8 — Collective Intelligence Emergence
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -173,7 +248,8 @@
 
 ---
 
-## 5. Continuous Learning Loop
+### FIG. 9 — Continuous Learning Loop
+
 
 ```
                     ┌──────────────┐
@@ -219,7 +295,8 @@
 
 ---
 
-## 6. Network Intelligence Scaling
+### FIG. 10 — Network Intelligence Scaling
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -267,4 +344,3 @@ This visual documentation provides comprehensive diagrams and visualizations for
 6. **Network Intelligence Scaling** - Scaling with network size
 
 These visuals support the deep-dive document and provide clear, patent-ready documentation of the system's technical implementation.
-

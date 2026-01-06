@@ -208,10 +208,12 @@ docs/patents/
 Each patent folder contains:
 
 1. **`[patent_name].md`** - Deep dive document with:
-   - Executive Summary
-   - Technical Innovation
+   - Abstract
+   - Background
+   - Summary
+   - Detailed Description
    - Key Technical Elements
-   - Patent Claims
+   - Claims
    - Code References
    - Patentability Assessment
    - Prior Art Analysis

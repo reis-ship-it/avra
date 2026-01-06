@@ -110,12 +110,16 @@ class _AdminCollaborativeActivityWidgetState
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Collaborative Activity Analytics',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+        Expanded(
+          child: Text(
+            'Collaborative Activity Analytics',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+          ),
         ),
         IconButton(
           icon: const Icon(Icons.refresh),

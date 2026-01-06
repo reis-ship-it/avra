@@ -19,6 +19,9 @@ import 'package:spots/core/ai/continuous_learning_system.dart';
 class ContinuousLearningOrchestrator {
   static const String _logName = 'ContinuousLearningOrchestrator';
 
+  // Perf triage: configurable cycle interval + non-overlapping cycles.
+  final Duration _cycleInterval;
+
   // Learning dimensions that the AI continuously improves
   static const List<String> _learningDimensions = [
     'user_preference_understanding',
@@ -38,6 +41,8 @@ class ContinuousLearningOrchestrator {
   bool _isLearningActive = false;
   DateTime? _learningStartTime;
   int _cyclesCompleted = 0;
+  bool _isInitialized = false;
+  bool _isCycleRunning = false;
 
   // Learning state tracking
   final Map<String, double> _currentLearningState = {};
@@ -52,7 +57,9 @@ class ContinuousLearningOrchestrator {
     required LearningDataCollector dataCollector,
     required LearningDataProcessor dataProcessor,
     List<LearningDimensionEngine>? engines,
+    Duration cycleInterval = const Duration(seconds: 1),
   })  : _dataCollector = dataCollector,
+        _cycleInterval = cycleInterval,
         _engines = engines ??
             [
               PersonalityLearningEngine(processor: dataProcessor),
@@ -79,10 +86,12 @@ class ContinuousLearningOrchestrator {
 
   /// Initialize learning system
   Future<void> initialize() async {
+    if (_isInitialized) return;
     try {
       developer.log('Initializing continuous learning orchestrator',
           name: _logName);
       await _initializeLearningState();
+      _isInitialized = true;
       developer.log('Continuous learning orchestrator initialized', name: _logName);
     } catch (e) {
       developer.log('Error initializing orchestrator: $e', name: _logName);
@@ -99,14 +108,18 @@ class ContinuousLearningOrchestrator {
         return;
       }
 
-      // Initialize learning state
-      await _initializeLearningState();
+      // Ensure orchestrator state is initialized (idempotent)
+      await initialize();
 
       // Start continuous learning loop
       _learningStartTime = DateTime.now();
-      _learningTimer =
-          Timer.periodic(const Duration(seconds: 1), (timer) async {
-        await _performContinuousLearning();
+      _learningTimer = Timer.periodic(_cycleInterval, (timer) {
+        // Prevent overlapping cycles if a previous async cycle is still running.
+        if (_isCycleRunning) return;
+        _isCycleRunning = true;
+        _performContinuousLearning().whenComplete(() {
+          _isCycleRunning = false;
+        });
       });
 
       _isLearningActive = true;
@@ -126,6 +139,7 @@ class ContinuousLearningOrchestrator {
       _learningTimer = null;
       _isLearningActive = false;
       _learningStartTime = null;
+      _isCycleRunning = false;
 
       // Save final learning state
       await _saveLearningState();

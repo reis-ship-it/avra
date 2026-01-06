@@ -213,10 +213,12 @@ class _SignupPageState extends State<SignupPage> {
                       // Sign Up Button
                       BlocBuilder<AuthBloc, AuthState>(
                         builder: (context, state) {
+                          final isLoading =
+                              state is AuthLoading || _isSubmitting;
                           return ElevatedButton(
                             onPressed:
-                                state is AuthLoading ? null : _handleSignUp,
-                            child: state is AuthLoading
+                                isLoading ? null : _handleSignUp,
+                            child: isLoading
                                 ? const SizedBox(
                                     height: 20,
                                     width: 20,

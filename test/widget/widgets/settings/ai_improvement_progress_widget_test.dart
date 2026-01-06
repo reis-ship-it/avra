@@ -79,6 +79,7 @@ void main() {
         mockService.setHistory(history);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_header_default'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -90,6 +91,7 @@ void main() {
 
         final widget2 = WidgetTestHelpers.createTestableWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_header_30d'),
             userId: 'test_user',
             trackingService: mockService,
             timeWindow: const Duration(days: 30),
@@ -101,6 +103,7 @@ void main() {
 
         final widget3 = WidgetTestHelpers.createTestableWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_header_7d'),
             userId: 'test_user',
             trackingService: mockService,
             timeWindow: const Duration(days: 7),
@@ -124,6 +127,7 @@ void main() {
         mockService.setHistory(history1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_dimension_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -144,6 +148,7 @@ void main() {
         mockService.setHistory(history2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_dimension_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -161,6 +166,7 @@ void main() {
         mockService.setHistory(history3);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_dimension_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -188,6 +194,7 @@ void main() {
         mockService.setHistory(history1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_chart_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -200,6 +207,7 @@ void main() {
         mockService.setHistory(history2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_chart_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -215,6 +223,7 @@ void main() {
         mockService.setHistory(history3);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_chart_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -242,6 +251,7 @@ void main() {
         mockService.setHistory(history1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_trend_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -256,6 +266,7 @@ void main() {
         mockService.setHistory(history2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_trend_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -269,6 +280,7 @@ void main() {
         mockService.setHistory(history3);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_trend_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -292,6 +304,7 @@ void main() {
         mockService.setHistory(history1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_edge_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -308,6 +321,7 @@ void main() {
         mockService.setHistory(history2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementProgressWidget(
+            key: const ValueKey('ai_improvement_progress_edge_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),

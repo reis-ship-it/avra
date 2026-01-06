@@ -11,9 +11,9 @@ import 'package:mockito/src/dummies.dart' as _i8;
 import 'package:spots/core/ai/personality_learning.dart' as _i4;
 import 'package:spots/core/models/multi_path_expertise.dart' as _i9;
 import 'package:spots/core/models/outcome_result.dart' as _i10;
-import 'package:spots_ai/models/personality_profile.dart' as _i3;
 import 'package:spots/core/services/enhanced_connectivity_service.dart' as _i2;
-import 'package:spots_ai/services/personality_sync_service.dart' as _i6;
+import 'package:spots_ai/models/personality_profile.dart' as _i3;
+import 'package:spots/core/services/personality_sync_service.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -165,6 +165,85 @@ class MockPersonalitySyncService extends _i1.Mock
   }
 
   @override
+  _i5.Future<bool> syncToCloud(
+    String? agentId,
+    _i3.PersonalityProfile? profile,
+    String? password,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #syncToCloud,
+          [
+            agentId,
+            profile,
+            password,
+          ],
+        ),
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+
+  @override
+  _i5.Future<_i3.PersonalityProfile?> syncFromCloud({
+    required String? agentId,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #syncFromCloud,
+          [],
+          {
+            #agentId: agentId,
+            #password: password,
+          },
+        ),
+        returnValue: _i5.Future<_i3.PersonalityProfile?>.value(),
+      ) as _i5.Future<_i3.PersonalityProfile?>);
+
+  @override
+  _i5.Future<bool> isCloudSyncEnabled([String? _0]) => (super.noSuchMethod(
+        Invocation.method(
+          #isCloudSyncEnabled,
+          [_0],
+        ),
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+
+  @override
+  _i5.Future<_i3.PersonalityProfile?> loadFromCloud(
+    String? agentId,
+    String? password,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #loadFromCloud,
+          [
+            agentId,
+            password,
+          ],
+        ),
+        returnValue: _i5.Future<_i3.PersonalityProfile?>.value(),
+      ) as _i5.Future<_i3.PersonalityProfile?>);
+
+  @override
+  _i5.Future<void> reEncryptWithNewPassword(
+    String? agentId,
+    String? currentPassword,
+    String? newPassword,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #reEncryptWithNewPassword,
+          [
+            agentId,
+            currentPassword,
+            newPassword,
+          ],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i5.Future<_i7.Uint8List> deriveKeyFromPassword(
     String? password,
     String? userId,
@@ -207,14 +286,14 @@ class MockPersonalitySyncService extends _i1.Mock
 
   @override
   _i5.Future<_i3.PersonalityProfile?> decryptProfileFromCloud(
-    String? encryptedJson,
+    String? payload,
     _i7.Uint8List? key,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #decryptProfileFromCloud,
           [
-            encryptedJson,
+            payload,
             key,
           ],
         ),
@@ -222,90 +301,10 @@ class MockPersonalitySyncService extends _i1.Mock
       ) as _i5.Future<_i3.PersonalityProfile?>);
 
   @override
-  _i5.Future<void> syncToCloud(
-    String? userId,
-    _i3.PersonalityProfile? profile,
-    String? password,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #syncToCloud,
-          [
-            userId,
-            profile,
-            password,
-          ],
-        ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
-
-  @override
-  _i5.Future<_i3.PersonalityProfile?> loadFromCloud(
-    String? userId,
-    String? password,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #loadFromCloud,
-          [
-            userId,
-            password,
-          ],
-        ),
-        returnValue: _i5.Future<_i3.PersonalityProfile?>.value(),
-      ) as _i5.Future<_i3.PersonalityProfile?>);
-
-  @override
-  _i5.Future<bool> isCloudSyncEnabled(String? userId) => (super.noSuchMethod(
-        Invocation.method(
-          #isCloudSyncEnabled,
-          [userId],
-        ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
-
-  @override
-  _i5.Future<void> setCloudSyncEnabled(
-    String? userId,
-    bool? enabled,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<void> setCloudSyncEnabled(bool? enabled) => (super.noSuchMethod(
         Invocation.method(
           #setCloudSyncEnabled,
-          [
-            userId,
-            enabled,
-          ],
-        ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
-
-  @override
-  _i5.Future<void> deleteCloudProfile(String? userId) => (super.noSuchMethod(
-        Invocation.method(
-          #deleteCloudProfile,
-          [userId],
-        ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
-
-  @override
-  _i5.Future<void> reEncryptWithNewPassword(
-    String? userId,
-    String? oldPassword,
-    String? newPassword,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #reEncryptWithNewPassword,
-          [
-            userId,
-            oldPassword,
-            newPassword,
-          ],
+          [enabled],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),

@@ -47,6 +47,9 @@ class BusinessCompatibilityWidget extends StatelessWidget {
   }
 
   Future<BusinessCompatibilityScore> _getCompatibilityScore() async {
+    // Ensure the Future completes asynchronously so the loading state renders
+    // for at least one frame (keeps UI/tests deterministic).
+    await Future<void>.delayed(Duration.zero);
     final service = UserBusinessMatchingService();
     return await service.getUserCompatibilityScore(user, business);
   }

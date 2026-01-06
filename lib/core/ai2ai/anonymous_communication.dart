@@ -20,11 +20,11 @@ class AnonymousCommunicationProtocol {
   
   // Required dependencies (used by protocol methods)
   // ignore: unused_field
-  final SupabaseClient _supabase;
+  final SupabaseClient? _supabase;
   // ignore: unused_field
-  final AtomicClockService _atomicClock;
+  final AtomicClockService? _atomicClock;
   // ignore: unused_field
-  final UserAnonymizationService _anonymizationService;
+  final UserAnonymizationService? _anonymizationService;
   
   // Encryption settings for maximum privacy
   // ignore: unused_field
@@ -33,14 +33,15 @@ class AnonymousCommunicationProtocol {
   static const int _maxHopsForMessage = 5;
   
   AnonymousCommunicationProtocol({
-    required message_encryption_service.MessageEncryptionService encryptionService,
-    required SupabaseClient supabase,
-    required AtomicClockService atomicClock,
-    required UserAnonymizationService anonymizationService,
-  }) : _encryptionService = encryptionService,
-       _supabase = supabase,
-       _atomicClock = atomicClock,
-       _anonymizationService = anonymizationService;
+    message_encryption_service.MessageEncryptionService? encryptionService,
+    SupabaseClient? supabase,
+    AtomicClockService? atomicClock,
+    UserAnonymizationService? anonymizationService,
+  })  : _encryptionService =
+            encryptionService ?? message_encryption_service.AES256GCMEncryptionService(),
+        _supabase = supabase,
+        _atomicClock = atomicClock,
+        _anonymizationService = anonymizationService;
   
   /// Send encrypted message between AI agents invisibly
   /// OUR_GUTS.md: "Zero user data exposure, maximum privacy"

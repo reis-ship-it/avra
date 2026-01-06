@@ -10,7 +10,7 @@ import 'package:spots/core/models/preferences_profile.dart';
 import 'package:spots/domain/repositories/auth_repository.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots_core/services/atomic_clock_service.dart';
 
 /// Profile Update Controller

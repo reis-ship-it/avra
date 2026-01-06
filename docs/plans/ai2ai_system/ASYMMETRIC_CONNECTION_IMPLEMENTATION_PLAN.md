@@ -536,8 +536,8 @@ Future<AI2AILearningInsight> generateAsymmetricLearningInsight(
 
 **Files to Update:**
 - `docs/plans/ai2ai_system/AI2AI_OPERATIONS_AND_VIEWING_GUIDE.md`
-- `VIBE_CODING/ARCHITECTURE/network_flow.md`
-- `VIBE_CODING/IMPLEMENTATION/connection_decision_process.md`
+- `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/network_flow.md`
+- `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/connection_decision_process.md`
 
 **Tasks:**
 - [ ] Update connection flow diagrams
@@ -663,8 +663,8 @@ Future<AI2AILearningInsight> generateAsymmetricLearningInsight(
 
 - **Design Document:** `docs/plans/ai2ai_system/ASYMMETRIC_CONNECTION_IMPROVEMENT.md`
 - **AI2AI Connection Vision:** `docs/plans/ai2ai_system/AI2AI_CONNECTION_VISION.md`
-- **Personality Spectrum:** `VIBE_CODING/ARCHITECTURE/personality_spectrum.md`
-- **Connection Decision Process:** `VIBE_CODING/IMPLEMENTATION/connection_decision_process.md`
+- **Personality Spectrum:** `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/personality_spectrum.md`
+- **Connection Decision Process:** `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/connection_decision_process.md`
 
 ---
 

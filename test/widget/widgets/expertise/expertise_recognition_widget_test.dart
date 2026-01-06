@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/expertise/expertise_recognition_widget.dart';
-import 'package:spots/core/models/unified_user.dart';
-import "../../helpers/widget_test_helpers.dart';
+import 'package:spots/core/services/expertise_recognition_service.dart';
+import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for ExpertiseRecognitionWidget
 /// Tests expertise recognition display
@@ -42,6 +43,7 @@ void main() {
       final featuredExpert = FeaturedExpert(
         expert: expert4,
         recognitionCount: 10,
+        recentRecognitionCount: 3,
         recognitionScore: 0.9,
       );
       final widget4 = WidgetTestHelpers.createTestableWidget(

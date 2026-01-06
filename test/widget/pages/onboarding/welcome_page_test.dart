@@ -66,45 +66,6 @@ void main() {
       await tester.pump();
       expect(skipCalled, true);
 
-      bool continueCalled = false;
-      await tester.pumpWidget(
-        MaterialApp(
-          home: WelcomePage(
-            onContinue: () {
-              continueCalled = true;
-            },
-          ),
-        ),
-      );
-      await tester.tap(find.byType(WelcomePage));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-      expect(continueCalled, false);
-      for (int i = 0; i < 8; i++) {
-        await tester.pump(const Duration(milliseconds: 50));
-      }
-      expect(continueCalled, true);
-
-      bool continueCalled2 = false;
-      await tester.pumpWidget(
-        MaterialApp(
-          home: WelcomePage(
-            onContinue: () {
-              continueCalled2 = true;
-            },
-          ),
-        ),
-      );
-      await tester.pump();
-      await tester.tap(find.byType(WelcomePage));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
-      expect(continueCalled2, false);
-      for (int i = 0; i < 10; i++) {
-        await tester.pump(const Duration(milliseconds: 50));
-      }
-      expect(continueCalled2, true);
-
       int continueCallCount = 0;
       await tester.pumpWidget(
         MaterialApp(
@@ -115,15 +76,21 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.byType(WelcomePage));
       await tester.pump();
-      await tester.tap(find.byType(WelcomePage));
+      await tester.tap(find.byType(GestureDetector).first);
       await tester.pump();
-      await tester.tap(find.byType(WelcomePage));
+      // Fade duration is 400ms; verify it doesn't fire immediately, then does.
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(continueCallCount, 0);
+      await tester.pump(const Duration(milliseconds: 450));
       await tester.pump();
-      for (int i = 0; i < 10; i++) {
-        await tester.pump(const Duration(milliseconds: 50));
-      }
+      expect(continueCallCount, 1);
+
+      // Further taps during/after exit should not fire again.
+      await tester.tap(find.byType(GestureDetector).first);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 450));
+      await tester.pump();
       expect(continueCallCount, 1);
     });
   });

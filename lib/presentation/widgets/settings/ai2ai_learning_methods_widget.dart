@@ -1,13 +1,13 @@
 /// AI2AI Learning Methods Widget
-/// 
+///
 /// Phase 7, Week 38: AI2AI Learning Methods UI - Integration & Polish
-/// 
+///
 /// Widget displaying active learning methods, status, and effectiveness scores:
 /// - Active learning methods display
 /// - Method status (active, paused, completed)
 /// - Method effectiveness scores
 /// - Visual indicators for method performance
-/// 
+///
 /// Uses AppColors/AppTheme for 100% design token compliance.
 library;
 
@@ -19,21 +19,23 @@ import 'package:spots/core/services/ai2ai_learning_service.dart';
 class AI2AILearningMethodsWidget extends StatefulWidget {
   /// User ID to show methods for
   final String userId;
-  
+
   /// AI2AI learning service
   final AI2AILearning learningService;
-  
+
   const AI2AILearningMethodsWidget({
     super.key,
     required this.userId,
     required this.learningService,
   });
-  
+
   @override
-  State<AI2AILearningMethodsWidget> createState() => _AI2AILearningMethodsWidgetState();
+  State<AI2AILearningMethodsWidget> createState() =>
+      _AI2AILearningMethodsWidgetState();
 }
 
-class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget> {
+class _AI2AILearningMethodsWidgetState
+    extends State<AI2AILearningMethodsWidget> {
   List<LearningMethod> _methods = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -52,50 +54,69 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
 
     try {
       // Get insights to determine active methods
-      final insights = await widget.learningService.getLearningInsights(widget.userId);
-      
+      final insights =
+          await widget.learningService.getLearningInsights(widget.userId);
+
       // Determine active learning methods based on insights
       final methods = <LearningMethod>[];
-      
+
       // Method 1: Cross-Personality Learning
       if (insights.isNotEmpty) {
-        final avgReliability = insights.map((i) => i.reliability).reduce((a, b) => a + b) / insights.length;
+        final avgReliability =
+            insights.map((i) => i.reliability).reduce((a, b) => a + b) /
+                insights.length;
         methods.add(LearningMethod(
           id: 'cross_personality',
           name: 'Cross-Personality Learning',
           description: 'Learning from interactions with other AI personalities',
           status: LearningMethodStatus.active,
           effectivenessScore: avgReliability,
-          lastActive: insights.isNotEmpty ? insights.map((i) => i.timestamp).reduce((a, b) => a.isAfter(b) ? a : b) : DateTime.now(),
+          lastActive: insights.isNotEmpty
+              ? insights
+                  .map((i) => i.timestamp)
+                  .reduce((a, b) => a.isAfter(b) ? a : b)
+              : DateTime.now(),
         ));
       }
-      
+
       // Method 2: Collective Intelligence
       if (insights.length >= 3) {
-        final avgReliability = insights.map((i) => i.reliability).reduce((a, b) => a + b) / insights.length;
+        final avgReliability =
+            insights.map((i) => i.reliability).reduce((a, b) => a + b) /
+                insights.length;
         methods.add(LearningMethod(
           id: 'collective_intelligence',
           name: 'Collective Intelligence',
           description: 'Building knowledge from multiple AI interactions',
           status: LearningMethodStatus.active,
           effectivenessScore: avgReliability,
-          lastActive: insights.isNotEmpty ? insights.map((i) => i.timestamp).reduce((a, b) => a.isAfter(b) ? a : b) : DateTime.now(),
+          lastActive: insights.isNotEmpty
+              ? insights
+                  .map((i) => i.timestamp)
+                  .reduce((a, b) => a.isAfter(b) ? a : b)
+              : DateTime.now(),
         ));
       }
-      
+
       // Method 3: Pattern Recognition
       if (insights.length >= 5) {
-        final avgReliability = insights.map((i) => i.reliability).reduce((a, b) => a + b) / insights.length;
+        final avgReliability =
+            insights.map((i) => i.reliability).reduce((a, b) => a + b) /
+                insights.length;
         methods.add(LearningMethod(
           id: 'pattern_recognition',
           name: 'Pattern Recognition',
           description: 'Identifying patterns across AI2AI conversations',
           status: LearningMethodStatus.active,
           effectivenessScore: avgReliability,
-          lastActive: insights.isNotEmpty ? insights.map((i) => i.timestamp).reduce((a, b) => a.isAfter(b) ? a : b) : DateTime.now(),
+          lastActive: insights.isNotEmpty
+              ? insights
+                  .map((i) => i.timestamp)
+                  .reduce((a, b) => a.isAfter(b) ? a : b)
+              : DateTime.now(),
         ));
       }
-      
+
       // If no methods found, show placeholder
       if (methods.isEmpty) {
         methods.add(LearningMethod(
@@ -123,7 +144,6 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -366,7 +386,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
   Widget _buildStatusBadge(LearningMethodStatus status) {
     final color = _getStatusColor(status);
     final text = _getStatusText(status);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -419,7 +439,7 @@ class _AI2AILearningMethodsWidgetState extends State<AI2AILearningMethodsWidget>
   String _formatLastActive(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inDays > 0) {
       return '${difference.inDays}d ago';
     } else if (difference.inHours > 0) {

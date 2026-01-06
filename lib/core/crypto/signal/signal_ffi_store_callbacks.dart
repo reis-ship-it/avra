@@ -3,8 +3,11 @@
 // 
 // Provides Dart callbacks for libsignal-ffi store interfaces
 
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:ffi';
+import 'dart:typed_data';
+
 import 'package:ffi/ffi.dart';
 import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
 import 'package:spots/core/crypto/signal/signal_rust_wrapper_bindings.dart';
@@ -19,10 +22,12 @@ import 'package:spots/core/crypto/signal/signal_types.dart';
 class _SignalStoreContext {
   final SignalKeyManager keyManager;
   final SignalSessionManager sessionManager;
+  final SignalFFIBindings ffiBindings;
   
   _SignalStoreContext({
     required this.keyManager,
     required this.sessionManager,
+    required this.ffiBindings,
   });
 }
 
@@ -39,6 +44,7 @@ class SignalFFIStoreCallbacks {
   // ignore: unused_field
   final SignalFFIBindings _ffiBindings;
   final SignalRustWrapperBindings _rustWrapper;
+  // ignore: unused_field
   final SignalPlatformBridgeBindings _platformBridge;
   
   // Store context (will be passed as void* to C)
@@ -56,10 +62,14 @@ class SignalFFIStoreCallbacks {
   static const int _saveIdentityKeyCallbackId = 5;
   static const int _getIdentityKeyCallbackId = 6;
   static const int _isTrustedIdentityCallbackId = 7;
-  
-  // NativeCallable instance (must be kept alive to prevent GC)
-  // ignore: sdk_version_since - NativeCallable is available in SDK 3.1.0+, but we check availability
-  NativeCallable? _dispatchNativeCallable;
+  static const int _loadPreKeyCallbackId = 8;
+  static const int _storePreKeyCallbackId = 9;
+  static const int _removePreKeyCallbackId = 10;
+  static const int _loadSignedPreKeyCallbackId = 11;
+  static const int _storeSignedPreKeyCallbackId = 12;
+  static const int _loadKyberPreKeyCallbackId = 13;
+  static const int _storeKyberPreKeyCallbackId = 14;
+  static const int _markKyberPreKeyUsedCallbackId = 15;
   
   // Initialization flag
   bool _initialized = false;
@@ -89,8 +99,10 @@ class SignalFFIStoreCallbacks {
   
   /// Initialize store callbacks
   /// 
-  /// Must be called after SignalPlatformBridgeBindings and SignalRustWrapperBindings
-  /// are initialized. This registers the callbacks with the platform bridge and Rust wrapper.
+  /// Must be called after `SignalRustWrapperBindings` is initialized.
+  ///
+  /// Note: the platform bridge is legacy (dlsym-based) and no longer required for
+  /// the struct-pointer dispatch callback path.
   Future<void> initialize() async {
     if (_initialized) {
       developer.log('Store callbacks already initialized', name: _logName);
@@ -101,18 +113,19 @@ class SignalFFIStoreCallbacks {
       developer.log('Initializing Signal FFI store callbacks...', name: _logName);
       
       // Verify dependencies are initialized
-      if (!_platformBridge.isInitialized) {
-        throw SignalProtocolException(
-          'Platform bridge not initialized. Call SignalPlatformBridgeBindings.initialize() first.',
-        );
-      }
-      
       if (!_rustWrapper.isInitialized) {
         throw SignalProtocolException(
           'Rust wrapper not initialized. Call SignalRustWrapperBindings.initialize() first.',
         );
       }
       
+      // Warm caches used by synchronous native callbacks.
+      await _keyManager.warmNativeCaches();
+      await _sessionManager.warmNativeCaches();
+
+      // Bind helper symbols for callbacks.
+      _ensureNativeHelpersBound(_ffiBindings);
+
       // Register callbacks (this will create NativeCallable if needed)
       _registerCallbacks();
       
@@ -134,20 +147,13 @@ class SignalFFIStoreCallbacks {
   
   /// Register all callbacks with the Rust wrapper library
   /// 
-  /// Uses Platform-Specific Bridge Pattern:
+  /// Uses the struct-pointer dispatch callback pattern:
   /// 1. Register callbacks with unique IDs in Dart registry
-  /// 2. Create dispatch function pointer using platform bridge (works around Dart FFI limitation!)
-  /// 3. Register dispatch function with Rust wrapper
+  /// 2. Register a single `CallbackArgs*` dispatch callback with the Rust wrapper
   void _registerCallbacks() {
     if (!_rustWrapper.isInitialized) {
       throw SignalProtocolException(
         'Rust wrapper not initialized. Call SignalRustWrapperBindings.initialize() first.',
-      );
-    }
-    
-    if (!_platformBridge.isInitialized) {
-      throw SignalProtocolException(
-        'Platform bridge not initialized. Call SignalPlatformBridgeBindings.initialize() first.',
       );
     }
     
@@ -159,77 +165,299 @@ class SignalFFIStoreCallbacks {
     _callbackRegistry[_saveIdentityKeyCallbackId] = _saveIdentityKeyCallbackImpl;
     _callbackRegistry[_getIdentityKeyCallbackId] = _getIdentityKeyCallbackImpl;
     _callbackRegistry[_isTrustedIdentityCallbackId] = _isTrustedIdentityCallbackImpl;
+    _callbackRegistry[_loadPreKeyCallbackId] = _loadPreKeyCallbackImpl;
+    _callbackRegistry[_storePreKeyCallbackId] = _storePreKeyCallbackImpl;
+    _callbackRegistry[_removePreKeyCallbackId] = _removePreKeyCallbackImpl;
+    _callbackRegistry[_loadSignedPreKeyCallbackId] = _loadSignedPreKeyCallbackImpl;
+    _callbackRegistry[_storeSignedPreKeyCallbackId] = _storeSignedPreKeyCallbackImpl;
+    _callbackRegistry[_loadKyberPreKeyCallbackId] = _loadKyberPreKeyCallbackImpl;
+    _callbackRegistry[_storeKyberPreKeyCallbackId] = _storeKyberPreKeyCallbackImpl;
+    _callbackRegistry[_markKyberPreKeyUsedCallbackId] =
+        _markKyberPreKeyUsedCallbackImpl;
     
-    // Register the Dart callback with the platform bridge using dlsym
-    // The C bridge will look up our exported function by name
-    // This avoids needing to create function pointers in Dart!
-    final bridgeLib = _platformBridge.library;
-    if (bridgeLib == null) {
-      throw SignalProtocolException('Platform bridge library not loaded');
-    }
-    
-    final registerByName = bridgeLib
-        .lookup<NativeFunction<Void Function(Pointer<Utf8>)>>('signal_register_dispatch_callback_by_name')
-        .asFunction<void Function(Pointer<Utf8>)>();
-    
-    // Export function name as C string
-    final functionName = 'signal_dispatch_callback'.toNativeUtf8();
-    try {
-      registerByName(functionName);
-    } finally {
-      malloc.free(functionName);
-    }
-    
-    // Get the C function pointer from the platform bridge
-    final cFunctionPtr = _platformBridge.getDispatchFunctionPtr();
-    
-    // Register the C function pointer with Rust wrapper
-    _rustWrapper.registerDispatchCallback(cFunctionPtr);
+    // Register the dispatch callback directly (single-parameter struct pointer).
+    final ptr = Pointer.fromFunction<Int32 Function(Pointer<CallbackArgs>)>(
+      _dispatchCallbackPtr,
+      1, // default error code if an exception bubbles out
+    ).cast<Void>();
+    _rustWrapper.registerDispatchCallback(ptr);
   }
   
-  /// Dispatch callback function
-  /// 
-  /// This is the single function that Rust wrapper calls.
-  /// Takes pointer address as int (Dart FFI limitation workaround).
-  /// 
-  /// The function:
-  /// 1. Reconstructs CallbackArgs struct pointer from address
-  /// 2. Extracts callback ID from CallbackArgs struct
-  /// 3. Looks up callback in Dart registry
-  /// 4. Invokes callback with unpacked parameters
-  // Export with well-known name for dlsym lookup
-  // Note: Function signature must match C: int32_t Function(uint64_t)
-  // Dart's int is 64-bit on most platforms, compatible with uint64_t
-  // Dart's int return is compatible with int32_t (C will handle truncation if needed)
+  /// Dispatch callback function.
+  ///
+  /// This is the single function the Rust wrapper calls. It must **never throw**.
   @pragma('vm:entry-point')
-  @pragma('vm:external-name', 'signal_dispatch_callback')
-  static int _dispatchCallback(int argsAddress) {
-    // Reconstruct struct pointer from address
-    // argsAddress is uint64_t from C, received as int (64-bit on most platforms)
-    final argsPtr = Pointer<CallbackArgs>.fromAddress(argsAddress);
-    
-    final callbackId = argsPtr.ref.callbackId;
-    final callback = _callbackRegistry[callbackId];
-    
-    if (callback == null) {
-      return 1; // Error: callback not found
+  static int _dispatchCallbackPtr(Pointer<CallbackArgs> argsPtr) {
+    try {
+      if (argsPtr == nullptr) return 1;
+      final callbackId = argsPtr.ref.callbackId;
+      final callback = _callbackRegistry[callbackId];
+      if (callback == null) return 1;
+      return callback(
+        argsPtr.ref.storeCtx,
+        argsPtr.ref.arg1,
+        argsPtr.ref.arg2,
+        argsPtr.ref.arg3,
+        argsPtr.ref.direction,
+      );
+    } catch (_) {
+      return 1;
     }
-    
-    // Invoke callback with unpacked parameters
-    final result = callback(
-      argsPtr.ref.storeCtx,
-      argsPtr.ref.arg1,
-      argsPtr.ref.arg2,
-      argsPtr.ref.arg3,
-      argsPtr.ref.direction,
-    );
-    
-    return result;
   }
   
   // ============================================================================
   // CALLBACK IMPLEMENTATIONS (called by dispatch function)
   // ============================================================================
+
+  // Native helper bindings (bound once, used by callbacks)
+  static bool _nativeHelpersBound = false;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<Uint32>,
+    _SignalConstPointerProtocolAddress,
+  ) _addressGetDeviceId;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<Pointer<Utf8>>,
+    _SignalConstPointerProtocolAddress,
+  ) _addressGetName;
+
+  static late final void Function(Pointer<Int8>) _freeString;
+  static late final void Function(Pointer<Uint8>, int) _freeBuffer;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<_SignalMutPointerSessionRecord>,
+    SignalBorrowedBuffer,
+  ) _sessionRecordDeserialize;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<SignalOwnedBuffer>,
+    _SignalConstPointerSessionRecord,
+  ) _sessionRecordSerialize;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<SignalMutPointerPrivateKey>,
+    SignalBorrowedBuffer,
+  ) _privateKeyDeserialize;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<SignalMutPointerPublicKey>,
+    SignalBorrowedBuffer,
+  ) _publicKeyDeserialize;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<SignalOwnedBuffer>,
+    SignalConstPointerPublicKey,
+  ) _publicKeySerialize;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<_SignalMutPointerPreKeyRecord>,
+    SignalBorrowedBuffer,
+  ) _preKeyRecordDeserialize;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<SignalOwnedBuffer>,
+    _SignalConstPointerPreKeyRecord,
+  ) _preKeyRecordSerialize;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<_SignalMutPointerSignedPreKeyRecord>,
+    SignalBorrowedBuffer,
+  ) _signedPreKeyRecordDeserialize;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<SignalOwnedBuffer>,
+    _SignalConstPointerSignedPreKeyRecord,
+  ) _signedPreKeyRecordSerialize;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<_SignalMutPointerKyberPreKeyRecord>,
+    SignalBorrowedBuffer,
+  ) _kyberPreKeyRecordDeserialize;
+
+  static late final Pointer<SignalFfiError> Function(
+    Pointer<SignalOwnedBuffer>,
+    _SignalConstPointerKyberPreKeyRecord,
+  ) _kyberPreKeyRecordSerialize;
+
+  static void _ensureNativeHelpersBound(SignalFFIBindings ffiBindings) {
+    if (_nativeHelpersBound) return;
+
+    final lib = ffiBindings.library;
+
+    _addressGetDeviceId = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<Uint32>, _SignalConstPointerProtocolAddress)>>(
+          'signal_address_get_device_id',
+        )
+        .asFunction();
+
+    _addressGetName = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<Pointer<Utf8>>, _SignalConstPointerProtocolAddress)>>(
+          'signal_address_get_name',
+        )
+        .asFunction();
+
+    _freeString = lib
+        .lookup<NativeFunction<Void Function(Pointer<Int8>)>>(
+          'signal_free_string',
+        )
+        .asFunction();
+
+    _freeBuffer = lib
+        .lookup<NativeFunction<Void Function(Pointer<Uint8>, IntPtr)>>(
+          'signal_free_buffer',
+        )
+        .asFunction();
+
+    _sessionRecordDeserialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<_SignalMutPointerSessionRecord>,
+                    SignalBorrowedBuffer)>>(
+          'signal_session_record_deserialize',
+        )
+        .asFunction();
+
+    _sessionRecordSerialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<SignalOwnedBuffer>, _SignalConstPointerSessionRecord)>>(
+          'signal_session_record_serialize',
+        )
+        .asFunction();
+
+    _privateKeyDeserialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(Pointer<SignalMutPointerPrivateKey>,
+                    SignalBorrowedBuffer)>>(
+          'signal_privatekey_deserialize',
+        )
+        .asFunction();
+
+    _publicKeyDeserialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<SignalMutPointerPublicKey>, SignalBorrowedBuffer)>>(
+          'signal_publickey_deserialize',
+        )
+        .asFunction();
+
+    _publicKeySerialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<SignalOwnedBuffer>, SignalConstPointerPublicKey)>>(
+          'signal_publickey_serialize',
+        )
+        .asFunction();
+
+    _preKeyRecordDeserialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<_SignalMutPointerPreKeyRecord>, SignalBorrowedBuffer)>>(
+          'signal_pre_key_record_deserialize',
+        )
+        .asFunction();
+
+    _preKeyRecordSerialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<SignalOwnedBuffer>, _SignalConstPointerPreKeyRecord)>>(
+          'signal_pre_key_record_serialize',
+        )
+        .asFunction();
+
+    _signedPreKeyRecordDeserialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<_SignalMutPointerSignedPreKeyRecord>,
+                    SignalBorrowedBuffer)>>(
+          'signal_signed_pre_key_record_deserialize',
+        )
+        .asFunction();
+
+    _signedPreKeyRecordSerialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<SignalOwnedBuffer>, _SignalConstPointerSignedPreKeyRecord)>>(
+          'signal_signed_pre_key_record_serialize',
+        )
+        .asFunction();
+
+    _kyberPreKeyRecordDeserialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<_SignalMutPointerKyberPreKeyRecord>,
+                    SignalBorrowedBuffer)>>(
+          'signal_kyber_pre_key_record_deserialize',
+        )
+        .asFunction();
+
+    _kyberPreKeyRecordSerialize = lib
+        .lookup<
+            NativeFunction<
+                Pointer<SignalFfiError> Function(
+                    Pointer<SignalOwnedBuffer>, _SignalConstPointerKyberPreKeyRecord)>>(
+          'signal_kyber_pre_key_record_serialize',
+        )
+        .asFunction();
+
+    _nativeHelpersBound = true;
+  }
+
+  static ({String name, int deviceId}) _readAddress(
+    _SignalStoreContext context,
+    Pointer<_SignalConstPointerProtocolAddress> addressPtr,
+  ) {
+    _ensureNativeHelpersBound(context.ffiBindings);
+
+    final outName = malloc<Pointer<Utf8>>();
+    try {
+      final err = _addressGetName(outName, addressPtr.ref);
+      context.ffiBindings.checkError(err);
+      final namePtr = outName.value;
+      final name = namePtr.toDartString();
+      _freeString(namePtr.cast<Int8>());
+
+      final outDevice = malloc<Uint32>();
+      try {
+        final err2 = _addressGetDeviceId(outDevice, addressPtr.ref);
+        context.ffiBindings.checkError(err2);
+        return (name: name, deviceId: outDevice.value);
+      } finally {
+        malloc.free(outDevice);
+      }
+    } finally {
+      malloc.free(outName);
+    }
+  }
+
+  static Uint8List _serializeOwnedBufferToBytesAndFree(
+    SignalFFIBindings ffiBindings,
+    Pointer<SignalOwnedBuffer> buf,
+  ) {
+    final bytes = Uint8List.fromList(
+      buf.ref.base.asTypedList(buf.ref.length),
+    );
+    _freeBuffer(buf.ref.base, buf.ref.length);
+    malloc.free(buf);
+    return bytes;
+  }
   
   /// Load session callback implementation
   static int _loadSessionCallbackImpl(
@@ -239,25 +467,49 @@ class SignalFFIStoreCallbacks {
     Pointer<Void> arg3, // unused
     int direction, // unused
   ) {
-    // Get context from lookup table
     final context = _contextMap[storeCtx.address];
+    final recordpTyped = arg1.cast<_SignalMutPointerSessionRecord>();
     if (context == null) {
-      return 1; // Error: context not found
+      recordpTyped.ref.raw = nullptr;
+      return 0;
     }
     
-    // Cast back to proper types
-    // ignore: unused_local_variable - TODO: Implement session loading
-    final recordpTyped = arg1.cast<_SignalMutPointerSessionRecord>();
-    // ignore: unused_local_variable - TODO: Implement session loading
     final addressTyped = arg2.cast<_SignalConstPointerProtocolAddress>();
-    
-    // TODO: Implement session loading
-    // 1. Extract protocol address from addressTyped
-    // 2. Get recipient ID from protocol address
-    // 3. Load session from sessionManager
-    // 4. Convert session to C format and write to recordpTyped
-    // For now, return error (session not found)
-    return 1; // Error code
+
+    try {
+      final addr = _readAddress(context, addressTyped);
+      final bytes = context.sessionManager.getCachedSessionRecordBytes(
+        addressName: addr.name,
+        deviceId: addr.deviceId,
+      );
+      if (bytes == null) {
+        recordpTyped.ref.raw = nullptr;
+        return 0;
+      }
+
+      final borrowed = malloc<SignalBorrowedBuffer>();
+      final data = malloc<Uint8>(bytes.length);
+      try {
+        data.asTypedList(bytes.length).setAll(0, bytes);
+        borrowed.ref.base = data;
+        borrowed.ref.length = bytes.length;
+        final err = _sessionRecordDeserialize(recordpTyped, borrowed.ref);
+        context.ffiBindings.checkError(err);
+        return 0;
+      } finally {
+        malloc.free(data);
+        malloc.free(borrowed);
+      }
+    } catch (e, st) {
+      developer.log(
+        'load_session failed: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      recordpTyped.ref.raw = nullptr;
+      return 0;
+    }
   }
   
   /// Store session callback implementation
@@ -273,13 +525,37 @@ class SignalFFIStoreCallbacks {
       return 1;
     }
     
-    // ignore: unused_local_variable - TODO: Implement session storing
     final addressTyped = arg1.cast<_SignalConstPointerProtocolAddress>();
-    // ignore: unused_local_variable - TODO: Implement session storing
     final recordTyped = arg2.cast<_SignalConstPointerSessionRecord>();
-    
-    // TODO: Implement session storing
-    return 0; // Success
+    try {
+      final addr = _readAddress(context, addressTyped);
+      final out = malloc<SignalOwnedBuffer>();
+      final err = _sessionRecordSerialize(out, recordTyped.ref);
+      context.ffiBindings.checkError(err);
+      final bytes = _serializeOwnedBufferToBytesAndFree(context.ffiBindings, out);
+
+      context.sessionManager.cacheSessionRecordBytes(
+        addressName: addr.name,
+        deviceId: addr.deviceId,
+        bytes: bytes,
+      );
+      unawaited(
+        context.sessionManager.saveSessionRecordBytes(
+          addressName: addr.name,
+          deviceId: addr.deviceId,
+          bytes: bytes,
+        ),
+      );
+      return 0;
+    } catch (e, st) {
+      developer.log(
+        'store_session failed: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return 1;
+    }
   }
   
   /// Get identity key pair callback implementation
@@ -295,11 +571,37 @@ class SignalFFIStoreCallbacks {
       return 1;
     }
     
-    // ignore: unused_local_variable - TODO: Implement identity key pair loading
     final keypTyped = arg1.cast<SignalMutPointerPrivateKey>();
-    
-    // TODO: Implement identity key pair retrieval
-    return 1; // Error code
+
+    final identity = context.keyManager.cachedIdentityKeyPair;
+    if (identity == null) {
+      return 1;
+    }
+
+    try {
+      _ensureNativeHelpersBound(context.ffiBindings);
+      final borrowed = malloc<SignalBorrowedBuffer>();
+      final data = malloc<Uint8>(identity.privateKey.length);
+      try {
+        data.asTypedList(identity.privateKey.length).setAll(0, identity.privateKey);
+        borrowed.ref.base = data;
+        borrowed.ref.length = identity.privateKey.length;
+        final err = _privateKeyDeserialize(keypTyped, borrowed.ref);
+        context.ffiBindings.checkError(err);
+        return 0;
+      } finally {
+        malloc.free(data);
+        malloc.free(borrowed);
+      }
+    } catch (e, st) {
+      developer.log(
+        'get_identity_key_pair failed: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return 1;
+    }
   }
   
   /// Get local registration ID callback implementation
@@ -316,10 +618,11 @@ class SignalFFIStoreCallbacks {
     }
     
     final idpTyped = arg1.cast<Uint32>();
-    
-    // TODO: Get registration ID from keyManager
-    idpTyped.value = 1; // Default registration ID
-    return 0; // Success
+
+    final regId = context.keyManager.cachedRegistrationId;
+    if (regId == null) return 1;
+    idpTyped.value = regId;
+    return 0;
   }
   
   /// Save identity key callback implementation
@@ -335,13 +638,46 @@ class SignalFFIStoreCallbacks {
       return 1;
     }
     
-    // ignore: unused_local_variable - TODO: Implement identity key saving
     final addressTyped = arg1.cast<_SignalConstPointerProtocolAddress>();
-    // ignore: unused_local_variable - TODO: Implement identity key saving
     final publicKeyTyped = arg2.cast<SignalConstPointerPublicKey>();
-    
-    // TODO: Implement identity key saving
-    return 0; // Success
+
+    try {
+      final addr = _readAddress(context, addressTyped);
+
+      final out = malloc<SignalOwnedBuffer>();
+      final err = _publicKeySerialize(out, publicKeyTyped.ref);
+      context.ffiBindings.checkError(err);
+      final bytes = _serializeOwnedBufferToBytesAndFree(context.ffiBindings, out);
+
+      final existing = context.sessionManager.getCachedRemoteIdentityKeyBytes(
+        addressName: addr.name,
+        deviceId: addr.deviceId,
+      );
+      final isReplace = existing != null && !_bytesEqual(existing, bytes);
+
+      context.sessionManager.cacheRemoteIdentityKeyBytes(
+        addressName: addr.name,
+        deviceId: addr.deviceId,
+        bytes: bytes,
+      );
+      unawaited(
+        context.sessionManager.saveRemoteIdentityKeyBytes(
+          addressName: addr.name,
+          deviceId: addr.deviceId,
+          bytes: bytes,
+        ),
+      );
+
+      return isReplace ? 1 : 0;
+    } catch (e, st) {
+      developer.log(
+        'save_identity failed: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return 1;
+    }
   }
   
   /// Get identity key callback implementation
@@ -357,13 +693,43 @@ class SignalFFIStoreCallbacks {
       return 1;
     }
     
-    // ignore: unused_local_variable - TODO: Implement identity key retrieval
     final publicKeypTyped = arg1.cast<SignalMutPointerPublicKey>();
-    // ignore: unused_local_variable - TODO: Implement identity key retrieval
     final addressTyped = arg2.cast<_SignalConstPointerProtocolAddress>();
-    
-    // TODO: Implement identity key retrieval
-    return 1; // Error code
+
+    try {
+      final addr = _readAddress(context, addressTyped);
+      final bytes = context.sessionManager.getCachedRemoteIdentityKeyBytes(
+        addressName: addr.name,
+        deviceId: addr.deviceId,
+      );
+      if (bytes == null) {
+        publicKeypTyped.ref.raw = nullptr;
+        return 0;
+      }
+
+      final borrowed = malloc<SignalBorrowedBuffer>();
+      final data = malloc<Uint8>(bytes.length);
+      try {
+        data.asTypedList(bytes.length).setAll(0, bytes);
+        borrowed.ref.base = data;
+        borrowed.ref.length = bytes.length;
+        final err = _publicKeyDeserialize(publicKeypTyped, borrowed.ref);
+        context.ffiBindings.checkError(err);
+        return 0;
+      } finally {
+        malloc.free(data);
+        malloc.free(borrowed);
+      }
+    } catch (e, st) {
+      developer.log(
+        'get_identity failed: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      publicKeypTyped.ref.raw = nullptr;
+      return 1;
+    }
   }
   
   /// Is trusted identity callback implementation
@@ -379,15 +745,274 @@ class SignalFFIStoreCallbacks {
       return 1;
     }
     
-    // ignore: unused_local_variable - TODO: Implement trust check
     final addressTyped = arg1.cast<_SignalConstPointerProtocolAddress>();
-    // ignore: unused_local_variable - TODO: Implement trust check
     final publicKeyTyped = arg2.cast<SignalConstPointerPublicKey>();
-    
-    // TODO: Implement trust check
-    return 0; // Trusted
+
+    try {
+      final addr = _readAddress(context, addressTyped);
+      final existing = context.sessionManager.getCachedRemoteIdentityKeyBytes(
+        addressName: addr.name,
+        deviceId: addr.deviceId,
+      );
+      if (existing == null) {
+        return 1; // TOFU: trusted until we have a stored key.
+      }
+
+      final out = malloc<SignalOwnedBuffer>();
+      final err = _publicKeySerialize(out, publicKeyTyped.ref);
+      context.ffiBindings.checkError(err);
+      final bytes = _serializeOwnedBufferToBytesAndFree(context.ffiBindings, out);
+      return _bytesEqual(existing, bytes) ? 1 : 0;
+    } catch (e, st) {
+      developer.log(
+        'is_trusted_identity failed: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return 0;
+    }
   }
-  
+
+  static bool _bytesEqual(Uint8List a, Uint8List b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
+  // ============================================================================
+  // PREKEY / SIGNED PREKEY / KYBER PREKEY STORE CALLBACKS
+  // ============================================================================
+
+  static int _loadPreKeyCallbackImpl(
+    Pointer<Void> storeCtx,
+    Pointer<Void> arg1, // recordp
+    Pointer<Void> arg2, // id (u32*)
+    Pointer<Void> arg3, // unused
+    int direction,
+  ) {
+    final context = _contextMap[storeCtx.address];
+    if (context == null) return 1;
+    final recordp = arg1.cast<_SignalMutPointerPreKeyRecord>();
+    final id = arg2.cast<Uint32>().value;
+
+    final bytes = context.keyManager.getCachedPreKeyRecord(id);
+    if (bytes == null) {
+      recordp.ref.raw = nullptr;
+      return 0;
+    }
+
+    try {
+      _ensureNativeHelpersBound(context.ffiBindings);
+      final borrowed = malloc<SignalBorrowedBuffer>();
+      final data = malloc<Uint8>(bytes.length);
+      try {
+        data.asTypedList(bytes.length).setAll(0, bytes);
+        borrowed.ref.base = data;
+        borrowed.ref.length = bytes.length;
+        final err = _preKeyRecordDeserialize(recordp, borrowed.ref);
+        context.ffiBindings.checkError(err);
+        return 0;
+      } finally {
+        malloc.free(data);
+        malloc.free(borrowed);
+      }
+    } catch (e, st) {
+      developer.log('load_pre_key failed: $e', name: _logName, error: e, stackTrace: st);
+      recordp.ref.raw = nullptr;
+      return 1;
+    }
+  }
+
+  static int _storePreKeyCallbackImpl(
+    Pointer<Void> storeCtx,
+    Pointer<Void> arg1, // record (const)
+    Pointer<Void> arg2, // id (u32*)
+    Pointer<Void> arg3,
+    int direction,
+  ) {
+    final context = _contextMap[storeCtx.address];
+    if (context == null) return 1;
+    final record = arg1.cast<_SignalConstPointerPreKeyRecord>();
+    final id = arg2.cast<Uint32>().value;
+
+    try {
+      _ensureNativeHelpersBound(context.ffiBindings);
+      final out = malloc<SignalOwnedBuffer>();
+      final err = _preKeyRecordSerialize(out, record.ref);
+      context.ffiBindings.checkError(err);
+      final bytes = _serializeOwnedBufferToBytesAndFree(context.ffiBindings, out);
+      unawaited(context.keyManager.storePreKeyRecord(id: id, serialized: bytes));
+      return 0;
+    } catch (e, st) {
+      developer.log('store_pre_key failed: $e', name: _logName, error: e, stackTrace: st);
+      return 1;
+    }
+  }
+
+  static int _removePreKeyCallbackImpl(
+    Pointer<Void> storeCtx,
+    Pointer<Void> arg1, // id (u32*)
+    Pointer<Void> arg2,
+    Pointer<Void> arg3,
+    int direction,
+  ) {
+    final context = _contextMap[storeCtx.address];
+    if (context == null) return 1;
+    final id = arg1.cast<Uint32>().value;
+    unawaited(context.keyManager.removePreKeyRecord(id));
+    return 0;
+  }
+
+  static int _loadSignedPreKeyCallbackImpl(
+    Pointer<Void> storeCtx,
+    Pointer<Void> arg1, // recordp
+    Pointer<Void> arg2, // id (u32*)
+    Pointer<Void> arg3,
+    int direction,
+  ) {
+    final context = _contextMap[storeCtx.address];
+    if (context == null) return 1;
+    final recordp = arg1.cast<_SignalMutPointerSignedPreKeyRecord>();
+    final id = arg2.cast<Uint32>().value;
+    final bytes = context.keyManager.getCachedSignedPreKeyRecord(id);
+    if (bytes == null) {
+      recordp.ref.raw = nullptr;
+      return 0;
+    }
+
+    try {
+      _ensureNativeHelpersBound(context.ffiBindings);
+      final borrowed = malloc<SignalBorrowedBuffer>();
+      final data = malloc<Uint8>(bytes.length);
+      try {
+        data.asTypedList(bytes.length).setAll(0, bytes);
+        borrowed.ref.base = data;
+        borrowed.ref.length = bytes.length;
+        final err = _signedPreKeyRecordDeserialize(recordp, borrowed.ref);
+        context.ffiBindings.checkError(err);
+        return 0;
+      } finally {
+        malloc.free(data);
+        malloc.free(borrowed);
+      }
+    } catch (e, st) {
+      developer.log('load_signed_pre_key failed: $e', name: _logName, error: e, stackTrace: st);
+      recordp.ref.raw = nullptr;
+      return 1;
+    }
+  }
+
+  static int _storeSignedPreKeyCallbackImpl(
+    Pointer<Void> storeCtx,
+    Pointer<Void> arg1, // record (const)
+    Pointer<Void> arg2, // id (u32*)
+    Pointer<Void> arg3,
+    int direction,
+  ) {
+    final context = _contextMap[storeCtx.address];
+    if (context == null) return 1;
+    final record = arg1.cast<_SignalConstPointerSignedPreKeyRecord>();
+    final id = arg2.cast<Uint32>().value;
+
+    try {
+      _ensureNativeHelpersBound(context.ffiBindings);
+      final out = malloc<SignalOwnedBuffer>();
+      final err = _signedPreKeyRecordSerialize(out, record.ref);
+      context.ffiBindings.checkError(err);
+      final bytes = _serializeOwnedBufferToBytesAndFree(context.ffiBindings, out);
+      unawaited(context.keyManager.storeSignedPreKeyRecord(id: id, serialized: bytes));
+      unawaited(context.keyManager.setCurrentSignedPreKeyId(id));
+      return 0;
+    } catch (e, st) {
+      developer.log('store_signed_pre_key failed: $e', name: _logName, error: e, stackTrace: st);
+      return 1;
+    }
+  }
+
+  static int _loadKyberPreKeyCallbackImpl(
+    Pointer<Void> storeCtx,
+    Pointer<Void> arg1, // recordp
+    Pointer<Void> arg2, // id (u32*)
+    Pointer<Void> arg3,
+    int direction,
+  ) {
+    final context = _contextMap[storeCtx.address];
+    if (context == null) return 1;
+    final recordp = arg1.cast<_SignalMutPointerKyberPreKeyRecord>();
+    final id = arg2.cast<Uint32>().value;
+    final bytes = context.keyManager.getCachedKyberPreKeyRecord(id);
+    if (bytes == null) {
+      recordp.ref.raw = nullptr;
+      return 0;
+    }
+
+    try {
+      _ensureNativeHelpersBound(context.ffiBindings);
+      final borrowed = malloc<SignalBorrowedBuffer>();
+      final data = malloc<Uint8>(bytes.length);
+      try {
+        data.asTypedList(bytes.length).setAll(0, bytes);
+        borrowed.ref.base = data;
+        borrowed.ref.length = bytes.length;
+        final err = _kyberPreKeyRecordDeserialize(recordp, borrowed.ref);
+        context.ffiBindings.checkError(err);
+        return 0;
+      } finally {
+        malloc.free(data);
+        malloc.free(borrowed);
+      }
+    } catch (e, st) {
+      developer.log('load_kyber_pre_key failed: $e', name: _logName, error: e, stackTrace: st);
+      recordp.ref.raw = nullptr;
+      return 1;
+    }
+  }
+
+  static int _storeKyberPreKeyCallbackImpl(
+    Pointer<Void> storeCtx,
+    Pointer<Void> arg1, // record (const)
+    Pointer<Void> arg2, // id (u32*)
+    Pointer<Void> arg3,
+    int direction,
+  ) {
+    final context = _contextMap[storeCtx.address];
+    if (context == null) return 1;
+    final record = arg1.cast<_SignalConstPointerKyberPreKeyRecord>();
+    final id = arg2.cast<Uint32>().value;
+
+    try {
+      _ensureNativeHelpersBound(context.ffiBindings);
+      final out = malloc<SignalOwnedBuffer>();
+      final err = _kyberPreKeyRecordSerialize(out, record.ref);
+      context.ffiBindings.checkError(err);
+      final bytes = _serializeOwnedBufferToBytesAndFree(context.ffiBindings, out);
+      unawaited(context.keyManager.storeKyberPreKeyRecord(id: id, serialized: bytes));
+      unawaited(context.keyManager.setCurrentKyberPreKeyId(id));
+      return 0;
+    } catch (e, st) {
+      developer.log('store_kyber_pre_key failed: $e', name: _logName, error: e, stackTrace: st);
+      return 1;
+    }
+  }
+
+  static int _markKyberPreKeyUsedCallbackImpl(
+    Pointer<Void> storeCtx,
+    Pointer<Void> arg1, // base_key (const public key)
+    Pointer<Void> arg2, // id (u32*)
+    Pointer<Void> arg3, // signed_prekey_id (u32*)
+    int direction,
+  ) {
+    final context = _contextMap[storeCtx.address];
+    if (context == null) return 1;
+    final id = arg2.cast<Uint32>().value;
+    // Best-effort: nothing to do yet; future: track used kyber prekeys.
+    developer.log('Kyber prekey marked used: $id', name: _logName);
+    return 0;
+  }
+
   /// Create session store struct for FFI
   /// 
   /// Returns a pointer to SignalSessionStore struct
@@ -439,6 +1064,60 @@ class SignalFFIStoreCallbacks {
     
     return store;
   }
+
+  /// Create prekey store struct for FFI (one-time prekeys).
+  Pointer<_SignalPreKeyStore> createPreKeyStore() {
+    if (!_rustWrapper.isInitialized) {
+      throw SignalProtocolException(
+        'Rust wrapper not initialized. Call SignalRustWrapperBindings.initialize() first.',
+      );
+    }
+
+    final store = malloc.allocate<_SignalPreKeyStore>(sizeOf<_SignalPreKeyStore>());
+    store.ref.ctx = _contextPtr.cast();
+    store.ref.load_pre_key = _rustWrapper.getLoadPreKeyWrapperPtr().cast();
+    store.ref.store_pre_key = _rustWrapper.getStorePreKeyWrapperPtr().cast();
+    store.ref.remove_pre_key = _rustWrapper.getRemovePreKeyWrapperPtr().cast();
+    return store;
+  }
+
+  /// Create signed prekey store struct for FFI.
+  Pointer<_SignalSignedPreKeyStore> createSignedPreKeyStore() {
+    if (!_rustWrapper.isInitialized) {
+      throw SignalProtocolException(
+        'Rust wrapper not initialized. Call SignalRustWrapperBindings.initialize() first.',
+      );
+    }
+
+    final store = malloc
+        .allocate<_SignalSignedPreKeyStore>(sizeOf<_SignalSignedPreKeyStore>());
+    store.ref.ctx = _contextPtr.cast();
+    store.ref.load_signed_pre_key =
+        _rustWrapper.getLoadSignedPreKeyWrapperPtr().cast();
+    store.ref.store_signed_pre_key =
+        _rustWrapper.getStoreSignedPreKeyWrapperPtr().cast();
+    return store;
+  }
+
+  /// Create Kyber prekey store struct for FFI.
+  Pointer<_SignalKyberPreKeyStore> createKyberPreKeyStore() {
+    if (!_rustWrapper.isInitialized) {
+      throw SignalProtocolException(
+        'Rust wrapper not initialized. Call SignalRustWrapperBindings.initialize() first.',
+      );
+    }
+
+    final store = malloc
+        .allocate<_SignalKyberPreKeyStore>(sizeOf<_SignalKyberPreKeyStore>());
+    store.ref.ctx = _contextPtr.cast();
+    store.ref.load_kyber_pre_key =
+        _rustWrapper.getLoadKyberPreKeyWrapperPtr().cast();
+    store.ref.store_kyber_pre_key =
+        _rustWrapper.getStoreKyberPreKeyWrapperPtr().cast();
+    store.ref.mark_kyber_pre_key_used =
+        _rustWrapper.getMarkKyberPreKeyUsedWrapperPtr().cast();
+    return store;
+  }
   
   /// Dispose resources
   /// 
@@ -446,21 +1125,6 @@ class SignalFFIStoreCallbacks {
   /// This method should never throw or crash, even if disposal fails.
   void dispose() {
     _unregisterContext();
-    
-    // Safely close NativeCallable to release resources (if initialized)
-    try {
-      // ignore: sdk_version_since - NativeCallable.close() is available in SDK 3.1.0+
-      _dispatchNativeCallable?.close();
-    } catch (e) {
-      // Log but don't throw - disposal should never crash
-      // Library may be broken, but we still need to clean up what we can
-      developer.log(
-        'Error closing NativeCallable during dispose: $e',
-        name: _logName,
-        error: e,
-      );
-    }
-    _dispatchNativeCallable = null;
     
     // Safely free allocated memory
     try {
@@ -488,18 +1152,17 @@ class SignalFFIStoreCallbacks {
   
   /// Register store context for callbacks
   void _registerContext() {
-    // Get the address from the IntPtr
-    final contextIdPtr = _contextPtr.cast<IntPtr>();
-    _contextMap[contextIdPtr.value] = _SignalStoreContext(
+    // Key by the actual pointer address used as store_ctx.
+    _contextMap[_contextPtr.address] = _SignalStoreContext(
       keyManager: _keyManager,
       sessionManager: _sessionManager,
+      ffiBindings: _ffiBindings,
     );
   }
   
   /// Unregister store context
   void _unregisterContext() {
-    final contextIdPtr = _contextPtr.cast<IntPtr>();
-    _contextMap.remove(contextIdPtr.value);
+    _contextMap.remove(_contextPtr.address);
   }
   
   /// Get session after X3DH key exchange
@@ -554,6 +1217,36 @@ final class _SignalConstPointerSessionRecord extends Struct {
 /// C struct: SignalConstPointerProtocolAddress
 /// (Duplicate definition - must match signal_ffi_bindings.dart)
 final class _SignalConstPointerProtocolAddress extends Struct {
+  external Pointer<Opaque> raw;
+}
+
+/// C struct: SignalMutPointerPreKeyRecord
+final class _SignalMutPointerPreKeyRecord extends Struct {
+  external Pointer<Opaque> raw;
+}
+
+/// C struct: SignalConstPointerPreKeyRecord
+final class _SignalConstPointerPreKeyRecord extends Struct {
+  external Pointer<Opaque> raw;
+}
+
+/// C struct: SignalMutPointerSignedPreKeyRecord
+final class _SignalMutPointerSignedPreKeyRecord extends Struct {
+  external Pointer<Opaque> raw;
+}
+
+/// C struct: SignalConstPointerSignedPreKeyRecord
+final class _SignalConstPointerSignedPreKeyRecord extends Struct {
+  external Pointer<Opaque> raw;
+}
+
+/// C struct: SignalMutPointerKyberPreKeyRecord
+final class _SignalMutPointerKyberPreKeyRecord extends Struct {
+  external Pointer<Opaque> raw;
+}
+
+/// C struct: SignalConstPointerKyberPreKeyRecord
+final class _SignalConstPointerKyberPreKeyRecord extends Struct {
   external Pointer<Opaque> raw;
 }
 
@@ -621,4 +1314,31 @@ final class _SignalIdentityKeyStore extends Struct {
   external Pointer<NativeFunction<_NativeSaveIdentityKeyCallback>> save_identity;
   external Pointer<NativeFunction<_NativeGetIdentityKeyCallback>> get_identity;
   external Pointer<NativeFunction<_NativeIsTrustedIdentityCallback>> is_trusted_identity;
+}
+
+/// C struct: SignalPreKeyStore
+///
+/// These store structs are wired through the Rust wrapper + callback dispatch bridge.
+/// We keep the function pointers as `void*` here to avoid duplicating (and drifting)
+/// callback signatures in Dart; the wrapper guarantees the ABI matches libsignal-ffi.
+final class _SignalPreKeyStore extends Struct {
+  external Pointer<Void> ctx;
+  external Pointer<Void> load_pre_key;
+  external Pointer<Void> store_pre_key;
+  external Pointer<Void> remove_pre_key;
+}
+
+/// C struct: SignalSignedPreKeyStore
+final class _SignalSignedPreKeyStore extends Struct {
+  external Pointer<Void> ctx;
+  external Pointer<Void> load_signed_pre_key;
+  external Pointer<Void> store_signed_pre_key;
+}
+
+/// C struct: SignalKyberPreKeyStore
+final class _SignalKyberPreKeyStore extends Struct {
+  external Pointer<Void> ctx;
+  external Pointer<Void> load_kyber_pre_key;
+  external Pointer<Void> store_kyber_pre_key;
+  external Pointer<Void> mark_kyber_pre_key_used;
 }

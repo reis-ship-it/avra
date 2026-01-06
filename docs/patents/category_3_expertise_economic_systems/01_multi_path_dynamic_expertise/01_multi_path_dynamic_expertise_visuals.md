@@ -5,9 +5,84 @@
 
 ---
 
-## Visual Diagrams and Formulas
 
-### 1. Multi-Path Expertise Calculation
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Multi-Path Expertise Calculation.
+- **FIG. 6**: Dynamic Threshold Scaling.
+- **FIG. 7**: Category Saturation Algorithm (6-Factor).
+- **FIG. 8**: Geographic Hierarchy.
+- **FIG. 9**: Expertise Boost Feedback Loop.
+- **FIG. 10**: Complete Expertise Calculation Flow.
+- **FIG. 11**: Platform Phase Scaling.
+- **FIG. 12**: Economic Enablement Flow.
+- **FIG. 13**: Automatic Check-In Integration.
+- **FIG. 14**: Complete System Architecture.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Multi-Path Dynamic Expertise System with Economic Enablement implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Multi-Path Expertise Calculation.
+- Dynamic Threshold Scaling.
+- Category Saturation Algorithm (6-Factor).
+- Geographic Hierarchy.
+- Expertise Boost Feedback Loop.
+- Complete Expertise Calculation Flow.
+- Platform Phase Scaling.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Multi-Path Dynamic Expertise System with Economic Enablement implementation.
+
+1. Calculating expertise across six paths: Exploration (40%), Credentials (25%), Influence (20%), Professional (25%), Community (15%), Local (varies).
+2. Combining path scores using weighted formula: `score = (exploration × 0.40) + (credentials × 0.25) + (influence × 0.20) + (professional × 0.25) + (community × 0.15) + (local × weight)`.
+3. Dynamically scaling thresholds based on platform phase, category saturation, and geographic hierarchy.
+4. Enforcing geographic hierarchy (Local → City → Regional → National → Global) for expertise scope.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Multi-Path Dynamic Expertise System with Economic Enablement implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- RevenueEvent: {eventId, grossAmount, currency, occurredAt}
+- RecipientShare: {recipientId, shareType, shareValue}
+- DistributionLock: {lockedAt, constraints, version}
+- Allocation: {recipientId, amount, roundingAdjustment}
+- DistributionRecord: {allocations[ ], status, auditTrail}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Multi-Path Dynamic Expertise System with Economic Enablement implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Payment processor / transfer rail
+- Ledger / audit store
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device receives a revenue event and retrieves a locked split configuration.
+2. Client device validates the split configuration and computes recipient allocations.
+3. Client device requests transfers via a payment processor and/or schedules transfers for a settlement time.
+4. Ledger/audit store records allocation amounts, recipients, and execution status.
+5. Client device returns confirmation and prevents modification of the locked split record.
+
+### FIG. 5 — Multi-Path Expertise Calculation
+
 
 ```
 Six Expertise Paths:
@@ -48,7 +123,8 @@ Weighted Combination:
 
 ---
 
-### 2. Dynamic Threshold Scaling
+### FIG. 6 — Dynamic Threshold Scaling
+
 
 ```
 Base Threshold: 50 points
@@ -81,7 +157,8 @@ Final Threshold:
 
 ---
 
-### 3. Category Saturation Algorithm (6-Factor)
+### FIG. 7 — Category Saturation Algorithm (6-Factor)
+
 
 ```
 Category: "Coffee"
@@ -120,7 +197,8 @@ Saturation Score:
 
 ---
 
-### 4. Geographic Hierarchy
+### FIG. 8 — Geographic Hierarchy
+
 
 ```
 Geographic Hierarchy:
@@ -158,7 +236,8 @@ Enforcement:
 
 ---
 
-### 5. Expertise Boost Feedback Loop
+### FIG. 9 — Expertise Boost Feedback Loop
+
 
 ```
 Partnership Success
@@ -185,7 +264,8 @@ Result:
 
 ---
 
-### 6. Complete Expertise Calculation Flow
+### FIG. 10 — Complete Expertise Calculation Flow
+
 
 ```
 START
@@ -232,7 +312,8 @@ START
 
 ---
 
-### 7. Platform Phase Scaling
+### FIG. 11 — Platform Phase Scaling
+
 
 ```
 Platform Phase: Bootstrap
@@ -262,7 +343,8 @@ Platform Phase: Mature
 
 ---
 
-### 8. Economic Enablement Flow
+### FIG. 12 — Economic Enablement Flow
+
 
 ```
 Expertise Calculation
@@ -293,7 +375,8 @@ Expertise Calculation
 
 ---
 
-### 9. Automatic Check-In Integration
+### FIG. 13 — Automatic Check-In Integration
+
 
 ```
 User Visits Location
@@ -317,7 +400,8 @@ User Visits Location
 
 ---
 
-### 10. Complete System Architecture
+### FIG. 14 — Complete System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -431,4 +515,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

@@ -19,8 +19,7 @@ void main() {
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const FederatedLearningPage(),
       );
-      await tester.pumpWidget(widget1);
-      await tester.pump();
+      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(AppBar), findsOneWidget);
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
       expect((appBar.title as Text).data, equals('Federated Learning'));

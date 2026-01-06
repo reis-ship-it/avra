@@ -399,7 +399,9 @@ void main() {
       blocTest<SpotsBloc, SpotsState>(
         'triggers LoadSpots after successful spot deletion',
         build: () {
-          when(() => mockDeleteSpotUseCase(any())).thenAnswer((_) async {});
+          when(() => mockDeleteSpotUseCase(any())).thenAnswer((_) async {
+            return null;
+          });
           when(() => mockGetSpotsUseCase()).thenAnswer((_) async => existingSpots);
           return spotsBloc;
         },

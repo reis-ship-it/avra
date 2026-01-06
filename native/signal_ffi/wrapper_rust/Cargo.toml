@@ -4,7 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib"]  # Dynamic library for FFI
+# We build:
+# - cdylib: Android (.so) + desktop (.dylib/.so) for Dart FFI
+# - staticlib: iOS static linking via XCFramework
+crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 # FFI support

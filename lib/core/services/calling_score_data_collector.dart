@@ -82,6 +82,18 @@ class CallingScoreDataCollector {
       }
       
       // Extract context features
+      double matchDim(double? a, double? b) {
+        if (a == null || b == null) return 0.5;
+        return (1.0 - (a - b).abs()).clamp(0.0, 1.0);
+      }
+
+      double avgOrNeutral(List<double?> values) {
+        final present = values.whereType<double>().toList();
+        if (present.isEmpty) return 0.5;
+        final sum = present.fold<double>(0.0, (s, v) => s + v);
+        return (sum / present.length).clamp(0.0, 1.0);
+      }
+
       final contextFeatures = <String, dynamic>{
         'location_proximity': context.locationProximity,
         'journey_alignment': context.journeyAlignment,
@@ -89,6 +101,20 @@ class CallingScoreDataCollector {
         'opportunity_availability': context.opportunityAvailability,
         'network_effects': context.networkEffects,
         'community_patterns': context.communityPatterns,
+        // Former placeholders (now logged so the model can be retrained truthfully)
+        'vibe_compatibility': result.breakdown.vibeCompatibility,
+        'energy_match': matchDim(
+          userVibe.anonymizedDimensions['overall_energy'],
+          spotVibe.vibeDimensions['overall_energy'],
+        ),
+        'community_match': matchDim(
+          userVibe.anonymizedDimensions['community_orientation'],
+          spotVibe.vibeDimensions['community_orientation'],
+        ),
+        'novelty_match': matchDim(
+          userVibe.anonymizedDimensions['novelty_seeking'],
+          spotVibe.vibeDimensions['novelty_seeking'],
+        ),
       };
       
       // Extract timing features
@@ -97,6 +123,13 @@ class CallingScoreDataCollector {
         'optimal_day_of_week': timing.optimalDayOfWeek,
         'user_patterns': timing.userPatterns,
         'opportunity_timing': timing.opportunityTiming,
+        // Former placeholder (now logged)
+        'timing_alignment': avgOrNeutral([
+          timing.optimalTimeOfDay,
+          timing.optimalDayOfWeek,
+          timing.userPatterns,
+          timing.opportunityTiming,
+        ]),
       };
       
       // Extract formula breakdown

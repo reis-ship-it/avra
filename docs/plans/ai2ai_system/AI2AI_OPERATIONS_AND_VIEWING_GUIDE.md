@@ -11,31 +11,31 @@
 ### **Core Documentation Locations:**
 
 1. **Architecture & Vision:**
-   - `VIBE_CODING/ARCHITECTURE/vision_overview.md` - Core vision and concept
-   - `VIBE_CODING/ARCHITECTURE/network_flow.md` - Complete flow diagrams
-   - `VIBE_CODING/ARCHITECTURE/architecture_layers.md` - Physical + AI layers
-   - `VIBE_CODING/ARCHITECTURE/personality_spectrum.md` - Spectrum vs binary matching
+   - `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/vision_overview.md` - Core vision and concept
+   - `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/network_flow.md` - Complete flow diagrams
+   - `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/architecture_layers.md` - Physical + AI layers
+   - `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/personality_spectrum.md` - Spectrum vs binary matching
 
 2. **Implementation:**
-   - `VIBE_CODING/IMPLEMENTATION/connection_orchestrator.md` - Connection management
-   - `VIBE_CODING/IMPLEMENTATION/vibe_analysis_engine.md` - Vibe compilation
-   - `VIBE_CODING/IMPLEMENTATION/privacy_protection.md` - Privacy mechanisms
-   - `VIBE_CODING/IMPLEMENTATION/pleasure_mechanism.md` - AI emotional intelligence
+   - `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/connection_orchestrator.md` - Connection management
+   - `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/vibe_analysis_engine.md` - Vibe compilation
+   - `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/privacy_protection.md` - Privacy mechanisms
+   - `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/pleasure_mechanism.md` - AI emotional intelligence
 
 3. **Learning Systems:**
-   - `VIBE_CODING/LEARNING/ai2ai_chat_learning.md` - Conversation analysis
-   - `VIBE_CODING/LEARNING/user_feedback_learning.md` - Feedback analysis
-   - `VIBE_CODING/LEARNING/cloud_interface_learning.md` - Cloud learning
-   - `VIBE_CODING/LEARNING/dynamic_dimensions.md` - Self-evolving dimensions
+   - `docs/_archive/vibe_coding/VIBE_CODING/LEARNING/ai2ai_chat_learning.md` - Conversation analysis
+   - `docs/_archive/vibe_coding/VIBE_CODING/LEARNING/user_feedback_learning.md` - Feedback analysis
+   - `docs/_archive/vibe_coding/VIBE_CODING/LEARNING/cloud_interface_learning.md` - Cloud learning
+   - `docs/_archive/vibe_coding/VIBE_CODING/LEARNING/dynamic_dimensions.md` - Self-evolving dimensions
 
 4. **Monitoring & Analytics:**
-   - `VIBE_CODING/MONITORING/network_analytics.md` - Network health tracking
-   - `VIBE_CODING/MONITORING/connection_monitoring.md` - Connection tracking
-   - `VIBE_CODING/MONITORING/learning_effectiveness.md` - Learning metrics
+   - `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/network_analytics.md` - Network health tracking
+   - `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/connection_monitoring.md` - Connection tracking
+   - `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/learning_effectiveness.md` - Learning metrics
 
 5. **Deployment & Status:**
-   - `VIBE_CODING/DEPLOYMENT/ai_implementation_readiness_assessment.md` - Readiness check
-   - `VIBE_CODING/DEPLOYMENT/architecture_completion_report.md` - Implementation status
+   - `docs/_archive/vibe_coding/VIBE_CODING/DEPLOYMENT/ai_implementation_readiness_assessment.md` - Readiness check
+   - `docs/_archive/vibe_coding/VIBE_CODING/DEPLOYMENT/architecture_completion_report.md` - Implementation status
 
 ---
 
@@ -75,7 +75,7 @@ Device A → Personality AI (decides connection) → WiFi/Bluetooth → Device B
 - `lib/core/ai2ai/connection_orchestrator.dart` - `discoverNearbyAIPersonalities()`
 
 **Documentation:**
-- `VIBE_CODING/ARCHITECTURE/network_flow.md` - Section "Device Discovery Flow"
+- `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/network_flow.md` - Section "Device Discovery Flow"
 
 ---
 
@@ -103,8 +103,8 @@ Device A → Personality AI (decides connection) → WiFi/Bluetooth → Device B
 - `lib/core/ai2ai/connection_orchestrator.dart` - `establishAI2AIConnection()`
 
 **Documentation:**
-- `VIBE_CODING/ARCHITECTURE/network_flow.md` - Section "Connection Establishment Flow"
-- `VIBE_CODING/IMPLEMENTATION/connection_orchestrator.md` - Section "Connection Establishment"
+- `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/network_flow.md` - Section "Connection Establishment Flow"
+- `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/connection_orchestrator.md` - Section "Connection Establishment"
 
 ---
 
@@ -126,8 +126,8 @@ Device A → Personality AI (decides connection) → WiFi/Bluetooth → Device B
 - `lib/core/ai/ai2ai_learning.dart` - `analyzeChatConversation()`
 
 **Documentation:**
-- `VIBE_CODING/ARCHITECTURE/network_flow.md` - Section "Learning Interaction Flow"
-- `VIBE_CODING/LEARNING/ai2ai_chat_learning.md` - Complete learning documentation
+- `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/network_flow.md` - Section "Learning Interaction Flow"
+- `docs/_archive/vibe_coding/VIBE_CODING/LEARNING/ai2ai_chat_learning.md` - Complete learning documentation
 
 ---
 
@@ -153,9 +153,9 @@ Device A → Personality AI (decides connection) → WiFi/Bluetooth → Device B
 - `lib/core/monitoring/network_analytics.dart` - Analytics methods
 
 **Documentation:**
-- `VIBE_CODING/ARCHITECTURE/network_flow.md` - Section "Connection Monitoring Flow"
-- `VIBE_CODING/MONITORING/connection_monitoring.md` - Complete monitoring docs
-- `VIBE_CODING/MONITORING/network_analytics.md` - Complete analytics docs
+- `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/network_flow.md` - Section "Connection Monitoring Flow"
+- `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/connection_monitoring.md` - Complete monitoring docs
+- `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/network_analytics.md` - Complete analytics docs
 
 ---
 
@@ -169,7 +169,7 @@ Device A → Personality AI (decides connection) → WiFi/Bluetooth → Device B
   - `discoverNearbyAIPersonalities()` - Find nearby AIs
   - `establishAI2AIConnection()` - Create connections
   - `manageActiveConnections()` - Monitor and optimize
-- **Documentation:** `VIBE_CODING/IMPLEMENTATION/connection_orchestrator.md`
+- **Documentation:** `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/connection_orchestrator.md`
 
 #### **AI2AIChatAnalyzer**
 - **Purpose:** Analyzes conversations between AI personalities
@@ -178,7 +178,7 @@ Device A → Personality AI (decides connection) → WiFi/Bluetooth → Device B
   - `analyzeChatConversation()` - Analyze conversation for learning
   - `extractSharedInsights()` - Find mutual learning opportunities
   - `generateEvolutionRecommendations()` - Suggest improvements
-- **Documentation:** `VIBE_CODING/LEARNING/ai2ai_chat_learning.md`
+- **Documentation:** `docs/_archive/vibe_coding/VIBE_CODING/LEARNING/ai2ai_chat_learning.md`
 
 #### **NetworkAnalytics**
 - **Purpose:** Comprehensive network monitoring and analysis
@@ -187,7 +187,7 @@ Device A → Personality AI (decides connection) → WiFi/Bluetooth → Device B
   - `analyzeNetworkHealth()` - Overall health assessment
   - `collectRealTimeMetrics()` - Live performance monitoring
   - `generateAnalyticsDashboard()` - Comprehensive dashboard data
-- **Documentation:** `VIBE_CODING/MONITORING/network_analytics.md`
+- **Documentation:** `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/network_analytics.md`
 
 #### **ConnectionMonitor**
 - **Purpose:** Real-time tracking of individual connections
@@ -196,7 +196,7 @@ Device A → Personality AI (decides connection) → WiFi/Bluetooth → Device B
   - `startMonitoring()` - Begin tracking connection
   - `updateConnectionMetrics()` - Update connection data
   - `getActiveConnectionsOverview()` - Get connection summaries
-- **Documentation:** `VIBE_CODING/MONITORING/connection_monitoring.md`
+- **Documentation:** `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/connection_monitoring.md`
 
 ---
 
@@ -243,7 +243,7 @@ healthScore = (
 - **Fair (0.4-0.6)** - Network functional, improvements needed
 - **Poor (<0.4)** - Network degraded, significant issues
 
-**Documentation:** `VIBE_CODING/MONITORING/network_analytics.md` - Section "Network Health Analysis"
+**Documentation:** `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/network_analytics.md` - Section "Network Health Analysis"
 
 ---
 
@@ -264,7 +264,7 @@ final metrics = await networkAnalytics.collectRealTimeMetrics();
 
 **Collection Frequency:** Every few seconds, stored historically
 
-**Documentation:** `VIBE_CODING/MONITORING/network_analytics.md` - Section "Real-Time Metrics"
+**Documentation:** `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/network_analytics.md` - Section "Real-Time Metrics"
 
 ---
 
@@ -293,7 +293,7 @@ final dashboard = await networkAnalytics.generateAnalyticsDashboard(
 - 30 Days - Monthly patterns
 - 90 Days - Quarterly analysis
 
-**Documentation:** `VIBE_CODING/MONITORING/network_analytics.md` - Section "Analytics Dashboard"
+**Documentation:** `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/network_analytics.md` - Section "Analytics Dashboard"
 
 ---
 
@@ -318,7 +318,7 @@ final overview = await connectionMonitor.getActiveConnectionsOverview();
   - Connection duration
   - Quality rating
 
-**Documentation:** `VIBE_CODING/MONITORING/connection_monitoring.md` - Complete monitoring docs
+**Documentation:** `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/connection_monitoring.md` - Complete monitoring docs
 
 ---
 
@@ -342,7 +342,7 @@ final anomalies = await networkAnalytics.detectNetworkAnomalies();
 - Medium - Moderate issue, monitor closely
 - Low - Minor issue, track for trends
 
-**Documentation:** `VIBE_CODING/MONITORING/network_analytics.md` - Section "Anomaly Detection"
+**Documentation:** `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/network_analytics.md` - Section "Anomaly Detection"
 
 ---
 
@@ -606,10 +606,10 @@ final logger = AppLogger(
 - **Realtime:** `lib/core/services/ai2ai_realtime_service.dart`
 
 ### **Key Documentation:**
-- **Architecture:** `VIBE_CODING/ARCHITECTURE/`
-- **Implementation:** `VIBE_CODING/IMPLEMENTATION/`
-- **Monitoring:** `VIBE_CODING/MONITORING/`
-- **Learning:** `VIBE_CODING/LEARNING/`
+- **Architecture:** `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/`
+- **Implementation:** `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/`
+- **Monitoring:** `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/`
+- **Learning:** `docs/_archive/vibe_coding/VIBE_CODING/LEARNING/`
 
 ### **Quick Start:**
 1. Initialize orchestrator: `await orchestrator.initializeOrchestration(userId, personality)`
@@ -621,7 +621,7 @@ final logger = AppLogger(
 
 ## 🎯 **NEXT STEPS**
 
-1. **Review Documentation:** Read through `VIBE_CODING/` folder for complete understanding
+1. **Review Documentation:** Read through `docs/_archive/vibe_coding/VIBE_CODING/` folder for complete understanding
 2. **Explore Code:** Review implementation files listed above
 3. **Build UI:** Follow `docs/AI2AI_360_IMPLEMENTATION_PLAN.md` Phase 3 for UI components
 4. **Test Monitoring:** Use code examples above to access monitoring data
@@ -632,7 +632,7 @@ final logger = AppLogger(
 **Related Documents:**
 - `docs/AI2AI_360_IMPLEMENTATION_PLAN.md` - Complete implementation plan
 - `docs/AI2AI_360_PLAN_SUMMARY.md` - Quick reference summary
-- `VIBE_CODING/README.md` - Documentation index
+- `docs/_archive/vibe_coding/VIBE_CODING/README.md` - Documentation index
 
 ---
 

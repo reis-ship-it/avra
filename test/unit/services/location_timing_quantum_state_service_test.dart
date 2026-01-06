@@ -6,8 +6,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
 import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots/core/models/unified_models.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/models/unified_location_data.dart';
 
 void main() {
   group('LocationTimingQuantumStateService', () {
@@ -17,8 +16,8 @@ void main() {
       service = LocationTimingQuantumStateService();
     });
 
-    test('should create location quantum state from UnifiedLocation', () async {
-      const location = UnifiedLocation(
+    test('should create location quantum state from UnifiedLocationData', () async {
+      const location = UnifiedLocationData(
         latitude: 40.7128,
         longitude: -74.0060,
         city: 'New York',
@@ -41,7 +40,7 @@ void main() {
     });
 
     test('should infer urban location type from city/address', () async {
-      const location = UnifiedLocation(
+      const location = UnifiedLocationData(
         latitude: 40.7128,
         longitude: -74.0060,
         city: 'New York',
@@ -171,12 +170,12 @@ void main() {
     });
 
     test('should calculate distance-based compatibility', () {
-      const locationA = UnifiedLocation(
+      const locationA = UnifiedLocationData(
         latitude: 40.7128,
         longitude: -74.0060,
       );
 
-      const locationB = UnifiedLocation(
+      const locationB = UnifiedLocationData(
         latitude: 40.7580,
         longitude: -73.9855,
       );

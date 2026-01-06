@@ -17,8 +17,9 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
 import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/network/device_discovery.dart';
+import 'package:spots_network/network/device_discovery.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:get_it/get_it.dart';
 
@@ -55,19 +56,32 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
     try {
       _orchestrator = GetIt.instance<VibeConnectionOrchestrator>();
     } catch (e) {
-      debugPrint('Connection orchestrator not available: $e');
+      developer.log(
+        'Connection orchestrator not available',
+        name: 'DiscoveredDevicesWidget',
+        error: e,
+      );
     }
   }
   
   Future<void> _connectToDevice(DiscoveredDevice device) async {
-    if (_orchestrator == null) {
-      _showSnackBar('Connection service unavailable');
-      return;
-    }
-    
     setState(() {
       _connectingDevices[device.deviceId] = true;
     });
+
+    // Even if orchestrator isn't available (eg. some widget-test contexts),
+    // show immediate feedback and then clear the state.
+    if (_orchestrator == null) {
+      _showSnackBar('Connection service unavailable');
+      // Keep "Connecting..." visible for at least a beat.
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+      if (mounted) {
+        setState(() {
+          _connectingDevices[device.deviceId] = false;
+        });
+      }
+      return;
+    }
     
     try {
       // Connection logic will be handled by orchestrator

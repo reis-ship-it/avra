@@ -41,6 +41,31 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant ExpertSearchWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Keep controllers in sync when parent changes initial values and the
+    // widget state is reused across rebuilds (common in widget tests and lists).
+    if (widget.initialCategory != oldWidget.initialCategory) {
+      final next = widget.initialCategory ?? '';
+      if (_categoryController.text != next) {
+        _categoryController.value = TextEditingValue(
+          text: next,
+          selection: TextSelection.collapsed(offset: next.length),
+        );
+      }
+    }
+    if (widget.initialLocation != oldWidget.initialLocation) {
+      final next = widget.initialLocation ?? '';
+      if (_locationController.text != next) {
+        _locationController.value = TextEditingValue(
+          text: next,
+          selection: TextSelection.collapsed(offset: next.length),
+        );
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _categoryController.dispose();
     _locationController.dispose();

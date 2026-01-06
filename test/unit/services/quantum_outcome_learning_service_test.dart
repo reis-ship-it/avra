@@ -4,12 +4,12 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/quantum/quantum_outcome_learning_service.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/services/event_success_analysis_service.dart';
 import 'package:spots/core/services/quantum/meaningful_connection_metrics_service.dart';
 import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
 import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/event_success_metrics.dart';
 import 'package:spots/core/models/event_success_level.dart';

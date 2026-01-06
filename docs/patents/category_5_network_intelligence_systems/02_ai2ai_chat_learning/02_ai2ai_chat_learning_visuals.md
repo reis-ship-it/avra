@@ -4,7 +4,80 @@
 
 ---
 
-## 1. System Architecture
+
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: System Architecture.
+- **FIG. 6**: Conversation Analysis Flow.
+- **FIG. 7**: Conversation Pattern Analysis.
+- **FIG. 8**: Shared Insight Extraction.
+- **FIG. 9**: Trust Metrics Calculation.
+- **FIG. 10**: Evolution Recommendation Types.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the AI2AI Chat Learning System with Conversation Analysis implementation.
+
+In the illustrated embodiment, a computing device receives input signals and stored profile/state data; constructs an internal representation; and applies representation construction and scoring/decision logic to produce an output score/decision and optional stored record.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- System Architecture.
+- Conversation Analysis Flow.
+- Conversation Pattern Analysis.
+- Shared Insight Extraction.
+- Trust Metrics Calculation.
+- Evolution Recommendation Types.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the AI2AI Chat Learning System with Conversation Analysis implementation.
+
+1. Routing messages through encrypted AI2AI personality network.
+2. Displaying real business/expert identities in UI while routing through anonymized network.
+3. Storing all messages locally in offline-first storage (Sembast).
+4. Analyzing conversation patterns (topic consistency, response latency, insight sharing).
+5. Extracting shared insights from conversations.
+6. Analyzing collective intelligence emergence.
+7. Generating personality evolution recommendations.
+8. Calculating trust metrics between AI personalities.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the AI2AI Chat Learning System with Conversation Analysis implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- InputSignals: {signals[ ], observedAt, source}
+- RepresentationState: {features, parameters, version}
+- ConstraintPolicy: {thresholds, privacy/timing rules}
+- ComputationResult: {score/decision, confidence (optional)}
+- LocalStoreRecord: {id, createdAt, payload}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the AI2AI Chat Learning System with Conversation Analysis implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+- Privacy/validation module (on-device)
+
+Example sequence:
+1. Client device gathers inputs and constructs a representation/state.
+2. Client device applies core computation and constraints.
+3. Client device emits an output and stores a record as needed.
+
+### FIG. 5 — System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -56,7 +129,8 @@
 
 ---
 
-## 2. Conversation Analysis Flow
+### FIG. 6 — Conversation Analysis Flow
+
 
 ```
                     START
@@ -116,7 +190,8 @@
 
 ---
 
-## 3. Conversation Pattern Analysis
+### FIG. 7 — Conversation Pattern Analysis
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -158,7 +233,8 @@
 
 ---
 
-## 4. Shared Insight Extraction
+### FIG. 8 — Shared Insight Extraction
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -198,7 +274,8 @@
 
 ---
 
-## 5. Trust Metrics Calculation
+### FIG. 9 — Trust Metrics Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -228,7 +305,8 @@
 
 ---
 
-## 6. Evolution Recommendation Types
+### FIG. 10 — Evolution Recommendation Types
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -276,4 +354,3 @@ This visual documentation provides comprehensive diagrams and visualizations for
 6. **Evolution Recommendation Types** - Recommendation categories
 
 These visuals support the deep-dive document and provide clear, patent-ready documentation of the system's technical implementation.
-

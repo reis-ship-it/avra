@@ -20,6 +20,12 @@ import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.d
 import 'package:spots_knot/services/knot/knot_audio_service.dart';
 import 'package:spots_knot/services/knot/knot_privacy_service.dart';
 import 'package:spots_knot/services/knot/knot_data_api_service.dart';
+import 'package:spots_knot/services/knot/quantum_state_knot_service.dart';
+import 'package:spots_knot/services/knot/knot_evolution_coordinator_service.dart';
+import 'package:spots_knot/services/knot/knot_evolution_string_service.dart';
+import 'package:spots_knot/services/knot/knot_worldsheet_service.dart';
+import 'package:spots_knot/services/knot/knot_orchestrator_service.dart';
+import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/admin/knot_admin_service.dart';
 import 'package:spots/core/services/wearable_data_service.dart';
 import 'package:spots/core/services/community_service.dart';
@@ -66,6 +72,11 @@ Future<void> registerKnotServices(GetIt sl) async {
     () => CrossEntityCompatibilityService(
       knotService: sl<PersonalityKnotService>(),
     ),
+  );
+
+  // Register QuantumStateKnotService (QuantumEntityState → EntityKnot bridge)
+  sl.registerLazySingleton<QuantumStateKnotService>(
+    () => QuantumStateKnotService(),
   );
 
   // Register Network Cross-Pollination Service
@@ -128,6 +139,52 @@ Future<void> registerKnotServices(GetIt sl) async {
       knotService: sl<PersonalityKnotService>(),
     ),
   );
+
+  // Register Knot Evolution Coordinator Service (Knot Evolution Tracking for String Generation)
+  // Note: AgentIdService is registered in main container, resolve it here
+  sl.registerLazySingleton<KnotEvolutionCoordinatorService>(
+    () {
+      // Resolve AgentIdService from main container (registered before knot services)
+      final agentIdService = sl<AgentIdService>();
+      return KnotEvolutionCoordinatorService(
+        knotService: sl<PersonalityKnotService>(),
+        storageService: sl<KnotStorageService>(),
+        getAgentId: (userId) => agentIdService.getUserAgentId(userId),
+      );
+    },
+  );
+  logger.debug('✅ [DI-Knot] KnotEvolutionCoordinatorService registered');
+
+  // Register Knot Evolution String Service (Knot Evolution Tracking for String Generation)
+  sl.registerLazySingleton<KnotEvolutionStringService>(
+    () => KnotEvolutionStringService(
+      storageService: sl<KnotStorageService>(),
+    ),
+  );
+  logger.debug('✅ [DI-Knot] KnotEvolutionStringService registered');
+
+  // Register Knot Worldsheet Service (2D plane representation for groups)
+  sl.registerLazySingleton<KnotWorldsheetService>(
+    () => KnotWorldsheetService(
+      storageService: sl<KnotStorageService>(),
+      stringService: sl<KnotEvolutionStringService>(),
+      fabricService: sl<KnotFabricService>(), // Required for constructor but not used yet
+    ),
+  );
+  logger.debug('✅ [DI-Knot] KnotWorldsheetService registered');
+
+  // Register Knot Orchestrator Service (High-level orchestrator for all knot operations)
+  sl.registerLazySingleton<KnotOrchestratorService>(
+    () => KnotOrchestratorService(
+      knotService: sl<PersonalityKnotService>(),
+      storageService: sl<KnotStorageService>(),
+      coordinator: sl<KnotEvolutionCoordinatorService>(),
+      stringService: sl<KnotEvolutionStringService>(),
+      fabricService: sl<KnotFabricService>(),
+      worldsheetService: sl<KnotWorldsheetService>(),
+    ),
+  );
+  logger.debug('✅ [DI-Knot] KnotOrchestratorService registered');
 
   // Register Phase 7: Audio & Privacy Services
   // Register Knot Audio Service

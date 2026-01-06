@@ -1,0 +1,43 @@
+name: avra_app
+description: Main SPOTS Flutter application
+publish_to: 'none'
+version: 1.2.0+5
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Local packages
+  avra_core:
+    path: ../avra_core
+  avra_data:
+    path: ../avra_data
+  avra_network:
+    path: ../avra_network
+  avra_ai:
+    path: ../avra_ai
+  avra_ml:
+    path: ../avra_ml
+  
+  # UI dependencies
+  flutter_bloc: ^9.1.1
+  cupertino_icons: ^1.0.2
+  google_fonts: ^6.1.0
+  flutter_map: ^8.2.2
+  get_it: ^9.2.0
+  
+  # Platform integration
+  connectivity_plus: ^7.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  integration_test:
+    sdk: flutter
+  
+flutter:
+  uses-material-design: true

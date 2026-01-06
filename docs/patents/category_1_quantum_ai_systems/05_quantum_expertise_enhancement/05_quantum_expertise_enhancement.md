@@ -7,13 +7,75 @@
 
 ---
 
-## Executive Summary
+## Cross-References to Related Applications
+
+None.
+
+---
+
+## Statement Regarding Federally Sponsored Research or Development
+
+Not applicable.
+
+---
+
+## Incorporation by Reference
+
+This disclosure references the accompanying visual/drawings document: `docs/patents/category_1_quantum_ai_systems/05_quantum_expertise_enhancement/05_quantum_expertise_enhancement_visuals.md`. The diagrams and formulas therein are incorporated by reference as non-limiting illustrative material supporting the written description and example embodiments.
+
+---
+
+## Definitions
+
+For purposes of this disclosure:
+- **“Entity”** means any actor or object represented for scoring/matching (e.g., user, device, business, event, sponsor), depending on the invention context.
+- **“Profile”** means a set of stored attributes used by the system (which may be multi-dimensional and may be anonymized).
+- **“Compatibility score”** means a bounded numeric value used to compare entities or an entity to an opportunity, typically normalized to \([0, 1]\).
+- **“Atomic timestamp”** means a time value derived from an atomic-time service or an equivalent high-precision time source used for synchronization and time-indexed computation.
+
+---
+
+## Brief Description of the Drawings
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Traditional vs. Quantum Expertise Calculation.
+- **FIG. 6**: Quantum Superposition of Expertise Paths.
+- **FIG. 7**: Quantum Interference Patterns.
+- **FIG. 8**: Quantum Entanglement Network.
+- **FIG. 9**: Information-Theoretic Optimization.
+- **FIG. 10**: Complete Quantum Expertise Calculation Flow.
+- **FIG. 11**: Decoherence Handling.
+- **FIG. 12**: Path Correlation Learning.
+- **FIG. 13**: Information Flow Maximization.
+- **FIG. 14**: Complete System Architecture.
+## Abstract
+
+A system and method for computing an expertise score using quantum-inspired aggregation across multiple evidence pathways. The method represents pathway scores as components of a superposed state, combines pathways using weighted superposition, and applies interference and/or entanglement-inspired operations to amplify consistent signals and attenuate noise across paths. In some embodiments, the system optimizes weighting and update behavior using information-theoretic objectives that favor distribution of signal across multiple noisy channels to improve robustness. The approach improves expertise estimation by capturing correlations among pathways beyond simple weighted sums and by providing a principled mechanism for stability and noise handling in multi-path scoring.
+
+---
+
+## Background
+
+Expertise scoring systems often aggregate heterogeneous signals using linear weighted sums that assume independence among evidence pathways. This can discard informative correlations, propagate noise, and produce suboptimal estimates when signals are incomplete or inconsistently reliable across users and contexts.
+
+Accordingly, there is a need for scoring methods that combine multiple evidence channels in a way that captures correlation structure and improves robustness to noise, while maintaining computational efficiency suitable for real-time expertise evaluation.
+
+---
+
+## Summary
 
 A quantum-enhanced expertise calculation system that applies quantum superposition, interference, and entanglement to multi-path expertise evaluation, optimized using information-theoretic principles (Lawson & Bialek, 2025) that demonstrate many noisy channels optimize information flow better than fewer reliable ones. This system replaces traditional weighted combination with quantum mathematics for more accurate expertise scoring.
 
 ---
 
-## Technical Innovation
+## Detailed Description
+
+### Implementation Notes (Non-Limiting)
+
+- In quantum-state embodiments, the system may represent multi-dimensional profiles as quantum state vectors (e.g., |ψ⟩) and compute similarity using an inner product, distance metric, or other quantum-inspired measure.
 
 ### Core Innovation
 The system applies quantum mathematics (superposition, interference, entanglement) to multi-path expertise calculation, replacing traditional weighted combination with quantum algorithms. This is optimized using information-theoretic principles showing that many noisy channels optimize information flow better than fewer reliable channels, leveraging the 6-path expertise system for maximum information transmission.
@@ -145,42 +207,37 @@ The system applies quantum mathematics (superposition, interference, entanglemen
 
 ---
 
-## Patent Claims
+## Claims
 
-### Claim 1: Method for Quantum-Enhanced Expertise Calculation
-A method for quantum-enhanced expertise calculation using superposition, interference, and entanglement across multiple expertise paths, comprising:
-- Representing each expertise path as quantum state `|ψ_path_i⟩`
-- Applying quantum superposition for parallel evaluation: `|ψ_expertise⟩ = Σᵢ wᵢ |ψ_path_i⟩`
-- Using interference patterns for optimal combination (constructive for aligned paths, destructive for conflicting paths)
-- Entangling correlated paths for information extraction: `|ψ_entangled⟩ = Σᵢⱼ cᵢⱼ |path_i⟩ ⊗ |path_j⟩`
-- Calculating expertise score using quantum measurement: `score = |⟨ψ_expertise|ψ_target⟩|²`
+1. A method for quantum-enhanced expertise calculation using superposition, interference, and entanglement across multiple expertise paths, comprising:
+   (a) Representing each expertise path as quantum state `|ψ_path_i⟩`
+   (b) Applying quantum superposition for parallel evaluation: `|ψ_expertise⟩ = Σᵢ wᵢ |ψ_path_i⟩`
+   (c) Using interference patterns for optimal combination (constructive for aligned paths, destructive for conflicting paths)
+   (d) Entangling correlated paths for information extraction: `|ψ_entangled⟩ = Σᵢⱼ cᵢⱼ |path_i⟩ ⊗ |path_j⟩`
+   (e) Calculating expertise score using quantum measurement: `score = |⟨ψ_expertise|ψ_target⟩|²`
 
-### Claim 2: System for Information-Theoretically Optimal Expertise Scoring
-A system for information-theoretically optimal expertise scoring using quantum-superposed multi-path evaluation, comprising:
-- Quantum superposition of 6 expertise paths with path weights (Exploration: 40%, Credentials: 25%, Influence: 20%, Professional: 25%, Community: 15%, Local: varies)
-- Quantum interference for signal amplification (constructive) and noise cancellation (destructive)
-- Path entanglement for correlated information extraction across paths
-- Information-theoretic optimization using many noisy channels principle (6 paths optimize information flow better than fewer paths)
-- Graceful degradation to classical weighted combination when quantum coherence lost
+2. A system for information-theoretically optimal expertise scoring using quantum-superposed multi-path evaluation, comprising:
+   (a) Quantum superposition of 6 expertise paths with path weights (Exploration: 40%, Credentials: 25%, Influence: 20%, Professional: 25%, Community: 15%, Local: varies)
+   (b) Quantum interference for signal amplification (constructive) and noise cancellation (destructive)
+   (c) Path entanglement for correlated information extraction across paths
+   (d) Information-theoretic optimization using many noisy channels principle (6 paths optimize information flow better than fewer paths)
+   (e) Graceful degradation to classical weighted combination when quantum coherence lost
 
-### Claim 3: Method for Expertise Calculation Using Quantum Mathematics
-A method for expertise calculation using quantum mathematics and information theory, comprising:
-- Quantum superposition of multiple expertise paths for parallel evaluation
-- Constructive/destructive interference for optimal path combination
-- Quantum entanglement of correlated paths for information extraction
-- Information-theoretic optimization leveraging many noisy channels principle
-- Graceful degradation to classical calculation when quantum coherence lost
+3. The method of claim 1, further comprising expertise calculation using quantum mathematics and information theory:
+   (a) Quantum superposition of multiple expertise paths for parallel evaluation
+   (b) Constructive/destructive interference for optimal path combination
+   (c) Quantum entanglement of correlated paths for information extraction
+   (d) Information-theoretic optimization leveraging many noisy channels principle
+   (e) Graceful degradation to classical calculation when quantum coherence lost
 
-### Claim 4: Expertise Scoring System with Quantum Enhancement
-An expertise scoring system using quantum-enhanced multi-path evaluation with information-theoretic optimization, comprising:
-- Quantum state representation of expertise paths: `|ψ_path_i⟩`
-- Interference pattern calculation for information flow maximization
-- Entanglement network for cross-path correlation: `|ψ_entangled⟩ = Σᵢⱼ cᵢⱼ |path_i⟩ ⊗ |path_j⟩`
-- "Sloppy" parameter space robustness (optimal performance with parameter variability)
-- Decoherence detection and automatic fallback to classical calculation
+4. An expertise scoring system using quantum-enhanced multi-path evaluation with information-theoretic optimization, comprising:
+   (a) Quantum state representation of expertise paths: `|ψ_path_i⟩`
+   (b) Interference pattern calculation for information flow maximization
+   (c) Entanglement network for cross-path correlation: `|ψ_entangled⟩ = Σᵢⱼ cᵢⱼ |path_i⟩ ⊗ |path_j⟩`
+   (d) "Sloppy" parameter space robustness (optimal performance with parameter variability)
+   (e) Decoherence detection and automatic fallback to classical calculation
 
----
-
+       ---
 ## Atomic Timing Integration
 
 **Date:** December 23, 2025  
@@ -873,8 +930,7 @@ QuantumVibeState entanglePaths(
 
 ---
 
-## Experimental Validation
-
+## Appendix A — Experimental Validation (Non-Limiting)
 **Date:** Original (see individual experiments), December 23, 2025 (Atomic Timing Integration)  
 **Status:** ✅ Complete - All experiments validated (including atomic timing integration)  
 **Execution Time:** 0.07 seconds  

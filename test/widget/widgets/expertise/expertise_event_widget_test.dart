@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:spots/presentation/widgets/expertise/expertise_event_widget.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import '../../helpers/widget_test_helpers.dart';
-import '../../../helpers/test_helpers.dart';
 
 /// Widget tests for ExpertiseEventWidget
 /// Tests expertise event display
@@ -16,8 +15,8 @@ void main() {
         'should display event information, display register button when user can register, display cancel button when user is registered, display event list widget, or display empty state when no events',
         (WidgetTester tester) async {
       // Test business logic: expertise event widget display and interactions
+      final now = DateTime.now();
       final host1 = WidgetTestHelpers.createTestUser();
-      final testDate1 = TestHelpers.createTestDateTime();
       final event1 = ExpertiseEvent(
         id: 'event-123',
         title: 'Coffee Tasting Event',
@@ -25,14 +24,14 @@ void main() {
         category: 'Coffee',
         eventType: ExpertiseEventType.workshop,
         host: host1,
-        startTime: testDate1.add(const Duration(days: 7)),
-        endTime: testDate1.add(const Duration(days: 7, hours: 2)),
+        startTime: now.add(const Duration(days: 7)),
+        endTime: now.add(const Duration(days: 7, hours: 2)),
         maxAttendees: 20,
         status: EventStatus.upcoming,
         attendeeIds: const [],
         spots: const [],
-        createdAt: testDate1,
-        updatedAt: testDate1,
+        createdAt: now,
+        updatedAt: now,
       );
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: ExpertiseEventWidget(event: event1),
@@ -44,7 +43,6 @@ void main() {
 
       final host2 = WidgetTestHelpers.createTestUser();
       final currentUser1 = WidgetTestHelpers.createTestUser(id: 'user-456');
-      final testDate2 = TestHelpers.createTestDateTime();
       final event2 = ExpertiseEvent(
         id: 'event-123',
         title: 'Coffee Tasting',
@@ -52,14 +50,14 @@ void main() {
         category: 'Coffee',
         eventType: ExpertiseEventType.workshop,
         host: host2,
-        startTime: testDate2.add(const Duration(days: 7)),
-        endTime: testDate2.add(const Duration(days: 7, hours: 2)),
+        startTime: now.add(const Duration(days: 7)),
+        endTime: now.add(const Duration(days: 7, hours: 2)),
         maxAttendees: 20,
         status: EventStatus.upcoming,
         attendeeIds: const [],
         spots: const [],
-        createdAt: testDate2,
-        updatedAt: testDate2,
+        createdAt: now,
+        updatedAt: now,
       );
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: ExpertiseEventWidget(
@@ -73,7 +71,6 @@ void main() {
 
       final host3 = WidgetTestHelpers.createTestUser();
       final currentUser2 = WidgetTestHelpers.createTestUser(id: 'user-456');
-      final testDate3 = TestHelpers.createTestDateTime();
       final event3 = ExpertiseEvent(
         id: 'event-123',
         title: 'Coffee Tasting',
@@ -81,14 +78,14 @@ void main() {
         category: 'Coffee',
         eventType: ExpertiseEventType.workshop,
         host: host3,
-        startTime: testDate3.add(const Duration(days: 7)),
-        endTime: testDate3.add(const Duration(days: 7, hours: 2)),
+        startTime: now.add(const Duration(days: 7)),
+        endTime: now.add(const Duration(days: 7, hours: 2)),
         maxAttendees: 20,
         status: EventStatus.upcoming,
         attendeeIds: const ['user-456'],
         spots: const [],
-        createdAt: testDate3,
-        updatedAt: testDate3,
+        createdAt: now,
+        updatedAt: now,
       );
       final widget3 = WidgetTestHelpers.createTestableWidget(
         child: ExpertiseEventWidget(
@@ -101,7 +98,6 @@ void main() {
       expect(find.byIcon(Icons.cancel), findsOneWidget);
 
       final host4 = WidgetTestHelpers.createTestUser();
-      final testDate4 = TestHelpers.createTestDateTime();
       final events = [
         ExpertiseEvent(
           id: 'event-1',
@@ -110,14 +106,14 @@ void main() {
           category: 'Coffee',
           eventType: ExpertiseEventType.workshop,
           host: host4,
-          startTime: testDate4.add(const Duration(days: 7)),
-          endTime: testDate4.add(const Duration(days: 7, hours: 2)),
+          startTime: now.add(const Duration(days: 7)),
+          endTime: now.add(const Duration(days: 7, hours: 2)),
           maxAttendees: 20,
           status: EventStatus.upcoming,
           attendeeIds: const [],
           spots: const [],
-          createdAt: testDate4,
-          updatedAt: testDate4,
+          createdAt: now,
+          updatedAt: now,
         ),
       ];
       final widget4 = WidgetTestHelpers.createTestableWidget(

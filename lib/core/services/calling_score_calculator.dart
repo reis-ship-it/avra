@@ -566,6 +566,18 @@ class CallingScoreCalculator {
     required CallingContext context,
     required TimingFactors timing,
   }) {
+    double matchDim(double? a, double? b) {
+      if (a == null || b == null) return 0.5;
+      return (1.0 - (a - b).abs()).clamp(0.0, 1.0);
+    }
+
+    double avgOrNeutral(List<double?> values) {
+      final present = values.whereType<double>().toList();
+      if (present.isEmpty) return 0.5;
+      final sum = present.fold<double>(0.0, (s, v) => s + v);
+      return (sum / present.length).clamp(0.0, 1.0);
+    }
+
     final features = <double>[];
 
     // User vibe dimensions (12D)
@@ -613,18 +625,42 @@ class CallingScoreCalculator {
     features.add(context.opportunityAvailability?.clamp(0.0, 1.0) ?? 0.5);
     features.add(context.networkEffects?.clamp(0.0, 1.0) ?? 0.5);
     features.add(context.communityPatterns?.clamp(0.0, 1.0) ?? 0.5);
-    // Add 4 more context features (can be extended)
-    features.add(0.5); // Placeholder
-    features.add(0.5); // Placeholder
-    features.add(0.5); // Placeholder
-    features.add(0.5); // Placeholder
+
+    // Additional context features (formerly placeholders):
+    // These are computed from the same observable inputs and are also logged
+    // via CallingScoreDataCollector so the model can be retrained with them.
+    final vibeCompatibility = opportunityVibe.calculateVibeCompatibility(userVibe);
+    final energyMatch = matchDim(
+      userDimensions['overall_energy'],
+      opportunityVibe.vibeDimensions['overall_energy'],
+    );
+    final communityMatch = matchDim(
+      userDimensions['community_orientation'],
+      opportunityVibe.vibeDimensions['community_orientation'],
+    );
+    final noveltyMatch = matchDim(
+      userDimensions['novelty_seeking'],
+      opportunityVibe.vibeDimensions['novelty_seeking'],
+    );
+
+    features.add(vibeCompatibility.clamp(0.0, 1.0));
+    features.add(energyMatch);
+    features.add(communityMatch);
+    features.add(noveltyMatch);
 
     // Timing features (5 features)
     features.add(timing.optimalTimeOfDay?.clamp(0.0, 1.0) ?? 0.5);
     features.add(timing.optimalDayOfWeek?.clamp(0.0, 1.0) ?? 0.5);
     features.add(timing.userPatterns?.clamp(0.0, 1.0) ?? 0.5);
     features.add(timing.opportunityTiming?.clamp(0.0, 1.0) ?? 0.5);
-    features.add(0.5); // Placeholder for 5th timing feature
+
+    // Timing alignment (formerly placeholder): average of the known timing signals.
+    features.add(avgOrNeutral([
+      timing.optimalTimeOfDay,
+      timing.optimalDayOfWeek,
+      timing.userPatterns,
+      timing.opportunityTiming,
+    ]));
 
     // Ensure we have exactly 39 features
     while (features.length < 39) {

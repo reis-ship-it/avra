@@ -2,8 +2,8 @@ import 'package:spots/core/models/sponsorship.dart';
 import 'package:spots/core/models/brand_account.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/business_service.dart';
 import 'package:spots/core/services/logger.dart';
+import 'package:spots/core/services/vibe_compatibility_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// Sponsorship Service
@@ -31,7 +31,7 @@ class SponsorshipService {
   
   final ExpertiseEventService _eventService;
   final PartnershipService _partnershipService; // Read-only
-  final BusinessService _businessService; // Read-only
+  final VibeCompatibilityService _vibeCompatibilityService;
   
   // In-memory storage for sponsorships (in production, use database)
   final Map<String, Sponsorship> _sponsorships = {};
@@ -43,10 +43,10 @@ class SponsorshipService {
   SponsorshipService({
     required ExpertiseEventService eventService,
     required PartnershipService partnershipService,
-    required BusinessService businessService,
+    required VibeCompatibilityService vibeCompatibilityService,
   }) : _eventService = eventService,
        _partnershipService = partnershipService,
-       _businessService = businessService;
+       _vibeCompatibilityService = vibeCompatibilityService;
   
   /// Create a new sponsorship for an event
   /// 
@@ -394,34 +394,55 @@ class SponsorshipService {
     required String eventId,
     required String brandId,
   }) async {
+    final score = await calculateVibeScore(
+      eventId: eventId,
+      brandId: brandId,
+    );
+    return score.combined;
+  }
+
+  /// Calculate a **truthful** vibe score breakdown between a brand and event.
+  ///
+  /// This is the canonical scoring primitive for brand discovery and sponsorship eligibility.
+  Future<VibeScore> calculateVibeScore({
+    required String eventId,
+    required String brandId,
+  }) async {
     try {
       _logger.info('Calculating compatibility: event=$eventId, brand=$brandId', tag: _logName);
       
       final event = await _eventService.getEventById(eventId);
       if (event == null) {
-        return 0.0;
+        return const VibeScore(
+          combined: 0.0,
+          quantum: 0.0,
+          knotTopological: 0.0,
+          knotWeave: 0.0,
+        );
       }
       
       final brand = await getBrandById(brandId);
       if (brand == null) {
-        return 0.0;
+        return const VibeScore(
+          combined: 0.0,
+          quantum: 0.0,
+          knotTopological: 0.0,
+          knotWeave: 0.0,
+        );
       }
       
-      // TODO: In production, integrate with sophisticated matching algorithm
-      // For now, return a placeholder compatibility score
-      // This should use:
-      // - Brand categories vs event categories
-      // - Brand preferences vs event details
-      // - Brand history vs event history
-      // - Similar vibe matching to PartnershipMatchingService
-      
-      // Placeholder: Return 0.75 (75% compatibility) for now
-      // This ensures sponsorships can be created for testing
-      // In production, replace with actual compatibility calculation
-      return 0.75;
+      return await _vibeCompatibilityService.calculateEventBrandVibe(
+        event: event,
+        brand: brand,
+      );
     } catch (e) {
       _logger.error('Error calculating compatibility', error: e, tag: _logName);
-      return 0.0;
+      return const VibeScore(
+        combined: 0.0,
+        quantum: 0.0,
+        knotTopological: 0.0,
+        knotWeave: 0.0,
+      );
     }
   }
   

@@ -45,9 +45,26 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
   @override
   void initState() {
     super.initState();
+    // If a fixed set of connections is provided (tests/debug), render without DI/timers.
+    if (widget.connections != null) {
+      _connections = widget.connections!;
+      return;
+    }
     _initializeOrchestrator();
     _loadConnections();
     _startAutoRefresh();
+  }
+
+  @override
+  void didUpdateWidget(covariant AI2AIConnectionView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Support tests/debug where the parent rebuilds with different connection lists.
+    if (widget.connections != null &&
+        widget.connections != oldWidget.connections) {
+      setState(() {
+        _connections = widget.connections!;
+      });
+    }
   }
 
   @override

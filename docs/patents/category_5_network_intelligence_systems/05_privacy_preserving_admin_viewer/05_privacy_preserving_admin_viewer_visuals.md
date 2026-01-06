@@ -4,7 +4,81 @@
 
 ---
 
-## 1. System Architecture
+
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: System Architecture.
+- **FIG. 6**: AdminPrivacyFilter Process.
+- **FIG. 7**: Forbidden vs. Allowed Keys.
+- **FIG. 8**: Live AI Agent Map.
+- **FIG. 9**: Real-Time Update Frequencies.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Privacy-Preserving Admin Viewer for Distributed AI Networks implementation.
+
+In the illustrated embodiment, a computing device receives raw values, a differential-privacy budget parameter (ε), and temporal context; constructs an internal representation; and applies noise calibration and entropy-based validation to produce an anonymized output and an entropy validation outcome.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- System Architecture.
+- AdminPrivacyFilter Process.
+- Forbidden vs. Allowed Keys.
+- Live AI Agent Map.
+- Real-Time Update Frequencies.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Privacy-Preserving Admin Viewer for Distributed AI Networks implementation.
+
+1. Filtering all personal data (name, email, phone, home address) using AdminPrivacyFilter.
+2. Allowing only AI-related data (signatures, connections, status, location vibe indicators).
+3. Displaying real-time AI2AI communication monitoring.
+4. Visualizing collective intelligence from network-wide patterns.
+5. Showing live AI agent map with predicted next actions.
+6. Displaying learning insights dashboard with cross-personality patterns.
+7. Providing conversation analysis viewer with trust metrics.
+8. Showing prediction visualization with confidence scores.
+9. Monitoring network health with real-time metrics.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Privacy-Preserving Admin Viewer for Distributed AI Networks implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- PrivacyBudget: {epsilon, sensitivity, delta (optional), policy}
+- NoiseParameters: {distribution: Laplace, scale, seed/salt (optional)}
+- AnonymizedValue: {value, clampedRange:[0,1], generatedAt}
+- EntropyMetric: {H, threshold, passed}
+- TemporalSignature: {windowStart, expiresAt, signatureHash}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Privacy-Preserving Admin Viewer for Distributed AI Networks implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+- Privacy/validation module (on-device)
+
+Example sequence:
+1. Client device selects privacy budget (ε) and sensitivity parameters.
+2. Client device transforms values by adding calibrated noise.
+3. Privacy/validation module computes entropy and validates randomness.
+4. If validation fails, client device re-transforms or strengthens privacy; otherwise continues.
+5. Client device emits/stores anonymized output for sharing or downstream computation.
+
+### FIG. 5 — System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -44,7 +118,8 @@
 
 ---
 
-## 2. AdminPrivacyFilter Process
+### FIG. 6 — AdminPrivacyFilter Process
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -77,7 +152,8 @@
 
 ---
 
-## 3. Forbidden vs. Allowed Keys
+### FIG. 7 — Forbidden vs. Allowed Keys
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -120,7 +196,8 @@
 
 ---
 
-## 4. Live AI Agent Map
+### FIG. 8 — Live AI Agent Map
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -160,7 +237,8 @@
 
 ---
 
-## 5. Real-Time Update Frequencies
+### FIG. 9 — Real-Time Update Frequencies
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -191,4 +269,3 @@ This visual documentation provides comprehensive diagrams and visualizations for
 5. **Real-Time Update Frequencies** - Update timing
 
 These visuals support the deep-dive document and provide clear, patent-ready documentation of the system's technical implementation.
-

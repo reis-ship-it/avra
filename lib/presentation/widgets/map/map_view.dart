@@ -25,6 +25,7 @@ import 'package:spots/core/services/geo_hierarchy_service.dart';
 import 'package:spots/presentation/widgets/map/geo_synco_summary_card.dart';
 import 'package:spots/core/services/neighborhood_boundary_service.dart';
 import 'package:spots/core/models/neighborhood_boundary.dart';
+import 'package:spots/core/services/geohash_service.dart';
 import 'dart:developer' as developer;
 
 class MapView extends StatefulWidget {
@@ -1342,7 +1343,22 @@ class _MapViewState extends State<MapView> {
         }
       }
 
-      // Fallback: neighborhood “boundaries” (currently mock/generated)
+      // NEW: Load locality agent geohash overlays (if available)
+      final localityAgentPolygons = await _loadLocalityAgentGeohashOverlays(
+        cityCode: cityCode,
+        centerLat: _center?.latitude,
+        centerLon: _center?.longitude,
+      );
+      if (localityAgentPolygons.isNotEmpty) {
+        if (!mounted) return;
+        setState(() {
+          _boundaryPolygons = localityAgentPolygons;
+          _boundaryPolylines = {};
+        });
+        return;
+      }
+
+      // Fallback: neighborhood "boundaries" (currently mock/generated)
       if (localityName == null || localityName.isEmpty) {
         setState(() {
           _boundaryPolylines = {};
@@ -1385,6 +1401,65 @@ class _MapViewState extends State<MapView> {
         _boundaryPolylines = {};
         _boundaryPolygons = {};
       });
+    }
+  }
+
+  /// NEW: Load locality agent geohash overlays for visualization
+  Future<Set<gmap.Polygon>> _loadLocalityAgentGeohashOverlays({
+    required String? cityCode,
+    required double? centerLat,
+    required double? centerLon,
+  }) async {
+    if (cityCode == null || centerLat == null || centerLon == null) {
+      return {};
+    }
+
+    try {
+      // Get geohash for current location (precision 7 for locality agents)
+      final geohash = GeohashService.encode(
+        latitude: centerLat,
+        longitude: centerLon,
+        precision: 7,
+      );
+
+      // Get 8 neighbors for visualization
+      final neighbors = GeohashService.neighbors(geohash: geohash);
+      final allGeohashes = [geohash, ...neighbors];
+
+      // Create polygons for each geohash
+      final polygons = <gmap.Polygon>{};
+      for (final gh in allGeohashes) {
+        final bbox = GeohashService.decodeBoundingBox(gh);
+
+        // Get agent state to determine opacity (more visits = more opaque)
+        // Note: This requires accessing the global repository, which may not be public
+        // For now, use a default opacity
+        final opacity = 0.1; // Default opacity
+
+        polygons.add(
+          gmap.Polygon(
+            polygonId: gmap.PolygonId('locality_agent_geohash:$gh'),
+            points: [
+              gmap.LatLng(bbox.latMin, bbox.lonMin),
+              gmap.LatLng(bbox.latMin, bbox.lonMax),
+              gmap.LatLng(bbox.latMax, bbox.lonMax),
+              gmap.LatLng(bbox.latMax, bbox.lonMin),
+            ],
+            strokeWidth: 1,
+            strokeColor: AppColors.secondary.withValues(alpha: 0.6),
+            fillColor: AppColors.secondary.withValues(alpha: opacity),
+          ),
+        );
+      }
+
+      return polygons;
+    } catch (e, st) {
+      developer.log(
+        'Failed to load locality agent geohash overlays: $e',
+        name: 'MapView',
+        stackTrace: st,
+      );
+      return {};
     }
   }
 

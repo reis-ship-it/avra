@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/community_event.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/core/models/expertise_level.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/geographic_scope_service.dart';
 import 'package:spots/core/services/cross_locality_connection_service.dart'
@@ -10,6 +15,8 @@ import 'package:spots/core/services/cross_locality_connection_service.dart'
         CrossLocalityConnectionService,
         ConnectedLocality;
 import 'package:spots/core/services/community_event_service.dart';
+import 'package:spots/core/services/storage_service.dart';
+import 'package:spots/core/services/supabase_service.dart';
 
 /// Expertise Event Service
 /// OUR_GUTS.md: "Pins unlock new features, like event hosting"
@@ -21,6 +28,7 @@ class ExpertiseEventService {
   final GeographicScopeService _geographicScopeService;
   final CrossLocalityConnectionService _crossLocalityService;
   final CommunityEventService _communityEventService;
+  final LedgerRecorderServiceV0 _ledger;
 
   // Performance optimization: In-memory event cache for O(1) lookups
   // In production, this would be replaced with database queries with indexes
@@ -33,12 +41,56 @@ class ExpertiseEventService {
     GeographicScopeService? geographicScopeService,
     CrossLocalityConnectionService? crossLocalityService,
     CommunityEventService? communityEventService,
+    LedgerRecorderServiceV0? ledgerRecorder,
   })  : _geographicScopeService =
             geographicScopeService ?? GeographicScopeService(),
         _crossLocalityService =
             crossLocalityService ?? CrossLocalityConnectionService(),
         _communityEventService =
-            communityEventService ?? CommunityEventService();
+            communityEventService ?? CommunityEventService(),
+        _ledger = ledgerRecorder ??
+            LedgerRecorderServiceV0(
+              supabaseService: SupabaseService(),
+              agentIdService: AgentIdService(),
+              storage: StorageService.instance,
+            );
+
+  Future<void> _tryLedgerAppendForUser({
+    required String expectedOwnerUserId,
+    required String eventType,
+    required String entityType,
+    required String entityId,
+    required String category,
+    required String? cityCode,
+    required String? localityCode,
+    required Map<String, Object?> payload,
+  }) async {
+    try {
+      final currentUserId = SupabaseService().currentUser?.id;
+      if (currentUserId == null || currentUserId != expectedOwnerUserId) {
+        return;
+      }
+
+      await _ledger.append(
+        domain: LedgerDomainV0.expertise,
+        eventType: eventType,
+        occurredAt: DateTime.now(),
+        payload: payload,
+        entityType: entityType,
+        entityId: entityId,
+        category: category,
+        cityCode: cityCode,
+        localityCode: localityCode,
+        correlationId: entityId,
+      );
+    } catch (e) {
+      // Never block UX.
+      _logger.warning(
+        'Ledger write skipped/failed for $eventType: ${e.toString()}',
+        tag: _logName,
+      );
+    }
+  }
 
   /// Create a new expertise event
   /// Requires user to have Local level or higher expertise
@@ -54,6 +106,8 @@ class ExpertiseEventService {
     String? location,
     double? latitude,
     double? longitude,
+    String? cityCode,
+    String? localityCode,
     int maxAttendees = 20,
     double? price,
     bool isPublic = true,
@@ -132,6 +186,8 @@ class ExpertiseEventService {
         location: location,
         latitude: latitude,
         longitude: longitude,
+        cityCode: cityCode,
+        localityCode: localityCode,
         maxAttendees: maxAttendees,
         price: price,
         isPaid: price != null && price > 0,
@@ -143,6 +199,29 @@ class ExpertiseEventService {
 
       // In production, save to database
       await _saveEvent(event);
+
+      // Best-effort dual-write to ledger (must never block UX).
+      unawaited(_tryLedgerAppendForUser(
+        expectedOwnerUserId: host.id,
+        eventType: 'expert_event_created',
+        entityType: 'event',
+        entityId: event.id,
+        category: category,
+        cityCode: cityCode,
+        localityCode: localityCode,
+        payload: <String, Object?>{
+          'event_id': event.id,
+          'event_type': eventType.name,
+          'start_time': startTime.toIso8601String(),
+          'end_time': endTime.toIso8601String(),
+          'max_attendees': maxAttendees,
+          'is_paid': event.isPaid,
+          'price': price,
+          'is_public': isPublic,
+          'spots_count': (spots ?? const <Spot>[]).length,
+          'has_location': (location ?? '').isNotEmpty,
+        },
+      ));
 
       _logger.info('Created event: ${event.id}', tag: _logName);
       return event;
@@ -706,6 +785,29 @@ class ExpertiseEventService {
       );
 
       await _saveEvent(updated);
+
+      if (status == EventStatus.completed) {
+        unawaited(_tryLedgerAppendForUser(
+          expectedOwnerUserId: updated.host.id,
+          eventType: 'expert_event_completed',
+          entityType: 'event',
+          entityId: updated.id,
+          category: updated.category,
+          cityCode: updated.cityCode,
+          localityCode: updated.localityCode,
+          payload: <String, Object?>{
+            'event_id': updated.id,
+            'attendee_count': updated.attendeeCount,
+            'max_attendees': updated.maxAttendees,
+            'start_time': updated.startTime.toIso8601String(),
+            'end_time': updated.endTime.toIso8601String(),
+            'is_paid': updated.isPaid,
+            'price': updated.price,
+            'spots_count': updated.spots.length,
+          },
+        ));
+      }
+
       _logger.info('Updated event status: ${event.id}', tag: _logName);
     } catch (e) {
       _logger.error('Error updating event status', error: e, tag: _logName);
@@ -715,8 +817,15 @@ class ExpertiseEventService {
 
   // Private helper methods
 
+  static int _eventIdCounter = 0;
+
   String _generateEventId() {
-    return 'event_${DateTime.now().millisecondsSinceEpoch}';
+    // Use microsecond resolution + a monotonic counter to avoid collisions when
+    // creating multiple events within the same clock tick (common in tests and
+    // batch operations).
+    final ts = DateTime.now().microsecondsSinceEpoch;
+    final counter = (_eventIdCounter++ % 1000000);
+    return 'event_${ts}_$counter';
   }
 
   Future<void> _saveEvent(ExpertiseEvent event) async {

@@ -358,7 +358,7 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
 
       // Assert: Timestamp formatted as "Just now"
-      expect(find.textContaining('Just now'), findsOneWidget);
+      expect(find.text('• Just now'), findsOneWidget);
     });
 
     testWidgets('should format value and reliability as percentages correctly', (WidgetTester tester) async {

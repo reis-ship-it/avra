@@ -38,9 +38,7 @@ class SafetyChecklistWidget extends StatefulWidget {
 }
 
 class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
-  final EventSafetyService _safetyService = EventSafetyService(
-    eventService: GetIt.instance<ExpertiseEventService>(),
-  );
+  EventSafetyService? _safetyService;
 
   EventSafetyGuidelines? _guidelines;
   bool _isLoading = true;
@@ -50,7 +48,25 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
   @override
   void initState() {
     super.initState();
-    _loadGuidelines();
+    _initializeAndLoad();
+  }
+
+  Future<void> _initializeAndLoad() async {
+    try {
+      // Some widget tests (and lightweight environments) don't register the full
+      // dependency graph. Degrade gracefully instead of throwing during State
+      // construction.
+      final eventService = GetIt.instance<ExpertiseEventService>();
+      _safetyService = EventSafetyService(eventService: eventService);
+    } catch (e) {
+      setState(() {
+        _error = 'Safety service unavailable: $e';
+        _isLoading = false;
+      });
+      return;
+    }
+
+    await _loadGuidelines();
   }
 
   Future<void> _loadGuidelines() async {
@@ -60,7 +76,11 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
     });
 
     try {
-      final guidelines = await _safetyService.generateGuidelines(widget.event.id);
+      final service = _safetyService;
+      if (service == null) {
+        throw StateError('Safety service unavailable');
+      }
+      final guidelines = await service.generateGuidelines(widget.event.id);
       setState(() {
         _guidelines = guidelines;
         _acknowledged = guidelines.acknowledged;
@@ -78,7 +98,11 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
     if (_guidelines == null || widget.readOnly) return;
 
     try {
-      await _safetyService.acknowledgeGuidelines(widget.event.id);
+      final service = _safetyService;
+      if (service == null) {
+        throw StateError('Safety service unavailable');
+      }
+      await service.acknowledgeGuidelines(widget.event.id);
       setState(() {
         _acknowledged = true;
         _guidelines = _guidelines!.copyWith(
@@ -656,6 +680,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
       case SafetyRequirement.crowdControl:
         return 'Crowd control measures must be implemented';
     }
+    return null;
   }
 
   IconData _getRequirementIcon(SafetyRequirement requirement) {

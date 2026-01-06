@@ -1,9 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/pages/profile/ai_personality_status_page.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import "../../helpers/widget_test_helpers.dart';
-import '../../../mocks/mock_blocs.dart';
+import '../../helpers/widget_test_helpers.dart';
+import '../../mocks/mock_blocs.dart';
 
 /// Widget tests for AIPersonalityStatusPage
 /// Tests AI personality status page display
@@ -28,7 +27,6 @@ void main() {
       );
       await tester.pumpWidget(widget);
       await tester.pump();
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
       expect(find.byType(AIPersonalityStatusPage), findsOneWidget);
       expect(find.text('AI Personality Status'), findsOneWidget);

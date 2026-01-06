@@ -14,17 +14,13 @@ class GooglePlacesConfig {
 
   static bool get isValid => apiKey.isNotEmpty;
   
-  /// Get API key with fallback to direct value (for development)
-  /// In production, always use environment variable
+  /// Get API key (build-time injected)
+  ///
+  /// **Security:** Never commit real API keys to this repository.
+  /// Provide via `--dart-define=GOOGLE_PLACES_API_KEY=...` for development,
+  /// and via CI/build secrets for release builds.
   static String getApiKey() {
-    if (apiKey.isNotEmpty) {
-      return apiKey;
-    }
-    
-    // Fallback: You can set your API key here directly for development
-    // WARNING: Never commit this file with a real API key!
-    // TODO: Replace with your actual API key or use environment variable
-    return 'AIzaSyDKz1R_H9deprlLXL3Q8xvf0A1lDVJljaA'; // Set your API key here for local development
+    return apiKey;
   }
 }
 

@@ -5,9 +5,79 @@
 
 ---
 
-## Visual Diagrams and Architecture
 
-### 1. Hybrid Architecture Overview
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Hybrid Architecture Overview.
+- **FIG. 6**: Weight Adjustment Over Time.
+- **FIG. 7**: Quantum Baseline Calculation.
+- **FIG. 8**: Neural Network Refinement.
+- **FIG. 9**: Adaptive Weighting Mechanism.
+- **FIG. 10**: Complete Hybrid Calculation Flow.
+- **FIG. 11**: Fallback Mechanism.
+- **FIG. 12**: Privacy-Preserving Training.
+- **FIG. 13**: Outcome Learning Integration.
+- **FIG. 14**: Complete System Architecture.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Hybrid Quantum-Classical Neural Network System implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+
+In some embodiments, the diagram includes:
+- Hybrid Architecture Overview.
+- Weight Adjustment Over Time.
+- Quantum Baseline Calculation.
+- Neural Network Refinement.
+- Adaptive Weighting Mechanism.
+- Complete Hybrid Calculation Flow.
+- Fallback Mechanism.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Hybrid Quantum-Classical Neural Network System implementation.
+
+1. Calculating baseline calling score using quantum-inspired mathematics (70% weight) via `C = |⟨ψ_user|ψ_opportunity⟩|²` and weighted formula (40% vibe + 30% life betterment + 15% connection + 10% context + 5% timing).
+2. Applying classical neural network refinements (30% weight) for pattern learning and outcome prediction.
+3. Gradually increasing neural network weight as confidence grows based on performance monitoring.
+4. Maintaining offline-first architecture with on-device computation for both quantum calculations and neural network inference.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Hybrid Quantum-Classical Neural Network System implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- AtomicTimestamp: {t, source, uncertainty}
+- TemporalState: {|ψ_t⟩, parameters, normalized}
+- TimeSyncRecord: {offset, drift, lastCalibratedAt}
+- TemporalCompatibilityResult: {score in [0,1], computedAt}
+- ServiceResponse: {value, confidence, provenance}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Hybrid Quantum-Classical Neural Network System implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device requests or samples atomic time and receives an atomic timestamp.
+2. Client device constructs a temporal quantum state representation indexed to the timestamp.
+3. Client device performs time-indexed computation and normalizes the result.
+4. Client device stores the resulting temporal state/score with provenance metadata.
+
+### FIG. 5 — Hybrid Architecture Overview
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -50,7 +120,8 @@
 
 ---
 
-### 2. Weight Adjustment Over Time
+### FIG. 6 — Weight Adjustment Over Time
+
 
 ```
 Initial State (Low Confidence)
@@ -86,7 +157,8 @@ formula_weight = 1.0 - neural_weight
 
 ---
 
-### 3. Quantum Baseline Calculation
+### FIG. 7 — Quantum Baseline Calculation
+
 
 ```
 User Profile
@@ -120,7 +192,8 @@ Calling Score Formula
 
 ---
 
-### 4. Neural Network Refinement
+### FIG. 8 — Neural Network Refinement
+
 
 ```
 Input Features
@@ -149,7 +222,8 @@ Input(39) → Hidden(128) → Hidden(64) → Output(1)
 
 ---
 
-### 5. Adaptive Weighting Mechanism
+### FIG. 9 — Adaptive Weighting Mechanism
+
 
 ```
 Performance Monitoring
@@ -174,7 +248,8 @@ neural_weight = min(0.3 + confidence × 0.4, 0.7)
 
 ---
 
-### 6. Complete Hybrid Calculation Flow
+### FIG. 10 — Complete Hybrid Calculation Flow
+
 
 ```
 START
@@ -207,7 +282,8 @@ START
 
 ---
 
-### 7. Fallback Mechanism
+### FIG. 11 — Fallback Mechanism
+
 
 ```
 Neural Network Inference
@@ -230,7 +306,8 @@ Neural Network Inference
 
 ---
 
-### 8. Privacy-Preserving Training
+### FIG. 12 — Privacy-Preserving Training
+
 
 ```
 On-Device Training
@@ -254,7 +331,8 @@ On-Device Training
 
 ---
 
-### 9. Outcome Learning Integration
+### FIG. 13 — Outcome Learning Integration
+
 
 ```
 User Action
@@ -282,7 +360,8 @@ User Action
 
 ---
 
-### 10. Complete System Architecture
+### FIG. 14 — Complete System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -393,4 +472,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

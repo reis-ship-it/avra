@@ -128,6 +128,13 @@ cd /Users/reisgordon/SPOTS
 flutter test test/unit/
 flutter test test/integration/
 flutter test test/widget/
+
+# Run domain suites (grouped test runs)
+# See: test/suites/README.md
+bash test/suites/auth_suite.sh
+bash test/suites/onboarding_suite.sh
+bash test/suites/payment_suite.sh
+bash test/suites/all_suites.sh
 ```
 
 ### **4. View Reports**

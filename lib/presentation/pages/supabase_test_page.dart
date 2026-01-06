@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:spots/core/services/logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spots_network/spots_network.dart';
 import 'package:spots_core/spots_core.dart';
-import 'package:spots_ai/services/ai2ai_realtime_service.dart';
+import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
 
 /// Test page to verify Supabase integration
 class SupabaseTestPage extends StatefulWidget {
@@ -21,7 +20,7 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
   late final DataBackend _data;
   late final RealtimeBackend _realtimeBackend;
   late final AuthBackend _auth;
-  AI2AIRealtimeService? _realtime;
+  AI2AIBroadcastService? _realtime;
   bool _diReady = false;
   bool _isLoading = false;
   String _status = 'Ready to test';
@@ -52,7 +51,7 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
     }
     // Try to resolve realtime service (optional)
     try {
-      _realtime = GetIt.instance<AI2AIRealtimeService>();
+      _realtime = GetIt.instance<AI2AIBroadcastService>();
     } catch (_) {}
 
     _testConnection();

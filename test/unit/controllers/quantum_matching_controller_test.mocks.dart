@@ -9,29 +9,29 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i19;
 import 'package:spots/core/ai/personality_learning.dart' as _i6;
 import 'package:spots/core/ai/vibe_analysis_engine.dart' as _i8;
-import 'package:spots/core/models/atomic_timestamp.dart' as _i2;
-import 'package:spots_knot/models/entity_knot.dart' as _i25;
-import 'package:spots_knot/models/knot/compatibility_score.dart' as _i10;
 import 'package:spots/core/models/multi_path_expertise.dart' as _i15;
 import 'package:spots/core/models/onboarding_data.dart' as _i21;
 import 'package:spots/core/models/outcome_result.dart' as _i16;
-import 'package:spots_knot/models/personality_knot.dart' as _i23;
-import 'package:spots_ai/models/personality_profile.dart' as _i5;
 import 'package:spots/core/models/preferences_profile.dart' as _i9;
-import 'package:spots_quantum/models/quantum_entity_state.dart' as _i4;
-import 'package:spots/core/models/unified_models.dart' as _i14;
 import 'package:spots/core/models/unified_user.dart' as _i17;
 import 'package:spots/core/models/user_vibe.dart' as _i7;
 import 'package:spots/core/services/agent_id_service.dart' as _i18;
-import 'package:spots/core/services/atomic_clock_service.dart' as _i11;
-import 'package:spots/core/services/knot/cross_entity_compatibility_service.dart'
-    as _i24;
-import 'package:spots/core/services/knot/integrated_knot_recommendation_engine.dart'
-    as _i22;
 import 'package:spots/core/services/preferences_profile_service.dart' as _i20;
-import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart'
+import 'package:spots_ai/models/personality_profile.dart' as _i5;
+import 'package:spots_core/models/atomic_timestamp.dart' as _i2;
+import 'package:spots_core/models/unified_location_data.dart' as _i14;
+import 'package:spots_core/services/atomic_clock_service.dart' as _i11;
+import 'package:spots_knot/models/entity_knot.dart' as _i25;
+import 'package:spots_knot/models/knot/compatibility_score.dart' as _i10;
+import 'package:spots_knot/models/personality_knot.dart' as _i23;
+import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart'
+    as _i24;
+import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart'
+    as _i22;
+import 'package:spots_quantum/models/quantum_entity_state.dart' as _i4;
+import 'package:spots_quantum/services/quantum/location_timing_quantum_state_service.dart'
     as _i13;
-import 'package:spots/core/services/quantum/quantum_entanglement_service.dart'
+import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart'
     as _i3;
 
 // ignore_for_file: type=lint
@@ -208,6 +208,17 @@ class MockAtomicClockService extends _i1.Mock
   MockAtomicClockService() {
     _i1.throwOnMissingStub(this);
   }
+
+  @override
+  void configure({_i12.Future<DateTime> Function()? serverTimeProvider}) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #configure,
+          [],
+          {#serverTimeProvider: serverTimeProvider},
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   _i12.Future<void> initialize() => (super.noSuchMethod(
@@ -432,7 +443,7 @@ class MockLocationTimingQuantumStateService extends _i1.Mock
 
   @override
   _i12.Future<_i4.EntityLocationQuantumState> createLocationQuantumState({
-    required _i14.UnifiedLocation? location,
+    required _i14.UnifiedLocationData? location,
     double? locationType,
     double? accessibilityScore,
     double? vibeLocationMatch,
@@ -1119,6 +1130,40 @@ class MockAgentIdService extends _i1.Mock implements _i18.AgentIdService {
           ),
         )),
       ) as _i12.Future<String>);
+
+  @override
+  _i12.Future<void> rotateMappingEncryptionKey(
+    String? userId, {
+    _i18.EncryptedMapping? existingEncryptedMapping,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #rotateMappingEncryptionKey,
+          [userId],
+          {#existingEncryptedMapping: existingEncryptedMapping},
+        ),
+        returnValue: _i12.Future<void>.value(),
+        returnValueForMissingStub: _i12.Future<void>.value(),
+      ) as _i12.Future<void>);
+
+  @override
+  void clearCache() => super.noSuchMethod(
+        Invocation.method(
+          #clearCache,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i12.Future<void> flushAuditLogs() => (super.noSuchMethod(
+        Invocation.method(
+          #flushAuditLogs,
+          [],
+        ),
+        returnValue: _i12.Future<void>.value(),
+        returnValueForMissingStub: _i12.Future<void>.value(),
+      ) as _i12.Future<void>);
 
   @override
   _i12.Future<String> getBusinessAgentId(String? businessId) =>

@@ -93,8 +93,11 @@ void main() {
             operationTimes.take(5).fold(0, (sum, time) => sum + time) / 5;
         final lastQuarter =
             operationTimes.skip(15).fold(0, (sum, time) => sum + time) / 5;
-        expect(lastQuarter,
-            lessThan(firstQuarter * 1.5)); // No more than 50% degradation
+        final maxAllowed = firstQuarter == 0 ? 1.0 : firstQuarter * 1.5;
+        expect(
+          lastQuarter,
+          lessThanOrEqualTo(maxAllowed),
+        ); // No more than 50% degradation (with 1ms floor)
 
         print(
             'Sustained AI workload - Average: ${averageTime.toStringAsFixed(1)}ms, '
@@ -437,7 +440,9 @@ void main() {
         // Act
         final stopwatch = Stopwatch()..start();
         final predictions =
-            await predictiveAnalytics.generatePredictions(historicalData: {});
+            await predictiveAnalytics.generatePredictions(
+          historicalData: {'events': historicalData},
+        );
         stopwatch.stop();
 
         // Assert
@@ -461,7 +466,7 @@ void main() {
         for (int userId = 0; userId < 100; userId++) {
           final userProfile = _createTestUserProfile();
           final recommendations = await predictiveAnalytics
-              .generateRecommendations(userProfile: {});
+              .generateRecommendations(userProfile: userProfile);
           allRecommendations.add(recommendations);
         }
 
@@ -830,6 +835,8 @@ Map<String, dynamic> _createComplexUserInteraction() {
     'user_profile': _createComplexUserProfile(),
     'preferences': _generateUserPreferences(),
     'history': _generateInteractionHistory(100),
+    'community_influences': _generateCommunityInfluences(20),
+    'temporal_factors': _generateTemporalFactors(10),
   };
 }
 

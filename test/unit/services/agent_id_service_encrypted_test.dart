@@ -178,16 +178,19 @@ void main() {
         oldMapping: any(named: 'oldMapping'),
       )).thenAnswer((_) async => newEncryptedMapping);
 
-      // Mock Supabase client for getting old mapping
-      // Note: In real scenario, this would query the database
-      // For unit test, we verify the encryption service is called
-      when(() => mockSupabaseService.client).thenThrow(Exception('Supabase not available in unit test'));
+      // In unit tests we don't have a real Supabase client. Provide the existing
+      // encrypted mapping so the service can rotate locally without DB reads.
+      when(() => mockSupabaseService.tryGetClient()).thenReturn(null);
 
-      // Act & Assert - Should throw since we can't actually query Supabase
-      expect(
-        () => service.rotateMappingEncryptionKey(userId),
-        throwsException,
+      await service.rotateMappingEncryptionKey(
+        userId,
+        existingEncryptedMapping: oldEncryptedMapping,
       );
+
+      verify(() => mockEncryptionService.rotateEncryptionKey(
+        userId: userId,
+        oldMapping: any(named: 'oldMapping'),
+      )).called(1);
     });
 
     test('should generate deterministic agent ID when Supabase unavailable', () async {

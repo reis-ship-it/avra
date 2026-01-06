@@ -27,6 +27,13 @@ void main() {
         remoteDataSource: mockRemoteDataSource,
         connectivity: mockConnectivity,
       );
+
+      // Default to "online" unless a test overrides it.
+      when(mockConnectivity.checkConnectivity())
+          .thenAnswer((_) async => [ConnectivityResult.wifi]);
+
+      // executeOfflineFirst always consults the local cache first; default to empty.
+      when(mockLocalDataSource.getCurrentUser()).thenAnswer((_) async => null);
     });
 
     group('signIn', () {
@@ -71,6 +78,10 @@ void main() {
 
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
+        // AuthRepositoryImpl is online-first for sign-in and will attempt remote
+        // even when offline checks indicate none; simulate offline by throwing.
+        when(mockRemoteDataSource.signIn(email, password))
+            .thenThrow(Exception('Offline'));
         when(mockLocalDataSource.signIn(email, password))
             .thenAnswer((_) async => user);
 
@@ -79,7 +90,7 @@ void main() {
         expect(result, isNotNull);
         expect(result?.email, equals(email));
         verify(mockLocalDataSource.signIn(email, password)).called(1);
-        verifyNever(mockRemoteDataSource.signIn(any, any));
+        verify(mockRemoteDataSource.signIn(email, password)).called(1);
       });
 
       test('should fallback to local when remote fails', () async {
@@ -145,16 +156,22 @@ void main() {
 
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
+        when(mockRemoteDataSource.signUp(email, password, name))
+            .thenThrow(Exception('Offline'));
 
         expect(
           () => repository.signUp(email, password, name),
           throwsA(isA<Exception>()),
         );
+
+        verify(mockRemoteDataSource.signUp(email, password, name)).called(1);
       });
     });
 
     group('signOut', () {
       test('should sign out from remote and local', () async {
+        when(mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(mockRemoteDataSource.signOut())
             .thenAnswer((_) async => Future.value());
         when(mockLocalDataSource.clearUser())
@@ -167,6 +184,8 @@ void main() {
       });
 
       test('should clear local even if remote fails', () async {
+        when(mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(mockRemoteDataSource.signOut())
             .thenThrow(Exception('Network error'));
         when(mockLocalDataSource.clearUser())
@@ -189,6 +208,9 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
+        when(mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(mockLocalDataSource.getCurrentUser()).thenAnswer((_) async => null);
         when(mockRemoteDataSource.getCurrentUser())
             .thenAnswer((_) async => user);
         when(mockLocalDataSource.saveUser(user))
@@ -211,6 +233,8 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
+        when(mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(mockRemoteDataSource.getCurrentUser())
             .thenThrow(Exception('Network error'));
         when(mockLocalDataSource.getCurrentUser())
@@ -242,6 +266,10 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
+        when(mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(mockLocalDataSource.saveUser(user))
+            .thenAnswer((_) async => Future.value());
         when(mockRemoteDataSource.updateUser(user))
             .thenAnswer((_) async => updatedUser);
         when(mockLocalDataSource.saveUser(updatedUser))

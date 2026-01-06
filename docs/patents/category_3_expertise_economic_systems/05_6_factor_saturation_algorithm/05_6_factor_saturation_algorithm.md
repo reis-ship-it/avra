@@ -19,7 +19,71 @@
 
 ---
 
-## Executive Summary
+## Cross-References to Related Applications
+
+None.
+
+---
+
+## Statement Regarding Federally Sponsored Research or Development
+
+Not applicable.
+
+---
+
+## Incorporation by Reference
+
+This disclosure references the accompanying visual/drawings document: `docs/patents/category_3_expertise_economic_systems/05_6_factor_saturation_algorithm/05_6_factor_saturation_algorithm_visuals.md`. The diagrams and formulas therein are incorporated by reference as non-limiting illustrative material supporting the written description and example embodiments.
+
+---
+
+## Definitions
+
+For purposes of this disclosure:
+- **“Entity”** means any actor or object represented for scoring/matching (e.g., user, device, business, event, sponsor), depending on the invention context.
+- **“Profile”** means a set of stored attributes used by the system (which may be multi-dimensional and may be anonymized).
+- **“Compatibility score”** means a bounded numeric value used to compare entities or an entity to an opportunity, typically normalized to \([0, 1]\).
+- **“Atomic timestamp”** means a time value derived from an atomic-time service or an equivalent high-precision time source used for synchronization and time-indexed computation.
+
+---
+
+## Brief Description of the Drawings
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: System Architecture Diagram.
+- **FIG. 6**: 6-Factor Saturation Formula.
+- **FIG. 7**: Factor Weight Distribution.
+- **FIG. 8**: Factor 1: Supply Ratio Calculation.
+- **FIG. 9**: Factor 2: Quality Distribution Calculation.
+- **FIG. 10**: Factor 3: Utilization Rate Calculation.
+- **FIG. 11**: Factor 4: Demand Signal Calculation.
+- **FIG. 12**: Factor 5: Growth Velocity Calculation.
+- **FIG. 13**: Factor 6: Geographic Distribution Calculation.
+- **FIG. 14**: Complete Calculation Example.
+- **FIG. 15**: Saturation Score Ranges.
+- **FIG. 16**: Data Flow Diagram.
+- **FIG. 17**: Multiplier Range Visualization.
+- **FIG. 18**: Factor Contribution Visualization.
+- **FIG. 19**: Algorithm Flowchart.
+- **FIG. 20**: Integration Points.
+## Abstract
+
+A system and method for dynamically adjusting expertise thresholds using a multi-factor saturation score. The method computes a saturation score from a plurality of weighted factors including supply, quality, utilization, demand, growth dynamics, and geographic distribution, and applies the saturation score to scale one or more expertise requirements for a category or locality. In some embodiments, the system uses time-indexed measurements and smoothing to reduce volatility and prevent threshold oscillation. The approach prevents oversaturation, maintains quality standards, and supports sustainable growth by adapting eligibility requirements to observed market conditions.
+
+---
+
+## Background
+
+Static expertise thresholds can lead to oversaturation in popular categories and scarcity in underserved geographies. Simple supply/demand ratios may fail to capture quality distribution, utilization, and geographic clustering, producing thresholds that either degrade quality or unnecessarily restrict participation.
+
+Accordingly, there is a need for dynamic threshold adjustment methods that incorporate multiple signals and weights to produce stable, interpretable adjustments that preserve quality while adapting to platform growth and regional variation.
+
+---
+
+## Summary
 
 The 6-Factor Saturation Algorithm is a sophisticated multi-factor analysis system that dynamically adjusts expertise requirements to prevent oversaturation while maintaining quality and enabling sustainable growth. Unlike simple ratio-based approaches, this algorithm uses six weighted factors (supply ratio, quality distribution, utilization rate, demand signal, growth velocity, geographic distribution) to create a comprehensive saturation score that intelligently scales expertise thresholds.
 
@@ -31,7 +95,11 @@ The 6-Factor Saturation Algorithm is a sophisticated multi-factor analysis syste
 
 ---
 
-## Technical Innovation
+## Detailed Description
+
+### Implementation Notes (Non-Limiting)
+
+- In quantum-state embodiments, the system may represent multi-dimensional profiles as quantum state vectors (e.g., |ψ⟩) and compute similarity using an inner product, distance metric, or other quantum-inspired measure.
 
 ### Core Algorithm
 
@@ -424,62 +492,49 @@ class SaturationMetrics {
 
 ---
 
-## Patent Claims
+## Claims
 
-### Claim 1: Method for Dynamic Expertise Threshold Adjustment
+1. A method for dynamic expertise threshold adjustment using 6-factor saturation analysis, comprising:
+   (a) Calculating a supply ratio factor by dividing the number of experts by the total number of users and normalizing against a target ratio of 2%
+   (b) Analyzing a quality distribution factor by computing a weighted average of expert ratings, engagement rates, and verification status
+   (c) Computing a utilization rate factor by measuring the ratio of active experts to total experts and events hosted to potential capacity
+   (d) Measuring a demand signal factor by analyzing search trends, wait list ratios, follow requests, and list subscriptions
+   (e) Evaluating a growth velocity factor by calculating growth rate instability from expert count changes over time periods
+   (f) Analyzing a geographic distribution factor by computing a clustering coefficient from location entropy
+   (g) Combining the six factors using a weighted formula: (supply ratio × 25%) + ((1 - quality) × 20%) + ((1 - utilization) × 20%) + ((1 - demand) × 15%) + (growth instability × 10%) + (geographic clustering × 10%)
+   (h) Calculating a saturation multiplier as 1.0 + (saturation score × 2.0)
+   (i) Adjusting expertise requirements by multiplying base requirements by the saturation multiplier
 
-A method for dynamic expertise threshold adjustment using 6-factor saturation analysis, comprising:
+2. A system for preventing expertise oversaturation using multi-factor analysis, comprising:
+   (a) A 6-factor saturation algorithm with weighted combination of factors
+   (b) A supply ratio calculation module that normalizes expert-to-user ratio against a 2% target
+   (c) A quality distribution analysis module that evaluates expert quality using ratings, engagement, and verification
+   (d) A utilization rate computation module that measures active expert usage and event capacity
+   (e) A demand signal measurement module that analyzes user search trends and engagement patterns
+   (f) A growth velocity evaluation module that calculates growth rate stability and instability
+   (g) A geographic distribution analysis module that computes location clustering coefficients
+   (h) A dynamic threshold adjustment module that applies saturation multiplier to base requirements
 
-1. Calculating a supply ratio factor by dividing the number of experts by the total number of users and normalizing against a target ratio of 2%
-2. Analyzing a quality distribution factor by computing a weighted average of expert ratings, engagement rates, and verification status
-3. Computing a utilization rate factor by measuring the ratio of active experts to total experts and events hosted to potential capacity
-4. Measuring a demand signal factor by analyzing search trends, wait list ratios, follow requests, and list subscriptions
-5. Evaluating a growth velocity factor by calculating growth rate instability from expert count changes over time periods
-6. Analyzing a geographic distribution factor by computing a clustering coefficient from location entropy
-7. Combining the six factors using a weighted formula: (supply ratio × 25%) + ((1 - quality) × 20%) + ((1 - utilization) × 20%) + ((1 - demand) × 15%) + (growth instability × 10%) + (geographic clustering × 10%)
-8. Calculating a saturation multiplier as 1.0 + (saturation score × 2.0)
-9. Adjusting expertise requirements by multiplying base requirements by the saturation multiplier
+3. The method of claim 1, further comprising sophisticated expertise saturation analysis using 6 weighted factors:
+   (a) Calculating supply ratio (25% weight) by normalizing expert-to-user ratio against 2% target
+   (b) Analyzing quality distribution (20% weight) using inverted quality score (1 - quality)
+   (c) Computing utilization rate (20% weight) using inverted utilization score (1 - utilization)
+   (d) Measuring demand signal (15% weight) using inverted demand score (1 - demand)
+   (e) Evaluating growth velocity (10% weight) as growth instability from rate changes
+   (f) Analyzing geographic distribution (10% weight) as clustering coefficient from location entropy
+   (g) Calculating saturation score from weighted combination of all six factors
+   (h) Generating dynamic threshold adjustment recommendation based on saturation score
 
-### Claim 2: System for Preventing Expertise Oversaturation
+4. An expertise management system using 6-factor saturation algorithm, comprising:
+   (a) Multi-factor saturation analysis with six distinct factors
+   (b) Quality-based threshold adjustment that increases requirements when quality is low
+   (c) Utilization-based requirements that scale based on active expert usage
+   (d) Demand-responsive scaling that adjusts thresholds based on user demand signals
+   (e) Growth velocity monitoring that detects unhealthy growth patterns
+   (f) Geographic distribution optimization that prevents location clustering
+   (g) Dynamic expertise requirement calculation using saturation multiplier (1.0x - 3.0x range)
 
-A system for preventing expertise oversaturation using multi-factor analysis, comprising:
-
-1. A 6-factor saturation algorithm with weighted combination of factors
-2. A supply ratio calculation module that normalizes expert-to-user ratio against a 2% target
-3. A quality distribution analysis module that evaluates expert quality using ratings, engagement, and verification
-4. A utilization rate computation module that measures active expert usage and event capacity
-5. A demand signal measurement module that analyzes user search trends and engagement patterns
-6. A growth velocity evaluation module that calculates growth rate stability and instability
-7. A geographic distribution analysis module that computes location clustering coefficients
-8. A dynamic threshold adjustment module that applies saturation multiplier to base requirements
-
-### Claim 3: Method for Sophisticated Expertise Saturation Analysis
-
-A method for sophisticated expertise saturation analysis using 6 weighted factors, comprising:
-
-1. Calculating supply ratio (25% weight) by normalizing expert-to-user ratio against 2% target
-2. Analyzing quality distribution (20% weight) using inverted quality score (1 - quality)
-3. Computing utilization rate (20% weight) using inverted utilization score (1 - utilization)
-4. Measuring demand signal (15% weight) using inverted demand score (1 - demand)
-5. Evaluating growth velocity (10% weight) as growth instability from rate changes
-6. Analyzing geographic distribution (10% weight) as clustering coefficient from location entropy
-7. Calculating saturation score from weighted combination of all six factors
-8. Generating dynamic threshold adjustment recommendation based on saturation score
-
-### Claim 4: Expertise Management System with 6-Factor Saturation
-
-An expertise management system using 6-factor saturation algorithm, comprising:
-
-1. Multi-factor saturation analysis with six distinct factors
-2. Quality-based threshold adjustment that increases requirements when quality is low
-3. Utilization-based requirements that scale based on active expert usage
-4. Demand-responsive scaling that adjusts thresholds based on user demand signals
-5. Growth velocity monitoring that detects unhealthy growth patterns
-6. Geographic distribution optimization that prevents location clustering
-7. Dynamic expertise requirement calculation using saturation multiplier (1.0x - 3.0x range)
-
----
-
+       ---
 ## Patentability Assessment
 
 ### Novelty Score: 7/10
@@ -1109,8 +1164,7 @@ This ensures geographic balance in saturation analysis.
 
 ---
 
-## Experimental Validation
-
+## Appendix A — Experimental Validation (Non-Limiting)
 **Date:** Original (see individual experiments), December 23, 2025 (Atomic Timing Integration)  
 **Status:** ✅ Complete - All experiments validated (including atomic timing integration)  
 **Execution Time:** 0.01 seconds  

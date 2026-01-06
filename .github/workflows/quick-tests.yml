@@ -25,6 +25,11 @@ jobs:
         
     - name: Get dependencies
       run: flutter pub get
+
+    - name: Repo guardrails (architecture + hygiene)
+      run: |
+        dart run scripts/ci/check_repo_hygiene.dart
+        dart run scripts/ci/check_architecture.dart
       
     - name: Run critical unit tests
       run: |

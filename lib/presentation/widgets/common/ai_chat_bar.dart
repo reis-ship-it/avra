@@ -35,6 +35,21 @@ class _AIChatBarState extends State<AIChatBar> {
   }
 
   @override
+  void didUpdateWidget(covariant AIChatBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Keep controller in sync if parent changes initialValue across rebuilds.
+    if (widget.initialValue != oldWidget.initialValue) {
+      final next = widget.initialValue ?? '';
+      if (_controller.text != next) {
+        _controller.value = TextEditingValue(
+          text: next,
+          selection: TextSelection.collapsed(offset: next.length),
+        );
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -45,6 +60,8 @@ class _AIChatBarState extends State<AIChatBar> {
     if (message.isNotEmpty && widget.onSendMessage != null) {
       widget.onSendMessage!(message);
       _controller.clear();
+      // Rebuild so the send button disables after clearing.
+      setState(() {});
     }
   }
 
@@ -74,6 +91,10 @@ class _AIChatBarState extends State<AIChatBar> {
                 controller: _controller,
                 enabled: widget.enabled && !widget.isLoading,
                 onTap: widget.onTap,
+                onChanged: (_) {
+                  // Rebuild to keep send button enabled/disabled in sync.
+                  setState(() {});
+                },
                 onSubmitted: (_) => _handleSendMessage(),
                 textInputAction: TextInputAction.send,
                 decoration: InputDecoration(
@@ -113,11 +134,13 @@ class _AIChatBarState extends State<AIChatBar> {
               IconButton(
                 icon: Icon(
                   Icons.send,
-                  color: _controller.text.trim().isNotEmpty
+                  color: (widget.onSendMessage != null &&
+                          _controller.text.trim().isNotEmpty)
                       ? AppTheme.primaryColor
                       : AppColors.grey400,
                 ),
-                onPressed: _controller.text.trim().isNotEmpty
+                onPressed: (widget.onSendMessage != null &&
+                        _controller.text.trim().isNotEmpty)
                     ? _handleSendMessage
                     : null,
               ),

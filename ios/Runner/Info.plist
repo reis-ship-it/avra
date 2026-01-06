@@ -22,26 +22,41 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.avra.app.oauth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>spots</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>GMSApiKey</key>
+	<string>$(GOOGLE_MAPS_IOS_API_KEY)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	
-	<!-- Location Permissions -->
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>SPOTS needs location access to detect nearby spots and provide personalized recommendations even when the app is in the background, ensuring continuous learning per OUR_GUTS.md principles.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>SPOTS needs background location access for continuous spot detection and ai2ai learning that respects your privacy while helping you discover places where you belong.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>SPOTS needs your location to show nearby spots and create personalized recommendations based on your unique preferences.</string>
-	
-	<!-- Bluetooth Permissions for AI2AI Communication -->
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>SPOTS uses Bluetooth for secure ai2ai communication between devices, enabling anonymous personality learning while maintaining your privacy and control.</string>
+	<string>AVRA uses Bluetooth for secure ai2ai communication between devices, enabling anonymous personality learning while maintaining your privacy and control.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>SPOTS uses Bluetooth to connect with nearby devices for secure ai2ai learning, always respecting your privacy per OUR_GUTS.md principles.</string>
-	
-	<!-- Background Modes for Continuous Learning -->
+	<string>AVRA uses Bluetooth to connect with nearby devices for secure ai2ai learning, always respecting your privacy per OUR_GUTS.md principles.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>AVRA uses the camera to capture evidence for disputes (e.g., screenshots/photos) to help resolve issues fairly.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>AVRA needs location access to detect nearby spots and provide personalized recommendations even when the app is in the background, ensuring continuous learning per OUR_GUTS.md principles.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>AVRA needs background location access for continuous spot detection and ai2ai learning that respects your privacy while helping you discover places where you belong.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>AVRA needs your location to show nearby spots and create personalized recommendations based on your unique preferences.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>AVRA needs access to your photo library so you can attach evidence (screenshots/photos) to disputes.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
@@ -49,10 +64,14 @@
 		<string>bluetooth-central</string>
 		<string>bluetooth-peripheral</string>
 		<string>background-fetch</string>
+		<string>nearby-interaction</string>
+		<string>external-accessory</string>
+		<string>processing</string>
+		<string>remote-notification</string>
+		<string>push-to-talk</string>
+		<string>audio</string>
+		<string>fetch</string>
 	</array>
-	
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -69,24 +88,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<!-- Google Maps API Key (used by google_maps_flutter on iOS) -->
-	<key>GMSApiKey</key>
-	<string>AIzaSyBruEqo9VBO82RYUtRzbS00_t97taO2T2Y</string>
-	
-	<!-- OAuth Deep Link URL Scheme -->
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>com.spots.app.oauth</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>spots</string>
-			</array>
-		</dict>
 	</array>
 </dict>
 </plist>

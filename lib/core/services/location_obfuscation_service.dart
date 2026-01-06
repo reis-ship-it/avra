@@ -178,15 +178,30 @@ class LocationObfuscationService {
     // "City, State, Country"
     // "City"
     final commaParts = locationString.split(',');
-    
-    if (commaParts.isNotEmpty) {
-      parts['city'] = commaParts[0].trim();
+
+    if (commaParts.isEmpty) {
+      return parts;
     }
-    
+
+    // Heuristic: if the first segment looks like a street address (contains digits)
+    // and we have more segments, treat it as "street, city, state(/zip), country".
+    final first = commaParts[0].trim();
+    final looksLikeStreetAddress = RegExp(r'\d').hasMatch(first);
+    if (looksLikeStreetAddress && commaParts.length >= 2) {
+      parts['city'] = commaParts[1].trim();
+      if (commaParts.length >= 3) {
+        parts['state'] = commaParts[2].trim();
+      }
+      if (commaParts.length >= 4) {
+        parts['country'] = commaParts[3].trim();
+      }
+      return parts;
+    }
+
+    parts['city'] = first;
     if (commaParts.length >= 2) {
       parts['state'] = commaParts[1].trim();
     }
-    
     if (commaParts.length >= 3) {
       parts['country'] = commaParts[2].trim();
     }

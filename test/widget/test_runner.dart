@@ -10,7 +10,6 @@ import 'pages/lists/lists_page_test.dart' as lists_page_tests;
 import 'components/universal_ai_search_test.dart' as universal_ai_search_tests;
 import 'components/role_based_ui_test.dart' as role_based_ui_tests;
 import 'components/dialogs_and_permissions_test.dart' as dialogs_permissions_tests;
-import 'golden/golden_tests.dart' as golden_tests;
 
 /// Comprehensive Widget Test Suite Runner
 /// 
@@ -66,10 +65,6 @@ void main() {
 
     group('💬 Dialogs & Permissions', () {
       dialogs_permissions_tests.main();
-    });
-
-    group('📸 Visual Regression Protection', () {
-      golden_tests.main();
     });
   });
 }

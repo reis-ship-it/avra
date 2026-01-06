@@ -2,6 +2,14 @@
 
 This guide will help you set up Google Gemini LLM integration for SPOTS.
 
+## 🧠 Local on-device LLM (model-pack system)
+
+SPOTS supports a **local model-pack system** for on-device inference. Because model weights are multi‑GB, they are **not shipped inside the base app install**. Instead, eligible devices **auto-download on Wi‑Fi by default (opt-out)** using a **signed manifest** fetched from Supabase.
+
+**Source of truth docs:**
+- `docs/plans/architecture/LOCAL_LLM_MODEL_PACK_SYSTEM.md`
+- `docs/plans/onboarding/ONBOARDING_LLM_DOWNLOAD_AND_BOOTSTRAP_ARCHITECTURE.md`
+
 ## 🚀 Quick Start
 
 ### Step 1: Get Google Gemini API Key
@@ -21,6 +29,14 @@ cd /path/to/SPOTS
 supabase functions deploy llm-chat --no-verify-jwt
 ```
 
+### (Optional) Step 2b: Deploy the signed local model-pack manifest function
+
+This function serves a **signed** model-pack manifest used by the app in release builds:
+
+```bash
+supabase functions deploy local-llm-manifest --no-verify-jwt
+```
+
 ### Step 3: Set the API Key Secret
 
 ```bash
@@ -29,6 +45,47 @@ supabase secrets set GEMINI_API_KEY=your_api_key_here
 ```
 
 **Important:** Replace `your_api_key_here` with your actual API key from Step 1.
+
+### (Optional) Step 3b: Configure local-llm-manifest signing + artifact metadata
+
+1) Generate an Ed25519 keypair for signing:
+
+```bash
+dart run scripts/security/generate_local_llm_manifest_keys.dart
+```
+
+2) Set Supabase secrets (server-side signing seed + key id):
+
+```bash
+supabase secrets set LOCAL_LLM_MANIFEST_KEY_ID=v1
+supabase secrets set LOCAL_LLM_MANIFEST_SIGNING_KEY_B64=<base64_32_byte_seed>
+```
+
+3) Configure artifact URLs + hashes (Supabase Storage public URLs recommended):
+
+```bash
+# llama8b (default)
+supabase secrets set LOCAL_LLM_ANDROID_GGUF_URL=<https://.../model.gguf>
+supabase secrets set LOCAL_LLM_ANDROID_GGUF_SHA256=<64_hex_chars>
+supabase secrets set LOCAL_LLM_ANDROID_GGUF_SIZE_BYTES=<bytes>
+
+supabase secrets set LOCAL_LLM_IOS_COREML_ZIP_URL=<https://.../model_coreml.zip>
+supabase secrets set LOCAL_LLM_IOS_COREML_ZIP_SHA256=<64_hex_chars>
+supabase secrets set LOCAL_LLM_IOS_COREML_ZIP_SIZE_BYTES=<bytes>
+
+# small3b (optional tier)
+supabase secrets set LOCAL_LLM_ANDROID_GGUF_URL_3B=<https://.../model.gguf>
+supabase secrets set LOCAL_LLM_ANDROID_GGUF_SHA256_3B=<64_hex_chars>
+supabase secrets set LOCAL_LLM_ANDROID_GGUF_SIZE_BYTES_3B=<bytes>
+
+supabase secrets set LOCAL_LLM_IOS_COREML_ZIP_URL_3B=<https://.../model_coreml.zip>
+supabase secrets set LOCAL_LLM_IOS_COREML_ZIP_SHA256_3B=<64_hex_chars>
+supabase secrets set LOCAL_LLM_IOS_COREML_ZIP_SIZE_BYTES_3B=<bytes>
+```
+
+4) Provide the **public key** to the app at build time:
+
+- `--dart-define=LOCAL_LLM_MANIFEST_PUBLIC_KEY_B64_V1=<base64_public_key>`
 
 ### Step 4: Verify Deployment
 
@@ -155,5 +212,5 @@ curl -X POST https://your-project.supabase.co/functions/v1/llm-chat \
 
 - [Google Gemini API Docs](https://ai.google.dev/docs)
 - [Supabase Edge Functions Docs](https://supabase.com/docs/guides/functions)
-- [SPOTS LLM Integration Guide](../VIBE_CODING/DEPLOYMENT/llm_integration_assessment.md)
+- [SPOTS LLM Integration Guide](../../docs/plans/llm_integration/LLM_INTEGRATION_COMPLETE.md)
 

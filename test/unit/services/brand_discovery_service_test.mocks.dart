@@ -3,16 +3,17 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:spots/core/models/brand_account.dart' as _i9;
+import 'package:spots/core/models/brand_account.dart' as _i10;
 import 'package:spots/core/models/expertise_event.dart' as _i2;
 import 'package:spots/core/models/sponsorship.dart' as _i3;
-import 'package:spots/core/models/spot.dart' as _i7;
-import 'package:spots/core/models/unified_user.dart' as _i6;
-import 'package:spots/core/services/expertise_event_service.dart' as _i4;
-import 'package:spots/core/services/sponsorship_service.dart' as _i8;
+import 'package:spots/core/models/spot.dart' as _i8;
+import 'package:spots/core/models/unified_user.dart' as _i7;
+import 'package:spots/core/services/expertise_event_service.dart' as _i5;
+import 'package:spots/core/services/sponsorship_service.dart' as _i9;
+import 'package:spots/core/services/vibe_compatibility_service.dart' as _i4;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -49,28 +50,40 @@ class _FakeSponsorship_1 extends _i1.SmartFake implements _i3.Sponsorship {
         );
 }
 
+class _FakeVibeScore_2 extends _i1.SmartFake implements _i4.VibeScore {
+  _FakeVibeScore_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [ExpertiseEventService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockExpertiseEventService extends _i1.Mock
-    implements _i4.ExpertiseEventService {
+    implements _i5.ExpertiseEventService {
   MockExpertiseEventService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<_i2.ExpertiseEvent> createEvent({
-    required _i6.UnifiedUser? host,
+  _i6.Future<_i2.ExpertiseEvent> createEvent({
+    required _i7.UnifiedUser? host,
     required String? title,
     required String? description,
     required String? category,
     required _i2.ExpertiseEventType? eventType,
     required DateTime? startTime,
     required DateTime? endTime,
-    List<_i7.Spot>? spots,
+    List<_i8.Spot>? spots,
     String? location,
     double? latitude,
     double? longitude,
+    String? cityCode,
+    String? localityCode,
     int? maxAttendees = 20,
     double? price,
     bool? isPublic = true,
@@ -91,12 +104,14 @@ class MockExpertiseEventService extends _i1.Mock
             #location: location,
             #latitude: latitude,
             #longitude: longitude,
+            #cityCode: cityCode,
+            #localityCode: localityCode,
             #maxAttendees: maxAttendees,
             #price: price,
             #isPublic: isPublic,
           },
         ),
-        returnValue: _i5.Future<_i2.ExpertiseEvent>.value(_FakeExpertiseEvent_0(
+        returnValue: _i6.Future<_i2.ExpertiseEvent>.value(_FakeExpertiseEvent_0(
           this,
           Invocation.method(
             #createEvent,
@@ -113,16 +128,18 @@ class MockExpertiseEventService extends _i1.Mock
               #location: location,
               #latitude: latitude,
               #longitude: longitude,
+              #cityCode: cityCode,
+              #localityCode: localityCode,
               #maxAttendees: maxAttendees,
               #price: price,
               #isPublic: isPublic,
             },
           ),
         )),
-      ) as _i5.Future<_i2.ExpertiseEvent>);
+      ) as _i6.Future<_i2.ExpertiseEvent>);
 
   @override
-  _i5.Future<_i2.ExpertiseEvent> duplicateEvent({
+  _i6.Future<_i2.ExpertiseEvent> duplicateEvent({
     required _i2.ExpertiseEvent? originalEvent,
     DateTime? newStartTime,
     bool? autoSuggestTime = true,
@@ -137,7 +154,7 @@ class MockExpertiseEventService extends _i1.Mock
             #autoSuggestTime: autoSuggestTime,
           },
         ),
-        returnValue: _i5.Future<_i2.ExpertiseEvent>.value(_FakeExpertiseEvent_0(
+        returnValue: _i6.Future<_i2.ExpertiseEvent>.value(_FakeExpertiseEvent_0(
           this,
           Invocation.method(
             #duplicateEvent,
@@ -149,12 +166,12 @@ class MockExpertiseEventService extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i2.ExpertiseEvent>);
+      ) as _i6.Future<_i2.ExpertiseEvent>);
 
   @override
-  _i5.Future<void> registerForEvent(
+  _i6.Future<void> registerForEvent(
     _i2.ExpertiseEvent? event,
-    _i6.UnifiedUser? user,
+    _i7.UnifiedUser? user,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -164,14 +181,14 @@ class MockExpertiseEventService extends _i1.Mock
             user,
           ],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 
   @override
-  _i5.Future<void> cancelRegistration(
+  _i6.Future<void> cancelRegistration(
     _i2.ExpertiseEvent? event,
-    _i6.UnifiedUser? user,
+    _i7.UnifiedUser? user,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -181,45 +198,45 @@ class MockExpertiseEventService extends _i1.Mock
             user,
           ],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 
   @override
-  _i5.Future<List<_i2.ExpertiseEvent>> getEventsByHost(_i6.UnifiedUser? host) =>
+  _i6.Future<List<_i2.ExpertiseEvent>> getEventsByHost(_i7.UnifiedUser? host) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventsByHost,
           [host],
         ),
         returnValue:
-            _i5.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
-      ) as _i5.Future<List<_i2.ExpertiseEvent>>);
+            _i6.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i6.Future<List<_i2.ExpertiseEvent>>);
 
   @override
-  _i5.Future<List<_i2.ExpertiseEvent>> getEventsByAttendee(
-          _i6.UnifiedUser? user) =>
+  _i6.Future<List<_i2.ExpertiseEvent>> getEventsByAttendee(
+          _i7.UnifiedUser? user) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventsByAttendee,
           [user],
         ),
         returnValue:
-            _i5.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
-      ) as _i5.Future<List<_i2.ExpertiseEvent>>);
+            _i6.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i6.Future<List<_i2.ExpertiseEvent>>);
 
   @override
-  _i5.Future<_i2.ExpertiseEvent?> getEventById(String? eventId) =>
+  _i6.Future<_i2.ExpertiseEvent?> getEventById(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventById,
           [eventId],
         ),
-        returnValue: _i5.Future<_i2.ExpertiseEvent?>.value(),
-      ) as _i5.Future<_i2.ExpertiseEvent?>);
+        returnValue: _i6.Future<_i2.ExpertiseEvent?>.value(),
+      ) as _i6.Future<_i2.ExpertiseEvent?>);
 
   @override
-  _i5.Future<List<_i2.ExpertiseEvent>> searchEvents({
+  _i6.Future<List<_i2.ExpertiseEvent>> searchEvents({
     String? category,
     String? location,
     _i2.ExpertiseEventType? eventType,
@@ -243,11 +260,11 @@ class MockExpertiseEventService extends _i1.Mock
           },
         ),
         returnValue:
-            _i5.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
-      ) as _i5.Future<List<_i2.ExpertiseEvent>>);
+            _i6.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i6.Future<List<_i2.ExpertiseEvent>>);
 
   @override
-  _i5.Future<List<_i2.ExpertiseEvent>> getUpcomingEventsInCategory(
+  _i6.Future<List<_i2.ExpertiseEvent>> getUpcomingEventsInCategory(
     String? category, {
     int? maxResults = 10,
   }) =>
@@ -258,12 +275,12 @@ class MockExpertiseEventService extends _i1.Mock
           {#maxResults: maxResults},
         ),
         returnValue:
-            _i5.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
-      ) as _i5.Future<List<_i2.ExpertiseEvent>>);
+            _i6.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i6.Future<List<_i2.ExpertiseEvent>>);
 
   @override
-  _i5.Future<List<_i2.ExpertiseEvent>> searchEventsWithConnectedLocalities({
-    required _i6.UnifiedUser? user,
+  _i6.Future<List<_i2.ExpertiseEvent>> searchEventsWithConnectedLocalities({
+    required _i7.UnifiedUser? user,
     String? category,
     String? location,
     _i2.ExpertiseEventType? eventType,
@@ -288,11 +305,11 @@ class MockExpertiseEventService extends _i1.Mock
           },
         ),
         returnValue:
-            _i5.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
-      ) as _i5.Future<List<_i2.ExpertiseEvent>>);
+            _i6.Future<List<_i2.ExpertiseEvent>>.value(<_i2.ExpertiseEvent>[]),
+      ) as _i6.Future<List<_i2.ExpertiseEvent>>);
 
   @override
-  _i5.Future<void> updateEventStatus(
+  _i6.Future<void> updateEventStatus(
     _i2.ExpertiseEvent? event,
     _i2.EventStatus? status,
   ) =>
@@ -304,22 +321,22 @@ class MockExpertiseEventService extends _i1.Mock
             status,
           ],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }
 
 /// A class which mocks [SponsorshipService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSponsorshipService extends _i1.Mock
-    implements _i8.SponsorshipService {
+    implements _i9.SponsorshipService {
   MockSponsorshipService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<_i3.Sponsorship> createSponsorship({
+  _i6.Future<_i3.Sponsorship> createSponsorship({
     required String? eventId,
     required String? brandId,
     required _i3.SponsorshipType? type,
@@ -342,7 +359,7 @@ class MockSponsorshipService extends _i1.Mock
             #vibeCompatibilityScore: vibeCompatibilityScore,
           },
         ),
-        returnValue: _i5.Future<_i3.Sponsorship>.value(_FakeSponsorship_1(
+        returnValue: _i6.Future<_i3.Sponsorship>.value(_FakeSponsorship_1(
           this,
           Invocation.method(
             #createSponsorship,
@@ -358,42 +375,42 @@ class MockSponsorshipService extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i3.Sponsorship>);
+      ) as _i6.Future<_i3.Sponsorship>);
 
   @override
-  _i5.Future<List<_i3.Sponsorship>> getSponsorshipsForEvent(String? eventId) =>
+  _i6.Future<List<_i3.Sponsorship>> getSponsorshipsForEvent(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getSponsorshipsForEvent,
           [eventId],
         ),
         returnValue:
-            _i5.Future<List<_i3.Sponsorship>>.value(<_i3.Sponsorship>[]),
-      ) as _i5.Future<List<_i3.Sponsorship>>);
+            _i6.Future<List<_i3.Sponsorship>>.value(<_i3.Sponsorship>[]),
+      ) as _i6.Future<List<_i3.Sponsorship>>);
 
   @override
-  _i5.Future<List<_i3.Sponsorship>> getSponsorshipsForBrand(String? brandId) =>
+  _i6.Future<List<_i3.Sponsorship>> getSponsorshipsForBrand(String? brandId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getSponsorshipsForBrand,
           [brandId],
         ),
         returnValue:
-            _i5.Future<List<_i3.Sponsorship>>.value(<_i3.Sponsorship>[]),
-      ) as _i5.Future<List<_i3.Sponsorship>>);
+            _i6.Future<List<_i3.Sponsorship>>.value(<_i3.Sponsorship>[]),
+      ) as _i6.Future<List<_i3.Sponsorship>>);
 
   @override
-  _i5.Future<_i3.Sponsorship?> getSponsorshipById(String? sponsorshipId) =>
+  _i6.Future<_i3.Sponsorship?> getSponsorshipById(String? sponsorshipId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getSponsorshipById,
           [sponsorshipId],
         ),
-        returnValue: _i5.Future<_i3.Sponsorship?>.value(),
-      ) as _i5.Future<_i3.Sponsorship?>);
+        returnValue: _i6.Future<_i3.Sponsorship?>.value(),
+      ) as _i6.Future<_i3.Sponsorship?>);
 
   @override
-  _i5.Future<_i3.Sponsorship> updateSponsorshipStatus({
+  _i6.Future<_i3.Sponsorship> updateSponsorshipStatus({
     required String? sponsorshipId,
     required _i3.SponsorshipStatus? status,
   }) =>
@@ -406,7 +423,7 @@ class MockSponsorshipService extends _i1.Mock
             #status: status,
           },
         ),
-        returnValue: _i5.Future<_i3.Sponsorship>.value(_FakeSponsorship_1(
+        returnValue: _i6.Future<_i3.Sponsorship>.value(_FakeSponsorship_1(
           this,
           Invocation.method(
             #updateSponsorshipStatus,
@@ -417,10 +434,10 @@ class MockSponsorshipService extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i3.Sponsorship>);
+      ) as _i6.Future<_i3.Sponsorship>);
 
   @override
-  _i5.Future<bool> checkSponsorshipEligibility({
+  _i6.Future<bool> checkSponsorshipEligibility({
     required String? eventId,
     required String? brandId,
   }) =>
@@ -433,11 +450,11 @@ class MockSponsorshipService extends _i1.Mock
             #brandId: brandId,
           },
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
 
   @override
-  _i5.Future<double> calculateCompatibility({
+  _i6.Future<double> calculateCompatibility({
     required String? eventId,
     required String? brandId,
   }) =>
@@ -450,27 +467,54 @@ class MockSponsorshipService extends _i1.Mock
             #brandId: brandId,
           },
         ),
-        returnValue: _i5.Future<double>.value(0.0),
-      ) as _i5.Future<double>);
+        returnValue: _i6.Future<double>.value(0.0),
+      ) as _i6.Future<double>);
 
   @override
-  _i5.Future<_i9.BrandAccount?> getBrandById(String? brandId) =>
+  _i6.Future<_i4.VibeScore> calculateVibeScore({
+    required String? eventId,
+    required String? brandId,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #calculateVibeScore,
+          [],
+          {
+            #eventId: eventId,
+            #brandId: brandId,
+          },
+        ),
+        returnValue: _i6.Future<_i4.VibeScore>.value(_FakeVibeScore_2(
+          this,
+          Invocation.method(
+            #calculateVibeScore,
+            [],
+            {
+              #eventId: eventId,
+              #brandId: brandId,
+            },
+          ),
+        )),
+      ) as _i6.Future<_i4.VibeScore>);
+
+  @override
+  _i6.Future<_i10.BrandAccount?> getBrandById(String? brandId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getBrandById,
           [brandId],
         ),
-        returnValue: _i5.Future<_i9.BrandAccount?>.value(),
-      ) as _i5.Future<_i9.BrandAccount?>);
+        returnValue: _i6.Future<_i10.BrandAccount?>.value(),
+      ) as _i6.Future<_i10.BrandAccount?>);
 
   @override
-  _i5.Future<void> registerBrand(_i9.BrandAccount? brand) =>
+  _i6.Future<void> registerBrand(_i10.BrandAccount? brand) =>
       (super.noSuchMethod(
         Invocation.method(
           #registerBrand,
           [brand],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }

@@ -1,10 +1,17 @@
+import 'dart:async';
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:spots/core/models/onboarding_suggestion_event.dart';
+import 'package:spots/core/services/onboarding_suggestion_event_store.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 
 class FavoritePlacesPage extends StatefulWidget {
   final List<String> favoritePlaces;
   final Function(List<String>) onPlacesChanged;
+  final String? userId;
   final String? userHomebase; // Add user's homebase for smart suggestions
   final VoidCallback? onDismissSnackBars; // Callback to dismiss SnackBars
 
@@ -12,6 +19,7 @@ class FavoritePlacesPage extends StatefulWidget {
     super.key,
     required this.favoritePlaces,
     required this.onPlacesChanged,
+    this.userId,
     this.userHomebase,
     this.onDismissSnackBars,
   });
@@ -21,6 +29,9 @@ class FavoritePlacesPage extends StatefulWidget {
 }
 
 class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
+  static const String _logName = 'FavoritePlacesPage';
+
+  late final OnboardingSuggestionEventStore _eventStore;
   final TextEditingController _searchController = TextEditingController();
   List<String> _selectedPlaces = [];
   List<String> _suggestions = [];
@@ -37,6 +48,68 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
   void dismissSnackBars() {
     if (mounted) {
       ScaffoldMessenger.of(context).clearSnackBars();
+    }
+  }
+
+  Future<void> _logSuggestionsShown({
+    required String promptCategory,
+    required List<String> suggestions,
+  }) async {
+    final userId = widget.userId;
+    if (userId == null || userId.isEmpty) return;
+    try {
+      await _eventStore.appendForUser(
+        userId: userId,
+        event: OnboardingSuggestionEvent(
+          eventId: OnboardingSuggestionEvent.newEventId(),
+          createdAtMs: DateTime.now().millisecondsSinceEpoch,
+          surface: 'favorite_places',
+          provenance: OnboardingSuggestionProvenance.heuristic,
+          promptCategory: promptCategory,
+          suggestions: suggestions
+              .take(12)
+              .map((s) => OnboardingSuggestionItem(id: s, label: s))
+              .toList(),
+          userAction: const OnboardingSuggestionUserAction(
+            type: OnboardingSuggestionActionType.shown,
+          ),
+        ),
+      );
+    } catch (e, st) {
+      developer.log('Failed to log suggestions shown: $e',
+          name: _logName, error: e, stackTrace: st);
+    }
+  }
+
+  Future<void> _logSuggestionAction({
+    required OnboardingSuggestionActionType type,
+    required String promptCategory,
+    required String itemLabel,
+  }) async {
+    final userId = widget.userId;
+    if (userId == null || userId.isEmpty) return;
+    try {
+      await _eventStore.appendForUser(
+        userId: userId,
+        event: OnboardingSuggestionEvent(
+          eventId: OnboardingSuggestionEvent.newEventId(),
+          createdAtMs: DateTime.now().millisecondsSinceEpoch,
+          surface: 'favorite_places',
+          provenance: OnboardingSuggestionProvenance.heuristic,
+          promptCategory: promptCategory,
+          suggestions: _suggestions
+              .take(12)
+              .map((s) => OnboardingSuggestionItem(id: s, label: s))
+              .toList(),
+          userAction: OnboardingSuggestionUserAction(
+            type: type,
+            item: OnboardingSuggestionItem(id: itemLabel, label: itemLabel),
+          ),
+        ),
+      );
+    } catch (e, st) {
+      developer.log('Failed to log suggestion action: $e',
+          name: _logName, error: e, stackTrace: st);
     }
   }
 
@@ -201,12 +274,21 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
   @override
   void initState() {
     super.initState();
+    _eventStore = GetIt.instance.isRegistered<OnboardingSuggestionEventStore>()
+        ? GetIt.instance<OnboardingSuggestionEventStore>()
+        : OnboardingSuggestionEventStore();
     _selectedPlaces = List.from(widget.favoritePlaces);
     _suggestions = _getSmartSuggestions();
     _allPlaces = _vibeCategories.values
         .expand((cities) => cities.values)
         .expand((neighborhoods) => neighborhoods)
         .toList();
+
+    // Best-effort: log initial suggestions shown.
+    unawaited(_logSuggestionsShown(
+      promptCategory: 'favorite_places_smart_suggestions',
+      suggestions: _suggestions,
+    ));
   }
 
   @override
@@ -445,8 +527,18 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                     ),
                     onTap: () {
                       if (isSelected) {
+                        unawaited(_logSuggestionAction(
+                          type: OnboardingSuggestionActionType.deselect,
+                          promptCategory: 'favorite_places_vibe_categories',
+                          itemLabel: fullName,
+                        ));
                         _removePlace(fullName);
                       } else {
+                        unawaited(_logSuggestionAction(
+                          type: OnboardingSuggestionActionType.select,
+                          promptCategory: 'favorite_places_vibe_categories',
+                          itemLabel: fullName,
+                        ));
                         _addPlace(fullName);
                       }
                     },
@@ -484,8 +576,18 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
               : null,
           onTap: () {
             if (isSelected) {
+              unawaited(_logSuggestionAction(
+                type: OnboardingSuggestionActionType.deselect,
+                promptCategory: 'favorite_places_search_suggestions',
+                itemLabel: place,
+              ));
               _removePlace(place);
             } else {
+              unawaited(_logSuggestionAction(
+                type: OnboardingSuggestionActionType.select,
+                promptCategory: 'favorite_places_search_suggestions',
+                itemLabel: place,
+              ));
               _addPlace(place);
             }
           },
@@ -628,6 +730,10 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
 
     if (vibeSuggestions.isNotEmpty) {
       _vibeSuggestionsShown++;
+      unawaited(_logSuggestionsShown(
+        promptCategory: 'favorite_places_vibe_suggestions',
+        suggestions: vibeSuggestions,
+      ));
 
       // Show a snackbar with vibe suggestions - shorter duration and easier to dismiss
       ScaffoldMessenger.of(context).showSnackBar(
@@ -660,6 +766,11 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                     .map((suggestion) => ActionChip(
                           label: Text(suggestion),
                           onPressed: () {
+                            unawaited(_logSuggestionAction(
+                              type: OnboardingSuggestionActionType.select,
+                              promptCategory: 'favorite_places_vibe_suggestions',
+                              itemLabel: suggestion,
+                            ));
                             _addPlace(suggestion);
                             ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           },

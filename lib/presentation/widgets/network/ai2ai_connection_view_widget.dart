@@ -19,6 +19,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:developer' as developer;
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:spots/core/models/connection_metrics.dart';
@@ -28,11 +29,18 @@ import 'package:get_it/get_it.dart';
 class AI2AIConnectionViewWidget extends StatefulWidget {
   final bool showHumanConnectionButton;
   final Function(ConnectionMetrics)? onEnableHumanConnection;
+  /// Optional override for tests/debug: provide a fixed list of connections.
+  final List<ConnectionMetrics>? connections;
+
+  /// Optional override for tests/debug: provide an orchestrator instance directly.
+  final VibeConnectionOrchestrator? orchestrator;
   
   const AI2AIConnectionViewWidget({
     super.key,
     this.showHumanConnectionButton = true,
     this.onEnableHumanConnection,
+    this.connections,
+    this.orchestrator,
   });
   
   @override
@@ -48,12 +56,19 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
   @override
   void initState() {
     super.initState();
+    // If tests/debug provided connections explicitly, render without DI/timers.
+    if (widget.connections != null) {
+      _activeConnections = widget.connections!;
+      _isLoading = false;
+      return;
+    }
+
     _initializeOrchestrator();
   }
   
   Future<void> _initializeOrchestrator() async {
     try {
-      _orchestrator = GetIt.instance<VibeConnectionOrchestrator>();
+      _orchestrator = widget.orchestrator ?? GetIt.instance<VibeConnectionOrchestrator>();
       await _refreshConnections();
       _startAutoRefresh();
       
@@ -63,7 +78,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
         });
       }
     } catch (e) {
-      debugPrint('Error initializing orchestrator: $e');
+      developer.log('Error initializing orchestrator: $e', name: 'AI2AIConnectionViewWidget');
       if (mounted) {
         setState(() {
           _isLoading = false;

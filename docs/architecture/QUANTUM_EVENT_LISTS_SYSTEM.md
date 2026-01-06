@@ -51,7 +51,7 @@ EventScopeTabWidget(
 - No personalization (same events for all users in same scope)
 - No AI-powered suggestions
 - No quantum compatibility matching
-- EventRecommendationService exists but not integrated
+- `EventRecommendationService` is available via DI for personalized recommendations, but `EventsBrowsePage` still primarily functions as a scope-based browser UI (full quantum list generation is still future work)
 
 ---
 
@@ -487,9 +487,8 @@ C_final ≈ 0.75 (high compatibility)
 ### **1. Quantum Individual Event Recommendations**
 
 **Current State:**
-- `EventRecommendationService` exists but uses **classical weighted averages**
-- Formula: `relevance = 0.4 * matching + 0.4 * preferences + 0.2 * cross_locality`
-- **Not quantum** - planned for future (Master Plan: "Recommendations ⏳")
+- `EventRecommendationService` now incorporates **true compatibility** signals (quantum + knot topology + weave fit) when available
+- Still **not** full quantum list generation (the “quantum future” section remains planned work), but individual recommendation scoring is no longer purely classical weighted averages
 
 **Quantum Future:**
 - Use **quantum compatibility** instead of weighted averages

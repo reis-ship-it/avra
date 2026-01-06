@@ -170,6 +170,18 @@ class OutcomePredictionService {
     required CallingContext context,
     required TimingFactors timingFactors,
   }) {
+    double matchDim(double? a, double? b) {
+      if (a == null || b == null) return 0.5;
+      return (1.0 - (a - b).abs()).clamp(0.0, 1.0);
+    }
+
+    double avgOrNeutral(List<double?> values) {
+      final present = values.whereType<double>().toList();
+      if (present.isEmpty) return 0.5;
+      final sum = present.fold<double>(0.0, (s, v) => s + v);
+      return (sum / present.length).clamp(0.0, 1.0);
+    }
+
     final features = <double>[];
     
     // User vibe dimensions (12D)
@@ -205,18 +217,36 @@ class OutcomePredictionService {
     features.add(context.opportunityAvailability ?? 0.5);
     features.add(context.networkEffects ?? 0.5);
     features.add(context.communityPatterns ?? 0.5);
-    // Add 4 placeholder context features
-    features.add(0.5);
-    features.add(0.5);
-    features.add(0.5);
-    features.add(0.5);
+    // Additional context features (formerly placeholders)
+    final vibeCompatibility = spotVibe.calculateVibeCompatibility(userVibe);
+    final energyMatch = matchDim(
+      userDims['overall_energy'],
+      spotVibe.vibeDimensions['overall_energy'],
+    );
+    final communityMatch = matchDim(
+      userDims['community_orientation'],
+      spotVibe.vibeDimensions['community_orientation'],
+    );
+    final noveltyMatch = matchDim(
+      userDims['novelty_seeking'],
+      spotVibe.vibeDimensions['novelty_seeking'],
+    );
+    features.add(vibeCompatibility.clamp(0.0, 1.0));
+    features.add(energyMatch);
+    features.add(communityMatch);
+    features.add(noveltyMatch);
     
     // Timing features (5 features)
     features.add(timingFactors.optimalTimeOfDay ?? 0.5);
     features.add(timingFactors.optimalDayOfWeek ?? 0.5);
     features.add(timingFactors.userPatterns ?? 0.5);
     features.add(timingFactors.opportunityTiming ?? 0.5);
-    features.add(0.5); // Placeholder for 5th timing feature
+    features.add(avgOrNeutral([
+      timingFactors.optimalTimeOfDay,
+      timingFactors.optimalDayOfWeek,
+      timingFactors.userPatterns,
+      timingFactors.opportunityTiming,
+    ]));
     
     return features;
   }

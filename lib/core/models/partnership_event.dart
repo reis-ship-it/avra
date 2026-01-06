@@ -5,15 +5,15 @@ import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/spot.dart';
 
 /// Partnership Event Model
-/// 
+///
 /// Extends existing ExpertiseEvent model to support partnerships.
-/// 
+///
 /// **Philosophy Alignment:**
 /// - Opens doors to business partnerships
 /// - Enables multi-party event hosting
 /// - Supports revenue sharing agreements
 /// - Creates pathways for business collaboration
-/// 
+///
 /// **Key Features:**
 /// - Extends ExpertiseEvent with partnership support
 /// - References partnership and revenue split
@@ -22,11 +22,11 @@ class PartnershipEvent extends ExpertiseEvent {
   /// Partnership reference
   final String? partnershipId;
   final EventPartnership? partnership;
-  
+
   /// Revenue split reference
   final String? revenueSplitId;
   final RevenueSplit? revenueSplit;
-  
+
   /// Partnership-specific fields
   final bool isPartnershipEvent;
   final List<String> partnerIds; // All partner IDs (user + business + sponsors)
@@ -48,6 +48,8 @@ class PartnershipEvent extends ExpertiseEvent {
     super.location,
     super.latitude,
     super.longitude,
+    super.cityCode,
+    super.localityCode,
     super.price,
     super.isPaid,
     super.isPublic,
@@ -89,6 +91,8 @@ class PartnershipEvent extends ExpertiseEvent {
       location: event.location,
       latitude: event.latitude,
       longitude: event.longitude,
+      cityCode: event.cityCode,
+      localityCode: event.localityCode,
       price: event.price,
       isPaid: event.isPaid,
       isPublic: event.isPublic,
@@ -161,6 +165,8 @@ class PartnershipEvent extends ExpertiseEvent {
     String? location,
     double? latitude,
     double? longitude,
+    String? cityCode,
+    String? localityCode,
     double? price,
     bool? isPaid,
     bool? isPublic,
@@ -191,6 +197,8 @@ class PartnershipEvent extends ExpertiseEvent {
       location: location ?? this.location,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      cityCode: cityCode ?? this.cityCode,
+      localityCode: localityCode ?? this.localityCode,
       price: price ?? this.price,
       isPaid: isPaid ?? this.isPaid,
       isPublic: isPublic ?? this.isPublic,
@@ -219,4 +227,3 @@ class PartnershipEvent extends ExpertiseEvent {
         partnerCount,
       ];
 }
-

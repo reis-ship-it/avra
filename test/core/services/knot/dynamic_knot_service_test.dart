@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/knot/dynamic_knot_service.dart';
+import 'package:spots_knot/services/knot/dynamic_knot_service.dart';
 import 'package:spots_knot/models/personality_knot.dart';
 import 'package:spots/core/models/mood_state.dart';
 import 'package:spots_knot/models/dynamic_knot.dart';
@@ -21,6 +21,10 @@ void main() {
           alexanderPolynomial: [1.0, -1.0],
           crossingNumber: 3,
           writhe: 1,
+          signature: 0,
+          bridgeNumber: 1,
+          braidIndex: 1,
+          determinant: 1,
         ),
         braidData: [3.0, 1.0, 2.0, 2.0, 3.0],
         createdAt: DateTime.now(),

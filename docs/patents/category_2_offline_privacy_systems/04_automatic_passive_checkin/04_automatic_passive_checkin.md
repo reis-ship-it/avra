@@ -7,13 +7,77 @@
 
 ---
 
-## Executive Summary
+## Cross-References to Related Applications
+
+None.
+
+---
+
+## Statement Regarding Federally Sponsored Research or Development
+
+Not applicable.
+
+---
+
+## Incorporation by Reference
+
+This disclosure references the accompanying visual/drawings document: `docs/patents/category_2_offline_privacy_systems/04_automatic_passive_checkin/04_automatic_passive_checkin_visuals.md`. The diagrams and formulas therein are incorporated by reference as non-limiting illustrative material supporting the written description and example embodiments.
+
+---
+
+## Definitions
+
+For purposes of this disclosure:
+- **“Entity”** means any actor or object represented for scoring/matching (e.g., user, device, business, event, sponsor), depending on the invention context.
+- **“Profile”** means a set of stored attributes used by the system (which may be multi-dimensional and may be anonymized).
+- **“Compatibility score”** means a bounded numeric value used to compare entities or an entity to an opportunity, typically normalized to \([0, 1]\).
+- **“userId”** means an identifier associated with a user account. In privacy-preserving embodiments, user-linked identifiers are not exchanged externally.
+- **“Atomic timestamp”** means a time value derived from an atomic-time service or an equivalent high-precision time source used for synchronization and time-indexed computation.
+
+---
+
+## Brief Description of the Drawings
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Dual-Trigger Verification Flow.
+- **FIG. 6**: Geofencing Detection.
+- **FIG. 7**: Bluetooth/AI2AI Proximity Verification.
+- **FIG. 8**: Dwell Time Calculation.
+- **FIG. 9**: Quality Score Calculation.
+- **FIG. 10**: Complete Check-In Flow.
+- **FIG. 11**: Dual-Trigger Verification Logic.
+- **FIG. 12**: Quality Score Examples.
+- **FIG. 13**: Offline Capability.
+- **FIG. 14**: Complete System Architecture.
+## Abstract
+
+A system and method for passively detecting and validating visits to physical locations without user interaction. The method triggers an initial visit candidate based on geofencing and confirms the candidate using a second, independent proximity signal derived from short-range radio communication. Upon dual-trigger confirmation, the system records visit start and end times, computes dwell time, and may derive visit quality metrics for downstream recommendation or logging. In some embodiments, the approach operates offline and reduces false positives associated with single-signal visit detection by requiring both a location-based trigger and a proximity-based verification prior to persisting a check-in event.
+
+---
+
+## Background
+
+Manual check-in workflows introduce user friction and incomplete data capture. Automated location-based detection systems can reduce friction but may generate false positives due to GPS drift, signal multipath, or coarse location granularity. Additionally, many real-world environments require offline-capable operation.
+
+Accordingly, there is a need for passive visit detection systems that reduce user burden while improving accuracy through verification mechanisms that function without internet connectivity.
+
+---
+
+## Summary
 
 A passive check-in system that automatically detects visits using geofencing (50m radius) combined with Bluetooth/AI2AI proximity verification, requiring no user interaction, calculating dwell time, and scoring visit quality. This system solves the critical problem of automatic visit tracking without user friction through dual-trigger verification that ensures accuracy while maintaining offline capability.
 
 ---
 
-## Technical Innovation
+## Detailed Description
+
+### Implementation Notes (Non-Limiting)
+
+- In privacy-preserving embodiments, the system minimizes exposure of user-linked identifiers and may exchange anonymized and/or differentially private representations rather than raw user data.
+- In quantum-state embodiments, the system may represent multi-dimensional profiles as quantum state vectors (e.g., |ψ⟩) and compute similarity using an inner product, distance metric, or other quantum-inspired measure.
 
 ### Core Innovation
 The system implements a dual-trigger verification mechanism that requires both geofencing detection (50m radius) and Bluetooth/AI2AI proximity confirmation before recording a visit. Unlike single-trigger systems that rely on location alone, this dual-trigger approach ensures accuracy by requiring both location and proximity verification, while maintaining offline capability through Bluetooth/AI2AI network verification.
@@ -96,42 +160,37 @@ The system implements a dual-trigger verification mechanism that requires both g
 
 ---
 
-## Patent Claims
+## Claims
 
-### Claim 1: Method for Automatic Passive Check-Ins
-A method for automatic passive check-ins using geofencing and Bluetooth proximity verification, comprising:
-- Detecting user entry into geofence with 50m radius using background location monitoring
-- Verifying proximity via Bluetooth/AI2AI network (works offline)
-- Requiring both geofencing AND Bluetooth/AI2AI confirmation before recording visit
-- Calculating dwell time from entry to exit
-- Recording visit only if dwell time ≥ 5 minutes
+1. A method for automatic passive check-ins using geofencing and Bluetooth proximity verification, comprising:
+   (a) Detecting user entry into geofence with 50m radius using background location monitoring
+   (b) Verifying proximity via Bluetooth/AI2AI network (works offline)
+   (c) Requiring both geofencing AND Bluetooth/AI2AI confirmation before recording visit
+   (d) Calculating dwell time from entry to exit
+   (e) Recording visit only if dwell time ≥ 5 minutes
 
-### Claim 2: System for Dual-Trigger Visit Detection
-A system for dual-trigger visit detection requiring both geofence and proximity confirmation, comprising:
-- Geofencing detection system with 50m radius background monitoring
-- Bluetooth/AI2AI proximity verification system (offline-capable)
-- Dual-trigger verification logic requiring both triggers to confirm
-- Dwell time calculation tracking time from entry to exit
-- Visit quality scoring based on dwell time, review given, repeat visits, and detailed reviews
+2. A system for dual-trigger visit detection requiring both geofence and proximity confirmation, comprising:
+   (a) Geofencing detection system with 50m radius background monitoring
+   (b) Bluetooth/AI2AI proximity verification system (offline-capable)
+   (c) Dual-trigger verification logic requiring both triggers to confirm
+   (d) Dwell time calculation tracking time from entry to exit
+   (e) Visit quality scoring based on dwell time, review given, repeat visits, and detailed reviews
 
-### Claim 3: Method for Calculating Visit Quality Scores
-A method for calculating visit quality scores based on dwell time and engagement metrics, comprising:
-- Calculating dwell time component: `dwell_time/30` (normalized to 30 minutes)
-- Adding review bonus for review given
-- Adding repeat bonus for repeat visits
-- Adding detail bonus for detailed reviews
-- Combining components: `quality = (dwell_time/30) + review_bonus + repeat_bonus + detail_bonus`
+3. The method of claim 1, further comprising calculating visit quality scores based on dwell time and engagement metrics:
+   (a) Calculating dwell time component: `dwell_time/30` (normalized to 30 minutes)
+   (b) Adding review bonus for review given
+   (c) Adding repeat bonus for repeat visits
+   (d) Adding detail bonus for detailed reviews
+   (e) Combining components: `quality = (dwell_time/30) + review_bonus + repeat_bonus + detail_bonus`
 
-### Claim 4: Offline-Capable Automatic Check-In System
-An offline-capable automatic check-in system using AI2AI network proximity verification, comprising:
-- Geofencing detection with 50m radius (background location monitoring)
-- Bluetooth/AI2AI proximity verification (works without internet)
-- Dual-trigger verification requiring both geofence and proximity confirmation
-- Dwell time calculation with 5-minute minimum threshold
-- Quality scoring system with formula: `quality = (dwell_time/30) + review_bonus + repeat_bonus + detail_bonus`
+4. An offline-capable automatic check-in system using AI2AI network proximity verification, comprising:
+   (a) Geofencing detection with 50m radius (background location monitoring)
+   (b) Bluetooth/AI2AI proximity verification (works without internet)
+   (c) Dual-trigger verification requiring both geofence and proximity confirmation
+   (d) Dwell time calculation with 5-minute minimum threshold
+   (e) Quality scoring system with formula: `quality = (dwell_time/30) + review_bonus + repeat_bonus + detail_bonus`
 
----
-
+       ---
 ## Atomic Timing Integration
 
 **Date:** December 23, 2025  
@@ -192,19 +251,35 @@ Where:
 
 ## Code References
 
-### Primary Implementation
-- **File:** `lib/core/services/automatic_check_in_service.dart`
-- **Key Functions:**
-  - `handleGeofenceTrigger()`
-  - `handleBluetoothTrigger()`
-  - `calculateDwellTime()`
-  - `calculateQualityScore()`
+### Primary Implementation (Updated 2026-01-03)
 
+**Automatic Check-In Service:**
+- **File:** `lib/core/services/automatic_check_in_service.dart` (400+ lines)
+- **Key Functions:**
+  - `handleGeofenceTrigger()` - Geofence-based check-in (50m radius)
+  - `handleBluetoothProximity()` - BLE-based check-in (works offline)
+  - `handleCheckOut()` - Check-out with dwell time calculation
+  - `calculateDwellTime()` - Calculate time spent (5+ min = valid)
+  - `_calculateQualityScore()` - Quality based on dwell time
+  - `_validateVisit()` - Validate visit meets minimum requirements
+
+**⚠️ GAP IDENTIFIED:** Currently uses `DateTime.now()` instead of `AtomicClockService`
+- **Fix Required:** Replace with `_atomicClock.getAtomicTimestamp()` (see Task #3)
+
+**Check-In Models:**
 - **File:** `lib/core/models/automatic_check_in.dart`
 - **Key Models:**
-  - `AutomaticCheckIn`
-  - `GeofenceTrigger`
-  - `BluetoothTrigger`
+  - `AutomaticCheckIn` - Check-in with trigger type, timestamps
+  - `CheckInTriggerType` - geofence, bluetooth, manual
+  - `VisitQuality` - low, medium, high
+
+**Visit Models:**
+- **File:** `lib/core/models/visit.dart`
+- **Key Models:** `Visit` - Location visit with dwell time
+
+**Locality Agent Ingestion:**
+- **File:** `lib/core/services/locality_agents/locality_agent_ingestion_service_v1.dart`
+- Ingests check-in data for locality expertise
 
 ### Documentation
 - `docs/plans/dynamic_expertise/DYNAMIC_EXPERTISE_THRESHOLDS_PLAN.md`
@@ -476,8 +551,7 @@ double calculateQualityScore({
 
 ---
 
-## Experimental Validation
-
+## Appendix A — Experimental Validation (Non-Limiting)
 **Date:** Original (see individual experiments), December 23, 2025 (Atomic Timing Integration)  
 **Status:** ✅ Complete - All experiments validated (including atomic timing integration)  
 **Status:** ✅ Complete - All 4 Technical Experiments Validated  

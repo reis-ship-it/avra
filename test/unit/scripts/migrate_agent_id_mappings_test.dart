@@ -157,7 +157,7 @@ void main() {
       // Arrange
       const totalMappings = 500;
       const migratedCount = 250;
-      final progress = (migratedCount / totalMappings) * 100;
+      const progress = (migratedCount / totalMappings) * 100;
 
       // Assert - should track progress
       expect(progress, equals(50.0));

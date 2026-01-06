@@ -1,10 +1,10 @@
-# SPOTS
+# AVRA
 
-**Smart Personalized Optimization and Tracking System**
+**Authentic Value Recognition Application**
 
 An AI2AI-powered, offline-first mobile application that helps people discover meaningful places, build authentic communities, and find belonging through personalized recommendations and event hosting.
 
-[![GitHub](https://img.shields.io/badge/GitHub-reis--ship--it-blue)](https://github.com/reis-ship-it/SPOTS)
+[![GitHub](https://img.shields.io/badge/GitHub-reis--ship--it-blue)](https://github.com/reis-ship-it/AVRA)
 [![Flutter](https://img.shields.io/badge/Flutter-3.8+-blue)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.6+-blue)](https://dart.dev)
 
@@ -14,7 +14,7 @@ An AI2AI-powered, offline-first mobile application that helps people discover me
 
 > **"There is no secret to life. Just doors that haven't been opened yet."**
 
-SPOTS is **the key** that helps you open those doors. Every spot is a door:
+AVRA is **the key** that helps you open those doors. Every spot is a door:
 - To experiences
 - To communities  
 - To people
@@ -23,9 +23,9 @@ SPOTS is **the key** that helps you open those doors. Every spot is a door:
 
 **The Journey:** Spots → Community → Life
 
-You discover your favorite spots, those spots have communities, those communities have events, and through SPOTS, you find your people and enrich your life.
+You discover your favorite spots, those spots have communities, those communities have events, and through AVRA, you find your people and enrich your life.
 
-**SPOTS just provides access. You decide which doors to open.**
+**AVRA just provides access. You decide which doors to open.**
 
 ---
 
@@ -123,8 +123,8 @@ You discover your favorite spots, those spots have communities, those communitie
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/reis-ship-it/SPOTS.git
-cd SPOTS
+git clone https://github.com/reis-ship-it/AVRA.git
+cd AVRA
 ```
 
 2. **Install dependencies:**
@@ -148,7 +148,7 @@ flutter run
 
 ### ML Model Setup (Optional)
 
-SPOTS uses ONNX models for AI2AI functionality:
+AVRA uses ONNX models for AI2AI functionality:
 
 ```bash
 ./scripts/ml/setup_models.sh
@@ -166,7 +166,7 @@ For manual setup, see [`assets/models/README.md`](assets/models/README.md).
 ## 📁 Project Structure
 
 ```
-SPOTS/
+AVRA/
 ├── lib/                      # Dart source code
 │   ├── core/                 # Core functionality
 │   │   ├── ai/              # AI2AI system & quantum algorithms
@@ -333,18 +333,18 @@ See [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-SPOTS is built on the philosophy that technology should open doors, not create barriers. Special thanks to all contributors who believe in authentic connections over algorithms.
+AVRA is built on the philosophy that technology should open doors, not create barriers. Special thanks to all contributors who believe in authentic connections over algorithms.
 
 ---
 
 ## 📞 Contact & Links
 
-- **GitHub:** [reis-ship-it/SPOTS](https://github.com/reis-ship-it/SPOTS)
+- **GitHub:** [reis-ship-it/AVRA](https://github.com/reis-ship-it/AVRA)
 - **Documentation:** See [`docs/`](docs/) directory
-- **Issues:** [GitHub Issues](https://github.com/reis-ship-it/SPOTS/issues)
+- **Issues:** [GitHub Issues](https://github.com/reis-ship-it/AVRA/issues)
 
 ---
 
 **"There is no secret to life. Just doors that haven't been opened yet."**
 
-*SPOTS helps you find the keys.*
+*AVRA helps you find the keys.*

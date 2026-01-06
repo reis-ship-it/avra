@@ -2,7 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
 import 'package:spots/core/services/ai2ai_learning_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spots/core/services/storage_service.dart';
+import '../../../helpers/platform_channel_helper.dart';
 import '../../../widget/helpers/widget_test_helpers.dart';
 import '../../../widget/mocks/mock_blocs.dart';
 
@@ -13,11 +14,11 @@ void main() {
     // AI2AI learning methods widget tests focus on business logic (widget initialization, data display, error handling), not property assignment
 
     late AI2AILearning learningService;
-    late SharedPreferences prefs;
+    late SharedPreferencesCompat prefs;
 
     setUp(() async {
-      SharedPreferences.setMockInitialValues({});
-      prefs = await SharedPreferences.getInstance();
+      await setupTestStorage();
+      prefs = await SharedPreferencesCompat.getInstance(storage: getTestStorage());
       final personalityLearning = PersonalityLearning.withPrefs(prefs);
       learningService = AI2AILearning.create(
         prefs: prefs,

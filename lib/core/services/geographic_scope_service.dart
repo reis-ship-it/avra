@@ -90,7 +90,16 @@ class GeographicScopeService {
           return _isSameLocality(userLocality, locality);
 
         case ExpertiseLevel.city:
-          // City experts can host in all localities in their city
+          // City experts can host in all localities in their city.
+          //
+          // For large cities we treat neighborhoods as localities under a parent city
+          // (e.g., Greenpoint -> Brooklyn). A city expert located in "Brooklyn" should
+          // be able to host in any Brooklyn neighborhood.
+          final parentCity = _largeCityService.getParentCity(locality);
+          if (parentCity != null &&
+              parentCity.toLowerCase() == userLocality.toLowerCase()) {
+            return true;
+          }
           return _isInSameCity(userLocality, locality);
 
         case ExpertiseLevel.regional:
@@ -420,6 +429,10 @@ class GeographicScopeService {
   String? _extractCity(String? location) {
     if (location == null || location.isEmpty) return null;
     final parts = location.split(',').map((s) => s.trim()).toList();
+    // If the input is a bare city name (e.g., "Brooklyn"), treat it as the city.
+    // This keeps city-scope validation usable even when callers don't provide a
+    // full "Locality, City, State, Country" string.
+    if (parts.length == 1) return parts[0];
     if (parts.length < 2) return null;
 
     // For large cities, second part might be the city
@@ -471,6 +484,18 @@ class GeographicScopeService {
       return city1 != null &&
           city2 != null &&
           city1.toLowerCase() == city2.toLowerCase();
+    }
+
+    // For large cities, allow comparing a neighborhood against its parent city.
+    if (_largeCityService.isNeighborhoodLocality(locality1) &&
+        !_largeCityService.isNeighborhoodLocality(locality2)) {
+      final city1 = _largeCityService.getParentCity(locality1);
+      return city1 != null && city1.toLowerCase() == locality2.toLowerCase();
+    }
+    if (!_largeCityService.isNeighborhoodLocality(locality1) &&
+        _largeCityService.isNeighborhoodLocality(locality2)) {
+      final city2 = _largeCityService.getParentCity(locality2);
+      return city2 != null && city2.toLowerCase() == locality1.toLowerCase();
     }
 
     // For regular localities, check if they're in the same city

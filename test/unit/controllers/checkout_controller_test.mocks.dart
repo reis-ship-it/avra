@@ -549,7 +549,8 @@ class MockLegalDocumentService extends _i1.Mock
 
   @override
   _i7.Future<_i5.UserAgreement> revokeAgreement({
-    required String? agreementId,
+    required String userId,
+    required String agreementId,
     String? reason,
   }) =>
       (super.noSuchMethod(
@@ -557,6 +558,7 @@ class MockLegalDocumentService extends _i1.Mock
           #revokeAgreement,
           [],
           {
+            #userId: userId,
             #agreementId: agreementId,
             #reason: reason,
           },
@@ -567,6 +569,7 @@ class MockLegalDocumentService extends _i1.Mock
             #revokeAgreement,
             [],
             {
+              #userId: userId,
               #agreementId: agreementId,
               #reason: reason,
             },
@@ -597,6 +600,8 @@ class MockExpertiseEventService extends _i1.Mock
     String? location,
     double? latitude,
     double? longitude,
+    String? cityCode,
+    String? localityCode,
     int? maxAttendees = 20,
     double? price,
     bool? isPublic = true,
@@ -617,6 +622,8 @@ class MockExpertiseEventService extends _i1.Mock
             #location: location,
             #latitude: latitude,
             #longitude: longitude,
+            #cityCode: cityCode,
+            #localityCode: localityCode,
             #maxAttendees: maxAttendees,
             #price: price,
             #isPublic: isPublic,
@@ -639,6 +646,8 @@ class MockExpertiseEventService extends _i1.Mock
               #location: location,
               #latitude: latitude,
               #longitude: longitude,
+              #cityCode: cityCode,
+              #localityCode: localityCode,
               #maxAttendees: maxAttendees,
               #price: price,
               #isPublic: isPublic,

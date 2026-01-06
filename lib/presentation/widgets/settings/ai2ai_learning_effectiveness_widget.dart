@@ -1,13 +1,13 @@
 /// AI2AI Learning Effectiveness Widget
-/// 
+///
 /// Phase 7, Week 38: AI2AI Learning Methods UI - Integration & Polish
-/// 
+///
 /// Widget displaying learning effectiveness metrics:
 /// - Effectiveness metrics display
 /// - Learning insights count
 /// - Knowledge acquisition rate
 /// - Visual indicators (progress bars, charts)
-/// 
+///
 /// Uses AppColors/AppTheme for 100% design token compliance.
 library;
 
@@ -20,21 +20,23 @@ import 'package:spots/core/ai/ai2ai_learning.dart';
 class AI2AILearningEffectivenessWidget extends StatefulWidget {
   /// User ID to show metrics for
   final String userId;
-  
+
   /// AI2AI learning service
   final AI2AILearning learningService;
-  
+
   const AI2AILearningEffectivenessWidget({
     super.key,
     required this.userId,
     required this.learningService,
   });
-  
+
   @override
-  State<AI2AILearningEffectivenessWidget> createState() => _AI2AILearningEffectivenessWidgetState();
+  State<AI2AILearningEffectivenessWidget> createState() =>
+      _AI2AILearningEffectivenessWidgetState();
 }
 
-class _AI2AILearningEffectivenessWidgetState extends State<AI2AILearningEffectivenessWidget> {
+class _AI2AILearningEffectivenessWidgetState
+    extends State<AI2AILearningEffectivenessWidget> {
   LearningEffectivenessMetrics? _metrics;
   bool _isLoading = true;
   String? _errorMessage;
@@ -53,7 +55,8 @@ class _AI2AILearningEffectivenessWidgetState extends State<AI2AILearningEffectiv
 
     try {
       // Measure learning effectiveness
-      final metrics = await widget.learningService.analyzeLearningEffectiveness(widget.userId);
+      final metrics = await widget.learningService
+          .analyzeLearningEffectiveness(widget.userId);
 
       if (mounted) {
         setState(() {
@@ -168,11 +171,11 @@ class _AI2AILearningEffectivenessWidgetState extends State<AI2AILearningEffectiv
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Overall Effectiveness Score
               _buildOverallScore(_metrics!.overallEffectiveness),
               const SizedBox(height: 24),
-              
+
               // Individual Metrics
               _buildMetricRow(
                 'Evolution Rate',
@@ -204,7 +207,7 @@ class _AI2AILearningEffectivenessWidgetState extends State<AI2AILearningEffectiv
                 Icons.share,
               ),
               const SizedBox(height: 16),
-              
+
               // Summary Stats
               _buildSummaryStats(),
             ],

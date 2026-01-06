@@ -1,6 +1,7 @@
 import 'package:spots/core/controllers/base/workflow_controller.dart';
 import 'package:spots/core/controllers/base/controller_result.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/geo_hierarchy_service.dart';
 import 'package:spots/core/services/geographic_scope_service.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_event.dart';
@@ -61,12 +62,17 @@ class EventCreationController implements WorkflowController<EventFormData, Event
   
   final ExpertiseEventService _eventService;
   final GeographicScopeService _geographicScopeService;
+  final GeoHierarchyService _geoHierarchyService;
   
   EventCreationController({
     ExpertiseEventService? eventService,
     GeographicScopeService? geographicScopeService,
-  }) : _eventService = eventService ?? GetIt.instance<ExpertiseEventService>(),
-       _geographicScopeService = geographicScopeService ?? GetIt.instance<GeographicScopeService>();
+    GeoHierarchyService? geoHierarchyService,
+  })  : _eventService = eventService ?? GetIt.instance<ExpertiseEventService>(),
+        _geographicScopeService =
+            geographicScopeService ?? GetIt.instance<GeographicScopeService>(),
+        _geoHierarchyService =
+            geoHierarchyService ?? GetIt.instance<GeoHierarchyService>();
   
   @override
   Future<EventCreationResult> execute(EventFormData input) async {
@@ -170,6 +176,28 @@ class EventCreationController implements WorkflowController<EventFormData, Event
       // STEP 6: Create event via service
       ExpertiseEvent createdEvent;
       try {
+        // Strong geo: resolve canonical codes (best-effort, non-blocking).
+        String? cityCode;
+        String? localityCode;
+        final locationHint = (formData.location ?? '').trim();
+        final localityName = (formData.locality ?? '').trim();
+
+        if (locationHint.isNotEmpty) {
+          cityCode = await _geoHierarchyService.lookupCityCode(locationHint);
+        }
+        if ((cityCode == null || cityCode.isEmpty) &&
+            localityName.isNotEmpty) {
+          cityCode = await _geoHierarchyService.lookupCityCode(localityName);
+        }
+        if (cityCode != null &&
+            cityCode.isNotEmpty &&
+            localityName.isNotEmpty) {
+          localityCode = await _geoHierarchyService.lookupLocalityCode(
+            cityCode: cityCode,
+            localityName: localityName,
+          );
+        }
+
         createdEvent = await _eventService.createEvent(
           host: host,
           title: formData.title,
@@ -182,6 +210,8 @@ class EventCreationController implements WorkflowController<EventFormData, Event
           location: formData.location,
           latitude: formData.latitude,
           longitude: formData.longitude,
+          cityCode: cityCode,
+          localityCode: localityCode,
           maxAttendees: formData.maxAttendees,
           price: formData.price,
           isPublic: formData.isPublic,

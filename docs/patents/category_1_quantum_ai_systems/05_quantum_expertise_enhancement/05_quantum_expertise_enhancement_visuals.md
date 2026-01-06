@@ -5,9 +5,79 @@
 
 ---
 
-## Visual Diagrams and Formulas
 
-### 1. Traditional vs. Quantum Expertise Calculation
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Traditional vs. Quantum Expertise Calculation.
+- **FIG. 6**: Quantum Superposition of Expertise Paths.
+- **FIG. 7**: Quantum Interference Patterns.
+- **FIG. 8**: Quantum Entanglement Network.
+- **FIG. 9**: Information-Theoretic Optimization.
+- **FIG. 10**: Complete Quantum Expertise Calculation Flow.
+- **FIG. 11**: Decoherence Handling.
+- **FIG. 12**: Path Correlation Learning.
+- **FIG. 13**: Information Flow Maximization.
+- **FIG. 14**: Complete System Architecture.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Quantum Expertise Algorithm Enhancement with Information-Theoretic Optimization implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+
+In some embodiments, the diagram includes:
+- Traditional vs. Quantum Expertise Calculation.
+- Quantum Superposition of Expertise Paths.
+- Quantum Interference Patterns.
+- Quantum Entanglement Network.
+- Information-Theoretic Optimization.
+- Complete Quantum Expertise Calculation Flow.
+- Decoherence Handling.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Quantum Expertise Algorithm Enhancement with Information-Theoretic Optimization implementation.
+
+1. Representing each expertise path as quantum state `|ψ_path_i⟩`.
+2. Applying quantum superposition for parallel evaluation: `|ψ_expertise⟩ = Σᵢ wᵢ |ψ_path_i⟩`.
+3. Using interference patterns for optimal combination (constructive for aligned paths, destructive for conflicting paths).
+4. Entangling correlated paths for information extraction: `|ψ_entangled⟩ = Σᵢⱼ cᵢⱼ |path_i⟩ ⊗ |path_j⟩`.
+5. Calculating expertise score using quantum measurement: `score = |⟨ψ_expertise|ψ_target⟩|²`.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Quantum Expertise Algorithm Enhancement with Information-Theoretic Optimization implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- AtomicTimestamp: {t, source, uncertainty}
+- TemporalState: {|ψ_t⟩, parameters, normalized}
+- TimeSyncRecord: {offset, drift, lastCalibratedAt}
+- TemporalCompatibilityResult: {score in [0,1], computedAt}
+- ServiceResponse: {value, confidence, provenance}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Quantum Expertise Algorithm Enhancement with Information-Theoretic Optimization implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device requests or samples atomic time and receives an atomic timestamp.
+2. Client device constructs a temporal quantum state representation indexed to the timestamp.
+3. Client device performs time-indexed computation and normalizes the result.
+4. Client device stores the resulting temporal state/score with provenance metadata.
+
+### FIG. 5 — Traditional vs. Quantum Expertise Calculation
+
 
 ```
 TRADITIONAL SYSTEM (Current)
@@ -54,7 +124,8 @@ QUANTUM SYSTEM (Proposed)
 
 ---
 
-### 2. Quantum Superposition of Expertise Paths
+### FIG. 6 — Quantum Superposition of Expertise Paths
+
 
 ```
 Path States:
@@ -85,7 +156,8 @@ Path States:
 
 ---
 
-### 3. Quantum Interference Patterns
+### FIG. 7 — Quantum Interference Patterns
+
 
 ```
 Aligned Paths (Constructive Interference)
@@ -119,7 +191,8 @@ Destructive: amplitudes subtract
 
 ---
 
-### 4. Quantum Entanglement Network
+### FIG. 8 — Quantum Entanglement Network
+
 
 ```
 Path Entanglement:
@@ -153,7 +226,8 @@ correlation strength between paths i and j
 
 ---
 
-### 5. Information-Theoretic Optimization
+### FIG. 9 — Information-Theoretic Optimization
+
 
 ```
 Many Noisy Channels Principle:
@@ -185,7 +259,8 @@ Many Noisy Channels Principle:
 
 ---
 
-### 6. Complete Quantum Expertise Calculation Flow
+### FIG. 10 — Complete Quantum Expertise Calculation Flow
+
 
 ```
 START
@@ -230,7 +305,8 @@ START
 
 ---
 
-### 7. Decoherence Handling
+### FIG. 11 — Decoherence Handling
+
 
 ```
 Quantum Calculation
@@ -256,7 +332,8 @@ Quantum Calculation
 
 ---
 
-### 8. Path Correlation Learning
+### FIG. 12 — Path Correlation Learning
+
 
 ```
 Path Interactions
@@ -278,7 +355,8 @@ Path Interactions
 
 ---
 
-### 9. Information Flow Maximization
+### FIG. 13 — Information Flow Maximization
+
 
 ```
 6 Paths (Many Noisy Channels)
@@ -304,7 +382,8 @@ Path Interactions
 
 ---
 
-### 10. Complete System Architecture
+### FIG. 14 — Complete System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -421,4 +500,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

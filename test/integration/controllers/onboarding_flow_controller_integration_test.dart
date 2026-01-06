@@ -1,9 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/controllers/onboarding_flow_controller.dart';
 import 'package:spots/core/models/onboarding_data.dart';
+import 'package:spots/core/services/legal_document_service.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:spots/core/services/onboarding_data_service.dart';
+import '../../helpers/platform_channel_helper.dart';
+
+class _AlwaysAcceptedLegalDocumentService extends LegalDocumentService {
+  _AlwaysAcceptedLegalDocumentService();
+
+  @override
+  Future<bool> hasAcceptedTerms(String userId) async => true;
+
+  @override
+  Future<bool> hasAcceptedPrivacyPolicy(String userId) async => true;
+}
 
 /// Integration tests for OnboardingFlowController
 /// 
@@ -15,11 +27,22 @@ void main() {
     const testUserId = 'test_user_123';
 
     setUpAll(() async {
-      // Initialize dependency injection
-      await di.init();
-      
       // Use in-memory database for tests
       SembastDatabase.useInMemoryForTests();
+
+      // Avoid path_provider / GetStorage.init in tests.
+      await setupTestStorage();
+
+      // Initialize dependency injection
+      await di.init();
+
+      // In integration tests we don't run legal acceptance UX; treat terms/privacy as accepted.
+      if (di.sl.isRegistered<LegalDocumentService>()) {
+        di.sl.unregister<LegalDocumentService>();
+      }
+      di.sl.registerLazySingleton<LegalDocumentService>(
+        () => _AlwaysAcceptedLegalDocumentService(),
+      );
     });
 
     setUp(() async {

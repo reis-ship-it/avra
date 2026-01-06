@@ -8,7 +8,7 @@ import 'dart:developer' as developer;
 import 'dart:math' as math;
 import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:spots_core/models/user.dart';
 import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
@@ -77,7 +77,7 @@ class MeaningfulConnectionMetricsService {
   final QuantumEntanglementService _entanglementService;
   final PersonalityLearning _personalityLearning;
   final UserVibeAnalyzer _vibeAnalyzer;
-  final SupabaseService? _supabaseService;
+  final SupabaseService _supabaseService;
   final AgentIdService _agentIdService;
 
   // Time windows for metrics
@@ -98,7 +98,7 @@ class MeaningfulConnectionMetricsService {
     required PersonalityLearning personalityLearning,
     required UserVibeAnalyzer vibeAnalyzer,
     required AgentIdService agentIdService,
-    SupabaseService? supabaseService,
+    required SupabaseService supabaseService,
   })  : _atomicClock = atomicClock,
         _entanglementService = entanglementService,
         _personalityLearning = personalityLearning,
@@ -116,7 +116,7 @@ class MeaningfulConnectionMetricsService {
   /// `MeaningfulConnectionMetrics` with all calculated metrics
   Future<MeaningfulConnectionMetrics> calculateMetrics({
     required ExpertiseEvent event,
-    required List<UnifiedUser> attendees,
+    required List<User> attendees,
   }) async {
     try {
       final tAtomic = await _atomicClock.getAtomicTimestamp();
@@ -127,7 +127,8 @@ class MeaningfulConnectionMetricsService {
       );
 
       // 1. Repeating interactions rate (30% weight)
-      final repeatingInteractionsRate = await _calculateRepeatingInteractionsRate(
+      final repeatingInteractionsRate =
+          await _calculateRepeatingInteractionsRate(
         event: event,
         attendees: attendees,
         tAtomic: tAtomic,
@@ -148,26 +149,27 @@ class MeaningfulConnectionMetricsService {
       );
 
       // 4. Connection persistence rate (15% weight)
-      final connectionPersistenceRate = await _calculateConnectionPersistenceRate(
+      final connectionPersistenceRate =
+          await _calculateConnectionPersistenceRate(
         event: event,
         attendees: attendees,
         tAtomic: tAtomic,
       );
 
       // 5. Transformative impact score (calculated separately, not in weighted average)
-      final transformativeImpactScore = await _calculateTransformativeImpactScore(
+      final transformativeImpactScore =
+          await _calculateTransformativeImpactScore(
         event: event,
         attendees: attendees,
         tAtomic: tAtomic,
       );
 
       // Calculate overall meaningful connection score
-      final meaningfulConnectionScore = (
-        0.30 * repeatingInteractionsRate +
-        0.30 * eventContinuationRate +
-        0.25 * vibeEvolutionScore +
-        0.15 * connectionPersistenceRate
-      ).clamp(0.0, 1.0);
+      final meaningfulConnectionScore = (0.30 * repeatingInteractionsRate +
+              0.30 * eventContinuationRate +
+              0.25 * vibeEvolutionScore +
+              0.15 * connectionPersistenceRate)
+          .clamp(0.0, 1.0);
 
       developer.log(
         'Meaningful connection metrics calculated: score=${meaningfulConnectionScore.toStringAsFixed(3)}',
@@ -216,7 +218,7 @@ class MeaningfulConnectionMetricsService {
   /// - Continued engagement (users interacting with event-related content)
   Future<double> _calculateRepeatingInteractionsRate({
     required ExpertiseEvent event,
-    required List<UnifiedUser> attendees,
+    required List<User> attendees,
     required AtomicTimestamp tAtomic,
   }) async {
     if (attendees.isEmpty) {
@@ -226,51 +228,47 @@ class MeaningfulConnectionMetricsService {
     try {
       // Get post-event interactions from database
       final eventEndTime = event.endTime;
-      final interactionWindowEnd = eventEndTime.add(_postEventInteractionWindow);
+      final interactionWindowEnd =
+          eventEndTime.add(_postEventInteractionWindow);
 
       // Query interaction_events table for post-event interactions
       // Interaction types: message_sent, profile_viewed, collaboration_started, event_content_engaged
       int usersWithInteractions = 0;
 
-      if (_supabaseService != null) {
-        try {
-          // Get agent IDs for all attendees
-          final attendeeAgentIds = <String>{};
-          for (final attendee in attendees) {
-            final agentId = await _agentIdService.getUserAgentId(attendee.id);
-            attendeeAgentIds.add(agentId);
-          }
-
-          // Query for interactions within the window
-          // Filter by event types using OR conditions
-          final response = await _supabaseService!.client
-              .from('interaction_events')
-              .select('agent_id, event_type')
-              .gte('timestamp', eventEndTime.toIso8601String())
-              .lte('timestamp', interactionWindowEnd.toIso8601String())
-              .or('event_type.eq.message_sent,event_type.eq.profile_viewed,event_type.eq.collaboration_started,event_type.eq.event_content_engaged');
-
-          // Count unique users with interactions
-          final usersWithInteractionsSet = <String>{};
-          // Supabase returns a List directly, not a response object with .data
-          final data = response as List<dynamic>? ?? [];
-          for (final row in data) {
-            final rowMap = row as Map<String, dynamic>;
-            final agentId = rowMap['agent_id'] as String?;
-            if (agentId != null && attendeeAgentIds.contains(agentId)) {
-              usersWithInteractionsSet.add(agentId);
-            }
-          }
-          usersWithInteractions = usersWithInteractionsSet.length;
-        } catch (e) {
-          developer.log(
-            'Error querying post-event interactions: $e, using placeholder',
-            name: _logName,
-          );
-          // Placeholder: assume 20% of attendees have interactions
-          usersWithInteractions = (attendees.length * 0.2).round();
+      try {
+        // Get agent IDs for all attendees
+        final attendeeAgentIds = <String>{};
+        for (final attendee in attendees) {
+          final agentId = await _agentIdService.getUserAgentId(attendee.id);
+          attendeeAgentIds.add(agentId);
         }
-      } else {
+
+        // Query for interactions within the window
+        // Filter by event types using OR conditions
+        final response = await _supabaseService.client
+            .from('interaction_events')
+            .select('agent_id, event_type')
+            .gte('timestamp', eventEndTime.toIso8601String())
+            .lte('timestamp', interactionWindowEnd.toIso8601String())
+            .or('event_type.eq.message_sent,event_type.eq.profile_viewed,event_type.eq.collaboration_started,event_type.eq.event_content_engaged');
+
+        // Count unique users with interactions
+        final usersWithInteractionsSet = <String>{};
+        // Supabase returns a List directly, not a response object with .data
+        final data = response as List<dynamic>? ?? [];
+        for (final row in data) {
+          final rowMap = row as Map<String, dynamic>;
+          final agentId = rowMap['agent_id'] as String?;
+          if (agentId != null && attendeeAgentIds.contains(agentId)) {
+            usersWithInteractionsSet.add(agentId);
+          }
+        }
+        usersWithInteractions = usersWithInteractionsSet.length;
+      } catch (e) {
+        developer.log(
+          'Error querying post-event interactions: $e, using placeholder',
+          name: _logName,
+        );
         // Placeholder: assume 20% of attendees have interactions
         usersWithInteractions = (attendees.length * 0.2).round();
       }
@@ -295,7 +293,7 @@ class MeaningfulConnectionMetricsService {
   /// Events are similar if `F(ρ_event_1, ρ_event_2) ≥ 0.7`
   Future<double> _calculateEventContinuationRate({
     required ExpertiseEvent event,
-    required List<UnifiedUser> attendees,
+    required List<User> attendees,
     required AtomicTimestamp tAtomic,
   }) async {
     if (attendees.isEmpty) {
@@ -317,27 +315,23 @@ class MeaningfulConnectionMetricsService {
 
       int usersAttendingSimilarEvents = 0;
 
-      if (_supabaseService != null) {
-        try {
-          // Get agent IDs for all attendees
-          final attendeeAgentIds = <String>{};
-          for (final attendee in attendees) {
-            final agentId = await _agentIdService.getUserAgentId(attendee.id);
-            attendeeAgentIds.add(agentId);
-          }
-
-          // Query for event registrations within the window
-          // TODO: This would require an event_registrations table or similar
-          // For now, use placeholder
-          usersAttendingSimilarEvents = (attendees.length * 0.15).round();
-        } catch (e) {
-          developer.log(
-            'Error querying event continuation: $e, using placeholder',
-            name: _logName,
-          );
-          usersAttendingSimilarEvents = (attendees.length * 0.15).round();
+      try {
+        // Get agent IDs for all attendees
+        final attendeeAgentIds = <String>{};
+        for (final attendee in attendees) {
+          final agentId = await _agentIdService.getUserAgentId(attendee.id);
+          attendeeAgentIds.add(agentId);
         }
-      } else {
+
+        // Query for event registrations within the window
+        // TODO: This would require an event_registrations table or similar
+        // For now, use placeholder
+        usersAttendingSimilarEvents = (attendees.length * 0.15).round();
+      } catch (e) {
+        developer.log(
+          'Error querying event continuation: $e, using placeholder',
+          name: _logName,
+        );
         usersAttendingSimilarEvents = (attendees.length * 0.15).round();
       }
 
@@ -357,7 +351,7 @@ class MeaningfulConnectionMetricsService {
   /// **Formula:**
   /// ```
   /// vibe_evolution_score = average(|⟨Δ|ψ_vibe_i(t_atomic_i)|ψ_event_type⟩|²) for all attendees
-  /// 
+  ///
   /// Where:
   /// Δ|ψ_vibe⟩ = |ψ_user_post_event(t_atomic_post)⟩ - |ψ_user_pre_event(t_atomic_pre)⟩
   /// ```
@@ -366,7 +360,7 @@ class MeaningfulConnectionMetricsService {
   /// User's vibe moving toward event type = Meaningful impact
   Future<double> _calculateVibeEvolutionScore({
     required ExpertiseEvent event,
-    required List<UnifiedUser> attendees,
+    required List<User> attendees,
     required AtomicTimestamp tAtomic,
   }) async {
     if (attendees.isEmpty) {
@@ -392,7 +386,8 @@ class MeaningfulConnectionMetricsService {
           // Get post-event vibe (from personality profile after event)
           final postEventVibe = await _getUserVibeAtTime(
             userId: attendee.id,
-            timestamp: event.endTime.add(const Duration(days: 7)), // 1 week after event
+            timestamp: event.endTime
+                .add(const Duration(days: 7)), // 1 week after event
           );
 
           if (preEventVibe != null && postEventVibe != null) {
@@ -444,7 +439,7 @@ class MeaningfulConnectionMetricsService {
   /// Connection that remains active for at least 30 days after event
   Future<double> _calculateConnectionPersistenceRate({
     required ExpertiseEvent event,
-    required List<UnifiedUser> attendees,
+    required List<User> attendees,
     required AtomicTimestamp tAtomic,
   }) async {
     if (attendees.isEmpty) {
@@ -460,7 +455,8 @@ class MeaningfulConnectionMetricsService {
       // 3. Calculate persistence rate
 
       // Estimate total possible connections (n choose 2)
-      final totalPossibleConnections = (attendees.length * (attendees.length - 1)) ~/ 2;
+      final totalPossibleConnections =
+          (attendees.length * (attendees.length - 1)) ~/ 2;
       if (totalPossibleConnections == 0) {
         return 0.0;
       }
@@ -488,7 +484,7 @@ class MeaningfulConnectionMetricsService {
   /// - User engagement level changing
   Future<double> _calculateTransformativeImpactScore({
     required ExpertiseEvent event,
-    required List<UnifiedUser> attendees,
+    required List<User> attendees,
     required AtomicTimestamp tAtomic,
   }) async {
     if (attendees.isEmpty) {
@@ -512,7 +508,8 @@ class MeaningfulConnectionMetricsService {
           // Get post-event behavior patterns
           final postEventBehavior = await _getUserBehaviorPattern(
             userId: attendee.id,
-            timestamp: event.endTime.add(const Duration(days: 30)), // 30 days after event
+            timestamp: event.endTime
+                .add(const Duration(days: 30)), // 30 days after event
             eventCategory: event.category,
           );
 
@@ -587,13 +584,15 @@ class MeaningfulConnectionMetricsService {
       // Get personality profile at that time
       // For now, use current personality profile as approximation
       // In production, would query historical personality profiles
-      final personalityProfile = await _personalityLearning.getCurrentPersonality(userId);
+      final personalityProfile =
+          await _personalityLearning.getCurrentPersonality(userId);
       if (personalityProfile == null) {
         return null;
       }
 
       // Compile user vibe from personality profile
-      final userVibe = await _vibeAnalyzer.compileUserVibe(userId, personalityProfile);
+      final userVibe =
+          await _vibeAnalyzer.compileUserVibe(userId, personalityProfile);
       return userVibe.anonymizedDimensions;
     } catch (e) {
       developer.log(
@@ -649,7 +648,8 @@ class MeaningfulConnectionMetricsService {
     }
 
     // Normalize inner product
-    final normalizedInnerProduct = innerProduct / (math.sqrt(normEvolution) * math.sqrt(normEventType));
+    final normalizedInnerProduct =
+        innerProduct / (math.sqrt(normEvolution) * math.sqrt(normEventType));
 
     // Evolution score: |⟨Δ|ψ_vibe⟩|ψ_event_type⟩|²
     final evolutionScore = normalizedInnerProduct * normalizedInnerProduct;
@@ -690,22 +690,30 @@ class MeaningfulConnectionMetricsService {
     double impactScore = 0.0;
 
     // 1. Category exploration (user exploring new categories)
-    final preCategories = (preBehavior['event_categories'] as List<dynamic>?) ?? [];
-    final postCategories = (postBehavior['event_categories'] as List<dynamic>?) ?? [];
-    final newCategories = postCategories.where((cat) => !preCategories.contains(cat)).length;
+    final preCategories =
+        (preBehavior['event_categories'] as List<dynamic>?) ?? [];
+    final postCategories =
+        (postBehavior['event_categories'] as List<dynamic>?) ?? [];
+    final newCategories =
+        postCategories.where((cat) => !preCategories.contains(cat)).length;
     if (newCategories > 0) {
-      impactScore += 0.3 * (newCategories / math.max(postCategories.length, 1)).clamp(0.0, 1.0);
+      impactScore += 0.3 *
+          (newCategories / math.max(postCategories.length, 1)).clamp(0.0, 1.0);
     }
 
     // 2. Engagement level change
-    final preEngagement = (preBehavior['engagement_level'] as num?)?.toDouble() ?? 0.5;
-    final postEngagement = (postBehavior['engagement_level'] as num?)?.toDouble() ?? 0.5;
+    final preEngagement =
+        (preBehavior['engagement_level'] as num?)?.toDouble() ?? 0.5;
+    final postEngagement =
+        (postBehavior['engagement_level'] as num?)?.toDouble() ?? 0.5;
     final engagementChange = (postEngagement - preEngagement).abs();
     impactScore += 0.2 * engagementChange;
 
     // 3. Exploration tendency change
-    final preExploration = (preBehavior['exploration_tendency'] as num?)?.toDouble() ?? 0.5;
-    final postExploration = (postBehavior['exploration_tendency'] as num?)?.toDouble() ?? 0.5;
+    final preExploration =
+        (preBehavior['exploration_tendency'] as num?)?.toDouble() ?? 0.5;
+    final postExploration =
+        (postBehavior['exploration_tendency'] as num?)?.toDouble() ?? 0.5;
     final explorationChange = (postExploration - preExploration).abs();
     impactScore += 0.2 * explorationChange;
 

@@ -4,7 +4,7 @@ import 'package:mockito/mockito.dart';
 
 import 'package:spots/core/controllers/sync_controller.dart';
 import 'package:spots/core/services/enhanced_connectivity_service.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 
@@ -101,7 +101,7 @@ void main() {
           'user_123',
           testPersonalityProfile,
           'password123',
-        )).thenAnswer((_) async => {});
+        )).thenAnswer((_) async => true);
 
         // Act
         final result = await controller.syncUserData(
@@ -208,7 +208,7 @@ void main() {
           'user_123',
           testPersonalityProfile,
           'password123',
-        )).thenAnswer((_) async => {});
+        )).thenAnswer((_) async => true);
 
         // Act - Test with SyncScope.all
         final resultAll = await controller.syncUserData(
@@ -397,7 +397,7 @@ void main() {
           'user_123',
           testPersonalityProfile,
           'password123',
-        )).thenAnswer((_) async => {});
+        )).thenAnswer((_) async => true);
 
         const input = SyncInput(
           userId: 'user_123',

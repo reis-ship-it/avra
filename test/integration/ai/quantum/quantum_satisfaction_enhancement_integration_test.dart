@@ -2,10 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/ai/feedback_learning.dart';
 import 'package:spots/core/services/quantum_satisfaction_enhancer.dart';
 import 'package:spots/core/ai/quantum/quantum_satisfaction_feature_extractor.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
+import '../../../helpers/platform_channel_helper.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {
@@ -19,7 +20,8 @@ void main() {
       TestHelpers.setupTestEnvironment();
       
       // Initialize services
-      final prefs = await StorageService.getInstance();
+      await setupTestStorage();
+      final prefs = await SharedPreferencesCompat.getInstance(storage: getTestStorage());
       personalityLearning = PersonalityLearning.withPrefs(prefs);
       atomicClock = AtomicClockService();
       
@@ -71,15 +73,17 @@ void main() {
       };
       
       // Add some feedback history for the user
-      await feedbackAnalyzer.analyzeFeedback(
-        userId,
-        FeedbackEvent(
-          type: FeedbackType.recommendation,
-          satisfaction: 0.8,
-          metadata: {},
-          timestamp: DateTime.now().subtract(const Duration(days: 1)),
-        ),
-      );
+      for (int i = 0; i < 5; i++) {
+        await feedbackAnalyzer.analyzeFeedback(
+          userId,
+          FeedbackEvent(
+            type: FeedbackType.recommendation,
+            satisfaction: (0.70 + (i * 0.05)).clamp(0.0, 1.0),
+            metadata: {},
+            timestamp: DateTime.now().subtract(Duration(days: i + 1)),
+          ),
+        );
+      }
       
       // Predict satisfaction
       final prediction = await feedbackAnalyzer.predictUserSatisfaction(

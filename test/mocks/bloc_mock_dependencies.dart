@@ -151,7 +151,9 @@ class MockBehaviorSetup {
     when(() => BlocMockFactory.signUpUseCase.call(any(), any(), any()))
         .thenAnswer((_) async => TestDataFactory.createTestUser());
 
-    when(() => BlocMockFactory.signOutUseCase.call()).thenAnswer((_) async {});
+    when(() => BlocMockFactory.signOutUseCase.call()).thenAnswer((_) async {
+      return null;
+    });
 
     when(() => BlocMockFactory.getCurrentUserUseCase.call())
         .thenAnswer((_) async => TestDataFactory.createTestUser());
@@ -184,7 +186,9 @@ class MockBehaviorSetup {
         .thenAnswer((_) async => TestDataFactory.createTestSpot());
 
     when(() => BlocMockFactory.deleteSpotUseCase.call(any()))
-        .thenAnswer((_) async {});
+        .thenAnswer((_) async {
+          return null;
+        });
   }
 
   /// Sets up spots operation failures
@@ -214,7 +218,9 @@ class MockBehaviorSetup {
         .thenAnswer((_) async => TestDataFactory.createTestList());
 
     when(() => BlocMockFactory.deleteListUseCase.call(any()))
-        .thenAnswer((_) async {});
+        .thenAnswer((_) async {
+          return null;
+        });
   }
 
   /// Sets up lists operation failures
@@ -273,7 +279,9 @@ class MockBehaviorSetup {
           maxResults: any(named: 'maxResults'),
           includeExternal: any(named: 'includeExternal'),
           result: any(named: 'result'),
-        )).thenAnswer((_) async {});
+        )).thenAnswer((_) async {
+          return null;
+        });
 
     when(() => BlocMockFactory.aiSearchSuggestionsService.learnFromSearch(
           query: any(named: 'query'),
@@ -310,17 +318,23 @@ class MockBehaviorSetup {
 
     when(() => BlocMockFactory.searchCacheService.prefetchPopularSearches(
           searchFunction: any(named: 'searchFunction'),
-        )).thenAnswer((_) async {});
+        )).thenAnswer((_) async {
+          return null;
+        });
 
     when(() => BlocMockFactory.searchCacheService.warmLocationCache(
           latitude: any(named: 'latitude'),
           longitude: any(named: 'longitude'),
           nearbySearchFunction: any(named: 'nearbySearchFunction'),
-        )).thenAnswer((_) async {});
+        )).thenAnswer((_) async {
+          return null;
+        });
 
     when(() => BlocMockFactory.searchCacheService.clearCache(
           preserveOffline: any(named: 'preserveOffline'),
-        )).thenAnswer((_) async {});
+        )).thenAnswer((_) async {
+          return null;
+        });
 
     when(() => BlocMockFactory.aiSearchSuggestionsService.clearLearningData())
         .thenReturn(null);

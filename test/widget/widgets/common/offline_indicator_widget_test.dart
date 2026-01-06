@@ -19,7 +19,10 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: OfflineIndicatorWidget(isOffline: true),
+            body: OfflineIndicatorWidget(
+              key: ValueKey('offline_indicator_1'),
+              isOffline: true,
+            ),
           ),
         ),
       );
@@ -31,7 +34,10 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: OfflineIndicatorWidget(isOffline: false),
+            body: OfflineIndicatorWidget(
+              key: ValueKey('offline_indicator_2'),
+              isOffline: false,
+            ),
           ),
         ),
       );
@@ -40,7 +46,10 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: OfflineIndicatorWidget(isOffline: true),
+            body: OfflineIndicatorWidget(
+              key: ValueKey('offline_indicator_3'),
+              isOffline: true,
+            ),
           ),
         ),
       );
@@ -55,6 +64,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: OfflineIndicatorWidget(
+              key: const ValueKey('offline_indicator_4'),
               isOffline: true,
               onRetry: () {
                 retryCalled = true;
@@ -72,6 +82,7 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: OfflineIndicatorWidget(
+              key: ValueKey('offline_indicator_5'),
               isOffline: true,
               showDismiss: true,
             ),
@@ -87,6 +98,7 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: OfflineIndicatorWidget(
+              key: ValueKey('offline_indicator_6'),
               isOffline: true,
               limitedFeatures: ['Feature A', 'Feature B'],
               availableFeatures: ['Feature C'],
@@ -110,7 +122,10 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: OfflineBanner(isOffline: true),
+            body: OfflineBanner(
+              key: ValueKey('offline_banner_1'),
+              isOffline: true,
+            ),
           ),
         ),
       );
@@ -120,7 +135,10 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: OfflineBanner(isOffline: false),
+            body: OfflineBanner(
+              key: ValueKey('offline_banner_2'),
+              isOffline: false,
+            ),
           ),
         ),
       );
@@ -131,6 +149,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: OfflineBanner(
+              key: const ValueKey('offline_banner_3'),
               isOffline: true,
               onTap: () {
                 tapped = true;

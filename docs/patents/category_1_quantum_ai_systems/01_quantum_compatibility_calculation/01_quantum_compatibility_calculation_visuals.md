@@ -5,9 +5,80 @@
 
 ---
 
-## Visual Diagrams and Formulas
 
-### 1. Quantum State Vector Representation
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Quantum State Vector Representation.
+- **FIG. 6**: Quantum Compatibility Formula.
+- **FIG. 7**: Quantum Entanglement Diagram.
+- **FIG. 8**: Bures Distance Metric.
+- **FIG. 9**: Quantum Regularization Flow.
+- **FIG. 10**: Complete Compatibility Calculation Flow.
+- **FIG. 11**: Quantum vs. Classical Comparison.
+- **FIG. 12**: Entanglement Visualization.
+- **FIG. 13**: Multi-Dimensional Personality Space.
+- **FIG. 14**: Regularization Process Diagram.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Quantum-Inspired Compatibility Calculation System implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Quantum State Vector Representation.
+- Quantum Compatibility Formula.
+- Quantum Entanglement Diagram.
+- Bures Distance Metric.
+- Quantum Regularization Flow.
+- Complete Compatibility Calculation Flow.
+- Quantum vs. Classical Comparison.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Quantum-Inspired Compatibility Calculation System implementation.
+
+1. Representing personality dimensions as quantum states `|ψ⟩`.
+2. Calculating quantum inner product `⟨ψ_A|ψ_B⟩` between two personality states.
+3. Computing compatibility score as `C = |⟨ψ_A|ψ_B⟩|²`.
+4. Returning compatibility score for personality matching.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Quantum-Inspired Compatibility Calculation System implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- AtomicTimestamp: {t, source, uncertainty}
+- TemporalState: {|ψ_t⟩, parameters, normalized}
+- TimeSyncRecord: {offset, drift, lastCalibratedAt}
+- TemporalCompatibilityResult: {score in [0,1], computedAt}
+- ServiceResponse: {value, confidence, provenance}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Quantum-Inspired Compatibility Calculation System implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device requests or samples atomic time and receives an atomic timestamp.
+2. Client device constructs a temporal quantum state representation indexed to the timestamp.
+3. Client device performs time-indexed computation and normalizes the result.
+4. Client device stores the resulting temporal state/score with provenance metadata.
+
+### FIG. 5 — Quantum State Vector Representation
+
 
 ```
 Personality A: |ψ_A⟩ = [α₁, α₂, α₃, ..., αₙ]
@@ -26,7 +97,8 @@ Personality A: |ψ_A⟩ = [α₁, α₂, α₃, ..., αₙ]
 
 ---
 
-### 2. Quantum Compatibility Formula
+### FIG. 6 — Quantum Compatibility Formula
+
 
 ```
     |ψ_A⟩ ──┐
@@ -50,7 +122,8 @@ Where:
 
 ---
 
-### 3. Quantum Entanglement Diagram
+### FIG. 7 — Quantum Entanglement Diagram
+
 
 ```
 Energy Dimension:     |ψ_energy⟩
@@ -76,7 +149,8 @@ C_entangled = |⟨ψ_A_entangled|ψ_B_entangled⟩|²
 
 ---
 
-### 4. Bures Distance Metric
+### FIG. 8 — Bures Distance Metric
+
 
 ```
 Personality A: |ψ_A⟩
@@ -102,7 +176,8 @@ Properties:
 
 ---
 
-### 5. Quantum Regularization Flow
+### FIG. 9 — Quantum Regularization Flow
+
 
 ```
 Noisy Personality Data
@@ -129,7 +204,8 @@ Noisy Personality Data
 
 ---
 
-### 6. Complete Compatibility Calculation Flow
+### FIG. 10 — Complete Compatibility Calculation Flow
+
 
 ```
 Personality A Profile
@@ -163,7 +239,8 @@ Personality B Profile                    │
 
 ---
 
-### 7. Quantum vs. Classical Comparison
+### FIG. 11 — Quantum vs. Classical Comparison
+
 
 ```
 Classical Approach:
@@ -195,7 +272,8 @@ Quantum Approach:
 
 ---
 
-### 8. Entanglement Visualization
+### FIG. 12 — Entanglement Visualization
+
 
 ```
 Without Entanglement:
@@ -213,7 +291,8 @@ With Entanglement:
 
 ---
 
-### 9. Multi-Dimensional Personality Space
+### FIG. 13 — Multi-Dimensional Personality Space
+
 
 ```
 3D Visualization (simplified):
@@ -240,7 +319,8 @@ With Entanglement:
 
 ---
 
-### 10. Regularization Process Diagram
+### FIG. 14 — Regularization Process Diagram
+
 
 ```
 Input: Noisy Measurements
@@ -310,4 +390,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

@@ -13,19 +13,34 @@
 library;
 
 import 'dart:async';
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/p2p/federated_learning.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/presentation/widgets/common/standard_error_widget.dart';
 import 'package:spots/presentation/widgets/common/standard_loading_widget.dart';
-import 'package:get_it/get_it.dart';
-import 'dart:developer' as developer;
 
 /// Widget displaying federated learning round status and participation
 class FederatedLearningStatusWidget extends StatefulWidget {
-  const FederatedLearningStatusWidget({super.key});
+  /// Optional override for tests/debug: preloaded active rounds.
+  final List<FederatedLearningRound>? activeRounds;
+
+  /// Optional override for tests/debug: current node id.
+  final String? currentNodeId;
+
+  /// Optional override for tests/debug: federated learning system instance.
+  final FederatedLearningSystem? federatedLearningSystem;
+
+  const FederatedLearningStatusWidget({
+    super.key,
+    this.activeRounds,
+    this.currentNodeId,
+    this.federatedLearningSystem,
+  });
 
   @override
   State<FederatedLearningStatusWidget> createState() => _FederatedLearningStatusWidgetState();
@@ -43,13 +58,27 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
   @override
   void initState() {
     super.initState();
-    // Use dependency injection to get FederatedLearningSystem
-    try {
-      _federatedLearningSystem = GetIt.instance<FederatedLearningSystem>();
-    } catch (e) {
-      // Fallback if not registered in DI (shouldn't happen in production)
-      _federatedLearningSystem = FederatedLearningSystem();
+    _federatedLearningSystem = widget.federatedLearningSystem ??
+        (() {
+          // Use dependency injection to get FederatedLearningSystem
+          try {
+            return GetIt.instance<FederatedLearningSystem>();
+          } catch (_) {
+            // Fallback if not registered in DI (shouldn't happen in production)
+            return FederatedLearningSystem();
+          }
+        })();
+
+    _currentNodeId = widget.currentNodeId;
+
+    // If tests/debug provided rounds, render without async loading/timers.
+    if (widget.activeRounds != null) {
+      _activeRounds = widget.activeRounds!;
+      _isLoading = false;
+      _errorMessage = null;
+      return;
     }
+
     _loadActiveRounds();
     // Set up periodic refresh (every 30 seconds)
     _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
@@ -57,6 +86,38 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
         _loadActiveRounds();
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant FederatedLearningStatusWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Keep local node id in sync with widget overrides.
+    if (widget.currentNodeId != oldWidget.currentNodeId) {
+      _currentNodeId = widget.currentNodeId;
+    }
+
+    // Support test/debug overrides updating across rebuilds.
+    if (widget.activeRounds != oldWidget.activeRounds) {
+      if (widget.activeRounds != null) {
+        _refreshTimer?.cancel();
+        _refreshTimer = null;
+
+        setState(() {
+          _activeRounds = widget.activeRounds!;
+          _isLoading = false;
+          _errorMessage = null;
+        });
+      } else if (oldWidget.activeRounds != null && widget.activeRounds == null) {
+        // Transition back to live loading mode.
+        _loadActiveRounds();
+        _refreshTimer ??= Timer.periodic(const Duration(seconds: 30), (_) {
+          if (mounted) {
+            _loadActiveRounds();
+          }
+        });
+      }
+    }
   }
 
   @override
@@ -72,10 +133,12 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
     });
 
     try {
-      // Get current user ID as node ID
-      final authState = context.read<AuthBloc>().state;
-      if (authState is Authenticated) {
-        _currentNodeId = authState.user.id;
+      // Get current user ID as node ID (unless provided by widget override)
+      if (_currentNodeId == null) {
+        final authState = context.read<AuthBloc>().state;
+        if (authState is Authenticated) {
+          _currentNodeId = authState.user.id;
+        }
       }
 
       // Fetch active rounds from backend

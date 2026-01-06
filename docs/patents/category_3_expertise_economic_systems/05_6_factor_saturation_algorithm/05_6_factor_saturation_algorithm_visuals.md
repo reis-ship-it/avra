@@ -4,7 +4,89 @@
 
 ---
 
-## 1. System Architecture Diagram
+
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: System Architecture Diagram.
+- **FIG. 6**: 6-Factor Saturation Formula.
+- **FIG. 7**: Factor Weight Distribution.
+- **FIG. 8**: Factor 1: Supply Ratio Calculation.
+- **FIG. 9**: Factor 2: Quality Distribution Calculation.
+- **FIG. 10**: Factor 3: Utilization Rate Calculation.
+- **FIG. 11**: Factor 4: Demand Signal Calculation.
+- **FIG. 12**: Factor 5: Growth Velocity Calculation.
+- **FIG. 13**: Factor 6: Geographic Distribution Calculation.
+- **FIG. 14**: Complete Calculation Example.
+- **FIG. 15**: Saturation Score Ranges.
+- **FIG. 16**: Data Flow Diagram.
+- **FIG. 17**: Multiplier Range Visualization.
+- **FIG. 18**: Factor Contribution Visualization.
+- **FIG. 19**: Algorithm Flowchart.
+- **FIG. 20**: Integration Points.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the 6-Factor Saturation Algorithm for Dynamic Expertise Thresholds implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+
+In some embodiments, the diagram includes:
+- System Architecture Diagram.
+- 6-Factor Saturation Formula.
+- Factor Weight Distribution.
+- Factor 1: Supply Ratio Calculation.
+- Factor 2: Quality Distribution Calculation.
+- Factor 3: Utilization Rate Calculation.
+- Factor 4: Demand Signal Calculation.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the 6-Factor Saturation Algorithm for Dynamic Expertise Thresholds implementation.
+
+1. Calculating a supply ratio factor by dividing the number of experts by the total number of users and normalizing against a target ratio of 2%.
+2. Analyzing a quality distribution factor by computing a weighted average of expert ratings, engagement rates, and verification status.
+3. Computing a utilization rate factor by measuring the ratio of active experts to total experts and events hosted to potential capacity.
+4. Measuring a demand signal factor by analyzing search trends, wait list ratios, follow requests, and list subscriptions.
+5. Evaluating a growth velocity factor by calculating growth rate instability from expert count changes over time periods.
+6. Analyzing a geographic distribution factor by computing a clustering coefficient from location entropy.
+7. Combining the six factors using a weighted formula: (supply ratio × 25%) + ((1 - quality) × 20%) + ((1 - utilization) × 20%) + ((1 - demand) × 15%) + (growth instability × 10%) + (geographic clustering × 10%).
+8. Calculating a saturation multiplier as 1.0 + (saturation score × 2.0).
+9. Adjusting expertise requirements by multiplying base requirements by the saturation multiplier.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the 6-Factor Saturation Algorithm for Dynamic Expertise Thresholds implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- AtomicTimestamp: {t, source, uncertainty}
+- TemporalState: {|ψ_t⟩, parameters, normalized}
+- TimeSyncRecord: {offset, drift, lastCalibratedAt}
+- TemporalCompatibilityResult: {score in [0,1], computedAt}
+- ServiceResponse: {value, confidence, provenance}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the 6-Factor Saturation Algorithm for Dynamic Expertise Thresholds implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device requests or samples atomic time and receives an atomic timestamp.
+2. Client device constructs a temporal quantum state representation indexed to the timestamp.
+3. Client device performs time-indexed computation and normalizes the result.
+4. Client device stores the resulting temporal state/score with provenance metadata.
+
+### FIG. 5 — System Architecture Diagram
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -51,7 +133,8 @@
 
 ---
 
-## 2. 6-Factor Saturation Formula
+### FIG. 6 — 6-Factor Saturation Formula
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -80,7 +163,8 @@
 
 ---
 
-## 3. Factor Weight Distribution
+### FIG. 7 — Factor Weight Distribution
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -116,7 +200,8 @@
 
 ---
 
-## 4. Factor 1: Supply Ratio Calculation
+### FIG. 8 — Factor 1: Supply Ratio Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -148,7 +233,8 @@
 
 ---
 
-## 5. Factor 2: Quality Distribution Calculation
+### FIG. 9 — Factor 2: Quality Distribution Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -190,7 +276,8 @@
 
 ---
 
-## 6. Factor 3: Utilization Rate Calculation
+### FIG. 10 — Factor 3: Utilization Rate Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -230,7 +317,8 @@
 
 ---
 
-## 7. Factor 4: Demand Signal Calculation
+### FIG. 11 — Factor 4: Demand Signal Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -275,7 +363,8 @@
 
 ---
 
-## 8. Factor 5: Growth Velocity Calculation
+### FIG. 12 — Factor 5: Growth Velocity Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -317,7 +406,8 @@
 
 ---
 
-## 9. Factor 6: Geographic Distribution Calculation
+### FIG. 13 — Factor 6: Geographic Distribution Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -358,7 +448,8 @@
 
 ---
 
-## 10. Complete Calculation Example
+### FIG. 14 — Complete Calculation Example
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -396,7 +487,8 @@
 
 ---
 
-## 11. Saturation Score Ranges
+### FIG. 15 — Saturation Score Ranges
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -432,7 +524,8 @@
 
 ---
 
-## 12. Data Flow Diagram
+### FIG. 16 — Data Flow Diagram
+
 
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
@@ -471,7 +564,8 @@
 
 ---
 
-## 13. Multiplier Range Visualization
+### FIG. 17 — Multiplier Range Visualization
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -496,7 +590,8 @@
 
 ---
 
-## 14. Factor Contribution Visualization
+### FIG. 18 — Factor Contribution Visualization
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -519,7 +614,8 @@
 
 ---
 
-## 15. Algorithm Flowchart
+### FIG. 19 — Algorithm Flowchart
+
 
 ```
                     START
@@ -601,7 +697,8 @@
 
 ---
 
-## 16. Integration Points
+### FIG. 20 — Integration Points
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -660,4 +757,3 @@ This visual documentation provides comprehensive diagrams and visualizations for
 11. **Integration Points** - System connections
 
 These visuals support the deep-dive document and provide clear, patent-ready documentation of the algorithm's technical implementation.
-

@@ -4,7 +4,84 @@
 
 ---
 
-## 1. System Architecture
+
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: System Architecture.
+- **FIG. 6**: Location Priority System.
+- **FIG. 7**: Consensus Algorithm Flow.
+- **FIG. 8**: Consensus Calculation Example.
+- **FIG. 9**: Proximity-Based Discovery.
+- **FIG. 10**: VPN/Proxy Detection Flow.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Location Inference from Agent Network Consensus System implementation.
+
+In the illustrated embodiment, a computing device receives peer-agent location reports, local proximity observations, and network reliability signals; constructs an internal representation; and applies a consensus computation with a confidence threshold and a fallback policy to produce an inferred city-level location and a confidence score.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- System Architecture.
+- Location Priority System.
+- Consensus Algorithm Flow.
+- Consensus Calculation Example.
+- Proximity-Based Discovery.
+- VPN/Proxy Detection Flow.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Location Inference from Agent Network Consensus System implementation.
+
+1. Detecting VPN/proxy usage through network configuration analysis.
+2. Discovering nearby AI2AI agents via physical proximity (Bluetooth/WiFi).
+3. Calculating proximity scores for discovered agents.
+4. Filtering agents by proximity threshold (> 0.5) to ensure physical proximity.
+5. Extracting obfuscated city-level locations from nearby agents.
+6. Aggregating locations and counting occurrences.
+7. Determining location by majority consensus algorithm.
+8. Requiring at least 60% confidence threshold (top_location_count / total_agents >= 0.6).
+9. Returning inferred location with confidence score if threshold met.
+10. Falling back to IP geolocation if consensus unavailable.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Location Inference from Agent Network Consensus System implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- AgentReport: {agentId, locationCandidate, observedAt, signalQuality}
+- LocationCandidate: {cityId/regionId, sourceType, weight}
+- ConsensusDistribution: {candidateCounts/weights, totalAgents, threshold}
+- InferenceResult: {inferredLocation, confidence, fallbackUsed, decidedAt}
+- DiscoveryContext: {nearbyEntities, proximitySignals, policy}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Location Inference from Agent Network Consensus System implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+- Privacy/validation module (on-device)
+
+Example sequence:
+1. Client device detects VPN/proxy likelihood and selects location policy.
+2. Client device discovers nearby agents and collects candidate location reports.
+3. Client device aggregates reports to compute a consensus distribution.
+4. Client device computes confidence and selects inferred location (or fallback).
+5. Client device stores inference result and uses it for downstream decisions.
+
+### FIG. 5 — System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -45,7 +122,8 @@
 
 ---
 
-## 2. Location Priority System
+### FIG. 6 — Location Priority System
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -71,7 +149,8 @@
 
 ---
 
-## 3. Consensus Algorithm Flow
+### FIG. 7 — Consensus Algorithm Flow
+
 
 ```
                     START
@@ -115,7 +194,8 @@
 
 ---
 
-## 4. Consensus Calculation Example
+### FIG. 8 — Consensus Calculation Example
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -150,7 +230,8 @@
 
 ---
 
-## 5. Proximity-Based Discovery
+### FIG. 9 — Proximity-Based Discovery
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -181,7 +262,8 @@
 
 ---
 
-## 6. VPN/Proxy Detection Flow
+### FIG. 10 — VPN/Proxy Detection Flow
+
 
 ```
                     START
@@ -228,4 +310,3 @@ This visual documentation provides comprehensive diagrams and visualizations for
 6. **VPN/Proxy Detection Flow** - Detection and routing logic
 
 These visuals support the deep-dive document and provide clear, patent-ready documentation of the system's technical implementation.
-

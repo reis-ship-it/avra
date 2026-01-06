@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:spots/presentation/widgets/common/offline_indicator.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/core/models/user.dart';
@@ -12,11 +11,8 @@ import '../../../helpers/test_helpers.dart';
 /// Tests offline indicator display based on auth state
 void main() {
   group('OfflineIndicator Widget Tests', () {
-    late MockAuthBloc mockAuthBloc;
-
-    setUp(() {
-      mockAuthBloc = MockAuthBloc();
-    });
+    // Note: MockAuthBloc's stream is a single-value broadcast stream per
+    // setState(). To avoid stale subscriptions, use a fresh bloc per scenario.
 
     // Removed: Property assignment tests
     // Offline indicator tests focus on business logic (offline indicator display based on auth state), not property assignment
@@ -33,29 +29,29 @@ void main() {
         createdAt: TestHelpers.createTestDateTime(),
         updatedAt: TestHelpers.createTestDateTime(),
       );
-      when(mockAuthBloc.state)
-          .thenReturn(Authenticated(user: testUser, isOffline: true));
+      final authBlocOffline = MockAuthBloc()
+        ..setState(Authenticated(user: testUser, isOffline: true));
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const OfflineIndicator(),
-        authBloc: mockAuthBloc,
+        authBloc: authBlocOffline,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Offline'), findsOneWidget);
       expect(find.byIcon(Icons.wifi_off), findsOneWidget);
 
-      when(mockAuthBloc.state)
-          .thenReturn(Authenticated(user: testUser, isOffline: false));
+      final authBlocOnline = MockAuthBloc()
+        ..setState(Authenticated(user: testUser, isOffline: false));
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: const OfflineIndicator(),
-        authBloc: mockAuthBloc,
+        authBloc: authBlocOnline,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Offline'), findsNothing);
 
-      when(mockAuthBloc.state).thenReturn(Unauthenticated());
+      final authBlocUnauthed = MockAuthBloc()..setState(Unauthenticated());
       final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const OfflineIndicator(),
-        authBloc: mockAuthBloc,
+        authBloc: authBlocUnauthed,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Offline'), findsNothing);

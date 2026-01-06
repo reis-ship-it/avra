@@ -16,7 +16,8 @@ import 'package:spots/presentation/pages/partnerships/partnership_checkout_page.
 import 'package:spots/presentation/pages/payment/checkout_page.dart';
 import 'package:spots/presentation/pages/payment/payment_success_page.dart';
 import 'package:spots/presentation/pages/business/business_account_creation_page.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart'
+    show AuthBloc, Authenticated;
 import 'package:spots/core/models/user.dart' show User, UserRole;
 import 'package:get_it/get_it.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
@@ -28,19 +29,40 @@ import 'package:spots/core/services/payment_event_service.dart';
 import 'package:spots/core/services/partnership_matching_service.dart';
 import 'package:spots/core/services/business_service.dart';
 import 'package:spots/core/services/business_account_service.dart';
+import 'package:spots/core/services/sponsorship_service.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/vibe_compatibility_service.dart';
+import 'package:spots/core/ai/personality_learning.dart';
+import 'package:spots_knot/services/knot/entity_knot_service.dart';
+import 'package:spots_knot/services/knot/personality_knot_service.dart';
+import 'package:spots/core/controllers/sponsorship_checkout_controller.dart';
+import 'package:spots/core/controllers/payment_processing_controller.dart';
+import 'package:spots/core/controllers/checkout_controller.dart';
+import 'package:spots/core/controllers/partnership_checkout_controller.dart';
+import 'package:spots/core/services/revenue_split_service.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/getit_test_harness.dart';
 import '../../helpers/test_helpers.dart';
 import '../../widget/mocks/mock_blocs.dart';
 
-@GenerateMocks([PaymentService, ExpertiseEventService, StripeService, PartnershipService, PaymentEventService, PartnershipMatchingService, BusinessService, BusinessAccountService])
+@GenerateMocks([
+  PaymentService,
+  ExpertiseEventService,
+  StripeService,
+  PartnershipService,
+  PaymentEventService,
+  PartnershipMatchingService,
+  BusinessService,
+  BusinessAccountService
+])
 import 'user_flow_integration_test.mocks.dart';
 
 /// User Flow Integration Tests
-/// 
+///
 /// Agent 2: Phase 4, Week 14 - User Flow Testing
-/// 
+///
 /// Tests complete user flows:
 /// - Brand → Discovery → Proposal → Acceptance → Payment → Analytics
 /// - User → Partnership → Payment → Earnings
@@ -56,94 +78,138 @@ void main() {
     late Sponsorship testSponsorship;
     late MockPaymentService mockPaymentService;
     late MockExpertiseEventService mockEventService;
-    late MockStripeService mockStripeService;
     late MockPartnershipService mockPartnershipService;
     late MockPaymentEventService mockPaymentEventService;
     late MockPartnershipMatchingService mockPartnershipMatchingService;
     late MockBusinessService mockBusinessService;
     late MockBusinessAccountService mockBusinessAccountService;
     late MockAuthBloc mockAuthBloc;
+    late GetItTestHarness getIt;
 
     setUpAll(() {
+      getIt = GetItTestHarness(sl: GetIt.instance);
+
+      // PersonalityLearning (used by the real VibeCompatibilityService) requires
+      // AgentIdService via DI. Register it once for this suite.
+      if (!GetIt.instance.isRegistered<AgentIdService>()) {
+        GetIt.instance.registerLazySingleton<AgentIdService>(
+          () => AgentIdService(),
+        );
+      }
+
       // Register required services in GetIt
       mockPaymentService = MockPaymentService();
       mockEventService = MockExpertiseEventService();
-      mockStripeService = MockStripeService();
       mockPartnershipService = MockPartnershipService();
       mockPaymentEventService = MockPaymentEventService();
       mockPartnershipMatchingService = MockPartnershipMatchingService();
       mockBusinessAccountService = MockBusinessAccountService();
       mockBusinessService = MockBusinessService();
-      
+
       // Unregister if already registered
-      if (GetIt.instance.isRegistered<PaymentService>()) {
-        GetIt.instance.unregister<PaymentService>();
-      }
-      if (GetIt.instance.isRegistered<ExpertiseEventService>()) {
-        GetIt.instance.unregister<ExpertiseEventService>();
-      }
-      if (GetIt.instance.isRegistered<SalesTaxService>()) {
-        GetIt.instance.unregister<SalesTaxService>();
-      }
-      if (GetIt.instance.isRegistered<PartnershipService>()) {
-        GetIt.instance.unregister<PartnershipService>();
-      }
-      if (GetIt.instance.isRegistered<PaymentEventService>()) {
-        GetIt.instance.unregister<PaymentEventService>();
-      }
-      if (GetIt.instance.isRegistered<PartnershipMatchingService>()) {
-        GetIt.instance.unregister<PartnershipMatchingService>();
-      }
-      if (GetIt.instance.isRegistered<BusinessService>()) {
-        GetIt.instance.unregister<BusinessService>();
-      }
-      if (GetIt.instance.isRegistered<BusinessAccountService>()) {
-        GetIt.instance.unregister<BusinessAccountService>();
-      }
-      
+      getIt.unregisterIfRegistered<PaymentService>();
+      getIt.unregisterIfRegistered<ExpertiseEventService>();
+      getIt.unregisterIfRegistered<SalesTaxService>();
+      getIt.unregisterIfRegistered<PartnershipService>();
+      getIt.unregisterIfRegistered<PaymentEventService>();
+      getIt.unregisterIfRegistered<PartnershipMatchingService>();
+      getIt.unregisterIfRegistered<BusinessService>();
+      getIt.unregisterIfRegistered<BusinessAccountService>();
+      getIt.unregisterIfRegistered<SponsorshipService>();
+      getIt.unregisterIfRegistered<SponsorshipCheckoutController>();
+      getIt.unregisterIfRegistered<RevenueSplitService>();
+      getIt.unregisterIfRegistered<PaymentProcessingController>();
+      getIt.unregisterIfRegistered<CheckoutController>();
+      getIt.unregisterIfRegistered<PartnershipCheckoutController>();
+
       // Register mocks
-      GetIt.instance.registerSingleton<PaymentService>(mockPaymentService);
-      GetIt.instance.registerSingleton<ExpertiseEventService>(mockEventService);
-      GetIt.instance.registerSingleton<PartnershipService>(mockPartnershipService);
-      GetIt.instance.registerSingleton<PaymentEventService>(mockPaymentEventService);
-      GetIt.instance.registerSingleton<PartnershipMatchingService>(mockPartnershipMatchingService);
-      GetIt.instance.registerSingleton<BusinessService>(mockBusinessService);
-      GetIt.instance.registerSingleton<BusinessAccountService>(mockBusinessAccountService);
-      // Register SalesTaxService (CheckoutPage requires it)
-      GetIt.instance.registerLazySingleton<SalesTaxService>(
+      getIt.registerSingletonReplace<PaymentService>(mockPaymentService);
+      getIt.registerSingletonReplace<ExpertiseEventService>(mockEventService);
+      getIt
+          .registerSingletonReplace<PartnershipService>(mockPartnershipService);
+      getIt.registerSingletonReplace<PaymentEventService>(
+          mockPaymentEventService);
+      getIt.registerSingletonReplace<PartnershipMatchingService>(
+        mockPartnershipMatchingService,
+      );
+      getIt.registerSingletonReplace<BusinessService>(mockBusinessService);
+      getIt.registerSingletonReplace<BusinessAccountService>(
+          mockBusinessAccountService);
+
+      // Register SalesTaxService (used by checkout/payment controllers)
+      getIt.registerLazySingletonReplace<SalesTaxService>(
         () => SalesTaxService(
           eventService: mockEventService,
           paymentService: mockPaymentService,
         ),
       );
+
+      // Needed by SponsorshipCheckoutPage (it pulls controller directly from GetIt).
+      getIt.registerLazySingletonReplace<SponsorshipService>(
+        () => SponsorshipService(
+          eventService: mockEventService,
+          partnershipService: mockPartnershipService,
+          vibeCompatibilityService: QuantumKnotVibeCompatibilityService(
+            personalityLearning: PersonalityLearning(),
+            personalityKnotService: PersonalityKnotService(),
+            entityKnotService: EntityKnotService(),
+          ),
+        ),
+      );
+      getIt.registerLazySingletonReplace<SponsorshipCheckoutController>(
+        () => SponsorshipCheckoutController(
+          sponsorshipService: GetIt.instance<SponsorshipService>(),
+          eventService: mockEventService,
+        ),
+      );
+
+      // Controllers used directly inside payment/partnership pages (pulled from GetIt in widgets).
+      getIt.registerLazySingletonReplace<RevenueSplitService>(
+        () => RevenueSplitService(
+          partnershipService: mockPartnershipService,
+          sponsorshipService: GetIt.instance<SponsorshipService>(),
+        ),
+      );
+      getIt.registerLazySingletonReplace<PaymentProcessingController>(
+        () => PaymentProcessingController(
+          salesTaxService: GetIt.instance<SalesTaxService>(),
+          paymentEventService: mockPaymentEventService,
+        ),
+      );
+      getIt.registerLazySingletonReplace<CheckoutController>(
+        () => CheckoutController(
+          paymentController: GetIt.instance<PaymentProcessingController>(),
+          salesTaxService: GetIt.instance<SalesTaxService>(),
+          eventService: mockEventService,
+        ),
+      );
+      getIt.registerLazySingletonReplace<PartnershipCheckoutController>(
+        () => PartnershipCheckoutController(
+          paymentController: GetIt.instance<PaymentProcessingController>(),
+          revenueSplitService: GetIt.instance<RevenueSplitService>(),
+          partnershipService: mockPartnershipService,
+          eventService: mockEventService,
+          salesTaxService: GetIt.instance<SalesTaxService>(),
+        ),
+      );
     });
-    
+
     tearDownAll(() {
       // Unregister all services for test isolation
-      if (GetIt.instance.isRegistered<PaymentService>()) {
-        GetIt.instance.unregister<PaymentService>();
-      }
-      if (GetIt.instance.isRegistered<ExpertiseEventService>()) {
-        GetIt.instance.unregister<ExpertiseEventService>();
-      }
-      if (GetIt.instance.isRegistered<SalesTaxService>()) {
-        GetIt.instance.unregister<SalesTaxService>();
-      }
-      if (GetIt.instance.isRegistered<PartnershipService>()) {
-        GetIt.instance.unregister<PartnershipService>();
-      }
-      if (GetIt.instance.isRegistered<PaymentEventService>()) {
-        GetIt.instance.unregister<PaymentEventService>();
-      }
-      if (GetIt.instance.isRegistered<PartnershipMatchingService>()) {
-        GetIt.instance.unregister<PartnershipMatchingService>();
-      }
-      if (GetIt.instance.isRegistered<BusinessService>()) {
-        GetIt.instance.unregister<BusinessService>();
-      }
-      if (GetIt.instance.isRegistered<BusinessAccountService>()) {
-        GetIt.instance.unregister<BusinessAccountService>();
-      }
+      getIt.unregisterIfRegistered<PaymentService>();
+      getIt.unregisterIfRegistered<ExpertiseEventService>();
+      getIt.unregisterIfRegistered<SalesTaxService>();
+      getIt.unregisterIfRegistered<PartnershipService>();
+      getIt.unregisterIfRegistered<PaymentEventService>();
+      getIt.unregisterIfRegistered<PartnershipMatchingService>();
+      getIt.unregisterIfRegistered<BusinessService>();
+      getIt.unregisterIfRegistered<BusinessAccountService>();
+      getIt.unregisterIfRegistered<SponsorshipService>();
+      getIt.unregisterIfRegistered<SponsorshipCheckoutController>();
+      getIt.unregisterIfRegistered<RevenueSplitService>();
+      getIt.unregisterIfRegistered<PaymentProcessingController>();
+      getIt.unregisterIfRegistered<CheckoutController>();
+      getIt.unregisterIfRegistered<PartnershipCheckoutController>();
     });
 
     Widget wrapWithAuthBloc(Widget child) {
@@ -167,7 +233,7 @@ void main() {
           role: UserRole.user,
         ),
       ));
-      
+
       testEvent = ExpertiseEvent(
         id: 'event-1',
         title: 'Test Event',
@@ -184,23 +250,24 @@ void main() {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      
+
       // Stub getEventById for SalesTaxService (must be after testEvent is created)
-      when(mockEventService.getEventById('event-1')).thenAnswer((_) async => testEvent);
-      
+      when(mockEventService.getEventById('event-1'))
+          .thenAnswer((_) async => testEvent);
+
       // Stub methods for PartnershipProposalPage
       when(mockPartnershipMatchingService.findMatchingPartners(
         userId: anyNamed('userId'),
         eventId: anyNamed('eventId'),
         minCompatibility: anyNamed('minCompatibility'),
       )).thenAnswer((_) async => []);
-      
+
       when(mockBusinessService.findBusinesses(
         category: anyNamed('category'),
         verifiedOnly: anyNamed('verifiedOnly'),
         maxResults: anyNamed('maxResults'),
       )).thenAnswer((_) async => []);
-      
+
       // Stub calculateRevenueSplit for PartnershipCheckoutPage
       when(mockPaymentService.calculateRevenueSplit(
         totalAmount: anyNamed('totalAmount'),
@@ -214,7 +281,7 @@ void main() {
           ticketsSold: 1,
         );
       });
-      
+
       // Stub getPayment for PaymentSuccessPage
       when(mockPaymentService.getPayment(any)).thenAnswer((invocation) {
         final paymentId = invocation.positionalArguments[0] as String;
@@ -256,7 +323,9 @@ void main() {
     });
 
     group('Complete Brand Sponsorship Flow', () {
-      testWidgets('should navigate through brand discovery to sponsorship proposal', (WidgetTester tester) async {
+      testWidgets(
+          'should navigate through brand discovery to sponsorship proposal',
+          (WidgetTester tester) async {
         // Arrange & Act - Start at Brand Discovery
         await tester.pumpWidget(
           MaterialApp(
@@ -273,7 +342,8 @@ void main() {
         // This test verifies the starting point of the brand sponsorship flow
       });
 
-      testWidgets('should navigate from discovery to sponsorship checkout', (WidgetTester tester) async {
+      testWidgets('should navigate from discovery to sponsorship checkout',
+          (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
@@ -290,7 +360,8 @@ void main() {
         expect(find.text(testEvent.title), findsOneWidget);
       });
 
-      testWidgets('should navigate from sponsorship checkout to payment', (WidgetTester tester) async {
+      testWidgets('should navigate from sponsorship checkout to payment',
+          (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
@@ -298,13 +369,15 @@ void main() {
           ),
         );
         await tester.pump();
-        await tester.pump(const Duration(seconds: 1)); // Allow async operations to complete
+        await tester.pump(
+            const Duration(seconds: 1)); // Allow async operations to complete
 
         // Assert - Payment checkout is displayed
         expect(find.text('Checkout'), findsOneWidget);
       });
 
-      testWidgets('should navigate from payment to success', (WidgetTester tester) async {
+      testWidgets('should navigate from payment to success',
+          (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
@@ -321,7 +394,8 @@ void main() {
         expect(find.text('Payment Successful'), findsOneWidget);
       });
 
-      testWidgets('should navigate from success to analytics', (WidgetTester tester) async {
+      testWidgets('should navigate from success to analytics',
+          (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
@@ -336,11 +410,12 @@ void main() {
         expect(find.text('Brand Analytics'), findsOneWidget);
       });
 
-      testWidgets('should complete full brand sponsorship flow', (WidgetTester tester) async {
+      testWidgets('should complete full brand sponsorship flow',
+          (WidgetTester tester) async {
         // Test business logic: all pages in brand sponsorship flow can render
         // This tests that each page in the flow can be displayed
         // Full navigation testing would require router setup with service mocks
-        
+
         // Test analytics page renders (final step in flow)
         await tester.pumpWidget(
           MaterialApp(
@@ -352,7 +427,7 @@ void main() {
         // Use pump with timeout instead of pumpAndSettle to avoid infinite waits
         await tester.pump(const Duration(seconds: 2));
         expect(find.byType(BrandAnalyticsPage), findsOneWidget);
-        
+
         // Note: Full flow testing would require:
         // 1. Brand discovers event (Event Discovery Page)
         // 2. Brand proposes sponsorship (Sponsorship Proposal Page)
@@ -365,7 +440,8 @@ void main() {
     });
 
     group('Complete User Partnership Flow', () {
-      testWidgets('should navigate from partnership proposal to checkout', (WidgetTester tester) async {
+      testWidgets('should navigate from partnership proposal to checkout',
+          (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
@@ -378,7 +454,8 @@ void main() {
         expect(find.text('Partnership Proposal'), findsOneWidget);
       });
 
-      testWidgets('should navigate from partnership checkout to payment', (WidgetTester tester) async {
+      testWidgets('should navigate from partnership checkout to payment',
+          (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
@@ -395,7 +472,8 @@ void main() {
         expect(find.text('Checkout'), findsOneWidget);
       });
 
-      testWidgets('should navigate from payment to success', (WidgetTester tester) async {
+      testWidgets('should navigate from payment to success',
+          (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
@@ -412,11 +490,12 @@ void main() {
         expect(find.text('Payment Successful'), findsOneWidget);
       });
 
-      testWidgets('should complete full user partnership flow', (WidgetTester tester) async {
+      testWidgets('should complete full user partnership flow',
+          (WidgetTester tester) async {
         // Test business logic: all pages in partnership flow can render
         // This tests that each page in the flow can be displayed
         // Full navigation testing would require router setup with service mocks
-        
+
         // Test Partnership Proposal page
         await tester.pumpWidget(
           MaterialApp(
@@ -454,7 +533,9 @@ void main() {
     });
 
     group('Complete Business Flow', () {
-      testWidgets('should navigate from business account to partnership management', (WidgetTester tester) async {
+      testWidgets(
+          'should navigate from business account to partnership management',
+          (WidgetTester tester) async {
         // Arrange & Act
         await tester.pumpWidget(
           MaterialApp(
@@ -467,11 +548,12 @@ void main() {
         expect(find.byType(BusinessAccountCreationPage), findsOneWidget);
       });
 
-      testWidgets('should complete full business flow', (WidgetTester tester) async {
+      testWidgets('should complete full business flow',
+          (WidgetTester tester) async {
         // Test business logic: all pages in business flow can render
         // This tests that each page in the flow can be displayed
         // Full navigation testing would require router setup with service mocks
-        
+
         // Test Business Account Creation page
         await tester.pumpWidget(
           MaterialApp(
@@ -493,11 +575,12 @@ void main() {
     });
 
     group('Navigation Between All Pages', () {
-      testWidgets('should navigate between brand pages', (WidgetTester tester) async {
+      testWidgets('should navigate between brand pages',
+          (WidgetTester tester) async {
         // Test business logic: brand pages can render
         // This tests that each brand page can be displayed
         // Full navigation testing would require router setup
-        
+
         // Test Brand Discovery page
         await tester.pumpWidget(
           MaterialApp(
@@ -520,11 +603,12 @@ void main() {
         expect(find.byType(SponsorshipCheckoutPage), findsOneWidget);
       });
 
-      testWidgets('should navigate between partnership pages', (WidgetTester tester) async {
+      testWidgets('should navigate between partnership pages',
+          (WidgetTester tester) async {
         // Test business logic: partnership pages can render
         // This tests that each partnership page can be displayed
         // Full navigation testing would require router setup
-        
+
         // Test Partnership Proposal page
         await tester.pumpWidget(
           MaterialApp(
@@ -547,11 +631,12 @@ void main() {
         expect(find.byType(PartnershipCheckoutPage), findsOneWidget);
       });
 
-      testWidgets('should navigate between payment pages', (WidgetTester tester) async {
+      testWidgets('should navigate between payment pages',
+          (WidgetTester tester) async {
         // Test business logic: payment pages can render
         // This tests that each payment page can be displayed
         // Full navigation testing would require router setup
-        
+
         // Test Checkout page
         await tester.pumpWidget(
           MaterialApp(
@@ -559,7 +644,8 @@ void main() {
           ),
         );
         await tester.pump();
-        await tester.pump(const Duration(milliseconds: 500)); // Allow async operations to complete
+        await tester.pump(const Duration(
+            milliseconds: 500)); // Allow async operations to complete
         expect(find.byType(CheckoutPage), findsOneWidget);
 
         // Test Payment Success page
@@ -571,7 +657,8 @@ void main() {
               event: testEvent,
               paymentId: 'payment-123',
               quantity: 1,
-              eventService: mockEventService, // Inject mocked service for test isolation
+              eventService:
+                  mockEventService, // Inject mocked service for test isolation
             )),
           ),
         );
@@ -585,7 +672,8 @@ void main() {
     });
 
     group('Responsive Design Across Flows', () {
-      testWidgets('should maintain responsive design through brand flow', (WidgetTester tester) async {
+      testWidgets('should maintain responsive design through brand flow',
+          (WidgetTester tester) async {
         // Test responsive design at each step of brand sponsorship flow
         // Suppress overflow errors - these are UI issues, not test failures
         FlutterError.onError = (FlutterErrorDetails details) {
@@ -630,12 +718,13 @@ void main() {
         // Reset
         tester.view.resetPhysicalSize();
         tester.view.resetDevicePixelRatio();
-        
+
         // Restore error handler
         FlutterError.onError = FlutterError.presentError;
       });
 
-      testWidgets('should maintain responsive design through partnership flow', (WidgetTester tester) async {
+      testWidgets('should maintain responsive design through partnership flow',
+          (WidgetTester tester) async {
         // Test responsive design at each step of partnership flow
         // Phone size
         tester.view.physicalSize = const Size(375, 667);
@@ -665,11 +754,12 @@ void main() {
     });
 
     group('Error States in Flows', () {
-      testWidgets('should handle errors gracefully in brand flow', (WidgetTester tester) async {
+      testWidgets('should handle errors gracefully in brand flow',
+          (WidgetTester tester) async {
         // Test business logic: brand pages render without crashing
         // This tests that pages can render even with potential errors
         // Full error injection testing would require service mocks with error states
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: wrapWithAuthBloc(const BrandDiscoveryPage()),
@@ -679,11 +769,12 @@ void main() {
         expect(find.byType(BrandDiscoveryPage), findsOneWidget);
       });
 
-      testWidgets('should handle errors gracefully in partnership flow', (WidgetTester tester) async {
+      testWidgets('should handle errors gracefully in partnership flow',
+          (WidgetTester tester) async {
         // Test business logic: partnership pages render without crashing
         // This tests that pages can render even with potential errors
         // Full error injection testing would require service mocks with error states
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
@@ -695,14 +786,15 @@ void main() {
     });
 
     group('Loading States in Flows', () {
-      testWidgets('should show loading states appropriately in brand flow', (WidgetTester tester) async {
+      testWidgets('should show loading states appropriately in brand flow',
+          (WidgetTester tester) async {
         // Test business logic: brand pages can display loading states
         // This tests that pages render correctly
         // Full loading state testing would require async operation simulation
-        
+
         // Save original error handler
         final originalErrorHandler = FlutterError.onError;
-        
+
         try {
           // Suppress overflow errors - these are UI issues, not test failures
           FlutterError.onError = (FlutterErrorDetails details) {
@@ -712,7 +804,7 @@ void main() {
             }
             originalErrorHandler?.call(details);
           };
-          
+
           // Use same approach as responsive design test to avoid timeout
           await tester.pumpWidget(
             MaterialApp(
@@ -734,11 +826,13 @@ void main() {
         }
       });
 
-      testWidgets('should show loading states appropriately in partnership flow', (WidgetTester tester) async {
+      testWidgets(
+          'should show loading states appropriately in partnership flow',
+          (WidgetTester tester) async {
         // Test business logic: partnership pages can display loading states
         // This tests that pages render correctly
         // Full loading state testing would require async operation simulation
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
@@ -750,11 +844,12 @@ void main() {
     });
 
     group('Empty States in Flows', () {
-      testWidgets('should handle empty states in brand flow', (WidgetTester tester) async {
+      testWidgets('should handle empty states in brand flow',
+          (WidgetTester tester) async {
         // Test business logic: brand pages can display empty states
         // This tests that pages render correctly
         // Full empty state testing would require empty data simulation
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: wrapWithAuthBloc(const BrandDiscoveryPage()),
@@ -764,11 +859,12 @@ void main() {
         expect(find.byType(BrandDiscoveryPage), findsOneWidget);
       });
 
-      testWidgets('should handle empty states in partnership flow', (WidgetTester tester) async {
+      testWidgets('should handle empty states in partnership flow',
+          (WidgetTester tester) async {
         // Test business logic: partnership pages can display empty states
         // This tests that pages render correctly
         // Full empty state testing would require empty data simulation
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: wrapWithAuthBloc(PartnershipProposalPage(event: testEvent)),
@@ -782,4 +878,3 @@ void main() {
     });
   });
 }
-

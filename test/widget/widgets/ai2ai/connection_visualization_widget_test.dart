@@ -9,6 +9,14 @@ import '../../../helpers/test_helpers.dart';
 /// Tests network visualization display including empty state, graph rendering, and legend
 void main() {
   group('ConnectionVisualizationWidget Widget Tests', () {
+    Finder networkGraphPaintFinder() {
+      return find.byWidgetPredicate(
+        (widget) =>
+            widget is CustomPaint && widget.painter is NetworkGraphPainter,
+        description: 'CustomPaint with NetworkGraphPainter',
+      );
+    }
+
     testWidgets('should display empty state when no connections', (WidgetTester tester) async {
       // Arrange: Create empty overview
       final emptyOverview = ActiveConnectionsOverview.empty();
@@ -26,7 +34,7 @@ void main() {
       expect(find.byIcon(Icons.account_tree), findsOneWidget);
       
       // Verify network graph is NOT displayed
-      expect(find.byType(CustomPaint), findsNothing);
+      expect(networkGraphPaintFinder(), findsNothing);
     });
 
     testWidgets('should display network graph when connections exist', (WidgetTester tester) async {
@@ -53,10 +61,11 @@ void main() {
       expect(find.byType(ConnectionVisualizationWidget), findsOneWidget);
       expect(find.text('Network Visualization'), findsOneWidget);
       expect(find.text('No connections to visualize'), findsNothing);
-      expect(find.byType(CustomPaint), findsOneWidget);
+      expect(networkGraphPaintFinder(), findsOneWidget);
       
       // Verify graph container has correct height
-      final customPaint = tester.widget<CustomPaint>(find.byType(CustomPaint));
+      final customPaint =
+          tester.widget<CustomPaint>(networkGraphPaintFinder());
       expect(customPaint, isNotNull);
     });
 
@@ -121,10 +130,11 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
 
       // Assert: Fullscreen button is displayed
-      expect(find.byIcon(Icons.fullscreen), findsOneWidget);
+      final fullscreenButton = find.widgetWithIcon(IconButton, Icons.fullscreen);
+      expect(fullscreenButton, findsOneWidget);
       
       // Verify button has tooltip
-      final iconButton = tester.widget<IconButton>(find.byIcon(Icons.fullscreen));
+      final iconButton = tester.widget<IconButton>(fullscreenButton);
       expect(iconButton.tooltip, equals('Fullscreen'));
     });
 
@@ -140,7 +150,7 @@ void main() {
 
       // Assert: Empty state is shown
       expect(find.text('No connections to visualize'), findsOneWidget);
-      expect(find.byType(CustomPaint), findsNothing);
+      expect(networkGraphPaintFinder(), findsNothing);
 
       // Act: Update to populated overview
       overview = ActiveConnectionsOverview(
@@ -162,7 +172,7 @@ void main() {
 
       // Assert: Network graph is now displayed
       expect(find.text('No connections to visualize'), findsNothing);
-      expect(find.byType(CustomPaint), findsOneWidget);
+      expect(networkGraphPaintFinder(), findsOneWidget);
     });
 
     testWidgets('should render network graph with correct painter properties', (WidgetTester tester) async {
@@ -186,9 +196,10 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
 
       // Assert: CustomPaint is rendered with NetworkGraphPainter
-      expect(find.byType(CustomPaint), findsOneWidget);
+      expect(networkGraphPaintFinder(), findsOneWidget);
       
-      final customPaint = tester.widget<CustomPaint>(find.byType(CustomPaint));
+      final customPaint =
+          tester.widget<CustomPaint>(networkGraphPaintFinder());
       expect(customPaint.painter, isA<NetworkGraphPainter>());
       
       final painter = customPaint.painter as NetworkGraphPainter;
@@ -235,9 +246,10 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
 
       // Assert: Graph is rendered (painter should clamp to 12 nodes)
-      expect(find.byType(CustomPaint), findsOneWidget);
+      expect(networkGraphPaintFinder(), findsOneWidget);
       
-      final customPaint = tester.widget<CustomPaint>(find.byType(CustomPaint));
+      final customPaint =
+          tester.widget<CustomPaint>(networkGraphPaintFinder());
       final painter = customPaint.painter as NetworkGraphPainter;
       // Painter should handle the clamping internally (nodeCount = totalConnections.clamp(0, 12))
       expect(painter.totalConnections, equals(20)); // Painter receives full count, clamps internally
@@ -280,9 +292,10 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
 
       // Assert: Graph is displayed
-      expect(find.byType(CustomPaint), findsOneWidget);
+      expect(networkGraphPaintFinder(), findsOneWidget);
       
-      final customPaint = tester.widget<CustomPaint>(find.byType(CustomPaint));
+      final customPaint =
+          tester.widget<CustomPaint>(networkGraphPaintFinder());
       final painter = customPaint.painter as NetworkGraphPainter;
       expect(painter.connections, equals(['conn-1', 'conn-2', 'conn-3']));
       expect(painter.needsAttention, isEmpty);
@@ -309,9 +322,10 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
 
       // Assert: Graph is displayed
-      expect(find.byType(CustomPaint), findsOneWidget);
+      expect(networkGraphPaintFinder(), findsOneWidget);
       
-      final customPaint = tester.widget<CustomPaint>(find.byType(CustomPaint));
+      final customPaint =
+          tester.widget<CustomPaint>(networkGraphPaintFinder());
       final painter = customPaint.painter as NetworkGraphPainter;
       expect(painter.connections, isEmpty);
       expect(painter.needsAttention, equals(['conn-1', 'conn-2']));

@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:spots_knot/models/personality_knot.dart';
 import 'package:spots_knot/models/knot/braided_knot.dart';
-import 'package:spots/core/services/knot/knot_storage_service.dart';
+import 'package:spots_knot/services/knot/knot_storage_service.dart';
 import 'package:spots/core/services/storage_service.dart';
 
 class MockStorageService extends Mock implements StorageService {}
@@ -30,6 +30,10 @@ void main() {
           alexanderPolynomial: [1.0],
           crossingNumber: 3,
           writhe: 1,
+          signature: 0,
+          bridgeNumber: 1,
+          braidIndex: 1,
+          determinant: 1,
         ),
         braidData: [8.0, 0.0, 1.0],
         createdAt: DateTime(2025, 1, 1),
@@ -43,6 +47,10 @@ void main() {
           alexanderPolynomial: [2.0],
           crossingNumber: 4,
           writhe: 2,
+          signature: 0,
+          bridgeNumber: 2,
+          braidIndex: 1,
+          determinant: 2,
         ),
         braidData: [8.0, 1.0, 1.0],
         createdAt: DateTime(2025, 1, 1),

@@ -6,13 +6,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/quantum/meaningful_connection_metrics_service.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/enums/user_enums.dart' as core_enums;
+import 'package:spots_core/models/user.dart' as core_user;
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/services/supabase_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:mockito/mockito.dart';
@@ -88,18 +90,20 @@ void main() {
           updatedAt: now.subtract(const Duration(days: 9)),
         );
 
-        final attendees = [
-          UnifiedUser(
+        final attendees = <core_user.User>[
+          core_user.User(
             id: 'user-1',
             email: 'user1@example.com',
-            displayName: 'User 1',
+            name: 'User 1',
+            role: core_enums.UserRole.follower,
             createdAt: now,
             updatedAt: now,
           ),
-          UnifiedUser(
+          core_user.User(
             id: 'user-2',
             email: 'user2@example.com',
-            displayName: 'User 2',
+            name: 'User 2',
+            role: core_enums.UserRole.follower,
             createdAt: now,
             updatedAt: now,
           ),
@@ -238,11 +242,12 @@ void main() {
           updatedAt: now.subtract(const Duration(days: 9)),
         );
 
-        final attendees = [
-          UnifiedUser(
+        final attendees = <core_user.User>[
+          core_user.User(
             id: 'user-1',
             email: 'user1@example.com',
-            displayName: 'User 1',
+            name: 'User 1',
+            role: core_enums.UserRole.follower,
             createdAt: now,
             updatedAt: now,
           ),

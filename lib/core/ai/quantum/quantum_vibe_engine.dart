@@ -48,7 +48,20 @@ class QuantumVibeEngine {
     TemporalVibeInsights temporal, {
     String? userId,
   }) async {
-    developer.log('Compiling vibe dimensions using quantum mathematics', name: _logName);
+    final stopwatch = Stopwatch()..start();
+    final perDimensionMs = <String, int>{};
+
+    final observabilityEnabled = _featureFlags != null &&
+        await _featureFlags!.isEnabled(
+          QuantumFeatureFlags.decoherenceTracking,
+          userId: userId,
+          defaultValue: false,
+        );
+
+    developer.log(
+      'Compiling vibe dimensions using quantum mathematics',
+      name: _logName,
+    );
 
     try {
       // Convert all insights to quantum states
@@ -56,6 +69,7 @@ class QuantumVibeEngine {
 
       // Map each dimension using quantum compilation
       for (final dimension in VibeConstants.coreDimensions) {
+        final dimStopwatch = observabilityEnabled ? (Stopwatch()..start()) : null;
         final quantumState = await _compileDimensionQuantum(
           dimension,
           personality,
@@ -64,6 +78,10 @@ class QuantumVibeEngine {
           relationship,
           temporal,
         );
+        dimStopwatch?.stop();
+        if (dimStopwatch != null) {
+          perDimensionMs[dimension] = dimStopwatch.elapsedMilliseconds;
+        }
 
         // Calculate confidence from insight quality
         final confidence = _calculateQuantumConfidence(
@@ -103,14 +121,45 @@ class QuantumVibeEngine {
         name: _logName,
       );
 
+      stopwatch.stop();
+      if (observabilityEnabled) {
+        final confidences = quantumDimensions.values.map((q) => q.confidence).toList();
+        final avgConfidence = confidences.isEmpty
+            ? 0.0
+            : confidences.reduce((a, b) => a + b) / confidences.length;
+
+        final slowest = perDimensionMs.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+        final topSlow = slowest
+            .take(3)
+            .map((e) => '${e.key}:${e.value}ms')
+            .join(', ');
+
+        developer.log(
+          'Quantum compilation stats: userId=${userId ?? "n/a"}, '
+          'totalMs=${stopwatch.elapsedMilliseconds}, '
+          'avgConfidence=${avgConfidence.toStringAsFixed(3)}, '
+          'slowDims=[$topSlow]',
+          name: _logName,
+        );
+      }
+
       return classicalDimensions;
     } catch (e, stackTrace) {
+      stopwatch.stop();
       developer.log(
         'Error in quantum compilation: $e',
         name: _logName,
         error: e,
         stackTrace: stackTrace,
       );
+      if (observabilityEnabled) {
+        developer.log(
+          'Quantum compilation fell back to classical: userId=${userId ?? "n/a"}, '
+          'totalMs=${stopwatch.elapsedMilliseconds}',
+          name: _logName,
+        );
+      }
       // Fallback to classical compilation
       return _fallbackClassicalCompilation(
         personality,

@@ -5,20 +5,26 @@
 /// Tests current implementation as-is without modifying production code
 library;
 
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots_ai/models/personality_profile.dart';
+import 'package:spots/core/ai2ai/connection_orchestrator.dart';
+import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/injection_container.dart' as di;
 import '../../helpers/bloc_test_helpers.dart';
 import '../../mocks/bloc_mock_dependencies.dart';
+import '../../mocks/mock_storage_service.dart';
 
 // Mocks for services accessed via GetIt
 class MockPersonalitySyncService extends Mock implements PersonalitySyncService {}
 class MockPersonalityLearning extends Mock implements PersonalityLearning {}
+class MockVibeConnectionOrchestrator extends Mock
+    implements VibeConnectionOrchestrator {}
 
 void main() {
   group('AuthBloc', () {
@@ -28,14 +34,27 @@ void main() {
     late MockSignOutUseCase mockSignOutUseCase;
     late MockGetCurrentUserUseCase mockGetCurrentUserUseCase;
     late MockUpdatePasswordUseCase mockUpdatePasswordUseCase;
+    late MockVibeConnectionOrchestrator mockOrchestrator;
 
-    setUpAll(() {
+    setUpAll(() async {
       BlocMockFactory.registerFallbacks();
       
+      // StorageService is used by AuthBloc to read `discovery_enabled`.
+      // Initialize it with in-memory boxes for unit tests (no platform channels).
+      MockGetStorage.reset();
+      await StorageService.instance.initForTesting(
+        defaultStorage: MockGetStorage.getInstance(boxName: 'spots_default'),
+        userStorage: MockGetStorage.getInstance(boxName: 'spots_user'),
+        aiStorage: MockGetStorage.getInstance(boxName: 'spots_ai'),
+        analyticsStorage: MockGetStorage.getInstance(boxName: 'spots_analytics'),
+      );
+
       // Register mock PersonalitySyncService in GetIt
       final mockSyncService = MockPersonalitySyncService();
       when(() => mockSyncService.isCloudSyncEnabled(any())).thenAnswer((_) async => false);
-      when(() => mockSyncService.reEncryptWithNewPassword(any(), any(), any())).thenAnswer((_) async {});
+      when(() => mockSyncService.reEncryptWithNewPassword(any(), any(), any())).thenAnswer((_) async {
+        return;
+      });
       if (di.sl.isRegistered<PersonalitySyncService>()) {
         di.sl.unregister<PersonalitySyncService>();
       }
@@ -47,10 +66,27 @@ void main() {
       final testProfile = PersonalityProfile.initial('agent_test-user-123', userId: 'test-user-123');
       when(() => mockPersonalityLearning.initializePersonality(any(), password: any(named: 'password'))).thenAnswer((_) async => testProfile);
       when(() => mockPersonalityLearning.initializePersonality(any())).thenAnswer((_) async => testProfile);
+      when(() => mockPersonalityLearning.getCurrentPersonality(any()))
+          .thenAnswer((_) async => testProfile);
       if (di.sl.isRegistered<PersonalityLearning>()) {
         di.sl.unregister<PersonalityLearning>();
       }
       di.sl.registerSingleton<PersonalityLearning>(mockPersonalityLearning);
+
+      // Register mock AI2AI orchestrator in GetIt so AuthBloc can start/stop it.
+      registerFallbackValue(testProfile);
+      mockOrchestrator = MockVibeConnectionOrchestrator();
+      when(() => mockOrchestrator.shutdown()).thenAnswer((_) async {
+        return null;
+      });
+      when(() => mockOrchestrator.initializeOrchestration(any(), any()))
+          .thenAnswer((_) async {
+            return null;
+          });
+      if (di.sl.isRegistered<VibeConnectionOrchestrator>()) {
+        di.sl.unregister<VibeConnectionOrchestrator>();
+      }
+      di.sl.registerSingleton<VibeConnectionOrchestrator>(mockOrchestrator);
     });
 
     setUp(() {
@@ -61,6 +97,7 @@ void main() {
       mockUpdatePasswordUseCase = BlocMockFactory.updatePasswordUseCase;
 
       BlocMockFactory.resetAll();
+      clearInteractions(mockOrchestrator);
       
       // Set up default successful response for updatePasswordUseCase
       // Individual tests can override this if needed
@@ -89,6 +126,54 @@ void main() {
     group('SignInRequested Event', () {
       const testEmail = 'test@example.com';
       const testPassword = 'password123';
+
+      blocTest<AuthBloc, AuthState>(
+        'starts AI2AI orchestration when discovery is enabled',
+        build: () {
+          StorageService.instance.setBool('discovery_enabled', true);
+          when(() => mockSignInUseCase(testEmail, testPassword))
+              .thenAnswer((_) async => TestDataFactory.createTestUser(
+                    email: testEmail,
+                    isOnline: true,
+                  ));
+          return authBloc;
+        },
+        act: (bloc) => bloc.add(SignInRequested(testEmail, testPassword)),
+        wait: const Duration(milliseconds: 1000),
+        expect: () => [
+          isA<AuthLoading>(),
+          isA<Authenticated>(),
+        ],
+        verify: (_) {
+          verify(() => mockOrchestrator.initializeOrchestration(any(), any()))
+              .called(1);
+          verifyNever(() => mockOrchestrator.shutdown());
+        },
+      );
+
+      blocTest<AuthBloc, AuthState>(
+        'shuts down AI2AI orchestration when discovery is disabled',
+        build: () {
+          StorageService.instance.setBool('discovery_enabled', false);
+          when(() => mockSignInUseCase(testEmail, testPassword))
+              .thenAnswer((_) async => TestDataFactory.createTestUser(
+                    email: testEmail,
+                    isOnline: true,
+                  ));
+          return authBloc;
+        },
+        act: (bloc) => bloc.add(SignInRequested(testEmail, testPassword)),
+        wait: const Duration(milliseconds: 1000),
+        expect: () => [
+          isA<AuthLoading>(),
+          isA<Authenticated>(),
+        ],
+        verify: (_) {
+          verify(() => mockOrchestrator.shutdown()).called(1);
+          verifyNever(
+              () => mockOrchestrator.initializeOrchestration(any(), any()));
+        },
+      );
 
       blocTest<AuthBloc, AuthState>(
         'emits [AuthLoading, Authenticated] when sign in succeeds',
@@ -266,7 +351,9 @@ void main() {
       blocTest<AuthBloc, AuthState>(
         'emits [AuthLoading, Unauthenticated] when sign out succeeds',
         build: () {
-          when(() => mockSignOutUseCase()).thenAnswer((_) async {});
+          when(() => mockSignOutUseCase()).thenAnswer((_) async {
+            return null;
+          });
           return authBloc;
         },
         act: (bloc) => bloc.add(SignOutRequested()),
@@ -276,6 +363,7 @@ void main() {
         ],
         verify: (_) {
           verify(() => mockSignOutUseCase()).called(1);
+          verify(() => mockOrchestrator.shutdown()).called(1);
         },
       );
 
@@ -301,7 +389,9 @@ void main() {
           isOffline: false,
         ),
         build: () {
-          when(() => mockSignOutUseCase()).thenAnswer((_) async {});
+          when(() => mockSignOutUseCase()).thenAnswer((_) async {
+            return null;
+          });
           return authBloc;
         },
         act: (bloc) => bloc.add(SignOutRequested()),
@@ -403,7 +493,9 @@ void main() {
         build: () {
           when(() => mockSignInUseCase(any(), any()))
               .thenAnswer((_) async => TestDataFactory.createTestUser());
-          when(() => mockSignOutUseCase()).thenAnswer((_) async {});
+          when(() => mockSignOutUseCase()).thenAnswer((_) async {
+            return null;
+          });
           when(() => mockGetCurrentUserUseCase())
               .thenAnswer((_) async => TestDataFactory.createTestUser());
           return authBloc;
@@ -467,7 +559,9 @@ void main() {
         build: () {
           when(() => mockSignInUseCase(any(), any()))
               .thenAnswer((_) async => TestDataFactory.createTestUser());
-          when(() => mockSignOutUseCase()).thenAnswer((_) async {});
+          when(() => mockSignOutUseCase()).thenAnswer((_) async {
+            return null;
+          });
           return authBloc;
         },
         act: (bloc) async {

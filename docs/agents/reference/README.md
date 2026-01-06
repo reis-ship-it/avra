@@ -9,6 +9,7 @@
 
 - **`quick_reference.md`** - Code patterns and examples (READ THIS FIRST)
 - **`date_time_format.md`** - Date/time format standards
+- **`EVENT_MODE_POLICY.md`** - Event-mode guardrails for AI2AI + BLE (drift/chatter/battery)
 
 ---
 

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/pages/admin/god_mode_dashboard_page.dart';
+import 'package:spots/presentation/pages/admin/god_mode_login_page.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for GodModeDashboardPage
@@ -17,7 +18,9 @@ void main() {
         child: const GodModeDashboardPage(),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      expect(find.byType(GodModeDashboardPage), findsOneWidget);
+      // In tests we don't authenticate as admin; the dashboard should redirect
+      // to the login page when admin session is missing.
+      expect(find.byType(GodModeLoginPage), findsOneWidget);
     });
   });
 }

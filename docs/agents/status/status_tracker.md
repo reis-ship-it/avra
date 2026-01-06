@@ -3,7 +3,7 @@
 **Date:** November 30, 2025, 9:54 PM CST  
 **Purpose:** Real-time status tracking for agent dependencies and communication  
 **Status:** 🟢 Active - Phase 6 Complete, Phase 7 Section 47-48 Complete, Section 51-52 IN PROGRESS (Section 49-50 Deferred)
-**Last Updated:** January 1, 2026 (Master Plan status made canonical here; removed duplicated status snapshots elsewhere)
+**Last Updated:** January 2, 2026 (Master Plan status made canonical here; removed duplicated status snapshots elsewhere)
 
 ---
 
@@ -35,6 +35,12 @@ To avoid drift and contradictory “status snapshots” across docs:
 
 ## 📊 **Current Status**
 
+### **Cross‑cutting: Architecture Stabilization + Repo Hygiene (Store‑ready)**
+**Status:** ✅ **Complete (Engineering)**  
+**What changed:** Removed `packages/* → package:spots/...` imports via package-owned canonicals + app shims, and moved app-dependent services out of packages.  
+**Work log:** `docs/agents/reports/agent_cursor/phase_4/2026-01-03_architecture_stabilization_repo_hygiene_store_ready_complete.md`  
+**Verification:** `dart run scripts/ci/check_architecture.dart` baseline is now **0** (no tolerated package→app import violations).
+
 ### **Master Plan Update: Phase 22 — Outside Data‑Buyer Insights (DP export)**
 **Status:** ✅ **Deployed + verified end-to-end** (migrations applied, function deployed, sample export run, deny-list checked)  
 **Primary plan doc:** `docs/plans/architecture/OUTSIDE_DATA_BUYER_INSIGHTS_DATA_CONTRACT_V1.md`
@@ -64,12 +70,14 @@ To avoid drift and contradictory “status snapshots” across docs:
 - Contract validator: `lib/core/services/outside_buyer/outside_buyer_insights_v1_validator.dart`
 - Unit tests: `test/unit/services/outside_buyer_insights_v1_validator_test.dart`
 
-### **Master Plan Update: Phase 23 — AI2AI Walk‑By BLE Optimization (continuous scan + hot‑path latency)**
-**Status:** ✅ **Implemented in repo** (pending real-device validation for RF/OS variance)  
+### **Master Plan Update: Phase 23 — AI2AI Walk‑By BLE Optimization (continuous scan + hot‑path latency + Event Mode broadcast-first)**
+**Status:** ✅ **Implemented in repo** (pending real-device validation for RF/OS variance + BLE advertisement/connectability behavior)  
 **Primary plan doc(s):**
 - `docs/plans/offline_ai2ai/OFFLINE_AI2AI_IMPLEMENTATION_PLAN.md`
 - `docs/plans/ai2ai_system/BLE_BACKGROUND_USAGE_IMPROVEMENT_PLAN.md`
-**Work log:** `docs/agents/reports/agent_cursor/phase_23/2026-01-02_ble_signal_ledgers_receipts_backup_plan_execution_complete.md`
+**Work log(s):**
+- `docs/agents/reports/agent_cursor/phase_23/2026-01-02_ble_signal_ledgers_receipts_backup_plan_execution_complete.md`
+- `docs/agents/reports/agent_cursor/phase_23/2026-01-02_event_mode_service_data_broadcast_execution_complete.md`
 
 **Implementation artifacts (source of truth):**
 - Continuous scan loop + scan window param:
@@ -92,6 +100,31 @@ To avoid drift and contradictory “status snapshots” across docs:
 - Hardware-free fast loop surface (focused suite):
   - `test/suites/ble_signal_suite.sh` (includes walk-by simulation)
   - Protocol: `docs/agents/protocols/BLE_SIGNAL_DEV_LOOP.md`
+
+**Event Mode broadcast-first (Phase 23 execution slice; new):**
+- Policy/spec (math + thresholds + frame contract):
+  - `docs/agents/reference/EVENT_MODE_POLICY.md`
+- Frame v1 single source of truth + tests:
+  - `packages/spots_network/lib/network/spots_broadcast_frame_v1.dart`
+  - `packages/spots_network/test/spots_broadcast_frame_v1_test.dart`
+- Service Data advertising (native):
+  - Android: `android/app/src/main/kotlin/com/spots/app/services/BLEForegroundService.kt` (Service Data + connectable gating from flags)
+  - iOS: `ios/Runner/AppDelegate.swift` (Service Data advertising + update hook)
+  - Dart bridge: `packages/spots_network/lib/network/ble_peripheral.dart` (`updateServiceDataFrameV1`)
+- Advertiser wiring (emits frame; can update flags without re-anonymizing):
+  - `packages/spots_network/lib/network/personality_advertising_service.dart`
+- Scanner parsing (Service Data → frame metadata):
+  - `packages/spots_network/lib/network/device_discovery_android.dart`
+  - `packages/spots_network/lib/network/device_discovery_ios.dart`
+- Room coherence + dwell (two-stage):
+  - `lib/core/ai2ai/room_coherence_engine.dart`
+  - `test/unit/ai2ai/room_coherence_engine_test.dart`
+- Orchestrator gating (armed check-ins + deterministic initiator + budgets):
+  - `lib/core/ai2ai/connection_orchestrator.dart`
+- UI toggle (preference):
+  - `lib/presentation/pages/settings/discovery_settings_page.dart` (`event_mode_enabled`)
+- Bluetooth SIG CID (future Manufacturer Data lane):
+  - `docs/agents/protocols/BLUETOOTH_SIG_COMPANY_ID_RUNBOOK.md`
 
 **Skeptic-proof proof run bundle (iOS simulator):**
 - **Status:** ✅ **Captured + bundled**
@@ -168,6 +201,13 @@ To avoid drift and contradictory “status snapshots” across docs:
   - Trigger any available “connect/learn” interaction (if present in UI) and confirm:
     - No exceptions/crashes.
     - Evidence of a received insight being applied (e.g., updated last interaction / logs).
+  - **Event Mode broadcast-first (Service Data frame v1)**
+    - Toggle **Event Mode** ON in `Discovery Settings`.
+    - Verify advertising contains **Service Data** under `0000FF00-0000-1000-8000-00805F9B34FB` and payload is **24 bytes** (magic `"SPTS"`, `ver=1`).
+    - Verify **`connect_ok` stays false** outside the short check-in window (default behavior).
+    - Android: verify device becomes **non-connectable** outside the check-in window, and becomes connectable only when `connect_ok=true`.
+    - Verify the system does not thrash-connect while walking by (no repeated session opens in logs).
+    - Optional stress: stand in a dense place for ≥ 3 minutes and verify check-ins arm only after linger/coherence thresholds are met (no early connects).
 - **Federated (optional cloud path)**
   - With internet enabled, after at least one AI2AI learning event, wait ~30–60s.
   - Confirm the federated cloud queue sync runs without errors (best-effort; non-blocking).

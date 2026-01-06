@@ -7,13 +7,76 @@
 
 ---
 
-## Executive Summary
+## Cross-References to Related Applications
+
+None.
+
+---
+
+## Statement Regarding Federally Sponsored Research or Development
+
+Not applicable.
+
+---
+
+## Incorporation by Reference
+
+This disclosure references the accompanying visual/drawings document: `docs/patents/category_1_quantum_ai_systems/06_hybrid_quantum_classical_neural/06_hybrid_quantum_classical_neural_visuals.md`. The diagrams and formulas therein are incorporated by reference as non-limiting illustrative material supporting the written description and example embodiments.
+
+---
+
+## Definitions
+
+For purposes of this disclosure:
+- **“Entity”** means any actor or object represented for scoring/matching (e.g., user, device, business, event, sponsor), depending on the invention context.
+- **“Profile”** means a set of stored attributes used by the system (which may be multi-dimensional and may be anonymized).
+- **“Compatibility score”** means a bounded numeric value used to compare entities or an entity to an opportunity, typically normalized to \([0, 1]\).
+- **“Atomic timestamp”** means a time value derived from an atomic-time service or an equivalent high-precision time source used for synchronization and time-indexed computation.
+
+---
+
+## Brief Description of the Drawings
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Hybrid Architecture Overview.
+- **FIG. 6**: Weight Adjustment Over Time.
+- **FIG. 7**: Quantum Baseline Calculation.
+- **FIG. 8**: Neural Network Refinement.
+- **FIG. 9**: Adaptive Weighting Mechanism.
+- **FIG. 10**: Complete Hybrid Calculation Flow.
+- **FIG. 11**: Fallback Mechanism.
+- **FIG. 12**: Privacy-Preserving Training.
+- **FIG. 13**: Outcome Learning Integration.
+- **FIG. 14**: Complete System Architecture.
+## Abstract
+
+A system and method for generating recommendations using a hybrid scoring architecture that combines a formula-based compatibility baseline with a learned neural network refinement. The method computes a baseline score using quantum-inspired state representations and deterministic scoring factors, computes a refinement score using an on-device neural network, and combines the scores using adaptive weights that change based on confidence and observed performance. In some embodiments, the system begins with conservative weighting favoring the baseline and increases the neural contribution as confidence grows, while retaining fallback behavior to the baseline under failure or low-confidence conditions. The approach improves recommendation quality while maintaining offline-first operation and privacy by performing inference on-device.
+
+---
+
+## Background
+
+Learned neural recommendation models can capture complex behavioral patterns but commonly depend on centralized training data and cloud infrastructure, creating privacy and connectivity constraints. Purely formula-based systems can be more transparent and offline-friendly but may fail to model non-linear patterns and personalized trajectories.
+
+Accordingly, there is a need for hybrid architectures that retain a stable, interpretable baseline while incorporating learned refinement in a controlled, confidence-aware manner that supports offline-first and privacy-preserving operation.
+
+---
+
+## Summary
 
 A hybrid recommendation system that combines quantum-inspired mathematics (70% baseline) with classical neural networks (30% refinement), gradually increasing neural network weight as confidence grows, providing accurate recommendations while maintaining offline-first architecture and privacy. This system solves the problem of accurate recommendations while maintaining privacy and offline-first architecture through adaptive hybrid weighting.
 
 ---
 
-## Technical Innovation
+## Detailed Description
+
+### Implementation Notes (Non-Limiting)
+
+- In privacy-preserving embodiments, the system minimizes exposure of user-linked identifiers and may exchange anonymized and/or differentially private representations rather than raw user data.
+- In quantum-state embodiments, the system may represent multi-dimensional profiles as quantum state vectors (e.g., |ψ⟩) and compute similarity using an inner product, distance metric, or other quantum-inspired measure.
 
 ### Core Innovation
 The system combines quantum-inspired mathematics with classical neural networks in a hybrid architecture that adaptively adjusts weights based on confidence. Unlike pure quantum or pure neural network systems, this hybrid approach uses quantum math as a stable baseline (70%) and neural networks for pattern refinement (30%), gradually transitioning as confidence grows while maintaining privacy through on-device computation.
@@ -177,41 +240,36 @@ The system combines quantum-inspired mathematics with classical neural networks 
 
 ---
 
-## Patent Claims
+## Claims
 
-### Claim 1: Method for Hybrid Quantum-Classical Recommendation Scoring
-A method for hybrid quantum-classical recommendation scoring, comprising:
-- Calculating baseline calling score using quantum-inspired mathematics (70% weight) via `C = |⟨ψ_user|ψ_opportunity⟩|²` and weighted formula (40% vibe + 30% life betterment + 15% connection + 10% context + 5% timing)
-- Applying classical neural network refinements (30% weight) for pattern learning and outcome prediction
-- Gradually increasing neural network weight as confidence grows based on performance monitoring
-- Maintaining offline-first architecture with on-device computation for both quantum calculations and neural network inference
+1. A method for hybrid quantum-classical recommendation scoring, comprising:
+   (a) Calculating baseline calling score using quantum-inspired mathematics (70% weight) via `C = |⟨ψ_user|ψ_opportunity⟩|²` and weighted formula (40% vibe + 30% life betterment + 15% connection + 10% context + 5% timing)
+   (b) Applying classical neural network refinements (30% weight) for pattern learning and outcome prediction
+   (c) Gradually increasing neural network weight as confidence grows based on performance monitoring
+   (d) Maintaining offline-first architecture with on-device computation for both quantum calculations and neural network inference
 
-### Claim 2: System for Adaptive Hybrid Recommendation Scoring
-A system for adaptive hybrid recommendation scoring using quantum math and neural networks, comprising:
-- Quantum-inspired baseline calculation via `C = |⟨ψ_user|ψ_opportunity⟩|²` with calling score formula
-- Classical neural network pattern learning for individual trajectory prediction and outcome prediction
-- Confidence-based weight adjustment that increases neural network weight as confidence grows
-- Automatic fallback to formula-based system if neural network fails or performance degrades
-- Performance monitoring that tracks neural network accuracy vs. formula baseline
+2. A system for adaptive hybrid recommendation scoring using quantum math and neural networks, comprising:
+   (a) Quantum-inspired baseline calculation via `C = |⟨ψ_user|ψ_opportunity⟩|²` with calling score formula
+   (b) Classical neural network pattern learning for individual trajectory prediction and outcome prediction
+   (c) Confidence-based weight adjustment that increases neural network weight as confidence grows
+   (d) Automatic fallback to formula-based system if neural network fails or performance degrades
+   (e) Performance monitoring that tracks neural network accuracy vs. formula baseline
 
-### Claim 3: Method for Privacy-Preserving Hybrid Recommendation System
-A method for privacy-preserving hybrid recommendation system, comprising:
-- On-device quantum-inspired baseline calculation using quantum state vectors
-- On-device neural network inference using ONNX runtime without cloud dependency
-- Anonymized pattern sharing for federated learning (no raw data)
-- Adaptive weight adjustment based on performance monitoring
-- User control for opting out of neural network training
+3. The method of claim 1, further comprising privacy-preserving hybrid recommendation system:
+   (a) On-device quantum-inspired baseline calculation using quantum state vectors
+   (b) On-device neural network inference using ONNX runtime without cloud dependency
+   (c) Anonymized pattern sharing for federated learning (no raw data)
+   (d) Adaptive weight adjustment based on performance monitoring
+   (e) User control for opting out of neural network training
 
-### Claim 4: Integrated Hybrid Recommendation System
-An integrated recommendation system combining quantum math and neural networks, comprising:
-- Quantum compatibility calculation `C = |⟨ψ_user|ψ_opportunity⟩|²`
-- Calling score formula with weighted factors (vibe, life betterment, connection, context, timing)
-- Classical neural network refinements for pattern learning and outcome prediction
-- Outcome-based learning integration with enhanced learning rate (β = 2α)
-- Gradual transition from formula-based (70%) to neural network-enhanced recommendations with adaptive weighting
+4. An integrated recommendation system combining quantum math and neural networks, comprising:
+   (a) Quantum compatibility calculation `C = |⟨ψ_user|ψ_opportunity⟩|²`
+   (b) Calling score formula with weighted factors (vibe, life betterment, connection, context, timing)
+   (c) Classical neural network refinements for pattern learning and outcome prediction
+   (d) Outcome-based learning integration with enhanced learning rate (β = 2α)
+   (e) Gradual transition from formula-based (70%) to neural network-enhanced recommendations with adaptive weighting
 
----
-
+       ---
 ## Atomic Timing Integration
 
 **Date:** December 23, 2025  
@@ -845,8 +903,7 @@ Combined system:
 
 ---
 
-## Experimental Validation
-
+## Appendix A — Experimental Validation (Non-Limiting)
 **Date:** Original (see individual experiments), December 23, 2025 (Atomic Timing Integration)  
 **Status:** ✅ Complete - All experiments validated (including atomic timing integration)
 

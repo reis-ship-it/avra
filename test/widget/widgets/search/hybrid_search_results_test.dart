@@ -11,40 +11,35 @@ void main() {
     // Removed: Property assignment tests
     // Hybrid search results tests focus on business logic (search results display, state management), not property assignment
 
-    late MockHybridSearchBloc mockHybridSearchBloc;
-
-    setUp(() {
-      mockHybridSearchBloc = MockHybridSearchBloc();
-    });
-
     testWidgets(
         'should display initial state message, display loading state, or display error state',
         (WidgetTester tester) async {
       // Test business logic: hybrid search results display and state management
-      mockHybridSearchBloc.setState(HybridSearchInitial());
+      final blocInitial = MockHybridSearchBloc()..setState(HybridSearchInitial());
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const HybridSearchResults(),
-        hybridSearchBloc: mockHybridSearchBloc,
+        hybridSearchBloc: blocInitial,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Search for spots'), findsOneWidget);
       expect(find.text('Find community spots and external places'),
           findsOneWidget);
 
-      mockHybridSearchBloc.setState(HybridSearchLoading());
+      final blocLoading = MockHybridSearchBloc()..setState(HybridSearchLoading());
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: const HybridSearchResults(),
-        hybridSearchBloc: mockHybridSearchBloc,
+        hybridSearchBloc: blocLoading,
       );
       await tester.pumpWidget(widget2);
       await tester.pump();
       expect(find.text('Searching community and external sources...'),
           findsOneWidget);
 
-      mockHybridSearchBloc.setState(HybridSearchError('Test error'));
+      final blocError =
+          MockHybridSearchBloc()..setState(HybridSearchError('Test error'));
       final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const HybridSearchResults(),
-        hybridSearchBloc: mockHybridSearchBloc,
+        hybridSearchBloc: blocError,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Test error'), findsOneWidget);

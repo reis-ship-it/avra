@@ -9,9 +9,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:spots_knot/models/knot/knot_community.dart';
 import 'package:spots_knot/models/personality_knot.dart';
 import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/services/knot/knot_community_service.dart';
-import 'package:spots/core/services/knot/personality_knot_service.dart';
-import 'package:spots/core/services/knot/knot_storage_service.dart';
+import 'package:spots_knot/services/knot/knot_community_service.dart';
+import 'package:spots_knot/services/knot/personality_knot_service.dart';
+import 'package:spots_knot/services/knot/knot_storage_service.dart';
 import 'package:spots/core/services/community_service.dart';
 
 class MockPersonalityKnotService extends Mock implements PersonalityKnotService {}
@@ -55,6 +55,10 @@ void main() {
           alexanderPolynomial: [1.0, 1.0],
           crossingNumber: 5,
           writhe: 2,
+          signature: 0,
+          bridgeNumber: 2,
+          braidIndex: 2,
+          determinant: 1,
         ),
         physics: KnotPhysics(energy: 0.5, stability: 0.7, length: 0.3),
         braidData: [8.0, 0.0, 1.0, 1.0, 1.0],

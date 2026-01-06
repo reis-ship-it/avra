@@ -10,10 +10,10 @@ import 'package:mockito/src/dummies.dart' as _i10;
 import 'package:spots/core/models/business_account.dart' as _i2;
 import 'package:spots/core/models/business_expert_preferences.dart' as _i7;
 import 'package:spots/core/models/business_patron_preferences.dart' as _i8;
-import 'package:spots_ai/models/personality_profile.dart' as _i3;
 import 'package:spots/core/models/unified_user.dart' as _i6;
 import 'package:spots/core/services/business_account_service.dart' as _i4;
 import 'package:spots/core/services/business_shared_agent_service.dart' as _i9;
+import 'package:spots_ai/models/personality_profile.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values

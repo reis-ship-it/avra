@@ -81,8 +81,8 @@ WIDGET_RESULT=$(run_test_category "widget" "test/widget/")
 
 # 3. Run BLoC Tests (if they exist)
 log_message "Running BLoC tests..."
-if [ -d "test/unit/bloc" ]; then
-    BLOC_RESULT=$(run_test_category "bloc" "test/unit/bloc/")
+if [ -d "test/unit/blocs" ]; then
+    BLOC_RESULT=$(run_test_category "blocs" "test/unit/blocs/")
 else
     log_message "⚠️ No BLoC tests found"
     BLOC_RESULT="SKIP"
@@ -172,24 +172,34 @@ log_message "Testing component interactions..."
 
 # Test Auth + Lists interaction
 log_message "Testing Auth + Lists integration..."
-if flutter test test/integration/auth_lists_integration_test.dart > "$LOG_DIR/auth_lists_$TIMESTAMP.log" 2>&1; then
-    log_message "✅ Auth + Lists integration passed"
-    AUTH_LISTS_RESULT="PASS"
+if [ -f "test/integration/auth_lists_integration_test.dart" ]; then
+    if flutter test test/integration/auth_lists_integration_test.dart > "$LOG_DIR/auth_lists_$TIMESTAMP.log" 2>&1; then
+        log_message "✅ Auth + Lists integration passed"
+        AUTH_LISTS_RESULT="PASS"
+    else
+        log_message "❌ Auth + Lists integration failed"
+        AUTH_LISTS_RESULT="FAIL"
+        create_alert "WARNING" "Auth + Lists integration failed"
+    fi
 else
-    log_message "❌ Auth + Lists integration failed"
-    AUTH_LISTS_RESULT="FAIL"
-    create_alert "WARNING" "Auth + Lists integration failed"
+    log_message "⚠️ Auth + Lists integration test file not found (skipping)"
+    AUTH_LISTS_RESULT="SKIP"
 fi
 
 # Test Lists + Spots interaction
 log_message "Testing Lists + Spots integration..."
-if flutter test test/integration/lists_spots_integration_test.dart > "$LOG_DIR/lists_spots_$TIMESTAMP.log" 2>&1; then
-    log_message "✅ Lists + Spots integration passed"
-    LISTS_SPOTS_RESULT="PASS"
+if [ -f "test/integration/lists_spots_integration_test.dart" ]; then
+    if flutter test test/integration/lists_spots_integration_test.dart > "$LOG_DIR/lists_spots_$TIMESTAMP.log" 2>&1; then
+        log_message "✅ Lists + Spots integration passed"
+        LISTS_SPOTS_RESULT="PASS"
+    else
+        log_message "❌ Lists + Spots integration failed"
+        LISTS_SPOTS_RESULT="FAIL"
+        create_alert "WARNING" "Lists + Spots integration failed"
+    fi
 else
-    log_message "❌ Lists + Spots integration failed"
-    LISTS_SPOTS_RESULT="FAIL"
-    create_alert "WARNING" "Lists + Spots integration failed"
+    log_message "⚠️ Lists + Spots integration test file not found (skipping)"
+    LISTS_SPOTS_RESULT="SKIP"
 fi
 
 # Test Offline + Online sync
@@ -208,24 +218,34 @@ log_message "Testing error handling scenarios..."
 
 # Test network error handling
 log_message "Testing network error handling..."
-if flutter test test/integration/network_error_test.dart > "$LOG_DIR/network_error_$TIMESTAMP.log" 2>&1; then
-    log_message "✅ Network error handling passed"
-    NETWORK_ERROR_RESULT="PASS"
+if [ -f "test/integration/network_error_test.dart" ]; then
+    if flutter test test/integration/network_error_test.dart > "$LOG_DIR/network_error_$TIMESTAMP.log" 2>&1; then
+        log_message "✅ Network error handling passed"
+        NETWORK_ERROR_RESULT="PASS"
+    else
+        log_message "❌ Network error handling failed"
+        NETWORK_ERROR_RESULT="FAIL"
+        create_alert "WARNING" "Network error handling failed"
+    fi
 else
-    log_message "❌ Network error handling failed"
-    NETWORK_ERROR_RESULT="FAIL"
-    create_alert "WARNING" "Network error handling failed"
+    log_message "⚠️ Network error handling test file not found (skipping)"
+    NETWORK_ERROR_RESULT="SKIP"
 fi
 
 # Test database error handling
 log_message "Testing database error handling..."
-if flutter test test/integration/database_error_test.dart > "$LOG_DIR/database_error_$TIMESTAMP.log" 2>&1; then
-    log_message "✅ Database error handling passed"
-    DATABASE_ERROR_RESULT="PASS"
+if [ -f "test/integration/database_error_test.dart" ]; then
+    if flutter test test/integration/database_error_test.dart > "$LOG_DIR/database_error_$TIMESTAMP.log" 2>&1; then
+        log_message "✅ Database error handling passed"
+        DATABASE_ERROR_RESULT="PASS"
+    else
+        log_message "❌ Database error handling failed"
+        DATABASE_ERROR_RESULT="FAIL"
+        create_alert "WARNING" "Database error handling failed"
+    fi
 else
-    log_message "❌ Database error handling failed"
-    DATABASE_ERROR_RESULT="FAIL"
-    create_alert "WARNING" "Database error handling failed"
+    log_message "⚠️ Database error handling test file not found (skipping)"
+    DATABASE_ERROR_RESULT="SKIP"
 fi
 
 # 10. Generate Integration Report

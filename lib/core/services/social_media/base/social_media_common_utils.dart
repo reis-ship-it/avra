@@ -16,7 +16,11 @@ class SocialMediaCommonUtils {
   static const String _logName = 'SocialMediaCommonUtils';
   final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS');
   final StorageService _storageService;
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  /// Secure storage for OAuth tokens and sensitive data.
+  ///
+  /// Injected to allow test environments to provide an in-memory implementation
+  /// (avoids platform channel dependencies / MissingPluginException).
+  final FlutterSecureStorage _secureStorage;
 
   // Storage keys
   static const String _tokensKeyPrefix = 'social_media_tokens_';
@@ -30,7 +34,10 @@ class SocialMediaCommonUtils {
   static const int _maxRequestsPerWindow = 60;
   static const Duration _minRequestDelay = Duration(milliseconds: 100);
 
-  SocialMediaCommonUtils(this._storageService);
+  SocialMediaCommonUtils(
+    this._storageService, {
+    FlutterSecureStorage? secureStorage,
+  }) : _secureStorage = secureStorage ?? const FlutterSecureStorage();
 
   /// Store OAuth tokens (encrypted using flutter_secure_storage)
   Future<void> storeTokens(

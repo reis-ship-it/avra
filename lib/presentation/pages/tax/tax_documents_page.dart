@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:spots/core/models/tax_document.dart';
 import 'package:spots/core/models/tax_profile.dart';
 import 'package:spots/core/services/tax_compliance_service.dart';
+import 'package:spots/core/services/tax_document_storage_service.dart';
 import 'package:spots/core/services/payment_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
@@ -62,7 +63,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
       final profile = await _taxService.getTaxProfile(authState.user.id);
       
       // Calculate current year earnings
-      final needsDocs = await _taxService.needsTaxDocuments(authState.user.id, _selectedYear);
+      await _taxService.needsTaxDocuments(authState.user.id, _selectedYear);
       final earnings = await _calculateEarnings(authState.user.id, _selectedYear);
 
       // Load documents for selected year
@@ -103,7 +104,8 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
     }
 
     try {
-      final uri = Uri.parse(document.documentUrl!);
+      final storage = GetIt.instance<TaxDocumentStorageService>();
+      final uri = await storage.resolveLaunchUrl(document.documentUrl!);
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       }

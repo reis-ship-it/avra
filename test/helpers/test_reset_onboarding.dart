@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';

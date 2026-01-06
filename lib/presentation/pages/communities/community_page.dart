@@ -4,16 +4,18 @@ import 'package:spots/core/models/community.dart';
 import 'package:spots/core/services/community_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
+import 'package:spots/injection_container.dart' as di;
+import 'package:spots_knot/models/knot/community_metrics.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/presentation/pages/events/create_community_event_page.dart';
 import 'package:spots/presentation/widgets/clubs/expertise_coverage_widget.dart';
 import 'package:spots/presentation/widgets/clubs/expansion_timeline_widget.dart';
 
 /// Community Page
-/// Agent 2: Frontend & UX Specialist (Phase 6, Week 29)
-/// 
+/// Agent 2: Frontend & UX Specialist (Phase 6)
+///
 /// CRITICAL: Uses AppColors/AppTheme (100% adherence required - NO direct Colors.* usage)
-/// 
+///
 /// Features:
 /// - Display community information (name, description, founder, members, events, metrics)
 /// - Community actions (join/leave, view members, view events, create event)
@@ -32,13 +34,15 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPageState extends State<CommunityPage> {
-  final CommunityService _communityService = CommunityService();
+  final CommunityService _communityService = di.sl<CommunityService>();
   
   bool _isLoading = true;
   bool _isMember = false;
   bool _isJoining = false;
   String? _error;
   Community? _community;
+  CommunityMetrics? _communityMetrics;
+  double? _weaveFit;
 
   @override
   void initState() {
@@ -53,6 +57,7 @@ class _CommunityPageState extends State<CommunityPage> {
     });
 
     try {
+      final authState = context.read<AuthBloc>().state;
       final community = await _communityService.getCommunityById(widget.communityId);
       
       if (community == null) {
@@ -64,18 +69,30 @@ class _CommunityPageState extends State<CommunityPage> {
       }
       
       // Check if user is member
-      final authState = context.read<AuthBloc>().state;
       bool isMember = false;
+      CommunityMetrics? metrics;
+      double? weaveFit;
       if (authState is Authenticated) {
         isMember = _communityService.isMember(community, authState.user.id);
+
+        // Best-effort: pull fabric-derived health + "your weave fit".
+        metrics = await _communityService.getCommunityHealth(community.id);
+        weaveFit = await _communityService.calculateUserCommunityWeaveFit(
+          communityId: community.id,
+          userId: authState.user.id,
+        );
       }
 
+      if (!mounted) return;
       setState(() {
         _community = community;
         _isMember = isMember;
+        _communityMetrics = metrics;
+        _weaveFit = weaveFit;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = 'Failed to load community: $e';
         _isLoading = false;
@@ -581,6 +598,30 @@ class _CommunityPageState extends State<CommunityPage> {
                   title: 'Diversity',
                   value: '${((_community?.diversityScore ?? 0.0) * 100).toStringAsFixed(0)}%',
                   icon: Icons.diversity_3,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildMetricCard(
+                  title: 'Knot Cohesion',
+                  value: _communityMetrics == null
+                      ? '—'
+                      : '${(_communityMetrics!.cohesion * 100).toStringAsFixed(0)}%',
+                  icon: Icons.hub,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildMetricCard(
+                  title: 'Your Weave Fit',
+                  value: _weaveFit == null
+                      ? '—'
+                      : '${(_weaveFit! * 100).toStringAsFixed(0)}%',
+                  icon: Icons.auto_awesome,
                 ),
               ),
             ],

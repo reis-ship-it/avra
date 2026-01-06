@@ -38,6 +38,22 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   }
 
   @override
+  void didUpdateWidget(covariant CustomSearchBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // If the parent changes initialValue and we're using an internal controller,
+    // keep the visible value in sync across rebuilds.
+    if (widget.controller == null && widget.initialValue != oldWidget.initialValue) {
+      final next = widget.initialValue ?? '';
+      if (_controller.text != next) {
+        _controller.value = TextEditingValue(
+          text: next,
+          selection: TextSelection.collapsed(offset: next.length),
+        );
+      }
+    }
+  }
+
+  @override
   void dispose() {
     if (widget.controller == null) {
       _controller.dispose();
@@ -71,7 +87,11 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           child: TextField(
             controller: _controller,
             enabled: widget.enabled,
-            onChanged: widget.onChanged,
+            onChanged: (value) {
+              widget.onChanged?.call(value);
+              // Rebuild to show/hide the clear button based on current text.
+              setState(() {});
+            },
             onTap: widget.onTap,
             decoration: InputDecoration(
               hintText: widget.hintText ?? 'Search...',

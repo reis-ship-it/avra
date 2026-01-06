@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:spots/core/monitoring/network_analytics.dart';
 import 'package:spots/core/monitoring/connection_monitor.dart';
@@ -52,7 +53,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
       _connectionMonitor = ConnectionMonitor(prefs: prefs);
       _setupStreams();
     } catch (e) {
-      debugPrint('Error initializing services: $e');
+      developer.log('Error initializing services: $e', name: 'AI2AIAdminDashboard');
       setState(() {
         _errorMessage = 'Failed to initialize services: $e';
         _isLoading = false;
@@ -82,7 +83,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
         });
       },
       onError: (error) {
-        debugPrint('Error in health report stream: $error');
+        developer.log('Error in health report stream: $error', name: 'AI2AIAdminDashboard');
         setState(() {
           _errorMessage = 'Error loading network health: $error';
           _isLoading = false;
@@ -103,7 +104,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
         });
       },
       onError: (error) {
-        debugPrint('Error in connections stream: $error');
+        developer.log('Error in connections stream: $error', name: 'AI2AIAdminDashboard');
         setState(() {
           _errorMessage = 'Error loading connections: $error';
           _isLoading = false;
@@ -124,7 +125,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
         });
       },
       onError: (error) {
-        debugPrint('Error in real-time metrics stream: $error');
+        developer.log('Error in real-time metrics stream: $error', name: 'AI2AIAdminDashboard');
         setState(() {
           _errorMessage = 'Error loading real-time metrics: $error';
           _isLoading = false;
@@ -157,7 +158,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
         });
       }
     } catch (e) {
-      debugPrint('Error refreshing dashboard: $e');
+      developer.log('Error refreshing dashboard: $e', name: 'AI2AIAdminDashboard');
       setState(() {
         _errorMessage = 'Error refreshing: $e';
         _isRefreshing = false;
@@ -171,6 +172,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
     _connectionsSubscription?.cancel();
     _realTimeMetricsSubscription?.cancel();
     _connectionMonitor?.disposeStreams();
+    _networkAnalytics?.disposeStreams();
     super.dispose();
   }
 

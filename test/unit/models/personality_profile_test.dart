@@ -56,7 +56,16 @@ void main() {
 
         expect(evolved.evolutionGeneration,
             equals(original.evolutionGeneration + 1));
-        expect(evolved.dimensions['exploration_eagerness'], equals(0.9));
+        // Drift resistance: dimensions cannot drift more than 30% from core.
+        final coreExploration =
+            original.corePersonality['exploration_eagerness'] ??
+                VibeConstants.defaultDimensionValue;
+        expect(
+          evolved.dimensions['exploration_eagerness'],
+          equals((coreExploration + PersonalityProfile.maxDriftFromCore)
+              .clamp(VibeConstants.minDimensionValue,
+                  VibeConstants.maxDimensionValue)),
+        );
         expect(evolved.lastUpdated.isAfter(original.lastUpdated), isTrue);
 
         // Test value clamping
@@ -73,10 +82,23 @@ void main() {
           },
         );
 
-        expect(evolvedDimensions.dimensions['exploration_eagerness'],
-            equals(VibeConstants.maxDimensionValue));
-        expect(evolvedDimensions.dimensions['community_orientation'],
-            equals(VibeConstants.minDimensionValue));
+        final coreExploration2 =
+            original.corePersonality['exploration_eagerness'] ??
+                VibeConstants.defaultDimensionValue;
+        final coreCommunity =
+            original.corePersonality['community_orientation'] ??
+                VibeConstants.defaultDimensionValue;
+        expect(
+          evolvedDimensions.dimensions['exploration_eagerness'],
+          equals((coreExploration2 + PersonalityProfile.maxDriftFromCore)
+              .clamp(VibeConstants.minDimensionValue,
+                  VibeConstants.maxDimensionValue)),
+        );
+        expect(
+          evolvedDimensions.dimensions['community_orientation'],
+          equals((coreCommunity - PersonalityProfile.maxDriftFromCore).clamp(
+              VibeConstants.minDimensionValue, VibeConstants.maxDimensionValue)),
+        );
         expect(evolvedConfidence.dimensionConfidence['exploration_eagerness'],
             equals(1.0));
         expect(evolvedConfidence.dimensionConfidence['community_orientation'],
@@ -152,7 +174,7 @@ void main() {
         expect(similar1.calculateLearningPotential(similar2),
             greaterThanOrEqualTo(0.5));
         expect(different1.calculateLearningPotential(different2),
-            equals(0.1)); // Minimum
+            equals(0.3)); // Low-compatibility learning floor (inclusive network)
       });
     });
 

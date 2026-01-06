@@ -6,13 +6,17 @@ import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
 import '../../helpers/widget_test_helpers.dart';
 import 'package:spots/core/models/list.dart';
+import 'package:spots/core/models/user.dart';
 import 'package:spots/domain/usecases/lists/create_list_usecase.dart';
+import 'package:spots/domain/usecases/lists/delete_list_usecase.dart';
 import 'package:spots/domain/usecases/lists/get_lists_usecase.dart';
+import 'package:spots/domain/usecases/lists/update_list_usecase.dart';
 import 'package:spots/data/repositories/lists_repository_impl.dart';
 import 'package:spots/data/datasources/local/lists_local_datasource.dart';
 import 'package:spots/data/datasources/remote/lists_remote_datasource.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/core/theme/app_theme.dart';
+import '../../mocks/mock_blocs.dart';
 
 /// Widget tests for AILoadingPage
 /// Tests AI loading page that generates personalized lists
@@ -25,8 +29,10 @@ void main() {
     late ListsRepositoryImpl listsRepository;
     late GetListsUseCase getListsUseCase;
     late CreateListUseCase createListUseCase;
-    late _FakeAuthBloc fakeAuthBloc;
-    late _FakeListsBloc fakeListsBloc;
+    late UpdateListUseCase updateListUseCase;
+    late DeleteListUseCase deleteListUseCase;
+    late MockAuthBloc mockAuthBloc;
+    late ListsBloc listsBloc;
 
     setUp(() {
       fakeLocalDataSource = _FakeListsLocalDataSource();
@@ -42,17 +48,35 @@ void main() {
 
       getListsUseCase = GetListsUseCase(listsRepository);
       createListUseCase = CreateListUseCase(listsRepository);
+      updateListUseCase = UpdateListUseCase(listsRepository);
+      deleteListUseCase = DeleteListUseCase(listsRepository);
 
-      fakeAuthBloc = _FakeAuthBloc();
-      fakeListsBloc = _FakeListsBloc(
+      mockAuthBloc = MockAuthBloc();
+      final now = DateTime.now();
+      mockAuthBloc.setState(
+        Authenticated(
+          user: User(
+            id: 'user-123',
+            email: 'test@example.com',
+            name: 'Test User',
+            role: UserRole.user,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        ),
+      );
+
+      listsBloc = ListsBloc(
         getListsUseCase: getListsUseCase,
         createListUseCase: createListUseCase,
+        updateListUseCase: updateListUseCase,
+        deleteListUseCase: deleteListUseCase,
       );
     });
 
     tearDown(() {
-      fakeAuthBloc.close();
-      fakeListsBloc.close();
+      mockAuthBloc.close();
+      listsBloc.close();
       fakeLocalDataSource.clear();
       fakeRemoteDataSource.clear();
     });
@@ -69,8 +93,8 @@ void main() {
           },
           onLoadingComplete: () {},
         ),
-        authBloc: fakeAuthBloc,
-        listsBloc: fakeListsBloc,
+        authBloc: mockAuthBloc,
+        listsBloc: listsBloc,
       );
 
       // Act
@@ -88,16 +112,16 @@ void main() {
           userName: 'Test User',
           onLoadingComplete: () {},
         ),
-        authBloc: fakeAuthBloc,
-        listsBloc: fakeListsBloc,
+        authBloc: mockAuthBloc,
+        listsBloc: listsBloc,
       );
 
       // Act
       await tester.pumpWidget(widget);
       await tester.pump(); // Initial frame
 
-      // Assert: Loading indicator should be visible
-      expect(find.byType(CircularProgressIndicator), findsWidgets);
+      // Assert: Loading indicator should be visible (SPOTS uses a branded icon animation).
+      expect(find.byIcon(Icons.psychology), findsWidgets);
     });
 
     testWidgets('should handle minimal user data', (WidgetTester tester) async {
@@ -107,8 +131,8 @@ void main() {
           userName: 'Test User',
           onLoadingComplete: () {},
         ),
-        authBloc: fakeAuthBloc,
-        listsBloc: fakeListsBloc,
+        authBloc: mockAuthBloc,
+        listsBloc: listsBloc,
       );
 
       // Act
@@ -132,8 +156,8 @@ void main() {
           },
           onLoadingComplete: () {},
         ),
-        authBloc: fakeAuthBloc,
-        listsBloc: fakeListsBloc,
+        authBloc: mockAuthBloc,
+        listsBloc: listsBloc,
       );
 
       // Act
@@ -150,8 +174,8 @@ void main() {
           userName: 'Test User',
           onLoadingComplete: () {},
         ),
-        authBloc: fakeAuthBloc,
-        listsBloc: fakeListsBloc,
+        authBloc: mockAuthBloc,
+        listsBloc: listsBloc,
       );
 
       // Act
@@ -248,100 +272,16 @@ class _FakeConnectivity implements Connectivity {
   }
 }
 
-/// Real fake AuthBloc with actual state management
-/// Minimal implementation - AILoadingPage doesn't heavily use AuthBloc
-class _FakeAuthBloc extends Bloc<AuthEvent, AuthState> {
-  _FakeAuthBloc() : super(AuthInitial()) {
-    // Handle events without throwing
-    on<AuthCheckRequested>(_onAuthCheckRequested);
-  }
-
-  Future<void> _onAuthCheckRequested(
-    AuthCheckRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
-    emit(Unauthenticated());
-  }
-}
-
-/// Real fake ListsBloc with actual state management and use cases
-class _FakeListsBloc extends Bloc<ListsEvent, ListsState> {
-  final GetListsUseCase getListsUseCase;
-  final CreateListUseCase createListUseCase;
-
-  _FakeListsBloc({
-    required this.getListsUseCase,
-    required this.createListUseCase,
-  }) : super(ListsInitial()) {
-    on<LoadLists>(_onLoadLists);
-    on<CreateList>(_onCreateList);
-    // Stub other events to prevent errors
-    on<UpdateList>(_onUpdateList);
-    on<DeleteList>(_onDeleteList);
-    on<SearchLists>(_onSearchLists);
-  }
-
-  Future<void> _onLoadLists(
-    LoadLists event,
-    Emitter<ListsState> emit,
-  ) async {
-    emit(ListsLoading());
-    try {
-      final lists = await getListsUseCase();
-      emit(ListsLoaded(lists, lists));
-    } catch (e) {
-      emit(ListsError(e.toString()));
-    }
-  }
-
-  Future<void> _onCreateList(
-    CreateList event,
-    Emitter<ListsState> emit,
-  ) async {
-    try {
-      await createListUseCase(event.list);
-      add(LoadLists());
-    } catch (e) {
-      emit(ListsError(e.toString()));
-    }
-  }
-
-  Future<void> _onUpdateList(
-    UpdateList event,
-    Emitter<ListsState> emit,
-  ) async {
-    // Not used by AILoadingPage, but needed for interface
-    emit(ListsError('UpdateList not implemented'));
-  }
-
-  Future<void> _onDeleteList(
-    DeleteList event,
-    Emitter<ListsState> emit,
-  ) async {
-    // Not used by AILoadingPage, but needed for interface
-    emit(ListsError('DeleteList not implemented'));
-  }
-
-  Future<void> _onSearchLists(
-    SearchLists event,
-    Emitter<ListsState> emit,
-  ) async {
-    // Not used by AILoadingPage, but needed for interface
-    add(LoadLists());
-  }
-}
-
 /// Helper to create testable widget with real BLoCs
 Widget _createTestableWidgetWithRealBlocs({
   required Widget child,
-  required Bloc<AuthEvent, AuthState> authBloc,
-  required Bloc<ListsEvent, ListsState> listsBloc,
+  required AuthBloc authBloc,
+  required ListsBloc listsBloc,
 }) {
   return MultiBlocProvider(
     providers: [
-      BlocProvider<AuthBloc>.value(value: authBloc as AuthBloc),
-      BlocProvider<ListsBloc>.value(value: listsBloc as ListsBloc),
+      BlocProvider<AuthBloc>.value(value: authBloc),
+      BlocProvider<ListsBloc>.value(value: listsBloc),
     ],
     child: MaterialApp(
       theme: AppTheme.lightTheme,

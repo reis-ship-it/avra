@@ -1,18 +1,42 @@
+import 'dart:developer' as developer;
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 /// Centralized repository patterns to eliminate code repetition
 /// Date: July 30, 2025
+/// Updated: January 2025 - Added optional connectivity support for local-only repositories
 
 /// Base class for simplified repositories that separate local and remote concerns
+/// 
+/// **Connectivity Support:**
+/// - If `connectivity` is provided: Full online/offline support
+/// - If `connectivity` is null: Local-only operations (no network checks)
 abstract class SimplifiedRepositoryBase {
-  final Connectivity connectivity;
+  final Connectivity? connectivity;
 
-  SimplifiedRepositoryBase({required this.connectivity});
+  /// Constructor accepts optional connectivity for local-only repositories
+  SimplifiedRepositoryBase({this.connectivity});
 
   /// Check if device is online
+  /// Returns false if connectivity is null (local-only mode)
   Future<bool> get isOnline async {
-    final result = await connectivity.checkConnectivity();
-    return !result.contains(ConnectivityResult.none);
+    if (connectivity == null) {
+      return false; // Local-only mode, always considered offline
+    }
+    try {
+      final result = await connectivity!.checkConnectivity();
+      return !result.contains(ConnectivityResult.none);
+    } catch (e, st) {
+      // In some environments (notably widget/integration tests), the underlying
+      // platform implementation may not be available. Treat failures as offline.
+      developer.log(
+        'Connectivity check failed; assuming offline',
+        name: 'SimplifiedRepositoryBase',
+        error: e,
+        stackTrace: st,
+      );
+      return false;
+    }
   }
 
   /// Execute operation with offline-first strategy
@@ -114,7 +138,8 @@ abstract class GenericRepository<T> {
 /// Simplified repository that implements the new unified models
 abstract class UnifiedRepository<T> extends SimplifiedRepositoryBase
     implements GenericRepository<T> {
-  UnifiedRepository({required super.connectivity});
+  /// Constructor accepts optional connectivity for local-only repositories
+  UnifiedRepository({super.connectivity});
 
   /// Local data source operations
   Future<List<T>> getAllLocal();
@@ -179,7 +204,8 @@ abstract class UnifiedRepository<T> extends SimplifiedRepositoryBase
 
 /// Repository for operations that require specific business logic
 abstract class BusinessLogicRepository<T> extends SimplifiedRepositoryBase {
-  BusinessLogicRepository({required super.connectivity});
+  /// Constructor accepts optional connectivity for local-only repositories
+  BusinessLogicRepository({super.connectivity});
 
   /// Business logic operations
   Future<List<T>> getByBusinessCriteria(Map<String, dynamic> criteria);

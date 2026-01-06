@@ -76,15 +76,15 @@
 ### **5. Event Services** (8 services)
 - `event_template_service.dart` - Event templates
 - `event_matching_service.dart` - Event matching
-- `event_recommendation_service.dart` - Event recommendations
+- `event_recommendation_service.dart` - Event recommendations (supports true compatibility signals when available)
 - `event_safety_service.dart` - Event safety
 - `event_success_analysis_service.dart` - Event success analysis
 - `post_event_feedback_service.dart` - Post-event feedback
 - `cancellation_service.dart` - Event cancellation
 - `automatic_check_in_service.dart` - Automatic check-in
 
-### **6. Community & Club Services** (5 services)
-- `community_service.dart` - Core community operations
+### **6. Community & Club Services** (6 services)
+- `community_service.dart` - Core community operations (includes discovery ranking + persistence-backed listing)
 - `club_service.dart` - Club management
 - `community_event_service.dart` - Community events
 - `community_event_upgrade_service.dart` - Community event upgrades

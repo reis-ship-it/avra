@@ -1,6 +1,10 @@
 // Supabase Edge Function: Onboarding Aggregation
 // Phase 11 Section 4: Edge Mesh Functions
-// Aggregates onboarding data and maps to personality dimensions
+// Stores aggregated onboarding data and (preferably device-mapped) dimensions.
+//
+// **Source of truth:** on-device mapping.
+// The server only performs a fallback mapping when dimensions are not provided
+// (e.g., older app versions).
 
 import { serve } from 'https://deno.land/std@0.224.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -20,6 +24,8 @@ interface OnboardingData {
 interface RequestBody {
   agentId: string
   onboardingData: OnboardingData
+  dimensions?: Record<string, number>
+  mappingSource?: 'device' | 'server'
 }
 
 function supabaseAdmin() {
@@ -30,9 +36,9 @@ function supabaseAdmin() {
   })
 }
 
-function mapOnboardingToDimensions(aggregated: any): Record<string, number> {
-  // Rule-based mapping: onboarding → dimensions
-  // Similar to PersonalityLearning logic
+function fallbackMapOnboardingToDimensions(aggregated: any): Record<string, number> {
+  // Fallback rule-based mapping: onboarding → dimensions
+  // Used only when device-mapped dimensions are not provided.
   const dimensions: Record<string, number> = {}
   
   // Exploration eagerness: based on favorite places and baseline lists
@@ -86,6 +92,18 @@ function mapOnboardingToDimensions(aggregated: any): Record<string, number> {
   return dimensions
 }
 
+function sanitizeDimensions(input: unknown): Record<string, number> {
+  if (!input || typeof input !== 'object') return {}
+  const obj = input as Record<string, unknown>
+  const out: Record<string, number> = {}
+  for (const [k, v] of Object.entries(obj)) {
+    if (typeof v === 'number' && Number.isFinite(v)) {
+      out[k] = Math.max(0, Math.min(1, v))
+    }
+  }
+  return out
+}
+
 serve(async (req) => {
   try {
     // CORS headers
@@ -120,8 +138,14 @@ serve(async (req) => {
       socialMediaConnected: onboardingData.socialMediaConnected || {},
     }
 
-    // Map to dimensions (rule-based)
-    const dimensions = mapOnboardingToDimensions(aggregated)
+    // Prefer device-mapped dimensions; fall back to server mapping for older clients.
+    const deviceDimensions = sanitizeDimensions(body.dimensions)
+    const mappingSource: 'device' | 'server' =
+      Object.keys(deviceDimensions).length > 0 ? 'device' : 'server'
+    const dimensions =
+      mappingSource === 'device'
+        ? deviceDimensions
+        : fallbackMapOnboardingToDimensions(aggregated)
 
     // Store aggregated data
     const supabase = supabaseAdmin()
@@ -130,7 +154,7 @@ serve(async (req) => {
       .from('onboarding_aggregations')
       .upsert({
         agent_id: agentId,
-        aggregated_data: aggregated,
+        aggregated_data: { ...aggregated, mappingSource },
         dimensions: dimensions,
         updated_at: new Date().toISOString(),
       }, {
@@ -146,7 +170,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, dimensions }),
+      JSON.stringify({ success: true, dimensions, mappingSource }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,

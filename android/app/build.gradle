@@ -28,10 +28,20 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.2.0'
 }
 
+// Google Maps Android SDK key (do not commit real keys).
+// Preferred sources (first match wins):
+// - android/local.properties: google.maps.apiKey=...
+// - Environment: GOOGLE_MAPS_ANDROID_API_KEY=...
+// - Fallback placeholder (maps will not load)
+def googleMapsApiKey =
+        localProperties.getProperty('google.maps.apiKey') ?:
+        System.getenv('GOOGLE_MAPS_ANDROID_API_KEY') ?:
+        'YOUR_ANDROID_GOOGLE_MAPS_API_KEY'
+
 android {
-    namespace "com.spots.app"
+    namespace "com.avra.app"
     compileSdkVersion 36
-    ndkVersion flutter.ndkVersion
+    ndkVersion "27.0.12077973"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -49,16 +59,32 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.spots.app"
+        applicationId "com.avra.app"
         minSdkVersion 26
         targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        // Used by AndroidManifest.xml meta-data: @string/google_maps_api_key
+        resValue "string", "google_maps_api_key", googleMapsApiKey
+
+        // Required by flutter_appauth (and any AppAuth-based OAuth flows).
+        // Prevents manifest merger failure for ${appAuthRedirectScheme}.
+        //
+        // IMPORTANT: use += so we don't clobber Flutter's own placeholders
+        // (e.g. ${applicationName}).
+        manifestPlaceholders += [
+                appAuthRedirectScheme: "com.avra.app"
+        ]
     }
 
     buildTypes {
         release {
             signingConfig signingConfigs.debug
+            // Packaging goal: produce a working release artifact.
+            // Disable minification to avoid R8 missing-class failures from optional SDK components.
+            minifyEnabled false
+            shrinkResources false
         }
     }
 
@@ -92,6 +118,10 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    // Workaround: `android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java`
+    // references IntegrationTestPlugin, which can otherwise be missing from release classpath.
+    implementation project(':integration_test')
     
     // Exclude the problematic androidx.preference library
     configurations.all {

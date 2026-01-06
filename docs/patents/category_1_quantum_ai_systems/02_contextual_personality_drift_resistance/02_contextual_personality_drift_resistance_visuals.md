@@ -5,9 +5,81 @@
 
 ---
 
-## Visual Diagrams and Architecture
 
-### 1. Three-Layered Personality Architecture
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Three-Layered Personality Architecture.
+- **FIG. 6**: Drift Resistance Mechanism.
+- **FIG. 7**: Surface Drift Detection Flow.
+- **FIG. 8**: Contextual Routing Algorithm.
+- **FIG. 9**: Evolution Timeline Structure.
+- **FIG. 10**: Three Types of Change.
+- **FIG. 11**: Drift Resistance Calculation.
+- **FIG. 12**: Contextual Layer Blending.
+- **FIG. 13**: Complete System Flow.
+- **FIG. 14**: Authenticity Validation Matrix.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Contextual Personality System with Drift Resistance implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Three-Layered Personality Architecture.
+- Drift Resistance Mechanism.
+- Surface Drift Detection Flow.
+- Contextual Routing Algorithm.
+- Evolution Timeline Structure.
+- Three Types of Change.
+- Drift Resistance Calculation.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Contextual Personality System with Drift Resistance implementation.
+
+1. Maintaining a core personality layer with maximum 18.36% drift resistance from original phase.
+2. Detecting surface drift using authenticity score, change velocity, and user action ratio.
+3. Resisting non-authentic changes by reducing learning rate by 90%.
+4. Routing authentic changes to core personality layer.
+5. Routing contextual changes to contextual adaptation layers.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Contextual Personality System with Drift Resistance implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- AtomicTimestamp: {t, source, uncertainty}
+- TemporalState: {|ψ_t⟩, parameters, normalized}
+- TimeSyncRecord: {offset, drift, lastCalibratedAt}
+- TemporalCompatibilityResult: {score in [0,1], computedAt}
+- ServiceResponse: {value, confidence, provenance}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Contextual Personality System with Drift Resistance implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device requests or samples atomic time and receives an atomic timestamp.
+2. Client device constructs a temporal quantum state representation indexed to the timestamp.
+3. Client device performs time-indexed computation and normalizes the result.
+4. Client device stores the resulting temporal state/score with provenance metadata.
+
+### FIG. 5 — Three-Layered Personality Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -40,7 +112,8 @@
 
 ---
 
-### 2. Drift Resistance Mechanism
+### FIG. 6 — Drift Resistance Mechanism
+
 
 ```
 Original Core Personality (Phase 1)
@@ -75,7 +148,8 @@ if (|proposedValue - originalValue| > maxDrift) {
 
 ---
 
-### 3. Surface Drift Detection Flow
+### FIG. 7 — Surface Drift Detection Flow
+
 
 ```
 AI2AI Learning Insight
@@ -107,7 +181,8 @@ AI2AI Learning Insight
 
 ---
 
-### 4. Contextual Routing Algorithm
+### FIG. 8 — Contextual Routing Algorithm
+
 
 ```
 AI2AI Learning Insight
@@ -142,7 +217,8 @@ AI2AI Learning Insight
 
 ---
 
-### 5. Evolution Timeline Structure
+### FIG. 9 — Evolution Timeline Structure
+
 
 ```
 Timeline: [Phase 1] → [Phase 2] → [Phase 3] → [Current]
@@ -172,7 +248,8 @@ Each Phase Contains:
 
 ---
 
-### 6. Three Types of Change
+### FIG. 10 — Three Types of Change
+
 
 ```
 Type 1: Contextual Adaptation (Temporary)
@@ -199,7 +276,8 @@ Type 3: Surface Drift (Resist)
 
 ---
 
-### 7. Drift Resistance Calculation
+### FIG. 11 — Drift Resistance Calculation
+
 
 ```
 Original Value (Phase 1): 0.5
@@ -228,7 +306,8 @@ Alternative Scenario:
 
 ---
 
-### 8. Contextual Layer Blending
+### FIG. 12 — Contextual Layer Blending
+
 
 ```
 Core Personality: [0.7, 0.5, 0.8, ...]
@@ -254,7 +333,8 @@ Default: weight = 0.3 (30% contextual, 70% core)
 
 ---
 
-### 9. Complete System Flow
+### FIG. 13 — Complete System Flow
+
 
 ```
 START
@@ -301,7 +381,8 @@ START
 
 ---
 
-### 10. Authenticity Validation Matrix
+### FIG. 14 — Authenticity Validation Matrix
+
 
 ```
                     Authenticity  Velocity  User Action
@@ -396,4 +477,3 @@ AI2AI Learning Insight Received
 ---
 
 **Last Updated:** December 16, 2025
-

@@ -16,9 +16,16 @@
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/theme/colors.dart';
+import 'package:spots/core/ai/personality_learning.dart';
+import 'package:spots/core/ai2ai/connection_orchestrator.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 /// Settings page for device discovery configuration
 class DiscoverySettingsPage extends StatefulWidget {
@@ -30,6 +37,7 @@ class DiscoverySettingsPage extends StatefulWidget {
 
 class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   final _storageService = StorageService.instance;
+  static const String _logName = 'DiscoverySettingsPage';
   
   // Discovery settings
   bool _discoveryEnabled = false;
@@ -38,6 +46,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   bool _discoverWiFi = true;
   bool _discoverBluetooth = true;
   bool _discoverMultipeer = true;
+  bool _eventModeEnabled = false;
   
   @override
   void initState() {
@@ -53,11 +62,39 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
       _discoverWiFi = _storageService.getBool('discover_wifi') ?? true;
       _discoverBluetooth = _storageService.getBool('discover_bluetooth') ?? true;
       _discoverMultipeer = _storageService.getBool('discover_multipeer') ?? true;
+      _eventModeEnabled = _storageService.getBool('event_mode_enabled') ?? false;
     });
   }
   
   Future<void> _saveSetting(String key, bool value) async {
     await _storageService.setBool(key, value);
+  }
+
+  Future<void> _applyDiscoveryRuntime(bool enabled) async {
+    try {
+      final orchestrator = GetIt.instance<VibeConnectionOrchestrator>();
+      if (!enabled) {
+        await orchestrator.shutdown();
+        return;
+      }
+
+      final authState = context.read<AuthBloc>().state;
+      if (authState is! Authenticated) return;
+
+      final userId = authState.user.id;
+      final personalityLearning = GetIt.instance<PersonalityLearning>();
+      final profile =
+          await personalityLearning.getCurrentPersonality(userId) ??
+              await personalityLearning.initializePersonality(userId);
+      await orchestrator.initializeOrchestration(userId, profile);
+    } catch (e, st) {
+      developer.log(
+        'Failed to apply discovery runtime',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+    }
   }
   
   @override
@@ -73,12 +110,54 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           _buildHeaderSection(),
           _buildMainToggle(),
           if (_discoveryEnabled) ...[
+            _buildEventModeToggle(),
             _buildDiscoveryMethodsSection(),
             _buildPrivacySection(),
             _buildAdvancedSection(),
           ],
           _buildInfoSection(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEventModeToggle() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: SwitchListTile(
+        title: const Text(
+          'Event Mode (Broadcast-First)',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        subtitle: Text(
+          _eventModeEnabled
+              ? 'Uses connectionless room sensing; deep sync only in short check-in windows'
+              : 'Normal discovery behavior',
+          style: const TextStyle(
+            fontSize: 14,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        value: _eventModeEnabled,
+        onChanged: (value) async {
+          setState(() {
+            _eventModeEnabled = value;
+          });
+          await _saveSetting('event_mode_enabled', value);
+        },
+        activeColor: AppColors.electricGreen,
+        secondary: Icon(
+          _eventModeEnabled ? Icons.local_activity : Icons.local_activity_outlined,
+          color: _eventModeEnabled ? AppColors.electricGreen : AppColors.grey300,
+        ),
       ),
     );
   }
@@ -170,6 +249,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
             _discoveryEnabled = value;
           });
           await _saveSetting('discovery_enabled', value);
+          await _applyDiscoveryRuntime(value);
         },
         activeColor: AppColors.electricGreen,
         secondary: Icon(

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'dart:async';
 import 'dart:convert';
 import 'package:spots/core/ai2ai/anonymous_communication.dart' as ai2ai;
-import 'package:spots/core/services/message_encryption_service.dart';
+import 'package:spots_network/network/message_encryption_service.dart';
 import 'package:spots/core/models/business_business_message.dart';
 import 'package:spots/core/services/business_account_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
@@ -319,10 +319,14 @@ class BusinessBusinessChatServiceAI2AI {
               encryptedContent: message.encryptedContent!,
               encryptionType: message.encryptionType,
             );
+            // Signal sessions are keyed by the remote business *agentId* (not businessId).
+            // For legacy AES (local-only), keep the existing senderBusinessId behavior.
+            final decryptKeyId = message.encryptionType == EncryptionType.signalProtocol
+                ? await _agentIdService.getBusinessAgentId(message.senderBusinessId)
+                : message.senderBusinessId;
             final decrypted = await _encryptionService.decrypt(
               encrypted,
-              message
-                  .senderBusinessId, // Use sender ID for decryption key lookup
+              decryptKeyId,
             );
             decryptedMessages.add(message.copyWith(content: decrypted));
           } catch (e) {

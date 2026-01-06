@@ -1,0 +1,23 @@
+name: spots_knot
+description: Knot theory services, knot weaving, and knot fabric for SPOTS
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+dependencies:
+  spots_core:
+    path: ../spots_core
+  spots_quantum:
+    path: ../spots_quantum
+  equatable: ^2.0.5
+  meta: ^1.9.1
+  uuid: ^4.3.3
+  flutter_rust_bridge: 2.11.1
+  audioplayers: ^6.0.0
+
+dev_dependencies:
+  test: ^1.24.7
+  flutter_test:
+    sdk: flutter

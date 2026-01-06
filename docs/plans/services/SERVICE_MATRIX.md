@@ -79,7 +79,7 @@ This matrix tracks:
 |---------|-----------|---------|
 | `event_template_service.dart` | None | Event creation UI |
 | `event_matching_service.dart` | `ExpertiseEventService` | Event matching |
-| `event_recommendation_service.dart` | `ExpertiseEventService` | Event recommendations |
+| `event_recommendation_service.dart` | `ExpertiseEventService`; plus: `AgentIdService`, `KnotFabricService`, `KnotStorageService`, `VibeCompatibilityService`; optional: `PostEventFeedbackService`, `SocialMediaConnectionService` | Personalized event recommendations (true compatibility + weave fit when available) |
 | `event_safety_service.dart` | `ExpertiseEventService` | Event safety checks |
 | `event_success_analysis_service.dart` | `ExpertiseEventService` | Post-event analysis |
 | `post_event_feedback_service.dart` | `ExpertiseEventService` | Feedback collection |
@@ -90,7 +90,7 @@ This matrix tracks:
 
 | Service | Depends On | Used By |
 |---------|-----------|---------|
-| `community_service.dart` | `StorageService` | Community features |
+| `community_service.dart` | `StorageService` (persistence); optional: `KnotFabricService`, `KnotStorageService`, `AgentIdService`, `PersonalityLearning` | Community pages + discovery ranking (health/cohesion, weave fit, true compatibility) |
 | `club_service.dart` | `CommunityService` | Club features |
 | `community_event_service.dart` | `CommunityService`, `ExpertiseEventService` | Community events |
 | `community_event_upgrade_service.dart` | `CommunityService`, `ExpertiseEventService` | Event upgrades |

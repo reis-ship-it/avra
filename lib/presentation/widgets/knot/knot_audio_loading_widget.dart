@@ -38,10 +38,6 @@ class KnotAudioLoadingWidget extends StatefulWidget {
 }
 
 class _KnotAudioLoadingWidgetState extends State<KnotAudioLoadingWidget> {
-  final _knotAudioService = GetIt.instance<KnotAudioService>();
-  final _knotStorageService = GetIt.instance<KnotStorageService>();
-  final _agentIdService = GetIt.instance<AgentIdService>();
-
   bool _audioStarted = false;
 
   @override
@@ -55,7 +51,11 @@ class _KnotAudioLoadingWidgetState extends State<KnotAudioLoadingWidget> {
   @override
   void dispose() {
     if (_audioStarted) {
-      _knotAudioService.stopAudio();
+      // Audio is optional; avoid hard dependency on DI in tests/limited builds.
+      final sl = GetIt.instance;
+      if (sl.isRegistered<KnotAudioService>()) {
+        sl<KnotAudioService>().stopAudio();
+      }
     }
     super.dispose();
   }
@@ -64,15 +64,27 @@ class _KnotAudioLoadingWidgetState extends State<KnotAudioLoadingWidget> {
     if (_audioStarted || widget.userId == null) return;
 
     try {
+      final sl = GetIt.instance;
+      if (!sl.isRegistered<AgentIdService>() ||
+          !sl.isRegistered<KnotStorageService>() ||
+          !sl.isRegistered<KnotAudioService>()) {
+        // Fail silently - audio is optional.
+        return;
+      }
+
+      final agentIdService = sl<AgentIdService>();
+      final knotStorageService = sl<KnotStorageService>();
+      final knotAudioService = sl<KnotAudioService>();
+
       // Get agent ID
-      final agentId = await _agentIdService.getUserAgentId(widget.userId!);
+      final agentId = await agentIdService.getUserAgentId(widget.userId!);
 
       // Load knot
-      final knot = await _knotStorageService.loadKnot(agentId);
+      final knot = await knotStorageService.loadKnot(agentId);
 
       if (knot != null && mounted) {
         // Play audio (simplified - full synthesis requires additional work)
-        await _knotAudioService.playKnotLoadingSound(knot);
+        await knotAudioService.playKnotLoadingSound(knot);
 
         setState(() {
           _audioStarted = true;

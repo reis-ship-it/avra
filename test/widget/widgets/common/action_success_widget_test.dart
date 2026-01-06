@@ -29,6 +29,7 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          key: const ValueKey('action_success_app_1'),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -52,6 +53,7 @@ void main() {
 
       const intent2 = CreateSpotIntent(
         name: 'Blue Bottle Coffee',
+        description: 'Great coffee spot',
         category: 'cafe',
         latitude: 37.7749,
         longitude: -122.4194,
@@ -64,6 +66,7 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          key: const ValueKey('action_success_app_2'),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -97,6 +100,7 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          key: const ValueKey('action_success_app_3'),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -140,6 +144,7 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          key: const ValueKey('action_success_app_4'),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -179,6 +184,7 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          key: const ValueKey('action_success_app_5'),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -217,6 +223,7 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          key: const ValueKey('action_success_app_6'),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(

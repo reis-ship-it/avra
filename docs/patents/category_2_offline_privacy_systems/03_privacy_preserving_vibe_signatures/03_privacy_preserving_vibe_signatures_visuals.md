@@ -5,9 +5,83 @@
 
 ---
 
-## Visual Diagrams and Flowcharts
 
-### 1. Anonymization Process Flow
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Anonymization Process Flow.
+- **FIG. 6**: Anonymized Signature Structure.
+- **FIG. 7**: Privacy-Preserving Compatibility Calculation.
+- **FIG. 8**: Zero-Knowledge Exchange.
+- **FIG. 9**: Differential Privacy Noise Application.
+- **FIG. 10**: Temporal Signature Protection.
+- **FIG. 11**: Complete Anonymization Workflow.
+- **FIG. 12**: Compatibility Preservation.
+- **FIG. 13**: Zero-Knowledge Exchange Flow.
+- **FIG. 14**: Complete System Architecture.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Privacy-Preserving Anonymized Vibe Signature System implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Anonymization Process Flow.
+- Anonymized Signature Structure.
+- Privacy-Preserving Compatibility Calculation.
+- Zero-Knowledge Exchange.
+- Differential Privacy Noise Application.
+- Temporal Signature Protection.
+- Complete Anonymization Workflow.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Privacy-Preserving Anonymized Vibe Signature System implementation.
+
+1. Extracting personal personality dimensions from personality profile.
+2. Converting personal dimensions to anonymized values using differential privacy noise.
+3. Creating shareable vibe signature without personal identifiers.
+4. Generating temporal signature with expiration for temporal protection.
+5. Creating fingerprint hash for signature validation.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Privacy-Preserving Anonymized Vibe Signature System implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- AtomicTimestamp: {t, source, uncertainty}
+- TemporalState: {|ψ_t⟩, parameters, normalized}
+- TimeSyncRecord: {offset, drift, lastCalibratedAt}
+- TemporalCompatibilityResult: {score in [0,1], computedAt}
+- ServiceResponse: {value, confidence, provenance}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Privacy-Preserving Anonymized Vibe Signature System implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+- Privacy/validation module (on-device)
+
+Example sequence:
+1. Client device requests or samples atomic time and receives an atomic timestamp.
+2. Client device constructs a temporal quantum state representation indexed to the timestamp.
+3. Client device performs time-indexed computation and normalizes the result.
+4. Client device stores the resulting temporal state/score with provenance metadata.
+
+### FIG. 5 — Anonymization Process Flow
+
 
 ```
 Personal Personality Profile
@@ -41,7 +115,8 @@ Personal Personality Profile
 
 ---
 
-### 2. Anonymized Signature Structure
+### FIG. 6 — Anonymized Signature Structure
+
 
 ```
 AnonymizedVibeSignature
@@ -81,7 +156,8 @@ AnonymizedVibeSignature
 
 ---
 
-### 3. Privacy-Preserving Compatibility Calculation
+### FIG. 7 — Privacy-Preserving Compatibility Calculation
+
 
 ```
 Anonymized Signature 1          Anonymized Signature 2
@@ -101,7 +177,8 @@ Anonymized Signature 1          Anonymized Signature 2
 
 ---
 
-### 4. Zero-Knowledge Exchange
+### FIG. 8 — Zero-Knowledge Exchange
+
 
 ```
 Device A                          Device B
@@ -129,7 +206,8 @@ Device A                          Device B
 
 ---
 
-### 5. Differential Privacy Noise Application
+### FIG. 9 — Differential Privacy Noise Application
+
 
 ```
 Original Dimension Value: 0.7
@@ -155,7 +233,8 @@ anonymized = (original + noise).clamp(0.0, 1.0)
 
 ---
 
-### 6. Temporal Signature Protection
+### FIG. 10 — Temporal Signature Protection
+
 
 ```
 Anonymized Signature
@@ -176,7 +255,8 @@ Anonymized Signature
 
 ---
 
-### 7. Complete Anonymization Workflow
+### FIG. 11 — Complete Anonymization Workflow
+
 
 ```
 START
@@ -222,7 +302,8 @@ START
 
 ---
 
-### 8. Compatibility Preservation
+### FIG. 12 — Compatibility Preservation
+
 
 ```
 Original Compatibility Calculation
@@ -249,7 +330,8 @@ Anonymized Compatibility Calculation
 
 ---
 
-### 9. Zero-Knowledge Exchange Flow
+### FIG. 13 — Zero-Knowledge Exchange Flow
+
 
 ```
 Device A
@@ -285,7 +367,8 @@ Device B
 
 ---
 
-### 10. Complete System Architecture
+### FIG. 14 — Complete System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -383,4 +466,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

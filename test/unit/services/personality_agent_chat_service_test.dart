@@ -147,7 +147,12 @@ void main() {
       test('should require LLMService', () {
         expect(
           () => PersonalityAgentChatService(
+            agentIdService: mockAgentIdService,
+            encryptionService: mockEncryptionService,
+            languageLearningService: mockLanguageLearningService,
             llmService: mockLLMService,
+            personalityLearning: mockPersonalityLearning,
+            searchRepository: mockSearchRepository,
           ),
           returnsNormally,
         );

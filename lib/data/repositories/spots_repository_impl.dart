@@ -3,163 +3,113 @@ import 'package:spots/core/models/spot.dart';
 import 'package:spots/data/datasources/local/spots_local_datasource.dart';
 import 'package:spots/data/datasources/remote/spots_remote_datasource.dart';
 import 'package:spots/domain/repositories/spots_repository.dart';
+import 'package:spots/data/repositories/repository_patterns.dart';
 
-class SpotsRepositoryImpl implements SpotsRepository {
+/// Spots Repository Implementation
+///
+/// Uses offline-first pattern: returns local data immediately, syncs with remote if online.
+class SpotsRepositoryImpl extends SimplifiedRepositoryBase
+    implements SpotsRepository {
   final SpotsRemoteDataSource remoteDataSource;
   final SpotsLocalDataSource localDataSource;
-  final Connectivity connectivity;
 
   SpotsRepositoryImpl({
+    required Connectivity connectivity,
     required this.remoteDataSource,
     required this.localDataSource,
-    required this.connectivity,
-  });
+  }) : super(connectivity: connectivity);
 
   @override
   Future<List<Spot>> getSpots() async {
+    // Offline-first contract:
+    // - Always return local data immediately when available.
+    // - When online, fetch remote and merge it into local without dropping
+    //   offline-created records that haven't been uploaded yet.
+    final localSpots = await localDataSource.getAllSpots();
+
+    if (!await isOnline) {
+      return localSpots;
+    }
+
     try {
-      // Always try to get from local first
-      final localSpots = await localDataSource.getAllSpots();
+      final remoteSpots = await remoteDataSource.getSpots();
 
-      // Check connectivity (robust to plugin return types)
-      final offline = await _isOffline();
-      if (offline) {
-        return localSpots;
+      // Best-effort cache remote into local (upsert).
+      for (final spot in remoteSpots) {
+        await localDataSource.updateSpot(spot);
       }
 
-      // If online, try to sync with remote
-      try {
-        final remoteSpots = await remoteDataSource.getSpots();
-        // For now, just return local data since remote is stubbed
-        return localSpots;
-      } catch (e) {
-        // If remote fails, return local data
-        return localSpots;
+      // Merge local + remote by id, preferring remote on conflicts.
+      final merged = <String, Spot>{};
+      for (final spot in localSpots) {
+        merged[spot.id] = spot;
       }
-    } catch (e) {
-      throw Exception('Failed to get spots: $e');
+      for (final spot in remoteSpots) {
+        merged[spot.id] = spot;
+      }
+
+      return merged.values.toList();
+    } catch (_) {
+      // If remote fetch fails, fall back to local.
+      return localSpots;
     }
   }
 
   @override
   Future<List<Spot>> getSpotsFromRespectedLists() async {
-    try {
-      // Get spots from respected lists
-      final respectedSpots = await localDataSource.getSpotsFromRespectedLists();
-      return respectedSpots;
-    } catch (e) {
-      throw Exception('Failed to get spots from respected lists: $e');
-    }
+    return executeLocalOnly(
+      localOperation: () => localDataSource.getSpotsFromRespectedLists(),
+    );
   }
 
   /// Convenience method used in performance tests
   Future<Spot?> getSpotById(String id) async {
-    try {
-      return await localDataSource.getSpotById(id);
-    } catch (e) {
-      throw Exception('Failed to get spot by id: $e');
-    }
+    return executeLocalOnly(
+      localOperation: () => localDataSource.getSpotById(id),
+    );
   }
 
   @override
   Future<Spot> createSpot(Spot spot) async {
-    try {
-      // Always save locally first
-      final spotId = await localDataSource.createSpot(spot);
-      final createdSpot = await localDataSource.getSpotById(spotId);
-
-      if (createdSpot == null) {
-        throw Exception('Failed to create spot locally');
-      }
-
-      // Check connectivity (robust to plugin return types)
-      final offline = await _isOffline();
-      if (offline) {
+    return executeOfflineFirst(
+      localOperation: () async {
+        final spotId = await localDataSource.createSpot(spot);
+        final createdSpot = await localDataSource.getSpotById(spotId);
+        if (createdSpot == null) {
+          throw Exception('Failed to create spot locally');
+        }
         return createdSpot;
-      }
-
-      // If online, try to sync with remote
-      try {
-        final remoteSpot = await remoteDataSource.createSpot(spot);
-        // Update local with remote data
+      },
+      remoteOperation: () => remoteDataSource.createSpot(spot),
+      syncToLocal: (remoteSpot) async {
         await localDataSource.updateSpot(remoteSpot);
-        return remoteSpot;
-      } catch (e) {
-        // If remote fails, return local data
-        return createdSpot;
-      }
-    } catch (e) {
-      throw Exception('Failed to create spot: $e');
-    }
+      },
+    );
   }
 
   @override
   Future<Spot> updateSpot(Spot spot) async {
-    try {
-      // Always update locally first
-      await localDataSource.updateSpot(spot);
-      final updatedSpot = await localDataSource.getSpotById(spot.id);
-
-      if (updatedSpot == null) {
-        throw Exception('Failed to update spot locally');
-      }
-
-      // Check connectivity (robust to plugin return types)
-      final offline = await _isOffline();
-      if (offline) {
+    return executeOfflineFirst(
+      localOperation: () async {
+        await localDataSource.updateSpot(spot);
+        final updatedSpot = await localDataSource.getSpotById(spot.id);
+        if (updatedSpot == null) {
+          throw Exception('Failed to update spot locally');
+        }
         return updatedSpot;
-      }
-
-      // If online, try to sync with remote
-      try {
-        final remoteSpot = await remoteDataSource.updateSpot(spot);
-        // Update local with remote data
+      },
+      remoteOperation: () => remoteDataSource.updateSpot(spot),
+      syncToLocal: (remoteSpot) async {
         await localDataSource.updateSpot(remoteSpot);
-        return remoteSpot;
-      } catch (e) {
-        // If remote fails, return local data
-        return updatedSpot;
-      }
-    } catch (e) {
-      throw Exception('Failed to update spot: $e');
-    }
+      },
+    );
   }
 
   @override
   Future<void> deleteSpot(String spotId) async {
-    try {
-      // Always delete locally first
-      await localDataSource.deleteSpot(spotId);
-
-      // Check connectivity (robust to plugin return types)
-      final offline = await _isOffline();
-      if (offline) {
-        return;
-      }
-
-      // If online, try to sync with remote
-      try {
-        await remoteDataSource.deleteSpot(spotId);
-      } catch (e) {
-        // If remote fails, local deletion is already done
-      }
-    } catch (e) {
-      throw Exception('Failed to delete spot: $e');
-    }
-  }
-
-  Future<bool> _isOffline() async {
-    try {
-      final result = await connectivity.checkConnectivity();
-      // Handle both ConnectivityResult and List<ConnectivityResult>
-      if (result is ConnectivityResult) {
-        return result == ConnectivityResult.none;
-      }
-      return result.contains(ConnectivityResult.none);
-          return false;
-    } catch (_) {
-      // On failure, assume offline to be safe
-      return true;
-    }
+    return executeOfflineFirst(
+      localOperation: () => localDataSource.deleteSpot(spotId),
+      remoteOperation: () => remoteDataSource.deleteSpot(spotId),
+    );
   }
 }

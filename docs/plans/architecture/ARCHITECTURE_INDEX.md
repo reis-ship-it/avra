@@ -19,6 +19,44 @@
 
 ## 📚 **Architecture Documents**
 
+### **Repo Hygiene + Architecture Rules (Guardrails)**
+
+**File:** [`REPO_HYGIENE_AND_ARCHITECTURE_RULES.md`](./REPO_HYGIENE_AND_ARCHITECTURE_RULES.md)
+
+**What it covers:**
+- ✅ CI guardrails for package boundaries (`packages/*` must not import the app)
+- ✅ CI guardrails for tracked generated artifacts (build outputs, Pods, temp/logs)
+
+---
+
+### **0. Expertise Ledger + Capabilities (Strict Append-Only)**
+
+**File:** [`EXPERTISE_LEDGER_AND_CAPABILITIES_V1.md`](./EXPERTISE_LEDGER_AND_CAPABILITIES_V1.md)
+
+**What it covers:**
+- ✅ **Strict append-only ledger** (no UPDATE/DELETE; revisions as new rows)
+- ✅ **Exact Supabase RLS policy shapes** aligned with user-owned rows (`auth.uid()`)
+- ✅ **Minimal Capabilities API** to prevent gating/scoring drift
+- ✅ **Migration path** from `UnifiedUser.expertiseMap` gating → ledger-based gating without breaking anything
+
+**Use this when:**
+- You need a single source of truth for expertise, events, communities/clubs, and partnerships
+- You want explainable “doors” (capabilities) derived from recorded facts
+- You are removing drift between stored expertise strings and computed expertise scores
+
+---
+
+### **0.5 Ledgers (v0) — Shared Append-Only Journal (Many Domains)**
+
+**Index:** [`../ledgers/LEDGERS_V0_INDEX.md`](../ledgers/LEDGERS_V0_INDEX.md)
+
+**What it covers:**
+- ✅ A single **append-only journal** schema used as *many logical ledgers* via `domain`
+- ✅ A v0 **event catalog** covering expertise/events/communities/clubs/partnerships + payments + moderation + more
+- ✅ “Feels like many ledgers” in Supabase via **domain-specific views**
+
+---
+
 ### **1. Online/Offline Strategy** ⭐ **MOST COMPREHENSIVE**
 
 **File:** [`ONLINE_OFFLINE_STRATEGY.md`](./ONLINE_OFFLINE_STRATEGY.md)

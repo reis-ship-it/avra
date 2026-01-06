@@ -59,6 +59,9 @@ class UserBusinessMatchingWidget extends StatelessWidget {
   }
 
   Future<List<UserBusinessMatch>> _getMatches() async {
+    // Ensure the Future completes asynchronously so the loading state renders
+    // for at least one frame (keeps UI and widget tests deterministic).
+    await Future<void>.delayed(Duration.zero);
     final service = UserBusinessMatchingService();
     return await service.findBusinessesForUser(user);
   }

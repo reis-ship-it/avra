@@ -38,6 +38,22 @@ class _UniversalAISearchState extends State<UniversalAISearch> {
   }
 
   @override
+  void didUpdateWidget(covariant UniversalAISearch oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Keep the text controller in sync when the parent changes initialValue.
+    // Without this, state reuse across rebuilds can leave stale/empty text.
+    if (widget.initialValue != oldWidget.initialValue) {
+      final next = widget.initialValue ?? '';
+      if (_controller.text != next) {
+        _controller.value = TextEditingValue(
+          text: next,
+          selection: TextSelection.collapsed(offset: next.length),
+        );
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

@@ -3,15 +3,18 @@ import 'package:spots/core/models/expertise_pin.dart';
 import 'package:spots/core/models/expertise_progress.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/logger.dart';
+import 'package:spots/core/services/interfaces/expertise_service_interface.dart';
 
 /// Expertise Service
 /// OUR_GUTS.md: "Pins, Not Badges" - Calculates expertise based on authentic contributions
-class ExpertiseService {
+class ExpertiseService implements IExpertiseService {
   static const String _logName = 'ExpertiseService';
-  final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
+  final AppLogger _logger =
+      const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
 
   /// Calculate expertise level based on contributions
   /// OUR_GUTS.md: Based on real contributions, trusted feedback, and curation quality
+  @override
   ExpertiseLevel calculateExpertiseLevel({
     required int respectedListsCount,
     required int thoughtfulReviewsCount,
@@ -46,6 +49,7 @@ class ExpertiseService {
   }
 
   /// Get expertise pins from user's expertise map
+  @override
   List<ExpertisePin> getUserPins(UnifiedUser user) {
     final pins = <ExpertisePin>[];
 
@@ -70,6 +74,7 @@ class ExpertiseService {
   }
 
   /// Calculate progress toward next expertise level
+  @override
   ExpertiseProgress calculateProgress({
     required String category,
     required String? location,
@@ -80,7 +85,7 @@ class ExpertiseService {
     required double communityTrustScore,
   }) {
     final nextLevel = currentLevel.nextLevel;
-    
+
     if (nextLevel == null) {
       // Already at highest level
       return ExpertiseProgress(
@@ -108,7 +113,9 @@ class ExpertiseService {
     // Calculate requirements for next level
     final requirements = _getLevelRequirements(nextLevel);
     final currentContributions = respectedListsCount + thoughtfulReviewsCount;
-    final progressPercentage = (currentContributions / requirements.totalContributions * 100.0).clamp(0.0, 100.0);
+    final progressPercentage =
+        (currentContributions / requirements.totalContributions * 100.0)
+            .clamp(0.0, 100.0);
 
     // Generate next steps
     final nextSteps = _generateNextSteps(
@@ -141,17 +148,23 @@ class ExpertiseService {
   LevelRequirements _getLevelRequirements(ExpertiseLevel level) {
     switch (level) {
       case ExpertiseLevel.local:
-        return const LevelRequirements(lists: 1, reviews: 10, totalContributions: 10);
+        return const LevelRequirements(
+            lists: 1, reviews: 10, totalContributions: 10);
       case ExpertiseLevel.city:
-        return const LevelRequirements(lists: 3, reviews: 25, totalContributions: 25);
+        return const LevelRequirements(
+            lists: 3, reviews: 25, totalContributions: 25);
       case ExpertiseLevel.regional:
-        return const LevelRequirements(lists: 6, reviews: 50, totalContributions: 50);
+        return const LevelRequirements(
+            lists: 6, reviews: 50, totalContributions: 50);
       case ExpertiseLevel.national:
-        return const LevelRequirements(lists: 11, reviews: 100, totalContributions: 100);
+        return const LevelRequirements(
+            lists: 11, reviews: 100, totalContributions: 100);
       case ExpertiseLevel.global:
-        return const LevelRequirements(lists: 21, reviews: 200, totalContributions: 200);
+        return const LevelRequirements(
+            lists: 21, reviews: 200, totalContributions: 200);
       case ExpertiseLevel.universal:
-        return const LevelRequirements(lists: 50, reviews: 500, totalContributions: 500);
+        return const LevelRequirements(
+            lists: 50, reviews: 500, totalContributions: 500);
     }
   }
 
@@ -167,12 +180,14 @@ class ExpertiseService {
 
     if (currentLists < requirements.lists) {
       final needed = requirements.lists - currentLists;
-      steps.add('Create $needed more ${needed == 1 ? 'respected list' : 'respected lists'}');
+      steps.add(
+          'Create $needed more ${needed == 1 ? 'respected list' : 'respected lists'}');
     }
 
     if (currentReviews < requirements.reviews) {
       final needed = requirements.reviews - currentReviews;
-      steps.add('Write $needed more ${needed == 1 ? 'thoughtful review' : 'thoughtful reviews'}');
+      steps.add(
+          'Write $needed more ${needed == 1 ? 'thoughtful review' : 'thoughtful reviews'}');
     }
 
     if (steps.isEmpty) {
@@ -184,6 +199,7 @@ class ExpertiseService {
   }
 
   /// Check if user can earn pin for category
+  @override
   bool canEarnPin({
     required String category,
     required int respectedListsCount,
@@ -191,13 +207,15 @@ class ExpertiseService {
     required double communityTrustScore,
   }) {
     // Need at least 1 respected list OR 10 thoughtful reviews
-    final hasMinimumContributions = respectedListsCount >= 1 || thoughtfulReviewsCount >= 10;
+    final hasMinimumContributions =
+        respectedListsCount >= 1 || thoughtfulReviewsCount >= 10;
     final hasBasicTrust = communityTrustScore >= 0.5;
 
     return hasMinimumContributions && hasBasicTrust;
   }
 
   /// Get expertise story/narrative
+  @override
   String getExpertiseStory({
     required String category,
     required ExpertiseLevel level,
@@ -206,7 +224,7 @@ class ExpertiseService {
     String? location,
   }) {
     final locationText = location != null ? ' in $location' : '';
-    
+
     if (respectedListsCount > 0 && thoughtfulReviewsCount > 0) {
       return 'Earned $category ${level.displayName} Level$locationText by creating $respectedListsCount respected lists and writing $thoughtfulReviewsCount thoughtful reviews.';
     } else if (respectedListsCount > 0) {
@@ -217,11 +235,13 @@ class ExpertiseService {
   }
 
   /// Check if pin unlocks feature
+  @override
   bool unlocksFeature(ExpertisePin pin, String feature) {
     return pin.unlockedFeatures.contains(feature);
   }
 
   /// Get unlocked features for level
+  @override
   List<String> getUnlockedFeatures(ExpertiseLevel level) {
     final features = <String>[];
 
@@ -257,4 +277,3 @@ class LevelRequirements {
     required this.totalContributions,
   });
 }
-

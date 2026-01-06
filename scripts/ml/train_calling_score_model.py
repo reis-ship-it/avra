@@ -172,12 +172,14 @@ def extract_features(record: Dict) -> List[float]:
         'opportunity_availability',
         'network_effects',
         'community_patterns',
+        # Former placeholders (now supported if present in training records)
+        'vibe_compatibility',
+        'energy_match',
+        'community_match',
+        'novelty_match',
     ]
     for feat in context_features:
         features.append(float(context.get(feat, 0.5)))
-    # Add 4 placeholder context features if needed
-    while len(features) < 34:
-        features.append(0.5)
     
     # Timing features (5 features)
     timing = record.get('timing_features', {})
@@ -186,12 +188,11 @@ def extract_features(record: Dict) -> List[float]:
         'optimal_day_of_week',
         'user_patterns',
         'opportunity_timing',
+        # Former placeholder (now supported if present in training records)
+        'timing_alignment',
     ]
     for feat in timing_features:
         features.append(float(timing.get(feat, 0.5)))
-    # Add 1 placeholder timing feature if needed
-    if len(features) < 39:
-        features.append(0.5)
     
     # Ensure exactly 39 features
     features = features[:39]

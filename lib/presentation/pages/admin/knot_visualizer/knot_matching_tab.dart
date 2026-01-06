@@ -195,7 +195,7 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
                                 ),
                                 const SizedBox(height: 4),
                                 LinearProgressIndicator(
-                                  value: entry.value as num,
+                                  value: (entry.value as num).toDouble(),
                                   backgroundColor: AppColors.grey200,
                                   valueColor: const AlwaysStoppedAnimation<Color>(
                                     AppColors.success,

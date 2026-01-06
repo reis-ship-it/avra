@@ -6,6 +6,7 @@ import 'package:spots/core/models/event_partnership.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Partnership Checkout Controller Integration Tests
 /// 
@@ -25,6 +26,7 @@ void main() {
       await SembastDatabase.database;
       
       // Initialize dependency injection
+      await setupTestStorage();
       await di.init();
       
       controller = di.sl<PartnershipCheckoutController>();

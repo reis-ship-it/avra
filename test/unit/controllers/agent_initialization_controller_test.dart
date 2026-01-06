@@ -8,12 +8,16 @@ import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
 import 'package:spots/core/services/onboarding_place_list_generator.dart';
 import 'package:spots/core/services/onboarding_recommendation_service.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/social_media_insight_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
 import 'agent_initialization_controller_test.mocks.dart';
+
+class MockSocialMediaInsightService extends Mock
+    implements SocialMediaInsightService {}
 
 @GenerateMocks([
   SocialMediaDataCollectionController,
@@ -34,6 +38,7 @@ void main() {
     late MockOnboardingRecommendationService mockRecommendationService;
     late MockPersonalitySyncService mockSyncService;
     late MockAgentIdService mockAgentIdService;
+    late MockSocialMediaInsightService mockSocialMediaInsightService;
 
     setUp(() {
       mockSocialMediaDataController = MockSocialMediaDataCollectionController();
@@ -43,6 +48,7 @@ void main() {
       mockRecommendationService = MockOnboardingRecommendationService();
       mockSyncService = MockPersonalitySyncService();
       mockAgentIdService = MockAgentIdService();
+      mockSocialMediaInsightService = MockSocialMediaInsightService();
       
       controller = AgentInitializationController(
         socialMediaDataController: mockSocialMediaDataController,
@@ -52,6 +58,7 @@ void main() {
         recommendationService: mockRecommendationService,
         syncService: mockSyncService,
         agentIdService: mockAgentIdService,
+        socialMediaInsightService: mockSocialMediaInsightService,
       );
     });
 

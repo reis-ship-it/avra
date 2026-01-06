@@ -252,7 +252,7 @@ vibeDimensions['crowd_tolerance'] = (
 
 ### **Documentation Files (Update):**
 
-#### **7. `/VIBE_CODING/DIMENSIONS/core_dimensions.md`**
+#### **7. `/docs/_archive/vibe_coding/VIBE_CODING/DIMENSIONS/core_dimensions.md`**
 **Changes:**
 - Add detailed descriptions of 4 new dimensions
 - Include examples and impact on behavior
@@ -590,7 +590,7 @@ test('should learn new dimensions from AI2AI connections', () async {
 ---
 
 ### **Day 5: Documentation & Optional Enhancements**
-- [ ] Update `VIBE_CODING/DIMENSIONS/core_dimensions.md`
+- [ ] Update `docs/_archive/vibe_coding/VIBE_CODING/DIMENSIONS/core_dimensions.md`
 - [ ] Update `CONTEXTUAL_PERSONALITY_SYSTEM.md`
 - [ ] Optional: Update archetypes
 - [ ] Optional: Update Supabase functions
@@ -752,7 +752,7 @@ test('should learn new dimensions from AI2AI connections', () async {
 
 ## 📚 **Related Documentation**
 
-- `VIBE_CODING/DIMENSIONS/core_dimensions.md` - Dimension definitions
+- `docs/_archive/vibe_coding/VIBE_CODING/DIMENSIONS/core_dimensions.md` - Dimension definitions
 - `docs/CONTEXTUAL_PERSONALITY_SYSTEM.md` - Contextual layers
 - `docs/OFFLINE_AI2AI_IMPLEMENTATION_PLAN.md` - AI2AI system
 - `lib/core/constants/vibe_constants.dart` - Current constants

@@ -1,7 +1,7 @@
 # Offline AI2AI Connection Implementation Plan
 
 **Date:** November 21, 2025  
-**Status:** 📋 Planning - Ready for Implementation  
+**Status:** ✅ Implemented in repo (pending real-device validation for BLE RF/OS variance)  
 **Priority:** HIGH - Core autonomous AI functionality  
 **Reference:** OUR_GUTS.md - "Always Learning With You"
 
@@ -44,6 +44,7 @@ Personal AIs are **fully autonomous**. They learn independently through:
 2. ⭐ Network-wide pattern recognition
 3. ⭐ Collective intelligence insights
 4. ⭐ Enhanced learning from global network
+5. ⭐ Hybrid federated learning sync (upload bounded deltas; download network priors)
 
 ---
 
@@ -69,7 +70,7 @@ Personal AIs are **fully autonomous**. They learn independently through:
 **Priority:** MEDIUM - Nice to have for network intelligence
 
 - **Day 1:** Connection log queue
-- **Day 2:** Cloud intelligence sync service
+- **Day 2:** Cloud intelligence sync service + federated delta upload (edge function)
 - **Day 3:** Testing and integration
 
 **Deliverables:**
@@ -77,6 +78,7 @@ Personal AIs are **fully autonomous**. They learn independently through:
 - Cloud sync service
 - Network intelligence integration
 - Enhanced insights from collective learning
+- Federated delta ingestion + lightweight aggregation (hybrid pattern)
 
 ---
 
@@ -184,8 +186,29 @@ class UsagePattern {
 - [ ] Compatibility calculated locally on both devices
 - [ ] Both AIs update their personalities immediately
 - [ ] Connection metrics stored locally
-- [ ] Process completes in under 5 seconds
+- [x] Process completes in under 5 seconds (hot-path regression test + runtime p50/p95 metrics)
 - [ ] Works in airplane mode
+
+---
+
+## ✅ Implementation status (as of 2026-01-01)
+
+**Core walk-by performance path (continuous scan):**
+- Continuous scan loop with explicit scan window (no overlapping scans):
+  - `packages/spots_network/lib/network/device_discovery.dart`
+- Android/iOS scanners collect results across the full scan window:
+  - `packages/spots_network/lib/network/device_discovery_android.dart`
+  - `packages/spots_network/lib/network/device_discovery_ios.dart`
+- Orchestrator walk-by hot path (RSSI-gated, cooldowned, single-session per device):
+  - `lib/core/ai2ai/connection_orchestrator.dart`
+
+**Runtime latency visibility (lightweight):**
+- In-memory latency ring buffers + throttled debug log summary (p50/p95):
+  - `lib/core/ai2ai/connection_orchestrator.dart`
+
+**Hardware-free regression test (CI-friendly):**
+- Simulated “walk-by” hot path test (no BLE required):
+  - `test/unit/ai2ai/walkby_hotpath_simulation_test.dart`
 
 ### **Phase 2 Success:**
 - [ ] Connection logs queue when offline

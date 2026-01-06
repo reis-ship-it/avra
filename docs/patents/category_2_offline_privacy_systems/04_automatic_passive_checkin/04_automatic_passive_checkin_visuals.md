@@ -5,9 +5,83 @@
 
 ---
 
-## Visual Diagrams and Flowcharts
 
-### 1. Dual-Trigger Verification Flow
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Dual-Trigger Verification Flow.
+- **FIG. 6**: Geofencing Detection.
+- **FIG. 7**: Bluetooth/AI2AI Proximity Verification.
+- **FIG. 8**: Dwell Time Calculation.
+- **FIG. 9**: Quality Score Calculation.
+- **FIG. 10**: Complete Check-In Flow.
+- **FIG. 11**: Dual-Trigger Verification Logic.
+- **FIG. 12**: Quality Score Examples.
+- **FIG. 13**: Offline Capability.
+- **FIG. 14**: Complete System Architecture.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Automatic Passive Check-In System with Dual-Trigger Verification implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Dual-Trigger Verification Flow.
+- Geofencing Detection.
+- Bluetooth/AI2AI Proximity Verification.
+- Dwell Time Calculation.
+- Quality Score Calculation.
+- Complete Check-In Flow.
+- Dual-Trigger Verification Logic.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Automatic Passive Check-In System with Dual-Trigger Verification implementation.
+
+1. Detecting user entry into geofence with 50m radius using background location monitoring.
+2. Verifying proximity via Bluetooth/AI2AI network (works offline).
+3. Requiring both geofencing AND Bluetooth/AI2AI confirmation before recording visit.
+4. Calculating dwell time from entry to exit.
+5. Recording visit only if dwell time ≥ 5 minutes.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Automatic Passive Check-In System with Dual-Trigger Verification implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- AtomicTimestamp: {t, source, uncertainty}
+- TemporalState: {|ψ_t⟩, parameters, normalized}
+- TimeSyncRecord: {offset, drift, lastCalibratedAt}
+- TemporalCompatibilityResult: {score in [0,1], computedAt}
+- ServiceResponse: {value, confidence, provenance}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Automatic Passive Check-In System with Dual-Trigger Verification implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+- Privacy/validation module (on-device)
+
+Example sequence:
+1. Client device requests or samples atomic time and receives an atomic timestamp.
+2. Client device constructs a temporal quantum state representation indexed to the timestamp.
+3. Client device performs time-indexed computation and normalizes the result.
+4. Client device stores the resulting temporal state/score with provenance metadata.
+
+### FIG. 5 — Dual-Trigger Verification Flow
+
 
 ```
 User Approaches Location
@@ -35,7 +109,8 @@ User Approaches Location
 
 ---
 
-### 2. Geofencing Detection
+### FIG. 6 — Geofencing Detection
+
 
 ```
 Location Monitoring (Background)
@@ -65,7 +140,8 @@ Location Monitoring (Background)
 
 ---
 
-### 3. Bluetooth/AI2AI Proximity Verification
+### FIG. 7 — Bluetooth/AI2AI Proximity Verification
+
 
 ```
 Bluetooth/AI2AI Network
@@ -95,7 +171,8 @@ Bluetooth/AI2AI Network
 
 ---
 
-### 4. Dwell Time Calculation
+### FIG. 8 — Dwell Time Calculation
+
 
 ```
 Entry Time: 10:00 AM
@@ -127,7 +204,8 @@ Entry Time: 10:00 AM
 
 ---
 
-### 5. Quality Score Calculation
+### FIG. 9 — Quality Score Calculation
+
 
 ```
 Quality Score Components:
@@ -162,7 +240,8 @@ quality = (dwell_time/30) + review_bonus + repeat_bonus + detail_bonus
 
 ---
 
-### 6. Complete Check-In Flow
+### FIG. 10 — Complete Check-In Flow
+
 
 ```
 START
@@ -216,7 +295,8 @@ START
 
 ---
 
-### 7. Dual-Trigger Verification Logic
+### FIG. 11 — Dual-Trigger Verification Logic
+
 
 ```
 Geofence Status          Bluetooth Status          Result
@@ -234,7 +314,8 @@ Geofence Status          Bluetooth Status          Result
 
 ---
 
-### 8. Quality Score Examples
+### FIG. 12 — Quality Score Examples
+
 
 ```
 Example 1: Quick Stop
@@ -267,7 +348,8 @@ Example 3: High-Quality Visit
 
 ---
 
-### 9. Offline Capability
+### FIG. 13 — Offline Capability
+
 
 ```
 Online System (Traditional)
@@ -290,7 +372,8 @@ Offline System (This Patent)
 
 ---
 
-### 10. Complete System Architecture
+### FIG. 14 — Complete System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -405,4 +488,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

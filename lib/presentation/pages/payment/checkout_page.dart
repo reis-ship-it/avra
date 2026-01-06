@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/controllers/checkout_controller.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
@@ -27,10 +26,14 @@ import 'package:get_it/get_it.dart';
 /// - Payment form integration
 class CheckoutPage extends StatefulWidget {
   final ExpertiseEvent event;
+  final CheckoutController? checkoutController;
+  final LegalDocumentService? legalService;
 
   const CheckoutPage({
     super.key,
     required this.event,
+    this.checkoutController,
+    this.legalService,
   });
 
   @override
@@ -38,10 +41,8 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  final _checkoutController = GetIt.instance<CheckoutController>();
-  final _legalService = LegalDocumentService(
-    eventService: GetIt.instance<ExpertiseEventService>(),
-  );
+  late final CheckoutController _checkoutController;
+  late final LegalDocumentService? _legalService;
   int _quantity = 1;
   bool _isProcessing = false;
   bool _isLoadingTax = false;
@@ -56,6 +57,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   void initState() {
     super.initState();
+    _checkoutController = widget.checkoutController ?? GetIt.instance<CheckoutController>();
+    _legalService = widget.legalService ??
+        (GetIt.instance.isRegistered<LegalDocumentService>()
+            ? GetIt.instance<LegalDocumentService>()
+            : null);
     _calculateSalesTax();
     // Delay waiver check until after first frame to ensure context is available
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -71,9 +77,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
     });
 
     try {
+      if (_legalService == null) {
+        setState(() {
+          _isCheckingWaiver = false;
+        });
+        return;
+      }
+
       final authState = context.read<AuthBloc>().state;
       if (authState is Authenticated) {
-        final accepted = await _legalService.hasAcceptedEventWaiver(
+        final accepted = await _legalService!.hasAcceptedEventWaiver(
           authState.user.id,
           widget.event.id,
         );

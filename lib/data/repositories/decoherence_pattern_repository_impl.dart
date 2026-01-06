@@ -1,25 +1,30 @@
 import 'package:spots/core/models/decoherence_pattern.dart';
 import 'package:spots/domain/repositories/decoherence_pattern_repository.dart';
 import 'package:spots/data/datasources/local/decoherence_pattern_local_datasource.dart';
+import 'package:spots/data/repositories/repository_patterns.dart';
 
 /// Decoherence Pattern Repository Implementation
 ///
-/// Implements offline-first storage for decoherence patterns.
+/// Implements local-only storage for decoherence patterns.
+/// No remote operations - patterns are stored locally only.
 ///
 /// **Implementation:**
 /// Part of Quantum Enhancement Implementation Plan - Phase 2.1
-class DecoherencePatternRepositoryImpl
+class DecoherencePatternRepositoryImpl extends SimplifiedRepositoryBase
     implements DecoherencePatternRepository {
   final DecoherencePatternLocalDataSource _localDataSource;
 
   DecoherencePatternRepositoryImpl({
     required DecoherencePatternLocalDataSource localDataSource,
-  }) : _localDataSource = localDataSource;
+  })  : _localDataSource = localDataSource,
+        super(connectivity: null); // Local-only, no connectivity needed
 
   @override
   Future<DecoherencePattern?> getByUserId(String userId) async {
     try {
-      return await _localDataSource.getByUserId(userId);
+      return await executeLocalOnly<DecoherencePattern?>(
+        localOperation: () => _localDataSource.getByUserId(userId),
+      );
     } catch (e) {
       // Return null on error (non-critical operation)
       return null;
@@ -28,13 +33,10 @@ class DecoherencePatternRepositoryImpl
 
   @override
   Future<void> save(DecoherencePattern pattern) async {
-    try {
-      await _localDataSource.save(pattern);
-    } catch (e) {
-      // Log but don't throw (non-critical operation)
-      // Error handling is done at service level
-      rethrow;
-    }
+    // Error handling is done at service level - rethrow to allow service to handle
+    return await executeLocalOnly(
+      localOperation: () => _localDataSource.save(pattern),
+    );
   }
 
   @override
@@ -42,10 +44,14 @@ class DecoherencePatternRepositoryImpl
     BehaviorPhase phase,
   ) async {
     try {
-      final allPatterns = await _localDataSource.getAll();
-      return allPatterns
-          .where((pattern) => pattern.behaviorPhase == phase)
-          .toList();
+      return await executeLocalOnly<List<DecoherencePattern>>(
+        localOperation: () async {
+          final allPatterns = await _localDataSource.getAll();
+          return allPatterns
+              .where((pattern) => pattern.behaviorPhase == phase)
+              .toList();
+        },
+      );
     } catch (e) {
       return [];
     }
@@ -57,11 +63,15 @@ class DecoherencePatternRepositoryImpl
     required DateTime end,
   }) async {
     try {
-      final allPatterns = await _localDataSource.getAll();
-      return allPatterns.where((pattern) {
-        final lastUpdated = pattern.lastUpdated.serverTime;
-        return lastUpdated.isAfter(start) && lastUpdated.isBefore(end);
-      }).toList();
+      return await executeLocalOnly<List<DecoherencePattern>>(
+        localOperation: () async {
+          final allPatterns = await _localDataSource.getAll();
+          return allPatterns.where((pattern) {
+            final lastUpdated = pattern.lastUpdated.serverTime;
+            return lastUpdated.isAfter(start) && lastUpdated.isBefore(end);
+          }).toList();
+        },
+      );
     } catch (e) {
       return [];
     }
@@ -69,12 +79,9 @@ class DecoherencePatternRepositoryImpl
 
   @override
   Future<void> delete(String userId) async {
-    try {
-      await _localDataSource.delete(userId);
-    } catch (e) {
-      // Log but don't throw (non-critical operation)
-      rethrow;
-    }
+    // Error handling is done at service level - rethrow to allow service to handle
+    return await executeLocalOnly(
+      localOperation: () => _localDataSource.delete(userId),
+    );
   }
 }
-

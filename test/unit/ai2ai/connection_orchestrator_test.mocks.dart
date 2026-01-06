@@ -10,9 +10,9 @@ import 'package:connectivity_plus_platform_interface/connectivity_plus_platform_
     as _i8;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:spots/core/ai/vibe_analysis_engine.dart' as _i3;
-import 'package:spots_ai/models/personality_profile.dart' as _i5;
 import 'package:spots/core/models/unified_user.dart' as _i6;
 import 'package:spots/core/models/user_vibe.dart' as _i2;
+import 'package:spots_ai/models/personality_profile.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values

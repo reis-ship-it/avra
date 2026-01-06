@@ -5,9 +5,82 @@
 
 ---
 
-## Visual Diagrams and Formulas
 
-### 1. Unified Calling Score Formula
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Unified Calling Score Formula.
+- **FIG. 6**: Life Betterment Factor Calculation.
+- **FIG. 7**: Outcome-Enhanced Convergence.
+- **FIG. 8**: Outcome Learning Flow.
+- **FIG. 9**: Complete Calling Score Flow.
+- **FIG. 10**: Outcome Mask Examples.
+- **FIG. 11**: Learning Rate Comparison.
+- **FIG. 12**: Complete System Architecture.
+- **FIG. 13**: Outcome Learning Rate Advantage.
+- **FIG. 14**: Complete Recommendation and Learning Flow.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Calling Score Calculation System with Outcome-Based Learning implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Unified Calling Score Formula.
+- Life Betterment Factor Calculation.
+- Outcome-Enhanced Convergence.
+- Outcome Learning Flow.
+- Complete Calling Score Flow.
+- Outcome Mask Examples.
+- Learning Rate Comparison.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Calling Score Calculation System with Outcome-Based Learning implementation.
+
+1. Calculating quantum compatibility via `C = |⟨ψ_user|ψ_opportunity⟩|²`.
+2. Computing life betterment factor from individual trajectory potential, positive influence, and fulfillment.
+3. Determining meaningful connection probability from compatibility and network effects.
+4. Applying context factor (location, time, journey, receptivity) and timing factor (optimal timing, user patterns).
+5. Combining factors with weighted formula: `score = (vibe × 0.40) + (life_betterment × 0.30) + (connection × 0.15) + (context × 0.10) + (timing × 0.05)`.
+6. Applying 70% threshold to "call" users to action.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Calling Score Calculation System with Outcome-Based Learning implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- AtomicTimestamp: {t, source, uncertainty}
+- TemporalState: {|ψ_t⟩, parameters, normalized}
+- TimeSyncRecord: {offset, drift, lastCalibratedAt}
+- TemporalCompatibilityResult: {score in [0,1], computedAt}
+- ServiceResponse: {value, confidence, provenance}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Calling Score Calculation System with Outcome-Based Learning implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device requests or samples atomic time and receives an atomic timestamp.
+2. Client device constructs a temporal quantum state representation indexed to the timestamp.
+3. Client device performs time-indexed computation and normalizes the result.
+4. Client device stores the resulting temporal state/score with provenance metadata.
+
+### FIG. 5 — Unified Calling Score Formula
+
 
 ```
 Calling Score Components:
@@ -51,7 +124,8 @@ Example:
 
 ---
 
-### 2. Life Betterment Factor Calculation
+### FIG. 6 — Life Betterment Factor Calculation
+
 
 ```
 Life Betterment Components:
@@ -82,7 +156,8 @@ Life Betterment Factor:
 
 ---
 
-### 3. Outcome-Enhanced Convergence
+### FIG. 7 — Outcome-Enhanced Convergence
+
 
 ```
 Current State: |ψ_current⟩
@@ -121,7 +196,8 @@ where:
 
 ---
 
-### 4. Outcome Learning Flow
+### FIG. 8 — Outcome Learning Flow
+
 
 ```
 Recommendation Made
@@ -151,7 +227,8 @@ Recommendation Made
 
 ---
 
-### 5. Complete Calling Score Flow
+### FIG. 9 — Complete Calling Score Flow
+
 
 ```
 START
@@ -203,7 +280,8 @@ START
 
 ---
 
-### 6. Outcome Mask Examples
+### FIG. 10 — Outcome Mask Examples
+
 
 ```
 Positive Outcome (O = 1):
@@ -233,7 +311,8 @@ No Action (O = 0):
 
 ---
 
-### 7. Learning Rate Comparison
+### FIG. 11 — Learning Rate Comparison
+
 
 ```
 Base Convergence Rate (α = 0.01):
@@ -257,7 +336,8 @@ Combined Effect:
 
 ---
 
-### 8. Complete System Architecture
+### FIG. 12 — Complete System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -315,7 +395,8 @@ Combined Effect:
 
 ---
 
-### 9. Outcome Learning Rate Advantage
+### FIG. 13 — Outcome Learning Rate Advantage
+
 
 ```
 Base Convergence (α = 0.01):
@@ -339,7 +420,8 @@ Combined:
 
 ---
 
-### 10. Complete Recommendation and Learning Flow
+### FIG. 14 — Complete Recommendation and Learning Flow
+
 
 ```
 START
@@ -438,4 +520,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

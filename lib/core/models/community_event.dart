@@ -4,22 +4,22 @@ import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/spot.dart';
 
 /// Community Event Model
-/// 
+///
 /// Extends existing ExpertiseEvent model to support non-expert community events.
-/// 
+///
 /// **Philosophy Alignment:**
 /// - Opens doors for anyone to host community events (no expertise gate)
 /// - Enables organic community building
 /// - Creates natural path from community events to expert events
 /// - Tracks event metrics for upgrade eligibility
-/// 
+///
 /// **Key Features:**
 /// - Extends ExpertiseEvent with community event support
 /// - No payment on app (price must be null or 0.0, isPaid must be false)
 /// - Public events only (isPublic must be true)
 /// - Event metrics tracking (attendance, engagement, growth, diversity)
 /// - Upgrade eligibility tracking (for upgrading to local expert events)
-/// 
+///
 /// **Upgrade Path:**
 /// - Community events can upgrade to local expert events when:
 ///   - Hosted frequently (recurring or multiple instances)
@@ -29,53 +29,53 @@ import 'package:spots/core/models/spot.dart';
 class CommunityEvent extends ExpertiseEvent {
   /// Community event flag (always true for CommunityEvent)
   final bool isCommunityEvent;
-  
+
   /// Host expertise level (null for non-experts)
   final ExpertiseLevel? hostExpertiseLevel;
-  
+
   /// Event metrics tracking
-  
+
   /// Engagement score (views, saves, shares) - 0.0 to 1.0
   final double engagementScore;
-  
+
   /// Growth metrics (attendance growth over time) - 0.0 to 1.0
   final double growthMetrics;
-  
+
   /// Diversity metrics (attendee diversity based on AI agents) - 0.0 to 1.0
   final double diversityMetrics;
-  
+
   /// Upgrade eligibility tracking
-  
+
   /// Whether event is eligible for upgrade to local expert event
   final bool isEligibleForUpgrade;
-  
+
   /// Upgrade eligibility score (0.0 to 1.0)
   final double upgradeEligibilityScore;
-  
+
   /// Which upgrade criteria are met
   final List<String> upgradeCriteria;
-  
+
   /// Number of times this event has been hosted
   final int timesHosted;
-  
+
   /// Number of repeat attendees
   final int repeatAttendeesCount;
-  
+
   /// View count
   final int viewCount;
-  
+
   /// Save count (users who saved this event)
   final int saveCount;
-  
+
   /// Share count
   final int shareCount;
-  
+
   /// Average rating (if ratings are collected)
   final double? averageRating;
-  
+
   /// Positive feedback count
   final int positiveFeedbackCount;
-  
+
   /// Community building indicators (e.g., community formed, club created)
   final List<String> communityBuildingIndicators;
 
@@ -95,6 +95,8 @@ class CommunityEvent extends ExpertiseEvent {
     super.location,
     super.latitude,
     super.longitude,
+    super.cityCode,
+    super.localityCode,
     super.price,
     super.isPaid,
     super.isPublic,
@@ -117,7 +119,7 @@ class CommunityEvent extends ExpertiseEvent {
     this.averageRating,
     this.positiveFeedbackCount = 0,
     this.communityBuildingIndicators = const [],
-  }) : assert(
+  })  : assert(
           price == null || price == 0.0,
           'Community events cannot have payment on app (price must be null or 0.0)',
         ),
@@ -159,7 +161,8 @@ class CommunityEvent extends ExpertiseEvent {
       throw Exception('Community events cannot be paid (isPaid must be false)');
     }
     if (!event.isPublic) {
-      throw Exception('Community events must be public (isPublic must be true)');
+      throw Exception(
+          'Community events must be public (isPublic must be true)');
     }
 
     return CommunityEvent(
@@ -178,6 +181,8 @@ class CommunityEvent extends ExpertiseEvent {
       location: event.location,
       latitude: event.latitude,
       longitude: event.longitude,
+      cityCode: event.cityCode,
+      localityCode: event.localityCode,
       price: event.price,
       isPaid: event.isPaid,
       isPublic: event.isPublic,
@@ -217,25 +222,25 @@ class CommunityEvent extends ExpertiseEvent {
   /// Get overall event quality score (0.0 to 1.0)
   double get overallQualityScore {
     double score = 0.0;
-    
+
     // Attendance growth (30%)
     score += growthMetrics * 0.3;
-    
+
     // Engagement (30%)
     score += engagementScore * 0.3;
-    
+
     // Diversity (20%)
     score += diversityMetrics * 0.2;
-    
+
     // Repeat attendees (10%)
     if (attendeeCount > 0) {
       final repeatRate = (repeatAttendeesCount / attendeeCount).clamp(0.0, 1.0);
       score += repeatRate * 0.1;
     }
-    
+
     // Times hosted (10%) - normalized to 0-1 (max at 10 times)
     score += (timesHosted / 10.0).clamp(0.0, 1.0) * 0.1;
-    
+
     return score.clamp(0.0, 1.0);
   }
 
@@ -270,7 +275,7 @@ class CommunityEvent extends ExpertiseEvent {
     UnifiedUser host,
   ) {
     final baseEvent = ExpertiseEvent.fromJson(json, host);
-    
+
     ExpertiseLevel? hostExpertiseLevel;
     if (json['hostExpertiseLevel'] != null) {
       try {
@@ -322,6 +327,8 @@ class CommunityEvent extends ExpertiseEvent {
     String? location,
     double? latitude,
     double? longitude,
+    String? cityCode,
+    String? localityCode,
     double? price,
     bool? isPaid,
     bool? isPublic,
@@ -361,6 +368,8 @@ class CommunityEvent extends ExpertiseEvent {
       location: location ?? this.location,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      cityCode: cityCode ?? this.cityCode,
+      localityCode: localityCode ?? this.localityCode,
       price: price ?? this.price,
       isPaid: isPaid ?? this.isPaid,
       isPublic: isPublic ?? this.isPublic,
@@ -410,4 +419,3 @@ class CommunityEvent extends ExpertiseEvent {
         communityBuildingIndicators,
       ];
 }
-

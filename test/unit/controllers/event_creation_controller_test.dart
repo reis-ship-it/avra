@@ -3,6 +3,7 @@ import 'package:spots/core/controllers/event_creation_controller.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/geo_hierarchy_service.dart';
 import 'package:spots/core/services/geographic_scope_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -22,10 +23,21 @@ void main() {
     setUp(() {
       mockEventService = MockExpertiseEventService();
       mockGeographicScopeService = MockGeographicScopeService();
-      
+
+      // Default: allow geographic validation to pass so tests can focus on the
+      // specific validation/error they are asserting.
+      when(mockGeographicScopeService.validateEventLocation(
+        userId: anyNamed('userId'),
+        user: anyNamed('user'),
+        category: anyNamed('category'),
+        eventLocality: anyNamed('eventLocality'),
+      )).thenReturn(true);
+
       controller = EventCreationController(
         eventService: mockEventService,
         geographicScopeService: mockGeographicScopeService,
+        // Avoid GetIt lookups in unit tests.
+        geoHierarchyService: GeoHierarchyService(),
       );
     });
 
@@ -89,7 +101,8 @@ void main() {
 
         // Assert
         expect(result.isValid, isFalse);
-        expect(result.fieldErrors['title'], equals('Title must be at least 3 characters'));
+        expect(result.fieldErrors['title'],
+            equals('Title must be at least 3 characters'));
       });
 
       test('should return invalid result for empty description', () {
@@ -108,7 +121,8 @@ void main() {
 
         // Assert
         expect(result.isValid, isFalse);
-        expect(result.fieldErrors['description'], equals('Description is required'));
+        expect(result.fieldErrors['description'],
+            equals('Description is required'));
       });
 
       test('should return invalid result for description too short', () {
@@ -127,7 +141,8 @@ void main() {
 
         // Assert
         expect(result.isValid, isFalse);
-        expect(result.fieldErrors['description'], equals('Description must be at least 10 characters'));
+        expect(result.fieldErrors['description'],
+            equals('Description must be at least 10 characters'));
       });
 
       test('should return invalid result for empty category', () {
@@ -166,10 +181,12 @@ void main() {
 
         // Assert
         expect(result.isValid, isFalse);
-        expect(result.fieldErrors['maxAttendees'], equals('Max attendees must be at least 1'));
+        expect(result.fieldErrors['maxAttendees'],
+            equals('Max attendees must be at least 1'));
       });
 
-      test('should return invalid result for maxAttendees greater than 1000', () {
+      test('should return invalid result for maxAttendees greater than 1000',
+          () {
         // Arrange
         final formData = EventFormData(
           title: 'Coffee Tour',
@@ -186,7 +203,8 @@ void main() {
 
         // Assert
         expect(result.isValid, isFalse);
-        expect(result.fieldErrors['maxAttendees'], equals('Max attendees cannot exceed 1000'));
+        expect(result.fieldErrors['maxAttendees'],
+            equals('Max attendees cannot exceed 1000'));
       });
 
       test('should return invalid result for negative price', () {
@@ -211,7 +229,8 @@ void main() {
     });
 
     group('validateExpertise', () {
-      test('should return valid result for user with Local level expertise', () {
+      test('should return valid result for user with Local level expertise',
+          () {
         // Arrange
         final user = UnifiedUser(
           id: 'user-1',
@@ -249,7 +268,9 @@ void main() {
         expect(result.error, isNull);
       });
 
-      test('should return invalid result for user without expertise in category', () {
+      test(
+          'should return invalid result for user without expertise in category',
+          () {
         // Arrange
         final user = UnifiedUser(
           id: 'user-1',
@@ -268,7 +289,9 @@ void main() {
         expect(result.error, contains('You must have expertise in Coffee'));
       });
 
-      test('should return invalid result for user with expertise below Local level', () {
+      test(
+          'should return invalid result for user with expertise below Local level',
+          () {
         // Note: This test assumes there are expertise levels below Local
         // If all levels are Local or above, this test may need adjustment
         // Arrange - user with no expertise in category (empty map)
@@ -291,7 +314,8 @@ void main() {
     });
 
     group('validateDates', () {
-      test('should return valid result for future dates with valid duration', () {
+      test('should return valid result for future dates with valid duration',
+          () {
         // Arrange
         final startTime = DateTime.now().add(const Duration(days: 1));
         final endTime = startTime.add(const Duration(hours: 2));
@@ -314,7 +338,8 @@ void main() {
 
         // Assert
         expect(result.isValid, isFalse);
-        expect(result.generalErrors, contains('Start time must be in the future'));
+        expect(
+            result.generalErrors, contains('Start time must be in the future'));
       });
 
       test('should return invalid result for end time before start time', () {
@@ -327,7 +352,8 @@ void main() {
 
         // Assert
         expect(result.isValid, isFalse);
-        expect(result.generalErrors, contains('End time must be after start time'));
+        expect(result.generalErrors,
+            contains('End time must be after start time'));
       });
 
       test('should return invalid result for duration less than 1 minute', () {
@@ -340,7 +366,8 @@ void main() {
 
         // Assert
         expect(result.isValid, isFalse);
-        expect(result.generalErrors, contains('Event duration must be at least 1 minute'));
+        expect(result.generalErrors,
+            contains('Event duration must be at least 1 minute'));
       });
 
       test('should return invalid result for duration greater than 7 days', () {
@@ -353,7 +380,8 @@ void main() {
 
         // Assert
         expect(result.isValid, isFalse);
-        expect(result.generalErrors, contains('Event duration cannot exceed 7 days'));
+        expect(result.generalErrors,
+            contains('Event duration cannot exceed 7 days'));
       });
     });
 
@@ -488,7 +516,8 @@ void main() {
         ));
       });
 
-      test('should return failure result for user without required expertise', () async {
+      test('should return failure result for user without required expertise',
+          () async {
         // Arrange
         final userWithoutExpertise = UnifiedUser(
           id: 'user-2',
@@ -536,7 +565,8 @@ void main() {
         ));
       });
 
-      test('should return failure result for invalid geographic scope', () async {
+      test('should return failure result for invalid geographic scope',
+          () async {
         // Arrange
         final formData = EventFormData(
           title: 'Coffee Tour',
@@ -554,7 +584,8 @@ void main() {
           user: anyNamed('user'),
           category: anyNamed('category'),
           eventLocality: anyNamed('eventLocality'),
-        )).thenThrow(Exception('Local experts can only host events in their own locality'));
+        )).thenThrow(Exception(
+            'Local experts can only host events in their own locality'));
 
         // Act
         final result = await controller.createEvent(
@@ -591,7 +622,8 @@ void main() {
           description: 'Explore local coffee shops',
           category: 'Coffee',
           eventType: ExpertiseEventType.tour,
-          startTime: DateTime.now().subtract(const Duration(days: 1)), // Past date
+          startTime:
+              DateTime.now().subtract(const Duration(days: 1)), // Past date
           endTime: DateTime.now().add(const Duration(hours: 2)),
           location: 'Greenpoint, Brooklyn',
           locality: 'Greenpoint',
@@ -625,7 +657,9 @@ void main() {
         ));
       });
 
-      test('should return failure result when event creation service throws error', () async {
+      test(
+          'should return failure result when event creation service throws error',
+          () async {
         // Arrange
         final formData = EventFormData(
           title: 'Coffee Tour',
@@ -675,4 +709,3 @@ void main() {
     });
   });
 }
-

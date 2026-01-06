@@ -1,5 +1,0 @@
-[0;34m[11:01:34][0m === Test Pass Rate Fix Script ===
-[0;34m[11:01:34][0m Checking current test status...
-[0;34m[11:01:34][0m Running tests in: test/unit
-[0;34m[11:03:55][0m Current Status:
-[0;32m[11:03:55] ✅[0m ✅ Target achieved! Pass rate is 100.00%

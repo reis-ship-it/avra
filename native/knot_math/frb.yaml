@@ -2,9 +2,8 @@
 # 
 # This file configures code generation for flutter_rust_bridge
 
-rust:
-  crate: "knot_math"
-  path: "native/knot_math"
+rust_input:
+  - "src/api.rs"
 
-dart:
-  path: "lib/core/services/knot/bridge"
+dart_output:
+  - "packages/spots_knot/lib/services/knot/bridge/knot_math_bridge.dart"

@@ -5,9 +5,86 @@
 
 ---
 
-## Visual Diagrams and Flowcharts
 
-### 1. Complete Offline Workflow
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Complete Offline Workflow.
+- **FIG. 6**: Device Discovery Flow.
+- **FIG. 7**: Peer-to-Peer Profile Exchange.
+- **FIG. 8**: Local Compatibility Calculation.
+- **FIG. 9**: Learning Insights Generation.
+- **FIG. 10**: Immediate AI Evolution.
+- **FIG. 11**: Complete System Architecture.
+- **FIG. 12**: Offline vs. Cloud Comparison.
+- **FIG. 13**: Learning Algorithm Flow.
+- **FIG. 14**: Complete Connection Flow.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Offline-First AI2AI Peer-to-Peer Learning System implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Complete Offline Workflow.
+- Device Discovery Flow.
+- Peer-to-Peer Profile Exchange.
+- Local Compatibility Calculation.
+- Learning Insights Generation.
+- Immediate AI Evolution.
+- Complete System Architecture.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Offline-First AI2AI Peer-to-Peer Learning System implementation.
+
+1. Discovering nearby devices using Bluetooth/NSD without internet connectivity.
+2. Exchanging personality profiles directly device-to-device via peer-to-peer protocol.
+3. Calculating compatibility locally on-device without cloud processing.
+4. Generating learning insights from compatibility analysis locally.
+5. Applying learning insights immediately to local AI personality without cloud sync.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Offline-First AI2AI Peer-to-Peer Learning System implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- RevenueEvent: {eventId, grossAmount, currency, occurredAt}
+- RecipientShare: {recipientId, shareType, shareValue}
+- DistributionLock: {lockedAt, constraints, version}
+- Allocation: {recipientId, amount, roundingAdjustment}
+- DistributionRecord: {allocations[ ], status, auditTrail}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Offline-First AI2AI Peer-to-Peer Learning System implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Payment processor / transfer rail
+- Ledger / audit store
+- Atomic time source (local or remote)
+- Privacy/validation module (on-device)
+
+Example sequence:
+1. Client device receives a revenue event and retrieves a locked split configuration.
+2. Client device validates the split configuration and computes recipient allocations.
+3. Client device requests transfers via a payment processor and/or schedules transfers for a settlement time.
+4. Ledger/audit store records allocation amounts, recipients, and execution status.
+5. Client device returns confirmation and prevents modification of the locked split record.
+
+### FIG. 5 — Complete Offline Workflow
+
 
 ```
 Device A                          Device B
@@ -43,7 +120,8 @@ Device A                          Device B
 
 ---
 
-### 2. Device Discovery Flow
+### FIG. 6 — Device Discovery Flow
+
 
 ```
 START
@@ -71,7 +149,8 @@ START
 
 ---
 
-### 3. Peer-to-Peer Profile Exchange
+### FIG. 7 — Peer-to-Peer Profile Exchange
+
 
 ```
 Device A
@@ -106,7 +185,8 @@ Device B
 
 ---
 
-### 4. Local Compatibility Calculation
+### FIG. 8 — Local Compatibility Calculation
+
 
 ```
 Local Profile                    Remote Profile
@@ -128,7 +208,8 @@ Local Profile                    Remote Profile
 
 ---
 
-### 5. Learning Insights Generation
+### FIG. 9 — Learning Insights Generation
+
 
 ```
 Compatibility Analysis
@@ -155,7 +236,8 @@ Compatibility Analysis
 
 ---
 
-### 6. Immediate AI Evolution
+### FIG. 10 — Immediate AI Evolution
+
 
 ```
 Learning Insights
@@ -175,7 +257,8 @@ Learning Insights
 
 ---
 
-### 7. Complete System Architecture
+### FIG. 11 — Complete System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -231,7 +314,8 @@ Learning Insights
 
 ---
 
-### 8. Offline vs. Cloud Comparison
+### FIG. 12 — Offline vs. Cloud Comparison
+
 
 ```
 OFFLINE SYSTEM (This Patent)
@@ -253,7 +337,8 @@ CLOUD SYSTEM (Traditional)
 
 ---
 
-### 9. Learning Algorithm Flow
+### FIG. 13 — Learning Algorithm Flow
+
 
 ```
 For Each Dimension:
@@ -283,7 +368,8 @@ For Each Dimension:
 
 ---
 
-### 10. Complete Connection Flow
+### FIG. 14 — Complete Connection Flow
+
 
 ```
 START
@@ -374,4 +460,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

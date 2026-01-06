@@ -9,6 +9,8 @@
 /// Date: December 2025
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spots/core/theme/app_theme.dart';
@@ -42,6 +44,7 @@ class _FriendChatViewState extends State<FriendChatView> {
   final _scrollController = ScrollController();
   final _chatService = GetIt.instance<FriendChatService>();
   final _nameResolver = GetIt.instance<UserNameResolutionService>();
+  StreamSubscription? _incomingSubscription;
   
   List<Map<String, dynamic>> _messages = [];
   List<Map<String, dynamic>> _filteredMessages = [];
@@ -57,7 +60,6 @@ class _FriendChatViewState extends State<FriendChatView> {
   void initState() {
     super.initState();
     _loadUser();
-    _loadConversationHistory();
   }
 
   Future<void> _loadUser() async {
@@ -77,7 +79,47 @@ class _FriendChatViewState extends State<FriendChatView> {
           _friendPhotoUrl = photoUrl;
         });
       }
+
+      // Load history + start listening for incoming DMs once we have a user ID.
+      await _loadConversationHistory();
+      _startIncomingSubscription();
     }
+  }
+
+  void _startIncomingSubscription() {
+    final userId = _userId;
+    if (userId == null) return;
+
+    _incomingSubscription?.cancel();
+    _incomingSubscription = _chatService
+        .subscribeToIncomingMessages(userId: userId, friendId: widget.friendId)
+        .listen((storedMessage) async {
+      try {
+        final decrypted = await _chatService.getDecryptedMessage(
+          storedMessage,
+          userId,
+          widget.friendId,
+        );
+
+        if (!mounted) return;
+        setState(() {
+          // De-dupe by message id
+          if (_messages.any((m) => m['id'] == storedMessage.messageId)) {
+            return;
+          }
+          _messages.add({
+            'id': storedMessage.messageId,
+            'content': decrypted,
+            'isFromUser': false,
+            'timestamp': storedMessage.timestamp,
+          });
+          _filteredMessages = _applySearchFilter(_messages);
+        });
+        _scrollToBottom();
+      } catch (_) {
+        // Best-effort; failures are logged in service layer.
+      }
+    });
   }
 
   Future<void> _loadConversationHistory() async {
@@ -173,12 +215,11 @@ class _FriendChatViewState extends State<FriendChatView> {
     });
 
     try {
-      // Send message
-      await _chatService.sendMessage(
-        _userId!,
-        widget.friendId,
-        messageText,
-      );
+      // Store locally + send over realtime (Signal Protocol transport).
+      //
+      // If Signal is unavailable or recipient hasn't published a prekey bundle yet,
+      // this will throw and the UI will show an error, while still keeping the local message.
+      await _chatService.sendMessageOverNetwork(_userId!, widget.friendId, messageText);
 
       if (mounted) {
         setState(() {
@@ -235,6 +276,7 @@ class _FriendChatViewState extends State<FriendChatView> {
 
   @override
   void dispose() {
+    _incomingSubscription?.cancel();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();

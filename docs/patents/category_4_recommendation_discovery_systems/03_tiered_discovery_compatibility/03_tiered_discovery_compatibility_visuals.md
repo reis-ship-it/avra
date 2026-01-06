@@ -4,7 +4,82 @@
 
 ---
 
-## 1. Three-Tier Architecture
+
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Three-Tier Architecture.
+- **FIG. 6**: Confidence Range Distribution.
+- **FIG. 7**: Compatibility Bridge Algorithm.
+- **FIG. 8**: Confidence Scoring Factors.
+- **FIG. 9**: Adaptive Prioritization Flow.
+- **FIG. 10**: Tier 1 Source Breakdown.
+- **FIG. 11**: Tier 2 Bridge Example.
+- **FIG. 12**: User Feedback Loop.
+- **FIG. 13**: Complete Discovery Pipeline.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Tiered Discovery System with Compatibility Bridge Recommendations implementation.
+
+In the illustrated embodiment, a computing device receives input signals and stored profile/state data; constructs an internal representation; and applies representation construction and scoring/decision logic to produce an output score/decision and optional stored record.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Three-Tier Architecture.
+- Confidence Range Distribution.
+- Compatibility Bridge Algorithm.
+- Confidence Scoring Factors.
+- Adaptive Prioritization Flow.
+- Tier 1 Source Breakdown.
+- Tier 2 Bridge Example.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Tiered Discovery System with Compatibility Bridge Recommendations implementation.
+
+1. Generating Tier 1 opportunities with confidence ≥0.7 from direct user activity, AI2AI-learned preferences, cloud network intelligence, and contextual preferences.
+2. Generating Tier 2 opportunities with confidence 0.4-0.69 using compatibility matrix bridges that combine shared and unique preferences.
+3. Generating Tier 3 opportunities with confidence <0.4 for experimental exploration.
+4. Calculating bridge compatibility as weighted combination: (shared compatibility × 60%) + (bridge score × 40%).
+5. Applying adaptive prioritization based on user interaction patterns.
+6. Calculating confidence scores using weighted factors: direct activity (40%), AI2AI learning (25%), cloud network (20%), contextual (15%).
+7. Recording user interactions and adjusting tier presentation frequency.
+8. Returning multi-tier discovery results with adaptive presentation weights.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Tiered Discovery System with Compatibility Bridge Recommendations implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- InputSignals: {signals[ ], observedAt, source}
+- RepresentationState: {features, parameters, version}
+- ConstraintPolicy: {thresholds, privacy/timing rules}
+- ComputationResult: {score/decision, confidence (optional)}
+- LocalStoreRecord: {id, createdAt, payload}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Tiered Discovery System with Compatibility Bridge Recommendations implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device gathers inputs and constructs a representation/state.
+2. Client device applies core computation and constraints.
+3. Client device emits an output and stores a record as needed.
+
+### FIG. 5 — Three-Tier Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -46,7 +121,8 @@
 
 ---
 
-## 2. Confidence Range Distribution
+### FIG. 6 — Confidence Range Distribution
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -74,7 +150,8 @@
 
 ---
 
-## 3. Compatibility Bridge Algorithm
+### FIG. 7 — Compatibility Bridge Algorithm
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -119,7 +196,8 @@
 
 ---
 
-## 4. Confidence Scoring Factors
+### FIG. 8 — Confidence Scoring Factors
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -157,7 +235,8 @@
 
 ---
 
-## 5. Adaptive Prioritization Flow
+### FIG. 9 — Adaptive Prioritization Flow
+
 
 ```
                     START
@@ -208,7 +287,8 @@
 
 ---
 
-## 6. Tier 1 Source Breakdown
+### FIG. 10 — Tier 1 Source Breakdown
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -246,7 +326,8 @@
 
 ---
 
-## 7. Tier 2 Bridge Example
+### FIG. 11 — Tier 2 Bridge Example
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -288,7 +369,8 @@
 
 ---
 
-## 8. User Feedback Loop
+### FIG. 12 — User Feedback Loop
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -320,7 +402,8 @@
 
 ---
 
-## 9. Complete Discovery Pipeline
+### FIG. 13 — Complete Discovery Pipeline
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -399,4 +482,3 @@ This visual documentation provides comprehensive diagrams and visualizations for
 9. **Complete Discovery Pipeline** - End-to-end process
 
 These visuals support the deep-dive document and provide clear, patent-ready documentation of the system's technical implementation.
-

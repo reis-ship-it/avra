@@ -12,9 +12,9 @@ void main() {
   group('LearningAnalyticsPage', () {
     late GetIt getIt;
 
-    setUp(() {
+    setUp(() async {
       getIt = GetIt.instance;
-      getIt.reset();
+      await getIt.reset();
 
       // Register required services
       getIt.registerLazySingleton<AgentIdService>(() => AgentIdService());
@@ -26,8 +26,8 @@ void main() {
       // SupabaseService is optional - the page handles null gracefully
     });
 
-    tearDown(() {
-      getIt.reset();
+    tearDown(() async {
+      await getIt.reset();
     });
 
     testWidgets('renders page correctly', (WidgetTester tester) async {

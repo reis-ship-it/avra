@@ -23,13 +23,15 @@ Currently, BLE scanning and advertising only work when the app is in the foregro
 - ✅ BLE advertising when app is open
 - ✅ Service UUID filtering (`spotsServiceUuid`)
 - ✅ Permissions configured (Android & iOS)
+- ✅ Android foreground service runtime for background BLE
+- ✅ iOS background modes configured (`bluetooth-central`, `bluetooth-peripheral`)
+- ✅ Continuous scan loop + scan windows (walk-by capture)
+- ✅ Walk-by hot-path session workflow (single lease per device) + p50/p95 latency metrics
 
 ### **What's Missing:**
-- ❌ Background BLE scanning
-- ❌ Background BLE advertising
-- ❌ Foreground service implementation (Android)
-- ❌ Background modes configuration (iOS)
-- ❌ Adaptive scanning based on battery level
+- ❌ Real-device validation + tuning for battery/OS throttling (scanWindow/scanInterval strategy)
+- ✅ Adaptive scanning based on battery level (battery_plus; tiered scan policy)
+- ✅ “Burst” scanning only when active (screen-on proxy or nearby-device activity) to reduce idle drain
 - ❌ Adaptive scanning based on usage patterns
 - ❌ Intermittent scanning patterns
 - ❌ Battery-aware advertising intervals
@@ -61,7 +63,7 @@ Currently, BLE scanning and advertising only work when the app is in the foregro
 
 #### **1.1 Create Foreground Service**
 
-**File:** `android/app/src/main/java/com/spots/app/services/BLEForegroundService.java`
+**File:** `android/app/src/main/kotlin/com/spots/app/services/BLEForegroundService.kt`
 
 **Features:**
 - Long-running service for BLE operations

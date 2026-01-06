@@ -483,12 +483,28 @@ impl SseDecode for crate::api::KnotResult {
         let mut var_alexanderPolynomial = <Vec<f64>>::sse_decode(deserializer);
         let mut var_crossingNumber = <usize>::sse_decode(deserializer);
         let mut var_writhe = <i32>::sse_decode(deserializer);
+        let mut var_signature = <i32>::sse_decode(deserializer);
+        let mut var_unknottingNumber = <Option<usize>>::sse_decode(deserializer);
+        let mut var_bridgeNumber = <usize>::sse_decode(deserializer);
+        let mut var_braidIndex = <usize>::sse_decode(deserializer);
+        let mut var_determinant = <i32>::sse_decode(deserializer);
+        let mut var_arfInvariant = <Option<i32>>::sse_decode(deserializer);
+        let mut var_hyperbolicVolume = <Option<f64>>::sse_decode(deserializer);
+        let mut var_homflyPolynomial = <Option<Vec<f64>>>::sse_decode(deserializer);
         return crate::api::KnotResult {
             knot_data: var_knotData,
             jones_polynomial: var_jonesPolynomial,
             alexander_polynomial: var_alexanderPolynomial,
             crossing_number: var_crossingNumber,
             writhe: var_writhe,
+            signature: var_signature,
+            unknotting_number: var_unknottingNumber,
+            bridge_number: var_bridgeNumber,
+            braid_index: var_braidIndex,
+            determinant: var_determinant,
+            arf_invariant: var_arfInvariant,
+            hyperbolic_volume: var_hyperbolicVolume,
+            homfly_polynomial: var_homflyPolynomial,
         };
     }
 }
@@ -514,6 +530,50 @@ impl SseDecode for Vec<u8> {
             ans_.push(<u8>::sse_decode(deserializer));
         }
         return ans_;
+    }
+}
+
+impl SseDecode for Option<f64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<f64>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<i32> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<i32>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<usize> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<usize>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<Vec<f64>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<Vec<f64>>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
     }
 }
 
@@ -598,6 +658,14 @@ impl flutter_rust_bridge::IntoDart for crate::api::KnotResult {
             self.alexander_polynomial.into_into_dart().into_dart(),
             self.crossing_number.into_into_dart().into_dart(),
             self.writhe.into_into_dart().into_dart(),
+            self.signature.into_into_dart().into_dart(),
+            self.unknotting_number.into_into_dart().into_dart(),
+            self.bridge_number.into_into_dart().into_dart(),
+            self.braid_index.into_into_dart().into_dart(),
+            self.determinant.into_into_dart().into_dart(),
+            self.arf_invariant.into_into_dart().into_dart(),
+            self.hyperbolic_volume.into_into_dart().into_dart(),
+            self.homfly_polynomial.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -638,6 +706,14 @@ impl SseEncode for crate::api::KnotResult {
         <Vec<f64>>::sse_encode(self.alexander_polynomial, serializer);
         <usize>::sse_encode(self.crossing_number, serializer);
         <i32>::sse_encode(self.writhe, serializer);
+        <i32>::sse_encode(self.signature, serializer);
+        <Option<usize>>::sse_encode(self.unknotting_number, serializer);
+        <usize>::sse_encode(self.bridge_number, serializer);
+        <usize>::sse_encode(self.braid_index, serializer);
+        <i32>::sse_encode(self.determinant, serializer);
+        <Option<i32>>::sse_encode(self.arf_invariant, serializer);
+        <Option<f64>>::sse_encode(self.hyperbolic_volume, serializer);
+        <Option<Vec<f64>>>::sse_encode(self.homfly_polynomial, serializer);
     }
 }
 
@@ -657,6 +733,46 @@ impl SseEncode for Vec<u8> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <u8>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<f64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <f64>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<i32> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <i32>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<usize> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <usize>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<Vec<f64>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <Vec<f64>>::sse_encode(value, serializer);
         }
     }
 }

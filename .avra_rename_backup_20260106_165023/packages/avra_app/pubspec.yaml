@@ -1,0 +1,43 @@
+name: spots_app
+description: Main SPOTS Flutter application
+publish_to: 'none'
+version: 1.2.0+5
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Local packages
+  spots_core:
+    path: ../spots_core
+  spots_data:
+    path: ../spots_data
+  spots_network:
+    path: ../spots_network
+  spots_ai:
+    path: ../spots_ai
+  spots_ml:
+    path: ../spots_ml
+  
+  # UI dependencies
+  flutter_bloc: ^9.1.1
+  cupertino_icons: ^1.0.2
+  google_fonts: ^6.1.0
+  flutter_map: ^8.2.2
+  get_it: ^9.2.0
+  
+  # Platform integration
+  connectivity_plus: ^7.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  integration_test:
+    sdk: flutter
+  
+flutter:
+  uses-material-design: true

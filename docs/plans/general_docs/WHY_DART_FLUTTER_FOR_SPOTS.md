@@ -5,7 +5,7 @@
 **Last Updated:** November 21, 2025
 
 **Related Documents:**
-- `VIBE_CODING/ARCHITECTURE/vision_overview.md` - Core AI2AI architecture
+- `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/vision_overview.md` - Core AI2AI architecture
 - `OUR_GUTS.md` - Core philosophy and requirements
 - `docs/AI2AI_OPERATIONS_AND_VIEWING_GUIDE.md` - System operations
 
@@ -368,10 +368,10 @@ Given that SPOTS' core value proposition is the **AI2AI personality learning net
 ## 📚 **References**
 
 - **Core Philosophy:** `OUR_GUTS.md`
-- **AI2AI Architecture:** `VIBE_CODING/ARCHITECTURE/vision_overview.md`
+- **AI2AI Architecture:** `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/vision_overview.md`
 - **Network Operations:** `docs/AI2AI_OPERATIONS_AND_VIEWING_GUIDE.md`
-- **Implementation Status:** `VIBE_CODING/DEPLOYMENT/architecture_completion_report.md`
-- **System Architecture:** `VIBE_CODING/ARCHITECTURE/architecture_layers.md`
+- **Implementation Status:** `docs/_archive/vibe_coding/VIBE_CODING/DEPLOYMENT/architecture_completion_report.md`
+- **System Architecture:** `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/architecture_layers.md`
 
 ---
 

@@ -99,6 +99,8 @@ class MockExpertiseEventService extends _i1.Mock
     String? location,
     double? latitude,
     double? longitude,
+    String? cityCode,
+    String? localityCode,
     int? maxAttendees = 20,
     double? price,
     bool? isPublic = true,
@@ -119,6 +121,8 @@ class MockExpertiseEventService extends _i1.Mock
             #location: location,
             #latitude: latitude,
             #longitude: longitude,
+            #cityCode: cityCode,
+            #localityCode: localityCode,
             #maxAttendees: maxAttendees,
             #price: price,
             #isPublic: isPublic,
@@ -141,6 +145,8 @@ class MockExpertiseEventService extends _i1.Mock
               #location: location,
               #latitude: latitude,
               #longitude: longitude,
+              #cityCode: cityCode,
+              #localityCode: localityCode,
               #maxAttendees: maxAttendees,
               #price: price,
               #isPublic: isPublic,
@@ -561,6 +567,40 @@ class MockAgentIdService extends _i1.Mock implements _i12.AgentIdService {
           ),
         )),
       ) as _i7.Future<String>);
+
+  @override
+  _i7.Future<void> rotateMappingEncryptionKey(
+    String? userId, {
+    _i12.EncryptedMapping? existingEncryptedMapping,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #rotateMappingEncryptionKey,
+          [userId],
+          {#existingEncryptedMapping: existingEncryptedMapping},
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  void clearCache() => super.noSuchMethod(
+        Invocation.method(
+          #clearCache,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i7.Future<void> flushAuditLogs() => (super.noSuchMethod(
+        Invocation.method(
+          #flushAuditLogs,
+          [],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
   _i7.Future<String> getBusinessAgentId(String? businessId) =>

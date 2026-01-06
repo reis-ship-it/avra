@@ -241,6 +241,25 @@ Successfully implemented UI components for the Clubs/Communities system. Created
 
 ---
 
+## 🧩 **Addendum (2026-01-01): Community Discovery + True Compatibility**
+
+**What shipped:**
+- ✅ Added `CommunitiesDiscoverPage` (`/communities/discover`) to surface ranked community suggestions
+- ✅ Added a “Discover” CTA in `EventsBrowsePage` when the user is on the Clubs/Communities scope
+- ✅ Updated `CommunityService` so discovery has candidates (persistence-backed community list via `StorageService`, key `communities:all_v1`)
+- ✅ Added a privacy-safe community 12D centroid to `Community` (`vibeCentroidDimensions` + contributor count)
+- ✅ Community quantum term now prefers the stored centroid (so scores aren’t neutral when member profiles can’t be fetched)
+- ✅ Added short-TTL caching for true compatibility ranking
+
+**Files:**
+- `lib/presentation/pages/communities/communities_discover_page.dart`
+- `lib/presentation/routes/app_router.dart` (route: `/communities/discover`)
+- `lib/presentation/pages/events/events_browse_page.dart` (Discover CTA in Clubs/Communities scope)
+- `lib/core/services/community_service.dart` (persistence + centroid + caching)
+- `lib/core/models/community.dart` (centroid fields)
+
+---
+
 ## 📈 **Metrics**
 
 - **Files Created:** 3 new files

@@ -1,68 +1,88 @@
 import 'dart:developer' as developer;
-import 'package:get_it/get_it.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/edge_function_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
 
-/// Service for aggregating onboarding data via edge function
+import 'package:get_it/get_it.dart';
+import 'package:spots/core/models/onboarding_data.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/edge_function_service.dart';
+import 'package:spots/core/services/onboarding_dimension_mapper.dart';
+import 'package:spots/injection_container.dart' as di;
+
+/// Service for syncing aggregated onboarding data to an edge function.
+///
+/// **Source of truth:** on-device mapping.
+/// This service sends the *device-computed* onboarding-dimension mapping to the
+/// edge function for storage/analytics, so cloud state mirrors local state.
 /// Phase 11 Section 4: Edge Mesh Functions
 class OnboardingAggregationService {
   static const String _logName = 'OnboardingAggregationService';
-  
+
   final EdgeFunctionService _edgeFunctionService;
   final AgentIdService _agentIdService;
-  
+  final OnboardingDimensionMapper _dimensionMapper;
+
   OnboardingAggregationService({
     EdgeFunctionService? edgeFunctionService,
     AgentIdService? agentIdService,
-  }) : _edgeFunctionService = edgeFunctionService ?? GetIt.instance<EdgeFunctionService>(),
-       _agentIdService = agentIdService ?? di.sl<AgentIdService>();
-  
-  /// Aggregate onboarding data via edge function
-  /// 
+    OnboardingDimensionMapper? dimensionMapper,
+  })  : _edgeFunctionService =
+            edgeFunctionService ?? GetIt.instance<EdgeFunctionService>(),
+        _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
+        _dimensionMapper = dimensionMapper ?? OnboardingDimensionMapper();
+
+  /// Sync onboarding aggregation via edge function.
+  ///
   /// [userId] - Authenticated user ID
   /// [onboardingData] - OnboardingData to aggregate
-  /// 
-  /// Returns the mapped personality dimensions
+  ///
+  /// Returns the stored personality dimensions (device-mapped, or server fallback
+  /// for older clients).
   Future<Map<String, double>> aggregateOnboardingData({
     required String userId,
     required OnboardingData onboardingData,
   }) async {
     try {
-      developer.log('Aggregating onboarding data via edge function', name: _logName);
-      
+      developer.log('Aggregating onboarding data via edge function',
+          name: _logName);
+
       // Convert userId → agentId
       final agentId = await _agentIdService.getUserAgentId(userId);
-      
+
+      // Device-side mapping is authoritative.
+      final localDimensions = _dimensionMapper.mapOnboardingToDimensions(
+        onboardingData.toAgentInitializationMap(),
+      );
+
       // Call edge function
       final response = await _edgeFunctionService.invokeFunction(
         functionName: 'onboarding-aggregation',
         body: {
           'agentId': agentId,
           'onboardingData': onboardingData.toJson(),
+          'dimensions': localDimensions,
+          'mappingSource': 'device',
         },
       );
-      
+
       if (response['success'] != true) {
         throw Exception('Onboarding aggregation failed');
       }
-      
+
       // Extract dimensions (convert JSON numbers to doubles)
-      final dimensionsJson = response['dimensions'] as Map<String, dynamic>? ?? {};
+      final dimensionsJson =
+          response['dimensions'] as Map<String, dynamic>? ?? {};
       final dimensions = <String, double>{};
-      
+
       dimensionsJson.forEach((key, value) {
         if (value is num) {
           dimensions[key] = value.toDouble();
         }
       });
-      
+
       developer.log(
         'Onboarding aggregation complete: ${dimensions.length} dimensions',
         name: _logName,
       );
-      
+
       return dimensions;
     } catch (e, stackTrace) {
       developer.log(

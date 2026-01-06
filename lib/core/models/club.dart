@@ -73,6 +73,8 @@ class Club extends Community {
     super.activityLevel,
     required super.originalLocality,
     super.currentLocalities,
+    super.vibeCentroidDimensions,
+    super.vibeCentroidContributors,
     required super.updatedAt,
     this.isClub = true,
     this.leaders = const [],
@@ -352,6 +354,9 @@ class Club extends Community {
     ActivityLevel? activityLevel,
     String? originalLocality,
     List<String>? currentLocalities,
+    Map<String, double>? vibeCentroidDimensions,
+    bool clearVibeCentroidDimensions = false,
+    int? vibeCentroidContributors,
     DateTime? updatedAt,
     bool? isClub,
     List<String>? leaders,
@@ -389,6 +394,11 @@ class Club extends Community {
       activityLevel: activityLevel ?? this.activityLevel,
       originalLocality: originalLocality ?? this.originalLocality,
       currentLocalities: currentLocalities ?? this.currentLocalities,
+      vibeCentroidDimensions: clearVibeCentroidDimensions
+          ? null
+          : (vibeCentroidDimensions ?? this.vibeCentroidDimensions),
+      vibeCentroidContributors:
+          vibeCentroidContributors ?? this.vibeCentroidContributors,
       updatedAt: updatedAt ?? this.updatedAt,
       leaders: leaders ?? this.leaders,
       adminTeam: adminTeam ?? this.adminTeam,

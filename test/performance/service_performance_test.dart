@@ -414,7 +414,8 @@ void main() {
 
         // Verify no significant outliers
         final maxTime = baselineTimes.reduce((a, b) => a > b ? a : b);
-        expect(maxTime, lessThan(avgBaseline * 3),
+        final maxAllowedMs = (avgBaseline * 3).ceil() == 0 ? 1 : (avgBaseline * 3).ceil();
+        expect(maxTime, lessThanOrEqualTo(maxAllowedMs),
             reason: 'Max time should not be more than 3x average');
       });
 

@@ -13,13 +13,16 @@ library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/onboarding_place_list_generator.dart';
 import 'package:spots/core/models/spot.dart';
+import 'package:spots/data/datasources/remote/google_places_datasource.dart';
 
 void main() {
   group('OnboardingPlaceListGenerator Tests', () {
     late OnboardingPlaceListGenerator generator;
 
     setUp(() {
-      generator = OnboardingPlaceListGenerator();
+      generator = OnboardingPlaceListGenerator(
+        placesDataSource: _FakeGooglePlacesDataSource(),
+      );
     });
 
     group('Generate Place Lists', () {
@@ -311,5 +314,34 @@ void main() {
       });
     });
   });
+}
+
+/// Fake Google Places data source for unit tests.
+///
+/// We avoid network calls and validate generator behavior/flow only.
+class _FakeGooglePlacesDataSource implements GooglePlacesDataSource {
+  @override
+  Future<Spot?> getPlaceDetails(String placeId) async => null;
+
+  @override
+  Future<List<Spot>> searchNearbyPlaces({
+    required double latitude,
+    required double longitude,
+    int radius = 5000,
+    String? type,
+  }) async {
+    return <Spot>[];
+  }
+
+  @override
+  Future<List<Spot>> searchPlaces({
+    required String query,
+    double? latitude,
+    double? longitude,
+    int radius = 5000,
+    String? type,
+  }) async {
+    return <Spot>[];
+  }
 }
 

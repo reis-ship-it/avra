@@ -67,12 +67,15 @@ void main() {
           find.byKey(const Key('password_field')), 'password123');
       await tester.tap(find.text('Sign In'));
       await tester.pump();
-      expect(find.text('Please enter your email'), findsOneWidget);
+      expect(find.text('Please enter your email or username'), findsOneWidget);
       await tester.enterText(
-          find.byKey(const Key('email_field')), 'invalid-email');
+          find.byKey(const Key('email_field')), 'ab');
       await tester.tap(find.text('Sign In'));
       await tester.pump();
-      expect(find.text('Please enter a valid email'), findsOneWidget);
+      expect(
+        find.text('Username must be 3+ chars (letters/numbers/._-)'),
+        findsOneWidget,
+      );
       await tester.enterText(
           find.byKey(const Key('email_field')), 'test@example.com');
       await tester.enterText(find.byKey(const Key('password_field')), '');
@@ -101,18 +104,13 @@ void main() {
       await tester.enterText(
           find.byKey(const Key('password_field')), 'password123');
       await tester.tap(find.text('Sign In'));
-      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
       expect(
         fakeAuthBloc.addedEvents.whereType<SignInRequested>().length,
         equals(1),
       );
-      fakeAuthBloc.setState(AuthLoading());
-      final widget2 = _createTestableWidgetWithRealBloc(
-        child: const LoginPage(),
-        authBloc: fakeAuthBloc,
-      );
-      await tester.pumpWidget(widget2);
-      await tester.pump();
+      // Loading UI should render once submit begins (either via bloc state or local submit gating).
+      await tester.pump(const Duration(milliseconds: 50));
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       final button =
           tester.widget<ElevatedButton>(find.byType(ElevatedButton).first);
@@ -124,12 +122,16 @@ void main() {
         (WidgetTester tester) async {
       // Test business logic: Error state handling
       const errorMessage = 'Invalid credentials';
-      fakeAuthBloc.setState(AuthError(errorMessage));
+      fakeAuthBloc.setState(AuthInitial());
       final widget = _createTestableWidgetWithRealBloc(
         child: const LoginPage(),
         authBloc: fakeAuthBloc,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      // SnackBar is shown via BlocListener on state changes, not initial state.
+      fakeAuthBloc.setState(AuthError(errorMessage));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       expect(find.text(errorMessage), findsOneWidget);
     });
 
@@ -196,7 +198,7 @@ void main() {
         authBloc: fakeAuthBloc,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      expect(find.text('Email'), findsOneWidget);
+      expect(find.text('Email or username'), findsOneWidget);
       expect(find.text('Password'), findsOneWidget);
       expect(find.text('Sign In'), findsOneWidget);
       expect(find.text('Sign Up'), findsOneWidget);

@@ -3,10 +3,12 @@ import 'package:spots/core/services/quantum_satisfaction_enhancer.dart';
 import 'package:spots/core/ai/quantum/quantum_satisfaction_feature_extractor.dart';
 import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
 import 'package:spots/core/ai/quantum/location_quantum_state.dart';
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:spots/core/models/quantum_satisfaction_features.dart';
 import 'package:spots/core/models/unified_models.dart' as unified_models;
 import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:spots/core/services/feature_flag_service.dart';
+import 'package:spots/core/services/storage_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
@@ -14,6 +16,10 @@ import 'package:mockito/annotations.dart';
 import 'quantum_satisfaction_enhancer_test.mocks.dart';
 
 void main() {
+  // Test-only feature flags: always enable quantum satisfaction enhancement so we
+  // exercise the quantum path (otherwise the enhancer returns baseSatisfaction).
+  final alwaysOnFeatureFlags = _AlwaysOnFeatureFlagService();
+
   group('QuantumSatisfactionEnhancer', () {
     late MockQuantumSatisfactionFeatureExtractor mockFeatureExtractor;
     late QuantumSatisfactionEnhancer enhancer;
@@ -22,6 +28,7 @@ void main() {
       mockFeatureExtractor = MockQuantumSatisfactionFeatureExtractor();
       enhancer = QuantumSatisfactionEnhancer(
         featureExtractor: mockFeatureExtractor,
+        featureFlags: alwaysOnFeatureFlags,
       );
     });
 
@@ -225,5 +232,18 @@ void main() {
       expect(importance['timingQuantumMatch'], equals(0.02));
     });
   });
+}
+
+final class _AlwaysOnFeatureFlagService extends FeatureFlagService {
+  _AlwaysOnFeatureFlagService() : super(storage: StorageService.instance);
+
+  @override
+  Future<bool> isEnabled(
+    String featureName, {
+    String? userId,
+    bool defaultValue = false,
+  }) async {
+    return true;
+  }
 }
 

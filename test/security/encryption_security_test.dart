@@ -74,15 +74,14 @@ void main() {
       );
       
       // Try to decrypt with user2's key (should fail)
-      final decrypted = await service2.decryptMapping(
-        userId: userId2,
-        encryptedBlob: encrypted1.encryptedBlob,
-        encryptionKeyId: encrypted1.encryptionKeyId,
+      expect(
+        () async => service2.decryptMapping(
+          userId: userId2,
+          encryptedBlob: encrypted1.encryptedBlob,
+          encryptionKeyId: encrypted1.encryptionKeyId,
+        ),
+        throwsA(isA<Exception>()),
       );
-      
-      // Should fail or return null (different keys)
-      expect(decrypted, isNull,
-        reason: 'Decryption with wrong key should fail');
     });
     
     test('Different plaintexts produce different ciphertexts', () async {

@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/pages/profile/partnerships_page.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:spots/core/models/user.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
 
@@ -18,6 +20,19 @@ void main() {
         'should display partnerships page or display empty state when no partnerships',
         (WidgetTester tester) async {
       // Test business logic: Partnerships page display
+      final now = DateTime.now();
+      mockAuthBloc.setState(
+        Authenticated(
+          user: User(
+            id: 'test-user-id',
+            email: 'test@example.com',
+            name: 'Test User',
+            role: UserRole.user,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        ),
+      );
       final widget = WidgetTestHelpers.createTestableWidget(
         child: const PartnershipsPage(),
         authBloc: mockAuthBloc,

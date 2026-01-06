@@ -67,7 +67,7 @@ python3 scripts/update_package_imports.py --package both --apply
 ```
 
 **What it does:**
-- Creates backups in `.import_migration_backup/`
+- Creates backups in `review_before_deletion/import_migration_backup/`
 - Applies changes to files
 - Shows progress
 - Reports success/failure

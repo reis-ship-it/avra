@@ -19,7 +19,63 @@
 
 ---
 
-## Executive Summary
+## Cross-References to Related Applications
+
+None.
+
+---
+
+## Statement Regarding Federally Sponsored Research or Development
+
+Not applicable.
+
+---
+
+## Incorporation by Reference
+
+This disclosure references the accompanying visual/drawings document: `docs/patents/category_6_location_context_systems/01_location_inference_agent_network/01_location_inference_agent_network_visuals.md`. The diagrams and formulas therein are incorporated by reference as non-limiting illustrative material supporting the written description and example embodiments.
+
+---
+
+## Definitions
+
+For purposes of this disclosure:
+- **“Entity”** means any actor or object represented for scoring/matching (e.g., user, device, business, event, sponsor), depending on the invention context.
+- **“Profile”** means a set of stored attributes used by the system (which may be multi-dimensional and may be anonymized).
+- **“Compatibility score”** means a bounded numeric value used to compare entities or an entity to an opportunity, typically normalized to \([0, 1]\).
+- **“agentId”** means a privacy-preserving identifier used in place of a user-linked identifier in network exchange and/or third-party outputs.
+- **“Atomic timestamp”** means a time value derived from an atomic-time service or an equivalent high-precision time source used for synchronization and time-indexed computation.
+- **“Epsilon (ε)”** means a differential privacy budget parameter controlling the privacy/utility tradeoff in noise-calibrated transformations.
+
+---
+
+## Brief Description of the Drawings
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: System Architecture.
+- **FIG. 6**: Location Priority System.
+- **FIG. 7**: Consensus Algorithm Flow.
+- **FIG. 8**: Consensus Calculation Example.
+- **FIG. 9**: Proximity-Based Discovery.
+- **FIG. 10**: VPN/Proxy Detection Flow.
+## Abstract
+
+A system and method for inferring a device location using consensus among nearby agents when conventional geolocation signals are unreliable. The method detects conditions that reduce reliability of network-based geolocation (e.g., VPN or proxy usage), discovers nearby agents using proximity communication, obtains obfuscated or coarse location indicators from the agents, and applies a majority or threshold-based consensus algorithm to infer the most likely location. In some embodiments, the system enforces confidence thresholds and privacy constraints by using coarse location bins rather than exact coordinates. The approach enables location-based features to function under masked network conditions while maintaining privacy through consensus over obfuscated signals.
+
+---
+
+## Background
+
+Location-based services often rely on IP geolocation or network signals that can be obscured by VPNs or proxies, reducing reliability and degrading user experience. Precise location sharing also raises privacy concerns, especially in distributed networks.
+
+Accordingly, there is a need for location inference techniques that can operate when network-based geolocation is masked, leverage local proximity signals, and preserve privacy by using obfuscated or coarse-grained location information.
+
+---
+
+## Summary
 
 The Location Inference from Agent Network Consensus System is a privacy-preserving location inference system that determines user location through consensus-based analysis of nearby AI2AI agents when VPN/proxy masks IP geolocation. The system uses proximity-based agent discovery (Bluetooth/WiFi) and a majority consensus algorithm with a 60% confidence threshold to accurately infer location while maintaining privacy.
 
@@ -31,7 +87,11 @@ The Location Inference from Agent Network Consensus System is a privacy-preservi
 
 ---
 
-## Technical Innovation
+## Detailed Description
+
+### Implementation Notes (Non-Limiting)
+
+- In AI2AI embodiments, on-device agents may exchange limited, privacy-scoped information with peer agents to coordinate matching, learning, or inference without requiring centralized disclosure of personal identifiers.
 
 ### VPN/Proxy Detection
 
@@ -321,63 +381,50 @@ class InferredLocation {
 
 ---
 
-## Patent Claims
+## Claims
 
-### Claim 1: Method for Inferring Location from Agent Network Consensus
+1. A method for inferring user location from AI2AI agent network consensus when VPN/proxy masks IP geolocation, comprising:
+   (a) Detecting VPN/proxy usage through network configuration analysis
+   (b) Discovering nearby AI2AI agents via physical proximity (Bluetooth/WiFi)
+   (c) Calculating proximity scores for discovered agents
+   (d) Filtering agents by proximity threshold (> 0.5) to ensure physical proximity
+   (e) Extracting obfuscated city-level locations from nearby agents
+   (f) Aggregating locations and counting occurrences
+   (g) Determining location by majority consensus algorithm
+   (h) Requiring at least 60% confidence threshold (top_location_count / total_agents >= 0.6)
+   (i) Returning inferred location with confidence score if threshold met
+   (j) Falling back to IP geolocation if consensus unavailable
 
-A method for inferring user location from AI2AI agent network consensus when VPN/proxy masks IP geolocation, comprising:
+2. A privacy-preserving location inference system using proximity-based agent discovery and consensus algorithms, comprising:
+   (a) Bluetooth/WiFi agent discovery module finding nearby agents via physical proximity
+   (b) Proximity scoring module calculating proximity scores based on signal strength
+   (c) Proximity filtering module ensuring only agents with proximity score > 0.5 considered
+   (d) Obfuscated location extraction module extracting city-level locations from agents
+   (e) Location aggregation module counting occurrences of each location
+   (f) Majority consensus algorithm determining location by majority vote
+   (g) 60% confidence threshold requiring at least 60% of agents to agree
+   (h) Privacy-preserving implementation using only obfuscated city-level locations
 
-1. Detecting VPN/proxy usage through network configuration analysis
-2. Discovering nearby AI2AI agents via physical proximity (Bluetooth/WiFi)
-3. Calculating proximity scores for discovered agents
-4. Filtering agents by proximity threshold (> 0.5) to ensure physical proximity
-5. Extracting obfuscated city-level locations from nearby agents
-6. Aggregating locations and counting occurrences
-7. Determining location by majority consensus algorithm
-8. Requiring at least 60% confidence threshold (top_location_count / total_agents >= 0.6)
-9. Returning inferred location with confidence score if threshold met
-10. Falling back to IP geolocation if consensus unavailable
+3. The method of claim 1, further comprising accurate location determination when VPN/proxy masks IP geolocation:
+   (a) Detecting VPN/proxy usage to identify when IP geolocation is unreliable
+   (b) Discovering nearby AI2AI agents via Bluetooth/WiFi physical proximity
+   (c) Calculating proximity scores and filtering agents (proximity > 0.5)
+   (d) Extracting obfuscated city-level locations from filtered agents
+   (e) Aggregating agent locations and counting occurrences
+   (f) Determining location by consensus with confidence calculation: `confidence = top_location_count / total_agents`
+   (g) Requiring confidence >= 0.6 for location inference
+   (h) Automatically falling back to IP geolocation if consensus unavailable
 
-### Claim 2: Privacy-Preserving Location Inference System
+4. A location inference system that overrides VPN/proxy IP geolocation using AI2AI agent network consensus, comprising:
+   (a) VPN/proxy detection module identifying when IP geolocation is unreliable
+   (b) Proximity-based agent discovery module finding nearby agents via Bluetooth/WiFi
+   (c) Obfuscated location extraction module extracting city-level locations
+   (d) Majority consensus algorithm with 60% confidence threshold
+   (e) Location priority system: agent network consensus → IP geolocation → user-provided
+   (f) Automatic fallback mechanism when consensus unavailable
+   (g) Privacy-preserving implementation with opt-in/opt-out control
 
-A privacy-preserving location inference system using proximity-based agent discovery and consensus algorithms, comprising:
-
-1. Bluetooth/WiFi agent discovery module finding nearby agents via physical proximity
-2. Proximity scoring module calculating proximity scores based on signal strength
-3. Proximity filtering module ensuring only agents with proximity score > 0.5 considered
-4. Obfuscated location extraction module extracting city-level locations from agents
-5. Location aggregation module counting occurrences of each location
-6. Majority consensus algorithm determining location by majority vote
-7. 60% confidence threshold requiring at least 60% of agents to agree
-8. Privacy-preserving implementation using only obfuscated city-level locations
-
-### Claim 3: Method for Accurate Location Determination
-
-A method for accurate location determination when VPN/proxy masks IP geolocation, comprising:
-
-1. Detecting VPN/proxy usage to identify when IP geolocation is unreliable
-2. Discovering nearby AI2AI agents via Bluetooth/WiFi physical proximity
-3. Calculating proximity scores and filtering agents (proximity > 0.5)
-4. Extracting obfuscated city-level locations from filtered agents
-5. Aggregating agent locations and counting occurrences
-6. Determining location by consensus with confidence calculation: `confidence = top_location_count / total_agents`
-7. Requiring confidence >= 0.6 for location inference
-8. Automatically falling back to IP geolocation if consensus unavailable
-
-### Claim 4: Location Inference System with Agent Network Override
-
-A location inference system that overrides VPN/proxy IP geolocation using AI2AI agent network consensus, comprising:
-
-1. VPN/proxy detection module identifying when IP geolocation is unreliable
-2. Proximity-based agent discovery module finding nearby agents via Bluetooth/WiFi
-3. Obfuscated location extraction module extracting city-level locations
-4. Majority consensus algorithm with 60% confidence threshold
-5. Location priority system: agent network consensus → IP geolocation → user-provided
-6. Automatic fallback mechanism when consensus unavailable
-7. Privacy-preserving implementation with opt-in/opt-out control
-
----
-
+       ---
 ## Patentability Assessment
 
 ### Novelty Score: 7/10
@@ -910,8 +957,7 @@ Where:
 
 ---
 
-## Experimental Validation
-
+## Appendix A — Experimental Validation (Non-Limiting)
 **Date:** Original (see individual experiments), December 23, 2025 (Atomic Timing Integration)  
 **Status:** ✅ Complete - All experiments validated (including atomic timing integration)  
 **Execution Time:** 0.03 seconds  

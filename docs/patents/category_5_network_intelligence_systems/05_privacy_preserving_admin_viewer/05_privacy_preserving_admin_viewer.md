@@ -19,7 +19,62 @@
 
 ---
 
-## Executive Summary
+## Cross-References to Related Applications
+
+None.
+
+---
+
+## Statement Regarding Federally Sponsored Research or Development
+
+Not applicable.
+
+---
+
+## Incorporation by Reference
+
+This disclosure references the accompanying visual/drawings document: `docs/patents/category_5_network_intelligence_systems/05_privacy_preserving_admin_viewer/05_privacy_preserving_admin_viewer_visuals.md`. The diagrams and formulas therein are incorporated by reference as non-limiting illustrative material supporting the written description and example embodiments.
+
+---
+
+## Definitions
+
+For purposes of this disclosure:
+- **“Entity”** means any actor or object represented for scoring/matching (e.g., user, device, business, event, sponsor), depending on the invention context.
+- **“Profile”** means a set of stored attributes used by the system (which may be multi-dimensional and may be anonymized).
+- **“Compatibility score”** means a bounded numeric value used to compare entities or an entity to an opportunity, typically normalized to \([0, 1]\).
+- **“userId”** means an identifier associated with a user account. In privacy-preserving embodiments, user-linked identifiers are not exchanged externally.
+- **“Atomic timestamp”** means a time value derived from an atomic-time service or an equivalent high-precision time source used for synchronization and time-indexed computation.
+- **“Epsilon (ε)”** means a differential privacy budget parameter controlling the privacy/utility tradeoff in noise-calibrated transformations.
+
+---
+
+## Brief Description of the Drawings
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: System Architecture.
+- **FIG. 6**: AdminPrivacyFilter Process.
+- **FIG. 7**: Forbidden vs. Allowed Keys.
+- **FIG. 8**: Live AI Agent Map.
+- **FIG. 9**: Real-Time Update Frequencies.
+## Abstract
+
+A system and method for providing administrative visibility into a distributed AI network while preventing exposure of personal user data. The method receives network telemetry, messages, and learning artifacts, applies a privacy filter that removes or masks personal identifiers and sensitive attributes, and renders real-time visualizations and dashboards using only allowed AI-related fields. In some embodiments, the filter enforces allowlists and blocklists for fields, applies additional safeguards for location-related data, and provides aggregate monitoring metrics suitable for operational oversight without revealing individual user identity. The approach enables administration and debugging of distributed AI systems while preserving privacy boundaries.
+
+---
+
+## Background
+
+Operational monitoring of distributed AI systems often requires access to telemetry and activity data, but such data can include personal identifiers or sensitive content. Exposing these fields in administrative tools can violate privacy expectations and regulations and may create security risk.
+
+Accordingly, there is a need for admin monitoring systems that provide useful AI network visibility while automatically filtering personal data and constraining displayed information to privacy-preserving representations.
+
+---
+
+## Summary
 
 The Privacy-Preserving Admin Viewer is an admin monitoring system that provides real-time visualization of AI2AI network activity, chat conversations, learning insights, and collective intelligence while filtering out all personal data, showing only AI-related information. The system uses AdminPrivacyFilter to strip all personal data (name, email, phone, address) while allowing AI signatures, connections, status, and location (vibe indicators).
 
@@ -31,7 +86,11 @@ The Privacy-Preserving Admin Viewer is an admin monitoring system that provides 
 
 ---
 
-## Technical Innovation
+## Detailed Description
+
+### Implementation Notes (Non-Limiting)
+
+- In privacy-preserving embodiments, the system minimizes exposure of user-linked identifiers and may exchange anonymized and/or differentially private representations rather than raw user data.
 
 ### AdminPrivacyFilter
 
@@ -277,62 +336,49 @@ class FilteredAdminData {
 
 ---
 
-## Patent Claims
+## Claims
 
-### Claim 1: Method for Privacy-Preserving Admin Monitoring
+1. A method for privacy-preserving admin monitoring of distributed AI networks, comprising:
+   (a) Filtering all personal data (name, email, phone, home address) using AdminPrivacyFilter
+   (b) Allowing only AI-related data (signatures, connections, status, location vibe indicators)
+   (c) Displaying real-time AI2AI communication monitoring
+   (d) Visualizing collective intelligence from network-wide patterns
+   (e) Showing live AI agent map with predicted next actions
+   (f) Displaying learning insights dashboard with cross-personality patterns
+   (g) Providing conversation analysis viewer with trust metrics
+   (h) Showing prediction visualization with confidence scores
+   (i) Monitoring network health with real-time metrics
 
-A method for privacy-preserving admin monitoring of distributed AI networks, comprising:
+2. A system for visualizing AI2AI communications and learning insights without exposing personal data, comprising:
+   (a) AdminPrivacyFilter module stripping all personal data
+   (b) AI-only data visibility module showing only AI signatures, connections, status
+   (c) Real-time communication monitoring module displaying AI-to-AI conversations
+   (d) Collective intelligence visualization module showing network-wide patterns
+   (e) Learning insights dashboard visualizing cross-personality learning
+   (f) Conversation analysis viewer displaying chat analysis
+   (g) Privacy validation ensuring no personal data exposure
 
-1. Filtering all personal data (name, email, phone, home address) using AdminPrivacyFilter
-2. Allowing only AI-related data (signatures, connections, status, location vibe indicators)
-3. Displaying real-time AI2AI communication monitoring
-4. Visualizing collective intelligence from network-wide patterns
-5. Showing live AI agent map with predicted next actions
-6. Displaying learning insights dashboard with cross-personality patterns
-7. Providing conversation analysis viewer with trust metrics
-8. Showing prediction visualization with confidence scores
-9. Monitoring network health with real-time metrics
+3. The method of claim 1, further comprising real-time AI agent mapping with prediction visualization:
+   (a) Displaying all active AI agents on real-time map
+   (b) Showing online agents (green markers) and offline agents (orange markers)
+   (c) Displaying detailed AI agent information on marker click
+   (d) Showing top 5 predicted next actions with probabilities
+   (e) Highlighting most likely next action
+   (f) Displaying prediction confidence scores
+   (g) Auto-refreshing map every 30 seconds
+   (h) Filtering all data through AdminPrivacyFilter
 
-### Claim 2: System for Visualizing AI2AI Communications
+4. An admin dashboard for monitoring collective intelligence in privacy-preserving AI networks, comprising:
+   (a) Privacy-preserving data filtering (AdminPrivacyFilter)
+   (b) Real-time AI2AI communication monitoring
+   (c) Collective intelligence visualization
+   (d) Live AI agent map with predictions
+   (e) Learning insights dashboard
+   (f) Conversation analysis viewer
+   (g) Network health monitoring
+   (h) Privacy validation throughout
 
-A system for visualizing AI2AI communications and learning insights without exposing personal data, comprising:
-
-1. AdminPrivacyFilter module stripping all personal data
-2. AI-only data visibility module showing only AI signatures, connections, status
-3. Real-time communication monitoring module displaying AI-to-AI conversations
-4. Collective intelligence visualization module showing network-wide patterns
-5. Learning insights dashboard visualizing cross-personality learning
-6. Conversation analysis viewer displaying chat analysis
-7. Privacy validation ensuring no personal data exposure
-
-### Claim 3: Method for Real-Time AI Agent Mapping
-
-A method for real-time AI agent mapping with prediction visualization, comprising:
-
-1. Displaying all active AI agents on real-time map
-2. Showing online agents (green markers) and offline agents (orange markers)
-3. Displaying detailed AI agent information on marker click
-4. Showing top 5 predicted next actions with probabilities
-5. Highlighting most likely next action
-6. Displaying prediction confidence scores
-7. Auto-refreshing map every 30 seconds
-8. Filtering all data through AdminPrivacyFilter
-
-### Claim 4: Admin Dashboard for Monitoring Collective Intelligence
-
-An admin dashboard for monitoring collective intelligence in privacy-preserving AI networks, comprising:
-
-1. Privacy-preserving data filtering (AdminPrivacyFilter)
-2. Real-time AI2AI communication monitoring
-3. Collective intelligence visualization
-4. Live AI agent map with predictions
-5. Learning insights dashboard
-6. Conversation analysis viewer
-7. Network health monitoring
-8. Privacy validation throughout
-
----
-
+       ---
 ## Patentability Assessment
 
 ### Novelty Score: 4/10
@@ -551,8 +597,7 @@ This patent has been enhanced with atomic timing integration, enabling precise t
 
 ---
 
-## Experimental Validation
-
+## Appendix A — Experimental Validation (Non-Limiting)
 **Date:** Original (see individual experiments), December 23, 2025 (Atomic Timing Integration)  
 **Status:** ✅ Complete - All experiments validated (including atomic timing integration)
 

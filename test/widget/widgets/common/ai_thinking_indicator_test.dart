@@ -19,7 +19,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: AIThinkingIndicator(),
+            body: AIThinkingIndicator(key: ValueKey('ai_thinking_default')),
           ),
         ),
       );
@@ -31,7 +31,10 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: AIThinkingIndicator(stage: stage),
+              body: AIThinkingIndicator(
+                key: ValueKey('ai_thinking_stage_${stage.name}'),
+                stage: stage,
+              ),
             ),
           ),
         );
@@ -44,6 +47,7 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(
+              key: ValueKey('ai_thinking_compact'),
               compact: true,
             ),
           ),
@@ -57,6 +61,7 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(
+              key: ValueKey('ai_thinking_details'),
               showDetails: true,
               stage: AIThinkingStage.analyzingPersonality,
             ),
@@ -71,6 +76,7 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(
+              key: ValueKey('ai_thinking_no_details'),
               showDetails: false,
             ),
           ),
@@ -83,6 +89,7 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(
+              key: ValueKey('ai_thinking_timeout_message'),
               timeout: Duration(milliseconds: 100),
             ),
           ),
@@ -100,6 +107,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: AIThinkingIndicator(
+              key: const ValueKey('ai_thinking_timeout_callback'),
               timeout: const Duration(milliseconds: 100),
               onTimeout: () {
                 callbackCalled = true;
@@ -115,7 +123,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: AIThinkingIndicator(),
+            body: AIThinkingIndicator(key: ValueKey('ai_thinking_animation')),
           ),
         ),
       );

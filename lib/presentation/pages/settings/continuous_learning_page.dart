@@ -36,6 +36,19 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
   bool _isInitializing = true;
   String? _errorMessage;
 
+  static ContinuousLearningSystem _resolveLearningSystemOrCreate() {
+    try {
+      final sl = GetIt.instance;
+      if (sl.isRegistered<ContinuousLearningSystem>()) {
+        return sl<ContinuousLearningSystem>();
+      }
+    } catch (_) {
+      // Fall through.
+    }
+    // Test/preview fallback: allow the page to render even when DI isn't set up.
+    return ContinuousLearningSystem();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -51,7 +64,8 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
 
       // Use injected instance (for testing) or get from DI (for production)
       // This ensures single instance across app, not per-page
-      _learningSystem = widget.learningSystem ?? GetIt.instance<ContinuousLearningSystem>();
+      _learningSystem =
+          widget.learningSystem ?? _resolveLearningSystemOrCreate();
       
       // Initialize if not already initialized (idempotent operation)
       await _learningSystem!.initialize();

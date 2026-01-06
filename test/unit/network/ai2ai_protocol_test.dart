@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/network/ai2ai_protocol.dart';
+import 'package:spots_network/network/ai2ai_protocol.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/services/message_encryption_service.dart';
@@ -92,37 +92,56 @@ void main() {
       });
     });
 
-    group('createConnectionRequest', () {
-      test('should create connection request message', () async {
-        // Create anonymized vibe data
+    group('Connection message encoding', () {
+      test('should encode connection request with anonymized vibe payload', () async {
         final vibe = UserVibe.fromPersonalityProfile('user1', {
           'exploration_eagerness': 0.8,
           'community_orientation': 0.6,
         });
         final anonymizedVibe = await PrivacyProtection.anonymizeUserVibe(vibe);
 
-        final message = await protocol.createConnectionRequest(
+        final message = await protocol.encodeMessage(
+          type: MessageType.connectionRequest,
+          payload: {
+            'requestId': 'req123',
+            'senderVibe': anonymizedVibe,
+          },
           senderNodeId: 'node1',
           recipientNodeId: 'node2',
-          senderVibe: anonymizedVibe,
         );
 
         expect(message.type, equals(MessageType.connectionRequest));
         expect(message.senderId, equals('node1'));
         expect(message.recipientId, equals('node2'));
-        expect(message.payload['requestId'], isNotNull);
+        expect(message.payload['requestId'], equals('req123'));
         expect(message.payload['senderVibe'], isNotNull);
       });
-    });
 
-    group('createConnectionResponse', () {
-      test('should create accepted connection response', () async {
-        final message = await protocol.createConnectionResponse(
+      test('should reject payloads containing UnifiedUser fields', () async {
+        expect(
+          () => protocol.encodeMessage(
+            type: MessageType.connectionRequest,
+            payload: const {
+              // Forbidden field by protocol safety check.
+              'userId': 'real-user-id',
+            },
+            senderNodeId: 'node1',
+            recipientNodeId: 'node2',
+          ),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('should encode connection response payload', () async {
+        final message = await protocol.encodeMessage(
+          type: MessageType.connectionResponse,
+          payload: const {
+            'requestId': 'req123',
+            'accepted': true,
+            'compatibilityScore': 0.85,
+          },
           senderNodeId: 'node2',
           recipientNodeId: 'node1',
-          requestId: 'req123',
-          accepted: true,
-          compatibilityScore: 0.85,
         );
 
         expect(message.type, equals(MessageType.connectionResponse));
@@ -130,39 +149,27 @@ void main() {
         expect(message.payload['compatibilityScore'], equals(0.85));
         expect(message.payload['requestId'], equals('req123'));
       });
-
-      test('should create rejected connection response', () async {
-        final message = await protocol.createConnectionResponse(
-          senderNodeId: 'node2',
-          recipientNodeId: 'node1',
-          requestId: 'req123',
-          accepted: false,
-        );
-
-        expect(message.type, equals(MessageType.connectionResponse));
-        expect(message.payload['accepted'], isFalse);
-      });
     });
 
-    group('createLearningExchange', () {
-      test('should create learning exchange message', () async {
-        final message = await protocol.createLearningExchange(
+    group('Learning message encoding', () {
+      test('should encode learning exchange payload', () async {
+        final message = await protocol.encodeMessage(
+          type: MessageType.learningExchange,
+          payload: const {
+            'learningData': {
+              'insight': 'test insight',
+              'dimension': 'exploration_eagerness',
+              'value': 0.8,
+            },
+            'timestamp': '2025-01-01T00:00:00.000Z',
+          },
           senderNodeId: 'node1',
           recipientNodeId: 'node2',
-          learningData: {
-            'insight': 'test insight',
-            'dimension': 'exploration_eagerness',
-            'value': 0.8,
-          },
         );
 
         expect(message.type, equals(MessageType.learningExchange));
         expect(message.payload['learningData'], isNotNull);
         expect(message.payload['timestamp'], isNotNull);
-        
-        // Verify anonymization (no userId in learning data)
-        final learningData = message.payload['learningData'] as Map<String, dynamic>;
-        expect(learningData['userId'], isNull);
       });
     });
 

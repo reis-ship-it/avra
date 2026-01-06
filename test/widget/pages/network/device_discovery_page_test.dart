@@ -7,14 +7,14 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/network/device_discovery.dart';
+import 'package:spots_network/network/device_discovery.dart';
 import 'package:spots/presentation/pages/network/device_discovery_page.dart';
 
 void main() {
   setUpAll(() {});
 
-  tearDown(() {
-    GetIt.instance.reset();
+  tearDown(() async {
+    await GetIt.instance.reset();
   });
 
   group('DeviceDiscoveryPage', () {
@@ -25,20 +25,17 @@ void main() {
         'should render page with discovery inactive state, display discovered devices when scanning, or show info dialog when info button tapped',
         (tester) async {
       // Test business logic: Device discovery page display and interactions
-      final mockService1 = MockDeviceDiscoveryService();
-      GetIt.instance.registerSingleton<DeviceDiscoveryService>(mockService1);
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: DeviceDiscoveryPage(),
-        ),
-      );
+      final mockService = MockDeviceDiscoveryService();
+      GetIt.instance.registerSingleton<DeviceDiscoveryService>(mockService);
+
+      await tester.pumpWidget(const MaterialApp(home: DeviceDiscoveryPage()));
       await tester.pumpAndSettle();
       expect(find.text('Device Discovery'), findsOneWidget);
       expect(find.text('Discovery Inactive'), findsOneWidget);
       expect(find.text('Start Discovery'), findsOneWidget);
 
-      final mockService2 = MockDeviceDiscoveryService();
-      mockService2.setDevices([
+      // Simulate devices being discovered when scanning starts.
+      mockService.setDevices([
         DiscoveredDevice(
           deviceId: 'device-1',
           deviceName: 'Test Device 1',
@@ -48,26 +45,11 @@ void main() {
           discoveredAt: DateTime.now(),
         ),
       ]);
-      GetIt.instance.registerSingleton<DeviceDiscoveryService>(mockService2);
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: DeviceDiscoveryPage(),
-        ),
-      );
-      await tester.pumpAndSettle();
       await tester.tap(find.text('Start Discovery'));
       await tester.pumpAndSettle();
       expect(find.text('Discovery Active'), findsOneWidget);
       expect(find.textContaining('1 device found'), findsOneWidget);
 
-      final mockService3 = MockDeviceDiscoveryService();
-      GetIt.instance.registerSingleton<DeviceDiscoveryService>(mockService3);
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: DeviceDiscoveryPage(),
-        ),
-      );
-      await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.info_outline));
       await tester.pumpAndSettle();
       expect(find.text('About Device Discovery'), findsOneWidget);
@@ -79,7 +61,6 @@ void main() {
 /// Mock implementation of DeviceDiscoveryService for testing
 class MockDeviceDiscoveryService extends DeviceDiscoveryService {
   List<DiscoveredDevice> _devices = [];
-  bool _isScanning = false;
 
   MockDeviceDiscoveryService() : super(platform: null);
 
@@ -90,14 +71,13 @@ class MockDeviceDiscoveryService extends DeviceDiscoveryService {
   @override
   Future<void> startDiscovery({
     Duration scanInterval = const Duration(seconds: 5),
+    Duration scanWindow = const Duration(seconds: 4),
     Duration deviceTimeout = const Duration(minutes: 2),
   }) async {
-    _isScanning = true;
   }
 
   @override
   void stopDiscovery() {
-    _isScanning = false;
   }
 
   @override

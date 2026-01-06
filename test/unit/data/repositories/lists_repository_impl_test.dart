@@ -52,10 +52,12 @@ void main() {
 
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        // Offline-first repositories always perform the local read first.
+        when(mockLocalDataSource.getLists()).thenAnswer((_) async => <SpotList>[]);
         when(mockRemoteDataSource.getLists())
             .thenAnswer((_) async => lists);
         when(mockLocalDataSource.saveList(any))
-            .thenAnswer((_) async => Future.value());
+            .thenAnswer((inv) async => inv.positionalArguments.first as SpotList);
 
         final result = await repository.getLists();
 
@@ -106,7 +108,7 @@ void main() {
         when(mockLocalDataSource.saveList(list))
             .thenAnswer((_) async => list);
         when(mockRemoteDataSource.createList(list))
-            .thenAnswer((_) async => Future.value());
+            .thenAnswer((_) async => list);
 
         final result = await repository.createList(list);
 
@@ -149,6 +151,8 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
+        when(mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(mockRemoteDataSource.updateList(list))
             .thenAnswer((_) async => list);
         when(mockLocalDataSource.saveList(list))
@@ -158,7 +162,8 @@ void main() {
 
         expect(result, isNotNull);
         verify(mockRemoteDataSource.updateList(list)).called(1);
-        verify(mockLocalDataSource.saveList(list)).called(1);
+        // Offline-first flow writes locally first, then syncs remote result back to local.
+        verify(mockLocalDataSource.saveList(list)).called(2);
       });
 
       test('should fallback to local when remote fails', () async {
@@ -187,10 +192,12 @@ void main() {
       test('should delete list from remote and local', () async {
         const listId = 'list-1';
 
+        when(mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
         when(mockRemoteDataSource.deleteList(listId))
-            .thenAnswer((_) async => Future.value());
+            .thenAnswer((_) async {});
         when(mockLocalDataSource.deleteList(listId))
-            .thenAnswer((_) async => Future.value());
+            .thenAnswer((_) async {});
 
         await repository.deleteList(listId);
 
@@ -204,7 +211,7 @@ void main() {
         when(mockRemoteDataSource.deleteList(listId))
             .thenThrow(Exception('Network error'));
         when(mockLocalDataSource.deleteList(listId))
-            .thenAnswer((_) async => Future.value());
+            .thenAnswer((_) async {});
 
         await repository.deleteList(listId);
 
@@ -228,10 +235,12 @@ void main() {
 
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        // Offline-first repositories always perform the local read first.
+        when(mockLocalDataSource.getLists()).thenAnswer((_) async => <SpotList>[]);
         when(mockRemoteDataSource.getPublicLists(limit: 50))
             .thenAnswer((_) async => publicLists);
         when(mockLocalDataSource.saveList(any))
-            .thenAnswer((_) async => Future.value());
+            .thenAnswer((inv) async => inv.positionalArguments.first as SpotList);
 
         final result = await repository.getPublicLists();
 
@@ -278,7 +287,7 @@ void main() {
         const userId = 'user-123';
 
         when(mockLocalDataSource.saveList(any))
-            .thenAnswer((_) async => Future.value());
+            .thenAnswer((inv) async => inv.positionalArguments.first as SpotList);
 
         await repository.createStarterListsForUser(userId: userId);
 
@@ -294,7 +303,7 @@ void main() {
         };
 
         when(mockLocalDataSource.saveList(any))
-            .thenAnswer((_) async => Future.value());
+            .thenAnswer((inv) async => inv.positionalArguments.first as SpotList);
 
         await repository.createPersonalizedListsForUser(
           userId: userId,

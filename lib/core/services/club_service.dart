@@ -1,22 +1,29 @@
+import 'dart:async';
+
 import 'package:spots/core/models/community.dart';
 import 'package:spots/core/models/club.dart';
 import 'package:spots/core/models/club_hierarchy.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_level.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/community_service.dart';
 import 'package:spots/core/services/geographic_expansion_service.dart';
 import 'package:spots/core/services/expansion_expertise_gain_service.dart';
+import 'package:spots/core/services/storage_service.dart';
+import 'package:spots/core/services/supabase_service.dart';
 
 /// Club Service
-/// 
+///
 /// Manages clubs (communities with organizational structure).
-/// 
+///
 /// **Philosophy Alignment:**
 /// - Communities can organize as clubs when structure is needed
 /// - Club leaders gain expertise recognition
 /// - Organizational structure enables community growth and geographic expansion
-/// 
+///
 /// **Key Features:**
 /// - Upgrade community to club
 /// - Manage club leaders (add, remove, get, check)
@@ -31,25 +38,71 @@ class ClubService {
     minimumLevel: LogLevel.debug,
   );
 
+  // Reserved for future: Club ↔ Community persistence integration.
+  // ignore: unused_field
   final CommunityService _communityService;
+  final LedgerRecorderServiceV0 _ledger;
 
   // In-memory storage (in production, use database)
   final Map<String, Club> _clubs = {};
 
   ClubService({
     CommunityService? communityService,
-  }) : _communityService = communityService ?? CommunityService();
+    LedgerRecorderServiceV0? ledgerRecorder,
+  })  : _communityService = communityService ?? CommunityService(),
+        _ledger = ledgerRecorder ??
+            LedgerRecorderServiceV0(
+              supabaseService: SupabaseService(),
+              agentIdService: AgentIdService(),
+              storage: StorageService.instance,
+            );
+
+  Future<void> _tryLedgerAppendForUser({
+    required String expectedOwnerUserId,
+    required String eventType,
+    required String entityType,
+    required String entityId,
+    String? category,
+    String? cityCode,
+    String? localityCode,
+    required Map<String, Object?> payload,
+  }) async {
+    try {
+      final currentUserId = SupabaseService().currentUser?.id;
+      if (currentUserId == null || currentUserId != expectedOwnerUserId) {
+        return;
+      }
+
+      await _ledger.append(
+        domain: LedgerDomainV0.expertise,
+        eventType: eventType,
+        occurredAt: DateTime.now(),
+        payload: payload,
+        entityType: entityType,
+        entityId: entityId,
+        category: category,
+        cityCode: cityCode,
+        localityCode: localityCode,
+        correlationId: entityId,
+      );
+    } catch (e) {
+      _logger.warning(
+        'Ledger write skipped/failed for $eventType: ${e.toString()}',
+        tag: _logName,
+      );
+    }
+  }
 
   /// Upgrade community to club
-  /// 
+  ///
   /// Upgrades a community to a club when organizational structure is needed.
-  /// 
+  ///
   /// **Upgrade Criteria:**
   /// - Community has X+ members (default: 10)
   /// - Community has hosted Y+ events (default: 3)
   /// - Community has stable leadership (founder active)
   /// - Community needs organizational structure
-  /// 
+  ///
   /// **What Gets Created:**
   /// - Club extends Community
   /// - Founder becomes initial leader
@@ -81,7 +134,8 @@ class ClubService {
       }
 
       if (!needsStructure) {
-        throw Exception('Community must need organizational structure to upgrade');
+        throw Exception(
+            'Community must need organizational structure to upgrade');
       }
 
       // Create club from community
@@ -103,10 +157,32 @@ class ClubService {
       // Save club
       await _saveClub(club);
 
+      // Best-effort dual-write to ledger (must never block UX).
+      unawaited(_tryLedgerAppendForUser(
+        expectedOwnerUserId: community.founderId,
+        eventType: 'community_upgraded_to_club',
+        entityType: 'club',
+        entityId: club.id,
+        category: community.category,
+        payload: <String, Object?>{
+          'club_id': club.id,
+          'community_id': community.id,
+          'min_members': minMembers,
+          'min_events': minEvents,
+          'needs_structure': needsStructure,
+          'member_count': community.memberCount,
+          'event_count': community.eventCount,
+          'founder_id': community.founderId,
+          'originating_event_id': community.originatingEventId,
+          'originating_event_type': community.originatingEventType.name,
+        },
+      ));
+
       _logger.info('Upgraded community to club: ${club.id}', tag: _logName);
       return club;
     } catch (e) {
-      _logger.error('Error upgrading community to club', error: e, tag: _logName);
+      _logger.error('Error upgrading community to club',
+          error: e, tag: _logName);
       rethrow;
     }
   }
@@ -138,11 +214,13 @@ class ClubService {
       // Remove from admin team if present
       List<String> updatedAdminTeam = latestClub.adminTeam;
       if (updatedAdminTeam.contains(userId)) {
-        updatedAdminTeam = updatedAdminTeam.where((id) => id != userId).toList();
+        updatedAdminTeam =
+            updatedAdminTeam.where((id) => id != userId).toList();
       }
 
       // Remove from member roles if present
-      Map<String, ClubRole> updatedMemberRoles = Map.from(latestClub.memberRoles);
+      Map<String, ClubRole> updatedMemberRoles =
+          Map.from(latestClub.memberRoles);
       updatedMemberRoles.remove(userId);
 
       final updated = latestClub.copyWith(
@@ -163,7 +241,8 @@ class ClubService {
   /// Remove leader from club
   Future<void> removeLeader(Club club, String userId) async {
     try {
-      _logger.info('Removing leader $userId from club ${club.id}', tag: _logName);
+      _logger.info('Removing leader $userId from club ${club.id}',
+          tag: _logName);
 
       if (!club.leaders.contains(userId)) {
         _logger.warning(
@@ -202,7 +281,7 @@ class ClubService {
   }
 
   /// Add admin to club
-  /// 
+  ///
   /// **Note:** Retrieves latest club from storage to ensure correct state
   Future<void> addAdmin(Club club, String userId) async {
     try {
@@ -233,7 +312,8 @@ class ClubService {
       }
 
       // Remove from member roles if present
-      Map<String, ClubRole> updatedMemberRoles = Map.from(latestClub.memberRoles);
+      Map<String, ClubRole> updatedMemberRoles =
+          Map.from(latestClub.memberRoles);
       updatedMemberRoles.remove(userId);
 
       final updated = latestClub.copyWith(
@@ -253,7 +333,8 @@ class ClubService {
   /// Remove admin from club
   Future<void> removeAdmin(Club club, String userId) async {
     try {
-      _logger.info('Removing admin $userId from club ${club.id}', tag: _logName);
+      _logger.info('Removing admin $userId from club ${club.id}',
+          tag: _logName);
 
       if (!club.adminTeam.contains(userId)) {
         _logger.warning(
@@ -287,7 +368,7 @@ class ClubService {
   }
 
   /// Assign role to member
-  /// 
+  ///
   /// **Note:** Retrieves latest club from storage to ensure correct state
   Future<void> assignRole(
     Club club,
@@ -326,11 +407,13 @@ class ClubService {
         updatedLeaders = updatedLeaders.where((id) => id != userId).toList();
       }
       if (updatedAdminTeam.contains(userId)) {
-        updatedAdminTeam = updatedAdminTeam.where((id) => id != userId).toList();
+        updatedAdminTeam =
+            updatedAdminTeam.where((id) => id != userId).toList();
       }
 
       // Update member roles
-      Map<String, ClubRole> updatedMemberRoles = Map.from(latestClub.memberRoles);
+      Map<String, ClubRole> updatedMemberRoles =
+          Map.from(latestClub.memberRoles);
       if (role == ClubRole.member) {
         updatedMemberRoles.remove(userId); // Default role, no need to store
       } else {
@@ -380,9 +463,7 @@ class ClubService {
   Future<List<Club>> getClubsByLeader(String leaderId) async {
     try {
       final allClubs = await _getAllClubs();
-      return allClubs
-          .where((c) => c.isLeader(leaderId))
-          .toList()
+      return allClubs.where((c) => c.isLeader(leaderId)).toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
       _logger.error('Error getting clubs by leader', error: e, tag: _logName);
@@ -445,18 +526,18 @@ class ClubService {
   }
 
   /// Grant expertise to club leaders
-  /// 
+  ///
   /// Grants expertise to club leaders in all localities where club hosts events.
-  /// 
+  ///
   /// **Philosophy Alignment:**
   /// - Club leaders recognized as experts (doors for leaders)
   /// - Leaders gain expertise in all localities where club hosts events
-  /// 
+  ///
   /// **Parameters:**
   /// - `club`: Club
   /// - `category`: Category for expertise
   /// - `expansionExpertiseGainService`: Service to grant expertise from expansion
-  /// 
+  ///
   /// **Returns:**
   /// Map of leader ID → updated user (with new expertise)
   Future<Map<String, UnifiedUser>> grantLeaderExpertise({
@@ -497,7 +578,8 @@ class ClubService {
         );
 
         // Grant expertise from expansion
-        final updatedLeader = await expansionExpertiseGainService.grantExpertiseFromExpansion(
+        final updatedLeader =
+            await expansionExpertiseGainService.grantExpertiseFromExpansion(
           user: leader,
           expansion: expansion,
           category: category,
@@ -519,14 +601,14 @@ class ClubService {
   }
 
   /// Update leader expertise when club expands
-  /// 
+  ///
   /// Called when club expands to new localities.
-  /// 
+  ///
   /// **Parameters:**
   /// - `club`: Club
   /// - `category`: Category for expertise
   /// - `expansionExpertiseGainService`: Service to grant expertise from expansion
-  /// 
+  ///
   /// **Returns:**
   /// Updated club with leader expertise tracked
   Future<Club> updateLeaderExpertise({
@@ -563,12 +645,12 @@ class ClubService {
   }
 
   /// Get expertise for a club leader
-  /// 
+  ///
   /// **Parameters:**
   /// - `club`: Club
   /// - `leaderId`: Leader user ID
   /// - `category`: Category for expertise
-  /// 
+  ///
   /// **Returns:**
   /// Expertise level for leader in category, or null if not found
   ExpertiseLevel? getLeaderExpertise({
@@ -604,4 +686,3 @@ class ClubService {
     return _clubs.values.toList();
   }
 }
-

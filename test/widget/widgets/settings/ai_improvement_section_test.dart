@@ -67,6 +67,7 @@ void main() {
         mockService.setMetrics(_createMockMetrics());
         final widget1 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_loading_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -80,6 +81,7 @@ void main() {
         mockService.setMetrics(null);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_loading_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -93,6 +95,7 @@ void main() {
         mockService.setMetrics(metrics);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_loading_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -145,6 +148,7 @@ void main() {
         mockService.setMetrics(metrics1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_score_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -159,6 +163,7 @@ void main() {
         mockService.setMetrics(metrics2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_score_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -171,6 +176,7 @@ void main() {
         mockService.setMetrics(metrics3);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_score_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -183,6 +189,7 @@ void main() {
         mockService.setMetrics(metrics4);
         final widget4 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_score_4'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -207,6 +214,7 @@ void main() {
         mockService.setAccuracyMetrics(accuracyMetrics1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_accuracy_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -226,6 +234,7 @@ void main() {
         mockService.setAccuracyMetrics(accuracyMetrics2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_accuracy_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -244,6 +253,7 @@ void main() {
         mockService.setAccuracyMetrics(accuracyMetrics3);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_accuracy_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -261,6 +271,7 @@ void main() {
         mockService.setAccuracyMetrics(accuracyMetrics4);
         final widget4 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_accuracy_4'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -284,6 +295,7 @@ void main() {
         mockService.setMetrics(metrics1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_performance_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -303,6 +315,7 @@ void main() {
         mockService.setMetrics(metrics2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_performance_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -327,6 +340,7 @@ void main() {
         mockService.setMetrics(metrics1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_dimensions_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -350,6 +364,7 @@ void main() {
         mockService.setMetrics(metrics2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_dimensions_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -368,6 +383,7 @@ void main() {
         mockService.setMetrics(metrics3);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_dimensions_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -395,6 +411,7 @@ void main() {
         mockService.setMetrics(metrics1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_rate_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -409,6 +426,7 @@ void main() {
         mockService.setMetrics(metrics2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_rate_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -424,6 +442,7 @@ void main() {
         mockService.setMetrics(metrics3);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementSection(
+            key: const ValueKey('ai_improvement_rate_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),

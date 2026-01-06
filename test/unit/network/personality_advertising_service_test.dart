@@ -7,94 +7,72 @@
 /// - Multiple Calls: Handling repeated start calls gracefully
 /// - Privacy Validation: Ensuring no user data is exposed
 /// 
-/// Dependencies:
-/// - Mock UserVibeAnalyzer: Simulates vibe compilation
-/// - Mock SharedPreferences: Simulates local storage
-/// 
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
-import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
-import '../../mocks/mock_storage_service.dart';
-import 'package:spots/core/network/personality_advertising_service.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:spots_network/network/personality_advertising_service.dart';
+import 'package:spots_network/network/models/anonymized_vibe_data.dart';
 
-import 'personality_advertising_service_test.mocks.dart';
-
-@GenerateMocks([UserVibeAnalyzer])
 void main() {
   // Initialize bindings before anything else
   TestWidgetsFlutterBinding.ensureInitialized();
   
   group('PersonalityAdvertisingService', () {
     late PersonalityAdvertisingService service;
-    late MockUserVibeAnalyzer mockVibeAnalyzer;
-    late SharedPreferencesCompat compatPrefs;
-
-    setUpAll(() async {
-      // Initialize mock shared preferences
-      real_prefs.SharedPreferences.setMockInitialValues({});
-      // Use mock storage to avoid platform channel requirements
-      final mockStorage = MockGetStorage.getInstance();
-      compatPrefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
-    });
-    
-    tearDownAll(() async {
-      // Reset mock storage - no async cleanup needed
-      MockGetStorage.reset();
-    });
 
     setUp(() {
-      mockVibeAnalyzer = MockUserVibeAnalyzer();
       service = PersonalityAdvertisingService();
     });
 
     group('Advertising Lifecycle', () {
       test('should start advertising without errors', () async {
-        const userId = 'test-user-123';
-        // Phase 8.3: Use agentId for privacy protection
-        const agentId = 'agent_$userId';
-        final profile = PersonalityProfile.initial(agentId, userId: userId);
-
-        // Mock vibe compilation - create a test UserVibe
-        final testVibe = UserVibe.fromPersonalityProfile(
-          userId,
-          profile.dimensions,
+        final now = DateTime.now();
+        final payload = AnonymizedVibeData(
+          noisyDimensions: const {
+            'exploration_eagerness': 0.5,
+            'community_orientation': 0.5,
+          },
+          anonymizedMetrics: AnonymizedVibeMetrics(
+            energy: 0.5,
+            social: 0.5,
+            exploration: 0.5,
+          ),
+          temporalContextHash: 't0',
+          vibeSignature: 'sig0',
+          privacyLevel: 'STANDARD_ANONYMIZATION',
+          anonymizationQuality: 0.9,
+          salt: '',
+          createdAt: now,
+          expiresAt: now.add(const Duration(hours: 1)),
         );
-        when(mockVibeAnalyzer.compileUserVibe(any, any))
-            .thenAnswer((_) async => testVibe);
 
-        final result = await service.startAdvertising(
-          userId,
-          profile,
-          mockVibeAnalyzer,
-        );
+        final result = await service.startAdvertising(personalityData: payload);
 
         // Result may be false if platform-specific code isn't available in test
         expect(result, isA<bool>());
       });
 
       test('should handle multiple start calls gracefully', () async {
-        const userId = 'test-user-123';
-        // Phase 8.3: Use agentId for privacy protection
-        const agentId = 'agent_$userId';
-        final profile = PersonalityProfile.initial(agentId, userId: userId);
-        
-        final testVibe = UserVibe.fromPersonalityProfile(
-          userId,
-          profile.dimensions,
+        final now = DateTime.now();
+        final payload = AnonymizedVibeData(
+          noisyDimensions: const {'exploration_eagerness': 0.5},
+          anonymizedMetrics: AnonymizedVibeMetrics(
+            energy: 0.5,
+            social: 0.5,
+            exploration: 0.5,
+          ),
+          temporalContextHash: 't1',
+          vibeSignature: 'sig1',
+          privacyLevel: 'STANDARD_ANONYMIZATION',
+          anonymizationQuality: 0.9,
+          salt: '',
+          createdAt: now,
+          expiresAt: now.add(const Duration(hours: 1)),
         );
-        when(mockVibeAnalyzer.compileUserVibe(any, any))
-            .thenAnswer((_) async => testVibe);
 
-        await service.startAdvertising(userId, profile, mockVibeAnalyzer);
-        final result = await service.startAdvertising(userId, profile, mockVibeAnalyzer);
+        await service.startAdvertising(personalityData: payload);
+        final result = await service.startAdvertising(personalityData: payload);
 
         // Should return true on second call (already advertising)
         expect(result, isA<bool>());
@@ -112,26 +90,30 @@ void main() {
 
     group('Privacy Validation', () {
       test('should ensure advertised data contains no user data', () async {
-        const userId = 'test-user-123';
-        // Phase 8.3: Use agentId for privacy protection
-        const agentId = 'agent_$userId';
-        final profile = PersonalityProfile.initial(agentId, userId: userId);
-        
-        final testVibe = UserVibe.fromPersonalityProfile(
-          userId,
-          profile.dimensions,
+        final now = DateTime.now();
+        final payload = AnonymizedVibeData(
+          noisyDimensions: const {
+            // No identifiers (userId/email/name). Only anonymized dimensions.
+            'exploration_eagerness': 0.5,
+          },
+          anonymizedMetrics: AnonymizedVibeMetrics(
+            energy: 0.5,
+            social: 0.5,
+            exploration: 0.5,
+          ),
+          temporalContextHash: 't2',
+          vibeSignature: 'sig2',
+          privacyLevel: 'MAXIMUM_ANONYMIZATION',
+          anonymizationQuality: 0.95,
+          salt: '',
+          createdAt: now,
+          expiresAt: now.add(const Duration(hours: 1)),
         );
-        when(mockVibeAnalyzer.compileUserVibe(any, any))
-            .thenAnswer((_) async => testVibe);
 
-        // OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"
-        // Advertising should only include anonymized personality data
-        
-        await service.startAdvertising(userId, profile, mockVibeAnalyzer);
-        
-        // Service should anonymize data before advertising
-        // This is verified by the service implementation using PrivacyProtection
-        expect(service, isNotNull);
+        await service.startAdvertising(personalityData: payload);
+
+        // Basic behavior check: service holds the current advertised payload.
+        expect(service.currentPersonalityData, isNotNull);
       });
     });
   });

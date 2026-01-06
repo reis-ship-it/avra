@@ -5,9 +5,82 @@
 
 ---
 
-## Visual Diagrams and Flowcharts
 
-### 1. N-Way Revenue Split Calculation
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: N-Way Revenue Split Calculation.
+- **FIG. 6**: Pre-Event Locking Flow.
+- **FIG. 7**: Percentage Validation.
+- **FIG. 8**: Revenue Distribution Flow.
+- **FIG. 9**: Hybrid Cash/Product Splits.
+- **FIG. 10**: Pre-Event Locking Timeline.
+- **FIG. 11**: Automatic Payment Distribution.
+- **FIG. 12**: Complete Revenue Distribution Flow.
+- **FIG. 13**: Locking Validation.
+- **FIG. 14**: Complete System Architecture.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the N-Way Revenue Distribution System with Pre-Event Locking implementation.
+
+In the illustrated embodiment, a computing device receives revenue events, participant identifiers, split percentages, and locking constraints; constructs an internal representation; and applies split calculation, validation, and enforcement of a locked distribution plan to produce validated distribution instructions and recorded transfers/ledger entries.
+
+In some embodiments, the diagram includes:
+- N-Way Revenue Split Calculation.
+- Pre-Event Locking Flow.
+- Percentage Validation.
+- Revenue Distribution Flow.
+- Hybrid Cash/Product Splits.
+- Pre-Event Locking Timeline.
+- Automatic Payment Distribution.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the N-Way Revenue Distribution System with Pre-Event Locking implementation.
+
+1. Calculating N-way revenue distribution for unlimited parties with percentage-based allocation.
+2. Validating percentages sum to exactly 100% (±0.01 tolerance) before allowing split creation.
+3. Locking revenue split agreements before event starts to prevent modification.
+4. Calculating platform fee (10%) and processing fees before party distribution.
+5. Automatically scheduling payments 2 days after event completion.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the N-Way Revenue Distribution System with Pre-Event Locking implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- RevenueEvent: {eventId, grossAmount, currency, occurredAt}
+- RecipientShare: {recipientId, shareType, shareValue}
+- DistributionLock: {lockedAt, constraints, version}
+- Allocation: {recipientId, amount, roundingAdjustment}
+- DistributionRecord: {allocations[ ], status, auditTrail}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the N-Way Revenue Distribution System with Pre-Event Locking implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Payment processor / transfer rail
+- Ledger / audit store
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device receives a revenue event and retrieves a locked split configuration.
+2. Client device validates the split configuration and computes recipient allocations.
+3. Client device requests transfers via a payment processor and/or schedules transfers for a settlement time.
+4. Ledger/audit store records allocation amounts, recipients, and execution status.
+5. Client device returns confirmation and prevents modification of the locked split record.
+
+### FIG. 5 — N-Way Revenue Split Calculation
+
 
 ```
 Total Revenue: $1,000
@@ -36,7 +109,8 @@ Total Revenue: $1,000
 
 ---
 
-### 2. Pre-Event Locking Flow
+### FIG. 6 — Pre-Event Locking Flow
+
 
 ```
 Revenue Split Created
@@ -64,7 +138,8 @@ Revenue Split Created
 
 ---
 
-### 3. Percentage Validation
+### FIG. 7 — Percentage Validation
+
 
 ```
 Parties:
@@ -95,7 +170,8 @@ Validation:
 
 ---
 
-### 4. Revenue Distribution Flow
+### FIG. 8 — Revenue Distribution Flow
+
 
 ```
 Event Revenue: $1,000
@@ -123,7 +199,8 @@ Event Revenue: $1,000
 
 ---
 
-### 5. Hybrid Cash/Product Splits
+### FIG. 9 — Hybrid Cash/Product Splits
+
 
 ```
 Total Revenue: $1,000
@@ -149,7 +226,8 @@ Combined:
 
 ---
 
-### 6. Pre-Event Locking Timeline
+### FIG. 10 — Pre-Event Locking Timeline
+
 
 ```
 Event Planning
@@ -179,7 +257,8 @@ Event Planning
 
 ---
 
-### 7. Automatic Payment Distribution
+### FIG. 11 — Automatic Payment Distribution
+
 
 ```
 Event Ends: Day 0
@@ -207,7 +286,8 @@ Event Ends: Day 0
 
 ---
 
-### 8. Complete Revenue Distribution Flow
+### FIG. 12 — Complete Revenue Distribution Flow
+
 
 ```
 START
@@ -248,7 +328,8 @@ START
 
 ---
 
-### 9. Locking Validation
+### FIG. 13 — Locking Validation
+
 
 ```
 Before Locking:
@@ -275,7 +356,8 @@ Locking Process:
 
 ---
 
-### 10. Complete System Architecture
+### FIG. 14 — Complete System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -380,4 +462,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

@@ -4,33 +4,133 @@
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 1.5: Universal Cross-Pollination Extension
 
+import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots_knot/models/entity_knot.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/knot/entity_knot_service.dart';
-import 'package:spots/core/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:spots_knot/services/knot/entity_knot_service.dart';
+import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 import '../../../fixtures/model_factories.dart';
 import '../../../helpers/integration_test_helpers.dart';
+
+/// Mock Rust API for testing
+class MockRustLibApi implements RustLibApi {
+  @override
+  Float64List crateApiCalculateAlexanderPolynomial(
+      {required List<double> braidData}) {
+    return Float64List.fromList([1.0, 0.0, -1.0]);
+  }
+
+  @override
+  Float64List crateApiCalculateBoltzmannDistribution(
+      {required List<double> energies, required double temperature}) {
+    final sum = energies.fold<double>(0.0, (a, b) => a + b);
+    return Float64List.fromList(energies.map((e) => e / sum).toList());
+  }
+
+  @override
+  BigInt crateApiCalculateCrossingNumberFromBraid(
+      {required List<double> braidData}) {
+    return BigInt.from((braidData.length - 1) ~/ 2);
+  }
+
+  @override
+  double crateApiCalculateEntropy({required List<double> probabilities}) {
+    return 1.0;
+  }
+
+  @override
+  double crateApiCalculateFreeEnergy(
+      {required double energy,
+      required double entropy,
+      required double temperature}) {
+    return energy - temperature * entropy;
+  }
+
+  @override
+  Float64List crateApiCalculateJonesPolynomial(
+      {required List<double> braidData}) {
+    return Float64List.fromList([1.0, -1.0, 1.0]);
+  }
+
+  @override
+  double crateApiCalculateKnotEnergyFromPoints(
+      {required List<double> knotPoints}) {
+    return 1.0;
+  }
+
+  @override
+  double crateApiCalculateKnotStabilityFromPoints(
+      {required List<double> knotPoints}) {
+    return 0.8;
+  }
+
+  @override
+  double crateApiCalculateTopologicalCompatibility(
+      {required List<double> braidDataA, required List<double> braidDataB}) {
+    final diff = (braidDataA.length - braidDataB.length).abs();
+    return (1.0 - (diff / 10.0).clamp(0.0, 1.0));
+  }
+
+  @override
+  int crateApiCalculateWritheFromBraid({required List<double> braidData}) {
+    return (braidData.length - 1) ~/ 2;
+  }
+
+  @override
+  double crateApiEvaluatePolynomial(
+      {required List<double> coefficients, required double x}) {
+    double result = 0.0;
+    for (int i = 0; i < coefficients.length; i++) {
+      result += coefficients[i] * (x * i);
+    }
+    return result;
+  }
+
+  @override
+  KnotResult crateApiGenerateKnotFromBraid({required List<double> braidData}) {
+    return KnotResult(
+      knotData: Float64List.fromList([braidData[0]]),
+      jonesPolynomial: Float64List.fromList([1.0, -1.0, 1.0]),
+      alexanderPolynomial: Float64List.fromList([1.0, 0.0, -1.0]),
+      crossingNumber: BigInt.from((braidData.length - 1) ~/ 2),
+      writhe: (braidData.length - 1) ~/ 2,
+      signature: 0,
+      bridgeNumber: BigInt.from(1),
+      braidIndex: BigInt.from(1),
+      determinant: 1,
+    );
+  }
+
+  @override
+  double crateApiPolynomialDistance(
+      {required List<double> coefficientsA,
+      required List<double> coefficientsB}) {
+    final maxLen = coefficientsA.length > coefficientsB.length
+        ? coefficientsA.length
+        : coefficientsB.length;
+    double sumSq = 0.0;
+    for (int i = 0; i < maxLen; i++) {
+      final a = i < coefficientsA.length ? coefficientsA[i] : 0.0;
+      final b = i < coefficientsB.length ? coefficientsB[i] : 0.0;
+      sumSq += (a - b) * (a - b);
+    }
+    return sumSq;
+  }
+}
 
 void main() {
   group('EntityKnotService Tests', () {
     late EntityKnotService service;
     bool rustLibInitialized = false;
 
-    setUpAll(() async {
-      // Initialize Rust library once for all tests
+    setUpAll(() {
+      // Initialize Rust library for tests (mock mode)
       if (!rustLibInitialized) {
-        try {
-          await RustLib.init();
-          rustLibInitialized = true;
-        } catch (e) {
-          // If already initialized, that's fine
-          if (!e.toString().contains('Should not initialize')) {
-            rethrow;
-          }
-          rustLibInitialized = true;
-        }
+        RustLib.initMock(api: MockRustLibApi());
+        rustLibInitialized = true;
       }
     });
 

@@ -1,9 +1,14 @@
 import 'package:get_it/get_it.dart';
 import 'package:spots/core/services/storage_service.dart';
+import 'package:spots/core/services/interfaces/storage_service_interface.dart';
+import 'package:spots/core/services/expertise_service.dart';
+import 'package:spots/core/services/interfaces/expertise_service_interface.dart'
+    show IExpertiseService;
 import 'package:spots/core/services/feature_flag_service.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/supabase_service.dart';
 import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:spots/core/services/geo_hierarchy_service.dart';
 import 'package:spots/core/services/large_city_detection_service.dart';
 import 'package:spots/core/services/neighborhood_boundary_service.dart';
 import 'package:spots/core/services/geographic_scope_service.dart';
@@ -17,11 +22,13 @@ import 'package:spots/core/services/ai_search_suggestions_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:spots/core/services/permissions_persistence_service.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 
+// Note: storage_service.dart is imported above for StorageService class
+// SharedPreferencesCompat is also imported from the same file using 'show'
+
 /// Core Services Registration Module
-/// 
+///
 /// Registers foundational services that other modules depend on.
 /// This includes:
 /// - Storage and database services
@@ -49,8 +56,19 @@ Future<void> registerCoreServices(GetIt sl) async {
   // Storage Service (foundation for many services)
   final storageService = StorageService.instance;
   await storageService.init();
+  // Register both interface and implementation for flexibility
+  sl.registerLazySingleton<IStorageService>(() => storageService);
   sl.registerLazySingleton<StorageService>(() => storageService);
-  logger.debug('✅ [DI-Core] StorageService registered');
+  logger.debug(
+      '✅ [DI-Core] StorageService registered (interface and implementation)');
+
+  // SharedPreferencesCompat (compat wrapper over StorageService).
+  // Many legacy services still depend on this type directly.
+  if (!sl.isRegistered<SharedPreferencesCompat>()) {
+    final prefsCompat = await StorageService.getInstance();
+    sl.registerSingleton<SharedPreferencesCompat>(prefsCompat);
+    logger.debug('✅ [DI-Core] SharedPreferencesCompat registered');
+  }
 
   // Feature Flag Service
   sl.registerLazySingleton<FeatureFlagService>(
@@ -75,6 +93,12 @@ Future<void> registerCoreServices(GetIt sl) async {
   );
   logger.debug('✅ [DI-Core] Geographic services registered');
 
+  // Expertise Service (used by many services - register interface and implementation)
+  sl.registerLazySingleton<IExpertiseService>(() => ExpertiseService());
+  sl.registerLazySingleton<ExpertiseService>(() => ExpertiseService());
+  logger.debug(
+      '✅ [DI-Core] ExpertiseService registered (interface and implementation)');
+
   // Phase 2: Missing Services
   // Note: RoleManagementService requires interface import - using implementation directly
   sl.registerLazySingleton(
@@ -84,9 +108,9 @@ Future<void> registerCoreServices(GetIt sl) async {
     ),
   );
   sl.registerLazySingleton(() => CommunityValidationService(
-    storageService: sl<StorageService>(),
-    prefs: sl<SharedPreferencesCompat>(),
-  ));
+        storageService: sl<StorageService>(),
+        prefs: sl<SharedPreferencesCompat>(),
+      ));
   logger.debug('✅ [DI-Core] Phase 2 services registered');
 
   // Patent #30: Quantum Atomic Clock System
@@ -96,7 +120,8 @@ Future<void> registerCoreServices(GetIt sl) async {
   // Agent ID Service (privacy protection)
   // Note: AgentIdService requires SecureMappingEncryptionService and BusinessAccountService
   // Registration deferred to main container where these dependencies are available
-  logger.debug('✅ [DI-Core] AgentIdService registration deferred to main container');
+  logger.debug(
+      '✅ [DI-Core] AgentIdService registration deferred to main container');
 
   // Supabase Service (if available)
   try {
@@ -106,17 +131,31 @@ Future<void> registerCoreServices(GetIt sl) async {
     logger.warn('⚠️ [DI-Core] SupabaseService registration skipped: $e');
   }
 
+  // Geo Hierarchy Service (DB-backed geo registry + lookup helpers).
+  //
+  // This ties the expert geo hierarchy to `city_code` buckets and supports:
+  // - event creation geo codes (city_code/locality_code)
+  // - map filtering/overlays (via RPC reads)
+  sl.registerLazySingleton<GeoHierarchyService>(
+    () => GeoHierarchyService(
+      supabaseService: sl.isRegistered<SupabaseService>()
+          ? sl<SupabaseService>()
+          : SupabaseService(),
+    ),
+  );
+  logger.debug('✅ [DI-Core] GeoHierarchyService registered');
+
   // Performance and Validation Services
   // Note: These require SharedPreferences, so register after sharedPrefs
   sl.registerLazySingleton(() => PerformanceMonitor(
-    storageService: sl<StorageService>(),
-    prefs: sl<SharedPreferencesCompat>(),
-  ));
+        storageService: sl<StorageService>(),
+        prefs: sl<SharedPreferencesCompat>(),
+      ));
   sl.registerLazySingleton(() => SecurityValidator());
   sl.registerLazySingleton(() => DeploymentValidator(
-    performanceMonitor: sl<PerformanceMonitor>(),
-    securityValidator: sl<SecurityValidator>(),
-  ));
+        performanceMonitor: sl<PerformanceMonitor>(),
+        securityValidator: sl<SecurityValidator>(),
+      ));
   logger.debug('✅ [DI-Core] Performance and validation services registered');
 
   // Search Services

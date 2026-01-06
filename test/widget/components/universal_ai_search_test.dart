@@ -23,6 +23,7 @@ void main() {
       const hintText = 'Search for anything...';
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: const UniversalAISearch(
+          key: ValueKey('universal_ai_search_1'),
           hintText: hintText,
         ),
       );
@@ -34,6 +35,7 @@ void main() {
       String? submittedCommand1;
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
+          key: const ValueKey('universal_ai_search_2'),
           hintText: 'Test search',
           onCommand: (command) => submittedCommand1 = command,
         ),
@@ -47,6 +49,7 @@ void main() {
 
       final widget3 = WidgetTestHelpers.createTestableWidget(
         child: const UniversalAISearch(
+          key: ValueKey('universal_ai_search_3'),
           hintText: 'Loading search',
           isLoading: true,
         ),
@@ -57,6 +60,7 @@ void main() {
 
       final widget4 = WidgetTestHelpers.createTestableWidget(
         child: const UniversalAISearch(
+          key: ValueKey('universal_ai_search_4'),
           hintText: 'Disabled search',
           enabled: false,
         ),
@@ -68,6 +72,7 @@ void main() {
       var tapped = false;
       final widget5 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
+          key: const ValueKey('universal_ai_search_5'),
           hintText: 'Tappable search',
           onTap: () => tapped = true,
         ),
@@ -80,15 +85,20 @@ void main() {
       const initialValue = 'Initial search term';
       final widget6 = WidgetTestHelpers.createTestableWidget(
         child: const UniversalAISearch(
+          key: ValueKey('universal_ai_search_6'),
           hintText: 'Search',
           initialValue: initialValue,
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget6);
-      expect(find.text(initialValue), findsOneWidget);
+      // In widget tests, the entered/initial text is held by the TextEditingController.
+      // Asserting via the controller is more robust than relying on rendered text.
+      final tfWithInitial = tester.widget<TextField>(find.byType(TextField));
+      expect(tfWithInitial.controller?.text, equals(initialValue));
 
       final widget7 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
+          key: const ValueKey('universal_ai_search_7'),
           hintText: 'Search with suggestions',
           onCommand: (command) {},
         ),
@@ -103,6 +113,7 @@ void main() {
       var callbackCount = 0;
       final widget8 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
+          key: const ValueKey('universal_ai_search_8'),
           hintText: 'Empty test',
           onCommand: (command) {
             submittedCommand2 = command;
@@ -119,6 +130,7 @@ void main() {
       String? submittedCommand3;
       final widget9 = WidgetTestHelpers.createTestableWidget(
         child: UniversalAISearch(
+          key: const ValueKey('universal_ai_search_9'),
           hintText: 'Trim test',
           onCommand: (command) => submittedCommand3 = command,
         ),
@@ -131,6 +143,7 @@ void main() {
 
       final widget10 = WidgetTestHelpers.createTestableWidget(
         child: const UniversalAISearch(
+          key: ValueKey('universal_ai_search_10'),
           hintText: 'Accessible search',
         ),
       );

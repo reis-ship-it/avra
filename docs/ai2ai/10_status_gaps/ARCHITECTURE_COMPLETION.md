@@ -8,7 +8,7 @@
 
 ## 🎯 Executive Summary
 
-This report compares the documented architecture in `VIBE_CODING/README.md` with the actual implementation status in both documentation files and codebase. 
+This report compares the documented architecture in `docs/_archive/vibe_coding/VIBE_CODING/README.md` with the actual implementation status in both documentation files and codebase. 
 
 **Key Findings:**
 - **Documentation Completeness:** ~30% (8 of 26 documented files exist)

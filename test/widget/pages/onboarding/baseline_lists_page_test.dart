@@ -19,18 +19,14 @@ void main() {
           onBaselineListsChanged: (_) {},
         ),
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-      expect(find.text('Baseline Lists'), findsOneWidget);
-      expect(find.textContaining('Create your first lists'), findsOneWidget);
+      await tester.pumpWidget(widget1);
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(find.text('Creating your personalized lists...'), findsOneWidget);
 
-      final widget2 = WidgetTestHelpers.createTestableWidget(
-        child: BaselineListsPage(
-          baselineLists: const [],
-          onBaselineListsChanged: (_) {},
-        ),
-      );
-      await tester.pumpWidget(widget2);
-      await tester.pump();
+      // Allow the loading phase (2s) to complete.
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(find.text('Your Smart Lists'), findsOneWidget);
       expect(find.byType(BaselineListsPage), findsOneWidget);
 
       final widget3 = WidgetTestHelpers.createTestableWidget(
@@ -40,10 +36,10 @@ void main() {
           userName: 'Test User',
         ),
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget3);
-      await tester.pump(const Duration(seconds: 2));
-      await tester.pumpAndSettle();
-      expect(find.text('Baseline Lists'), findsOneWidget);
+      await tester.pumpWidget(widget3);
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(find.text('Your Smart Lists'), findsOneWidget);
 
       final initialLists = ['List 1', 'List 2'];
       final widget4 = WidgetTestHelpers.createTestableWidget(
@@ -67,10 +63,10 @@ void main() {
           userPreferences: preferences,
         ),
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
-      await tester.pump(const Duration(seconds: 2));
-      await tester.pumpAndSettle();
-      expect(find.text('Baseline Lists'), findsOneWidget);
+      await tester.pumpWidget(widget5);
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(find.text('Your Smart Lists'), findsOneWidget);
     });
   });
 }

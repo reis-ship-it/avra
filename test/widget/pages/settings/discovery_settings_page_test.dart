@@ -93,14 +93,18 @@ void main() {
       expect(find.text('Privacy & Security'), findsOneWidget);
       expect(find.text('Anonymization'), findsOneWidget);
       expect(find.text('Encryption'), findsOneWidget);
+      // Close dialog before interacting with underlying page widgets.
+      await tester.tap(find.text('Got it'), warnIfMissed: false);
+      await tester.pumpAndSettle();
 
       final mainToggle2 = find.byType(SwitchListTile).first;
       SwitchListTile toggle = tester.widget(mainToggle2);
-      expect(toggle.value, isFalse);
+      final wasEnabled = toggle.value;
+      await tester.ensureVisible(mainToggle2);
       await tester.tap(mainToggle2);
       await tester.pumpAndSettle();
       toggle = tester.widget(mainToggle2);
-      expect(toggle.value, isTrue);
+      expect(toggle.value, equals(!wasEnabled));
     });
   });
 }

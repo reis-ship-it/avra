@@ -287,7 +287,7 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
       if (mounted) {
         Navigator.of(context).pop(reservation);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Reservation created successfully!'),
             backgroundColor: AppTheme.successColor,
           ),
@@ -329,14 +329,14 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                         ),
                         child: Text(
                           _error!,
-                          style: TextStyle(color: AppTheme.errorColor),
+                          style: const TextStyle(color: AppTheme.errorColor),
                         ),
                       ),
 
                     // Reservation Type
                     DropdownButtonFormField<ReservationType>(
                       value: _selectedType,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Reservation Type',
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.event, color: AppTheme.primaryColor),
@@ -375,8 +375,8 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                               : _selectedType == ReservationType.spot
                                   ? 'Select Spot'
                                   : 'Select Business',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.location_on, color: AppTheme.primaryColor),
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.location_on, color: AppTheme.primaryColor),
                         ),
                         items: _availableTargets.map((target) {
                           return DropdownMenuItem(
@@ -406,14 +406,14 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                     InkWell(
                       onTap: _selectReservationTime,
                       child: InputDecorator(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Reservation Time',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.calendar_today, color: AppTheme.primaryColor),
                         ),
                         child: Text(
                           _reservationTime != null
-                              ? '${_reservationTime!.toLocal().toString().split('.')[0]}'
+                              ? _reservationTime!.toLocal().toString().split('.')[0]
                               : 'Select date and time',
                           style: TextStyle(
                             color: _reservationTime != null
@@ -429,7 +429,7 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                     // Party Size
                     TextFormField(
                       initialValue: _partySize.toString(),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Party Size',
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.people, color: AppTheme.primaryColor),
@@ -458,7 +458,7 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                     // Special Requests
                     TextFormField(
                       controller: TextEditingController(text: _specialRequests),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Special Requests (Optional)',
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.note, color: AppTheme.primaryColor),
@@ -477,7 +477,7 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                     if (_isLoadingCompatibility)
                       Container(
                         padding: const EdgeInsets.all(16),
-                        child: Row(
+                        child: const Row(
                           children: [
                             SizedBox(
                               width: 16,
@@ -487,7 +487,7 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                                 valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text(
                               'Calculating compatibility...',
                               style: TextStyle(color: AppColors.textSecondary),
@@ -505,11 +505,11 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.star, color: AppTheme.primaryColor),
+                            const Icon(Icons.star, color: AppTheme.primaryColor),
                             const SizedBox(width: 8),
                             Text(
                               'Quantum Compatibility: ${(_compatibilityScore! * 100).toStringAsFixed(0)}%',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: AppTheme.primaryColor,

@@ -4,7 +4,7 @@ import 'package:spots/core/services/business_expert_chat_service_ai2ai.dart';
 import 'package:spots/core/models/business_expert_message.dart';
 
 /// Business-Expert Outreach Service
-/// 
+///
 /// Handles vibe-based matching and outreach between businesses and experts.
 /// Manages discovery, compatibility scoring, and outreach initiation.
 class BusinessExpertOutreachService {
@@ -19,7 +19,7 @@ class BusinessExpertOutreachService {
         _chatService = chatService;
 
   /// Discover experts based on vibe compatibility
-  /// 
+  ///
   /// Returns a list of experts sorted by compatibility score.
   /// Filters by minimum compatibility threshold and other criteria.
   Future<List<ExpertMatch>> discoverExperts({
@@ -48,7 +48,7 @@ class BusinessExpertOutreachService {
       // Placeholder: In real implementation, would query experts
       // For now, return empty list - this will be implemented when
       // expert discovery system is available
-      
+
       developer.log(
         'Found ${expertMatches.length} expert matches',
         name: _logName,
@@ -62,7 +62,7 @@ class BusinessExpertOutreachService {
   }
 
   /// Calculate vibe compatibility between business and expert
-  /// 
+  ///
   /// Returns a score from 0.0 to 1.0 indicating compatibility.
   Future<double?> calculateCompatibility({
     required String businessId,
@@ -95,7 +95,7 @@ class BusinessExpertOutreachService {
   }
 
   /// Send outreach message to an expert
-  /// 
+  ///
   /// Initiates a conversation with an expert by sending an initial message.
   /// Creates conversation if it doesn't exist.
   Future<bool> sendOutreach({
@@ -141,7 +141,7 @@ class BusinessExpertOutreachService {
   }
 
   /// Get outreach history for a business
-  /// 
+  ///
   /// Returns list of experts the business has reached out to.
   Future<List<OutreachRecord>> getOutreachHistory(String businessId) async {
     try {
@@ -150,7 +150,8 @@ class BusinessExpertOutreachService {
       }
 
       // Get all conversations for this business
-      final conversations = await _chatService!.getBusinessConversations(businessId);
+      final conversations =
+          await _chatService!.getBusinessConversations(businessId);
 
       // Filter to only conversations initiated by the business
       // (i.e., where business sent the first message)
@@ -162,7 +163,8 @@ class BusinessExpertOutreachService {
 
         // Get first message to determine if business initiated
         final conversationId = conversation['id'] as String;
-        final messages = await _chatService!.getMessageHistory(conversationId, limit: 1);
+        final messages =
+            await _chatService!.getMessageHistory(conversationId, limit: 1);
 
         if (messages.isNotEmpty) {
           final firstMessage = messages.first;
@@ -173,7 +175,8 @@ class BusinessExpertOutreachService {
               businessId: businessId,
               message: firstMessage.content,
               sentAt: firstMessage.createdAt,
-              compatibilityScore: conversation['vibe_compatibility_score'] as double?,
+              compatibilityScore:
+                  conversation['vibe_compatibility_score'] as double?,
               conversationId: conversationId,
             ));
           }
@@ -191,7 +194,7 @@ class BusinessExpertOutreachService {
   }
 
   /// Get recommended experts for a business
-  /// 
+  ///
   /// Returns experts with high compatibility scores that haven't been contacted yet.
   Future<List<ExpertMatch>> getRecommendedExperts({
     required String businessId,
@@ -208,9 +211,8 @@ class BusinessExpertOutreachService {
 
       // Get outreach history to exclude already contacted experts
       final outreachHistory = await getOutreachHistory(businessId);
-      final contactedExpertIds = outreachHistory
-          .map((record) => record.expertId)
-          .toSet();
+      final contactedExpertIds =
+          outreachHistory.map((record) => record.expertId).toSet();
 
       // Filter out contacted experts and sort by compatibility
       final recommended = allExperts
@@ -262,4 +264,3 @@ class OutreachRecord {
     required this.conversationId,
   });
 }
-

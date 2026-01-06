@@ -7,7 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
 import 'package:spots_quantum/models/quantum_entity_state.dart';
 import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart';
+import 'package:spots_knot/services/knot/quantum_state_knot_service.dart';
 
 void main() {
   group('QuantumEntanglementService', () {
@@ -164,6 +166,41 @@ void main() {
       // Service should work without knot services
       final knotBonus = await service.calculateKnotCompatibilityBonus([entity]);
       expect(knotBonus, equals(0.0)); // Graceful degradation
+    });
+
+    test('should return non-zero knot bonus when knot services available', () async {
+      await atomicClock.initialize();
+
+      final tAtomic1 = await atomicClock.getAtomicTimestamp();
+      final tAtomic2 = await atomicClock.getAtomicTimestamp();
+
+      final entity1 = QuantumEntityState(
+        entityId: 'entity1',
+        entityType: QuantumEntityType.user,
+        personalityState: {'dim1': 0.2, 'dim2': 0.8},
+        quantumVibeAnalysis: {'vibe1': 0.6, 'vibe2': 0.4},
+        entityCharacteristics: const {'type': 'user'},
+        tAtomic: tAtomic1,
+      );
+
+      final entity2 = QuantumEntityState(
+        entityId: 'entity2',
+        entityType: QuantumEntityType.event,
+        personalityState: {'dim1': 0.25, 'dim2': 0.75},
+        quantumVibeAnalysis: {'vibe1': 0.55, 'vibe2': 0.45},
+        entityCharacteristics: const {'type': 'event'},
+        tAtomic: tAtomic2,
+      );
+
+      final svc = QuantumEntanglementService(
+        atomicClock: atomicClock,
+        knotCompatibilityService: CrossEntityCompatibilityService(),
+        quantumStateKnotService: QuantumStateKnotService(),
+      );
+
+      final bonus = await svc.calculateKnotCompatibilityBonus([entity1, entity2]);
+      expect(bonus, greaterThan(0.0));
+      expect(bonus, lessThanOrEqualTo(1.0));
     });
   });
 

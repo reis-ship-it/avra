@@ -1,15 +1,31 @@
 // ONNX Dimension Scorer for Phase 11: User-AI Interaction Update
 // Provides fast, privacy-sensitive dimension scoring using ONNX models
 
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
+
+import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:spots/core/services/onboarding_dimension_mapper.dart';
+import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/ai2ai/embedding_delta_collector.dart';
 
 /// Scores personality dimensions from onboarding inputs
 /// Uses ONNX model for fast, privacy-sensitive scoring
 class OnnxDimensionScorer {
   static const String _logName = 'OnnxDimensionScorer';
-  
+
+  // --------------------------------------------------------------------------
+  // Federated personalization overlay (workable now, real ONNX weight updates later)
+  // --------------------------------------------------------------------------
+  static const String _biasStorageKey = 'onnx_dimension_scorer_bias_v1';
+  static const double _maxAbsBias = 0.20; // max additive shift per dimension
+  static const double _deltaToBiasRate = 0.15; // scales avg delta into bias update
+
+  bool _biasLoaded = false;
+  DateTime? _biasUpdatedAt;
+  final Map<String, double> _biasByDimension = <String, double>{};
+
   // TODO: Add ONNX runtime instance when ONNX backend is fully integrated
   // For now, this is a placeholder that provides rule-based scoring
   bool _isInitialized = false;
@@ -18,6 +34,7 @@ class OnnxDimensionScorer {
   Future<void> initialize() async {
     // TODO: Load ONNX model when ONNX backend is available
     // For now, mark as initialized with rule-based fallback
+    await _loadBiasFromStorageIfPossible();
     _isInitialized = true;
     developer.log(
       'ONNX Dimension Scorer initialized (using rule-based fallback)',
@@ -40,7 +57,8 @@ class OnnxDimensionScorer {
     try {
       // TODO: Use ONNX model for scoring when available
       // For now, use rule-based scoring as placeholder
-      return _ruleBasedScoring(input);
+      final base = _ruleBasedScoring(input);
+      return _applyPersonalizationOverlay(base);
     } catch (e) {
       developer.log(
         'Error scoring dimensions: $e',
@@ -48,76 +66,52 @@ class OnnxDimensionScorer {
         error: e,
       );
       // Return default scores on error
-      return _getDefaultScores();
+      return _applyPersonalizationOverlay(_getDefaultScores());
     }
   }
   
   /// Rule-based scoring (fallback when ONNX model not available)
   Map<String, double> _ruleBasedScoring(Map<String, dynamic> input) {
-    final scores = <String, double>{};
+    // Start from canonical defaults for all 12 dimensions.
+    final scores = _getDefaultScores();
     
     // Extract input data
     final onboardingData = input['onboarding_data'] as Map<String, dynamic>? ?? {};
     final places = input['places'] as List? ?? [];
     final socialGraph = input['social_graph'] as List? ?? [];
-    final homebase = onboardingData['homebase'] as String?;
-    final preferences = onboardingData['preferences'] as Map<String, dynamic>? ?? {};
-    
-    // Exploration eagerness: based on number of places, preferences
-    if (places.length > 5) {
-      scores['exploration_eagerness'] = 0.8;
-    } else if (places.isNotEmpty) {
-      scores['exploration_eagerness'] = 0.6;
-    } else {
-      scores['exploration_eagerness'] = 0.5;
+
+    // Device-first source of truth: reuse the onboarding mapper (mirrors PersonalityLearning).
+    final mapper = OnboardingDimensionMapper();
+    final onboardingInsights = mapper.mapOnboardingToDimensions(onboardingData);
+    for (final entry in onboardingInsights.entries) {
+      scores[entry.key] = entry.value.clamp(0.0, 1.0);
     }
-    
-    // Community orientation: based on social graph size
-    if (socialGraph.length > 10) {
-      scores['community_orientation'] = 0.8;
-    } else if (socialGraph.isNotEmpty) {
-      scores['community_orientation'] = 0.6;
-    } else {
-      scores['community_orientation'] = 0.5;
+
+    // Lightweight additional signals beyond onboarding answers (still on-device).
+    if (places.length >= 8) {
+      scores['exploration_eagerness'] =
+          ((scores['exploration_eagerness'] ?? 0.5) + 0.08).clamp(0.0, 1.0);
+      scores['novelty_seeking'] =
+          ((scores['novelty_seeking'] ?? 0.5) + 0.06).clamp(0.0, 1.0);
     }
-    
-    // Location adventurousness: based on homebase and places
-    if (homebase != null && places.length > 3) {
-      scores['location_adventurousness'] = 0.7;
-    } else {
-      scores['location_adventurousness'] = 0.5;
+
+    if (socialGraph.length >= 8) {
+      scores['community_orientation'] =
+          ((scores['community_orientation'] ?? 0.5) + 0.08).clamp(0.0, 1.0);
+      scores['trust_network_reliance'] =
+          ((scores['trust_network_reliance'] ?? 0.5) + 0.05).clamp(0.0, 1.0);
     }
-    
-    // Authenticity preference: based on preferences
-    if (preferences.containsKey('authentic') && preferences['authentic'] == true) {
-      scores['authenticity_preference'] = 0.8;
-    } else {
-      scores['authenticity_preference'] = 0.5;
-    }
-    
-    // Trust network reliance: based on social graph
-    if (socialGraph.length > 5) {
-      scores['trust_network_reliance'] = 0.7;
-    } else {
-      scores['trust_network_reliance'] = 0.5;
-    }
-    
-    // Temporal flexibility: default
-    scores['temporal_flexibility'] = 0.5;
     
     return scores;
   }
   
   /// Get default dimension scores
   Map<String, double> _getDefaultScores() {
-    return {
-      'exploration_eagerness': 0.5,
-      'community_orientation': 0.5,
-      'location_adventurousness': 0.5,
-      'authenticity_preference': 0.5,
-      'trust_network_reliance': 0.5,
-      'temporal_flexibility': 0.5,
-    };
+    final scores = <String, double>{};
+    for (final d in VibeConstants.coreDimensions) {
+      scores[d] = VibeConstants.defaultDimensionValue;
+    }
+    return scores;
   }
   
   /// Validate dimension scores for safety
@@ -176,10 +170,13 @@ class OnnxDimensionScorer {
         developer.log('No deltas to apply', name: _logName);
         return;
       }
-      
-      // TODO: Apply deltas to actual ONNX model when ONNX backend is available
-      // For now, this is a placeholder that logs the deltas
-      
+
+      if (!_isInitialized) {
+        await initialize();
+      } else {
+        await _loadBiasFromStorageIfPossible();
+      }
+
       // Aggregate deltas by category
       final deltasByCategory = <String, List<EmbeddingDelta>>{};
       for (final delta in deltas) {
@@ -208,13 +205,16 @@ class OnnxDimensionScorer {
           name: _logName,
         );
         
-        // TODO: Apply avgDelta to ONNX model weights
-        // This would update the model's internal weights based on the aggregated deltas
-        // For now, we just log the information
+        // Workable now: apply a bounded personalization overlay (bias) on top of
+        // model/rule-based outputs. This keeps "federated learning" real without
+        // requiring ONNX weight mutation yet.
+        _applyDeltaVectorToBias(avgDelta);
       }
+
+      await _persistBiasToStorageIfPossible();
       
       developer.log(
-        'Federated delta update complete (placeholder - ONNX backend not yet available)',
+        'Federated delta update complete (personalization overlay updated)',
         name: _logName,
       );
     } catch (e, stackTrace) {
@@ -265,5 +265,89 @@ class OnnxDimensionScorer {
       sum += value * value;
     }
     return math.sqrt(sum / delta.length);
+  }
+
+  Map<String, double> _applyPersonalizationOverlay(Map<String, double> base) {
+    if (!_biasLoaded || _biasByDimension.isEmpty) return base;
+
+    final adjusted = <String, double>{};
+    for (final d in VibeConstants.coreDimensions) {
+      final v = base[d] ?? VibeConstants.defaultDimensionValue;
+      final bias = _biasByDimension[d] ?? 0.0;
+      adjusted[d] = (v + bias).clamp(0.0, 1.0);
+    }
+    return adjusted;
+  }
+
+  void _applyDeltaVectorToBias(List<double> avgDelta) {
+    if (avgDelta.isEmpty) return;
+
+    for (var i = 0; i < VibeConstants.coreDimensions.length; i++) {
+      if (i >= avgDelta.length) break;
+      final dim = VibeConstants.coreDimensions[i];
+      final raw = avgDelta[i];
+
+      // Scale and bound per update so a single batch can't swing things wildly.
+      final update = (raw * _deltaToBiasRate).clamp(-0.05, 0.05);
+      final next = ((_biasByDimension[dim] ?? 0.0) + update)
+          .clamp(-_maxAbsBias, _maxAbsBias);
+      _biasByDimension[dim] = next;
+    }
+
+    _biasLoaded = true;
+    _biasUpdatedAt = DateTime.now();
+  }
+
+  Future<void> _loadBiasFromStorageIfPossible() async {
+    if (_biasLoaded) return;
+
+    try {
+      final raw = StorageService.instance.aiStorage.read(_biasStorageKey);
+      if (raw is! String || raw.isEmpty) {
+        _biasLoaded = true;
+        return;
+      }
+
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) {
+        _biasLoaded = true;
+        return;
+      }
+
+      final bias = decoded['bias'];
+      final updatedAtStr = decoded['updated_at'];
+      if (updatedAtStr is String) {
+        _biasUpdatedAt = DateTime.tryParse(updatedAtStr);
+      }
+
+      if (bias is Map) {
+        for (final d in VibeConstants.coreDimensions) {
+          final v = bias[d];
+          if (v is num) {
+            _biasByDimension[d] = v.toDouble().clamp(-_maxAbsBias, _maxAbsBias);
+          }
+        }
+      }
+
+      _biasLoaded = true;
+    } catch (_) {
+      // Storage not initialized or invalid JSON. Degrade gracefully.
+      _biasLoaded = true;
+    }
+  }
+
+  Future<void> _persistBiasToStorageIfPossible() async {
+    try {
+      final payload = <String, dynamic>{
+        'updated_at': (_biasUpdatedAt ?? DateTime.now()).toIso8601String(),
+        'bias': _biasByDimension,
+      };
+      await StorageService.instance.aiStorage.write(
+        _biasStorageKey,
+        jsonEncode(payload),
+      );
+    } catch (_) {
+      // Storage not initialized; best-effort only.
+    }
   }
 }

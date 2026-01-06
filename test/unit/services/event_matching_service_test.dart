@@ -3,7 +3,6 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:spots/core/services/event_matching_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_level.dart';
 import '../../helpers/integration_test_helpers.dart';
@@ -12,22 +11,19 @@ import '../../fixtures/model_factories.dart';
 import 'event_matching_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';
 
-@GenerateMocks([ExpertiseEventService, GeographicScopeService])
+@GenerateMocks([ExpertiseEventService])
 void main() {
   group('EventMatchingService Tests', () {
     late EventMatchingService service;
     late MockExpertiseEventService mockEventService;
-    late MockGeographicScopeService mockGeographicScopeService;
     late UnifiedUser expert;
     late UnifiedUser user;
 
     setUp(() {
       mockEventService = MockExpertiseEventService();
-      mockGeographicScopeService = MockGeographicScopeService();
 
       service = EventMatchingService(
         eventService: mockEventService,
-        geographicScopeService: mockGeographicScopeService,
       );
 
       // Create expert with local expertise

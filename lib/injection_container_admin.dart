@@ -42,7 +42,9 @@ Future<void> registerAdminServices(GetIt sl) async {
       () => BusinessAuthService(sl<SharedPreferencesCompat>()));
 
   // Supabase Service (kept for internal tooling/debug; app uses spots_network boundary)
-  sl.registerLazySingleton(() => SupabaseService());
+  if (!sl.isRegistered<SupabaseService>()) {
+    sl.registerLazySingleton<SupabaseService>(() => SupabaseService());
+  }
 
   // AdminCommunicationService (for AI2AI communication logs)
   sl.registerLazySingleton(() => AdminCommunicationService(

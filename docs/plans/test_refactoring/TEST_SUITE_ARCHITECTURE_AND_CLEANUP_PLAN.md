@@ -22,6 +22,30 @@ This document provides:
 
 ---
 
+## ✅ Implementation Status (Current)
+
+**As of December 31, 2025**, the following has been completed in the repository:
+
+- ✅ **Grouped suites added**: `test/suites/*.sh` + `test/suites/README.md`
+- ✅ **Removed duplicate top-level folders**:
+  - `test/pages/` → moved into `test/widget/pages/` (imports fixed) → deleted `test/pages/`
+  - `test/services/` → moved into `test/unit/services/` (imports fixed, deduped where needed) → deleted `test/services/`
+- ✅ **Removed placeholder**: deleted `test/widget_test.dart`
+- ✅ **Canonicalized unit-test layout (Option A)**:
+  - **Kept**: `test/unit/domain/usecases/**`
+  - **Kept**: `test/unit/data/repositories/**`
+  - **Removed**: `test/unit/usecases/**`
+  - **Removed**: `test/unit/repositories/**` (migrated `tax_*_repository_test.dart` into `test/unit/data/repositories/`)
+- ✅ **Runner script hardened**: `test/testing/integration_runner.sh` now:
+  - uses `test/unit/blocs/` (correct folder name)
+  - skips optional integration test files if they don’t exist
+
+**Still pending (separate from structure work):**
+- ⏳ `test/unit/services/rate_limiting_test.dart.disabled` review (enable/remove)
+- ⏳ Fix underlying compilation issues so `flutter test` is green again (this repo currently has non-test compilation failures unrelated to folder organization)
+
+---
+
 ## 🧹 Cleanup Opportunities
 
 ### High Priority - Duplicates & Misplaced Files

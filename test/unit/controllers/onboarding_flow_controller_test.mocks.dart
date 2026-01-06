@@ -117,6 +117,40 @@ class MockAgentIdService extends _i1.Mock implements _i6.AgentIdService {
       ) as _i4.Future<String>);
 
   @override
+  _i4.Future<void> rotateMappingEncryptionKey(
+    String? userId, {
+    _i6.EncryptedMapping? existingEncryptedMapping,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #rotateMappingEncryptionKey,
+          [userId],
+          {#existingEncryptedMapping: existingEncryptedMapping},
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
+  void clearCache() => super.noSuchMethod(
+        Invocation.method(
+          #clearCache,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i4.Future<void> flushAuditLogs() => (super.noSuchMethod(
+        Invocation.method(
+          #flushAuditLogs,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
   _i4.Future<String> getBusinessAgentId(String? businessId) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -342,7 +376,8 @@ class MockLegalDocumentService extends _i1.Mock
 
   @override
   _i4.Future<_i2.UserAgreement> revokeAgreement({
-    required String? agreementId,
+    required String userId,
+    required String agreementId,
     String? reason,
   }) =>
       (super.noSuchMethod(
@@ -350,6 +385,7 @@ class MockLegalDocumentService extends _i1.Mock
           #revokeAgreement,
           [],
           {
+            #userId: userId,
             #agreementId: agreementId,
             #reason: reason,
           },
@@ -360,6 +396,7 @@ class MockLegalDocumentService extends _i1.Mock
             #revokeAgreement,
             [],
             {
+              #userId: userId,
               #agreementId: agreementId,
               #reason: reason,
             },

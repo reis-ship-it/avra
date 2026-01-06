@@ -9,6 +9,8 @@
 /// Date: December 2025
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spots/core/theme/app_theme.dart';
@@ -42,6 +44,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
   final _chatService = GetIt.instance<CommunityChatService>();
   final _communityService = GetIt.instance<CommunityService>();
   final _nameResolver = GetIt.instance<UserNameResolutionService>();
+  StreamSubscription? _incomingSubscription;
   
   List<Map<String, dynamic>> _messages = [];
   List<Map<String, dynamic>> _filteredMessages = [];
@@ -58,7 +61,6 @@ class _CommunityChatViewState extends State<CommunityChatView> {
     super.initState();
     _loadUser();
     _loadCommunity();
-    _loadConversationHistory();
   }
 
   Future<void> _loadUser() async {
@@ -67,6 +69,8 @@ class _CommunityChatViewState extends State<CommunityChatView> {
       setState(() {
         _userId = authState.user.id;
       });
+      await _loadConversationHistory();
+      _startIncomingSubscription();
     }
   }
 
@@ -89,6 +93,40 @@ class _CommunityChatViewState extends State<CommunityChatView> {
         // Community not found, continue without it
       }
     }
+  }
+
+  void _startIncomingSubscription() {
+    final userId = _userId;
+    if (userId == null) return;
+
+    _incomingSubscription?.cancel();
+    _incomingSubscription = _chatService
+        .subscribeToIncomingCommunityMessages(
+          userId: userId,
+          communityId: widget.communityId,
+        )
+        .listen((storedMessage) async {
+      try {
+        final decrypted =
+            await _chatService.getDecryptedMessage(storedMessage, widget.communityId);
+        if (!mounted) return;
+
+        setState(() {
+          if (_messages.any((m) => m['id'] == storedMessage.messageId)) return;
+          _messages.add({
+            'id': storedMessage.messageId,
+            'content': decrypted,
+            'isFromUser': storedMessage.senderId == userId,
+            'timestamp': storedMessage.timestamp,
+            'senderId': storedMessage.senderId,
+          });
+          _filteredMessages = _applySearchFilter(_messages);
+        });
+        _scrollToBottom();
+      } catch (_) {
+        // Best-effort; failures are logged in service layer.
+      }
+    });
   }
 
   Future<void> _loadConversationHistory() async {
@@ -178,11 +216,11 @@ class _CommunityChatViewState extends State<CommunityChatView> {
     _scrollToBottom();
 
     try {
-      // Send message
-      await _chatService.sendGroupMessage(
-        _userId!,
-        widget.communityId,
-        messageText,
+      // Store locally + send over realtime (Signal Protocol transport, fanout).
+      await _chatService.sendGroupMessageOverNetwork(
+        userId: _userId!,
+        communityId: widget.communityId,
+        message: messageText,
         community: _community!,
       );
 
@@ -291,6 +329,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
 
   @override
   void dispose() {
+    _incomingSubscription?.cancel();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();

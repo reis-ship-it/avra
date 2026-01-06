@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/business/business_account_form_widget.dart';
-import "../../helpers/widget_test_helpers.dart';
+import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for BusinessAccountFormWidget
 /// Tests business account creation form
@@ -25,7 +25,7 @@ void main() {
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
       expect(find.byType(BusinessAccountFormWidget), findsOneWidget);
-      expect(find.text('Create Business Account'), findsOneWidget);
+      expect(find.text('Create Business Account'), findsWidgets);
       expect(find.text('Business Name *'), findsOneWidget);
       expect(find.text('Email *'), findsOneWidget);
       expect(find.text('Business Type *'), findsOneWidget);

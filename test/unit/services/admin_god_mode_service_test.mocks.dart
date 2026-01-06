@@ -16,7 +16,6 @@ import 'package:spots/core/models/connection_metrics.dart' as _i16;
 import 'package:spots/core/models/expertise_level.dart' as _i20;
 import 'package:spots/core/models/expertise_pin.dart' as _i21;
 import 'package:spots/core/models/expertise_progress.dart' as _i9;
-import 'package:spots_ai/models/personality_profile.dart' as _i17;
 import 'package:spots/core/models/unified_user.dart' as _i12;
 import 'package:spots/core/models/user.dart' as _i15;
 import 'package:spots/core/monitoring/connection_monitor.dart' as _i6;
@@ -25,6 +24,7 @@ import 'package:spots/core/services/admin_communication_service.dart' as _i3;
 import 'package:spots/core/services/business_account_service.dart' as _i11;
 import 'package:spots/core/services/expertise_service.dart' as _i19;
 import 'package:spots/core/services/supabase_service.dart' as _i18;
+import 'package:spots_ai/models/personality_profile.dart' as _i17;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i8;
 
 // ignore_for_file: type=lint
@@ -227,8 +227,8 @@ class _FakeSupabaseClient_16 extends _i1.SmartFake
         );
 }
 
-class _FakeAuthResponse_17 extends _i1.SmartFake implements _i8.AuthResponse {
-  _FakeAuthResponse_17(
+class _FakeDateTime_17 extends _i1.SmartFake implements DateTime {
+  _FakeDateTime_17(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -237,9 +237,19 @@ class _FakeAuthResponse_17 extends _i1.SmartFake implements _i8.AuthResponse {
         );
 }
 
-class _FakeExpertiseProgress_18 extends _i1.SmartFake
+class _FakeAuthResponse_18 extends _i1.SmartFake implements _i8.AuthResponse {
+  _FakeAuthResponse_18(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeExpertiseProgress_19 extends _i1.SmartFake
     implements _i9.ExpertiseProgress {
-  _FakeExpertiseProgress_18(
+  _FakeExpertiseProgress_19(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -1122,6 +1132,21 @@ class MockSupabaseService extends _i1.Mock implements _i18.SupabaseService {
       ) as _i10.Future<bool>);
 
   @override
+  _i10.Future<DateTime> getServerTime() => (super.noSuchMethod(
+        Invocation.method(
+          #getServerTime,
+          [],
+        ),
+        returnValue: _i10.Future<DateTime>.value(_FakeDateTime_17(
+          this,
+          Invocation.method(
+            #getServerTime,
+            [],
+          ),
+        )),
+      ) as _i10.Future<DateTime>);
+
+  @override
   _i10.Future<_i8.AuthResponse> signInWithEmail(
     String? email,
     String? password,
@@ -1134,7 +1159,7 @@ class MockSupabaseService extends _i1.Mock implements _i18.SupabaseService {
             password,
           ],
         ),
-        returnValue: _i10.Future<_i8.AuthResponse>.value(_FakeAuthResponse_17(
+        returnValue: _i10.Future<_i8.AuthResponse>.value(_FakeAuthResponse_18(
           this,
           Invocation.method(
             #signInWithEmail,
@@ -1159,7 +1184,7 @@ class MockSupabaseService extends _i1.Mock implements _i18.SupabaseService {
             password,
           ],
         ),
-        returnValue: _i10.Future<_i8.AuthResponse>.value(_FakeAuthResponse_17(
+        returnValue: _i10.Future<_i8.AuthResponse>.value(_FakeAuthResponse_18(
           this,
           Invocation.method(
             #signUpWithEmail,
@@ -1394,7 +1419,7 @@ class MockExpertiseService extends _i1.Mock implements _i19.ExpertiseService {
             #communityTrustScore: communityTrustScore,
           },
         ),
-        returnValue: _FakeExpertiseProgress_18(
+        returnValue: _FakeExpertiseProgress_19(
           this,
           Invocation.method(
             #calculateProgress,

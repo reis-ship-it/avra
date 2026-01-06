@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/business/business_compatibility_widget.dart';
 import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/unified_models.dart';
-import "../../helpers/widget_test_helpers.dart';
+import 'package:spots/core/models/business_patron_preferences.dart';
+import '../../helpers/widget_test_helpers.dart';
 import '../../../helpers/test_helpers.dart';
 
 /// Widget tests for BusinessCompatibilityWidget
@@ -21,6 +22,11 @@ void main() {
         name: 'Test Business',
         email: 'business@test.com',
         businessType: 'Restaurant',
+        patronPreferences: const BusinessPatronPreferences(
+          preferredVibePreferences: ['Relaxed'],
+          preferredInterests: ['Coffee'],
+          preferLocalPatrons: true,
+        ),
         createdAt: TestHelpers.createTestDateTime(),
         updatedAt: TestHelpers.createTestDateTime(),
         createdBy: 'user-123',

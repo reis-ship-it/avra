@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:spots/core/models/social_media_connection.dart';
 import 'package:spots/core/services/social_media/base/social_media_platform_service.dart';
 import 'package:spots/core/services/social_media/base/social_media_common_utils.dart';
+import 'package:spots/core/services/social_media/google_sign_in_bootstrap.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/config/oauth_config.dart';
@@ -36,20 +37,26 @@ class GooglePlatformService implements SocialMediaPlatformService {
     required String userId,
   }) async {
     try {
-      final googleSignIn = GoogleSignIn(
-        scopes: OAuthConfig.googleScopes,
+      await GoogleSignInBootstrap.ensureInitialized(
         clientId: OAuthConfig.googleClientId,
       );
 
-      final GoogleSignInAccount? account = await googleSignIn.signIn();
-      if (account == null) {
-        throw Exception('Google sign-in cancelled by user');
+      late final GoogleSignInAccount account;
+      try {
+        account = await GoogleSignIn.instance.authenticate(
+          scopeHint: OAuthConfig.googleScopes,
+        );
+      } on GoogleSignInException catch (e) {
+        if (e.code == GoogleSignInExceptionCode.canceled) {
+          throw Exception('Google sign-in cancelled by user');
+        }
+        rethrow;
       }
 
-      final GoogleSignInAuthentication auth = await account.authentication;
-      if (auth.accessToken == null) {
-        throw Exception('Failed to get Google access token');
-      }
+      final GoogleSignInAuthentication auth = account.authentication;
+      final authz = await account.authorizationClient.authorizeScopes(
+        OAuthConfig.googleScopes,
+      );
 
       final now = DateTime.now();
       final connection = SocialMediaConnection(
@@ -70,7 +77,7 @@ class GooglePlatformService implements SocialMediaPlatformService {
 
       await _saveConnection(agentId, connection);
       await _commonUtils.storeTokens(agentId, 'google', {
-        'access_token': auth.accessToken!,
+        'access_token': authz.accessToken,
         'id_token': auth.idToken,
         'refresh_token': null, // Google Sign-In handles refresh internally
         'expires_at': null, // Google Sign-In handles expiration

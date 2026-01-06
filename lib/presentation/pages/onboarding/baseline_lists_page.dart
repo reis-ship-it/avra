@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
+import 'package:spots/core/models/onboarding_suggestion_event.dart';
+import 'package:spots/core/services/onboarding_suggestion_event_store.dart';
 
 class BaselineListsPage extends StatefulWidget {
   final List<String> baselineLists;
   final Function(List<String>) onBaselineListsChanged;
+  final String? userId;
   final String? userName;
   final Map<String, List<String>>? userPreferences;
   final List<String>? userFavoritePlaces;
@@ -13,6 +17,7 @@ class BaselineListsPage extends StatefulWidget {
     super.key,
     required this.baselineLists,
     required this.onBaselineListsChanged,
+    this.userId,
     this.userName,
     this.userPreferences,
     this.userFavoritePlaces,
@@ -25,6 +30,7 @@ class BaselineListsPage extends StatefulWidget {
 class _BaselineListsPageState extends State<BaselineListsPage>
     with TickerProviderStateMixin {
   List<String> _generatedLists = [];
+  final Set<String> _selectedLists = <String>{};
   bool _isLoading = true;
   late AnimationController _loadingController;
   late Animation<double> _loadingAnimation;
@@ -64,8 +70,9 @@ class _BaselineListsPageState extends State<BaselineListsPage>
   }
 
   void _generateQuickSuggestions() {
-    final userName = widget.userName ?? 'User';
-    final homebase = widget.userPreferences?['homebase'] as String?;
+    final homebaseList = widget.userPreferences?['homebase'];
+    final homebase =
+        (homebaseList != null && homebaseList.isNotEmpty) ? homebaseList.first : null;
     final favoritePlaces = widget.userFavoritePlaces ?? [];
     final preferences = widget.userPreferences ?? {};
 
@@ -120,8 +127,38 @@ class _BaselineListsPageState extends State<BaselineListsPage>
 
     setState(() {
       _generatedLists = uniqueSuggestions;
+      _selectedLists
+        ..clear()
+        ..addAll(uniqueSuggestions);
     });
-    widget.onBaselineListsChanged(_generatedLists);
+
+    // Emit selected lists (users can deselect below).
+    widget.onBaselineListsChanged(_selectedLists.toList());
+
+    // Record “shown” event for later bootstrap (best-effort).
+    final userId = widget.userId;
+    if (userId != null &&
+        userId.isNotEmpty &&
+        GetIt.instance.isRegistered<OnboardingSuggestionEventStore>()) {
+      final store = GetIt.instance<OnboardingSuggestionEventStore>();
+      final items = uniqueSuggestions
+          .map((s) => OnboardingSuggestionItem(id: s, label: s))
+          .toList();
+      store.appendForUser(
+        userId: userId,
+        event: OnboardingSuggestionEvent(
+          eventId: OnboardingSuggestionEvent.newEventId(),
+          createdAtMs: DateTime.now().millisecondsSinceEpoch,
+          surface: 'baseline_lists',
+          provenance: OnboardingSuggestionProvenance.heuristic,
+          promptCategory: 'baseline_lists_quick_suggestions',
+          suggestions: items,
+          userAction: const OnboardingSuggestionUserAction(
+            type: OnboardingSuggestionActionType.shown,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -274,9 +311,11 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                 itemCount: _generatedLists.length,
                 itemBuilder: (context, index) {
                   final listName = _generatedLists[index];
+                  final isSelected = _selectedLists.contains(listName);
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
+                      onTap: () => _toggleSelected(listName),
                       leading: CircleAvatar(
                         backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                         child: Icon(
@@ -296,9 +335,9 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                           color: AppColors.grey600,
                         ),
                       ),
-                      trailing: const Icon(
-                        Icons.check_circle,
-                        color: AppTheme.primaryColor,
+                      trailing: Icon(
+                        isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                        color: isSelected ? AppTheme.primaryColor : AppColors.grey500,
                         size: 24,
                       ),
                       tileColor: AppTheme.primaryColor.withValues(alpha: 0.05),
@@ -314,6 +353,45 @@ class _BaselineListsPageState extends State<BaselineListsPage>
         ],
       ),
     );
+  }
+
+  void _toggleSelected(String listName) {
+    setState(() {
+      if (_selectedLists.contains(listName)) {
+        _selectedLists.remove(listName);
+      } else {
+        _selectedLists.add(listName);
+      }
+    });
+
+    widget.onBaselineListsChanged(_selectedLists.toList());
+
+    final userId = widget.userId;
+    if (userId != null &&
+        userId.isNotEmpty &&
+        GetIt.instance.isRegistered<OnboardingSuggestionEventStore>()) {
+      final store = GetIt.instance<OnboardingSuggestionEventStore>();
+      final wasSelected = _selectedLists.contains(listName);
+      store.appendForUser(
+        userId: userId,
+        event: OnboardingSuggestionEvent(
+          eventId: OnboardingSuggestionEvent.newEventId(),
+          createdAtMs: DateTime.now().millisecondsSinceEpoch,
+          surface: 'baseline_lists',
+          provenance: OnboardingSuggestionProvenance.heuristic,
+          promptCategory: 'baseline_lists_quick_suggestions',
+          suggestions: _generatedLists
+              .map((s) => OnboardingSuggestionItem(id: s, label: s))
+              .toList(),
+          userAction: OnboardingSuggestionUserAction(
+            type: wasSelected
+                ? OnboardingSuggestionActionType.select
+                : OnboardingSuggestionActionType.deselect,
+            item: OnboardingSuggestionItem(id: listName, label: listName),
+          ),
+        ),
+      );
+    }
   }
 
   IconData _getListIcon(String listName) {

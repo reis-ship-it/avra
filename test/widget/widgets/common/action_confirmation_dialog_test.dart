@@ -19,6 +19,38 @@ import 'package:spots/core/ai/action_models.dart';
 import 'package:spots/presentation/widgets/common/action_confirmation_dialog.dart';
 import '../../helpers/widget_test_helpers.dart';
 
+class _DialogLauncher extends StatefulWidget {
+  final WidgetBuilder dialogBuilder;
+  final bool barrierDismissible;
+
+  const _DialogLauncher({
+    super.key,
+    required this.dialogBuilder,
+    this.barrierDismissible = false,
+  });
+
+  @override
+  State<_DialogLauncher> createState() => _DialogLauncherState();
+}
+
+class _DialogLauncherState extends State<_DialogLauncher> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: widget.barrierDismissible,
+        builder: widget.dialogBuilder,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => const Scaffold(body: SizedBox());
+}
+
 /// Widget tests for ActionConfirmationDialog
 /// Tests dialog rendering, user interactions, and action preview display
 void main() {
@@ -40,20 +72,13 @@ void main() {
         confidence: 0.95,
       );
       final widget1 = WidgetTestHelpers.createTestableWidget(
-        child: Builder(
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (context) => ActionConfirmationDialog(
-                  intent: intent1,
-                  onConfirm: () {},
-                  onCancel: () {},
-                ),
-              );
-            });
-            return const Scaffold(body: SizedBox());
-          },
+        child: _DialogLauncher(
+          key: const ValueKey('action_confirmation_dialog_1'),
+          dialogBuilder: (dialogContext) => ActionConfirmationDialog(
+            intent: intent1,
+            onConfirm: () {},
+            onCancel: () {},
+          ),
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
@@ -61,6 +86,9 @@ void main() {
       expect(find.text('Confirm Action'), findsOneWidget);
       expect(find.text('Create Spot'), findsOneWidget);
       expect(find.text('Blue Bottle Coffee'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ActionConfirmationDialog), findsNothing);
 
       const intent2 = CreateListIntent(
         title: 'My Coffee Shops',
@@ -69,20 +97,13 @@ void main() {
         confidence: 0.90,
       );
       final widget2 = WidgetTestHelpers.createTestableWidget(
-        child: Builder(
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (context) => ActionConfirmationDialog(
-                  intent: intent2,
-                  onConfirm: () {},
-                  onCancel: () {},
-                ),
-              );
-            });
-            return const Scaffold(body: SizedBox());
-          },
+        child: _DialogLauncher(
+          key: const ValueKey('action_confirmation_dialog_2'),
+          dialogBuilder: (dialogContext) => ActionConfirmationDialog(
+            intent: intent2,
+            onConfirm: () {},
+            onCancel: () {},
+          ),
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
@@ -90,6 +111,9 @@ void main() {
       expect(find.text('Confirm Action'), findsOneWidget);
       expect(find.text('Create List'), findsOneWidget);
       expect(find.text('My Coffee Shops'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ActionConfirmationDialog), findsNothing);
 
       const intent3 = AddSpotToListIntent(
         spotId: 'spot123',
@@ -102,20 +126,13 @@ void main() {
         },
       );
       final widget3 = WidgetTestHelpers.createTestableWidget(
-        child: Builder(
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (context) => ActionConfirmationDialog(
-                  intent: intent3,
-                  onConfirm: () {},
-                  onCancel: () {},
-                ),
-              );
-            });
-            return const Scaffold(body: SizedBox());
-          },
+        child: _DialogLauncher(
+          key: const ValueKey('action_confirmation_dialog_3'),
+          dialogBuilder: (dialogContext) => ActionConfirmationDialog(
+            intent: intent3,
+            onConfirm: () {},
+            onCancel: () {},
+          ),
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget3);
@@ -124,6 +141,9 @@ void main() {
       expect(find.text('Add Spot to List'), findsOneWidget);
       expect(find.text('Blue Bottle Coffee'), findsOneWidget);
       expect(find.text('My Coffee Shops'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ActionConfirmationDialog), findsNothing);
 
       bool confirmCalled = false;
       const intent4 = CreateSpotIntent(
@@ -136,25 +156,16 @@ void main() {
         confidence: 0.9,
       );
       final widget4 = WidgetTestHelpers.createTestableWidget(
-        child: Builder(
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (context) => ActionConfirmationDialog(
-                  intent: intent4,
-                  onConfirm: () {
-                    confirmCalled = true;
-                    Navigator.of(context).pop();
-                  },
-                  onCancel: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              );
-            });
-            return const Scaffold(body: SizedBox());
-          },
+        child: _DialogLauncher(
+          key: const ValueKey('action_confirmation_dialog_4'),
+          dialogBuilder: (dialogContext) => ActionConfirmationDialog(
+            intent: intent4,
+            onConfirm: () {
+              confirmCalled = true;
+            },
+            onCancel: () {
+            },
+          ),
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget4);
@@ -174,25 +185,16 @@ void main() {
         confidence: 0.9,
       );
       final widget5 = WidgetTestHelpers.createTestableWidget(
-        child: Builder(
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (context) => ActionConfirmationDialog(
-                  intent: intent5,
-                  onConfirm: () {
-                    Navigator.of(context).pop();
-                  },
-                  onCancel: () {
-                    cancelCalled = true;
-                    Navigator.of(context).pop();
-                  },
-                ),
-              );
-            });
-            return const Scaffold(body: SizedBox());
-          },
+        child: _DialogLauncher(
+          key: const ValueKey('action_confirmation_dialog_5'),
+          dialogBuilder: (dialogContext) => ActionConfirmationDialog(
+            intent: intent5,
+            onConfirm: () {
+            },
+            onCancel: () {
+              cancelCalled = true;
+            },
+          ),
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget5);
@@ -211,23 +213,15 @@ void main() {
         confidence: 0.9,
       );
       final widget6 = WidgetTestHelpers.createTestableWidget(
-        child: Builder(
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                barrierDismissible: true,
-                builder: (context) => ActionConfirmationDialog(
-                  intent: intent6,
-                  onConfirm: () {
-                    Navigator.of(context).pop();
-                  },
-                  onCancel: () {},
-                ),
-              );
-            });
-            return const Scaffold(body: SizedBox());
-          },
+        child: _DialogLauncher(
+          key: const ValueKey('action_confirmation_dialog_6'),
+          barrierDismissible: true,
+          dialogBuilder: (dialogContext) => ActionConfirmationDialog(
+            intent: intent6,
+            onConfirm: () {
+            },
+            onCancel: () {},
+          ),
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget6);
@@ -247,26 +241,22 @@ void main() {
         confidence: 0.95,
       );
       final widget7 = WidgetTestHelpers.createTestableWidget(
-        child: Builder(
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (context) => ActionConfirmationDialog(
-                  intent: intent7,
-                  onConfirm: () {},
-                  onCancel: () {},
-                ),
-              );
-            });
-            return const Scaffold(body: SizedBox());
-          },
+        child: _DialogLauncher(
+          key: const ValueKey('action_confirmation_dialog_7'),
+          dialogBuilder: (dialogContext) => ActionConfirmationDialog(
+            intent: intent7,
+            onConfirm: () {},
+            onCancel: () {},
+          ),
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget7);
       expect(find.text('Blue Bottle Coffee'), findsOneWidget);
       expect(find.text('Coffee'), findsOneWidget);
       expect(find.text('123 Main St'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ActionConfirmationDialog), findsNothing);
 
       const intent8 = CreateListIntent(
         title: 'My Coffee Shops',
@@ -278,25 +268,21 @@ void main() {
         confidence: 0.90,
       );
       final widget8 = WidgetTestHelpers.createTestableWidget(
-        child: Builder(
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (context) => ActionConfirmationDialog(
-                  intent: intent8,
-                  onConfirm: () {},
-                  onCancel: () {},
-                ),
-              );
-            });
-            return const Scaffold(body: SizedBox());
-          },
+        child: _DialogLauncher(
+          key: const ValueKey('action_confirmation_dialog_8'),
+          dialogBuilder: (dialogContext) => ActionConfirmationDialog(
+            intent: intent8,
+            onConfirm: () {},
+            onCancel: () {},
+          ),
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget8);
       expect(find.text('My Coffee Shops'), findsOneWidget);
       expect(find.text('Public'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ActionConfirmationDialog), findsNothing);
 
       const intent9 = CreateSpotIntent(
         name: 'Test Spot',
@@ -308,25 +294,21 @@ void main() {
         confidence: 0.5,
       );
       final widget9 = WidgetTestHelpers.createTestableWidget(
-        child: Builder(
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (context) => ActionConfirmationDialog(
-                  intent: intent9,
-                  onConfirm: () {},
-                  onCancel: () {},
-                ),
-              );
-            });
-            return const Scaffold(body: SizedBox());
-          },
+        child: _DialogLauncher(
+          key: const ValueKey('action_confirmation_dialog_9'),
+          dialogBuilder: (dialogContext) => ActionConfirmationDialog(
+            intent: intent9,
+            onConfirm: () {},
+            onCancel: () {},
+          ),
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget9);
       expect(find.byType(ActionConfirmationDialog), findsOneWidget);
       expect(find.text('Test Spot'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ActionConfirmationDialog), findsNothing);
 
       const intent10 = CreateSpotIntent(
         name: 'Test Spot',
@@ -338,25 +320,21 @@ void main() {
         confidence: 0.75,
       );
       final widget10 = WidgetTestHelpers.createTestableWidget(
-        child: Builder(
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (context) => ActionConfirmationDialog(
-                  intent: intent10,
-                  onConfirm: () {},
-                  onCancel: () {},
-                  showConfidence: true,
-                ),
-              );
-            });
-            return const Scaffold(body: SizedBox());
-          },
+        child: _DialogLauncher(
+          key: const ValueKey('action_confirmation_dialog_10'),
+          dialogBuilder: (dialogContext) => ActionConfirmationDialog(
+            intent: intent10,
+            onConfirm: () {},
+            onCancel: () {},
+            showConfidence: true,
+          ),
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget10);
       expect(find.textContaining('75%'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ActionConfirmationDialog), findsNothing);
     });
   });
 }

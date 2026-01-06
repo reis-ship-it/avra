@@ -12,6 +12,7 @@ import 'package:spots/core/models/spot.dart';
 import 'package:spots/core/models/business_account.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:spots/injection_container.dart' as di;
+import '../../helpers/platform_channel_helper.dart';
 import '../../helpers/integration_test_helpers.dart';
 
 /// Integration tests for QuantumMatchingController
@@ -37,6 +38,7 @@ void main() {
       await SembastDatabase.database;
       
       // Initialize dependency injection
+      await setupTestStorage();
       await di.init();
       
       // Get controller from DI
@@ -80,7 +82,11 @@ void main() {
         final result = await controller.execute(input);
 
         // Assert
-        expect(result.isSuccess, isTrue);
+        expect(
+          result.isSuccess,
+          isTrue,
+          reason: 'errorCode=${result.errorCode} error=${result.error}',
+        );
         expect(result.matchingResult, isNotNull);
         expect(result.matchingResult!.compatibility, greaterThan(0.0));
         expect(result.matchingResult!.compatibility, lessThanOrEqualTo(1.0));
@@ -128,7 +134,11 @@ void main() {
         final result = await controller.execute(input);
 
         // Assert
-        expect(result.isSuccess, isTrue);
+        expect(
+          result.isSuccess,
+          isTrue,
+          reason: 'errorCode=${result.errorCode} error=${result.error}',
+        );
         expect(result.matchingResult, isNotNull);
         expect(result.matchingResult!.compatibility, greaterThan(0.0));
         expect(result.matchingResult!.entities.length, greaterThanOrEqualTo(2)); // User + Spot
@@ -163,7 +173,11 @@ void main() {
         final result = await controller.execute(input);
 
         // Assert
-        expect(result.isSuccess, isTrue);
+        expect(
+          result.isSuccess,
+          isTrue,
+          reason: 'errorCode=${result.errorCode} error=${result.error}',
+        );
         expect(result.matchingResult, isNotNull);
         expect(result.matchingResult!.compatibility, greaterThan(0.0));
         expect(result.matchingResult!.entities.length, greaterThanOrEqualTo(2)); // User + Business
@@ -209,7 +223,11 @@ void main() {
         final result = await controller.execute(input);
 
         // Assert
-        expect(result.isSuccess, isTrue);
+        expect(
+          result.isSuccess,
+          isTrue,
+          reason: 'errorCode=${result.errorCode} error=${result.error}',
+        );
         expect(result.matchingResult, isNotNull);
         expect(result.matchingResult!.entities.length, greaterThanOrEqualTo(3)); // User + Event + Spot
         expect(result.matchingResult!.metadata!['entityCount'], greaterThanOrEqualTo(3));
@@ -264,7 +282,11 @@ void main() {
         final result = await controller.execute(input);
 
         // Assert
-        expect(result.isSuccess, isTrue);
+        expect(
+          result.isSuccess,
+          isTrue,
+          reason: 'errorCode=${result.errorCode} error=${result.error}',
+        );
         expect(result.matchingResult, isNotNull);
         expect(result.matchingResult!.metadata, isNotNull);
         expect(result.matchingResult!.metadata!['agentId'], isNotNull);

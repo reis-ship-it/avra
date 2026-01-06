@@ -99,7 +99,7 @@ The AI2AI system is built on the foundation of `OUR_GUTS.md` - the core philosop
 **Code Reference:**
 - `lib/core/ai/vibe_analysis_engine.dart` - Compatibility analysis
 - `lib/core/constants/vibe_constants.dart` - Compatibility thresholds
-- `VIBE_CODING/ARCHITECTURE/personality_spectrum.md` - Spectrum approach
+- `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/personality_spectrum.md` - Spectrum approach
 
 ---
 

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:async';
-import 'package:spots/core/services/ai2ai_realtime_service.dart';
+import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/models/personality_profile.dart';
@@ -77,6 +77,7 @@ void main() async {
     final orchestrator = VibeConnectionOrchestrator(
       vibeAnalyzer: vibeAnalyzer,
       connectivity: connectivity,
+      prefs: prefs,
     );
 
     // #region agent log
@@ -106,7 +107,9 @@ void main() async {
     // #endregion
 
     // Create AI2AI realtime service
-    final realtimeService = AI2AIRealtimeService(realtimeBackend, orchestrator);
+    final realtimeService = AI2AIBroadcastService(realtimeBackend);
+    // Mirror app wiring: orchestrator consumes realtime service.
+    orchestrator.setRealtimeService(realtimeService);
 
     // Test backend connection
     developer.log('🔌 Testing backend connection...',
@@ -193,7 +196,7 @@ void main() async {
 
 /// Test realtime functionality
 Future<void> _testRealtimeFunctionality(
-    AI2AIRealtimeService realtimeService) async {
+    AI2AIBroadcastService realtimeService) async {
   developer.log('📡 Testing realtime functionality...',
       name: 'TestAI2AIRealtime');
 
@@ -227,7 +230,15 @@ Future<void> _testRealtimeFunctionality(
         {'nodeId': testNode.nodeId, 'vibeSignature': testNode.vibeSignature});
     // #endregion
 
-    await realtimeService.broadcastPersonalityDiscovery(testNode);
+    await realtimeService.broadcastPersonalityDiscovery(
+      agentId: testNode.nodeId,
+      data: {
+        'node_id': testNode.nodeId,
+        'vibe_signature': testNode.vibeSignature,
+        'trust_score': testNode.trustScore,
+        'last_seen': testNode.lastSeen.toIso8601String(),
+      },
+    );
     developer.log('✅ Personality discovery broadcast successful',
         name: 'TestAI2AIRealtime');
 
@@ -243,7 +254,12 @@ Future<void> _testRealtimeFunctionality(
         'Before broadcastVibeLearning', {'dimensionUpdates': dimensionUpdates});
     // #endregion
 
-    await realtimeService.broadcastVibeLearning(dimensionUpdates);
+    await realtimeService.broadcastVibeLearning(
+      agentId: testNode.nodeId,
+      data: {
+        ...dimensionUpdates,
+      },
+    );
     developer.log('✅ Vibe learning broadcast successful',
         name: 'TestAI2AIRealtime');
 
@@ -279,7 +295,7 @@ Future<void> _testRealtimeFunctionality(
 
 /// Test AI2AI communication
 Future<void> _testAI2AICommunication(
-    AI2AIRealtimeService realtimeService) async {
+    AI2AIBroadcastService realtimeService) async {
   developer.log('💬 Testing AI2AI communication...', name: 'TestAI2AIRealtime');
 
   try {
@@ -383,7 +399,7 @@ Future<void> _testAI2AICommunication(
 }
 
 /// Test presence tracking
-Future<void> _testPresenceTracking(AI2AIRealtimeService realtimeService) async {
+Future<void> _testPresenceTracking(AI2AIBroadcastService realtimeService) async {
   developer.log('👥 Testing presence tracking...', name: 'TestAI2AIRealtime');
 
   try {

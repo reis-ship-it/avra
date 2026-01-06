@@ -15,7 +15,7 @@ void main() {
         (WidgetTester tester) async {
       // Test business logic: AI chat bar display and interactions
       final widget1 = WidgetTestHelpers.createTestableWidget(
-        child: const AIChatBar(),
+        child: const AIChatBar(key: ValueKey('ai_chat_bar_1')),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(AIChatBar), findsOneWidget);
@@ -24,13 +24,19 @@ void main() {
       expect(find.byIcon(Icons.smart_toy), findsOneWidget);
 
       final widget2 = WidgetTestHelpers.createTestableWidget(
-        child: const AIChatBar(hintText: 'Custom hint text'),
+        child: const AIChatBar(
+          key: ValueKey('ai_chat_bar_2'),
+          hintText: 'Custom hint text',
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Custom hint text'), findsOneWidget);
 
       final widget3 = WidgetTestHelpers.createTestableWidget(
-        child: const AIChatBar(initialValue: 'Initial message'),
+        child: const AIChatBar(
+          key: ValueKey('ai_chat_bar_3'),
+          initialValue: 'Initial message',
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.text('Initial message'), findsOneWidget);
@@ -38,6 +44,7 @@ void main() {
       String? sentMessage1;
       final widget4 = WidgetTestHelpers.createTestableWidget(
         child: AIChatBar(
+          key: const ValueKey('ai_chat_bar_4'),
           onSendMessage: (message) {
             sentMessage1 = message;
           },
@@ -46,13 +53,14 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       await tester.enterText(find.byType(TextField), 'Test message');
       await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.send));
+      await tester.tap(find.widgetWithIcon(IconButton, Icons.send));
       await tester.pumpAndSettle();
       expect(sentMessage1, equals('Test message'));
 
       String? sentMessage2;
       final widget5 = WidgetTestHelpers.createTestableWidget(
         child: AIChatBar(
+          key: const ValueKey('ai_chat_bar_5'),
           onSendMessage: (message) {
             sentMessage2 = message;
           },
@@ -65,30 +73,46 @@ void main() {
       expect(sentMessage2, equals('Test message'));
 
       final widget6 = WidgetTestHelpers.createTestableWidget(
-        child: const AIChatBar(),
+        child: AIChatBar(
+          key: const ValueKey('ai_chat_bar_6'),
+          onSendMessage: (_) {},
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget6);
-      final sendButton1 = tester.widget<IconButton>(find.byIcon(Icons.send));
+      final sendButton1 = tester.widget<IconButton>(
+        find.widgetWithIcon(IconButton, Icons.send),
+      );
       expect(sendButton1.onPressed, isNull);
 
       final widget7 = WidgetTestHelpers.createTestableWidget(
-        child: const AIChatBar(),
+        child: AIChatBar(
+          key: const ValueKey('ai_chat_bar_7'),
+          onSendMessage: (_) {},
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget7);
       await tester.enterText(find.byType(TextField), 'Test');
       await tester.pumpAndSettle();
-      final sendButton2 = tester.widget<IconButton>(find.byIcon(Icons.send));
+      final sendButton2 = tester.widget<IconButton>(
+        find.widgetWithIcon(IconButton, Icons.send),
+      );
       expect(sendButton2.onPressed, isNotNull);
 
       final widget8 = WidgetTestHelpers.createTestableWidget(
-        child: const AIChatBar(isLoading: true),
+        child: const AIChatBar(
+          key: ValueKey('ai_chat_bar_8'),
+          isLoading: true,
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget8);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.byIcon(Icons.send), findsNothing);
 
       final widget9 = WidgetTestHelpers.createTestableWidget(
-        child: const AIChatBar(enabled: false),
+        child: const AIChatBar(
+          key: ValueKey('ai_chat_bar_9'),
+          enabled: false,
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget9);
       final textField1 = tester.widget<TextField>(find.byType(TextField));
@@ -97,6 +121,7 @@ void main() {
       bool tapped = false;
       final widget10 = WidgetTestHelpers.createTestableWidget(
         child: AIChatBar(
+          key: const ValueKey('ai_chat_bar_10'),
           onTap: () {
             tapped = true;
           },
@@ -108,12 +133,15 @@ void main() {
       expect(tapped, isTrue);
 
       final widget11 = WidgetTestHelpers.createTestableWidget(
-        child: const AIChatBar(),
+        child: AIChatBar(
+          key: const ValueKey('ai_chat_bar_11'),
+          onSendMessage: (_) {},
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget11);
       await tester.enterText(find.byType(TextField), 'Test message');
       await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.send));
+      await tester.tap(find.widgetWithIcon(IconButton, Icons.send));
       await tester.pumpAndSettle();
       final textField2 = tester.widget<TextField>(find.byType(TextField));
       expect(textField2.controller?.text, isEmpty);

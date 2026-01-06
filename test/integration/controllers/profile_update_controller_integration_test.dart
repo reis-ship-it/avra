@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/controllers/profile_update_controller.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Profile Update Controller Integration Tests
 /// 
@@ -21,6 +22,7 @@ void main() {
       await SembastDatabase.database;
       
       // Initialize dependency injection
+      await setupTestStorage();
       await di.init();
       
       controller = di.sl<ProfileUpdateController>();

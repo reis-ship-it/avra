@@ -2,6 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../helpers/widget_test_helpers.dart';
 
+Future<void> _tapElevatedButton(WidgetTester tester, String label) async {
+  final finder = find.widgetWithText(ElevatedButton, label).hitTestable();
+  expect(finder, findsOneWidget);
+  await tester.tap(finder);
+}
+
+Future<void> _tapTextButton(WidgetTester tester, String label) async {
+  final finder = find.widgetWithText(TextButton, label).hitTestable();
+  expect(finder, findsOneWidget);
+  await tester.tap(finder);
+}
+
+Future<void> _dismissDialogProgrammatically(WidgetTester tester) async {
+  final dialog = find.byType(AlertDialog);
+  expect(dialog, findsOneWidget);
+  Navigator.of(tester.element(dialog)).pop();
+  // Let the dialog route transition fully complete so barriers are removed.
+  await tester.pump(const Duration(milliseconds: 350));
+}
+
 void main() {
   group('Dialogs and Permissions Widget Tests', () {
     // Removed: Property assignment tests
@@ -21,13 +41,17 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-        await tester.tap(find.text('Show Dialog'));
+        await _tapElevatedButton(tester, 'Show Dialog');
         await tester.pumpAndSettle();
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(find.text('Age Verification'), findsOneWidget);
         expect(find.text('Are you 18 or older?'), findsOneWidget);
         expect(find.text('Yes'), findsOneWidget);
         expect(find.text('No'), findsOneWidget);
+        // Close so the modal barrier doesn't leak into subsequent pumps.
+        await _tapTextButton(tester, 'No');
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsNothing);
 
         bool? verificationResult1;
         final widget2 = WidgetTestHelpers.createTestableWidget(
@@ -42,9 +66,9 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-        await tester.tap(find.text('Show Dialog'));
+        await _tapElevatedButton(tester, 'Show Dialog');
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Yes'));
+        await _tapTextButton(tester, 'Yes');
         await tester.pumpAndSettle();
         expect(verificationResult1, isTrue);
         expect(find.byType(AlertDialog), findsNothing);
@@ -62,9 +86,9 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget3);
-        await tester.tap(find.text('Show Dialog'));
+        await _tapElevatedButton(tester, 'Show Dialog');
         await tester.pumpAndSettle();
-        await tester.tap(find.text('No'));
+        await _tapTextButton(tester, 'No');
         await tester.pumpAndSettle();
         expect(verificationResult2, isFalse);
         expect(find.byType(AlertDialog), findsNothing);
@@ -85,13 +109,17 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-        await tester.tap(find.text('Request Location'));
+        await _tapElevatedButton(tester, 'Request Location');
         await tester.pumpAndSettle();
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(find.text('Location Permission'), findsOneWidget);
         expect(find.textContaining('location'), findsWidgets);
         expect(find.text('Allow'), findsOneWidget);
         expect(find.text('Deny'), findsOneWidget);
+        // Close so the modal barrier doesn't leak into subsequent pumps.
+        await _tapTextButton(tester, 'Deny');
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsNothing);
 
         bool? permissionGranted;
         final widget2 = WidgetTestHelpers.createTestableWidget(
@@ -106,9 +134,9 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-        await tester.tap(find.text('Request Location'));
+        await _tapElevatedButton(tester, 'Request Location');
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Allow'));
+        await _tapTextButton(tester, 'Allow');
         await tester.pumpAndSettle();
         expect(permissionGranted, isTrue);
         expect(find.byType(AlertDialog), findsNothing);
@@ -122,11 +150,14 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget3);
-        await tester.tap(find.text('Request Camera'));
+        await _tapElevatedButton(tester, 'Request Camera');
         await tester.pumpAndSettle();
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(find.text('Camera Permission'), findsOneWidget);
         expect(find.textContaining('camera'), findsWidgets);
+        await _tapTextButton(tester, 'Deny');
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsNothing);
       });
     });
 
@@ -144,13 +175,17 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-        await tester.tap(find.text('Delete Item'));
+        await _tapElevatedButton(tester, 'Delete Item');
         await tester.pumpAndSettle();
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(find.text('Confirm Delete'), findsOneWidget);
         expect(find.textContaining('permanently'), findsWidgets);
         expect(find.text('Delete'), findsOneWidget);
         expect(find.text('Cancel'), findsOneWidget);
+        // Close so the modal barrier doesn't leak into subsequent pumps.
+        await _tapTextButton(tester, 'Cancel');
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsNothing);
 
         bool? deleteConfirmed1;
         final widget2 = WidgetTestHelpers.createTestableWidget(
@@ -165,9 +200,9 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-        await tester.tap(find.text('Delete Item'));
+        await _tapElevatedButton(tester, 'Delete Item');
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Delete'));
+        await _tapTextButton(tester, 'Delete');
         await tester.pumpAndSettle();
         expect(deleteConfirmed1, isTrue);
         expect(find.byType(AlertDialog), findsNothing);
@@ -185,9 +220,9 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget3);
-        await tester.tap(find.text('Delete Item'));
+        await _tapElevatedButton(tester, 'Delete Item');
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Cancel'));
+        await _tapTextButton(tester, 'Cancel');
         await tester.pumpAndSettle();
         expect(deleteConfirmed2, isNull);
         expect(find.byType(AlertDialog), findsNothing);
@@ -208,11 +243,14 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-        await tester.tap(find.text('Show Loading'));
+        await _tapElevatedButton(tester, 'Show Loading');
         await tester.pump();
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
         expect(find.text('Saving...'), findsOneWidget);
+        await _dismissDialogProgrammatically(tester);
+        await tester.pump();
+        expect(find.byType(AlertDialog), findsNothing);
 
         final widget2 = WidgetTestHelpers.createTestableWidget(
           child: Builder(
@@ -231,42 +269,60 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-        await tester.tap(find.text('Show Loading'));
+        await _tapElevatedButton(tester, 'Show Loading');
         await tester.pump();
-        await tester.tap(find.text('Other Button'));
+        // Should not be tappable through the modal barrier.
+        await tester.tap(
+          find.widgetWithText(ElevatedButton, 'Other Button'),
+          warnIfMissed: false,
+        );
         await tester.pump();
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        await _dismissDialogProgrammatically(tester);
+        await tester.pump();
+        expect(find.byType(AlertDialog), findsNothing);
 
         const errorMessage = 'Something went wrong!';
         final widget3 = WidgetTestHelpers.createTestableWidget(
-          child: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () => _showErrorDialog(context, errorMessage),
-              child: const Text('Show Error'),
+          child: Scaffold(
+            body: Center(
+              child: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => _showErrorDialog(context, errorMessage),
+                  child: const Text('Show Error'),
+                ),
+              ),
             ),
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget3);
-        await tester.tap(find.text('Show Error'));
-        await tester.pumpAndSettle();
+        await _tapElevatedButton(tester, 'Show Error');
+        await tester.pump(const Duration(milliseconds: 350));
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(find.text('Error'), findsOneWidget);
         expect(find.text(errorMessage), findsOneWidget);
         expect(find.text('OK'), findsOneWidget);
+        await _tapTextButton(tester, 'OK');
+        await tester.pump(const Duration(milliseconds: 350));
+        expect(find.byType(AlertDialog), findsNothing);
 
         final widget4 = WidgetTestHelpers.createTestableWidget(
-          child: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () => _showErrorDialog(context, 'Error message'),
-              child: const Text('Show Error'),
+          child: Scaffold(
+            body: Center(
+              child: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => _showErrorDialog(context, 'Error message'),
+                  child: const Text('Show Error'),
+                ),
+              ),
             ),
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget4);
-        await tester.tap(find.text('Show Error'));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('OK'));
-        await tester.pumpAndSettle();
+        await _tapElevatedButton(tester, 'Show Error');
+        await tester.pump(const Duration(milliseconds: 350));
+        await _tapTextButton(tester, 'OK');
+        await tester.pump(const Duration(milliseconds: 350));
         expect(find.byType(AlertDialog), findsNothing);
       });
     });
@@ -285,7 +341,7 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-        await tester.tap(find.text('Show Dialog'));
+        await _tapElevatedButton(tester, 'Show Dialog');
         await tester.pumpAndSettle();
         expect(find.text('Age Verification'), findsOneWidget);
         final yesButton =
@@ -293,6 +349,9 @@ void main() {
         expect(yesButton.height, greaterThanOrEqualTo(48.0));
         final noButton = tester.getSize(find.widgetWithText(TextButton, 'No'));
         expect(noButton.height, greaterThanOrEqualTo(48.0));
+        await _tapTextButton(tester, 'No');
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsNothing);
 
         final widget2 = WidgetTestHelpers.createTestableWidget(
           child: Builder(
@@ -303,11 +362,14 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-        await tester.tap(find.text('Show Delete Dialog'));
+        await _tapElevatedButton(tester, 'Show Delete Dialog');
         await tester.pumpAndSettle();
         expect(find.text('Confirm Delete'), findsOneWidget);
         expect(find.text('Delete'), findsOneWidget);
         expect(find.text('Cancel'), findsOneWidget);
+        await _tapTextButton(tester, 'Cancel');
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsNothing);
 
         final widget3 = WidgetTestHelpers.createTestableWidget(
           child: Builder(
@@ -318,7 +380,7 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget3);
-        await tester.tap(find.text('Show Dialog'));
+        await _tapElevatedButton(tester, 'Show Dialog');
         await tester.pumpAndSettle();
         final originalSize = tester.view.physicalSize;
         tester.view.physicalSize = const Size(800, 400);
@@ -327,6 +389,9 @@ void main() {
         expect(find.text('Age Verification'), findsOneWidget);
         tester.view.physicalSize = originalSize;
         await tester.pump();
+        await _tapTextButton(tester, 'No');
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsNothing);
 
         final widget4 = WidgetTestHelpers.createTestableWidget(
           child: Builder(
@@ -337,9 +402,9 @@ void main() {
           ),
         );
         await WidgetTestHelpers.pumpAndSettle(tester, widget4);
-        await tester.tap(find.text('Show Dialog'));
+        await _tapElevatedButton(tester, 'Show Dialog');
         await tester.pump();
-        await tester.tap(find.text('Yes'));
+        await _tapTextButton(tester, 'Yes');
         await tester.pump();
         expect(find.byType(AlertDialog), findsNothing);
       });

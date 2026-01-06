@@ -23,7 +23,21 @@ import 'package:get_it/get_it.dart';
 
 /// Widget displaying user's federated learning participation history
 class FederatedParticipationHistoryWidget extends StatefulWidget {
-  const FederatedParticipationHistoryWidget({super.key});
+  /// Optional override for tests/debug: preloaded participation history.
+  final ParticipationHistory? participationHistory;
+
+  /// Optional override for tests/debug: current node id.
+  final String? currentNodeId;
+
+  /// Optional override for tests/debug: federated learning system instance.
+  final FederatedLearningSystem? federatedLearningSystem;
+
+  const FederatedParticipationHistoryWidget({
+    super.key,
+    this.participationHistory,
+    this.currentNodeId,
+    this.federatedLearningSystem,
+  });
 
   @override
   State<FederatedParticipationHistoryWidget> createState() => _FederatedParticipationHistoryWidgetState();
@@ -39,14 +53,51 @@ class _FederatedParticipationHistoryWidgetState extends State<FederatedParticipa
   @override
   void initState() {
     super.initState();
-    // Use dependency injection to get FederatedLearningSystem
-    try {
-      _federatedLearningSystem = GetIt.instance<FederatedLearningSystem>();
-    } catch (e) {
-      // Fallback if not registered in DI (shouldn't happen in production)
-      _federatedLearningSystem = FederatedLearningSystem();
+    _federatedLearningSystem = widget.federatedLearningSystem ??
+        (() {
+          try {
+            return GetIt.instance<FederatedLearningSystem>();
+          } catch (_) {
+            return FederatedLearningSystem();
+          }
+        })();
+
+    _currentNodeId = widget.currentNodeId;
+
+    // If tests/debug provided history, render without async load.
+    if (widget.participationHistory != null) {
+      _participationHistory = widget.participationHistory;
+      _isLoading = false;
+      _errorMessage = null;
+      return;
     }
+
     _loadParticipationHistory();
+  }
+
+  @override
+  void didUpdateWidget(covariant FederatedParticipationHistoryWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Keep local node id in sync with widget overrides.
+    if (widget.currentNodeId != oldWidget.currentNodeId) {
+      _currentNodeId = widget.currentNodeId;
+    }
+
+    // Support test/debug overrides updating across rebuilds.
+    if (widget.participationHistory != oldWidget.participationHistory) {
+      if (widget.participationHistory != null) {
+        setState(() {
+          _participationHistory = widget.participationHistory;
+          _isLoading = false;
+          _errorMessage = null;
+        });
+      } else if (oldWidget.participationHistory != null &&
+          widget.participationHistory == null) {
+        // Transition back to live loading mode.
+        _loadParticipationHistory();
+      }
+    }
   }
 
   Future<void> _loadParticipationHistory() async {
@@ -57,13 +108,24 @@ class _FederatedParticipationHistoryWidgetState extends State<FederatedParticipa
 
     try {
       // Get current user ID as node ID
-      final authState = context.read<AuthBloc>().state;
-      if (authState is Authenticated) {
-        _currentNodeId = authState.user.id;
+      if (_currentNodeId == null) {
+        final authState = context.read<AuthBloc>().state;
+        if (authState is Authenticated) {
+          _currentNodeId = authState.user.id;
+        }
       }
 
       if (_currentNodeId == null) {
-        throw Exception('User not authenticated');
+        // In widget-test contexts (or signed-out UX), treat "no user" as
+        // "no history yet" rather than an error state.
+        if (mounted) {
+          setState(() {
+            _participationHistory = null;
+            _isLoading = false;
+            _errorMessage = null;
+          });
+        }
+        return;
       }
 
       // Fetch participation history from backend

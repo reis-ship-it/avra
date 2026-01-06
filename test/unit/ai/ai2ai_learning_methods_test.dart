@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/ai/ai2ai_learning.dart';
 import 'package:spots/core/ai/personality_learning.dart';
-import 'package:shared_preferences/shared_preferences.dart' as sp;
 import 'package:spots/core/services/storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
@@ -15,16 +14,13 @@ void main() {
     });
     
     setUp(() async {
-      sp.SharedPreferences.setMockInitialValues({});
-      final sharedPrefs = await sp.SharedPreferences.getInstance();
       // PersonalityLearning uses SharedPreferences from storage_service (typedef to SharedPreferencesCompat)
-      // AI2AIChatAnalyzer uses SharedPreferences from shared_preferences package
-      // Use the compat version for PersonalityLearning with mock storage
+      // AI2AIChatAnalyzer also uses SharedPreferencesCompat.
       final mockStorage = getTestStorage();
       final compatPrefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
       personalityLearning = PersonalityLearning.withPrefs(compatPrefs);
       analyzer = AI2AIChatAnalyzer(
-        prefs: sharedPrefs,
+        prefs: compatPrefs,
         personalityLearning: personalityLearning,
       );
     });

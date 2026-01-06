@@ -22,12 +22,12 @@
 /// ✅ DO: Consolidate related workflow steps into comprehensive tests
 /// 
 /// See: docs/plans/test_refactoring/TEST_WRITING_GUIDE.md
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/reservation_service.dart';
 import 'package:spots/core/services/reservation_quantum_service.dart';
-import 'package:spots/core/services/reservation_recommendation_service.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/services/supabase_service.dart';
@@ -42,6 +42,7 @@ import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:mocktail/mocktail.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 // Mock dependencies
 class MockSupabaseService extends Mock implements SupabaseService {}
@@ -67,6 +68,8 @@ void main() {
     late LocationTimingQuantumStateService locationTimingService;
 
     setUp(() async {
+      await setupTestStorage();
+
       // Initialize storage service
       storageService = StorageService.instance;
 
@@ -120,8 +123,8 @@ void main() {
     group('Complete Reservation Workflow', () {
       test('should create reservation, store locally, and retrieve successfully', () async {
         // Arrange
-        final userId = 'test-user-123';
-        final eventId = 'event-456';
+        const userId = 'test-user-123';
+        const eventId = 'event-456';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         // Create mock personality profile
@@ -178,8 +181,8 @@ void main() {
 
       test('should sync reservation to cloud when online', () async {
         // Arrange
-        final userId = 'test-user-456';
-        final eventId = 'event-789';
+        const userId = 'test-user-456';
+        const eventId = 'event-789';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         // Create mock personality profile
@@ -226,8 +229,8 @@ void main() {
     group('Reservation Updates', () {
       test('should update reservation and increment modification count', () async {
         // Arrange
-        final userId = 'test-user-update';
-        final eventId = 'event-update';
+        const userId = 'test-user-update';
+        const eventId = 'event-update';
         final originalTime = DateTime.now().add(const Duration(days: 7));
         final newTime = DateTime.now().add(const Duration(days: 8));
 
@@ -281,8 +284,8 @@ void main() {
     group('Reservation Cancellation', () {
       test('should cancel reservation and update status', () async {
         // Arrange
-        final userId = 'test-user-cancel';
-        final eventId = 'event-cancel';
+        const userId = 'test-user-cancel';
+        const eventId = 'event-cancel';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         // Create mock personality profile
@@ -333,9 +336,9 @@ void main() {
     group('Reservation Filtering', () {
       test('should filter reservations by status', () async {
         // Arrange
-        final userId = 'test-user-filter';
-        final eventId1 = 'event-1';
-        final eventId2 = 'event-2';
+        const userId = 'test-user-filter';
+        const eventId1 = 'event-1';
+        const eventId2 = 'event-2';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         // Create mock personality profile
@@ -407,8 +410,8 @@ void main() {
     group('Offline-First Behavior', () {
       test('should create reservation offline and retrieve it', () async {
         // Arrange
-        final userId = 'test-user-offline';
-        final eventId = 'event-offline';
+        const userId = 'test-user-offline';
+        const eventId = 'event-offline';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         // Create mock personality profile

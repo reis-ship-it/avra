@@ -18,7 +18,8 @@ class MockAuthBloc extends Mock implements AuthBloc {
   AuthState get state => _state ?? AuthInitial();
 
   @override
-  Stream<AuthState> get stream => _stream?.asBroadcastStream() ?? Stream.value(AuthInitial()).asBroadcastStream();
+  Stream<AuthState> get stream =>
+      _stream ?? Stream.value(state).asBroadcastStream();
 
   @override
   Future<void> close() async {
@@ -55,7 +56,7 @@ class MockListsBloc extends Mock implements ListsBloc {
 
   @override
   Stream<ListsState> get stream =>
-      _stream?.asBroadcastStream() ?? Stream.value(ListsInitial()).asBroadcastStream();
+      _stream ?? Stream.value(state).asBroadcastStream();
 
   @override
   Future<void> close() async {
@@ -91,7 +92,7 @@ class MockSpotsBloc extends Mock implements SpotsBloc {
 
   @override
   Stream<SpotsState> get stream =>
-      _stream?.asBroadcastStream() ?? Stream.value(SpotsInitial()).asBroadcastStream();
+      _stream ?? Stream.value(state).asBroadcastStream();
 
   @override
   Future<void> close() async {
@@ -117,8 +118,8 @@ class MockHybridSearchBloc extends Mock implements HybridSearchBloc {
   HybridSearchState get state => _state ?? HybridSearchInitial();
 
   @override
-  Stream<HybridSearchState> get stream => _stream?.asBroadcastStream() ??
-      Stream.value(HybridSearchInitial()).asBroadcastStream();
+  Stream<HybridSearchState> get stream =>
+      _stream ?? Stream.value(state).asBroadcastStream();
 
   @override
   Future<void> close() async {

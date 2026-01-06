@@ -4,10 +4,10 @@ import 'package:mockito/mockito.dart';
 
 import 'package:spots/core/controllers/list_creation_controller.dart';
 import 'package:spots/domain/repositories/lists_repository.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/models/list.dart';
 import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 
 import 'list_creation_controller_test.mocks.dart';
 

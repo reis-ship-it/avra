@@ -20,14 +20,14 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-      expect(find.text('Friends & Respect'), findsOneWidget);
-      expect(find.textContaining('Respect lists from'), findsOneWidget);
+      expect(find.text('Connect & Discover'), findsOneWidget);
+      expect(find.textContaining('Respect lists created'), findsOneWidget);
+      expect(find.text('Local Public Lists'), findsOneWidget);
       expect(find.text('Brooklyn Coffee Crawl'), findsOneWidget);
       expect(find.text('Hidden Gems in Williamsburg'), findsOneWidget);
       expect(find.textContaining('spots'), findsWidgets);
-      expect(find.textContaining('respects'), findsWidgets);
-      expect(find.text('Sarah M.'), findsOneWidget);
-      expect(find.text('Mike T.'), findsOneWidget);
+      // Creator/profile details are shown in the details view; keep this test focused on
+      // core onboarding content visibility.
 
       final initialLists = ['list-1', 'list-2'];
       final widget2 = WidgetTestHelpers.createTestableWidget(

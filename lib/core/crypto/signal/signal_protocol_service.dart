@@ -51,6 +51,12 @@ class SignalProtocolService {
       
       // Initialize FFI bindings
       await _ffiBindings.initialize();
+
+      // Initialize store callbacks (required for any session/identity store access
+      // inside libsignal-ffi operations).
+      if (!_storeCallbacks.isInitialized) {
+        await _storeCallbacks.initialize();
+      }
       
       // Ensure identity key exists
       await _keyManager.getOrGenerateIdentityKeyPair();
@@ -199,11 +205,11 @@ class SignalProtocolService {
   /// Should be called periodically to maintain fresh prekeys.
   /// 
   /// **Parameters:**
-  /// - `agentId`: Our agent ID
-  Future<void> uploadPreKeyBundle(String agentId) async {
+  /// - `userId`: Our Supabase auth user id (used as Signal address for user-to-user messaging)
+  Future<void> uploadPreKeyBundle(String userId) async {
     try {
-      await _keyManager.rotatePreKeys(agentId: agentId);
-      developer.log('Prekey bundle uploaded for agent: $agentId', name: _logName);
+      await _keyManager.rotatePreKeys(userId: userId);
+      developer.log('Prekey bundle uploaded for user: $userId', name: _logName);
     } catch (e, stackTrace) {
       developer.log(
         'Error uploading prekey bundle: $e',

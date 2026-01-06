@@ -35,7 +35,7 @@ Instead of yes/no connections, SPOTS uses a **compatibility spectrum** (0.0 - 1.
 **Code Reference:**
 - `lib/core/ai/vibe_analysis_engine.dart` - Compatibility calculation
 - `lib/core/constants/vibe_constants.dart` - Compatibility thresholds
-- `VIBE_CODING/ARCHITECTURE/personality_spectrum.md` - Spectrum documentation
+- `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/personality_spectrum.md` - Spectrum documentation
 
 ---
 
@@ -100,7 +100,7 @@ Device A → Personality AI (decides connection) → WiFi/Bluetooth → Device B
 
 **Code Reference:**
 - `lib/core/ai2ai/connection_orchestrator.dart` - Orchestration flow
-- `VIBE_CODING/ARCHITECTURE/network_flow.md` - Complete flow diagrams
+- `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/network_flow.md` - Complete flow diagrams
 
 ---
 
@@ -152,7 +152,7 @@ This personality-driven AI2AI network creates a **living, learning community** w
 - **Core Philosophy:** [`CORE_PHILOSOPHY.md`](./CORE_PHILOSOPHY.md)
 - **Architecture:** [`../02_architecture/README.md`](../02_architecture/README.md)
 - **Network Flows:** [`../02_architecture/NETWORK_FLOWS.md`](../02_architecture/NETWORK_FLOWS.md)
-- **Original Vision:** `VIBE_CODING/ARCHITECTURE/vision_overview.md`
+- **Original Vision:** `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/vision_overview.md`
 
 ---
 

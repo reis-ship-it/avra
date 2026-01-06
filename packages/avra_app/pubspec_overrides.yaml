@@ -1,0 +1,12 @@
+# melos_managed_dependency_overrides: avra_ai,avra_core,avra_data,avra_ml,avra_network
+dependency_overrides:
+  avra_ai:
+    path: ../avra_ai
+  avra_core:
+    path: ../avra_core
+  avra_data:
+    path: ../avra_data
+  avra_ml:
+    path: ../avra_ml
+  avra_network:
+    path: ../avra_network

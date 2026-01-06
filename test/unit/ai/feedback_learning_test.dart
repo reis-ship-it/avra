@@ -1,27 +1,33 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spots/core/ai/feedback_learning.dart' show UserFeedbackAnalyzer, FeedbackEvent, FeedbackType, FeedbackAnalysisResult, BehavioralPattern, SatisfactionPrediction, FeedbackLearningInsights;
 import 'package:spots/core/ai/personality_learning.dart' show PersonalityLearning;
+import 'package:spots/core/services/storage_service.dart';
 
-import 'feedback_learning_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
-@GenerateMocks([SharedPreferences, PersonalityLearning])
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('UserFeedbackAnalyzer', () {
     late UserFeedbackAnalyzer analyzer;
-    late MockSharedPreferences mockPrefs;
-    late MockPersonalityLearning mockPersonalityLearning;
+    late SharedPreferencesCompat prefs;
+    late PersonalityLearning personalityLearning;
 
-    setUp(() {
-      mockPrefs = MockSharedPreferences();
-      mockPersonalityLearning = MockPersonalityLearning();
-      
+    setUpAll(() async {
+      await setupTestStorage();
+    });
+
+    setUp(() async {
+      prefs = await SharedPreferencesCompat.getInstance(storage: getTestStorage());
+      personalityLearning = PersonalityLearning.withPrefs(prefs);
       analyzer = UserFeedbackAnalyzer(
-        prefs: mockPrefs,
-        personalityLearning: mockPersonalityLearning,
+        prefs: prefs,
+        personalityLearning: personalityLearning,
       );
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
 
     group('Feedback Analysis', () {
@@ -33,9 +39,6 @@ void main() {
           metadata: {},
           timestamp: DateTime.now(),
         );
-
-        when(mockPrefs.getString(any)).thenReturn(null);
-        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
 
         final result = await analyzer.analyzeFeedback(userId, feedback);
 
@@ -55,9 +58,6 @@ void main() {
           timestamp: DateTime.now(),
         );
 
-        when(mockPrefs.getString(any)).thenReturn(null);
-        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
-
         final result = await analyzer.analyzeFeedback(userId, feedback);
 
         expect(result, isA<FeedbackAnalysisResult>());
@@ -69,8 +69,6 @@ void main() {
       test('should identify behavioral patterns without errors', () async {
         const userId = 'test-user-123';
 
-        when(mockPrefs.getString(any)).thenReturn(null);
-
         final patterns = await analyzer.identifyBehavioralPatterns(userId);
 
         expect(patterns, isA<List<BehavioralPattern>>());
@@ -78,8 +76,6 @@ void main() {
 
       test('should return empty list for insufficient feedback history', () async {
         const userId = 'new-user';
-
-        when(mockPrefs.getString(any)).thenReturn(null);
 
         final patterns = await analyzer.identifyBehavioralPatterns(userId);
 
@@ -90,8 +86,6 @@ void main() {
     group('Dimension Extraction', () {
       test('should extract new dimensions without errors', () async {
         const userId = 'test-user-123';
-
-        when(mockPrefs.getString(any)).thenReturn(null);
 
         // Provide recent feedback input (required by updated API)
         final dimensions = await analyzer.extractNewDimensions(userId, const []);
@@ -108,8 +102,6 @@ void main() {
           'category': 'food',
         };
 
-        when(mockPrefs.getString(any)).thenReturn(null);
-
         final prediction = await analyzer.predictUserSatisfaction(userId, scenario);
 
         expect(prediction, isA<SatisfactionPrediction>());
@@ -123,8 +115,6 @@ void main() {
     group('Feedback Insights', () {
       test('should get feedback insights without errors', () async {
         const userId = 'test-user-123';
-
-        when(mockPrefs.getString(any)).thenReturn(null);
 
         final insights = await analyzer.getFeedbackInsights(userId);
 

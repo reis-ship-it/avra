@@ -509,6 +509,12 @@ void main() {
         ));
         
         // Act - Test touch response time
+        await tester.pump();
+        await tester.scrollUntilVisible(
+          find.text('Item 50'),
+          300.0,
+          scrollable: find.byType(Scrollable),
+        );
         responseStopwatch.start();
         await tester.tap(find.text('Item 50'));
         await tester.pump();
@@ -681,10 +687,3 @@ Color _getTestColor(int index) {
   ];
   return colors[index % colors.length];
 }
-
-// Deprecated mocks kept for reference; real in-memory fakes are used above.
-dynamic _mockGetSpotsUseCase() => GetSpotsUseCase(_InMemorySpotsRepository());
-dynamic _mockCreateSpotUseCase() => CreateSpotUseCase(_InMemorySpotsRepository());
-dynamic _mockUpdateSpotUseCase() => UpdateSpotUseCase(_InMemorySpotsRepository());
-dynamic _mockDeleteSpotUseCase() => DeleteSpotUseCase(_InMemorySpotsRepository());
-dynamic _mockGetSpotsFromRespectedListsUseCase() => GetSpotsFromRespectedListsUseCase(_InMemorySpotsRepository());

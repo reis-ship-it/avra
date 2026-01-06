@@ -388,20 +388,27 @@ class BrandDiscoveryService {
     required String brandId,
     required String eventId,
   }) async {
-    // TODO: In production, use sophisticated vibe matching algorithm
-    // For now, return placeholder
-    final overallScore = await calculateBrandEventCompatibility(
-          brandId: brandId,
-          eventId: eventId,
-        ) *
-        100;
+    final score = await _sponsorshipService.calculateVibeScore(
+      eventId: eventId,
+      brandId: brandId,
+    );
+
+    // Map the truthful quantum+knot breakdown into the legacy UI fields.
+    // These fields are display-only; the canonical matching threshold uses overallScore.
+    final overallScore = score.combined * 100;
 
     return VibeCompatibility(
       overallScore: overallScore,
-      valueAlignment: overallScore * 0.25,
-      styleCompatibility: overallScore * 0.25,
-      qualityFocus: overallScore * 0.20,
-      audienceAlignment: overallScore * 0.30,
+      valueAlignment: score.knotTopological * 100,
+      styleCompatibility: score.quantum * 100,
+      qualityFocus: score.knotWeave * 100,
+      audienceAlignment: ((score.quantum * 0.6) + (score.knotTopological * 0.4)) * 100,
+      breakdown: {
+        'quantum': score.quantum,
+        'knot_topological': score.knotTopological,
+        'knot_weave': score.knotWeave,
+        'combined': score.combined,
+      },
     );
   }
 

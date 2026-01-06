@@ -6,14 +6,14 @@
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/knot/knot_fabric_service.dart';
+import 'package:spots_knot/services/knot/knot_fabric_service.dart';
 import 'package:spots_knot/models/personality_knot.dart';
 import 'package:spots_knot/models/knot/fabric_cluster.dart';
 import 'package:spots_knot/models/knot/bridge_strand.dart';
 import 'package:spots_knot/models/knot/fabric_evolution.dart';
 import 'package:spots_knot/models/knot/braided_knot.dart';
-import 'package:spots/core/services/knot/bridge/knot_math_bridge.dart/api.dart';
-import 'package:spots/core/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 
 // Mock Rust API for testing
 class MockRustLibApi implements RustLibApi {
@@ -109,6 +109,10 @@ class MockRustLibApi implements RustLibApi {
       alexanderPolynomial: Float64List.fromList([1.0, 0.0, -1.0]),
       crossingNumber: BigInt.from((braidData.length - 1) ~/ 2),
       writhe: 0,
+      signature: 0,
+      bridgeNumber: BigInt.from(1),
+      braidIndex: BigInt.from(1),
+      determinant: 1,
     );
   }
 
@@ -502,6 +506,10 @@ List<PersonalityKnot> _createTestKnots(int count) {
           alexanderPolynomial: [1.0, -0.3, 0.1],
           crossingNumber: 2 + i,
           writhe: i % 3 - 1,
+          signature: 0,
+          bridgeNumber: ((2 + i) / 2).clamp(1, 10).round(),
+          braidIndex: ((2 + i) / 3).clamp(1, 12).round(),
+          determinant: 1,
         ),
         createdAt: now,
         lastUpdated: now,

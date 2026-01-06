@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:spots/core/models/dispute.dart';
 import 'package:spots/core/models/dispute_status.dart';
 import 'package:spots/core/services/dispute_resolution_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/disputes/dispute_evidence_storage_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 
@@ -31,9 +31,10 @@ class DisputeStatusPage extends StatefulWidget {
 }
 
 class _DisputeStatusPageState extends State<DisputeStatusPage> {
-  final DisputeResolutionService _disputeService = DisputeResolutionService(
-    eventService: GetIt.instance<ExpertiseEventService>(),
-  );
+  final DisputeResolutionService _disputeService =
+      GetIt.instance<DisputeResolutionService>();
+  final DisputeEvidenceStorageService _evidenceStorage =
+      GetIt.instance<DisputeEvidenceStorageService>();
 
   Dispute? _dispute;
   bool _isLoading = true;
@@ -274,17 +275,72 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
               spacing: 8,
               runSpacing: 8,
               children: _dispute!.evidenceUrls.map((url) {
-                return Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.grey300),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      url,
+                return _buildEvidenceThumb(url);
+              }).toList(),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEvidenceThumb(String url) {
+    return FutureBuilder<Uri>(
+      future: _evidenceStorage.resolveSignedUrl(url),
+      builder: (context, snapshot) {
+        final resolved = snapshot.data;
+        return GestureDetector(
+          onTap: resolved == null
+              ? null
+              : () async {
+                  // Open a larger preview (uses a short-lived signed URL).
+                  if (!mounted) return;
+                  showDialog<void>(
+                    context: context,
+                    builder: (context) => Dialog(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: InteractiveViewer(
+                          child: Image.network(
+                            resolved.toString(),
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppColors.grey200,
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(16),
+                                child: const Text(
+                                  'Unable to load image',
+                                  style: TextStyle(color: AppColors.textSecondary),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.grey300),
+              color: AppColors.grey200,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: resolved == null
+                  ? const Center(
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  : Image.network(
+                      resolved.toString(),
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -293,13 +349,10 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                         );
                       },
                     ),
-                  ),
-                );
-              }).toList(),
             ),
-          ],
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 

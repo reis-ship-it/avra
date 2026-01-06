@@ -8,6 +8,7 @@ import 'package:spots/core/services/expertise_community_service.dart';
 import 'package:spots/core/services/llm_service.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/partnership_service.dart';
+import 'package:spots/core/services/vibe_compatibility_service.dart';
 
 /// Business Expert Matching Service
 /// 
@@ -38,16 +39,19 @@ class BusinessExpertMatchingService {
   final ExpertiseCommunityService _communityService;
   final LLMService? _llmService;
   final PartnershipService? _partnershipService;
+  final VibeCompatibilityService? _vibeCompatibilityService;
 
   BusinessExpertMatchingService({
     ExpertiseMatchingService? expertiseMatchingService,
     ExpertiseCommunityService? communityService,
     LLMService? llmService,
     PartnershipService? partnershipService,
+    VibeCompatibilityService? vibeCompatibilityService,
   }) : _expertiseMatchingService = expertiseMatchingService ?? ExpertiseMatchingService(),
        _communityService = communityService ?? ExpertiseCommunityService(),
        _llmService = llmService,
-       _partnershipService = partnershipService;
+       _partnershipService = partnershipService,
+       _vibeCompatibilityService = vibeCompatibilityService;
 
   /// Find experts for a business account
   /// Uses community membership, expertise matching, and AI suggestions
@@ -67,8 +71,6 @@ class BusinessExpertMatchingService {
           ? preferences!.requiredExpertiseCategories
           : business.requiredExpertise;
       
-      final preferredCategories = preferences?.preferredExpertiseCategories ?? [];
-
       // STEP 1: Find experts by required expertise categories
       for (final category in requiredCategories) {
         final expertMatches = await _findExpertsByCategory(
@@ -527,6 +529,16 @@ class BusinessExpertMatchingService {
     BusinessAccount business,
   ) async {
     try {
+      // Prefer direct vibe service when we already have BusinessAccount.
+      // This avoids unnecessary lookups and ensures "truthful vibe" everywhere.
+      if (_vibeCompatibilityService != null) {
+        final score = await _vibeCompatibilityService!.calculateUserBusinessVibe(
+          userId: expert.id,
+          business: business,
+        );
+        return score.combined.clamp(0.0, 1.0);
+      }
+
       if (_partnershipService != null) {
         // Use PartnershipService to calculate vibe compatibility
         return await _partnershipService!.calculateVibeCompatibility(
@@ -535,12 +547,11 @@ class BusinessExpertMatchingService {
         );
       }
       
-      // Fallback: Return moderate compatibility if service not available
-      // In production, this should always use the vibe service
-      return 0.7;
+      // Truthful fallback: if we can't compute it, don't invent confidence.
+      return 0.5;
     } catch (e) {
       _logger.warning('Error calculating vibe compatibility, using fallback', tag: _logName);
-      return 0.7;
+      return 0.5;
     }
   }
   

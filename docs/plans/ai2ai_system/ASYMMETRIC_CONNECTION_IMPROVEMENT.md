@@ -448,9 +448,9 @@ The system already uses a compatibility spectrum (0.0-1.0). Asymmetric connectio
 ## 🔗 **Related Documentation**
 
 - **AI2AI Connection Vision:** `docs/plans/ai2ai_system/AI2AI_CONNECTION_VISION.md`
-- **Personality Spectrum:** `VIBE_CODING/ARCHITECTURE/personality_spectrum.md`
-- **Connection Decision Process:** `VIBE_CODING/IMPLEMENTATION/connection_decision_process.md`
-- **AI Pleasure Mechanism:** `VIBE_CODING/IMPLEMENTATION/pleasure_mechanism.md`
+- **Personality Spectrum:** `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/personality_spectrum.md`
+- **Connection Decision Process:** `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/connection_decision_process.md`
+- **AI Pleasure Mechanism:** `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/pleasure_mechanism.md`
 - **OUR_GUTS.md:** Core philosophy document
 
 ---

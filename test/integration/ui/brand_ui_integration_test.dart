@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/brand_account.dart';
 import 'package:spots/core/models/unified_user.dart' hide UserRole;
 import 'package:spots/presentation/pages/brand/brand_discovery_page.dart';
 import 'package:spots/presentation/pages/brand/sponsorship_management_page.dart';
@@ -13,16 +11,19 @@ import 'package:spots/presentation/pages/brand/brand_analytics_page.dart';
 import 'package:spots/presentation/pages/brand/sponsorship_checkout_page.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/core/models/user.dart' show User, UserRole;
+import 'package:spots/core/controllers/sponsorship_checkout_controller.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/payment_service.dart';
+import 'package:spots/core/services/sponsorship_service.dart';
 import 'package:spots/core/services/stripe_service.dart';
 import 'package:mocktail/mocktail.dart';
 import '../../fixtures/model_factories.dart';
-import '../../helpers/test_helpers.dart';
+import '../../helpers/getit_test_harness.dart';
 import '../../widget/mocks/mock_blocs.dart';
 
 // Mock dependencies
 class MockStripeService extends Mock implements StripeService {}
+class MockSponsorshipService extends Mock implements SponsorshipService {}
 
 /// Brand UI Integration Tests
 /// 
@@ -41,11 +42,10 @@ void main() {
   group('Brand UI Integration Tests', () {
     late ExpertiseEvent testEvent;
     late UnifiedUser testUser;
-    late BrandAccount testBrandAccount;
-    late Sponsorship testSponsorship;
     late MockAuthBloc mockAuthBloc;
     late ExpertiseEventService eventService;
     late PaymentService paymentService;
+    late GetItTestHarness getIt;
 
     Widget wrapWithAuthBloc(Widget child) {
       return BlocProvider<AuthBloc>.value(
@@ -55,8 +55,11 @@ void main() {
     }
 
     setUpAll(() {
+      getIt = GetItTestHarness(sl: GetIt.instance);
+
       // Register required services in GetIt (use real services for integration tests)
       final mockStripeService = MockStripeService();
+      final mockSponsorshipService = MockSponsorshipService();
       when(() => mockStripeService.isInitialized).thenReturn(true);
       when(() => mockStripeService.initializeStripe()).thenAnswer((_) async => {});
       
@@ -67,29 +70,30 @@ void main() {
       );
       
       // Unregister if already registered
-      if (GetIt.instance.isRegistered<ExpertiseEventService>()) {
-        GetIt.instance.unregister<ExpertiseEventService>();
-      }
-      if (GetIt.instance.isRegistered<PaymentService>()) {
-        GetIt.instance.unregister<PaymentService>();
-      }
+      getIt.unregisterIfRegistered<ExpertiseEventService>();
+      getIt.unregisterIfRegistered<PaymentService>();
+      getIt.unregisterIfRegistered<SponsorshipCheckoutController>();
       
       // Register real services
-      GetIt.instance.registerSingleton<ExpertiseEventService>(eventService);
-      GetIt.instance.registerSingleton<PaymentService>(paymentService);
+      getIt.registerSingletonReplace<ExpertiseEventService>(eventService);
+      getIt.registerSingletonReplace<PaymentService>(paymentService);
+
+      // SponsorshipCheckoutPage resolves SponsorshipCheckoutController from GetIt.
+      // Provide a minimal controller wired to a mocked SponsorshipService so UI can render.
+      getIt.registerLazySingletonReplace<SponsorshipCheckoutController>(
+        () => SponsorshipCheckoutController(
+          sponsorshipService: mockSponsorshipService,
+          eventService: eventService,
+        ),
+      );
     });
     
     tearDownAll(() {
       // Unregister all services for test isolation
-      if (GetIt.instance.isRegistered<ExpertiseEventService>()) {
-        GetIt.instance.unregister<ExpertiseEventService>();
-      }
-      if (GetIt.instance.isRegistered<PaymentService>()) {
-        GetIt.instance.unregister<PaymentService>();
-      }
-      if (GetIt.instance.isRegistered<StripeService>()) {
-        GetIt.instance.unregister<StripeService>();
-      }
+      getIt.unregisterIfRegistered<ExpertiseEventService>();
+      getIt.unregisterIfRegistered<PaymentService>();
+      getIt.unregisterIfRegistered<StripeService>();
+      getIt.unregisterIfRegistered<SponsorshipCheckoutController>();
     });
 
     setUp(() {
@@ -121,27 +125,6 @@ void main() {
         updatedAt: DateTime.now(),
       );
 
-      // Create test brand account
-      testBrandAccount = BrandAccount(
-        id: 'brand-1',
-        name: 'Test Brand',
-        brandType: 'Food & Beverage',
-        contactEmail: 'brand@example.com',
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-      );
-
-      // Create test sponsorship
-      testSponsorship = Sponsorship(
-        id: 'sponsorship-1',
-        eventId: testEvent.id,
-        brandId: testBrandAccount.id,
-        type: SponsorshipType.financial,
-        status: SponsorshipStatus.pending,
-        contributionAmount: 1000.0,
-        createdAt: TestHelpers.createTestDateTime(),
-        updatedAt: TestHelpers.createTestDateTime(),
-      );
     });
 
     group('Brand Discovery Page', () {

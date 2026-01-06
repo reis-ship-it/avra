@@ -133,8 +133,8 @@ final response = await AICommandProcessor.processCommand(
 - ✅ `supabase/functions/llm-chat/index.ts` - Edge Function
 - ✅ `lib/core/services/llm_service.dart` - LLM Service
 - ✅ `supabase/functions/README_LLM.md` - Deployment guide
-- ✅ `VIBE_CODING/DEPLOYMENT/gemini_setup_instructions.md` - Setup guide
-- ✅ `VIBE_CODING/DEPLOYMENT/llm_integration_assessment.md` - Assessment
+- ✅ `docs/_archive/vibe_coding/VIBE_CODING/DEPLOYMENT/gemini_setup_instructions.md` - Setup guide (archived source)
+- ✅ `docs/_archive/vibe_coding/VIBE_CODING/DEPLOYMENT/llm_integration_assessment.md` - Assessment (archived source)
 
 ### **Modified Files:**
 - ✅ `lib/presentation/widgets/common/ai_command_processor.dart` - LLM integration
@@ -170,9 +170,9 @@ final response = await AICommandProcessor.processCommand(
 
 ## 📚 **Documentation**
 
-- **Setup Guide:** `VIBE_CODING/DEPLOYMENT/gemini_setup_instructions.md`
+- **Setup Guide:** `docs/_archive/vibe_coding/VIBE_CODING/DEPLOYMENT/gemini_setup_instructions.md`
 - **Deployment:** `supabase/functions/README_LLM.md`
-- **Assessment:** `VIBE_CODING/DEPLOYMENT/llm_integration_assessment.md`
+- **Assessment:** `docs/_archive/vibe_coding/VIBE_CODING/DEPLOYMENT/llm_integration_assessment.md`
 
 ---
 

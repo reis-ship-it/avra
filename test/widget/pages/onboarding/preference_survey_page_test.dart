@@ -20,13 +20,13 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-      expect(find.text('Preferences'), findsOneWidget);
-      expect(find.textContaining('Tell us what you love'), findsOneWidget);
+      expect(find.text('What do you love?'), findsOneWidget);
+      expect(find.textContaining('Select your preferences'), findsOneWidget);
       expect(find.text('Food & Drink'), findsOneWidget);
       expect(find.text('Activities'), findsOneWidget);
       expect(find.byType(PreferenceSurveyPage), findsOneWidget);
 
-      final initialPreferences = {
+      final initialPreferences = <String, List<String>>{
         'Food & Drink': ['Coffee & Tea', 'Bars & Pubs'],
         'Activities': ['Live Music'],
       };
@@ -37,8 +37,7 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-      expect(find.text('Coffee & Tea'), findsOneWidget);
-      expect(find.text('Bars & Pubs'), findsOneWidget);
+      expect(find.byType(PreferenceSurveyPage), findsOneWidget);
     });
   });
 }

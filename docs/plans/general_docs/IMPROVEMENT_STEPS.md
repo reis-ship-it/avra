@@ -452,6 +452,17 @@ id "org.jetbrains.kotlin.android" version "2.1.0" apply false
    - Zero-knowledge proofs
    - Homomorphic encryption
 
+3. **Community Chat Admin Controls (Key Rotation UX)** (Week 16)
+   - Add an in-chat “Admin tools” action for community founders/admins:
+     - **Rotate community key** (default: **soft rotation** with grace window; members stay in seamlessly)
+     - Optional: **Hard rotation** (revocation) with “remove member(s)” flow (no grace; do not share new key)
+   - UX requirements:
+     - Confirmation modal that clearly states impact (new messages use new key; members stay in)
+     - “Grace duration” picker (safe defaults; hide advanced options behind “Advanced”)
+     - Post-action status: “Rotating…” → “Rotation complete” + error handling
+   - Technical note:
+     - Backend + RLS + client silent refresh are implemented; this item is **UI wiring + guardrails**.
+
 **Success Criteria:**
 - ✅ Community networks functional
 - ✅ Trust-based connections

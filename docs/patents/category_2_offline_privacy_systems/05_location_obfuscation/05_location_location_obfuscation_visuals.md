@@ -5,9 +5,82 @@
 
 ---
 
-## Visual Diagrams and Flowcharts
 
-### 1. Multi-Layer Obfuscation Process
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Multi-Layer Obfuscation Process.
+- **FIG. 6**: City-Level Precision Rounding.
+- **FIG. 7**: Differential Privacy Noise.
+- **FIG. 8**: Home Location Protection.
+- **FIG. 9**: Complete Obfuscation Flow.
+- **FIG. 10**: Obfuscation Precision Comparison.
+- **FIG. 11**: Temporal Expiration.
+- **FIG. 12**: Admin Override.
+- **FIG. 13**: Complete System Architecture.
+- **FIG. 14**: Privacy Protection Levels.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Location Obfuscation System with Differential Privacy Noise implementation.
+
+In the illustrated embodiment, a computing device receives input signals and stored profile/state data; constructs an internal representation; and applies representation construction and scoring/decision logic to produce an output score/decision and optional stored record.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Multi-Layer Obfuscation Process.
+- City-Level Precision Rounding.
+- Differential Privacy Noise.
+- Home Location Protection.
+- Complete Obfuscation Flow.
+- Obfuscation Precision Comparison.
+- Temporal Expiration.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Location Obfuscation System with Differential Privacy Noise implementation.
+
+1. Rounding coordinates to city-level precision (0.01 degrees ≈ 1km) using formula `rounded = (coordinate / 0.01).round() * 0.01`.
+2. Adding differential privacy noise (0.005 degrees ≈ 500m) using formula `noise = (random.nextDouble() - 0.5) * 2 * 0.005`.
+3. Detecting home locations and preventing sharing in AI2AI network.
+4. Setting 24-hour expiration for obfuscated locations.
+5. Providing admin override for exact location access.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Location Obfuscation System with Differential Privacy Noise implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- InputSignals: {signals[ ], observedAt, source}
+- RepresentationState: {features, parameters, version}
+- ConstraintPolicy: {thresholds, privacy/timing rules}
+- ComputationResult: {score/decision, confidence (optional)}
+- LocalStoreRecord: {id, createdAt, payload}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Location Obfuscation System with Differential Privacy Noise implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+- Privacy/validation module (on-device)
+
+Example sequence:
+1. Client device gathers inputs and constructs a representation/state.
+2. Client device applies core computation and constraints.
+3. Client device emits an output and stores a record as needed.
+
+### FIG. 5 — Multi-Layer Obfuscation Process
+
 
 ```
 Exact Location: (30.2672°N, 97.7431°W)
@@ -35,7 +108,8 @@ Exact Location: (30.2672°N, 97.7431°W)
 
 ---
 
-### 2. City-Level Precision Rounding
+### FIG. 6 — City-Level Precision Rounding
+
 
 ```
 Original Coordinate: 30.2672°
@@ -64,7 +138,8 @@ rounded = (coordinate / 0.01).round() * 0.01
 
 ---
 
-### 3. Differential Privacy Noise
+### FIG. 7 — Differential Privacy Noise
+
 
 ```
 Rounded Coordinate: 30.27°
@@ -94,7 +169,8 @@ obfuscated = coordinate + noise
 
 ---
 
-### 4. Home Location Protection
+### FIG. 8 — Home Location Protection
+
 
 ```
 Location String: "123 Main St, Austin, TX"
@@ -121,7 +197,8 @@ Location String: "123 Main St, Austin, TX"
 
 ---
 
-### 5. Complete Obfuscation Flow
+### FIG. 9 — Complete Obfuscation Flow
+
 
 ```
 START
@@ -160,7 +237,8 @@ START
 
 ---
 
-### 6. Obfuscation Precision Comparison
+### FIG. 10 — Obfuscation Precision Comparison
+
 
 ```
 Exact Location:
@@ -186,7 +264,8 @@ With Differential Privacy:
 
 ---
 
-### 7. Temporal Expiration
+### FIG. 11 — Temporal Expiration
+
 
 ```
 Obfuscated Location Created: 2025-12-16 10:00 AM
@@ -210,7 +289,8 @@ Obfuscated Location Created: 2025-12-16 10:00 AM
 
 ---
 
-### 8. Admin Override
+### FIG. 12 — Admin Override
+
 
 ```
 Location Request
@@ -234,7 +314,8 @@ Location Request
 
 ---
 
-### 9. Complete System Architecture
+### FIG. 13 — Complete System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -293,7 +374,8 @@ Location Request
 
 ---
 
-### 10. Privacy Protection Levels
+### FIG. 14 — Privacy Protection Levels
+
 
 ```
 Privacy Protection:
@@ -379,4 +461,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

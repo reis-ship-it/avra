@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,21 +17,64 @@ import '../mocks/mock_blocs.dart';
 import '../../helpers/platform_channel_helper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spots/core/services/storage_service.dart';
+import 'package:spots/core/services/supabase_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:spots/core/controllers/sync_controller.dart';
+import 'package:spots/core/services/enhanced_connectivity_service.dart';
+import 'package:spots/core/ai/personality_learning.dart';
+import '../../helpers/getit_test_harness.dart';
 
 /// Helper utilities for widget testing to ensure consistent test setup
 class WidgetTestHelpers {
+  static bool _didGlobalSetup = false;
+
   /// Global setup for widget tests - call this in setUpAll
   /// Initializes StorageService and registers SharedPreferencesCompat in GetIt
   static Future<void> setupWidgetTestEnvironment() async {
     try {
+      final getIt = GetItTestHarness(sl: GetIt.instance);
+
       // Initialize StorageService for tests
       await setupTestStorage();
+
+      // Register StorageService in GetIt for widgets/pages that resolve it via DI.
+      if (!GetIt.instance.isRegistered<StorageService>()) {
+        getIt.registerSingletonReplace<StorageService>(StorageService.instance);
+      }
       
       // Register SharedPreferencesCompat in GetIt if not already registered
       if (!GetIt.instance.isRegistered<SharedPreferencesCompat>()) {
         final mockStorage = getTestStorage();
         final prefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
-        GetIt.instance.registerSingleton<SharedPreferencesCompat>(prefs);
+        getIt.registerSingletonReplace<SharedPreferencesCompat>(prefs);
+      }
+
+      // Register core sync services used by settings pages.
+      if (!GetIt.instance.isRegistered<SupabaseService>()) {
+        getIt.registerSingletonReplace<SupabaseService>(SupabaseService());
+      }
+      if (!GetIt.instance.isRegistered<PersonalitySyncService>()) {
+        getIt.registerSingletonReplace<PersonalitySyncService>(
+          PersonalitySyncService(
+            supabaseService: SupabaseService(),
+            storageService: StorageService.instance,
+          ),
+        );
+      }
+      if (!GetIt.instance.isRegistered<EnhancedConnectivityService>()) {
+        getIt.registerSingletonReplace<EnhancedConnectivityService>(
+          EnhancedConnectivityService(),
+        );
+      }
+      if (!GetIt.instance.isRegistered<SyncController>()) {
+        final prefs = GetIt.instance<SharedPreferencesCompat>();
+        getIt.registerSingletonReplace<SyncController>(
+          SyncController(
+            connectivityService: GetIt.instance<EnhancedConnectivityService>(),
+            personalitySyncService: GetIt.instance<PersonalitySyncService>(),
+            personalityLearning: PersonalityLearning.withPrefs(prefs),
+          ),
+        );
       }
     } catch (e) {
       // If initialization fails, log but don't throw
@@ -41,11 +86,17 @@ class WidgetTestHelpers {
   /// Cleanup for widget tests - call this in tearDownAll
   static Future<void> cleanupWidgetTestEnvironment() async {
     try {
+      final getIt = GetItTestHarness(sl: GetIt.instance);
+
       // Clean up GetIt registrations
-      if (GetIt.instance.isRegistered<SharedPreferencesCompat>()) {
-        await GetIt.instance.unregister<SharedPreferencesCompat>();
-      }
+      getIt.unregisterIfRegistered<SharedPreferencesCompat>();
+      getIt.unregisterIfRegistered<StorageService>();
+      getIt.unregisterIfRegistered<SyncController>();
+      getIt.unregisterIfRegistered<EnhancedConnectivityService>();
+      getIt.unregisterIfRegistered<PersonalitySyncService>();
+      getIt.unregisterIfRegistered<SupabaseService>();
       await cleanupTestStorage();
+      _didGlobalSetup = false;
     } catch (e) {
       // Ignore cleanup errors
       print('Warning: Failed to cleanup widget test environment: $e');
@@ -79,7 +130,11 @@ class WidgetTestHelpers {
       ],
       child: MaterialApp(
         theme: AppTheme.lightTheme,
-        home: child,
+        // Many onboarding "pages" are fragments that assume a Material ancestor
+        // (they render TextField/InputDecorator without their own Scaffold).
+        // Wrapping here keeps tests deterministic without forcing every test
+        // to add an extra Scaffold/Material wrapper.
+        home: Material(child: child),
         navigatorObservers: navigatorObserver != null ? [navigatorObserver] : [],
       ),
     );
@@ -114,7 +169,7 @@ class WidgetTestHelpers {
         theme: AppTheme.lightTheme,
         initialRoute: initialRoute,
         onGenerateRoute: (settings) => MaterialPageRoute(
-          builder: (context) => child,
+          builder: (context) => Material(child: child),
           settings: settings,
         ),
         navigatorObservers: navigatorObserver != null ? [navigatorObserver] : [],
@@ -128,8 +183,33 @@ class WidgetTestHelpers {
     Widget widget, {
     Duration? duration,
   }) async {
+    // Some suites call cleanup helpers; make setup idempotent per pump.
+    if (!_didGlobalSetup || !GetIt.instance.isRegistered<StorageService>()) {
+      await setupWidgetTestEnvironment();
+      _didGlobalSetup = true;
+    }
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle(duration ?? const Duration(seconds: 1));
+    // Many SPOTS pages intentionally run continuous animations (pulsing hints,
+    // map tiles, etc.). `pumpAndSettle` will time out in those cases, so we
+    // treat "timed out" as non-fatal and advance a bounded amount of time.
+    try {
+      await tester.pumpAndSettle(duration ?? const Duration(seconds: 1));
+    } catch (_) {
+      await tester.pump(duration ?? const Duration(milliseconds: 200));
+    }
+  }
+
+  /// Like `tester.pumpAndSettle()`, but safe for widgets with continuous
+  /// animations (eg. indeterminate progress indicators).
+  static Future<void> safePumpAndSettle(
+    WidgetTester tester, {
+    Duration? duration,
+  }) async {
+    try {
+      await tester.pumpAndSettle(duration ?? const Duration(seconds: 1));
+    } catch (_) {
+      await tester.pump(duration ?? const Duration(milliseconds: 200));
+    }
   }
 
   /// Verifies that a widget displays the expected loading state

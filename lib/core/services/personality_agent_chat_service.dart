@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 import 'package:geolocator/geolocator.dart';
 import 'package:spots_ai/models/personality_chat_message.dart';
 import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
+import 'package:spots_network/network/message_encryption_service.dart';
 import 'package:spots/core/services/language_pattern_learning_service.dart';
 import 'package:spots/core/services/llm_service.dart';
 import 'package:spots/core/ai/personality_learning.dart' as pl;
@@ -15,26 +15,26 @@ import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 
 /// PersonalityAgentChatService
-/// 
+///
 /// Orchestrates chat conversations with the user's personality agent.
 /// Integrates personality profile, language learning, and search functionality.
-/// 
+///
 /// Philosophy: "Doors, not badges" - Authentic AI companion that learns and adapts.
 /// Privacy: All messages encrypted, uses agentId for privacy protection.
-/// 
+///
 /// Phase 2.1: Personality Agent Chat Service
 class PersonalityAgentChatService {
   static const String _logName = 'PersonalityAgentChatService';
   static const String _chatStoreName = 'personality_chat_messages';
   static const String _chatIdPrefix = 'chat_';
-  
+
   final AgentIdService _agentIdService;
   final MessageEncryptionService _encryptionService;
   final LanguagePatternLearningService _languageLearningService;
   final LLMService _llmService;
   final pl.PersonalityLearning _personalityLearning;
   final HybridSearchRepository? _searchRepository;
-  
+
   PersonalityAgentChatService({
     AgentIdService? agentIdService,
     MessageEncryptionService? encryptionService,
@@ -42,20 +42,20 @@ class PersonalityAgentChatService {
     required LLMService llmService,
     pl.PersonalityLearning? personalityLearning,
     HybridSearchRepository? searchRepository,
-      })  : _agentIdService = agentIdService ?? 
-            di.sl<AgentIdService>(),
+  })  : _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
-        _languageLearningService = languageLearningService ?? LanguagePatternLearningService(),
+        _languageLearningService =
+            languageLearningService ?? LanguagePatternLearningService(),
         _llmService = llmService,
         _personalityLearning = personalityLearning ?? pl.PersonalityLearning(),
         _searchRepository = searchRepository;
-  
+
   /// Main chat method - handles user message and returns agent response
-  /// 
+  ///
   /// [userId] - User-facing identifier
   /// [message] - User's message text
   /// [currentLocation] - Optional current location for search integration
-  /// 
+  ///
   /// Returns agent's response text
   Future<String> chat(
     String userId,
@@ -63,15 +63,16 @@ class PersonalityAgentChatService {
     Position? currentLocation,
   }) async {
     try {
-      developer.log('Processing chat message from user: $userId', name: _logName);
-      
+      developer.log('Processing chat message from user: $userId',
+          name: _logName);
+
       // Convert userId → agentId
       final agentId = await _agentIdService.getUserAgentId(userId);
       final chatId = '$_chatIdPrefix$agentId}_$userId';
-      
+
       // Analyze user message for language learning (only from agent chat)
       await _languageLearningService.analyzeMessage(userId, message, 'agent');
-      
+
       // Encrypt and save user message
       await _saveMessage(
         chatId: chatId,
@@ -81,10 +82,11 @@ class PersonalityAgentChatService {
         agentId: agentId,
         userId: userId,
       );
-      
+
       // Check if message contains search request
-      final searchResults = await _handleSearchRequest(message, currentLocation);
-      
+      final searchResults =
+          await _handleSearchRequest(message, currentLocation);
+
       // Build conversation history for context
       final history = await _getConversationHistory(userId, agentId);
       final historyMessages = <ChatMessage>[];
@@ -95,17 +97,17 @@ class PersonalityAgentChatService {
           content: decrypted,
         ));
       }
-      
+
       // Add current user message
       historyMessages.add(ChatMessage(role: ChatRole.user, content: message));
-      
+
       // Add search results to user message if available
       String userMessage = message;
       if (searchResults != null && searchResults.spots.isNotEmpty) {
         final searchContext = _formatSearchResultsForContext(searchResults);
         userMessage = '$message\n\n$searchContext';
       }
-      
+
       // Update last message with search context if available
       if (searchResults != null && searchResults.spots.isNotEmpty) {
         historyMessages[historyMessages.length - 1] = ChatMessage(
@@ -113,20 +115,23 @@ class PersonalityAgentChatService {
           content: userMessage,
         );
       }
-      
+
       // Get personality profile
-      final personality = await _personalityLearning.getCurrentPersonality(userId);
-      
+      final personality =
+          await _personalityLearning.getCurrentPersonality(userId);
+
       // Get language style summary
-      final languageStyle = await _languageLearningService.getLanguageStyleSummary(userId);
-      
+      final languageStyle =
+          await _languageLearningService.getLanguageStyleSummary(userId);
+
       // Phase 11 Section 5: Use generateWithContext() for structured facts integration
       // This automatically retrieves structured facts and includes them in context
       String response;
       try {
         // Use generateWithContext() with conversation history for enriched context
         response = await _llmService.generateWithContext(
-          query: userMessage, // Use userMessage which may include search context
+          query:
+              userMessage, // Use userMessage which may include search context
           userId: userId,
           messages: historyMessages, // Include conversation history
           temperature: 0.7,
@@ -143,7 +148,7 @@ class PersonalityAgentChatService {
           if (GetIt.instance.isRegistered<FactsIndex>()) {
             final factsIndex = GetIt.instance<FactsIndex>();
             final facts = await factsIndex.retrieveFacts(userId: userId);
-            
+
             // Merge structured facts into preferences
             enrichedPreferences = {
               'traits': facts.traits,
@@ -152,9 +157,10 @@ class PersonalityAgentChatService {
             };
           }
         } catch (factsError) {
-          developer.log('Error retrieving structured facts: $factsError', name: _logName);
+          developer.log('Error retrieving structured facts: $factsError',
+              name: _logName);
         }
-        
+
         // Generate agent response with fallback context
         response = await _llmService.chat(
           messages: historyMessages,
@@ -162,14 +168,15 @@ class PersonalityAgentChatService {
             userId: userId,
             location: currentLocation,
             personality: personality,
-            preferences: enrichedPreferences.isNotEmpty ? enrichedPreferences : null,
+            preferences:
+                enrichedPreferences.isNotEmpty ? enrichedPreferences : null,
             languageStyle: languageStyle.isNotEmpty ? languageStyle : null,
           ),
           temperature: 0.7,
           maxTokens: 500,
         );
       }
-      
+
       // Encrypt and save agent response
       await _saveMessage(
         chatId: chatId,
@@ -179,7 +186,7 @@ class PersonalityAgentChatService {
         agentId: agentId,
         userId: userId,
       );
-      
+
       developer.log('✅ Chat response generated and saved', name: _logName);
       return response;
     } catch (e, stackTrace) {
@@ -192,12 +199,13 @@ class PersonalityAgentChatService {
       rethrow;
     }
   }
-  
+
   /// Get conversation history (decrypted)
-  /// 
+  ///
   /// [userId] - User-facing identifier
   /// Returns list of decrypted messages, most recent first
-  Future<List<PersonalityChatMessage>> getConversationHistory(String userId) async {
+  Future<List<PersonalityChatMessage>> getConversationHistory(
+      String userId) async {
     try {
       final agentId = await _agentIdService.getUserAgentId(userId);
       return await _getConversationHistory(userId, agentId);
@@ -211,56 +219,68 @@ class PersonalityAgentChatService {
       return [];
     }
   }
-  
-  
+
   // ========================================================================
   // PRIVATE METHODS
   // ========================================================================
-  
+
   /// Format search results for LLM context
   String _formatSearchResultsForContext(HybridSearchResult results) {
     final buffer = StringBuffer();
     buffer.writeln('\nSearch Results Available:');
-    buffer.writeln('Found ${results.totalCount} spots (${results.communityCount} from community, ${results.externalCount} external)');
+    buffer.writeln(
+        'Found ${results.totalCount} spots (${results.communityCount} from community, ${results.externalCount} external)');
     buffer.writeln('\nTop Results:');
-    
+
     for (int i = 0; i < results.spots.take(5).length; i++) {
       final spot = results.spots[i];
       buffer.writeln('${i + 1}. ${spot.name} - ${spot.category}');
       if (spot.description.isNotEmpty) {
-        buffer.writeln('   ${spot.description.substring(0, spot.description.length > 100 ? 100 : spot.description.length)}...');
+        buffer.writeln(
+            '   ${spot.description.substring(0, spot.description.length > 100 ? 100 : spot.description.length)}...');
       }
     }
-    
-    buffer.writeln('\nYou can reference these spots in your response. Present them naturally in the user\'s language style.');
-    
+
+    buffer.writeln(
+        '\nYou can reference these spots in your response. Present them naturally in the user\'s language style.');
+
     return buffer.toString();
   }
-  
+
   /// Handle search request if message contains search intent
   Future<HybridSearchResult?> _handleSearchRequest(
     String message,
     Position? currentLocation,
   ) async {
     if (_searchRepository == null) return null;
-    
+
     // Simple search intent detection
     final lowerMessage = message.toLowerCase();
-    final searchKeywords = ['find', 'search', 'look for', 'where is', 'near me', 'nearby'];
-    final hasSearchIntent = searchKeywords.any((keyword) => lowerMessage.contains(keyword));
-    
+    final searchKeywords = [
+      'find',
+      'search',
+      'look for',
+      'where is',
+      'near me',
+      'nearby'
+    ];
+    final hasSearchIntent =
+        searchKeywords.any((keyword) => lowerMessage.contains(keyword));
+
     if (!hasSearchIntent) return null;
-    
+
     try {
-      developer.log('Detected search intent, performing search', name: _logName);
-      
+      developer.log('Detected search intent, performing search',
+          name: _logName);
+
       // Extract query (simple: remove search keywords)
       String query = message;
       for (final keyword in searchKeywords) {
-        query = query.replaceAll(RegExp(keyword, caseSensitive: false), '').trim();
+        query =
+            query.replaceAll(RegExp(keyword, caseSensitive: false), '').trim();
       }
       if (query.isEmpty) query = message; // Fallback to full message
-      
+
       // Perform search
       final results = await _searchRepository!.searchSpots(
         query: query,
@@ -269,16 +289,16 @@ class PersonalityAgentChatService {
         maxResults: 10,
         includeExternal: true,
       );
-      
-      developer.log('Search completed: ${results.totalCount} results', name: _logName);
+
+      developer.log('Search completed: ${results.totalCount} results',
+          name: _logName);
       return results;
     } catch (e) {
       developer.log('Error performing search: $e', name: _logName);
       return null;
     }
   }
-  
-  
+
   /// Get conversation history (encrypted messages)
   Future<List<PersonalityChatMessage>> _getConversationHistory(
     String userId,
@@ -288,7 +308,7 @@ class PersonalityAgentChatService {
       final chatId = '$_chatIdPrefix$agentId}_$userId';
       final db = await SembastDatabase.database;
       final store = _getChatStore();
-      
+
       final records = await store.find(
         db,
         finder: Finder(
@@ -296,7 +316,7 @@ class PersonalityAgentChatService {
           sortOrders: [SortOrder('timestamp', false)], // Most recent first
         ),
       );
-      
+
       return records.map((record) {
         return PersonalityChatMessage.fromJson(record.value);
       }).toList();
@@ -310,7 +330,7 @@ class PersonalityAgentChatService {
       return [];
     }
   }
-  
+
   /// Save message (encrypt and store)
   Future<void> _saveMessage({
     required String chatId,
@@ -323,7 +343,7 @@ class PersonalityAgentChatService {
     try {
       // Encrypt message using chat ID as key
       final encrypted = await _encryptMessage(message, chatId);
-      
+
       // Create message
       final chatMessage = PersonalityChatMessage(
         messageId: const Uuid().v4(),
@@ -333,12 +353,12 @@ class PersonalityAgentChatService {
         encryptedContent: encrypted,
         timestamp: DateTime.now(),
       );
-      
+
       // Store in database
       final db = await SembastDatabase.database;
       final store = _getChatStore();
       await store.record(chatMessage.messageId).put(db, chatMessage.toJson());
-      
+
       developer.log('Message saved: ${chatMessage.messageId}', name: _logName);
     } catch (e, stackTrace) {
       developer.log(
@@ -350,12 +370,13 @@ class PersonalityAgentChatService {
       rethrow;
     }
   }
-  
+
   /// Encrypt message
-  Future<EncryptedMessage> _encryptMessage(String message, String chatId) async {
+  Future<EncryptedMessage> _encryptMessage(
+      String message, String chatId) async {
     return await _encryptionService.encrypt(message, chatId);
   }
-  
+
   /// Get decrypted message content (async)
   Future<String> getDecryptedMessageAsync(
     PersonalityChatMessage message,
@@ -375,10 +396,9 @@ class PersonalityAgentChatService {
       return '[Message decryption failed]';
     }
   }
-  
+
   /// Get chat store
   StoreRef<String, Map<String, dynamic>> _getChatStore() {
     return stringMapStoreFactory.store(_chatStoreName);
   }
 }
-

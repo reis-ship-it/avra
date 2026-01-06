@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.spots.app">
+    package="com.avra.app">
     
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <!-- For Android 10+ scoped storage, prefer granular media permissions instead of legacy storage -->
     <!-- Uncomment specific permissions if your app actually reads respective media types on Android 13+ -->
-    <!-- <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <!-- <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" /> -->
     <!-- <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" /> -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     
     <!-- AI2AI Communication Permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -36,7 +38,7 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     
     <application
-        android:label="SPOTS"
+        android:label="AVRA"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <!-- Google Maps API Key -->
@@ -73,10 +75,17 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="spots"
+                    android:scheme="avra"
                     android:host="oauth" />
             </intent-filter>
         </activity>
+
+        <!-- Background AI2AI: keeps BLE discovery alive (Android requires a foreground service notification). -->
+        <service
+            android:name=".services.BLEForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location|dataSync" />
         
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

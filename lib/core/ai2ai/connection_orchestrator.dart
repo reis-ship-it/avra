@@ -17,7 +17,7 @@ import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots_ai/services/ai2ai_realtime_service.dart';
+import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/core/ai2ai/aipersonality_node.dart';
 import 'package:spots/core/ai2ai/orchestrator_components.dart';
@@ -25,12 +25,17 @@ import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:spots/core/ai2ai/battery_adaptive_ble_scheduler.dart';
+import 'package:spots/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:spots/core/ai2ai/adaptive_mesh_hop_policy.dart' as mesh_policy;
 import 'package:spots/core/ai2ai/embedding_delta_collector.dart';
 import 'package:spots/core/ai2ai/federated_learning_codec.dart';
 import 'package:spots/core/ai2ai/room_coherence_engine.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/anonymous_user.dart';
 import 'package:spots/core/services/user_anonymization_service.dart';
+import 'package:spots/core/services/locality_agents/locality_agent_models_v1.dart';
+import 'package:spots/core/services/locality_agents/locality_agent_mesh_cache.dart';
+import 'package:get_it/get_it.dart';
 import 'package:spots/core/ml/onnx_dimension_scorer.dart';
 import 'package:spots_knot/services/knot/knot_weaving_service.dart';
 import 'package:spots_knot/services/knot/knot_storage_service.dart';
@@ -169,7 +174,7 @@ class VibeConnectionOrchestrator {
 
   final UserVibeAnalyzer _vibeAnalyzer;
   final Connectivity _connectivity;
-  AI2AIRealtimeService? _realtimeService;
+  AI2AIBroadcastService? _realtimeService;
   final DiscoveryManager _discoveryManager;
   final ConnectionManager _connectionManager;
   final RealtimeCoordinator? _realtimeCoordinator;
@@ -203,6 +208,7 @@ class VibeConnectionOrchestrator {
   Timer? _connectionMaintenanceTimer;
   Timer? _bleInboxPoller;
   BatteryAdaptiveBleScheduler? _batteryScheduler;
+  AdaptiveMeshNetworkingService? _adaptiveMeshService;
 
   Timer? _federatedCloudSyncTimer;
   StreamSubscription<List<ConnectivityResult>>? _federatedCloudConnectivitySub;
@@ -402,7 +408,7 @@ class VibeConnectionOrchestrator {
   VibeConnectionOrchestrator({
     required UserVibeAnalyzer vibeAnalyzer,
     required Connectivity connectivity,
-    AI2AIRealtimeService? realtimeService,
+    AI2AIBroadcastService? realtimeService,
     DeviceDiscoveryService? deviceDiscovery,
     AI2AIProtocol? protocol,
     PersonalityAdvertisingService? advertisingService,
@@ -437,7 +443,7 @@ class VibeConnectionOrchestrator {
             : null;
 
   /// Inject or update the realtime service after construction to avoid DI cycles
-  void setRealtimeService(AI2AIRealtimeService service) {
+  void setRealtimeService(AI2AIBroadcastService service) {
     _realtimeService = service;
   }
 
@@ -465,10 +471,12 @@ class VibeConnectionOrchestrator {
           tag: _logName);
 
       final eventModeEnabled = _isEventModeEnabled();
+      final vibe =
+          await _vibeAnalyzer.compileUserVibe(userId, updatedPersonality);
+      final anonymized = await PrivacyProtection.anonymizeUserVibe(vibe);
+
       final success = await _advertisingService!.updatePersonalityData(
-        userId,
-        updatedPersonality,
-        _vibeAnalyzer,
+        personalityData: anonymized,
         nodeId: _localBleNodeId,
         eventModeEnabled: eventModeEnabled,
         connectOk: _lastAdvertisedConnectOk,
@@ -609,10 +617,11 @@ class VibeConnectionOrchestrator {
       // BLE side-effects are disabled by default on iOS (simulator safety).
       if (_allowBleSideEffects && _advertisingService != null) {
         final eventModeEnabled = _isEventModeEnabled();
+        final vibe = await _vibeAnalyzer.compileUserVibe(userId, personality);
+        final anonymized = await PrivacyProtection.anonymizeUserVibe(vibe);
+
         final advertisingStarted = await _advertisingService!.startAdvertising(
-          userId,
-          personality,
-          _vibeAnalyzer,
+          personalityData: anonymized,
           nodeId: _localBleNodeId,
           eventModeEnabled: eventModeEnabled,
           connectOk: false,
@@ -644,6 +653,14 @@ class VibeConnectionOrchestrator {
           prefs: _prefs,
         );
         await _batteryScheduler!.start();
+
+        // Initialize adaptive mesh networking service
+        _adaptiveMeshService?.stop();
+        _adaptiveMeshService = AdaptiveMeshNetworkingService(
+          batteryScheduler: _batteryScheduler!,
+          discovery: _deviceDiscovery!,
+        );
+        await _adaptiveMeshService!.start();
       }
 
       // Start AI2AI discovery process (BLE-only; skip when BLE side-effects are disabled).
@@ -1836,6 +1853,8 @@ class VibeConnectionOrchestrator {
     _federatedCloudConnectivitySub = null;
     await _batteryScheduler?.stop();
     _batteryScheduler = null;
+    await _adaptiveMeshService?.stop();
+    _adaptiveMeshService = null;
 
     // Stop discovery + advertising (best-effort).
     try {
@@ -1877,6 +1896,8 @@ class VibeConnectionOrchestrator {
     _pendingConnections.clear();
     _nearbyVibes.clear();
     _discoveredNodes.clear();
+    // Update adaptive mesh service with network density
+    _adaptiveMeshService?.updateNetworkDensity(0);
     _currentUserId = null;
 
     _logger.info('Shutdown completed', tag: _logName);
@@ -1909,7 +1930,14 @@ class VibeConnectionOrchestrator {
           if (decoded == null) continue;
 
           if (decoded.type == MessageType.learningInsight) {
-            await _handleIncomingLearningInsight(decoded);
+            // Check if this is a locality agent update or learning insight
+            final payload = decoded.payload;
+            final type = payload['type'] as String?;
+            if (type == 'locality_agent_update') {
+              await _handleIncomingLocalityAgentUpdate(decoded);
+            } else {
+              await _handleIncomingLearningInsight(decoded);
+            }
           }
         }
 
@@ -1926,6 +1954,16 @@ class VibeConnectionOrchestrator {
   }
 
   void _startFederatedCloudSync() {
+    // Unit/widget tests shouldn't spin background timers/subscriptions; they
+    // create pending timers and flaky hangs in CI.
+    if (_isTestBinding) {
+      _logger.debug(
+        'Test binding detected; skipping federated cloud sync timers',
+        tag: _logName,
+      );
+      return;
+    }
+
     // Best-effort: no-op if not configured; safe to call multiple times.
     _federatedCloudSyncTimer?.cancel();
     unawaited(_federatedCloudConnectivitySub?.cancel());
@@ -2148,8 +2186,23 @@ class VibeConnectionOrchestrator {
 
       final originId = payload['origin_id'] as String? ?? message.senderId;
       final hop = (payload['hop'] as num?)?.toInt() ?? 0;
-      // Hard cap: do not allow uncontrolled propagation.
-      if (hop < 0 || hop > 2) return;
+      // Validate hop count
+      if (hop < 0) return;  // Negative hops are invalid
+
+      // Use adaptive mesh service to check hop limit
+      if (_adaptiveMeshService != null) {
+        if (!_adaptiveMeshService!.shouldForwardMessage(
+          currentHop: hop,
+          priority: mesh_policy.MessagePriority.medium,
+          messageType: mesh_policy.MessageType.learningInsight,
+        )) {
+          // Adaptive policy says this hop is beyond limit
+          return;
+        }
+      } else {
+        // Fallback: limit to 2 hops if adaptive service not available
+        if (hop > 2) return;
+      }
 
       final insightsRaw = payload['dimension_insights'];
       if (insightsRaw is! Map) return;
@@ -2247,8 +2300,19 @@ class VibeConnectionOrchestrator {
     if (!_allowBleSideEffects) return;
     if (!_isFederatedLearningParticipationEnabled()) return;
 
-    // Limit to a single hop by default to avoid runaway propagation.
-    if (hop >= 1) return;
+    // Use adaptive hop limit instead of hardcoded 1-hop limit
+    if (_adaptiveMeshService != null) {
+      if (!_adaptiveMeshService!.shouldForwardMessage(
+        currentHop: hop,
+        priority: mesh_policy.MessagePriority.medium,
+        messageType: mesh_policy.MessageType.learningInsight,
+      )) {
+        return;  // Adaptive policy says don't forward
+      }
+    } else {
+      // Fallback to old behavior if adaptive service not available
+      if (hop >= 1) return;
+    }
 
     // Never forward our own-origin updates (it would just amplify duplicates).
     if (originId == _localBleNodeId) return;
@@ -2569,6 +2633,8 @@ class VibeConnectionOrchestrator {
   void _updateDiscoveredNodes(List<AIPersonalityNode> nodes) {
     for (final node in nodes) {
       _discoveredNodes[node.nodeId] = node;
+      // Update adaptive mesh service with network density
+      _adaptiveMeshService?.updateNetworkDensity(_discoveredNodes.length);
       _nearbyVibes[node.nodeId] = node.vibe;
     }
 
@@ -2581,6 +2647,8 @@ class VibeConnectionOrchestrator {
 
     for (final nodeId in expiredNodes) {
       _discoveredNodes.remove(nodeId);
+      // Update adaptive mesh service with network density
+      _adaptiveMeshService?.updateNetworkDensity(_discoveredNodes.length);
       _nearbyVibes.remove(nodeId);
     }
   }
@@ -2991,6 +3059,249 @@ class VibeConnectionOrchestrator {
       // #region agent log
       _logger.warn('Failed to setup realtime listeners: $e', tag: _logName);
       // #endregion
+    }
+  }
+
+  /// NEW: Forward locality agent update through mesh network
+  Future<void> forwardLocalityAgentUpdate(Map<String, dynamic> message) async {
+    if (!_allowBleSideEffects) return;
+    if (!_isFederatedLearningParticipationEnabled()) return;
+
+    final protocol = _protocol;
+    if (protocol == null) return;
+
+    final discovery = _deviceDiscovery;
+    if (discovery == null) return;
+
+    final hop = (message['hop'] as num?)?.toInt() ?? 0;
+    final originId = message['origin_id'] as String? ?? message['agent_id'] as String?;
+
+    // Use adaptive mesh service to check hop limit
+    if (_adaptiveMeshService != null) {
+      final scope = message['scope'] as String?;
+      if (!_adaptiveMeshService!.shouldForwardMessage(
+        currentHop: hop,
+        priority: mesh_policy.MessagePriority.high,
+        messageType: mesh_policy.MessageType.localityAgentUpdate,
+        geographicScope: scope,
+      )) {
+        return; // Adaptive policy says don't forward
+      }
+    }
+
+    // Never forward our own-origin updates
+    if (originId == _localBleNodeId) return;
+
+    // Choose up to 2 nearby devices to forward to (best-effort)
+    final candidates = _discoveredNodes.values
+        .map((n) => n.nodeId)
+        .where((id) => id != originId)
+        .take(2)
+        .toList();
+
+    if (candidates.isEmpty) return;
+
+    try {
+      final forwardedMessage = Map<String, dynamic>.from(message);
+      forwardedMessage['hop'] = hop + 1;
+      forwardedMessage['origin_id'] = originId;
+
+      for (final peerId in candidates) {
+        final device = discovery.getDevice(peerId);
+        if (device == null) continue;
+        if (device.type != DeviceType.bluetooth) continue;
+
+        final recipientId =
+            _peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
+        final packetBytes = await protocol.encodePacketBytes(
+          type: MessageType.learningInsight, // Reuse learning insight type for now
+          payload: forwardedMessage,
+          senderNodeId: _localBleNodeId,
+          recipientNodeId: recipientId,
+        );
+
+        // Best-effort ACK-confirmed send
+        await sendBlePacketsBatch(
+          device: device,
+          senderId: _localBleNodeId,
+          packetBytesList: <Uint8List>[packetBytes],
+        );
+      }
+
+      _logger.debug('Forwarded locality agent update through mesh', tag: _logName);
+    } catch (e) {
+      _logger.debug('Locality agent update forward failed: $e', tag: _logName);
+    }
+  }
+
+  /// NEW: Handle incoming locality agent update from mesh
+  Future<void> _handleIncomingLocalityAgentUpdate(ProtocolMessage message) async {
+    try {
+      final payload = message.payload;
+      final type = payload['type'] as String?;
+      if (type != 'locality_agent_update') return;
+
+      final keyStr = payload['key'] as String?;
+      final geohashPrefix = payload['geohash_prefix'] as String?;
+      final precision = (payload['precision'] as num?)?.toInt() ?? 7;
+      final cityCode = payload['city_code'] as String?;
+      final delta12Raw = payload['delta12'] as List?;
+      final hop = (payload['hop'] as num?)?.toInt() ?? 0;
+
+      if (keyStr == null || geohashPrefix == null || delta12Raw == null) return;
+
+      // Validate hop count
+      if (hop < 0) return;
+
+      // Use adaptive mesh service to check hop limit
+      final scope = payload['scope'] as String?;
+      if (_adaptiveMeshService != null) {
+        if (!_adaptiveMeshService!.shouldForwardMessage(
+          currentHop: hop,
+          priority: mesh_policy.MessagePriority.high,
+          messageType: mesh_policy.MessageType.localityAgentUpdate,
+          geographicScope: scope,
+        )) {
+          return; // Adaptive policy says this hop is beyond limit
+        }
+      }
+
+      // Parse delta12
+      final delta12 = delta12Raw
+          .map((e) => (e as num).toDouble())
+          .where((v) => v.abs() <= 0.35) // Hard cap like learning insights
+          .toList();
+
+      if (delta12.length != 12) return;
+
+      // Create locality agent key
+      final key = LocalityAgentKeyV1(
+        geohashPrefix: geohashPrefix,
+        precision: precision,
+        cityCode: cityCode,
+      );
+
+      // Store mesh update in cache for neighbor smoothing
+      final sl = GetIt.instance;
+      if (sl.isRegistered<LocalityAgentMeshCache>()) {
+        try {
+          final meshCache = sl<LocalityAgentMeshCache>();
+          final ttlMs = (payload['ttl_ms'] as num?)?.toInt() ?? 
+                        (6 * 60 * 60 * 1000); // Default 6 hours
+          await meshCache.storeMeshUpdate(
+            key: key,
+            delta12: delta12,
+            receivedAt: DateTime.now(),
+            ttl: Duration(milliseconds: ttlMs),
+          );
+          _logger.debug(
+            'Stored locality agent mesh update: ${key.stableKey} (hop=$hop)',
+            tag: _logName,
+          );
+        } catch (e) {
+          _logger.debug(
+            'Failed to store mesh update in cache: $e',
+            tag: _logName,
+          );
+        }
+      }
+
+      _logger.debug(
+        'Received locality agent update: ${key.stableKey} (hop=$hop)',
+        tag: _logName,
+      );
+
+      // Forward through mesh if within limits
+      await _maybeForwardLocalityAgentUpdateGossip(
+        payload: payload,
+        originId: payload['origin_id'] as String? ?? message.senderId,
+        hop: hop,
+        receivedFromDeviceId: message.senderId,
+      );
+    } catch (e, st) {
+      _logger.error(
+        'Failed to handle incoming locality agent update: $e',
+        error: e,
+        stackTrace: st,
+        tag: _logName,
+      );
+    }
+  }
+
+  /// NEW: Forward locality agent update gossip (similar to learning insight gossip)
+  Future<void> _maybeForwardLocalityAgentUpdateGossip({
+    required Map<String, dynamic> payload,
+    required String originId,
+    required int hop,
+    required String receivedFromDeviceId,
+  }) async {
+    // Forwarding is *optional* federated behavior
+    if (!_allowBleSideEffects) return;
+    if (!_isFederatedLearningParticipationEnabled()) return;
+
+    // Use adaptive hop limit
+    final scope = payload['scope'] as String?;
+    if (_adaptiveMeshService != null) {
+      if (!_adaptiveMeshService!.shouldForwardMessage(
+        currentHop: hop,
+        priority: mesh_policy.MessagePriority.high,
+        messageType: mesh_policy.MessageType.localityAgentUpdate,
+        geographicScope: scope,
+      )) {
+        return; // Adaptive policy says don't forward
+      }
+    } else {
+      // Fallback: limit to 2 hops if adaptive service not available
+      if (hop >= 2) return;
+    }
+
+    // Never forward our own-origin updates
+    if (originId == _localBleNodeId) return;
+
+    final protocol = _protocol;
+    if (protocol == null) return;
+
+    final discovery = _deviceDiscovery;
+    if (discovery == null) return;
+
+    // Choose up to 2 nearby devices to forward to (best-effort)
+    final candidates = _discoveredNodes.values
+        .map((n) => n.nodeId)
+        .where((id) => id != receivedFromDeviceId && id != originId)
+        .take(2)
+        .toList();
+
+    if (candidates.isEmpty) return;
+
+    try {
+      final forwardedPayload = Map<String, dynamic>.from(payload);
+      forwardedPayload['hop'] = hop + 1;
+      forwardedPayload['origin_id'] = originId;
+
+      for (final peerId in candidates) {
+        final device = discovery.getDevice(peerId);
+        if (device == null) continue;
+        if (device.type != DeviceType.bluetooth) continue;
+
+        final recipientId =
+            _peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
+        final packetBytes = await protocol.encodePacketBytes(
+          type: MessageType.learningInsight, // Reuse learning insight type
+          payload: forwardedPayload,
+          senderNodeId: _localBleNodeId,
+          recipientNodeId: recipientId,
+        );
+
+        // Best-effort ACK-confirmed send
+        await sendBlePacketsBatch(
+          device: device,
+          senderId: _localBleNodeId,
+          packetBytesList: <Uint8List>[packetBytes],
+        );
+      }
+    } catch (e) {
+      _logger.debug('Locality agent update gossip forward failed: $e',
+          tag: _logName);
     }
   }
 }

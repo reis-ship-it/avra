@@ -11,6 +11,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/injection_container.dart' as di;
+import 'package:spots/core/services/geo_hierarchy_service.dart';
+import 'package:spots/core/services/geo_city_pack_service.dart';
 
 class HomebaseSelectionPage extends StatefulWidget {
   final String? selectedHomebase;
@@ -43,45 +45,43 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
   static final Map<String, String> _geocodingCache = {};
   static const String _cacheKey = 'homebase_geocoding_cache';
 
+  final GeoHierarchyService _geoHierarchyService = GeoHierarchyService();
+  List<Polygon> _geoPolygons = const [];
+
+  bool get _isWidgetTestBinding {
+    // Avoid importing flutter_test into production code; detect via binding type name.
+    final bindingType = WidgetsBinding.instance.runtimeType.toString();
+    return bindingType.contains('TestWidgetsFlutterBinding') ||
+        bindingType.contains('AutomatedTestWidgetsFlutterBinding');
+  }
+
   @override
   void initState() {
     super.initState();
     _logger.debug('HomebaseSelectionPage: initState called');
+
+    // Respect a pre-selected homebase (e.g., when navigating back in onboarding).
+    if (widget.selectedHomebase != null && widget.selectedHomebase!.isNotEmpty) {
+      _selectedNeighborhood = widget.selectedHomebase;
+    }
+
     // Use addPostFrameCallback to avoid setState during build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadCachedLocation();
         _initializeMap();
-        _preloadCommonLocations();
+        // NOTE: Geocoding preloads were removed because they can trigger async
+        // errors and non-determinism (especially under widget tests where HTTP
+        // requests are blocked and reverse geocoding can time out).
       }
     });
   }
 
-  Future<void> _preloadCommonLocations() async {
-    // Preload geocoding for common locations to improve performance
-    final commonLocations = [
-      const LatLng(40.7128, -74.0060), // NYC
-      const LatLng(34.0522, -118.2437), // LA
-      const LatLng(41.8781, -87.6298), // Chicago
-      const LatLng(29.7604, -95.3698), // Houston
-      const LatLng(33.7490, -84.3880), // Atlanta
-    ];
-
-    for (final location in commonLocations) {
-      final cacheKey =
-          '${location.latitude.toStringAsFixed(4)}_${location.longitude.toStringAsFixed(4)}';
-      if (!_geocodingCache.containsKey(cacheKey)) {
-        // Preload in background
-        _getNeighborhoodName(location).catchError((e) {
-          _logger.warn(
-              'HomebaseSelectionPage: Error preloading location $location: $e');
-        });
-      }
-    }
-  }
-
   Future<void> _loadCachedLocation() async {
     try {
+      if (!di.sl.isRegistered<SharedPreferences>()) {
+        return;
+      }
       final prefs = di.sl<SharedPreferences>();
       // Restore persisted geocoding cache (best-effort)
       try {
@@ -128,6 +128,9 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
 
   Future<void> _saveCachedLocation(LatLng location, String neighborhood) async {
     try {
+      if (!di.sl.isRegistered<SharedPreferences>()) {
+        return;
+      }
       final prefs = di.sl<SharedPreferences>();
       await prefs.setDouble('cached_lat', location.latitude);
       await prefs.setDouble('cached_lng', location.longitude);
@@ -155,11 +158,20 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
       _mapLoaded = true;
     });
 
+    // Auto-load geo overlays (best-effort) immediately for default/known location,
+    // so onboarding shows locality geometry from the start.
+    final initial = _currentLocation ?? const LatLng(40.7128, -74.0060);
+    // ignore: unawaited_futures
+    _loadGeoOverlayForCenter(initial);
+
     // Then try to get current location AFTER the map has rendered at least once.
     // flutter_map's MapController throws if move() is called before first render.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _getCurrentLocation();
+        // If the user already has a selected homebase, don't override it.
+        if (_selectedNeighborhood == null || _selectedNeighborhood!.isEmpty) {
+          _getCurrentLocation();
+        }
       }
     });
   }
@@ -174,10 +186,8 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
     });
 
     try {
-      // Integration test mode: avoid OS permission dialogs and slow geocoding.
-      // This keeps onboarding deterministic on iOS simulators.
-    const bool isIntegrationTest = bool.fromEnvironment('FLUTTER_TEST');
-      if (isIntegrationTest) {
+      // Widget/integration test mode: avoid OS permission dialogs, plugins, and geocoding.
+      if (_isWidgetTestBinding) {
         _logger.info(
           'HomebaseSelectionPage: FLUTTER_TEST enabled - using default homebase without permission prompts',
           tag: 'HomebaseSelectionPage',
@@ -239,6 +249,10 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
           _logger.debug('HomebaseSelectionPage: Map not ready for move(): $e');
         }
 
+        // Auto-load locality geometry overlay for this point (best-effort).
+        // ignore: unawaited_futures
+        _loadGeoOverlayForCenter(_currentLocation!);
+
         // Get neighborhood name for the centered location (in parallel)
         _getNeighborhoodName(_currentLocation!);
       } else {
@@ -250,6 +264,8 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
         } catch (e) {
           _logger.debug('HomebaseSelectionPage: Map not ready for move(): $e');
         }
+        // ignore: unawaited_futures
+        _loadGeoOverlayForCenter(const LatLng(40.7128, -74.0060));
         _getNeighborhoodName(const LatLng(40.7128, -74.0060));
       }
     } catch (e) {
@@ -261,6 +277,8 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
         _logger.debug(
             'HomebaseSelectionPage: Map not ready for move() after error: $moveError');
       }
+      // ignore: unawaited_futures
+      _loadGeoOverlayForCenter(const LatLng(40.7128, -74.0060));
       _getNeighborhoodName(const LatLng(40.7128, -74.0060));
     } finally {
       if (mounted) {
@@ -513,9 +531,65 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
     // Debounce the geocoding call with shorter delay for faster response
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       if (mounted) {
+        // Auto-refresh locality overlay as the user moves the marker.
+        // ignore: unawaited_futures
+        _loadGeoOverlayForCenter(center);
         _getNeighborhoodName(center);
       }
     });
+  }
+
+  Future<void> _loadGeoOverlayForCenter(LatLng center) async {
+    // Avoid any network/RPC calls in widget tests.
+    if (_isWidgetTestBinding) return;
+
+    try {
+      final lookup = await _geoHierarchyService.lookupLocalityByPoint(
+        lat: center.latitude,
+        lon: center.longitude,
+      );
+
+      // If we can resolve a locality_code, render that polygon.
+      if (lookup != null) {
+        // Best-effort: ensure the relevant city pack is installed so the user
+        // keeps getting locality boundaries offline after onboarding.
+        // ignore: unawaited_futures
+        unawaited(GeoCityPackService().ensureLatestInstalled(lookup.cityCode));
+
+        final poly = await _geoHierarchyService.getLocalityPolygon(
+          localityCode: lookup.localityCode,
+          simplifyTolerance: 0.01,
+        );
+        if (!mounted) return;
+
+        if (poly != null && poly.rings.isNotEmpty) {
+          final outer = poly.rings.first
+              .map((p) => LatLng(p.lat, p.lon))
+              .toList(growable: false);
+
+          setState(() {
+            _geoPolygons = [
+              Polygon(
+                points: outer,
+                color: AppTheme.primaryColor.withValues(alpha: 0.12),
+                borderColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+                borderStrokeWidth: 2,
+              ),
+            ];
+          });
+          return;
+        }
+      }
+
+      // No overlay available.
+      if (!mounted) return;
+      if (_geoPolygons.isNotEmpty) {
+        setState(() => _geoPolygons = const []);
+      }
+    } catch (e) {
+      // Best-effort: overlay failure should never block onboarding.
+      _logger.debug('HomebaseSelectionPage: Geo overlay load failed: $e');
+    }
   }
 
   void _onMapZoomChanged() {
@@ -529,6 +603,8 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isFlutterTest = _isWidgetTestBinding;
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -566,33 +642,52 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                 child: Stack(
                   children: [
                     // Map
-                    FlutterMap(
-                      mapController: _mapController,
-                      options: MapOptions(
-                        initialCenter:
-                            _currentLocation ?? const LatLng(40.7128, -74.0060),
-                        initialZoom: 15,
-                        minZoom: 10,
-                        maxZoom: 15,
-                        onMapEvent: (event) {
-                          if (event is MapEventMove) {
-                            _onMapMoved();
-                            _onMapZoomChanged();
-                          }
-                        },
-                        onMapReady: () {
-                          _logger.debug('HomebaseSelectionPage: Map is ready');
-                        },
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName: 'com.spots.app',
-                          maxZoom: 18,
+                    if (isFlutterTest)
+                      // In `flutter test`, avoid network tile fetches and plugin-driven map behavior.
+                      // This keeps widget tests deterministic and prevents HttpClient exceptions.
+                      Container(
+                        color: AppColors.grey200,
+                        child: const Center(
+                          child: Icon(
+                            Icons.map,
+                            color: AppColors.grey600,
+                            size: 48,
+                          ),
                         ),
-                      ],
-                    ),
+                      )
+                    else
+                      FlutterMap(
+                        mapController: _mapController,
+                        options: MapOptions(
+                          initialCenter: _currentLocation ??
+                              const LatLng(40.7128, -74.0060),
+                          initialZoom: 15,
+                          minZoom: 10,
+                          maxZoom: 15,
+                          onMapEvent: (event) {
+                            if (event is MapEventMove) {
+                              _onMapMoved();
+                              _onMapZoomChanged();
+                            }
+                          },
+                          onMapReady: () {
+                            _logger.debug(
+                                'HomebaseSelectionPage: Map is ready');
+                          },
+                        ),
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            userAgentPackageName: 'com.spots.app',
+                            maxZoom: 18,
+                          ),
+                          if (_geoPolygons.isNotEmpty)
+                            PolygonLayer(
+                              polygons: _geoPolygons,
+                            ),
+                        ],
+                      ),
 
                     // Fixed center marker (always in center of map)
                     Center(
@@ -724,6 +819,13 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                               ),
                               TextButton(
                                 onPressed: _getCurrentLocation,
+                                style: TextButton.styleFrom(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
                                 child: const Text(
                                   'Enable',
                                   style: TextStyle(

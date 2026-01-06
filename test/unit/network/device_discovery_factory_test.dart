@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/network/device_discovery_factory.dart' show DeviceDiscoveryFactory;
-import 'package:spots/core/network/device_discovery.dart' show DeviceDiscoveryPlatform;
+import 'package:spots_network/network/device_discovery_factory.dart' show DeviceDiscoveryFactory;
+import 'package:spots_network/network/device_discovery.dart' show DeviceDiscoveryPlatform;
 
 /// Device Discovery Factory Tests
 /// Tests the factory for creating platform-specific device discovery implementations

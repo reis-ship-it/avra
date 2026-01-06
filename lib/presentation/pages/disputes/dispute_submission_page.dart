@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/dispute_type.dart';
 import 'package:spots/core/services/dispute_resolution_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/disputes/dispute_evidence_storage_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
@@ -38,16 +42,19 @@ class DisputeSubmissionPage extends StatefulWidget {
 }
 
 class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
-  final DisputeResolutionService _disputeService = DisputeResolutionService(
-    eventService: GetIt.instance<ExpertiseEventService>(),
-  );
+  final DisputeResolutionService _disputeService =
+      GetIt.instance<DisputeResolutionService>();
+  final DisputeEvidenceStorageService _evidenceStorage =
+      GetIt.instance<DisputeEvidenceStorageService>();
+  final ImagePicker _imagePicker = ImagePicker();
 
   final _descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   DisputeType? _selectedType;
-  final List<String> _evidenceUrls = [];
+  final List<_EvidenceDraft> _evidenceDrafts = [];
   bool _isSubmitting = false;
+  bool _isUploadingEvidence = false;
   String? _error;
 
   @override
@@ -57,29 +64,64 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
   }
 
   Future<void> _pickImage() async {
-    // TODO: Implement image picker when image_picker package is available
-    // For now, show a message that evidence upload will be available soon
-    if (mounted) {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: true,
+        withData: true,
+      );
+      if (result == null) return;
+
+      for (final f in result.files) {
+        Uint8List? bytes = f.bytes;
+        if (bytes == null) {
+          continue;
+        }
+
+        final ext = f.extension;
+        setState(() {
+          _evidenceDrafts.add(_EvidenceDraft(
+            bytes: bytes,
+            contentType: _guessContentType(ext),
+            fileExtension: ext,
+          ));
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Evidence upload coming soon. You can still submit your dispute.'),
-          backgroundColor: AppTheme.warningColor,
+        SnackBar(
+          content: Text('Error picking image: $e'),
+          backgroundColor: AppColors.error,
         ),
       );
     }
-    
-    // Placeholder: In production, this would:
-    // 1. Use image_picker to select image
-    // 2. Upload to storage (Firebase Storage, S3, etc.)
-    // 3. Get URL and add to _evidenceUrls
   }
 
   Future<void> _takePhoto() async {
-    // TODO: Implement camera when image_picker package is available
-    if (mounted) {
+    try {
+      final image = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 85,
+      );
+      if (image == null) return;
+
+      final bytes = await image.readAsBytes();
+      final ext = image.name.contains('.') ? image.name.split('.').last : null;
+
+      setState(() {
+        _evidenceDrafts.add(_EvidenceDraft(
+          bytes: bytes,
+          contentType: _guessContentType(ext),
+          fileExtension: ext,
+        ));
+      });
+    } catch (e) {
+      // Some platforms (or permission states) may not support camera capture.
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Camera feature coming soon. You can still submit your dispute.'),
+        SnackBar(
+          content: Text('Camera unavailable: $e'),
           backgroundColor: AppTheme.warningColor,
         ),
       );
@@ -100,6 +142,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
 
     setState(() {
       _isSubmitting = true;
+      _isUploadingEvidence = false;
       _error = null;
     });
 
@@ -118,8 +161,32 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
         reportedId: reportedId,
         type: _selectedType!,
         description: _descriptionController.text.trim(),
-        evidenceUrls: _evidenceUrls,
+        evidenceUrls: const [],
       );
+
+      if (_evidenceDrafts.isNotEmpty) {
+        setState(() {
+          _isUploadingEvidence = true;
+        });
+
+        final uploaded = <String>[];
+        for (final d in _evidenceDrafts) {
+          final ref = await _evidenceStorage.uploadEvidenceImage(
+            userId: authState.user.id,
+            disputeId: dispute.id,
+            eventId: widget.event.id,
+            bytes: d.bytes,
+            contentType: d.contentType,
+            fileExtension: d.fileExtension,
+          );
+          uploaded.add(ref);
+        }
+
+        await _disputeService.attachEvidence(
+          disputeId: dispute.id,
+          evidenceUrls: uploaded,
+        );
+      }
 
       if (mounted) {
         // Navigate to dispute status page
@@ -134,6 +201,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
       setState(() {
         _error = e.toString();
         _isSubmitting = false;
+        _isUploadingEvidence = false;
       });
     }
   }
@@ -217,7 +285,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
                             valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                           ),
                         )
-                      : const Text('Submit Dispute'),
+                      : Text(_isUploadingEvidence ? 'Uploading evidence…' : 'Submit Dispute'),
                 ),
               ],
             ),
@@ -404,12 +472,12 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
             ),
           ],
         ),
-        if (_evidenceUrls.isNotEmpty) ...[
+        if (_evidenceDrafts.isNotEmpty) ...[
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _evidenceUrls.asMap().entries.map((entry) {
+            children: _evidenceDrafts.asMap().entries.map((entry) {
               return Stack(
                 children: [
                   Container(
@@ -421,16 +489,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
-                        'assets/placeholder.png', // Placeholder - in production, show actual image
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: AppColors.grey200,
-                            child: const Icon(Icons.image, color: AppColors.textSecondary),
-                          );
-                        },
-                      ),
+                      child: Image.memory(entry.value.bytes, fit: BoxFit.cover),
                     ),
                   ),
                   Positioned(
@@ -439,7 +498,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          _evidenceUrls.removeAt(entry.key);
+                          _evidenceDrafts.removeAt(entry.key);
                         });
                       },
                       child: Container(
@@ -463,6 +522,17 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
         ],
       ],
     );
+  }
+
+  String _guessContentType(String? ext) {
+    final e = (ext ?? '').toLowerCase();
+    return switch (e) {
+      'png' => 'image/png',
+      'webp' => 'image/webp',
+      'heic' => 'image/heic',
+      'heif' => 'image/heif',
+      _ => 'image/jpeg',
+    };
   }
 
   String _getTypeDescription(DisputeType type) {
@@ -491,5 +561,17 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
     final period = dateTime.hour >= 12 ? 'PM' : 'AM';
     return '$hour:${dateTime.minute.toString().padLeft(2, '0')} $period';
   }
+}
+
+class _EvidenceDraft {
+  final Uint8List bytes;
+  final String contentType;
+  final String? fileExtension;
+
+  const _EvidenceDraft({
+    required this.bytes,
+    required this.contentType,
+    required this.fileExtension,
+  });
 }
 

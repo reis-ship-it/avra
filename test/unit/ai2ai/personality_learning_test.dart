@@ -48,6 +48,7 @@ void main() {
         connectionOrchestrator = VibeConnectionOrchestrator(
           vibeAnalyzer: vibeAnalyzer!,
           connectivity: mockConnectivity,
+          prefs: compatPrefs,
         );
         
         // Setup default mock behaviors after successful initialization

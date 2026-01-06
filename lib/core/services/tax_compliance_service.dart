@@ -1,9 +1,16 @@
+import 'dart:async';
+
 import 'package:spots/core/models/tax_document.dart';
 import 'package:spots/core/models/tax_profile.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:spots/core/services/payment_service.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/services/pdf_generation_service.dart';
 import 'package:spots/core/services/irs_filing_service.dart';
+import 'package:spots/core/services/storage_service.dart';
+import 'package:spots/core/services/supabase_service.dart';
 import 'package:spots/core/services/tax_document_storage_service.dart';
 import 'package:spots/core/utils/secure_ssn_encryption.dart';
 import 'package:spots/data/repositories/tax_profile_repository.dart';
@@ -52,6 +59,7 @@ class TaxComplianceService {
   final IRSFilingService _irsFilingService;
   final TaxDocumentStorageService _storageService;
   final SecureSSNEncryption _encryption;
+  final LedgerRecorderServiceV0 _ledger;
   
   // IRS threshold for 1099-K reporting
   static const double _irsThreshold = 600.0; // $600 USD
@@ -64,13 +72,51 @@ class TaxComplianceService {
     IRSFilingService? irsFilingService,
     TaxDocumentStorageService? storageService,
     SecureSSNEncryption? encryption,
+    LedgerRecorderServiceV0? ledgerRecorder,
   }) : _paymentService = paymentService,
        _taxProfileRepository = taxProfileRepository ?? TaxProfileRepository(),
        _taxDocumentRepository = taxDocumentRepository ?? TaxDocumentRepository(),
        _pdfGenerationService = pdfGenerationService ?? PDFGenerationService(),
        _irsFilingService = irsFilingService ?? IRSFilingService(),
        _storageService = storageService ?? TaxDocumentStorageService(),
-       _encryption = encryption ?? SecureSSNEncryption();
+       _encryption = encryption ?? SecureSSNEncryption(),
+       _ledger = ledgerRecorder ??
+           LedgerRecorderServiceV0(
+             supabaseService: SupabaseService(),
+             agentIdService: AgentIdService(),
+             storage: StorageService.instance,
+           );
+
+  Future<void> _tryLedgerAppendForUser({
+    required String expectedOwnerUserId,
+    required String eventType,
+    required String entityType,
+    required String entityId,
+    required Map<String, Object?> payload,
+  }) async {
+    try {
+      final currentUserId = SupabaseService().currentUser?.id;
+      if (currentUserId == null || currentUserId != expectedOwnerUserId) {
+        return;
+      }
+
+      await _ledger.append(
+        domain: LedgerDomainV0.payments,
+        eventType: eventType,
+        occurredAt: DateTime.now(),
+        payload: payload,
+        entityType: entityType,
+        entityId: entityId,
+        correlationId: entityId,
+        source: 'tax_compliance',
+      );
+    } catch (e) {
+      _logger.warn(
+        'Ledger write skipped/failed for $eventType: ${e.toString()}',
+        tag: _logName,
+      );
+    }
+  }
   
   /// Check if user needs tax documents
   /// 
@@ -233,6 +279,25 @@ class TaxComplianceService {
           '1099 generated and filed: user=$userId, year=$year, earnings=\$${earnings.toStringAsFixed(2)}, hasW9=$hasW9, confirmation=${filingResult.confirmationNumber}',
           tag: _logName,
         );
+
+        unawaited(_tryLedgerAppendForUser(
+          expectedOwnerUserId: userId,
+          eventType: 'tax_document_generated',
+          entityType: 'tax_document',
+          entityId: updatedDoc.id,
+          payload: <String, Object?>{
+            'tax_document_id': updatedDoc.id,
+            'tax_year': updatedDoc.taxYear,
+            'form_type': updatedDoc.formType.name,
+            'status': updatedDoc.status.name,
+            'total_earnings': updatedDoc.totalEarnings,
+            'has_w9': hasW9,
+            'document_url': updatedDoc.documentUrl,
+            'irs_filed': true,
+            'irs_confirmation_number': filingResult.confirmationNumber,
+          },
+        ));
+
         return updatedDoc;
       } else {
         _logger.warn(
@@ -245,6 +310,23 @@ class TaxComplianceService {
         '1099 generated: user=$userId, year=$year, earnings=\$${earnings.toStringAsFixed(2)}, hasW9=$hasW9',
         tag: _logName,
       );
+
+      unawaited(_tryLedgerAppendForUser(
+        expectedOwnerUserId: userId,
+        eventType: 'tax_document_generated',
+        entityType: 'tax_document',
+        entityId: taxDocWithUrl.id,
+        payload: <String, Object?>{
+          'tax_document_id': taxDocWithUrl.id,
+          'tax_year': taxDocWithUrl.taxYear,
+          'form_type': taxDocWithUrl.formType.name,
+          'status': taxDocWithUrl.status.name,
+          'total_earnings': taxDocWithUrl.totalEarnings,
+          'has_w9': hasW9,
+          'document_url': taxDocWithUrl.documentUrl,
+          'irs_filed': false,
+        },
+      ));
       
       return taxDocWithUrl;
     } catch (e) {
@@ -376,6 +458,21 @@ class TaxComplianceService {
       await _taxProfileRepository.saveTaxProfile(profile);
       
       _logger.info('W-9 processed: user=$userId, classification=${classification.name}', tag: _logName);
+
+      unawaited(_tryLedgerAppendForUser(
+        expectedOwnerUserId: userId,
+        eventType: 'w9_submitted',
+        entityType: 'tax_profile',
+        entityId: userId,
+        payload: <String, Object?>{
+          'user_id': userId,
+          'classification': classification.name,
+          'has_ein': ein != null && ein.isNotEmpty,
+          'has_business_name': businessName != null && businessName.isNotEmpty,
+          'ssn_provided': ssn.isNotEmpty,
+          'w9_submitted_at': profile.w9SubmittedAt?.toIso8601String(),
+        },
+      ));
       
       return profile;
     } catch (e) {

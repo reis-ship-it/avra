@@ -159,6 +159,12 @@ void main() {
           'should add leader to club, not add duplicate leader, throw error if user is not a member, remove user from admin team when promoting to leader, remove leader from club, not remove non-leader, throw error when trying to remove founder if only leader, allow removing founder if there are other leaders, and check if user is leader',
           () async {
         // Test business logic: leader management operations
+        // Founder starts as the only leader after upgrade; removing them should throw.
+        await expectLater(
+          service.removeLeader(club, club.founderId),
+          throwsException,
+        );
+
         const newLeaderId = 'leader-1';
         await service.addLeader(club, newLeaderId);
         final updated1 = await service.getClubById(club.id);
@@ -192,12 +198,6 @@ void main() {
         await service.removeLeader(updated4, 'non-leader-1');
         final updated5 = await service.getClubById(club.id);
         expect(updated5!.leaders.length, equals(updated4.leaders.length));
-
-        // Test removing founder when they're the only leader (should throw)
-        await expectLater(
-          () => service.removeLeader(updated5, updated5.founderId),
-          throwsException,
-        );
 
         const otherLeader = 'leader-3';
         await service.addLeader(updated5, otherLeader);

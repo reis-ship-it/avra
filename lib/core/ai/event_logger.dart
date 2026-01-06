@@ -245,12 +245,22 @@ class EventLogger {
         developer.log('Supabase not available, cannot submit events', name: _logName);
         return false;
       }
+
+      final userId = _supabaseService.currentUser?.id;
+      if (userId == null || userId.isEmpty) {
+        developer.log(
+          'No authenticated user; cannot submit interaction_events under user_id-based RLS',
+          name: _logName,
+        );
+        return false;
+      }
       
       final client = _supabaseService.client;
       
       // Prepare events for database insertion
       final eventsData = events.map((event) {
         return {
+          'user_id': userId,
           'agent_id': event.agentId,
           'event_type': event.eventType,
           'parameters': event.parameters,

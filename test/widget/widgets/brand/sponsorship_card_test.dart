@@ -2,9 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/brand/sponsorship_card.dart';
 import 'package:spots/core/models/sponsorship.dart';
 import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/models/sponsorship_status.dart';
 import '../../helpers/widget_test_helpers.dart';
-import '../../../fixtures/model_factories.dart';
 
 /// Widget tests for SponsorshipCard
 ///
@@ -25,7 +23,8 @@ void main() {
         'should display sponsorship card with event ID, display active status badge, display financial contribution when present, display product tracking when present, or call onTap callback when card is tapped',
         (WidgetTester tester) async {
       // Test business logic: sponsorship card display and interactions
-      final sponsorship1 = ModelFactories.createTestSponsorship(
+      final sponsorship1 = _createTestSponsorship(
+        id: 'sponsor-1',
         eventId: 'event-123',
         status: SponsorshipStatus.active,
       );
@@ -38,7 +37,8 @@ void main() {
       expect(find.byType(SponsorshipCard), findsOneWidget);
       expect(find.text('Event: event-123'), findsOneWidget);
 
-      final sponsorship2 = ModelFactories.createTestSponsorship(
+      final sponsorship2 = _createTestSponsorship(
+        id: 'sponsor-2',
         status: SponsorshipStatus.active,
       );
       final widget2 = WidgetTestHelpers.createTestableWidget(
@@ -49,7 +49,8 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.byType(SponsorshipCard), findsOneWidget);
 
-      final sponsorship3 = ModelFactories.createTestSponsorship(
+      final sponsorship3 = _createTestSponsorship(
+        id: 'sponsor-3',
         contributionAmount: 500.0,
       );
       final widget3 = WidgetTestHelpers.createTestableWidget(
@@ -61,12 +62,16 @@ void main() {
       expect(find.byType(SponsorshipCard), findsOneWidget);
       expect(find.textContaining('Your Contribution'), findsOneWidget);
 
-      final sponsorship4 = ModelFactories.createTestSponsorship();
-      const productTracking = ProductTracking(
+      final sponsorship4 = _createTestSponsorship(id: 'sponsor-4');
+      final now = DateTime.now();
+      final productTracking = ProductTracking(
+        id: 'track-123',
+        sponsorshipId: sponsorship4.id,
         productName: 'Test Product',
-        quantity: 10,
-        unitValue: 25.0,
-        trackingId: 'track-123',
+        quantityProvided: 10,
+        unitPrice: 25.0,
+        createdAt: now,
+        updatedAt: now,
       );
       final widget4 = WidgetTestHelpers.createTestableWidget(
         child: SponsorshipCard(
@@ -78,7 +83,7 @@ void main() {
       expect(find.byType(SponsorshipCard), findsOneWidget);
 
       bool wasTapped = false;
-      final sponsorship5 = ModelFactories.createTestSponsorship();
+      final sponsorship5 = _createTestSponsorship(id: 'sponsor-5');
       final widget5 = WidgetTestHelpers.createTestableWidget(
         child: SponsorshipCard(
           sponsorship: sponsorship5,
@@ -91,4 +96,24 @@ void main() {
       expect(wasTapped, isTrue);
     });
   });
+}
+
+Sponsorship _createTestSponsorship({
+  required String id,
+  String eventId = 'event-123',
+  String brandId = 'brand-123',
+  double? contributionAmount,
+  SponsorshipStatus status = SponsorshipStatus.pending,
+}) {
+  final now = DateTime.now();
+  return Sponsorship(
+    id: id,
+    eventId: eventId,
+    brandId: brandId,
+    type: SponsorshipType.financial,
+    contributionAmount: contributionAmount,
+    status: status,
+    createdAt: now,
+    updatedAt: now,
+  );
 }

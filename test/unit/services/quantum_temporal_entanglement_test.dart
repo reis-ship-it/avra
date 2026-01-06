@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
 
 /// Experiment 3: Quantum Temporal Entanglement Synchronization

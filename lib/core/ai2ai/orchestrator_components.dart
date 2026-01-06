@@ -3,13 +3,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/network/ai2ai_protocol.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/ai2ai/aipersonality_node.dart';
-import 'package:spots_ai/services/ai2ai_realtime_service.dart';
+import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
 import 'package:spots_network/spots_network.dart';
 
 /// Supports discovery of nearby AI personalities and prioritization
@@ -25,12 +24,9 @@ class DiscoveryManager {
     Future<List<AIPersonalityNode>> Function(AnonymizedVibeData)
         performDiscovery,
   ) async {
-    final connectivityResult = await connectivity.checkConnectivity();
-    final isConnected =
-        connectivityResult.any((c) => c != ConnectivityResult.none);
-    if (!isConnected) {
-      return [];
-    }
+    // Offline-first: physical-layer discovery (BLE, etc.) must work without
+    // internet connectivity. Cloud/realtime discovery can be layered on top.
+    // So we intentionally do NOT short-circuit when offline.
 
     final userVibe = await vibeAnalyzer.compileUserVibe(userId, personality);
     final anonymizedVibe = await PrivacyProtection.anonymizeUserVibe(userVibe);
@@ -169,11 +165,14 @@ class ConnectionManager {
       }
 
       // Step 2: Calculate compatibility locally (no cloud needed)
-      final compatibility = await ai2aiProtocol!.calculateLocalCompatibility(
-        localPersonality,
+      final localVibe =
+          await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
+      final remoteVibe = await vibeAnalyzer.compileUserVibe(
+        remoteProfile.agentId,
         remoteProfile,
-        vibeAnalyzer,
       );
+      final compatibility =
+          await vibeAnalyzer.analyzeVibeCompatibility(localVibe, remoteVibe);
 
       // Check if connection is worthy
       if (!_isWorthy(compatibility)) {
@@ -181,8 +180,7 @@ class ConnectionManager {
       }
 
       // Step 3: Generate learning insights locally
-      final learningInsight =
-          await ai2aiProtocol!.generateLocalLearningInsights(
+      final learningInsight = _generateOfflineAI2AILearningInsight(
         localPersonality,
         remoteProfile,
         compatibility,
@@ -195,11 +193,6 @@ class ConnectionManager {
       );
 
       // Step 5: Create connection metrics
-      final localVibe =
-          await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
-      final remoteVibe = await vibeAnalyzer.compileUserVibe(
-          remoteProfile.agentId, remoteProfile);
-
       final anonLocal = await PrivacyProtection.anonymizeUserVibe(localVibe);
       final anonRemote = await PrivacyProtection.anonymizeUserVibe(remoteVibe);
 
@@ -218,11 +211,66 @@ class ConnectionManager {
       return null;
     }
   }
+
+  /// Generate learning insights from an offline AI2AI interaction.
+  ///
+  /// This lives in the app layer (not `spots_network`) because it depends on the
+  /// app's learning model types and thresholds.
+  AI2AILearningInsight _generateOfflineAI2AILearningInsight(
+    PersonalityProfile local,
+    PersonalityProfile remote,
+    VibeCompatibilityResult compatibility,
+  ) {
+    final dimensionInsights = <String, double>{};
+
+    // Learning algorithm: compare dimensions and only learn from significant,
+    // high-confidence differences (resists surface drift).
+    for (final dimension in remote.dimensions.keys) {
+      final localValue = local.dimensions[dimension] ?? 0.0;
+      final remoteValue = remote.dimensions[dimension] ?? 0.0;
+      final difference = remoteValue - localValue;
+
+      final remoteConfidence = remote.dimensionConfidence[dimension] ?? 0.0;
+      if (difference.abs() > 0.15 && remoteConfidence > 0.7) {
+        // Gradual learning - 30% influence.
+        dimensionInsights[dimension] = difference * 0.3;
+      }
+    }
+
+    final learningQuality = _calculateOfflineInsightConfidence(
+      dimensionInsights: dimensionInsights,
+      compatibility: compatibility,
+    );
+
+    return AI2AILearningInsight(
+      type: AI2AIInsightType.dimensionDiscovery,
+      dimensionInsights: dimensionInsights,
+      learningQuality: learningQuality,
+      timestamp: DateTime.now(),
+    );
+  }
+
+  double _calculateOfflineInsightConfidence({
+    required Map<String, double> dimensionInsights,
+    required VibeCompatibilityResult compatibility,
+  }) {
+    if (dimensionInsights.isEmpty) return 0.0;
+
+    // Confidence rises with compatibility and the magnitude of insights,
+    // but is capped to [0, 1].
+    final avgMagnitude = dimensionInsights.values
+            .map((v) => v.abs())
+            .fold<double>(0.0, (a, b) => a + b) /
+        dimensionInsights.length;
+
+    return (compatibility.basicCompatibility * 0.6 + avgMagnitude * 0.4)
+        .clamp(0.0, 1.0);
+  }
 }
 
 /// Bundles realtime listener wiring and disposables
 class RealtimeCoordinator {
-  final AI2AIRealtimeService realtime;
+  final AI2AIBroadcastService realtime;
   StreamSubscription? personalitySub;
   StreamSubscription? learningSub;
   StreamSubscription? anonymousSub;

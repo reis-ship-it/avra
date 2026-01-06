@@ -15,6 +15,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spots/core/p2p/federated_learning.dart';
 import 'package:spots/presentation/widgets/settings/federated_participation_history_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 

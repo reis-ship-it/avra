@@ -13,7 +13,8 @@ import 'dart:async';
 import 'package:spots_quantum/models/quantum_entity_state.dart';
 import 'package:spots_quantum/models/quantum_entity_type.dart';
 import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:spots_core/models/user.dart';
+import 'package:spots_core/enums/user_enums.dart';
 import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
 import 'package:spots_quantum/services/quantum/location_timing_quantum_state_service.dart';
@@ -25,10 +26,9 @@ import 'package:spots/core/services/preferences_profile_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots_knot/services/knot/entity_knot_service.dart';
 import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots_quantum/services/quantum/meaningful_experience_calculator.dart';
-import 'package:spots_quantum/services/quantum/user_journey_tracking_service.dart';
-import 'package:spots/core/models/unified_models.dart' hide UnifiedUser;
-import 'package:spots/core/models/preferences_profile.dart';
+import 'package:spots/core/services/quantum/meaningful_experience_calculator.dart';
+import 'package:spots/core/services/quantum/user_journey_tracking_service.dart';
+import 'package:spots_core/models/unified_location_data.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
 import 'dart:math' as math;
 
@@ -62,12 +62,12 @@ class RealTimeUserCallingService {
   final CrossEntityCompatibilityService? _knotCompatibilityService;
   final PersonalityLearning _personalityLearning;
   final UserVibeAnalyzer _vibeAnalyzer;
-  final SupabaseService? _supabaseService;
-  final PreferencesProfileService? _preferencesProfileService;
+  final SupabaseService _supabaseService;
+  final PreferencesProfileService _preferencesProfileService;
   final AgentIdService _agentIdService;
-  final PersonalityKnotService? _personalityKnotService;
-  final MeaningfulExperienceCalculator? _meaningfulExperienceCalculator;
-  final UserJourneyTrackingService? _journeyTrackingService;
+  final PersonalityKnotService _personalityKnotService;
+  final MeaningfulExperienceCalculator _meaningfulExperienceCalculator;
+  final UserJourneyTrackingService _journeyTrackingService;
 
   // Performance optimization: Cache for quantum states and compatibility
   final Map<String, CachedQuantumState> _quantumStateCache = {};
@@ -94,12 +94,12 @@ class RealTimeUserCallingService {
     required UserVibeAnalyzer vibeAnalyzer,
     required AgentIdService agentIdService,
     CrossEntityCompatibilityService? knotCompatibilityService,
-    SupabaseService? supabaseService,
-    PreferencesProfileService? preferencesProfileService,
+    required SupabaseService supabaseService,
+    required PreferencesProfileService preferencesProfileService,
     EntityKnotService? entityKnotService,
-    PersonalityKnotService? personalityKnotService,
-    MeaningfulExperienceCalculator? meaningfulExperienceCalculator,
-    UserJourneyTrackingService? journeyTrackingService,
+    required PersonalityKnotService personalityKnotService,
+    required MeaningfulExperienceCalculator meaningfulExperienceCalculator,
+    required UserJourneyTrackingService journeyTrackingService,
   })  : _atomicClock = atomicClock,
         _entanglementService = entanglementService,
         _locationTimingService = locationTimingService,
@@ -281,7 +281,7 @@ class RealTimeUserCallingService {
   /// Process a batch of users in parallel
   Future<void> _processUserBatch({
     required String eventId,
-    required List<UnifiedUser> batch,
+    required List<User> batch,
     required EntangledQuantumState entangledState,
     required List<QuantumEntityState> eventEntities,
     required AtomicTimestamp tAtomic,
@@ -379,30 +379,30 @@ class RealTimeUserCallingService {
           eventTiming,
         );
 
-        // Calculate timing flexibility factor if meaningful experience calculator is available
-        if (_meaningfulExperienceCalculator != null) {
-          try {
-            // Calculate meaningful experience score
-            final meaningfulScore = await _meaningfulExperienceCalculator!.calculateMeaningfulExperienceScore(
-              userState: userState,
-              entangledState: entangledState,
-              eventEntities: eventEntities,
-            );
+        // Calculate timing flexibility factor (best-effort; failures fall back to 1.0).
+        try {
+          // Calculate meaningful experience score.
+          final meaningfulScore =
+              await _meaningfulExperienceCalculator.calculateMeaningfulExperienceScore(
+            userState: userState,
+            entangledState: entangledState,
+            eventEntities: eventEntities,
+          );
 
-            // Calculate timing flexibility factor
-            timingFlexibilityFactor = await _meaningfulExperienceCalculator!.calculateTimingFlexibilityFactor(
-              userState: userState,
-              eventEntities: eventEntities,
-              meaningfulExperienceScore: meaningfulScore,
-            );
-          } catch (e) {
-            developer.log(
-              'Error calculating timing flexibility factor: $e, using default 1.0',
-              name: _logName,
-            );
-            // Use default 1.0 (no flexibility adjustment) on error
-            timingFlexibilityFactor = 1.0;
-          }
+          // Calculate timing flexibility factor.
+          timingFlexibilityFactor =
+              await _meaningfulExperienceCalculator.calculateTimingFlexibilityFactor(
+            userState: userState,
+            eventEntities: eventEntities,
+            meaningfulExperienceScore: meaningfulScore,
+          );
+        } catch (e) {
+          developer.log(
+            'Error calculating timing flexibility factor: $e, using default 1.0',
+            name: _logName,
+          );
+          // Use default 1.0 (no flexibility adjustment) on error.
+          timingFlexibilityFactor = 1.0;
         }
       }
     }
@@ -410,7 +410,7 @@ class RealTimeUserCallingService {
 
     // 4. Knot compatibility bonus (15% weight, optional)
     double knotBonus = 0.0;
-    if (_knotCompatibilityService != null && _personalityKnotService != null) {
+    if (_knotCompatibilityService != null) {
       try {
         knotBonus = await _calculateKnotCompatibilityBonus(
           userState: userState,
@@ -435,7 +435,7 @@ class RealTimeUserCallingService {
   }
 
   /// Get user quantum state (with caching)
-  Future<QuantumEntityState> _getUserQuantumState(UnifiedUser user) async {
+  Future<QuantumEntityState> _getUserQuantumState(User user) async {
     // Check cache
     final cacheKey = 'user_${user.id}';
     final cached = _quantumStateCache[cacheKey];
@@ -463,7 +463,7 @@ class RealTimeUserCallingService {
       EntityLocationQuantumState? locationState;
       if (user.location != null) {
         try {
-          // Parse location string to UnifiedLocation
+          // Parse location string to UnifiedLocationData
           final unifiedLocation = await _parseLocationString(user.location!);
           if (unifiedLocation != null) {
             locationState = await _locationTimingService.createLocationQuantumState(
@@ -535,28 +535,29 @@ class RealTimeUserCallingService {
   }
 
   /// Get all users (with pagination support)
-  Future<List<UnifiedUser>> _getAllUsers({int limit = 1000}) async {
+  Future<List<User>> _getAllUsers({int limit = 1000}) async {
     try {
       // Try to get users from Supabase if available
-      if (_supabaseService != null && _supabaseService!.isAvailable) {
+      if (_supabaseService.isAvailable) {
         try {
-          final client = _supabaseService!.client;
+          final client = _supabaseService.client;
           final response = await client
               .from('users')
               .select('id, email, display_name, photo_url, location, created_at, updated_at, is_online, has_completed_onboarding')
               .limit(limit);
 
           final users = (response as List).map((json) {
-            return UnifiedUser(
+            return User(
               id: json['id'] as String,
               email: json['email'] as String? ?? '',
+              name: json['display_name'] as String? ?? json['name'] as String? ?? 'User',
               displayName: json['display_name'] as String?,
-              photoUrl: json['photo_url'] as String?,
+              role: UserRole.follower, // Default role - could be parsed from json if available
+              avatarUrl: json['photo_url'] as String?,
               location: json['location'] as String?,
               createdAt: DateTime.parse(json['created_at'] as String),
               updatedAt: DateTime.parse(json['updated_at'] as String),
               isOnline: json['is_online'] as bool? ?? false,
-              hasCompletedOnboarding: json['has_completed_onboarding'] as bool?,
             );
           }).toList();
 
@@ -620,9 +621,9 @@ class RealTimeUserCallingService {
     }
 
     // 2. Check database for persistent tracking (slower but persistent)
-    if (_supabaseService != null && _supabaseService!.isAvailable) {
+    if (_supabaseService.isAvailable) {
       try {
-        final client = _supabaseService!.client;
+        final client = _supabaseService.client;
         final result = await client
             .from('event_user_calls')
             .select('id')
@@ -674,19 +675,17 @@ class RealTimeUserCallingService {
       );
 
       // 3. Capture pre-event state for journey tracking
-      if (_journeyTrackingService != null) {
-        try {
-          await _journeyTrackingService!.capturePreEventState(
-            userId: userId,
-            eventId: eventId,
-          );
-        } catch (e) {
-          developer.log(
-            'Error capturing pre-event state: $e, continuing',
-            name: _logName,
-          );
-          // Don't fail calling if journey tracking fails
-        }
+      try {
+        await _journeyTrackingService.capturePreEventState(
+          userId: userId,
+          eventId: eventId,
+        );
+      } catch (e) {
+        developer.log(
+          'Error capturing pre-event state: $e, continuing',
+          name: _logName,
+        );
+        // Don't fail calling if journey tracking fails.
       }
 
       // 4. Send notification to user
@@ -779,9 +778,9 @@ class RealTimeUserCallingService {
       _eventCallScores[eventId]?.remove(userId);
 
       // 2. Update database record (mark as stopped)
-      if (_supabaseService != null && _supabaseService!.isAvailable) {
+      if (_supabaseService.isAvailable) {
         try {
-          final client = _supabaseService!.client;
+          final client = _supabaseService.client;
           await client
               .from('event_user_calls')
               .update({
@@ -835,16 +834,16 @@ class RealTimeUserCallingService {
     }
   }
 
-  /// Parse location string to UnifiedLocation
+  /// Parse location string to UnifiedLocationData
   ///
   /// Attempts to geocode the location string to get coordinates
-  Future<UnifiedLocation?> _parseLocationString(String locationString) async {
+  Future<UnifiedLocationData?> _parseLocationString(String locationString) async {
     try {
       // Try to geocode the location string
       final placemarks = await geocoding.locationFromAddress(locationString);
       if (placemarks.isNotEmpty) {
         final placemark = placemarks.first;
-        return UnifiedLocation(
+        return UnifiedLocationData(
           latitude: placemark.latitude,
           longitude: placemark.longitude,
           city: locationString, // Use original string as city fallback
@@ -863,7 +862,7 @@ class RealTimeUserCallingService {
     final parts = locationString.split(',').map((s) => s.trim()).toList();
     if (parts.length >= 2) {
       // Assume format: "City, State" or "City, State, Country"
-      // For now, return null as we need coordinates for UnifiedLocation
+      // For now, return null as we need coordinates for UnifiedLocationData
       // In production, could use a geocoding service or database lookup
       return null;
     }
@@ -880,10 +879,8 @@ class RealTimeUserCallingService {
       final agentId = await _agentIdService.getUserAgentId(userId);
 
       // Get PreferencesProfile if available
-      PreferencesProfile? preferencesProfile;
-      if (_preferencesProfileService != null) {
-        preferencesProfile = await _preferencesProfileService!.getPreferencesProfile(agentId);
-      }
+      final preferencesProfile =
+          await _preferencesProfileService.getPreferencesProfile(agentId);
 
       // Infer timing preferences from PreferencesProfile
       if (preferencesProfile != null) {
@@ -940,7 +937,7 @@ class RealTimeUserCallingService {
     required QuantumEntityState userState,
     required List<QuantumEntityState> eventEntities,
   }) async {
-    if (_knotCompatibilityService == null || _personalityKnotService == null) {
+    if (_knotCompatibilityService == null) {
       return 0.0;
     }
 
@@ -955,7 +952,7 @@ class RealTimeUserCallingService {
       // TODO: In production, use EntityKnotService to generate knots for all entity types
       // and use CrossEntityCompatibilityService for full knot compatibility
       // For now, we'll use quantum vibe similarity as a proxy for knot compatibility
-      await _personalityKnotService!.generateKnot(personalityProfile);
+      await _personalityKnotService.generateKnot(personalityProfile);
 
       // Calculate compatibility with each event entity
       double totalCompatibility = 0.0;
@@ -1041,12 +1038,12 @@ class RealTimeUserCallingService {
     required AtomicTimestamp tAtomic,
     required String status,
   }) async {
-    if (_supabaseService == null || !_supabaseService!.isAvailable) {
+    if (!_supabaseService.isAvailable) {
       return; // Graceful degradation - cache still works
     }
 
     try {
-      final client = _supabaseService!.client;
+      final client = _supabaseService.client;
       await client
           .from('event_user_calls')
           .upsert({
@@ -1094,9 +1091,9 @@ class RealTimeUserCallingService {
       // );
 
       // Store notification in database for in-app notifications
-      if (_supabaseService != null && _supabaseService!.isAvailable) {
+      if (_supabaseService.isAvailable) {
         try {
-          final client = _supabaseService!.client;
+          final client = _supabaseService.client;
           await client.from('notifications').insert({
             'user_id': userId,
             'type': isUpdate ? 'event_call_updated' : 'event_call',

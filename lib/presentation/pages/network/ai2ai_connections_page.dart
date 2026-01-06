@@ -16,13 +16,14 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/network/device_discovery.dart';
+import 'package:spots_network/network/device_discovery.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
 import 'package:spots/presentation/widgets/network/discovered_devices_widget.dart';
 import 'package:spots/presentation/widgets/network/ai2ai_connection_view_widget.dart';
 import 'package:spots/presentation/pages/settings/discovery_settings_page.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:async';
+import 'dart:developer' as developer;
 
 /// Comprehensive page for AI2AI networking and device discovery
 class AI2AIConnectionsPage extends StatefulWidget {
@@ -64,7 +65,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
         });
       }
     } catch (e) {
-      debugPrint('Error initializing services: $e');
+      developer.log('Error initializing services', name: 'AI2AIConnectionsPage', error: e);
       if (mounted) {
         setState(() {
           _isLoading = false;

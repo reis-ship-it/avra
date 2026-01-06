@@ -9,7 +9,6 @@
 /// Usage: dart scripts/security_validation/verify_encryption_security.dart
 
 import 'dart:io';
-import 'dart:mirrors';
 import 'package:path/path.dart' as path;
 
 void main() async {

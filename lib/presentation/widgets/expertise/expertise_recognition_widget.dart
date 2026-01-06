@@ -9,6 +9,13 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
   final UnifiedUser expert;
   final Function(UnifiedUser)? onRecognize;
 
+  Future<List<ExpertRecognition>> _getRecognitions() async {
+    // Ensure the Future completes asynchronously so the loading state renders
+    // for at least one frame (keeps UI/tests deterministic).
+    await Future<void>.delayed(Duration.zero);
+    return ExpertiseRecognitionService().getRecognitionsForExpert(expert);
+  }
+
   const ExpertiseRecognitionWidget({
     super.key,
     required this.expert,
@@ -18,7 +25,7 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<ExpertRecognition>>(
-      future: ExpertiseRecognitionService().getRecognitionsForExpert(expert),
+      future: _getRecognitions(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -259,7 +266,9 @@ class FeaturedExpertWidget extends StatelessWidget {
                 child: featuredExpert.expert.photoUrl != null
                     ? Image.network(featuredExpert.expert.photoUrl!)
                     : Text(
-                        (featuredExpert.expert.displayName ?? featuredExpert.expert.email)[0].toUpperCase(),
+                        (featuredExpert.expert.displayName ??
+                                featuredExpert.expert.email)[0]
+                            .toUpperCase(),
                         style: const TextStyle(fontSize: 20),
                       ),
               ),
@@ -269,7 +278,8 @@ class FeaturedExpertWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      featuredExpert.expert.displayName ?? featuredExpert.expert.email,
+                      featuredExpert.expert.displayName ??
+                          featuredExpert.expert.email,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -293,4 +303,3 @@ class FeaturedExpertWidget extends StatelessWidget {
     );
   }
 }
-

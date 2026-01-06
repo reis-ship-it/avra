@@ -228,18 +228,23 @@ void main() {
         when(mockAuthLocal.signIn('test@example.com', 'password')).thenAnswer((_) async => localUser);
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
+        // Online-first auth still attempts remote; simulate offline by throwing.
+        when(mockAuthRemote.signIn('test@example.com', 'password'))
+            .thenThrow(Exception('Offline'));
 
         final result =
             await authRepository.signIn('test@example.com', 'password');
 
         expect(result?.email, 'test@example.com');
         verify(mockAuthLocal.signIn('test@example.com', 'password')).called(1);
-        verifyZeroInteractions(mockAuthRemote);
+        verify(mockAuthRemote.signIn('test@example.com', 'password')).called(1);
       });
 
       test('throws error when signing up offline', () async {
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
+        when(mockAuthRemote.signUp('test@example.com', 'password', 'Test User'))
+            .thenThrow(Exception('Offline'));
 
         expect(
           () => authRepository.signUp(
@@ -247,9 +252,9 @@ void main() {
           throwsA(isA<Exception>()),
         );
 
-        // Should not interact with any datasource when offline
+        verify(mockAuthRemote.signUp('test@example.com', 'password', 'Test User'))
+            .called(1);
         verifyNever(mockAuthLocal.signUp(any, any, any));
-        verifyNever(mockAuthRemote.signUp(any, any, any));
       });
 
       test('returns offline user when getting current user offline', () async {

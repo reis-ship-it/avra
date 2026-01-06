@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/network/personality_data_codec.dart' show PersonalityDataCodec;
+import 'package:spots_network/network/personality_data_codec.dart' show PersonalityDataCodec;
 import 'package:spots/core/ai/privacy_protection.dart' show PrivacyProtection;
 import 'package:spots/core/models/user_vibe.dart';
 

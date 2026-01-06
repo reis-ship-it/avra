@@ -6,6 +6,7 @@ import 'package:spots/core/services/onboarding_data_service.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:spots/injection_container.dart' as di;
+import '../../helpers/platform_channel_helper.dart';
 
 void main() {
   group('AgentInitializationController Integration Tests', () {
@@ -19,6 +20,7 @@ void main() {
       await SembastDatabase.database;
       
       // Initialize dependency injection
+      await setupTestStorage();
       await di.init();
       
       // Get controller from DI

@@ -33,6 +33,7 @@ import 'package:spots/core/crypto/signal/signal_types.dart';
 /// - SIGABRT during finalization is expected (OS-level cleanup)
 class SignalLibraryManager {
   static const String _logName = 'SignalLibraryManager';
+  static const bool _isFlutterTest = bool.fromEnvironment('FLUTTER_TEST');
   
   // Singleton instance
   static final SignalLibraryManager _instance = SignalLibraryManager._internal();
@@ -64,15 +65,53 @@ class SignalLibraryManager {
     }
     
     try {
-      if (Platform.isIOS || Platform.isMacOS) {
-        // iOS/macOS: Framework is embedded, use process-level loading
+      if (Platform.isIOS) {
+        // iOS: vendored via SignalNative CocoaPod.
+        // Prefer explicit framework loading so symbols are available even if
+        // dyld hasn't already loaded it into the global namespace.
+        developer.log('Loading main library (iOS)', name: _logName);
+        try {
+          _mainLib = DynamicLibrary.open('SignalFfi.framework/SignalFfi');
+        } catch (e) {
+          developer.log(
+            'Could not open SignalFfi.framework directly, falling back to process(): $e',
+            name: _logName,
+          );
+          _mainLib = DynamicLibrary.process();
+        }
+      } else if (Platform.isMacOS) {
+        // macOS:
+        // - In production apps, we may have a dylib alongside the executable (explicit open)
+        //   OR an embedded framework (process-level).
+        // - In Flutter test subprocesses, explicit dylib loading has proven to cause
+        //   flaky SIGABRT crashes during teardown/finalization, so we avoid it.
         developer.log(
-          'Loading main library using process-level loading (${Platform.operatingSystem})',
+          'Loading main library (macOS)${_isFlutterTest ? " [flutter_test]" : ""}',
           name: _logName,
         );
-        _mainLib = DynamicLibrary.process();
+        if (_isFlutterTest) {
+          _mainLib = DynamicLibrary.process();
+        } else {
+          try {
+            final currentDir = Directory.current.path;
+            final libPath = '$currentDir/native/signal_ffi/macos/libsignal_ffi.dylib';
+            final libFile = File(libPath);
+            if (libFile.existsSync()) {
+              _mainLib = DynamicLibrary.open(libPath);
+            } else {
+              _mainLib = DynamicLibrary.process();
+            }
+          } catch (e) {
+            developer.log(
+              'Could not load main library from project path, using process-level loading: $e',
+              name: _logName,
+            );
+            _mainLib = DynamicLibrary.process();
+          }
+        }
       } else if (Platform.isAndroid) {
-        _mainLib = DynamicLibrary.open('libsignal_jni.so');
+        // Android must load the C-FFI shared library (not the JNI shim).
+        _mainLib = DynamicLibrary.open('libsignal_ffi.so');
       } else if (Platform.isLinux) {
         _mainLib = DynamicLibrary.open('libsignal_ffi.so');
       } else if (Platform.isWindows) {
@@ -110,31 +149,45 @@ class SignalLibraryManager {
     
     try {
       if (Platform.isIOS) {
-        // Process-level loading for iOS
-        developer.log(
-          'Loading wrapper library using process-level loading (iOS)',
-          name: _logName,
-        );
-        _wrapperLib = DynamicLibrary.process();
-      } else if (Platform.isMacOS) {
-        // macOS: Use explicit loading (dylib files)
-        // TODO: Migrate to framework when wrapper framework is built
-        developer.log(
-          'Loading wrapper library using explicit loading (macOS)',
-          name: _logName,
-        );
+        // iOS: vendored via SignalNative CocoaPod.
+        developer.log('Loading wrapper library (iOS)', name: _logName);
         try {
-          final currentDir = Directory.current.path;
-          final libPath = '$currentDir/native/signal_ffi/macos/libsignal_ffi_wrapper.dylib';
-          final libFile = File(libPath);
-          if (libFile.existsSync()) {
-            _wrapperLib = DynamicLibrary.open(libPath);
-          } else {
+          _wrapperLib =
+              DynamicLibrary.open('SignalFfiWrapper.framework/SignalFfiWrapper');
+        } catch (e) {
+          developer.log(
+            'Could not open SignalFfiWrapper.framework directly, falling back to process(): $e',
+            name: _logName,
+          );
+          _wrapperLib = DynamicLibrary.process();
+        }
+      } else if (Platform.isMacOS) {
+        // macOS:
+        // - Prefer explicit dylib loading in apps/dev.
+        // - Avoid explicit loading in Flutter tests to reduce SIGABRT teardown crashes.
+        developer.log(
+          'Loading wrapper library (macOS)${_isFlutterTest ? " [flutter_test]" : ""}',
+          name: _logName,
+        );
+        if (_isFlutterTest) {
+          _wrapperLib = DynamicLibrary.process();
+        } else {
+          try {
+            final currentDir = Directory.current.path;
+            final libPath = '$currentDir/native/signal_ffi/macos/libsignal_ffi_wrapper.dylib';
+            final libFile = File(libPath);
+            if (libFile.existsSync()) {
+              _wrapperLib = DynamicLibrary.open(libPath);
+            } else {
+              _wrapperLib = DynamicLibrary.open('libsignal_ffi_wrapper.dylib');
+            }
+          } catch (e) {
+            developer.log(
+              'Could not load wrapper from project path, trying system path: $e',
+              name: _logName,
+            );
             _wrapperLib = DynamicLibrary.open('libsignal_ffi_wrapper.dylib');
           }
-        } catch (e) {
-          developer.log('Could not load wrapper from project path, trying system path: $e', name: _logName);
-          _wrapperLib = DynamicLibrary.open('libsignal_ffi_wrapper.dylib');
         }
       } else if (Platform.isAndroid) {
         _wrapperLib = DynamicLibrary.open('libsignal_ffi_wrapper.so');
@@ -175,31 +228,45 @@ class SignalLibraryManager {
     
     try {
       if (Platform.isIOS) {
-        // Process-level loading for iOS
-        developer.log(
-          'Loading bridge library using process-level loading (iOS)',
-          name: _logName,
-        );
-        _bridgeLib = DynamicLibrary.process();
-      } else if (Platform.isMacOS) {
-        // macOS: Use explicit loading (dylib files)
-        // TODO: Migrate to framework when bridge framework is built
-        developer.log(
-          'Loading bridge library using explicit loading (macOS)',
-          name: _logName,
-        );
+        // Same rationale as wrapper library: symbols are linked into SignalNative.
+        developer.log('Loading bridge library (iOS)', name: _logName);
         try {
-          final currentDir = Directory.current.path;
-          final libPath = '$currentDir/native/signal_ffi/macos/libsignal_callback_bridge.dylib';
-          final libFile = File(libPath);
-          if (libFile.existsSync()) {
-            _bridgeLib = DynamicLibrary.open(libPath);
-          } else {
+          _bridgeLib =
+              DynamicLibrary.open('SignalNative.framework/SignalNative');
+        } catch (e) {
+          developer.log(
+            'Could not open SignalNative.framework directly, falling back to process(): $e',
+            name: _logName,
+          );
+          _bridgeLib = DynamicLibrary.process();
+        }
+      } else if (Platform.isMacOS) {
+        // macOS:
+        // - Prefer explicit dylib loading in apps/dev.
+        // - Avoid explicit loading in Flutter tests to reduce SIGABRT teardown crashes.
+        developer.log(
+          'Loading bridge library (macOS)${_isFlutterTest ? " [flutter_test]" : ""}',
+          name: _logName,
+        );
+        if (_isFlutterTest) {
+          _bridgeLib = DynamicLibrary.process();
+        } else {
+          try {
+            final currentDir = Directory.current.path;
+            final libPath = '$currentDir/native/signal_ffi/macos/libsignal_callback_bridge.dylib';
+            final libFile = File(libPath);
+            if (libFile.existsSync()) {
+              _bridgeLib = DynamicLibrary.open(libPath);
+            } else {
+              _bridgeLib = DynamicLibrary.open('libsignal_callback_bridge.dylib');
+            }
+          } catch (e) {
+            developer.log(
+              'Could not load bridge from project path, trying system path: $e',
+              name: _logName,
+            );
             _bridgeLib = DynamicLibrary.open('libsignal_callback_bridge.dylib');
           }
-        } catch (e) {
-          developer.log('Could not load bridge from project path, trying system path: $e', name: _logName);
-          _bridgeLib = DynamicLibrary.open('libsignal_callback_bridge.dylib');
         }
       } else if (Platform.isAndroid) {
         _bridgeLib = DynamicLibrary.open('libsignal_callback_bridge.so');

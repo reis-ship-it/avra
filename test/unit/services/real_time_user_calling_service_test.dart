@@ -9,10 +9,17 @@ import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
 import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
 import 'package:spots_quantum/models/quantum_entity_state.dart';
 import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/storage_service.dart';
+import 'package:spots/core/services/preferences_profile_service.dart';
+import 'package:spots/core/services/supabase_service.dart';
+import 'package:spots_knot/services/knot/personality_knot_service.dart';
+import 'package:spots/core/services/quantum/meaningful_experience_calculator.dart';
+import 'package:spots/core/services/quantum/user_journey_tracking_service.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 void main() {
   group('RealTimeUserCallingService', () {
@@ -22,6 +29,11 @@ void main() {
     late AtomicClockService atomicClock;
     late PersonalityLearning personalityLearning;
     late UserVibeAnalyzer vibeAnalyzer;
+    late SupabaseService supabaseService;
+    late PreferencesProfileService preferencesProfileService;
+    late PersonalityKnotService personalityKnotService;
+    late MeaningfulExperienceCalculator meaningfulExperienceCalculator;
+    late UserJourneyTrackingService journeyTrackingService;
 
     setUp(() async {
       atomicClock = AtomicClockService();
@@ -35,9 +47,27 @@ void main() {
       locationTimingService = LocationTimingQuantumStateService();
       
       // Initialize PersonalityLearning and UserVibeAnalyzer
-      final prefs = await SharedPreferencesCompat.getInstance();
+      await setupTestStorage();
+      final mockStorage = getTestStorage();
+      final prefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
       personalityLearning = PersonalityLearning.withPrefs(prefs);
       vibeAnalyzer = UserVibeAnalyzer(prefs: prefs);
+
+      supabaseService = SupabaseService();
+      preferencesProfileService = PreferencesProfileService();
+      personalityKnotService = PersonalityKnotService();
+      meaningfulExperienceCalculator = MeaningfulExperienceCalculator(
+        atomicClock: atomicClock,
+        entanglementService: entanglementService,
+        locationTimingService: locationTimingService,
+      );
+      journeyTrackingService = UserJourneyTrackingService(
+        atomicClock: atomicClock,
+        personalityLearning: personalityLearning,
+        vibeAnalyzer: vibeAnalyzer,
+        agentIdService: AgentIdService(),
+        supabaseService: supabaseService,
+      );
       
       service = RealTimeUserCallingService(
         atomicClock: atomicClock,
@@ -45,10 +75,13 @@ void main() {
         locationTimingService: locationTimingService,
         personalityLearning: personalityLearning,
         vibeAnalyzer: vibeAnalyzer,
-        quantumVibeEngine: null,
-        knotEngine: null,
+        agentIdService: AgentIdService(),
         knotCompatibilityService: null,
-        supabaseService: null,
+        supabaseService: supabaseService,
+        preferencesProfileService: preferencesProfileService,
+        personalityKnotService: personalityKnotService,
+        meaningfulExperienceCalculator: meaningfulExperienceCalculator,
+        journeyTrackingService: journeyTrackingService,
       );
     });
 

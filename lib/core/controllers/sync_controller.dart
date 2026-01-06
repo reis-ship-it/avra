@@ -5,7 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:spots/core/controllers/base/workflow_controller.dart';
 import 'package:spots/core/controllers/base/controller_result.dart';
 import 'package:spots/core/services/enhanced_connectivity_service.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/ai/personality_learning.dart';
@@ -59,10 +59,10 @@ class SyncController implements WorkflowController<SyncInput, SyncResult> {
     EnhancedConnectivityService? connectivityService,
     PersonalitySyncService? personalitySyncService,
     PersonalityLearning? personalityLearning,
-  })  : _connectivityService =
-            connectivityService ?? EnhancedConnectivityService(),
+  })  : _connectivityService = connectivityService ??
+            GetIt.instance<EnhancedConnectivityService>(),
         _personalitySyncService =
-            personalitySyncService ?? PersonalitySyncService(),
+            personalitySyncService ?? GetIt.instance<PersonalitySyncService>(),
         _personalityLearning = personalityLearning ??
             (() {
               // Use same pattern as injection_container.dart

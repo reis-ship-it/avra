@@ -190,11 +190,11 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 48, color: AppTheme.errorColor),
+                      const Icon(Icons.error_outline, size: 48, color: AppTheme.errorColor),
                       const SizedBox(height: 16),
                       Text(
                         _error!,
-                        style: TextStyle(color: AppTheme.errorColor),
+                        style: const TextStyle(color: AppTheme.errorColor),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
@@ -372,7 +372,7 @@ class _DetailRow extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.bold,

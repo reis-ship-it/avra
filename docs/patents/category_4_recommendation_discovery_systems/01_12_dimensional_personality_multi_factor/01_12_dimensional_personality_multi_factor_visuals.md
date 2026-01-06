@@ -4,7 +4,90 @@
 
 ---
 
-## 1. 12-Dimensional Model Structure
+
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: 12-Dimensional Model Structure.
+- **FIG. 6**: Multi-Factor Compatibility Formula.
+- **FIG. 7**: Factor Weight Distribution.
+- **FIG. 8**: Dimension Compatibility Calculation Flow.
+- **FIG. 9**: Dimension Similarity Calculation.
+- **FIG. 10**: Energy Compatibility Calculation.
+- **FIG. 11**: Exploration Compatibility Calculation.
+- **FIG. 12**: Complete Compatibility Calculation Example.
+- **FIG. 13**: System Architecture Diagram.
+- **FIG. 14**: Confidence Threshold Filtering.
+- **FIG. 15**: Dimension Value Range Visualization.
+- **FIG. 16**: Compatibility Score Interpretation.
+- **FIG. 17**: Data Flow Diagram.
+- **FIG. 18**: Integration Points.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the 12-Dimensional Personality System with Multi-Factor Compatibility implementation.
+
+In the illustrated embodiment, a computing device receives time requests, atomic timestamps, and temporal parameters; constructs an internal representation; and applies atomic time acquisition and temporal state generation to produce a time-indexed temporal state and an output compatibility/timing value.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- 12-Dimensional Model Structure.
+- Multi-Factor Compatibility Formula.
+- Factor Weight Distribution.
+- Dimension Compatibility Calculation Flow.
+- Dimension Similarity Calculation.
+- Energy Compatibility Calculation.
+- Exploration Compatibility Calculation.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the 12-Dimensional Personality System with Multi-Factor Compatibility implementation.
+
+1. Representing a user's personality using 12 distinct dimensions, wherein 8 dimensions represent discovery style preferences and 4 dimensions represent experience preferences.
+2. Storing dimension values on a normalized scale from 0.0 to 1.0.
+3. Storing confidence scores for each dimension indicating measurement reliability.
+4. Calculating dimension compatibility by computing similarity for each dimension as `1.0 - |dimension_A - dimension_B|`.
+5. Weighting dimension similarity by average confidence of both users for that dimension.
+6. Aggregating weighted similarities across all valid dimensions (confidence ≥ 0.6).
+7. Calculating energy compatibility as `1.0 - |overall_energy_A - overall_energy_B|`.
+8. Calculating exploration compatibility as `1.0 - |exploration_tendency_A - exploration_tendency_B|`.
+9. Combining compatibility factors using weighted formula: `(dimension × 0.6) + (energy × 0.2) + (exploration × 0.2)`.
+10. Returning final compatibility score normalized to 0.0-1.0 range.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the 12-Dimensional Personality System with Multi-Factor Compatibility implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- AtomicTimestamp: {t, source, uncertainty}
+- TemporalState: {|ψ_t⟩, parameters, normalized}
+- TimeSyncRecord: {offset, drift, lastCalibratedAt}
+- TemporalCompatibilityResult: {score in [0,1], computedAt}
+- ServiceResponse: {value, confidence, provenance}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the 12-Dimensional Personality System with Multi-Factor Compatibility implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device requests or samples atomic time and receives an atomic timestamp.
+2. Client device constructs a temporal quantum state representation indexed to the timestamp.
+3. Client device performs time-indexed computation and normalizes the result.
+4. Client device stores the resulting temporal state/score with provenance metadata.
+
+### FIG. 5 — 12-Dimensional Model Structure
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -40,7 +123,8 @@
 
 ---
 
-## 2. Multi-Factor Compatibility Formula
+### FIG. 6 — Multi-Factor Compatibility Formula
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -67,7 +151,8 @@
 
 ---
 
-## 3. Factor Weight Distribution
+### FIG. 7 — Factor Weight Distribution
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -91,7 +176,8 @@
 
 ---
 
-## 4. Dimension Compatibility Calculation Flow
+### FIG. 8 — Dimension Compatibility Calculation Flow
+
 
 ```
                     START
@@ -160,7 +246,8 @@
 
 ---
 
-## 5. Dimension Similarity Calculation
+### FIG. 9 — Dimension Similarity Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -201,7 +288,8 @@
 
 ---
 
-## 6. Energy Compatibility Calculation
+### FIG. 10 — Energy Compatibility Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -241,7 +329,8 @@
 
 ---
 
-## 7. Exploration Compatibility Calculation
+### FIG. 11 — Exploration Compatibility Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -282,7 +371,8 @@
 
 ---
 
-## 8. Complete Compatibility Calculation Example
+### FIG. 12 — Complete Compatibility Calculation Example
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -334,7 +424,8 @@
 
 ---
 
-## 9. System Architecture Diagram
+### FIG. 13 — System Architecture Diagram
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -372,7 +463,8 @@
 
 ---
 
-## 10. Confidence Threshold Filtering
+### FIG. 14 — Confidence Threshold Filtering
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -409,7 +501,8 @@
 
 ---
 
-## 11. Dimension Value Range Visualization
+### FIG. 15 — Dimension Value Range Visualization
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -441,7 +534,8 @@
 
 ---
 
-## 12. Compatibility Score Interpretation
+### FIG. 16 — Compatibility Score Interpretation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -477,7 +571,8 @@
 
 ---
 
-## 13. Data Flow Diagram
+### FIG. 17 — Data Flow Diagram
+
 
 ```
 ┌──────────────┐     ┌──────────────┐
@@ -526,7 +621,8 @@
 
 ---
 
-## 14. Integration Points
+### FIG. 18 — Integration Points
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -584,4 +680,3 @@ This visual documentation provides comprehensive diagrams and visualizations for
 14. **Integration Points** - System connections
 
 These visuals support the deep-dive document and provide clear, patent-ready documentation of the system's technical implementation.
-

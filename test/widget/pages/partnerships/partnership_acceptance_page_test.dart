@@ -1,10 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:spots/core/models/event_partnership.dart';
 import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:spots/core/models/unified_user.dart' hide UserRole;
 import 'package:spots/core/models/business_account.dart';
+import 'package:spots/core/models/user.dart';
+import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/partnership_service.dart';
+import 'package:spots/core/services/payment_service.dart';
+import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/presentation/pages/partnerships/partnership_acceptance_page.dart';
+
+import '../../../helpers/getit_test_harness.dart';
+import '../../mocks/mock_blocs.dart';
 
 /// Partnership Acceptance Page Widget Tests
 ///
@@ -15,8 +26,19 @@ void main() {
   group('PartnershipAcceptancePage Widget Tests', () {
     late EventPartnership testPartnership;
     late ExpertiseEvent testEvent;
+    late GetItTestHarness getIt;
+    late MockAuthBloc mockAuthBloc;
+    late _MockPartnershipService mockPartnershipService;
+    late _MockExpertiseEventService mockEventService;
+    late _MockPaymentService mockPaymentService;
 
     setUp(() {
+      getIt = GetItTestHarness(sl: GetIt.instance);
+      mockAuthBloc = MockAuthBloc();
+      mockPartnershipService = _MockPartnershipService();
+      mockEventService = _MockExpertiseEventService();
+      mockPaymentService = _MockPaymentService();
+
       final user = UnifiedUser(
         id: 'user-1',
         email: 'user@example.com',
@@ -41,6 +63,7 @@ void main() {
         title: 'Test Event',
         description: 'Test event description',
         category: 'Food',
+        eventType: ExpertiseEventType.tour,
         host: user,
         startTime: DateTime.now().add(const Duration(days: 7)),
         endTime: DateTime.now().add(const Duration(days: 7, hours: 2)),
@@ -64,6 +87,34 @@ void main() {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
+
+      final now = DateTime.now();
+      mockAuthBloc.setState(
+        Authenticated(
+          user: User(
+            id: 'user-1',
+            email: 'user@example.com',
+            name: 'Test User',
+            role: UserRole.user,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        ),
+      );
+
+      getIt.registerSingletonReplace<PartnershipService>(mockPartnershipService);
+      getIt.registerSingletonReplace<ExpertiseEventService>(mockEventService);
+      getIt.registerSingletonReplace<PaymentService>(mockPaymentService);
+
+      when(() => mockEventService.getEventById(any()))
+          .thenAnswer((_) async => testEvent);
+    });
+
+    tearDown(() {
+      mockAuthBloc.close();
+      getIt.unregisterIfRegistered<PartnershipService>();
+      getIt.unregisterIfRegistered<ExpertiseEventService>();
+      getIt.unregisterIfRegistered<PaymentService>();
     });
 
     // Removed: Property assignment tests
@@ -75,11 +126,14 @@ void main() {
       // Test business logic: Partnership acceptance page display and functionality
       await tester.pumpWidget(
         MaterialApp(
-          home: PartnershipAcceptancePage(partnership: testPartnership),
+          home: BlocProvider<AuthBloc>.value(
+            value: mockAuthBloc,
+            child: PartnershipAcceptancePage(partnership: testPartnership),
+          ),
         ),
       );
-      await tester.pumpAndSettle();
-      expect(find.text('Partnership Proposal'), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(find.text('Partnership Proposal'), findsWidgets);
       expect(find.text('Partnership Details'), findsOneWidget);
       expect(find.text('Accept Partnership'), findsOneWidget);
       expect(find.text('Decline'), findsOneWidget);
@@ -87,3 +141,9 @@ void main() {
     });
   });
 }
+
+class _MockPartnershipService extends Mock implements PartnershipService {}
+
+class _MockExpertiseEventService extends Mock implements ExpertiseEventService {}
+
+class _MockPaymentService extends Mock implements PaymentService {}

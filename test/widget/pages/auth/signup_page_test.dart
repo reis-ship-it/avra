@@ -13,6 +13,14 @@ import 'package:spots/domain/usecases/auth/sign_up_usecase.dart';
 import 'package:spots/domain/usecases/auth/update_password_usecase.dart';
 import 'package:spots/domain/repositories/auth_repository.dart';
 
+Finder _signUpButtonFinder() => find.widgetWithText(ElevatedButton, 'Sign Up');
+
+Future<void> _tapSignUp(WidgetTester tester) async {
+  final button = _signUpButtonFinder();
+  await tester.ensureVisible(button);
+  await tester.tap(button);
+}
+
 void main() {
   group('SignupPage Widget Tests', () {
     late _FakeAuthBloc fakeAuthBloc;
@@ -72,17 +80,17 @@ void main() {
           find.byKey(const Key('password_field')), 'password123');
       await tester.enterText(
           find.byKey(const Key('confirm_password_field')), 'password123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
+      await _tapSignUp(tester);
       await tester.pump();
       expect(find.text('Please enter your name'), findsOneWidget);
       await tester.enterText(find.byKey(const Key('name_field')), 'Test User');
       await tester.enterText(find.byKey(const Key('email_field')), '');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
+      await _tapSignUp(tester);
       await tester.pump();
       expect(find.text('Please enter your email'), findsOneWidget);
       await tester.enterText(
           find.byKey(const Key('email_field')), 'invalid-email');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
+      await _tapSignUp(tester);
       await tester.pump();
       expect(find.text('Please enter a valid email'), findsOneWidget);
       await tester.enterText(
@@ -90,11 +98,11 @@ void main() {
       await tester.enterText(find.byKey(const Key('password_field')), '');
       await tester.enterText(
           find.byKey(const Key('confirm_password_field')), '');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
+      await _tapSignUp(tester);
       await tester.pump();
       expect(find.text('Please enter your password'), findsOneWidget);
       await tester.enterText(find.byKey(const Key('password_field')), '123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
+      await _tapSignUp(tester);
       await tester.pump();
       expect(
           find.text('Password must be at least 6 characters'), findsOneWidget);
@@ -102,7 +110,7 @@ void main() {
           find.byKey(const Key('password_field')), 'password123');
       await tester.enterText(
           find.byKey(const Key('confirm_password_field')), 'different123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
+      await _tapSignUp(tester);
       await tester.pump();
       expect(find.text('Passwords do not match'), findsOneWidget);
     });
@@ -124,19 +132,15 @@ void main() {
           find.byKey(const Key('password_field')), 'password123');
       await tester.enterText(
           find.byKey(const Key('confirm_password_field')), 'password123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
-      await tester.pump();
+      await _tapSignUp(tester);
+      await tester.pump(const Duration(milliseconds: 50));
       expect(
         fakeAuthBloc.addedEvents.whereType<SignUpRequested>().length,
         equals(1),
       );
-      fakeAuthBloc.setState(AuthLoading());
-      final widget2 = _createTestableWidgetWithRealBloc(
-        child: const SignupPage(),
-        authBloc: fakeAuthBloc,
-      );
-      await tester.pumpWidget(widget2);
-      await tester.pump();
+      // Our fake bloc emits AuthLoading in response to SignUpRequested.
+      // Give it a short beat to process and rebuild.
+      await tester.pump(const Duration(milliseconds: 50));
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       final button =
           tester.widget<ElevatedButton>(find.byType(ElevatedButton).first);
@@ -148,12 +152,16 @@ void main() {
         (WidgetTester tester) async {
       // Test business logic: Error state handling
       const errorMessage = 'Email already exists';
-      fakeAuthBloc.setState(AuthError(errorMessage));
+      fakeAuthBloc.setState(AuthInitial());
       final widget = _createTestableWidgetWithRealBloc(
         child: const SignupPage(),
         authBloc: fakeAuthBloc,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      fakeAuthBloc.setState(AuthError(errorMessage));
+      await tester.pump();
+      // SnackBar animates in; allow a short frame window.
+      await tester.pump(const Duration(milliseconds: 300));
       expect(find.text(errorMessage), findsOneWidget);
     });
 
@@ -245,7 +253,7 @@ void main() {
         authBloc: fakeAuthBloc,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
+      await _tapSignUp(tester);
       await tester.pump();
       expect(find.text('Please enter your name'), findsOneWidget);
       expect(find.text('Please enter your email'), findsOneWidget);
@@ -271,9 +279,9 @@ void main() {
           find.byKey(const Key('password_field')), 'password123');
       await tester.enterText(
           find.byKey(const Key('confirm_password_field')), 'password123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
+      await _tapSignUp(tester);
+      await _tapSignUp(tester);
+      await _tapSignUp(tester);
       await tester.pump();
       expect(
         fakeAuthBloc.addedEvents.whereType<SignUpRequested>().length,

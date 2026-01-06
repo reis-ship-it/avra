@@ -25,10 +25,10 @@ The device discovery system discovers nearby SPOTS-enabled devices using WiFi/Bl
 - **Web:** WebRTC + WebSocket
 
 **Code Reference:**
-- `lib/core/network/device_discovery.dart` - Main discovery service
-- `lib/core/network/device_discovery_android.dart` - Android implementation
-- `lib/core/network/device_discovery_ios.dart` - iOS implementation
-- `lib/core/network/device_discovery_web.dart` - Web implementation
+- `packages/spots_network/lib/network/device_discovery.dart` - Main discovery service (continuous loop + callbacks)
+- `packages/spots_network/lib/network/device_discovery_android.dart` - Android implementation
+- `packages/spots_network/lib/network/device_discovery_ios.dart` - iOS implementation
+- `packages/spots_network/lib/network/device_discovery_web.dart` - Web implementation
 
 ---
 
@@ -63,12 +63,17 @@ The device discovery system discovers nearby SPOTS-enabled devices using WiFi/Bl
 ```dart
 Future<void> startDiscovery({
   Duration scanInterval = const Duration(seconds: 5),
+  Duration scanWindow = const Duration(seconds: 4),
   Duration deviceTimeout = const Duration(minutes: 2),
 }) async
 ```
 
+**Notes:**
+- **Continuous scan mode:** pass `scanInterval: Duration.zero` (back-to-back scan windows).
+- `scanWindow` controls how long each scan runs (better walk-by capture vs battery).
+
 **Code Reference:**
-```12:48:lib/core/network/device_discovery.dart
+```27:48:packages/spots_network/lib/network/device_discovery.dart
 ```
 
 ### **Stop Discovery**
@@ -78,7 +83,7 @@ void stopDiscovery()
 ```
 
 **Code Reference:**
-```50:58:lib/core/network/device_discovery.dart
+```50:56:packages/spots_network/lib/network/device_discovery.dart
 ```
 
 ---

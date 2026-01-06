@@ -1,12 +1,15 @@
+import 'dart:math' as math;
+
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/post_event_feedback_service.dart';
 import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
+import 'package:spots/core/services/social_media_connection_service.dart';
+import 'package:spots/core/services/supabase_service.dart';
 
 /// Event Matching Service
 ///
@@ -41,20 +44,25 @@ class EventMatchingService {
   );
 
   final ExpertiseEventService _eventService;
-  final GeographicScopeService _geographicScopeService;
   final IntegratedKnotRecommendationEngine? _knotRecommendationEngine;
   final PersonalityLearning? _personalityLearning;
+  final PostEventFeedbackService? _feedbackService;
+  final SocialMediaConnectionService? _socialMediaConnectionService;
+  final SupabaseService _supabaseService;
 
   EventMatchingService({
     ExpertiseEventService? eventService,
-    GeographicScopeService? geographicScopeService,
     IntegratedKnotRecommendationEngine? knotRecommendationEngine,
     PersonalityLearning? personalityLearning,
+    PostEventFeedbackService? feedbackService,
+    SocialMediaConnectionService? socialMediaConnectionService,
+    SupabaseService? supabaseService,
   })  : _eventService = eventService ?? ExpertiseEventService(),
-        _geographicScopeService =
-            geographicScopeService ?? GeographicScopeService(),
         _knotRecommendationEngine = knotRecommendationEngine,
-        _personalityLearning = personalityLearning;
+        _personalityLearning = personalityLearning,
+        _feedbackService = feedbackService,
+        _socialMediaConnectionService = socialMediaConnectionService,
+        _supabaseService = supabaseService ?? SupabaseService();
 
   /// Calculate matching score for an expert hosting events
   ///
@@ -90,6 +98,13 @@ class EventMatchingService {
         locality: locality,
       );
 
+      // If we couldn't compute any signals (e.g., event service failure),
+      // don't apply optional knot compatibility. Return 0.0 for a clear
+      // "no match signal available" result.
+      if (signals.localityWeight == 0.0) {
+        return 0.0;
+      }
+
       // Calculate weighted score based on locality-specific weighting
       double score = 0.0;
 
@@ -97,7 +112,8 @@ class EventMatchingService {
       score += signals.eventsHostedScore * 0.28;
 
       // Event ratings (23% weight, reduced from 25%)
-      score += signals.averageRating * 0.23;
+      // Normalize 1-5 star rating to 0-1 score.
+      score += ((signals.averageRating / 5.0).clamp(0.0, 1.0)) * 0.23;
 
       // Followers count (14% weight, reduced from 15%)
       score += signals.followersScore * 0.14;
@@ -134,14 +150,15 @@ class EventMatchingService {
   /// Uses IntegratedKnotRecommendationEngine to calculate compatibility
   /// between user and expert personalities.
   ///
-  /// **Returns:** Compatibility score (0.0 to 1.0), or 0.5 (neutral) if unavailable
+  /// **Returns:** Compatibility score (0.0 to 1.0), or 0.0 if unavailable
   Future<double> _calculateKnotCompatibilityScore({
     required UnifiedUser expert,
     required UnifiedUser user,
   }) async {
     // If knot services not available, return neutral score
     if (_knotRecommendationEngine == null || _personalityLearning == null) {
-      return 0.5;
+      // Optional enhancement: if not wired, don't influence scores.
+      return 0.0;
     }
 
     try {
@@ -171,8 +188,8 @@ class EventMatchingService {
         'Error calculating knot compatibility: $e, using neutral score',
         tag: _logName,
       );
-      // Return neutral score on error (don't break matching)
-      return 0.5;
+      // Don't influence scores on error (don't break matching).
+      return 0.0;
     }
   }
 
@@ -218,7 +235,7 @@ class EventMatchingService {
 
       // External social following (if available)
       final externalSocialScore =
-          _getExternalSocialScore(expert) * localityWeight;
+          (await _getExternalSocialScore(expert)) * localityWeight;
 
       // Community recognition (partnerships, collaborations)
       final communityRecognitionScore = await _calculateCommunityRecognition(
@@ -322,28 +339,54 @@ class EventMatchingService {
 
   /// Calculate average rating from event feedback
   ///
-  /// **Note:** In production, this would query event feedback service
-  /// For now, returns a placeholder based on event attendance
+  /// Returns the **1-5** average rating across events, when feedback is available.
+  ///
+  /// If feedback isn’t available, we fall back to an **honest neutral** signal:
+  /// - 0.0 if there’s no data at all
+  /// - otherwise a small engagement-based proxy (occupancy), mapped to ~3.0-5.0
   Future<double> _calculateAverageRating(List<ExpertiseEvent> events) async {
     if (events.isEmpty) return 0.0;
 
-    // Placeholder: Use attendance as proxy for rating
-    // In production, query PostEventFeedbackService for actual ratings
-    double totalRating = 0.0;
-    int ratedEvents = 0;
+    if (_feedbackService != null) {
+      double sum = 0.0;
+      int count = 0;
 
-    for (final event in events) {
-      // Events with more attendees likely have better ratings
-      // Placeholder logic: assume 4.0 base + attendance boost
-      if (event.attendeeCount > 0) {
-        final attendanceBoost =
-            (event.attendeeCount / event.maxAttendees).clamp(0.0, 1.0) * 0.5;
-        totalRating += 4.0 + attendanceBoost;
-        ratedEvents++;
+      for (final event in events) {
+        try {
+          final feedback = await _feedbackService!.getEventFeedback(event.id);
+          if (feedback.isEmpty) continue;
+          final avgForEvent =
+              feedback.map((f) => f.overallRating).reduce((a, b) => a + b) /
+                  feedback.length;
+          // Clamp to the expected 1-5 star range (defensive; don't explode scoring).
+          sum += avgForEvent.clamp(1.0, 5.0);
+          count++;
+        } catch (e) {
+          // Don't fail the whole matching computation if feedback lookup fails.
+          _logger.warn('Failed to read feedback for event ${event.id}: $e',
+              tag: _logName);
+        }
+      }
+
+      if (count > 0) {
+        return (sum / count).clamp(1.0, 5.0);
       }
     }
 
-    return ratedEvents > 0 ? totalRating / ratedEvents : 0.0;
+    // No feedback available: use a lightweight occupancy proxy (honest but not a rating).
+    return _occupancyProxyRating(events);
+  }
+
+  double _occupancyProxyRating(List<ExpertiseEvent> events) {
+    // Map occupancy (0-1) to a conservative ~3.0-5.0 range.
+    final occupancies = <double>[];
+    for (final e in events) {
+      if (e.maxAttendees <= 0) continue;
+      occupancies.add((e.attendeeCount / e.maxAttendees).clamp(0.0, 1.0));
+    }
+    if (occupancies.isEmpty) return 0.0;
+    final avg = occupancies.reduce((a, b) => a + b) / occupancies.length;
+    return (3.0 + avg * 2.0).clamp(1.0, 5.0);
   }
 
   /// Normalize followers count to 0-1 scale
@@ -356,12 +399,62 @@ class EventMatchingService {
 
   /// Get external social following score
   ///
-  /// **Note:** In production, this would query external social media APIs
-  /// For now, returns placeholder
-  double _getExternalSocialScore(UnifiedUser expert) {
-    // Placeholder: Return moderate score
-    // In production, integrate with social media APIs (Instagram, TikTok, etc.)
-    return 0.5;
+  /// Returns a 0-1 score based on follower counts across connected platforms.
+  ///
+  /// If no social connections exist (or service isn't wired), returns 0.0 (no signal).
+  Future<double> _getExternalSocialScore(UnifiedUser expert) async {
+    final svc = _socialMediaConnectionService;
+    if (svc == null) return 0.0;
+
+    try {
+      final connections = await svc.getActiveConnections(expert.id);
+      if (connections.isEmpty) return 0.0;
+
+      int maxFollowers = 0;
+      for (final c in connections) {
+        final profile = await svc.fetchProfileData(c);
+        final followers = _extractFollowerCount(profile);
+        if (followers != null && followers > maxFollowers) {
+          maxFollowers = followers;
+        }
+      }
+
+      if (maxFollowers <= 0) return 0.0;
+
+      // Log-scaled normalization: ~1M followers maps near 1.0.
+      final denom = math.log(1000000.0 + 1.0);
+      final score = (math.log(maxFollowers.toDouble() + 1.0) / denom)
+          .clamp(0.0, 1.0);
+      return score;
+    } catch (e) {
+      _logger.warn('Failed to compute external social score: $e', tag: _logName);
+      return 0.0;
+    }
+  }
+
+  int? _extractFollowerCount(Map<String, dynamic> profileData) {
+    // Accept a handful of common keys across platforms/placeholder payloads.
+    final candidates = <dynamic>[
+      profileData['followers_count'],
+      profileData['followersCount'],
+      profileData['followers'],
+      profileData['followersCountTotal'],
+      profileData['connections_count'],
+      profileData['connectionsCount'],
+      (profileData['profile'] is Map ? (profileData['profile'] as Map)['followers_count'] : null),
+      (profileData['profile'] is Map ? (profileData['profile'] as Map)['followersCount'] : null),
+      (profileData['profile'] is Map ? (profileData['profile'] as Map)['connectionsCount'] : null),
+    ];
+
+    for (final v in candidates) {
+      if (v is int) return v;
+      if (v is num) return v.toInt();
+      if (v is String) {
+        final parsed = int.tryParse(v);
+        if (parsed != null) return parsed;
+      }
+    }
+    return null;
   }
 
   /// Calculate community recognition score
@@ -419,16 +512,67 @@ class EventMatchingService {
 
   /// Calculate active list respects score
   ///
-  /// **Note:** In production, this would query user_respects table
-  /// For now, returns placeholder
+  /// Returns a 0-1 score based on how much the community “respects” this expert’s
+  /// curated lists in the given category.
+  ///
+  /// If Supabase isn’t available, returns 0.0 (no signal) instead of inventing a score.
   Future<double> _calculateActiveListRespects({
     required UnifiedUser expert,
     required String category,
   }) async {
-    // Placeholder: Return moderate score
-    // In production, query user_respects table for lists in this category
-    // Count active respects (recent respects = more active)
-    return 0.5;
+    final client = _supabaseService.tryGetClient();
+    if (client == null) return 0.0;
+
+    try {
+      // Primary: use list aggregates (cheap and available offline when synced).
+      final lists = await client
+          .from('spot_lists')
+          .select('id, respect_count, category, created_by')
+          .eq('created_by', expert.id)
+          .eq('category', category);
+
+      final rows = (lists as List).cast<Map<String, dynamic>>();
+      if (rows.isEmpty) return 0.0;
+
+      final totalRespects = rows.fold<int>(0, (sum, r) {
+        final v = r['respect_count'];
+        if (v is int) return sum + v;
+        if (v is num) return sum + v.toInt();
+        return sum;
+      });
+
+      // Optional: recency signal (last 30 days respects) if available.
+      int recentRespects = 0;
+      try {
+        final cutoff = DateTime.now().subtract(const Duration(days: 30));
+        final respects = await client
+            .from('user_respects')
+            .select('id, created_at, list_id, spot_lists!inner(created_by, category)')
+            .eq('spot_lists.created_by', expert.id)
+            .eq('spot_lists.category', category)
+            .gte('created_at', cutoff.toIso8601String());
+        recentRespects = (respects as List).length;
+      } catch (e) {
+        // Ignore: schema/relationship may vary; we still have aggregate counts.
+        _logger.debug('Recent respects query unavailable: $e', tag: _logName);
+      }
+
+      final totalScore = _logNormalize(totalRespects, pivot: 100);
+      final recentScore = (recentRespects / 20.0).clamp(0.0, 1.0);
+
+      // Combine: total respect matters more, but recency boosts activity.
+      return (totalScore * 0.65 + recentScore * 0.35).clamp(0.0, 1.0);
+    } catch (e) {
+      _logger.warn('Failed to compute list respects: $e', tag: _logName);
+      return 0.0;
+    }
+  }
+
+  double _logNormalize(int value, {required int pivot}) {
+    if (value <= 0) return 0.0;
+    final denom = math.log(pivot.toDouble() + 1.0);
+    if (denom == 0.0) return 0.0;
+    return (math.log(value.toDouble() + 1.0) / denom).clamp(0.0, 1.0);
   }
 }
 

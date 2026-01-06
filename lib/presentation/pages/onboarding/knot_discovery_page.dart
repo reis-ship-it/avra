@@ -4,6 +4,8 @@
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 3: Onboarding Integration
 
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:spots_knot/models/personality_knot.dart';
 import 'package:spots_ai/models/personality_profile.dart';
@@ -36,6 +38,8 @@ class KnotDiscoveryPage extends StatefulWidget {
 }
 
 class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
+  static const String _logName = 'KnotDiscoveryPage';
+
   final KnotCommunityService _knotCommunityService =
       GetIt.instance<KnotCommunityService>();
   final KnotStorageService _knotStorageService =
@@ -99,15 +103,32 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
         _loadOnboardingGroup(profile);
       } else {
         // Generate knot if it doesn't exist
-        final newKnot = await _personalityKnotService.generateKnot(profile);
-        await _knotStorageService.saveKnot(agentId, newKnot);
-        setState(() {
-          _userKnot = newKnot;
-          _isLoadingKnot = false;
-        });
-        // Load tribes and group after knot is generated
-        _loadTribes();
-        _loadOnboardingGroup(profile);
+        try {
+          final newKnot = await _personalityKnotService.generateKnot(profile);
+          await _knotStorageService.saveKnot(agentId, newKnot);
+          setState(() {
+            _userKnot = newKnot;
+            _isLoadingKnot = false;
+          });
+          // Load tribes and group after knot is generated
+          _loadTribes();
+          _loadOnboardingGroup(profile);
+        } catch (e, st) {
+          // Knot generation is best-effort; onboarding must stay unblocked.
+          developer.log(
+            'Knot runtime unavailable; continuing without knot: $e',
+            name: _logName,
+            error: e,
+            stackTrace: st,
+          );
+          setState(() {
+            _userKnot = null;
+            _isLoadingKnot = false;
+            _error = null;
+          });
+          // Group is optional and may still work without a knot.
+          _loadOnboardingGroup(profile);
+        }
       }
     } catch (e) {
       setState(() {

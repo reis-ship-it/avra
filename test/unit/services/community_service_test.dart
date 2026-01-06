@@ -4,6 +4,7 @@ import 'package:spots/core/models/community.dart';
 import 'package:spots/core/models/community_event.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/unified_user.dart';
+import 'package:spots/core/constants/vibe_constants.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 import '../../helpers/platform_channel_helper.dart';
@@ -107,6 +108,89 @@ void main() {
 
     tearDown(() {
       TestHelpers.teardownTestEnvironment();
+    });
+
+    group('Community centroid lifecycle (privacy-safe contributions)', () {
+      test(
+          'recordCommunityVibeContribution updates centroid as mean of contributions; removeCommunityVibeContribution recomputes centroid and clears when empty',
+          () async {
+        final community = Community(
+          id: 'c_centroid_1',
+          name: 'Centroid Test Community',
+          description: 'centroid lifecycle tests',
+          category: 'Test',
+          originatingEventId: 'event_x',
+          originatingEventType: OriginatingEventType.expertiseEvent,
+          memberIds: const ['u1', 'u2'],
+          memberCount: 2,
+          founderId: 'u1',
+          eventIds: const [],
+          eventCount: 0,
+          memberGrowthRate: 0.0,
+          eventGrowthRate: 0.0,
+          createdAt: testDate,
+          lastEventAt: null,
+          engagementScore: 0.0,
+          diversityScore: 0.0,
+          activityLevel: ActivityLevel.active,
+          originalLocality: 'Testville',
+          currentLocalities: const ['Testville'],
+          updatedAt: testDate,
+          vibeCentroidDimensions: null,
+          vibeCentroidContributors: 0,
+        );
+        await service.upsertCommunity(community);
+
+        final dimsU1 = <String, double>{
+          for (final d in VibeConstants.coreDimensions) d: 0.0,
+        };
+        final dimsU2 = <String, double>{
+          for (final d in VibeConstants.coreDimensions) d: 1.0,
+        };
+
+        await service.recordCommunityVibeContribution(
+          communityId: community.id,
+          userId: 'u1',
+          anonymizedDimensions: dimsU1,
+          quantizationBins: 2,
+        );
+        await service.recordCommunityVibeContribution(
+          communityId: community.id,
+          userId: 'u2',
+          anonymizedDimensions: dimsU2,
+          quantizationBins: 2,
+        );
+
+        final afterTwo = await service.getCommunityById(community.id);
+        expect(afterTwo, isNotNull);
+        expect(afterTwo!.vibeCentroidContributors, equals(2));
+        expect(afterTwo.vibeCentroidDimensions, isNotNull);
+        for (final d in VibeConstants.coreDimensions) {
+          // Mean of 0 and 1 == 0.5 (quantizationBins=2 keeps exact endpoints).
+          expect(afterTwo.vibeCentroidDimensions![d], equals(0.5));
+        }
+
+        await service.removeCommunityVibeContribution(
+          communityId: community.id,
+          userId: 'u2',
+        );
+        final afterRemoveOne = await service.getCommunityById(community.id);
+        expect(afterRemoveOne, isNotNull);
+        expect(afterRemoveOne!.vibeCentroidContributors, equals(1));
+        expect(afterRemoveOne.vibeCentroidDimensions, isNotNull);
+        for (final d in VibeConstants.coreDimensions) {
+          expect(afterRemoveOne.vibeCentroidDimensions![d], equals(0.0));
+        }
+
+        await service.removeCommunityVibeContribution(
+          communityId: community.id,
+          userId: 'u1',
+        );
+        final afterRemoveAll = await service.getCommunityById(community.id);
+        expect(afterRemoveAll, isNotNull);
+        expect(afterRemoveAll!.vibeCentroidContributors, equals(0));
+        expect(afterRemoveAll.vibeCentroidDimensions, isNull);
+      });
     });
 
     // Removed: Property assignment tests
@@ -466,6 +550,79 @@ void main() {
           () => service.deleteCommunity(communityWithEvents),
           throwsException,
         );
+      });
+    });
+
+    group('Community Recommendations (True Compatibility Ranking)', () {
+      test('should rank communities higher when centroid is closer to user',
+          () async {
+        // User profile defaults to 0.5 across 12D (PersonalityProfile.initial).
+        const userId = 'user-reco-1';
+
+        final mid = <String, double>{
+          for (final d in VibeConstants.coreDimensions) d: 0.5,
+        };
+        final zero = <String, double>{
+          for (final d in VibeConstants.coreDimensions) d: 0.0,
+        };
+
+        final good = Community(
+          id: 'community-good',
+          name: 'Good Fit',
+          description: 'Centroid near default user dimensions',
+          category: 'Coffee',
+          originatingEventId: 'event-x',
+          originatingEventType: OriginatingEventType.communityEvent,
+          founderId: 'host-1',
+          originalLocality: 'Test Locality',
+          createdAt: testDate,
+          updatedAt: testDate,
+          vibeCentroidDimensions: mid,
+          vibeCentroidContributors: 10,
+        );
+
+        final bad = Community(
+          id: 'community-bad',
+          name: 'Bad Fit',
+          description: 'Centroid far from default user dimensions',
+          category: 'Coffee',
+          originatingEventId: 'event-y',
+          originatingEventType: OriginatingEventType.communityEvent,
+          founderId: 'host-1',
+          originalLocality: 'Test Locality',
+          createdAt: testDate,
+          updatedAt: testDate,
+          vibeCentroidDimensions: zero,
+          vibeCentroidContributors: 10,
+        );
+
+        await service.upsertCommunity(good);
+        await service.upsertCommunity(bad);
+
+        final ranked = await service.getRecommendedCommunitiesForUser(
+          userId: userId,
+          maxResults: 10,
+          excludeJoined: false,
+        );
+
+        expect(
+            ranked.map((c) => c.id).toList(),
+            containsAll(<String>[
+              'community-good',
+              'community-bad',
+            ]));
+        expect(ranked.first.id, equals('community-good'));
+
+        // And the score itself should reflect that ordering (non-neutral).
+        final goodScore = await service.calculateUserCommunityTrueCompatibility(
+          communityId: 'community-good',
+          userId: userId,
+        );
+        final badScore = await service.calculateUserCommunityTrueCompatibility(
+          communityId: 'community-bad',
+          userId: userId,
+        );
+        expect(goodScore, greaterThan(badScore));
       });
     });
   });

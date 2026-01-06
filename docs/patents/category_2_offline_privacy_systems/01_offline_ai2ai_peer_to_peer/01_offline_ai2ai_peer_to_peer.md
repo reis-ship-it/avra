@@ -7,13 +7,77 @@
 
 ---
 
-## Executive Summary
+## Cross-References to Related Applications
+
+None.
+
+---
+
+## Statement Regarding Federally Sponsored Research or Development
+
+Not applicable.
+
+---
+
+## Incorporation by Reference
+
+This disclosure references the accompanying visual/drawings document: `docs/patents/category_2_offline_privacy_systems/01_offline_ai2ai_peer_to_peer/01_offline_ai2ai_peer_to_peer_visuals.md`. The diagrams and formulas therein are incorporated by reference as non-limiting illustrative material supporting the written description and example embodiments.
+
+---
+
+## Definitions
+
+For purposes of this disclosure:
+- **“Entity”** means any actor or object represented for scoring/matching (e.g., user, device, business, event, sponsor), depending on the invention context.
+- **“Profile”** means a set of stored attributes used by the system (which may be multi-dimensional and may be anonymized).
+- **“Compatibility score”** means a bounded numeric value used to compare entities or an entity to an opportunity, typically normalized to \([0, 1]\).
+- **“Atomic timestamp”** means a time value derived from an atomic-time service or an equivalent high-precision time source used for synchronization and time-indexed computation.
+
+---
+
+## Brief Description of the Drawings
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Complete Offline Workflow.
+- **FIG. 6**: Device Discovery Flow.
+- **FIG. 7**: Peer-to-Peer Profile Exchange.
+- **FIG. 8**: Local Compatibility Calculation.
+- **FIG. 9**: Learning Insights Generation.
+- **FIG. 10**: Immediate AI Evolution.
+- **FIG. 11**: Complete System Architecture.
+- **FIG. 12**: Offline vs. Cloud Comparison.
+- **FIG. 13**: Learning Algorithm Flow.
+- **FIG. 14**: Complete Connection Flow.
+## Abstract
+
+A system and method for enabling autonomous AI-to-AI (AI2AI) discovery, communication, and learning without reliance on internet connectivity. The system performs proximity-based peer discovery using local transports, establishes direct device-to-device connections, exchanges profile and capability information, computes compatibility locally, and derives learning updates from observed interaction outcomes. In some embodiments, the system operates as an offline-first architecture that reduces latency and avoids centralized collection of personal data by keeping computation and storage on-device while permitting privacy-aware exchange of limited representations needed for compatibility and learning. The approach enables continuous learning and network formation in connectivity-constrained environments.
+
+---
+
+## Background
+
+Many AI learning systems depend on centralized servers for discovery, synchronization, and model updates. These architectures can fail under intermittent connectivity and may increase privacy risk by requiring sensitive user data to transit or be stored in the cloud. Additionally, cloud-mediated learning can introduce latency that delays adaptation and personalization.
+
+Accordingly, there is a need for offline-first AI systems that can discover peers, exchange information, compute compatibility, and learn directly on-device using peer-to-peer communication while preserving privacy and maintaining robust operation without internet access.
+
+---
+
+## Summary
 
 A fully autonomous peer-to-peer AI learning system that works completely offline, enabling personal AIs to discover, connect, exchange personality profiles, calculate compatibility, and learn from each other without internet connectivity. This system solves critical privacy and connectivity problems by enabling AI learning without cloud dependency or privacy compromise.
 
 ---
 
-## Technical Innovation
+## Detailed Description
+
+### Implementation Notes (Non-Limiting)
+
+- In privacy-preserving embodiments, the system minimizes exposure of user-linked identifiers and may exchange anonymized and/or differentially private representations rather than raw user data.
+- In AI2AI embodiments, on-device agents may exchange limited, privacy-scoped information with peer agents to coordinate matching, learning, or inference without requiring centralized disclosure of personal identifiers.
+- In quantum-state embodiments, the system may represent multi-dimensional profiles as quantum state vectors (e.g., |ψ⟩) and compute similarity using an inner product, distance metric, or other quantum-inspired measure.
 
 ### Core Innovation
 The system implements a fully autonomous peer-to-peer AI learning architecture that operates completely offline using Bluetooth/NSD device discovery and direct device-to-device communication. Unlike cloud-dependent AI systems, this architecture enables personal AIs to discover nearby devices, exchange personality profiles, calculate compatibility locally, generate learning insights, and evolve immediately—all without internet connectivity.
@@ -151,41 +215,36 @@ for each dimension in remote.dimensions:
 
 ---
 
-## Patent Claims
+## Claims
 
-### Claim 1: Method for Autonomous Peer-to-Peer AI Learning
-A method for autonomous peer-to-peer AI learning via offline device connections, comprising:
-- Discovering nearby devices using Bluetooth/NSD without internet connectivity
-- Exchanging personality profiles directly device-to-device via peer-to-peer protocol
-- Calculating compatibility locally on-device without cloud processing
-- Generating learning insights from compatibility analysis locally
-- Applying learning insights immediately to local AI personality without cloud sync
+1. A method for autonomous peer-to-peer AI learning via offline device connections, comprising:
+   (a) Discovering nearby devices using Bluetooth/NSD without internet connectivity
+   (b) Exchanging personality profiles directly device-to-device via peer-to-peer protocol
+   (c) Calculating compatibility locally on-device without cloud processing
+   (d) Generating learning insights from compatibility analysis locally
+   (e) Applying learning insights immediately to local AI personality without cloud sync
 
-### Claim 2: System for Offline Personality Profile Exchange
-A system for exchanging personality profiles between devices without cloud infrastructure, comprising:
-- Bluetooth/NSD device discovery for finding nearby devices
-- Peer-to-peer personality profile exchange using AI2AIMessage protocol
-- Local compatibility calculation on-device
-- Local learning insight generation and application
-- Immediate personality evolution without internet connectivity
+2. A system for exchanging personality profiles between devices without cloud infrastructure, comprising:
+   (a) Bluetooth/NSD device discovery for finding nearby devices
+   (b) Peer-to-peer personality profile exchange using AI2AIMessage protocol
+   (c) Local compatibility calculation on-device
+   (d) Local learning insight generation and application
+   (e) Immediate personality evolution without internet connectivity
 
-### Claim 3: Method for Local Compatibility and Learning Exchange
-A method for local compatibility calculation and learning exchange between AIs, comprising:
-- Calculating compatibility between two personality profiles entirely on-device
-- Generating learning insights from compatibility analysis locally
-- Applying learning insights to local AI personality immediately
-- Performing all operations without cloud infrastructure or internet connectivity
+3. The method of claim 1, further comprising local compatibility calculation and learning exchange between AIs:
+   (a) Calculating compatibility between two personality profiles entirely on-device
+   (b) Generating learning insights from compatibility analysis locally
+   (c) Applying learning insights to local AI personality immediately
+   (d) Performing all operations without cloud infrastructure or internet connectivity
 
-### Claim 4: Offline-First Architecture for Distributed AI Learning
-An offline-first architecture for distributed AI personality learning, comprising:
-- Offline device discovery via Bluetooth/NSD
-- Peer-to-peer personality profile exchange
-- Local compatibility calculation and learning insight generation
-- Immediate AI evolution without cloud dependency
-- Optional cloud enhancement that doesn't require internet for core functionality
+4. An offline-first architecture for distributed AI personality learning, comprising:
+   (a) Offline device discovery via Bluetooth/NSD
+   (b) Peer-to-peer personality profile exchange
+   (c) Local compatibility calculation and learning insight generation
+   (d) Immediate AI evolution without cloud dependency
+   (e) Optional cloud enhancement that doesn't require internet for core functionality
 
----
-
+       ---
 ## Atomic Timing Integration
 
 **Date:** December 23, 2025  
@@ -233,20 +292,36 @@ Where:
 
 ## Code References
 
-### Primary Implementation
+### Primary Implementation (Updated 2026-01-03)
+
+**Connection Orchestrator (Core AI2AI):**
+- **File:** `lib/core/ai2ai/connection_orchestrator.dart` (3000+ lines) ✅ COMPLETE
+- **Key Functions:**
+  - `_processLearning()` - Offline personality learning
+  - `_syncFederatedCloudQueue()` - Federated sync to cloud
+  - `_startFederatedCloudSync()` - Periodic federated sync
+  - `_processEventModeDiscovery()` - Event mode discovery
+
+**Orchestrator Components:**
 - **File:** `lib/core/ai2ai/orchestrator_components.dart`
 - **Key Functions:**
-  - `establishOfflinePeerConnection()`
-  - `_establishOfflinePeerConnection()`
-  - Connection management
+  - Connection management, peer discovery
 
-- **File:** `lib/core/network/ai2ai_protocol.dart`
+**Device Discovery (BLE):**
+- **File:** `packages/spots_network/lib/network/device_discovery.dart`
 - **Key Functions:**
-  - `exchangePersonalityProfile()`
-  - `calculateLocalCompatibility()`
-  - `generateLocalLearningInsights()`
+  - `startDiscovery()` - Start BLE scanning
+  - `stopDiscovery()` - Stop BLE scanning
+  - Device advertisement and discovery
 
-- **File:** `lib/core/ai/personality_learning.dart`
+**Anonymous Communication:**
+- **File:** `lib/core/ai2ai/anonymous_communication.dart`
+- **Key Functions:**
+  - `anonymizeProfile()` - Privacy-preserved personality exchange
+  - `AnonymousCommunicationProtocol` - Protocol for AI2AI
+
+**Personality Learning:**
+- **File:** `lib/core/ai/personality_learning.dart` ✅
 - **Key Functions:**
   - `evolveFromAI2AILearning()`
   - Learning application
@@ -494,8 +569,7 @@ Future<AI2AILearningInsight> generateLocalLearningInsights(
 
 ---
 
-## Experimental Validation
-
+## Appendix A — Experimental Validation (Non-Limiting)
 **Date:** Original (see individual experiments), December 23, 2025 (Atomic Timing Integration)  
 **Status:** ✅ Complete - All experiments validated (including atomic timing integration)
 

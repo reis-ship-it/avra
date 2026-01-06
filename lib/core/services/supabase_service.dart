@@ -76,6 +76,32 @@ class SupabaseService {
     }
   }
 
+  /// Get server time from the backend (authoritative).
+  ///
+  /// Uses the `public.get_server_time()` RPC (see `supabase/migrations/039_atomic_clock_server_time_rpc.sql`).
+  /// This is used by `AtomicClockService` for NTP-style offset estimation.
+  Future<DateTime> getServerTime() async {
+    try {
+      final c = _tryGetClient();
+      if (c == null) {
+        throw Exception('Supabase client not available');
+      }
+
+      final res = await c.rpc('get_server_time');
+      // supabase_flutter returns a raw value for scalar RPCs
+      if (res is String) {
+        return DateTime.parse(res);
+      }
+      if (res is DateTime) {
+        return res;
+      }
+      throw Exception('Unexpected get_server_time() result type: ${res.runtimeType}');
+    } catch (e) {
+      _logger.error('Failed to fetch server time', error: e, tag: _logName);
+      rethrow;
+    }
+  }
+
   /// Sign in with email and password
   Future<AuthResponse> signInWithEmail(String email, String password) async {
     try {

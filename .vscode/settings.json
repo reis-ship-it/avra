@@ -6,8 +6,18 @@
   "java.configuration.runtimes": [],
   "files.exclude": {
     "**/backups/**": true,
-    "**/.metadata/**": true
+    "**/.metadata/**": true,
+    "**/native/signal_ffi/**": true
   },
+  "files.watcherExclude": {
+    "**/native/signal_ffi/**": true
+  },
+  "search.exclude": {
+    "**/native/signal_ffi/**": true
+  },
+  "java.import.exclusions": [
+    "**/native/signal_ffi/**"
+  ],
   "java.project.sourcePaths": [
     "android/app/src/main/java",
     "android/app/src/main/kotlin"

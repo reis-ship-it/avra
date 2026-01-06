@@ -19,7 +19,7 @@ import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart
 import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/models/unified_models.dart';
+import 'package:spots_core/models/unified_location_data.dart';
 
 /// Reservation Quantum Service
 ///
@@ -50,9 +50,9 @@ class ReservationQuantumService {
   final UserVibeAnalyzer _vibeAnalyzer;
   final PersonalityLearning _personalityLearning;
   final LocationTimingQuantumStateService _locationTimingService;
+  // Optional, graceful degradation.
   // ignore: unused_field - Reserved for future Phase 19 integration
-  final QuantumEntanglementService?
-      _entanglementService; // Optional, graceful degradation
+  final QuantumEntanglementService? _entanglementService;
 
   ReservationQuantumService({
     required AtomicClockService atomicClock,
@@ -337,7 +337,7 @@ class ReservationQuantumService {
   /// Create default location quantum state
   Future<EntityLocationQuantumState> _createDefaultLocationState() async {
     // Create default location (center of map, urban, accessible)
-    const defaultLocation = UnifiedLocation(
+    const defaultLocation = UnifiedLocationData(
       latitude: 0.0,
       longitude: 0.0,
       city: 'Unknown',

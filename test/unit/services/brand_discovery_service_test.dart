@@ -4,6 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:spots/core/services/brand_discovery_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/sponsorship_service.dart';
+import 'package:spots/core/services/vibe_compatibility_service.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/brand_account.dart';
 import 'package:spots/core/models/brand_discovery.dart';
@@ -95,10 +96,28 @@ void main() {
           eventId: 'event-123',
           brandId: 'brand-1',
         )).thenAnswer((_) async => 0.75);
+        when(mockSponsorshipService.calculateVibeScore(
+          eventId: 'event-123',
+          brandId: 'brand-1',
+        )).thenAnswer((_) async => const VibeScore(
+              combined: 0.75,
+              quantum: 0.75,
+              knotTopological: 0.0,
+              knotWeave: 0.0,
+            ));
         when(mockSponsorshipService.calculateCompatibility(
           eventId: 'event-123',
           brandId: 'brand-2',
         )).thenAnswer((_) async => 0.80);
+        when(mockSponsorshipService.calculateVibeScore(
+          eventId: 'event-123',
+          brandId: 'brand-2',
+        )).thenAnswer((_) async => const VibeScore(
+              combined: 0.80,
+              quantum: 0.80,
+              knotTopological: 0.0,
+              knotWeave: 0.0,
+            ));
         await service.registerBrand(testBrand1);
         await service.registerBrand(testBrand2);
         final matches1 = await service.findBrandsForEvent(
@@ -116,10 +135,28 @@ void main() {
           eventId: 'event-123',
           brandId: 'brand-1',
         )).thenAnswer((_) async => 0.65);
+        when(mockSponsorshipService.calculateVibeScore(
+          eventId: 'event-123',
+          brandId: 'brand-1',
+        )).thenAnswer((_) async => const VibeScore(
+              combined: 0.65,
+              quantum: 0.65,
+              knotTopological: 0.0,
+              knotWeave: 0.0,
+            ));
         when(mockSponsorshipService.calculateCompatibility(
           eventId: 'event-123',
           brandId: 'brand-2',
         )).thenAnswer((_) async => 0.75);
+        when(mockSponsorshipService.calculateVibeScore(
+          eventId: 'event-123',
+          brandId: 'brand-2',
+        )).thenAnswer((_) async => const VibeScore(
+              combined: 0.75,
+              quantum: 0.75,
+              knotTopological: 0.0,
+              knotWeave: 0.0,
+            ));
         final matches2 = await service.findBrandsForEvent(
           eventId: 'event-123',
           minCompatibility: 0.70,
@@ -141,10 +178,28 @@ void main() {
           eventId: 'event-123',
           brandId: 'brand-1',
         )).thenAnswer((_) async => 0.75);
+        when(mockSponsorshipService.calculateVibeScore(
+          eventId: 'event-123',
+          brandId: 'brand-1',
+        )).thenAnswer((_) async => const VibeScore(
+              combined: 0.75,
+              quantum: 0.75,
+              knotTopological: 0.0,
+              knotWeave: 0.0,
+            ));
         when(mockSponsorshipService.calculateCompatibility(
           eventId: 'event-123',
           brandId: 'brand-2',
         )).thenAnswer((_) async => 0.85);
+        when(mockSponsorshipService.calculateVibeScore(
+          eventId: 'event-123',
+          brandId: 'brand-2',
+        )).thenAnswer((_) async => const VibeScore(
+              combined: 0.85,
+              quantum: 0.85,
+              knotTopological: 0.0,
+              knotWeave: 0.0,
+            ));
         final matches4 = await service.findBrandsForEvent(
           eventId: 'event-123',
           minCompatibility: 0.80,
@@ -214,10 +269,28 @@ void main() {
           eventId: 'event-123',
           brandId: 'brand-1',
         )).thenAnswer((_) async => 0.75);
+        when(mockSponsorshipService.calculateVibeScore(
+          eventId: 'event-123',
+          brandId: 'brand-1',
+        )).thenAnswer((_) async => const VibeScore(
+              combined: 0.75,
+              quantum: 0.75,
+              knotTopological: 0.0,
+              knotWeave: 0.0,
+            ));
         when(mockSponsorshipService.calculateCompatibility(
           eventId: 'event-123',
           brandId: 'brand-2',
         )).thenAnswer((_) async => 0.80);
+        when(mockSponsorshipService.calculateVibeScore(
+          eventId: 'event-123',
+          brandId: 'brand-2',
+        )).thenAnswer((_) async => const VibeScore(
+              combined: 0.80,
+              quantum: 0.80,
+              knotTopological: 0.0,
+              knotWeave: 0.0,
+            ));
         await service.registerBrand(testBrand1);
         await service.registerBrand(testBrand2);
         final discovery1 = await service.getSponsorshipSuggestions(
@@ -231,6 +304,15 @@ void main() {
           eventId: 'event-123',
           brandId: 'brand-1',
         )).thenAnswer((_) async => 0.75);
+        when(mockSponsorshipService.calculateVibeScore(
+          eventId: 'event-123',
+          brandId: 'brand-1',
+        )).thenAnswer((_) async => const VibeScore(
+              combined: 0.75,
+              quantum: 0.75,
+              knotTopological: 0.0,
+              knotWeave: 0.0,
+            ));
         final discovery2 = await service.getSponsorshipSuggestions(
           eventId: 'event-123',
           searchCriteria: {

@@ -34,9 +34,11 @@ void main() {
         listsBloc: mockListsBloc,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-      expect(find.text('Test Coffee Shop'), findsOneWidget);
+      // Spot name is shown in both AppBar title and page header.
+      expect(find.text('Test Coffee Shop'), findsNWidgets(2));
       expect(find.byIcon(Icons.edit), findsOneWidget);
-      expect(find.byIcon(Icons.share), findsOneWidget);
+      // Share affordance exists in the AppBar and as an on-page action button.
+      expect(find.byIcon(Icons.share), findsNWidgets(2));
       expect(find.text('Cafe'), findsOneWidget);
 
       final detailedSpot = ModelFactories.createTestSpot(
@@ -48,9 +50,10 @@ void main() {
         listsBloc: mockListsBloc,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-      expect(find.text('Detailed Spot'), findsOneWidget);
-      expect(find.text('A great place'), findsOneWidget);
-      expect(find.text('123 Main St'), findsOneWidget);
+      // Spot name is shown in both AppBar title and page header.
+      expect(find.text('Detailed Spot'), findsNWidgets(2));
+      // ModelFactories.createTestSpot uses a deterministic default description.
+      expect(find.text('A test location for unit testing'), findsOneWidget);
     });
   });
 }

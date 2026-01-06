@@ -22,8 +22,6 @@ class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
 void main() {
   group('SignalFFIStoreCallbacks', () {
     late SignalFFIBindings ffiBindings;
-    SignalKeyManager? keyManager;
-    SignalSessionManager? sessionManager;
     late Database database;
     SignalFFIStoreCallbacks? storeCallbacks;
     late MockFlutterSecureStorage mockSecureStorage;
@@ -64,8 +62,6 @@ void main() {
       // Don't load libraries in setUp - only load when individual tests need them
       // This prevents crashes in tests that don't need libraries
       ffiBindings = SignalFFIBindings();
-      keyManager = null;
-      sessionManager = null;
       storeCallbacks = null;
     });
     
@@ -95,9 +91,6 @@ void main() {
         ffiBindings: ffiBindings,
         keyManager: km,
       );
-      
-      keyManager = km;
-      sessionManager = sm;
       
       // Try to initialize wrapper library (optional - may not be built yet)
       try {
@@ -134,29 +127,13 @@ void main() {
     }
     
     tearDown(() async {
-      // Hybrid disposal approach: Try to dispose (tests cleanup path), but don't fail tests if it crashes
-      // This gives us:
-      // - Disposal verification when libraries work correctly
-      // - Test reliability when native cleanup is broken
-      // - Production parity (same disposal code as production)
-      
-      try {
-        if (storeCallbacks?.isInitialized ?? false) {
-          storeCallbacks?.dispose();
-        }
-      } catch (e) {
-        // Silently ignore disposal failures - test already passed
-      }
-      
+      // NOTE: We intentionally do NOT dispose native-backed Signal components in unit tests.
+      //
+      // Disposal paths that touch native libraries/callbacks can cause SIGABRT during
+      // finalization even when tests pass. Unit tests should avoid native teardown for
+      // reliability; the OS will reclaim resources when the test process exits.
+
       await database.close();
-      
-      try {
-        if (ffiBindings.isInitialized) {
-          ffiBindings.dispose();
-        }
-      } catch (e) {
-        // Silently ignore disposal failures - test already passed
-      }
     });
     
     test('should create session store struct', () async {

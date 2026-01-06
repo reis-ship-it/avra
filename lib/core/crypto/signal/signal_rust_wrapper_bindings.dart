@@ -78,6 +78,14 @@ class SignalRustWrapperBindings {
   late final _GetWrapperPtr _getSaveIdentityKeyWrapperPtr;
   late final _GetWrapperPtr _getGetIdentityKeyWrapperPtr;
   late final _GetWrapperPtr _getIsTrustedIdentityWrapperPtr;
+  late final _GetWrapperPtr _getLoadPreKeyWrapperPtr;
+  late final _GetWrapperPtr _getStorePreKeyWrapperPtr;
+  late final _GetWrapperPtr _getRemovePreKeyWrapperPtr;
+  late final _GetWrapperPtr _getLoadSignedPreKeyWrapperPtr;
+  late final _GetWrapperPtr _getStoreSignedPreKeyWrapperPtr;
+  late final _GetWrapperPtr _getLoadKyberPreKeyWrapperPtr;
+  late final _GetWrapperPtr _getStoreKyberPreKeyWrapperPtr;
+  late final _GetWrapperPtr _getMarkKyberPreKeyUsedWrapperPtr;
   
   // Library loading is now handled by SignalLibraryManager
   // Removed _loadLibrary() method
@@ -125,6 +133,38 @@ class SignalRustWrapperBindings {
       
       _getIsTrustedIdentityWrapperPtr = _lib!
           .lookup<NativeFunction<_NativeGetWrapperPtr>>('spots_rust_get_is_trusted_identity_wrapper_ptr')
+          .asFunction<_GetWrapperPtr>();
+
+      _getLoadPreKeyWrapperPtr = _lib!
+          .lookup<NativeFunction<_NativeGetWrapperPtr>>('spots_rust_get_load_pre_key_wrapper_ptr')
+          .asFunction<_GetWrapperPtr>();
+
+      _getStorePreKeyWrapperPtr = _lib!
+          .lookup<NativeFunction<_NativeGetWrapperPtr>>('spots_rust_get_store_pre_key_wrapper_ptr')
+          .asFunction<_GetWrapperPtr>();
+
+      _getRemovePreKeyWrapperPtr = _lib!
+          .lookup<NativeFunction<_NativeGetWrapperPtr>>('spots_rust_get_remove_pre_key_wrapper_ptr')
+          .asFunction<_GetWrapperPtr>();
+
+      _getLoadSignedPreKeyWrapperPtr = _lib!
+          .lookup<NativeFunction<_NativeGetWrapperPtr>>('spots_rust_get_load_signed_pre_key_wrapper_ptr')
+          .asFunction<_GetWrapperPtr>();
+
+      _getStoreSignedPreKeyWrapperPtr = _lib!
+          .lookup<NativeFunction<_NativeGetWrapperPtr>>('spots_rust_get_store_signed_pre_key_wrapper_ptr')
+          .asFunction<_GetWrapperPtr>();
+
+      _getLoadKyberPreKeyWrapperPtr = _lib!
+          .lookup<NativeFunction<_NativeGetWrapperPtr>>('spots_rust_get_load_kyber_pre_key_wrapper_ptr')
+          .asFunction<_GetWrapperPtr>();
+
+      _getStoreKyberPreKeyWrapperPtr = _lib!
+          .lookup<NativeFunction<_NativeGetWrapperPtr>>('spots_rust_get_store_kyber_pre_key_wrapper_ptr')
+          .asFunction<_GetWrapperPtr>();
+
+      _getMarkKyberPreKeyUsedWrapperPtr = _lib!
+          .lookup<NativeFunction<_NativeGetWrapperPtr>>('spots_rust_get_mark_kyber_pre_key_used_wrapper_ptr')
           .asFunction<_GetWrapperPtr>();
       
       _initialized = true;
@@ -227,6 +267,62 @@ class SignalRustWrapperBindings {
       throw SignalProtocolException('Rust wrapper bindings not initialized. Call initialize() first.');
     }
     return _getIsTrustedIdentityWrapperPtr();
+  }
+
+  Pointer<Void> getLoadPreKeyWrapperPtr() {
+    if (!_initialized) {
+      throw SignalProtocolException('Rust wrapper bindings not initialized. Call initialize() first.');
+    }
+    return _getLoadPreKeyWrapperPtr();
+  }
+
+  Pointer<Void> getStorePreKeyWrapperPtr() {
+    if (!_initialized) {
+      throw SignalProtocolException('Rust wrapper bindings not initialized. Call initialize() first.');
+    }
+    return _getStorePreKeyWrapperPtr();
+  }
+
+  Pointer<Void> getRemovePreKeyWrapperPtr() {
+    if (!_initialized) {
+      throw SignalProtocolException('Rust wrapper bindings not initialized. Call initialize() first.');
+    }
+    return _getRemovePreKeyWrapperPtr();
+  }
+
+  Pointer<Void> getLoadSignedPreKeyWrapperPtr() {
+    if (!_initialized) {
+      throw SignalProtocolException('Rust wrapper bindings not initialized. Call initialize() first.');
+    }
+    return _getLoadSignedPreKeyWrapperPtr();
+  }
+
+  Pointer<Void> getStoreSignedPreKeyWrapperPtr() {
+    if (!_initialized) {
+      throw SignalProtocolException('Rust wrapper bindings not initialized. Call initialize() first.');
+    }
+    return _getStoreSignedPreKeyWrapperPtr();
+  }
+
+  Pointer<Void> getLoadKyberPreKeyWrapperPtr() {
+    if (!_initialized) {
+      throw SignalProtocolException('Rust wrapper bindings not initialized. Call initialize() first.');
+    }
+    return _getLoadKyberPreKeyWrapperPtr();
+  }
+
+  Pointer<Void> getStoreKyberPreKeyWrapperPtr() {
+    if (!_initialized) {
+      throw SignalProtocolException('Rust wrapper bindings not initialized. Call initialize() first.');
+    }
+    return _getStoreKyberPreKeyWrapperPtr();
+  }
+
+  Pointer<Void> getMarkKyberPreKeyUsedWrapperPtr() {
+    if (!_initialized) {
+      throw SignalProtocolException('Rust wrapper bindings not initialized. Call initialize() first.');
+    }
+    return _getMarkKyberPreKeyUsedWrapperPtr();
   }
   
   /// Dispose resources

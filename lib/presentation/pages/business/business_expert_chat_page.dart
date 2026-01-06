@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'dart:async';
 
 /// Business-Expert Chat Page
-/// 
+///
 /// Chat interface for messaging between businesses and experts.
 /// Messages routed through ai2ai network, stored locally.
 class BusinessExpertChatPage extends StatefulWidget {
@@ -32,7 +32,7 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
   final _chatService = GetIt.instance<BusinessExpertChatServiceAI2AI>();
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  
+
   List<BusinessExpertMessage> _messages = [];
   bool _isLoading = true;
   bool _isSending = false;
@@ -41,7 +41,8 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
   String? _conversationId;
   String? _businessName;
   String? _expertName;
-  final MessageSenderType _senderType = MessageSenderType.business; // TODO: Determine from auth state
+  final MessageSenderType _senderType =
+      MessageSenderType.business; // TODO: Determine from auth state
 
   @override
   void initState() {
@@ -66,14 +67,14 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
         widget.businessId,
         widget.expertId,
       );
-      
+
       if (conversation != null) {
         setState(() {
           _conversationId = conversation['id'] as String?;
           _businessName ??= conversation['business_name'] as String?;
           _expertName ??= conversation['expert_name'] as String?;
         });
-        
+
         // Subscribe to real-time messages
         if (_conversationId != null) {
           _messageSubscription = _chatService
@@ -112,13 +113,13 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
       if (conversation != null) {
         final conversationId = conversation['id'] as String;
         final messages = await _chatService.getMessageHistory(conversationId);
-        
+
         setState(() {
           _messages = messages;
           _conversationId = conversationId;
           _isLoading = false;
         });
-        
+
         _scrollToBottom();
       } else {
         setState(() {
@@ -192,15 +193,18 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                   : (_businessName ?? 'Business'),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (_senderType == MessageSenderType.business && _expertName != null)
+            if (_senderType == MessageSenderType.business &&
+                _expertName != null)
               Text(
                 _expertName!,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+                style: const TextStyle(
+                    fontSize: 12, fontWeight: FontWeight.normal),
               )
             else if (_businessName != null)
               Text(
                 _businessName!,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+                style: const TextStyle(
+                    fontSize: 12, fontWeight: FontWeight.normal),
               ),
           ],
         ),
@@ -268,7 +272,8 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                             itemCount: _messages.length,
                             itemBuilder: (context, index) {
                               final message = _messages[index];
-                              final isFromMe = message.senderType == _senderType;
+                              final isFromMe =
+                                  message.senderType == _senderType;
                               return _buildMessageBubble(message, isFromMe);
                             },
                           ),
@@ -298,7 +303,8 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                           hintText: 'Type a message...',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: const BorderSide(color: AppColors.grey300),
+                            borderSide:
+                                const BorderSide(color: AppColors.grey300),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -324,7 +330,8 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                               color: AppTheme.primaryColor,
                             ),
                       style: IconButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                        backgroundColor:
+                            AppTheme.primaryColor.withValues(alpha: 0.1),
                         padding: const EdgeInsets.all(12),
                       ),
                     ),
@@ -367,9 +374,7 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isFromMe
-                    ? AppTheme.primaryColor
-                    : AppColors.white,
+                color: isFromMe ? AppTheme.primaryColor : AppColors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -437,4 +442,3 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
     }
   }
 }
-

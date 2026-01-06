@@ -124,7 +124,8 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      // FloatingTextWidget has continuous animations; `pumpAndSettle` will time out.
+      await tester.pump(const Duration(milliseconds: 200));
       expect(find.byType(FloatingTextWidget), findsOneWidget);
 
       await tester.pumpWidget(

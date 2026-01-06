@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/core/theme/colors.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/controllers/sync_controller.dart';
+import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/injection_container.dart' as di;
 
@@ -29,6 +30,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
 
   late PersonalitySyncService _syncService;
   late SyncController _syncController;
+  // Use StorageService (get_storage-backed) for lightweight local settings.
+  final _storageService = di.sl<StorageService>();
   String? _currentUserId;
   bool _isSyncing = false;
 
@@ -57,6 +60,28 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     _syncService = di.sl<PersonalitySyncService>();
     _syncController = di.sl<SyncController>();
     _loadCloudSyncSetting();
+    _loadAi2AiLearningSetting();
+  }
+
+  void _loadAi2AiLearningSetting() {
+    try {
+      final enabled = _storageService.getBool('ai2ai_learning_enabled') ?? true;
+      _ai2aiLearning = enabled;
+    } catch (_) {
+      // Default: enabled.
+      _ai2aiLearning = true;
+    }
+  }
+
+  void _handleAi2AiLearningToggle(bool value) {
+    setState(() => _ai2aiLearning = value);
+    Future<void>(() async {
+      try {
+        await _storageService.setBool('ai2ai_learning_enabled', value);
+      } catch (_) {
+        // Ignore.
+      }
+    });
   }
 
   Future<void> _loadCloudSyncSetting() async {
@@ -114,7 +139,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     }
 
     try {
-      await _syncService.setCloudSyncEnabled(_currentUserId!, value);
+      await _syncService.setCloudSyncEnabled(value);
       if (mounted) {
         setState(() {
           _cloudSyncEnabled = value;
@@ -357,7 +382,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               'AI2AI Learning',
               'Enable anonymous personality learning between devices',
               _ai2aiLearning,
-              (value) => setState(() => _ai2aiLearning = value),
+              _handleAi2AiLearningToggle,
               Icons.psychology,
             ),
 

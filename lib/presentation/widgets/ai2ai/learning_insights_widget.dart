@@ -17,59 +17,63 @@ class LearningInsightsWidget extends StatelessWidget {
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Learning Insights',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                if (insights.isNotEmpty)
-                  Chip(
-                    label: Text('${insights.length}'),
-                    backgroundColor: AppColors.grey100,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Learning Insights',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (insights.isEmpty)
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.lightbulb_outline,
-                        size: 48,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'No insights yet',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Insights will appear as your AI learns from interactions',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textHint,
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                  if (insights.isNotEmpty)
+                    Chip(
+                      label: Text('${insights.length}'),
+                      backgroundColor: AppColors.grey100,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (insights.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.lightbulb_outline,
+                          size: 48,
+                          color: AppColors.textSecondary,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'No insights yet',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Insights will appear as your AI learns from interactions',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppColors.textHint,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )
-            else
-              ...insights.take(5).map((insight) => _buildInsightCard(context, insight)),
-          ],
+                )
+              else
+                ...insights
+                    .take(5)
+                    .map((insight) => _buildInsightCard(context, insight)),
+            ],
+          ),
         ),
       ),
     );

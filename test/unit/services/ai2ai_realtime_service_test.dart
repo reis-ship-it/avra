@@ -1,17 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots_ai/services/ai2ai_realtime_service.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
+import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
 import 'package:spots_network/spots_network.dart';
-import 'package:spots/core/ai2ai/aipersonality_node.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 class MockRealtimeBackend extends Mock implements RealtimeBackend {}
-
-class MockVibeConnectionOrchestrator extends Mock
-    implements VibeConnectionOrchestrator {}
-
-class MockAIPersonalityNode extends Mock implements AIPersonalityNode {}
 
 void main() {
   setUpAll(() {
@@ -30,18 +23,22 @@ void main() {
       timestamp: DateTime.now(),
     ));
   });
-  group('AI2AIRealtimeService', () {
-    late AI2AIRealtimeService service;
+  group('AI2AIBroadcastService', () {
+    late AI2AIBroadcastService service;
     late MockRealtimeBackend mockBackend;
-    late MockVibeConnectionOrchestrator mockOrchestrator;
 
     setUp(() {
       mockBackend = MockRealtimeBackend();
-      mockOrchestrator = MockVibeConnectionOrchestrator();
-      service = AI2AIRealtimeService(mockBackend, mockOrchestrator);
+      service = AI2AIBroadcastService(mockBackend);
 
-      // Mock getCurrentVibe to avoid web-specific code paths
-      when(() => mockOrchestrator.getCurrentVibe()).thenReturn(null);
+      // Default stubs used by most tests.
+      when(() => mockBackend.connect()).thenAnswer((_) async => {});
+      when(() => mockBackend.disconnect()).thenAnswer((_) async => {});
+      when(() => mockBackend.joinChannel(any())).thenAnswer((_) async => {});
+      when(() => mockBackend.leaveChannel(any())).thenAnswer((_) async => {});
+      when(() => mockBackend.connectionStatus).thenAnswer(
+        (_) => Stream.value(RealtimeConnectionStatus.connected),
+      );
     });
 
     // Removed: Property assignment tests
@@ -52,15 +49,9 @@ void main() {
           'should initialize successfully, subscribe to all AI2AI channels, or handle initialization failure',
           () async {
         // Test business logic: service initialization with channel subscription
-        when(() => mockBackend.connect()).thenAnswer((_) async => {});
-        when(() => mockBackend.joinChannel(any())).thenAnswer((_) async => {});
-        when(() => mockBackend.updatePresence(any(), any()))
-            .thenAnswer((_) async => {});
-
         final result = await service.initialize();
         expect(result, isTrue);
         verify(() => mockBackend.connect()).called(1);
-        verify(() => mockBackend.updatePresence(any(), any())).called(1);
         // Verify specific channels (verify general count separately to avoid conflicts)
         verify(() => mockBackend.joinChannel('ai2ai-network')).called(1);
         verify(() => mockBackend.joinChannel('personality-discovery'))
@@ -70,19 +61,24 @@ void main() {
             .called(1);
 
         // Test failure case
-        when(() => mockBackend.connect())
+        final failingBackend = MockRealtimeBackend();
+        when(() => failingBackend.connect())
             .thenThrow(Exception('Connection failed'));
-        final failureResult = await service.initialize();
+        when(() => failingBackend.disconnect()).thenAnswer((_) async => {});
+        when(() => failingBackend.joinChannel(any())).thenAnswer((_) async => {});
+        when(() => failingBackend.leaveChannel(any())).thenAnswer((_) async => {});
+        when(() => failingBackend.connectionStatus).thenAnswer(
+          (_) => Stream.value(RealtimeConnectionStatus.disconnected),
+        );
+
+        final failingService = AI2AIBroadcastService(failingBackend);
+        final failureResult = await failingService.initialize();
         expect(failureResult, isFalse);
       });
     });
 
     group('broadcasting', () {
       setUp(() async {
-        when(() => mockBackend.connect()).thenAnswer((_) async => {});
-        when(() => mockBackend.joinChannel(any())).thenAnswer((_) async => {});
-        when(() => mockBackend.updatePresence(any(), any()))
-            .thenAnswer((_) async => {});
         await service.initialize();
       });
 
@@ -93,12 +89,15 @@ void main() {
         when(() => mockBackend.sendMessage(any(), any()))
             .thenAnswer((_) async => {});
 
-        final mockNode = MockAIPersonalityNode();
-        when(() => mockNode.nodeId).thenReturn('node-123');
-        when(() => mockNode.vibeSignature).thenReturn('sig-123');
-        when(() => mockNode.compatibilityScore).thenReturn(0.85);
-        when(() => mockNode.learningPotential).thenReturn(0.9);
-        await service.broadcastPersonalityDiscovery(mockNode);
+        await service.broadcastPersonalityDiscovery(
+          agentId: 'agent-123',
+          data: {
+            'node_id': 'node-123',
+            'vibe_signature': 'sig-123',
+            'compatibility_score': 0.85,
+            'learning_potential': 0.9,
+          },
+        );
         verify(() => mockBackend.sendMessage('personality-discovery', any()))
             .called(1);
 
@@ -106,7 +105,10 @@ void main() {
           'exploration_eagerness': 0.7,
           'community_orientation': 0.8
         };
-        await service.broadcastVibeLearning(dimensionUpdates);
+        await service.broadcastVibeLearning(
+          agentId: 'agent-123',
+          data: dimensionUpdates,
+        );
         verify(() => mockBackend.sendMessage('vibe-learning', any())).called(1);
 
         await service.sendAnonymousMessage('test_message', {'key': 'value'});
@@ -122,12 +124,6 @@ void main() {
       test(
           'should listen to all channels when connected, or return empty stream when not connected',
           () async {
-        // Test business logic: listening to all channel types
-        when(() => mockBackend.connect()).thenAnswer((_) async => {});
-        when(() => mockBackend.joinChannel(any())).thenAnswer((_) async => {});
-        when(() => mockBackend.updatePresence(any(), any()))
-            .thenAnswer((_) async => {});
-
         final testStream = Stream<RealtimeMessage>.value(
           RealtimeMessage(
               id: '1',
@@ -155,8 +151,7 @@ void main() {
             isA<Stream<RealtimeMessage>>());
 
         // Test not connected case
-        final newService = AI2AIRealtimeService(mockBackend, mockOrchestrator);
-        when(() => mockOrchestrator.getCurrentVibe()).thenReturn(null);
+        final newService = AI2AIBroadcastService(mockBackend);
         expect(
             newService.listenToAI2AINetwork(), isA<Stream<RealtimeMessage>>());
       });
@@ -167,10 +162,6 @@ void main() {
           'should watch AI network presence when connected or return empty stream when not connected',
           () async {
         // Test business logic: presence watching
-        when(() => mockBackend.connect()).thenAnswer((_) async => {});
-        when(() => mockBackend.joinChannel(any())).thenAnswer((_) async => {});
-        when(() => mockBackend.updatePresence(any(), any()))
-            .thenAnswer((_) async => {});
         final stream = Stream<List<UserPresence>>.value([]);
         when(() => mockBackend.subscribeToPresence('ai2ai-network'))
             .thenAnswer((_) => stream);
@@ -178,8 +169,7 @@ void main() {
         final result1 = service.watchAINetworkPresence();
         expect(result1, isA<Stream<List<UserPresence>>>());
 
-        final newService = AI2AIRealtimeService(mockBackend, mockOrchestrator);
-        when(() => mockOrchestrator.getCurrentVibe()).thenReturn(null);
+        final newService = AI2AIBroadcastService(mockBackend);
         final result2 = newService.watchAINetworkPresence();
         expect(result2, isA<Stream<List<UserPresence>>>());
       });

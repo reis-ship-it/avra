@@ -16,9 +16,9 @@ import 'package:spots/core/crypto/signal/signal_key_manager.dart';
 import 'package:spots/core/crypto/signal/signal_session_manager.dart';
 import 'package:spots/core/crypto/signal/signal_protocol_service.dart';
 import 'package:spots/core/crypto/signal/signal_ffi_store_callbacks.dart';
+import 'package:spots/core/crypto/signal/signal_types.dart';
 import 'package:spots/core/crypto/signal/signal_platform_bridge_bindings.dart';
 import 'package:spots/core/crypto/signal/signal_rust_wrapper_bindings.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
 import '../mocks/in_memory_flutter_secure_storage.dart';
 import 'dart:developer' as developer;
 
@@ -115,15 +115,22 @@ void main() {
       aliceStoreCallbacks = SignalFFIStoreCallbacks(
         keyManager: aliceKeyManager,
         sessionManager: aliceSessionManager,
+        ffiBindings: aliceFFI,
         rustWrapper: aliceRustWrapper,
         platformBridge: alicePlatformBridge,
       );
       bobStoreCallbacks = SignalFFIStoreCallbacks(
         keyManager: bobKeyManager,
         sessionManager: bobSessionManager,
+        ffiBindings: bobFFI,
         rustWrapper: bobRustWrapper,
         platformBridge: bobPlatformBridge,
       );
+
+      // Store callbacks must be initialized before calling any FFI methods that
+      // require store access (eg. X3DH / Double Ratchet).
+      await aliceStoreCallbacks.initialize();
+      await bobStoreCallbacks.initialize();
       
       // Initialize protocol services
       aliceProtocol = SignalProtocolService(
@@ -221,9 +228,11 @@ void main() {
         final aliceStoreCallbacks = SignalFFIStoreCallbacks(
           keyManager: aliceKeyManager,
           sessionManager: aliceSessionManager,
+          ffiBindings: aliceFFI,
           rustWrapper: aliceRustWrapper,
           platformBridge: alicePlatformBridge,
         );
+        await aliceStoreCallbacks.initialize();
         
         final aliceIdentityKeyPair = await aliceKeyManager.getOrGenerateIdentityKeyPair();
         final bobPreKeyBundle = await bobKeyManager.generatePreKeyBundle();

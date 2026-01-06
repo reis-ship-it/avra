@@ -6,10 +6,10 @@ import 'dart:developer' as developer;
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/supabase_service.dart';
 import 'package:spots/core/crypto/signal/signal_protocol_service.dart';
 import 'package:spots/core/crypto/signal/signal_types.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 
 /// Signal Protocol Encryption Service
 /// 
@@ -21,19 +21,16 @@ class SignalProtocolEncryptionService implements MessageEncryptionService {
   static const String _logName = 'SignalProtocolEncryptionService';
   
   final SignalProtocolService _signalProtocol;
-  final AgentIdService _agentIdService;
   final SupabaseService _supabaseService;
-  
-  // Cached agent ID (resolved lazily from current user)
-  String? _cachedAgentId;
+  final AtomicClockService _atomicClock;
   
   SignalProtocolEncryptionService({
     required SignalProtocolService signalProtocol,
-    required AgentIdService agentIdService,
     required SupabaseService supabaseService,
+    required AtomicClockService atomicClock,
   }) : _signalProtocol = signalProtocol,
-       _agentIdService = agentIdService,
-       _supabaseService = supabaseService;
+       _supabaseService = supabaseService,
+       _atomicClock = atomicClock;
   
   /// Check if Signal Protocol is initialized and ready
   bool get isInitialized => _signalProtocol.isInitialized;
@@ -48,7 +45,7 @@ class SignalProtocolEncryptionService implements MessageEncryptionService {
   /// 
   /// **Parameters:**
   /// - `plaintext`: Message to encrypt
-  /// - `recipientId`: Recipient's agent ID
+  /// - `recipientId`: Recipient's Signal address (for user-to-user messaging: auth user id)
   /// 
   /// **Returns:**
   /// Encrypted message with Signal Protocol metadata
@@ -71,6 +68,9 @@ class SignalProtocolEncryptionService implements MessageEncryptionService {
       
       // Convert to EncryptedMessage format
       final encryptedBytes = encrypted.toBytes();
+
+      // Phase 14 requirement: timestamps must use AtomicClockService (not DateTime.now()).
+      final atomicTimestamp = await _atomicClock.getAtomicTimestamp();
       
       developer.log(
         'Message encrypted using Signal Protocol for recipient: $recipientId',
@@ -82,7 +82,8 @@ class SignalProtocolEncryptionService implements MessageEncryptionService {
         encryptionType: EncryptionType.signalProtocol,
         metadata: {
           'recipientId': recipientId,
-          'timestamp': DateTime.now().toIso8601String(),
+          'timestamp': atomicTimestamp.serverTime.toIso8601String(),
+          'atomicTimestamp': atomicTimestamp.toJson(),
           'messageHeaderLength': encrypted.messageHeader?.length ?? 0,
         },
       );
@@ -104,7 +105,7 @@ class SignalProtocolEncryptionService implements MessageEncryptionService {
   /// 
   /// **Parameters:**
   /// - `encrypted`: Encrypted message
-  /// - `senderId`: Sender's agent ID
+  /// - `senderId`: Sender's Signal address (for user-to-user messaging: auth user id)
   /// 
   /// **Returns:**
   /// Decrypted plaintext
@@ -155,55 +156,20 @@ class SignalProtocolEncryptionService implements MessageEncryptionService {
     }
   }
   
-  /// Get the current user's agent ID (resolved lazily)
-  /// 
-  /// Resolves agent ID from the current authenticated user.
-  /// Caches the result for subsequent calls.
-  Future<String> _getCurrentAgentId() async {
-    if (_cachedAgentId != null) {
-      return _cachedAgentId!;
-    }
-    
-    try {
-      // Get current user ID from Supabase
-      final currentUser = _supabaseService.currentUser;
-      if (currentUser == null || currentUser.id.isEmpty) {
-        throw Exception('No authenticated user found. Cannot resolve agent ID.');
-      }
-      
-      // Resolve agent ID for current user
-      _cachedAgentId = await _agentIdService.getUserAgentId(currentUser.id);
-      
-      developer.log(
-        'Resolved agent ID for user ${currentUser.id}: $_cachedAgentId',
-        name: _logName,
-      );
-      
-      return _cachedAgentId!;
-    } catch (e, stackTrace) {
-      developer.log(
-        'Error resolving agent ID: $e',
-        name: _logName,
-        error: e,
-        stackTrace: stackTrace,
-      );
-      rethrow;
-    }
-  }
-  
   /// Initialize Signal Protocol service
   /// 
   /// Should be called during app initialization.
-  /// Resolves agent ID from current user and uploads prekey bundle.
+  /// Uploads a prekey bundle keyed by the current auth user id.
   Future<void> initialize() async {
     try {
       await _signalProtocol.initialize();
       
-      // Resolve agent ID from current user
-      final agentId = await _getCurrentAgentId();
-      
       // Upload prekey bundle to key server
-      await _signalProtocol.uploadPreKeyBundle(agentId);
+      final currentUser = _supabaseService.currentUser;
+      if (currentUser == null || currentUser.id.isEmpty) {
+        throw Exception('No authenticated user found. Cannot upload prekey bundle.');
+      }
+      await _signalProtocol.uploadPreKeyBundle(currentUser.id);
       
       developer.log('Signal Protocol encryption service initialized', name: _logName);
     } catch (e, stackTrace) {
@@ -219,11 +185,5 @@ class SignalProtocolEncryptionService implements MessageEncryptionService {
         name: _logName,
       );
     }
-  }
-  
-  /// Clear cached agent ID (useful when user changes)
-  void clearAgentIdCache() {
-    _cachedAgentId = null;
-    developer.log('Cleared agent ID cache', name: _logName);
   }
 }

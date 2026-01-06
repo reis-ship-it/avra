@@ -210,6 +210,9 @@ class SocialMediaVibeAnalyzer {
     
     // Get profile info
     final profile = profileData['profile'] as Map<String, dynamic>? ?? {};
+    // Some integrations provide `bio` at the root; accept either shape.
+    final bio = ((profile['bio'] as String?) ?? (profileData['bio'] as String?) ?? '')
+        .toLowerCase();
     final posts = profileData['posts'] as List<dynamic>? ?? [];
     final interests = profileData['interests'] as List<dynamic>? ?? [];
     final communities = profileData['communities'] as List<dynamic>? ?? [];
@@ -244,6 +247,21 @@ class SocialMediaVibeAnalyzer {
     if (interests.contains('nature') || interests.contains('outdoor')) {
       insights['location_adventurousness'] = (insights['location_adventurousness'] ?? 0.0) + 0.12;
       insights['exploration_eagerness'] = (insights['exploration_eagerness'] ?? 0.0) + 0.10;
+    }
+
+    // Bio keyword fallback (supports lightweight / partial profile payloads).
+    if (bio.isNotEmpty) {
+      if (bio.contains('explorer') || bio.contains('adventure')) {
+        insights['exploration_eagerness'] =
+            (insights['exploration_eagerness'] ?? 0.0) + 0.10;
+      }
+      if (bio.contains('foodie') ||
+          bio.contains('coffee') ||
+          bio.contains('restaurant') ||
+          bio.contains('cafe')) {
+        insights['curation_tendency'] =
+            (insights['curation_tendency'] ?? 0.0) + 0.10;
+      }
     }
     
     // Analyze communities (hashtags) → community orientation

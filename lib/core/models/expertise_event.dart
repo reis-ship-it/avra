@@ -21,6 +21,14 @@ class ExpertiseEvent extends Equatable {
   final String? location; // Meeting point or location
   final double? latitude;
   final double? longitude;
+  /// Canonical geo hierarchy codes (v1).
+  ///
+  /// These make geo scope **first-class** (not just strings) and align with:
+  /// - expert geo hierarchy (city → locality → neighborhood)
+  /// - map filtering/overlays
+  /// - outside-buyer `city_code` buckets (same city_code namespace)
+  final String? cityCode; // ex: 'us-nyc'
+  final String? localityCode; // ex: 'us-nyc-brooklyn' or 'us-nyc-brooklyn-greenpoint'
   final double? price; // Event price (if paid)
   final bool isPaid;
   final bool isPublic;
@@ -44,6 +52,8 @@ class ExpertiseEvent extends Equatable {
     this.location,
     this.latitude,
     this.longitude,
+    this.cityCode,
+    this.localityCode,
     this.price,
     this.isPaid = false,
     this.isPublic = true,
@@ -123,6 +133,8 @@ class ExpertiseEvent extends Equatable {
       'location': location,
       'latitude': latitude,
       'longitude': longitude,
+      'cityCode': cityCode,
+      'localityCode': localityCode,
       'price': price,
       'isPaid': isPaid,
       'isPublic': isPublic,
@@ -153,6 +165,8 @@ class ExpertiseEvent extends Equatable {
       location: json['location'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
+      cityCode: json['cityCode'] as String?,
+      localityCode: json['localityCode'] as String?,
       price: (json['price'] as num?)?.toDouble(),
       isPaid: json['isPaid'] as bool? ?? false,
       isPublic: json['isPublic'] as bool? ?? true,
@@ -182,6 +196,8 @@ class ExpertiseEvent extends Equatable {
     String? location,
     double? latitude,
     double? longitude,
+    String? cityCode,
+    String? localityCode,
     double? price,
     bool? isPaid,
     bool? isPublic,
@@ -205,6 +221,8 @@ class ExpertiseEvent extends Equatable {
       location: location ?? this.location,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      cityCode: cityCode ?? this.cityCode,
+      localityCode: localityCode ?? this.localityCode,
       price: price ?? this.price,
       isPaid: isPaid ?? this.isPaid,
       isPublic: isPublic ?? this.isPublic,
@@ -231,6 +249,8 @@ class ExpertiseEvent extends Equatable {
         location,
         latitude,
         longitude,
+        cityCode,
+        localityCode,
         price,
         isPaid,
         isPublic,

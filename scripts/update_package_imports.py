@@ -53,7 +53,9 @@ class ImportMigrator:
     def __init__(self, project_root: Path, dry_run: bool = True):
         self.project_root = project_root
         self.dry_run = dry_run
-        self.backup_dir = project_root / '.import_migration_backup'
+        # Keep backups out of the repo root "product surface".
+        # This directory is intended as a quarantine/review area (see repo hygiene plan).
+        self.backup_dir = project_root / 'review_before_deletion' / 'import_migration_backup'
         self.changes: Dict[Path, FileChanges] = {}
         
     def find_dart_files(self, directory: Path) -> List[Path]:
@@ -74,8 +76,8 @@ class ImportMigrator:
         if 'test' in str(file_path):
             return False
         
-        # Skip backup directory
-        if '.import_migration_backup' in str(file_path):
+        # Skip backup/quarantine directory
+        if 'review_before_deletion/import_migration_backup' in str(file_path):
             return False
             
         # Skip generated files

@@ -1,7 +1,7 @@
 {
-    "name": "spots",
+    "name": "AVRA",
     "version": "1.2.0",
-    "short_name": "spots",
+    "short_name": "AVRA",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

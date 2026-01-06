@@ -1,6 +1,9 @@
 import 'package:spots/core/models/visit.dart';
 import 'package:spots/core/models/automatic_check_in.dart';
+import 'package:spots/core/services/locality_agents/locality_agent_ingestion_service_v1.dart';
 import 'package:spots/core/services/logger.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:get_it/get_it.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -18,6 +21,8 @@ import 'dart:io';
 /// - Bluetooth ai2ai proximity verification (works offline)
 /// - Dwell time calculation (5+ minutes = valid visit)
 /// - Quality scoring (longer stay = higher quality)
+///
+/// **Patent #30 Integration:** Uses AtomicClockService for precise timing
 class AutomaticCheckInService {
   static const String _logName = 'AutomaticCheckInService';
   final AppLogger _logger = const AppLogger(
@@ -26,6 +31,36 @@ class AutomaticCheckInService {
   );
 
   static int _idCounter = 0;
+  
+  /// AtomicClockService for precise timing (Patent #30)
+  AtomicClockService? _atomicClock;
+  
+  /// Get AtomicClockService (lazy initialization)
+  AtomicClockService get atomicClock {
+    if (_atomicClock == null) {
+      try {
+        final sl = GetIt.instance;
+        if (sl.isRegistered<AtomicClockService>()) {
+          _atomicClock = sl<AtomicClockService>();
+        }
+      } catch (_) {}
+      _atomicClock ??= AtomicClockService();
+    }
+    return _atomicClock!;
+  }
+  
+  /// Get current atomic time (with fallback to DateTime.now())
+  Future<DateTime> _getAtomicNow() async {
+    try {
+      final timestamp = await atomicClock.getAtomicTimestamp();
+      // `AtomicTimestamp` exposes multiple time representations; for check-in
+      // semantics we want the canonical server-synchronized time when available.
+      return timestamp.serverTime;
+    } catch (_) {
+      // Graceful degradation: fallback to DateTime.now() if atomic clock fails
+      return DateTime.now();
+    }
+  }
 
   // #region agent log
   static const String _agentDebugLogPath = '/Users/reisgordon/SPOTS/.cursor/debug.log';
@@ -115,13 +150,16 @@ class AutomaticCheckInService {
         return _activeCheckIns[userId]!;
       }
 
+      // Patent #30: Use atomic time for precise timing
+      final now = await _getAtomicNow();
+      
       // Create geofence trigger
       final geofenceTrigger = GeofenceTrigger(
         locationId: locationId,
         latitude: latitude,
         longitude: longitude,
         accuracy: accuracy,
-        triggeredAt: DateTime.now(),
+        triggeredAt: now,
       );
 
       // Create visit
@@ -129,16 +167,16 @@ class AutomaticCheckInService {
         id: _generateVisitId(),
         userId: userId,
         locationId: locationId,
-        checkInTime: DateTime.now(),
+        checkInTime: now,
         isAutomatic: true,
         geofencingData: GeofencingData(
           latitude: latitude,
           longitude: longitude,
           accuracy: accuracy,
-          triggeredAt: DateTime.now(),
+          triggeredAt: now,
         ),
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: now,
+        updatedAt: now,
       );
 
       // #region agent log
@@ -150,15 +188,15 @@ class AutomaticCheckInService {
       );
       // #endregion
 
-      // Create automatic check-in
+      // Create automatic check-in (using atomic time)
       final checkIn = AutomaticCheckIn(
         id: _generateCheckInId(),
         visitId: visit.id,
         geofenceTrigger: geofenceTrigger,
-        checkInTime: DateTime.now(),
+        checkInTime: now,
         visitCreated: true,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: now,
+        updatedAt: now,
       );
 
       // Save check-in and visit
@@ -230,11 +268,14 @@ class AutomaticCheckInService {
         return _activeCheckIns[userId]!;
       }
 
+      // Patent #30: Use atomic time for precise timing
+      final now = await _getAtomicNow();
+
       // Create Bluetooth trigger
       final bluetoothTrigger = BluetoothTrigger(
         deviceId: deviceId,
         rssi: rssi,
-        detectedAt: DateTime.now(),
+        detectedAt: now,
         ai2aiConnected: ai2aiConnected,
         personalityExchanged: personalityExchanged,
         locationId: locationId,
@@ -247,30 +288,30 @@ class AutomaticCheckInService {
           id: _generateVisitId(),
           userId: userId,
           locationId: locationId,
-          checkInTime: DateTime.now(),
+          checkInTime: now,
           isAutomatic: true,
           bluetoothData: BluetoothData(
             deviceId: deviceId,
             rssi: rssi,
-            detectedAt: DateTime.now(),
+            detectedAt: now,
             ai2aiConnected: ai2aiConnected,
             personalityExchanged: personalityExchanged,
           ),
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+          createdAt: now,
+          updatedAt: now,
         );
         await _saveVisit(visit);
       }
 
-      // Create automatic check-in
+      // Create automatic check-in (using atomic time)
       final checkIn = AutomaticCheckIn(
         id: _generateCheckInId(),
         visitId: visit?.id ?? 'pending',
         bluetoothTrigger: bluetoothTrigger,
-        checkInTime: DateTime.now(),
+        checkInTime: now,
         visitCreated: visit != null,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: now,
+        updatedAt: now,
       );
 
       // Save check-in
@@ -315,7 +356,8 @@ class AutomaticCheckInService {
         throw Exception('No active check-in found for user: $userId');
       }
 
-      final checkout = checkOutTime ?? DateTime.now();
+      // Patent #30: Use atomic time for precise timing
+      final checkout = checkOutTime ?? await _getAtomicNow();
 
       // Calculate dwell time
       final dwellTime = checkout.difference(activeCheckIn.checkInTime);
@@ -326,6 +368,23 @@ class AutomaticCheckInService {
         // Update visit
         final updatedVisit = visit.checkOut(checkOutTime: checkout);
         await _saveVisit(updatedVisit);
+
+        // Best-effort: update locality agents on completed visit.
+        // This should never block checkout.
+        try {
+          final ingestion = LocalityAgentIngestionServiceV1.tryGetFromDI();
+          if (ingestion != null) {
+            final source = switch (activeCheckIn.triggerType) {
+              CheckInTriggerType.geofence => 'geofence',
+              CheckInTriggerType.bluetooth => 'bluetooth',
+              CheckInTriggerType.unknown => 'unknown',
+            };
+            // ignore: unawaited_futures
+            ingestion.ingestVisit(userId: userId, visit: updatedVisit, source: source);
+          }
+        } catch (e) {
+          _logger.warning('Locality agent ingestion skipped: $e', tag: _logName);
+        }
 
         // Update check-in (this calculates quality score internally)
         final updatedCheckIn = activeCheckIn.checkOut(checkOutTime: checkout);

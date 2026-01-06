@@ -3,7 +3,8 @@ import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/user_anonymization_service.dart';
 import 'package:spots/core/services/field_encryption_service.dart';
 import 'package:spots/core/services/location_obfuscation_service.dart';
-import 'helpers/platform_channel_helper.dart';
+import '../helpers/platform_channel_helper.dart';
+import '../mocks/in_memory_flutter_secure_storage.dart';
 
 /// CCPA Compliance Tests
 /// 
@@ -25,7 +26,9 @@ void main() {
     late LocationObfuscationService locationService;
 
     setUp(() async {
-      encryptionService = FieldEncryptionService();
+      // Use in-memory secure storage to avoid platform channel dependencies in tests.
+      encryptionService =
+          FieldEncryptionService(storage: InMemoryFlutterSecureStorage());
       locationService = LocationObfuscationService();
       anonymizationService = UserAnonymizationService(
         locationObfuscationService: locationService,
@@ -45,9 +48,9 @@ void main() {
         await encryptionService.deleteKey('email', userId);
 
         // Verify data is deleted (cannot decrypt)
-        expect(
-          () => encryptionService.decryptField('email', encryptedEmail, userId),
-          throwsException,
+        await expectLater(
+          encryptionService.decryptField('email', encryptedEmail, userId),
+          throwsA(isA<Exception>()),
         );
       });
 
@@ -200,9 +203,9 @@ void main() {
         expect(decrypted2, equals(email));
 
         // User 1 should NOT decrypt User 2's data
-        expect(
-          () => encryptionService.decryptField('email', encrypted2, userId1),
-          throwsException,
+        await expectLater(
+          encryptionService.decryptField('email', encrypted2, userId1),
+          throwsA(isA<Exception>()),
         );
       });
 
@@ -237,9 +240,9 @@ void main() {
         final encrypted = await encryptionService.encryptField('email', email, userId);
 
         // Attempt unauthorized access (should fail)
-        expect(
-          () => encryptionService.decryptField('email', encrypted, unauthorizedUserId),
-          throwsException,
+        await expectLater(
+          encryptionService.decryptField('email', encrypted, unauthorizedUserId),
+          throwsA(isA<Exception>()),
         );
       });
     });
@@ -268,9 +271,9 @@ void main() {
         await encryptionService.deleteKey('email', userId);
 
         // Verify data is deleted
-        expect(
-          () => encryptionService.decryptField('email', encrypted, userId),
-          throwsException,
+        await expectLater(
+          encryptionService.decryptField('email', encrypted, userId),
+          throwsA(isA<Exception>()),
         );
       });
 
@@ -369,9 +372,9 @@ void main() {
         // Test 1: Data deletion
         final encrypted = await encryptionService.encryptField('email', unifiedUser.email, unifiedUser.id);
         await encryptionService.deleteKey('email', unifiedUser.id);
-        expect(
-          () => encryptionService.decryptField('email', encrypted, unifiedUser.id),
-          throwsException,
+        await expectLater(
+          encryptionService.decryptField('email', encrypted, unifiedUser.id),
+          throwsA(isA<Exception>()),
         );
 
         // Test 2: Opt-out mechanisms

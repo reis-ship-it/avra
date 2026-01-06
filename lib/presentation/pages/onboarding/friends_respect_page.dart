@@ -1,15 +1,23 @@
+import 'dart:async';
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:spots/core/models/onboarding_suggestion_event.dart';
+import 'package:spots/core/services/onboarding_suggestion_event_store.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 
 class FriendsRespectPage extends StatefulWidget {
   final List<String> respectedLists;
   final Function(List<String>) onRespectedListsChanged;
+  final String? userId;
 
   const FriendsRespectPage({
     super.key,
     required this.respectedLists,
     required this.onRespectedListsChanged,
+    this.userId,
   });
 
   @override
@@ -17,8 +25,11 @@ class FriendsRespectPage extends StatefulWidget {
 }
 
 class _FriendsRespectPageState extends State<FriendsRespectPage> {
+  static const String _logName = 'FriendsRespectPage';
+
   List<String> _selectedLists = [];
   final Map<String, int> _respectCounts = {};
+  late final OnboardingSuggestionEventStore _eventStore;
 
   // Enhanced mock data with user profiles
   final List<Map<String, dynamic>> _localPublicLists = [
@@ -169,9 +180,91 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
     super.initState();
     _selectedLists = List.from(widget.respectedLists);
 
+    _eventStore = GetIt.instance.isRegistered<OnboardingSuggestionEventStore>()
+        ? GetIt.instance<OnboardingSuggestionEventStore>()
+        : OnboardingSuggestionEventStore();
+
     // Initialize respect counts from the mock data
     for (var list in _localPublicLists) {
       _respectCounts[list['name'] as String] = list['respects'] as int;
+    }
+
+    // Best-effort: log the suggestions shown on this onboarding surface.
+    unawaited(_logSuggestionsShown());
+  }
+
+  Future<void> _logSuggestionsShown() async {
+    final userId = widget.userId;
+    if (userId == null || userId.isEmpty) return;
+    try {
+      final items = _localPublicLists
+          .map((l) => l['name'] as String)
+          .take(20)
+          .map((name) => OnboardingSuggestionItem(id: name, label: name))
+          .toList();
+
+      await _eventStore.appendForUser(
+        userId: userId,
+        event: OnboardingSuggestionEvent(
+          eventId: OnboardingSuggestionEvent.newEventId(),
+          createdAtMs: DateTime.now().millisecondsSinceEpoch,
+          surface: 'friends_respect',
+          provenance: OnboardingSuggestionProvenance.heuristic,
+          promptCategory: 'friends_respect_local_public_lists',
+          suggestions: items,
+          userAction: const OnboardingSuggestionUserAction(
+            type: OnboardingSuggestionActionType.shown,
+          ),
+        ),
+      );
+    } catch (e, st) {
+      developer.log(
+        'Failed to log suggestions shown: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  Future<void> _logSuggestionAction({
+    required OnboardingSuggestionActionType type,
+    required String promptCategory,
+    String? itemLabel,
+  }) async {
+    final userId = widget.userId;
+    if (userId == null || userId.isEmpty) return;
+    try {
+      final items = _localPublicLists
+          .map((l) => l['name'] as String)
+          .take(20)
+          .map((name) => OnboardingSuggestionItem(id: name, label: name))
+          .toList();
+
+      await _eventStore.appendForUser(
+        userId: userId,
+        event: OnboardingSuggestionEvent(
+          eventId: OnboardingSuggestionEvent.newEventId(),
+          createdAtMs: DateTime.now().millisecondsSinceEpoch,
+          surface: 'friends_respect',
+          provenance: OnboardingSuggestionProvenance.heuristic,
+          promptCategory: promptCategory,
+          suggestions: items,
+          userAction: OnboardingSuggestionUserAction(
+            type: type,
+            item: itemLabel == null
+                ? null
+                : OnboardingSuggestionItem(id: itemLabel, label: itemLabel),
+          ),
+        ),
+      );
+    } catch (e, st) {
+      developer.log(
+        'Failed to log suggestion action: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -226,6 +319,10 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                             _selectedLists.clear();
                           });
                           widget.onRespectedListsChanged(_selectedLists);
+                          unawaited(_logSuggestionAction(
+                            type: OnboardingSuggestionActionType.deselect,
+                            promptCategory: 'friends_respect_clear_all',
+                          ));
                         },
                         child: const Text('Clear All'),
                       ),
@@ -312,6 +409,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                   // Respect button
                                   GestureDetector(
                                     onTap: () {
+                                      final selecting = !isSelected;
                                       setState(() {
                                         if (isSelected) {
                                           _selectedLists.remove(listName);
@@ -321,6 +419,14 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                       });
                                       widget.onRespectedListsChanged(
                                           _selectedLists);
+                                      unawaited(_logSuggestionAction(
+                                        type: selecting
+                                            ? OnboardingSuggestionActionType.select
+                                            : OnboardingSuggestionActionType.deselect,
+                                        promptCategory:
+                                            'friends_respect_local_public_lists',
+                                        itemLabel: listName,
+                                      ));
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
@@ -368,7 +474,6 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
 
   Widget _buildUserProfileInfo(Map<String, dynamic> list) {
     final userProfile = list['userProfile'] as Map<String, dynamic>;
-    final creatorName = list['creator'] as String;
     final expertise = userProfile['expertise'] as String;
     final locations = userProfile['locations'] as List<String>;
     final hostedEventsCount = userProfile['hostedEventsCount'] as int;

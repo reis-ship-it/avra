@@ -1,6 +1,8 @@
 // Federated Sync Edge Function for Phase 11: User-AI Interaction Update
 // Section 7: Federated Learning Hooks
-// Syncs federated updates to edge functions - aggregates deltas from multiple agents
+// Hybrid federated learning sync:
+// - Pattern 1 (offline): AI2AI BLE gossip exchanges deltas directly
+// - Pattern 2 (online): devices upload privacy-bounded deltas for cloud aggregation
 
 import { serve } from 'https://deno.land/std@0.224.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -17,14 +19,23 @@ serve(async (req) => {
   }
 
   try {
-    const body = await req.json()
-    const { agentId, deltas } = body
+    const authHeader = req.headers.get('authorization') ?? req.headers.get('Authorization') ?? ''
+    const jwt = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : authHeader
+    if (!jwt) {
+      return new Response(JSON.stringify({ error: 'Authorization required' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
 
-    if (!agentId) {
-      return new Response(
-        JSON.stringify({ error: 'agentId is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+    const body = await req.json()
+    const { schema_version, source, deltas } = body
+
+    if (schema_version !== 1) {
+      return new Response(JSON.stringify({ error: 'Unsupported schema_version' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     if (!deltas || !Array.isArray(deltas) || deltas.length === 0) {
@@ -40,29 +51,97 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    // Aggregate deltas by category
-    const aggregatedDeltas = aggregateDeltasByCategory(deltas)
+    // Authenticate caller (required even though we write using service role).
+    const { data: userData, error: userErr } = await supabase.auth.getUser(jwt)
+    if (userErr || !userData?.user?.id) {
+      return new Response(JSON.stringify({ error: 'Invalid auth token' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+    const userId = userData.user.id
 
-    // Store aggregated deltas for cloud model updates
-    // TODO: Create federated_deltas table for storing aggregated deltas
-    // For now, we'll log the aggregation
-    console.log(`Aggregated ${deltas.length} deltas from agent ${agentId.substring(0, 10)}...`)
-    console.log(`Categories: ${Object.keys(aggregatedDeltas).join(', ')}`)
+    // Validate and clamp input deltas (privacy + abuse resistance).
+    const maxPerRequest = 50
+    const sanitized = []
+    for (const d of deltas.slice(0, maxPerRequest)) {
+      if (!d || typeof d !== 'object') continue
+      const category = typeof d.category === 'string' && d.category.length > 0 ? d.category : 'general'
+      const ts = typeof d.timestamp === 'string' ? d.timestamp : new Date().toISOString()
+      const vec = Array.isArray(d.delta) ? d.delta : null
+      if (!vec || vec.length === 0 || vec.length > 64) continue
+      const clamped = vec.map((x: any) => {
+        const n = typeof x === 'number' ? x : 0
+        // Match client-side caps; keep it bounded.
+        return Math.max(-0.35, Math.min(0.35, n))
+      })
+      sanitized.push({
+        user_id: userId,
+        category,
+        delta: clamped,
+        created_at: ts,
+        source: typeof source === 'string' ? source : 'unknown',
+        metadata: d.metadata && typeof d.metadata === 'object' ? d.metadata : {},
+      })
+    }
 
-    // Calculate average deltas per category
+    if (sanitized.length === 0) {
+      return new Response(JSON.stringify({ error: 'No valid deltas provided' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Insert rows.
+    const { error: insertErr } = await supabase
+      .from('federated_embedding_deltas_v1')
+      .insert(sanitized)
+    if (insertErr) {
+      return new Response(JSON.stringify({ error: 'Insert failed' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Aggregate recent rows for a lightweight "global average" response.
+    // This is intentionally simple (v1): it gives clients a network prior without
+    // exposing user-level data.
+    const windowHours = 24
+    const cutoff = new Date(Date.now() - windowHours * 60 * 60 * 1000).toISOString()
+    const { data: rows, error: readErr } = await supabase
+      .from('federated_embedding_deltas_v1')
+      .select('category,delta')
+      .gte('created_at', cutoff)
+      .limit(1000)
+
+    if (readErr || !rows) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          inserted: sanitized.length,
+          window_hours: windowHours,
+          global_average_deltas: {},
+          sample_counts: {},
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const aggregatedDeltas = aggregateDeltasByCategory(rows as any[])
     const averageDeltas = calculateAverageDeltas(aggregatedDeltas)
-
-    // TODO: Update cloud models with aggregated deltas
-    // This would update the global model weights based on federated learning
-    // For now, we just return the aggregated results
+    const sampleCounts: Record<string, number> = {}
+    for (const [category, ds] of Object.entries(aggregatedDeltas)) {
+      sampleCounts[category] = ds.length
+    }
 
     return new Response(
       JSON.stringify({
         success: true,
-        agentId: agentId.substring(0, 10) + '...', // Truncate for privacy
-        deltaCount: deltas.length,
-        categories: Object.keys(aggregatedDeltas),
-        averageDeltas: averageDeltas,
+        inserted: sanitized.length,
+        window_hours: windowHours,
+        categories: Object.keys(averageDeltas),
+        global_average_deltas: averageDeltas,
+        sample_counts: sampleCounts,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

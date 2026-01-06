@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:spots/core/models/decoherence_pattern.dart';
 import 'package:spots/core/services/decoherence_tracking_service.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/domain/repositories/decoherence_pattern_repository.dart';
 
 void main() {

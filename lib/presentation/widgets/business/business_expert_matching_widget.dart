@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:spots/core/models/business_account.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/business_expert_matching_service.dart';
+import 'package:spots/core/services/vibe_compatibility_service.dart';
 import 'package:spots/core/theme/colors.dart';
+import 'package:spots/injection_container.dart' as di;
 
 /// Business Expert Matching Widget
 /// Displays expert matches for a business account
@@ -61,7 +63,18 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
   }
 
   Future<List<BusinessExpertMatch>> _getMatches() async {
-    final service = BusinessExpertMatchingService();
+    // Ensure the Future completes asynchronously so the loading state renders
+    // for at least one frame (helps avoid "instant jump" in UI and keeps widget
+    // tests deterministic).
+    await Future<void>.delayed(Duration.zero);
+    final vibeCompatibilityService =
+        di.sl.isRegistered<VibeCompatibilityService>()
+            ? di.sl<VibeCompatibilityService>()
+            : null;
+
+    final service = BusinessExpertMatchingService(
+      vibeCompatibilityService: vibeCompatibilityService,
+    );
     return await service.findExpertsForBusiness(business);
   }
 

@@ -59,7 +59,9 @@ class PartnershipCheckoutController
     implements WorkflowController<PartnershipCheckoutInput, PartnershipCheckoutResult> {
   static const String _logName = 'PartnershipCheckoutController';
 
-  final PaymentProcessingController _paymentController;
+  // Payment processing is only needed when checkout is submitted.
+  // Keep optional so UI/tests can render without full payment DI wiring.
+  final PaymentProcessingController? _paymentController;
   final RevenueSplitService _revenueSplitService;
   final PartnershipService _partnershipService;
   final ExpertiseEventService _eventService;
@@ -71,8 +73,7 @@ class PartnershipCheckoutController
     PartnershipService? partnershipService,
     ExpertiseEventService? eventService,
     SalesTaxService? salesTaxService,
-  })  : _paymentController =
-            paymentController ?? GetIt.instance<PaymentProcessingController>(),
+  })  : _paymentController = paymentController,
         _revenueSplitService =
             revenueSplitService ?? GetIt.instance<RevenueSplitService>(),
         _partnershipService =
@@ -81,6 +82,10 @@ class PartnershipCheckoutController
             eventService ?? GetIt.instance<ExpertiseEventService>(),
         _salesTaxService =
             salesTaxService ?? GetIt.instance<SalesTaxService>();
+
+  PaymentProcessingController _resolvePaymentController() {
+    return _paymentController ?? GetIt.instance<PaymentProcessingController>();
+  }
 
   /// Process partnership checkout
   /// 
@@ -236,7 +241,7 @@ class PartnershipCheckoutController
       // Step 6: Process payment via PaymentProcessingController
       // Note: PaymentProcessingController and PaymentService handle partnership revenue splits
       // automatically when processing payments for partnership events
-      final paymentResult = await _paymentController.processEventPayment(
+      final paymentResult = await _resolvePaymentController().processEventPayment(
         event: updatedEvent,
         buyer: buyer,
         quantity: quantity,

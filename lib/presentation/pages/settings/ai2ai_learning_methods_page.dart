@@ -10,9 +10,9 @@ import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/injection_container.dart' as di;
 
 /// AI2AI Learning Methods Page
-/// 
+///
 /// Phase 7, Week 38: AI2AI Learning Methods UI - Integration & Polish
-/// 
+///
 /// Combines all 4 AI2AI learning widgets into a single comprehensive page:
 /// 1. Learning Methods Overview (active methods, status, effectiveness)
 /// 2. Learning Effectiveness Metrics (metrics, insights count, acquisition rate)
@@ -22,7 +22,8 @@ class AI2AILearningMethodsPage extends StatefulWidget {
   const AI2AILearningMethodsPage({super.key});
 
   @override
-  State<AI2AILearningMethodsPage> createState() => _AI2AILearningMethodsPageState();
+  State<AI2AILearningMethodsPage> createState() =>
+      _AI2AILearningMethodsPageState();
 }
 
 class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
@@ -139,12 +140,13 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
           }
 
           return ListView(
+            key: const Key('ai2ai_learning_methods_page_list'),
             padding: const EdgeInsets.all(16),
             children: [
               // Header
               _buildHeader(context),
               const SizedBox(height: 24),
-              
+
               // Section 1: Learning Methods Overview
               _buildSectionHeader(context, 'Learning Methods Overview'),
               const SizedBox(height: 8),
@@ -161,7 +163,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
                 learningService: _learningService!,
               ),
               const SizedBox(height: 32),
-              
+
               // Section 2: Learning Effectiveness
               _buildSectionHeader(context, 'Learning Effectiveness Metrics'),
               const SizedBox(height: 8),
@@ -178,7 +180,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
                 learningService: _learningService!,
               ),
               const SizedBox(height: 32),
-              
+
               // Section 3: Learning Insights
               _buildSectionHeader(context, 'Active Learning Insights'),
               const SizedBox(height: 8),
@@ -195,7 +197,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
                 learningService: _learningService!,
               ),
               const SizedBox(height: 32),
-              
+
               // Section 4: Learning Recommendations
               _buildSectionHeader(context, 'Learning Recommendations'),
               const SizedBox(height: 8),
@@ -212,7 +214,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
                 learningService: _learningService!,
               ),
               const SizedBox(height: 24),
-              
+
               // Footer
               _buildFooter(context),
             ],
@@ -221,7 +223,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
       ),
     );
   }
-  
+
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -271,7 +273,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
       ),
     );
   }
-  
+
   Widget _buildSectionHeader(BuildContext context, String title) {
     return Text(
       title,
@@ -282,7 +284,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
       ),
     );
   }
-  
+
   Widget _buildFooter(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),

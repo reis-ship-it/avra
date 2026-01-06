@@ -58,7 +58,7 @@ All 3 low-complexity AI services have been successfully moved from `lib/core/ser
   - ai2ai_realtime_service: 4 production + 1 test = 5 files
   - locality_personality_service: 0 production + 2 test = 2 files
 - ✅ No old import paths remain in main codebase or tests (verified with grep)
-- ✅ Old imports only exist in `.import_migration_backup/` (backup files - expected)
+- ✅ Old imports only exist in `review_before_deletion/import_migration_backup/` (backup files - expected)
 
 ### **Compilation:**
 - ✅ Package exports properly configured

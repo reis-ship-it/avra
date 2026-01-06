@@ -4,7 +4,7 @@ import 'package:spots/core/services/storage_service.dart' show SharedPreferences
 import 'package:spots/core/ai/ai2ai_learning.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:spots_core/services/logger.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/injection_container.dart' as di;
 

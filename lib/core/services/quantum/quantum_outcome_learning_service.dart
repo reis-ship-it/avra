@@ -12,7 +12,7 @@ import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/event_success_metrics.dart';
 import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/services/event_success_analysis_service.dart';
-import 'package:spots_quantum/services/quantum/meaningful_connection_metrics_service.dart';
+import 'package:spots/core/services/quantum/meaningful_connection_metrics_service.dart';
 import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
 import 'package:spots_quantum/services/quantum/location_timing_quantum_state_service.dart';
 
@@ -162,7 +162,7 @@ class QuantumOutcomeLearningService {
 
   final AtomicClockService _atomicClock;
   final EventSuccessAnalysisService _successAnalysisService;
-  // TODO(Phase 19.9): _meaningfulMetricsService will be used when UnifiedUser fetching is available
+  // TODO(Phase 19.9): _meaningfulMetricsService will be used when User fetching is available
   // ignore: unused_field
   final MeaningfulConnectionMetricsService? _meaningfulMetricsService;
   // TODO(Phase 19.9): _entanglementService and _locationTimingService may be needed for future enhancements
@@ -318,10 +318,10 @@ class QuantumOutcomeLearningService {
     }
 
       // 6. Meaningful connection score (from Section 19.7)
-      // TODO(Phase 19.9): Integrate meaningful connection metrics when UnifiedUser fetching is available
+      // TODO(Phase 19.9): Integrate meaningful connection metrics when User fetching is available
       // For now, use default neutral score
       // In production, would:
-      // 1. Fetch UnifiedUser objects from attendee IDs
+      // 1. Fetch User objects from attendee IDs
       // 2. Call _meaningfulMetricsService!.calculateMetrics(event: event, attendees: unifiedUsers)
       // 3. Combine metrics into meaningfulConnectionScore
       const meaningfulConnectionScore = 0.5; // Default to neutral until integration complete

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spots/core/models/business_expert_preferences.dart';
 import 'package:spots/presentation/widgets/business/business_expert_preferences_widget.dart';
-import "../../helpers/widget_test_helpers.dart';
+import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for BusinessExpertPreferencesWidget
 /// Tests business expert preferences form
@@ -24,7 +25,7 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.byType(BusinessExpertPreferencesWidget), findsOneWidget);
 
-      final initialPreferences = BusinessExpertPreferences.empty();
+      const initialPreferences = BusinessExpertPreferences();
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: BusinessExpertPreferencesWidget(
           initialPreferences: initialPreferences,

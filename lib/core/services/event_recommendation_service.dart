@@ -5,9 +5,17 @@ import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/event_matching_service.dart';
 import 'package:spots/core/services/user_preference_learning_service.dart';
 import 'package:spots/core/services/cross_locality_connection_service.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/controllers/base/workflow_controller.dart';
+import 'package:spots/core/controllers/quantum_matching_controller.dart';
+import 'package:spots/core/models/matching_input.dart';
 import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
+import 'package:spots_knot/models/personality_knot.dart';
+import 'package:spots_knot/services/knot/knot_fabric_service.dart';
+import 'package:spots_knot/services/knot/knot_storage_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/logger.dart';
+import 'package:spots/core/services/vibe_compatibility_service.dart';
 
 /// Event Recommendation Service
 ///
@@ -42,6 +50,12 @@ class EventRecommendationService {
   final CrossLocalityConnectionService _crossLocalityService;
   final IntegratedKnotRecommendationEngine? _knotRecommendationEngine;
   final PersonalityLearning? _personalityLearning;
+  final VibeCompatibilityService? _vibeCompatibilityService;
+  final AgentIdService? _agentIdService;
+  final KnotFabricService? _knotFabricService;
+  final KnotStorageService? _knotStorageService;
+  final WorkflowController<MatchingInput, QuantumMatchingResult>?
+      _quantumMatchingController;
 
   EventRecommendationService({
     ExpertiseEventService? eventService,
@@ -50,6 +64,12 @@ class EventRecommendationService {
     CrossLocalityConnectionService? crossLocalityService,
     IntegratedKnotRecommendationEngine? knotRecommendationEngine,
     PersonalityLearning? personalityLearning,
+    VibeCompatibilityService? vibeCompatibilityService,
+    AgentIdService? agentIdService,
+    KnotFabricService? knotFabricService,
+    KnotStorageService? knotStorageService,
+    WorkflowController<MatchingInput, QuantumMatchingResult>?
+        quantumMatchingController,
   })  : _eventService = eventService ?? ExpertiseEventService(),
         _matchingService = matchingService ?? EventMatchingService(),
         _preferenceService =
@@ -57,7 +77,56 @@ class EventRecommendationService {
         _crossLocalityService =
             crossLocalityService ?? CrossLocalityConnectionService(),
         _knotRecommendationEngine = knotRecommendationEngine,
-        _personalityLearning = personalityLearning;
+        _personalityLearning = personalityLearning,
+        _vibeCompatibilityService = vibeCompatibilityService,
+        _agentIdService = agentIdService,
+        _knotFabricService = knotFabricService,
+        _knotStorageService = knotStorageService,
+        _quantumMatchingController = quantumMatchingController;
+
+  /// Phase 19 vertical slice: compute an entanglement-based compatibility score for a user↔event pair.
+  ///
+  /// This is a **best-effort** signal used to enrich recommendation compatibility without requiring
+  /// BLE transport or hardware. If the quantum matching stack is not wired, this returns null.
+  Future<double?> calculateQuantumEntanglementScoreForEvent({
+    required UnifiedUser user,
+    required ExpertiseEvent event,
+  }) async {
+    final controller = _quantumMatchingController;
+    if (controller == null) return null;
+
+    try {
+      final res =
+          await controller.execute(MatchingInput(user: user, event: event));
+      final match = res.matchingResult;
+      if (!res.success || match == null) return null;
+      return match.compatibility.clamp(0.0, 1.0);
+    } catch (e) {
+      _logger.warn(
+        'Quantum entanglement score failed: $e (skipping)',
+        tag: _logName,
+      );
+      return null;
+    }
+  }
+
+  /// Public wrapper for recommendation-time compatibility so tests can validate integration.
+  ///
+  /// Internally this delegates to the same logic used in `_calculateRelevanceScore()`.
+  Future<double> calculateKnotCompatibilityForRecommendation({
+    required ExpertiseEvent event,
+    required UnifiedUser user,
+  }) async {
+    return _calculateKnotCompatibilityScore(event: event, user: user);
+  }
+
+  double _blendCompatibility({
+    required double base,
+    required double entanglement,
+  }) {
+    // Small, stable enrichment: keep existing compatibility primary, add multi-entity entanglement as a secondary factor.
+    return ((0.7 * base) + (0.3 * entanglement)).clamp(0.0, 1.0);
+  }
 
   /// Get personalized event recommendations
   ///
@@ -243,7 +312,7 @@ class EventRecommendationService {
   /// - Matching score (from EventMatchingService): 35%
   /// - Preference match: 35%
   /// - Cross-locality boost: 15%
-  /// - Knot compatibility (integrated quantum + topological): 15% (optional enhancement)
+  /// - Knot compatibility (quantum + topology + weave): 15% (optional enhancement)
   Future<double> _calculateRelevanceScore({
     required ExpertiseEvent event,
     required UnifiedUser user,
@@ -288,17 +357,106 @@ class EventRecommendationService {
 
   /// Calculate knot compatibility score for event recommendation
   ///
-  /// Uses IntegratedKnotRecommendationEngine to calculate compatibility
-  /// between user and event host personalities.
+  /// Preferred: uses the **truthful** VibeCompatibilityService to incorporate
+  /// user↔event knot topology + weave (in addition to quantum).
+  ///
+  /// Fallback: uses IntegratedKnotRecommendationEngine (user↔host only).
   ///
   /// **Returns:** Compatibility score (0.0 to 1.0), or 0.5 (neutral) if unavailable
   Future<double> _calculateKnotCompatibilityScore({
     required ExpertiseEvent event,
     required UnifiedUser user,
   }) async {
+    final entanglementScore = await calculateQuantumEntanglementScoreForEvent(
+      user: user,
+      event: event,
+    );
+
+    // Best-available "true compatibility": does the user's knot improve / fit
+    // into the event's current weave (host + current attendees)?
+    final weaveFit = await _calculateUserEventWeaveFit(
+      event: event,
+      user: user,
+    );
+    if (weaveFit != null && _vibeCompatibilityService != null) {
+      try {
+        final vibe = await _vibeCompatibilityService!.calculateUserEventVibe(
+          userId: user.id,
+          event: event,
+        );
+
+        // Patent-aligned integrated score, but with **fabric-based weave fit**
+        // instead of pairwise knot weave similarity.
+        final integrated = (0.5 * vibe.quantum) +
+            (0.3 * vibe.knotTopological) +
+            (0.2 * weaveFit);
+
+        _logger.debug(
+          'User↔Event true compatibility: event=${event.id} user=${user.id} '
+          'combined=${(integrated * 100).toStringAsFixed(1)}% '
+          '(quantum=${(vibe.quantum * 100).toStringAsFixed(1)}%, '
+          'topo=${(vibe.knotTopological * 100).toStringAsFixed(1)}%, '
+          'weaveFit=${(weaveFit * 100).toStringAsFixed(1)}%)',
+          tag: _logName,
+        );
+
+        final base = integrated.clamp(0.0, 1.0);
+        return entanglementScore == null
+            ? base
+            : _blendCompatibility(base: base, entanglement: entanglementScore);
+      } catch (e) {
+        _logger.warn(
+          'Error combining weave fit with vibe: $e (using weave fit only)',
+          tag: _logName,
+        );
+        final base = weaveFit.clamp(0.0, 1.0);
+        return entanglementScore == null
+            ? base
+            : _blendCompatibility(base: base, entanglement: entanglementScore);
+      }
+    }
+
+    if (weaveFit != null) {
+      final base = weaveFit.clamp(0.0, 1.0);
+      return entanglementScore == null
+          ? base
+          : _blendCompatibility(base: base, entanglement: entanglementScore);
+    }
+
+    // Preferred path: user knot inserted into event knot weave (best-effort).
+    if (_vibeCompatibilityService != null) {
+      try {
+        final vibe = await _vibeCompatibilityService!.calculateUserEventVibe(
+          userId: user.id,
+          event: event,
+        );
+
+        _logger.debug(
+          'User↔Event vibe for event ${event.id}: ${(vibe.combined * 100).toStringAsFixed(1)}% '
+          '(quantum: ${(vibe.quantum * 100).toStringAsFixed(1)}%, '
+          'topo: ${(vibe.knotTopological * 100).toStringAsFixed(1)}%, '
+          'weave: ${(vibe.knotWeave * 100).toStringAsFixed(1)}%)',
+          tag: _logName,
+        );
+
+        final base = vibe.combined.clamp(0.0, 1.0);
+        return entanglementScore == null
+            ? base
+            : _blendCompatibility(base: base, entanglement: entanglementScore);
+      } catch (e) {
+        _logger.warn(
+          'Error calculating user↔event vibe: $e, falling back',
+          tag: _logName,
+        );
+      }
+    }
+
     // If knot services not available, return neutral score
     if (_knotRecommendationEngine == null || _personalityLearning == null) {
-      return 0.5;
+      const base = 0.5;
+      return entanglementScore == null
+          ? base
+          : _blendCompatibility(base: base, entanglement: entanglementScore);
     }
 
     try {
@@ -322,14 +480,20 @@ class EventRecommendationService {
         tag: _logName,
       );
 
-      return compatibility.combined;
+      final base = compatibility.combined.clamp(0.0, 1.0);
+      return entanglementScore == null
+          ? base
+          : _blendCompatibility(base: base, entanglement: entanglementScore);
     } catch (e) {
       _logger.warn(
         'Error calculating knot compatibility: $e, using neutral score',
         tag: _logName,
       );
       // Return neutral score on error (don't break recommendations)
-      return 0.5;
+      const base = 0.5;
+      return entanglementScore == null
+          ? base
+          : _blendCompatibility(base: base, entanglement: entanglementScore);
     }
   }
 
@@ -490,6 +654,78 @@ class EventRecommendationService {
   String? _extractLocality(String? location) {
     if (location == null || location.isEmpty) return null;
     return location.split(',').first.trim();
+  }
+
+  Future<double?> _calculateUserEventWeaveFit({
+    required ExpertiseEvent event,
+    required UnifiedUser user,
+  }) async {
+    if (_agentIdService == null ||
+        _knotFabricService == null ||
+        _knotStorageService == null) {
+      return null;
+    }
+
+    try {
+      final userAgentId = await _agentIdService!.getUserAgentId(user.id);
+      final userKnot = await _knotStorageService!.loadKnot(userAgentId);
+      if (userKnot == null) return null;
+
+      // Baseline: host + current attendees (excluding the user if already present).
+      final baselineUserIds = <String>{
+        event.host.id,
+        ...event.attendeeIds.take(10),
+      }.where((id) => id != user.id).toList();
+
+      if (baselineUserIds.isEmpty) return null;
+
+      final baselineKnots = <PersonalityKnot>[];
+      for (final id in baselineUserIds) {
+        try {
+          final agentId = await _agentIdService!.getUserAgentId(id);
+          final knot = await _knotStorageService!.loadKnot(agentId);
+          if (knot != null) baselineKnots.add(knot);
+        } catch (_) {
+          // Skip users without knots.
+        }
+      }
+
+      if (baselineKnots.isEmpty) return null;
+
+      final baselineFabric =
+          await _knotFabricService!.generateMultiStrandBraidFabric(
+        userKnots: baselineKnots,
+      );
+      final baselineStability =
+          await _knotFabricService!.measureFabricStability(baselineFabric);
+
+      final withUserFabric =
+          await _knotFabricService!.generateMultiStrandBraidFabric(
+        userKnots: [userKnot, ...baselineKnots],
+      );
+      final withUserStability =
+          await _knotFabricService!.measureFabricStability(withUserFabric);
+
+      final stabilityDrop =
+          (baselineStability - withUserStability).clamp(0.0, 1.0);
+      final fit = (withUserStability * (1.0 - stabilityDrop)).clamp(0.0, 1.0);
+
+      _logger.debug(
+        'Event weave fit: event=${event.id} user=${user.id} '
+        'baseline=${baselineStability.toStringAsFixed(3)} '
+        'withUser=${withUserStability.toStringAsFixed(3)} '
+        'fit=${fit.toStringAsFixed(3)}',
+        tag: _logName,
+      );
+
+      return fit;
+    } catch (e) {
+      _logger.warn(
+        'Error calculating event weave fit: $e',
+        tag: _logName,
+      );
+      return null;
+    }
   }
 }
 

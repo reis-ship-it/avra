@@ -3,14 +3,15 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:spots/core/models/brand_account.dart' as _i6;
-import 'package:spots/core/models/revenue_split.dart' as _i3;
+import 'package:spots/core/models/brand_account.dart' as _i7;
+import 'package:spots/core/models/revenue_split.dart' as _i4;
 import 'package:spots/core/models/sponsorship.dart' as _i2;
-import 'package:spots/core/services/revenue_split_service.dart' as _i7;
-import 'package:spots/core/services/sponsorship_service.dart' as _i4;
+import 'package:spots/core/services/revenue_split_service.dart' as _i8;
+import 'package:spots/core/services/sponsorship_service.dart' as _i5;
+import 'package:spots/core/services/vibe_compatibility_service.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -36,8 +37,18 @@ class _FakeSponsorship_0 extends _i1.SmartFake implements _i2.Sponsorship {
         );
 }
 
-class _FakeRevenueSplit_1 extends _i1.SmartFake implements _i3.RevenueSplit {
-  _FakeRevenueSplit_1(
+class _FakeVibeScore_1 extends _i1.SmartFake implements _i3.VibeScore {
+  _FakeVibeScore_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeRevenueSplit_2 extends _i1.SmartFake implements _i4.RevenueSplit {
+  _FakeRevenueSplit_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -50,13 +61,13 @@ class _FakeRevenueSplit_1 extends _i1.SmartFake implements _i3.RevenueSplit {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSponsorshipService extends _i1.Mock
-    implements _i4.SponsorshipService {
+    implements _i5.SponsorshipService {
   MockSponsorshipService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<_i2.Sponsorship> createSponsorship({
+  _i6.Future<_i2.Sponsorship> createSponsorship({
     required String? eventId,
     required String? brandId,
     required _i2.SponsorshipType? type,
@@ -79,7 +90,7 @@ class MockSponsorshipService extends _i1.Mock
             #vibeCompatibilityScore: vibeCompatibilityScore,
           },
         ),
-        returnValue: _i5.Future<_i2.Sponsorship>.value(_FakeSponsorship_0(
+        returnValue: _i6.Future<_i2.Sponsorship>.value(_FakeSponsorship_0(
           this,
           Invocation.method(
             #createSponsorship,
@@ -95,42 +106,42 @@ class MockSponsorshipService extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i2.Sponsorship>);
+      ) as _i6.Future<_i2.Sponsorship>);
 
   @override
-  _i5.Future<List<_i2.Sponsorship>> getSponsorshipsForEvent(String? eventId) =>
+  _i6.Future<List<_i2.Sponsorship>> getSponsorshipsForEvent(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getSponsorshipsForEvent,
           [eventId],
         ),
         returnValue:
-            _i5.Future<List<_i2.Sponsorship>>.value(<_i2.Sponsorship>[]),
-      ) as _i5.Future<List<_i2.Sponsorship>>);
+            _i6.Future<List<_i2.Sponsorship>>.value(<_i2.Sponsorship>[]),
+      ) as _i6.Future<List<_i2.Sponsorship>>);
 
   @override
-  _i5.Future<List<_i2.Sponsorship>> getSponsorshipsForBrand(String? brandId) =>
+  _i6.Future<List<_i2.Sponsorship>> getSponsorshipsForBrand(String? brandId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getSponsorshipsForBrand,
           [brandId],
         ),
         returnValue:
-            _i5.Future<List<_i2.Sponsorship>>.value(<_i2.Sponsorship>[]),
-      ) as _i5.Future<List<_i2.Sponsorship>>);
+            _i6.Future<List<_i2.Sponsorship>>.value(<_i2.Sponsorship>[]),
+      ) as _i6.Future<List<_i2.Sponsorship>>);
 
   @override
-  _i5.Future<_i2.Sponsorship?> getSponsorshipById(String? sponsorshipId) =>
+  _i6.Future<_i2.Sponsorship?> getSponsorshipById(String? sponsorshipId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getSponsorshipById,
           [sponsorshipId],
         ),
-        returnValue: _i5.Future<_i2.Sponsorship?>.value(),
-      ) as _i5.Future<_i2.Sponsorship?>);
+        returnValue: _i6.Future<_i2.Sponsorship?>.value(),
+      ) as _i6.Future<_i2.Sponsorship?>);
 
   @override
-  _i5.Future<_i2.Sponsorship> updateSponsorshipStatus({
+  _i6.Future<_i2.Sponsorship> updateSponsorshipStatus({
     required String? sponsorshipId,
     required _i2.SponsorshipStatus? status,
   }) =>
@@ -143,7 +154,7 @@ class MockSponsorshipService extends _i1.Mock
             #status: status,
           },
         ),
-        returnValue: _i5.Future<_i2.Sponsorship>.value(_FakeSponsorship_0(
+        returnValue: _i6.Future<_i2.Sponsorship>.value(_FakeSponsorship_0(
           this,
           Invocation.method(
             #updateSponsorshipStatus,
@@ -154,10 +165,10 @@ class MockSponsorshipService extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i2.Sponsorship>);
+      ) as _i6.Future<_i2.Sponsorship>);
 
   @override
-  _i5.Future<bool> checkSponsorshipEligibility({
+  _i6.Future<bool> checkSponsorshipEligibility({
     required String? eventId,
     required String? brandId,
   }) =>
@@ -170,11 +181,11 @@ class MockSponsorshipService extends _i1.Mock
             #brandId: brandId,
           },
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
 
   @override
-  _i5.Future<double> calculateCompatibility({
+  _i6.Future<double> calculateCompatibility({
     required String? eventId,
     required String? brandId,
   }) =>
@@ -187,47 +198,74 @@ class MockSponsorshipService extends _i1.Mock
             #brandId: brandId,
           },
         ),
-        returnValue: _i5.Future<double>.value(0.0),
-      ) as _i5.Future<double>);
+        returnValue: _i6.Future<double>.value(0.0),
+      ) as _i6.Future<double>);
 
   @override
-  _i5.Future<_i6.BrandAccount?> getBrandById(String? brandId) =>
+  _i6.Future<_i3.VibeScore> calculateVibeScore({
+    required String? eventId,
+    required String? brandId,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #calculateVibeScore,
+          [],
+          {
+            #eventId: eventId,
+            #brandId: brandId,
+          },
+        ),
+        returnValue: _i6.Future<_i3.VibeScore>.value(_FakeVibeScore_1(
+          this,
+          Invocation.method(
+            #calculateVibeScore,
+            [],
+            {
+              #eventId: eventId,
+              #brandId: brandId,
+            },
+          ),
+        )),
+      ) as _i6.Future<_i3.VibeScore>);
+
+  @override
+  _i6.Future<_i7.BrandAccount?> getBrandById(String? brandId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getBrandById,
           [brandId],
         ),
-        returnValue: _i5.Future<_i6.BrandAccount?>.value(),
-      ) as _i5.Future<_i6.BrandAccount?>);
+        returnValue: _i6.Future<_i7.BrandAccount?>.value(),
+      ) as _i6.Future<_i7.BrandAccount?>);
 
   @override
-  _i5.Future<void> registerBrand(_i6.BrandAccount? brand) =>
+  _i6.Future<void> registerBrand(_i7.BrandAccount? brand) =>
       (super.noSuchMethod(
         Invocation.method(
           #registerBrand,
           [brand],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }
 
 /// A class which mocks [RevenueSplitService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRevenueSplitService extends _i1.Mock
-    implements _i7.RevenueSplitService {
+    implements _i8.RevenueSplitService {
   MockRevenueSplitService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<_i3.RevenueSplit> calculateNWaySplit({
+  _i6.Future<_i4.RevenueSplit> calculateNWaySplit({
     required String? eventId,
     String? partnershipId,
     required double? totalAmount,
     required int? ticketsSold,
-    required List<_i3.SplitParty>? parties,
+    required List<_i4.SplitParty>? parties,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -241,7 +279,7 @@ class MockRevenueSplitService extends _i1.Mock
             #parties: parties,
           },
         ),
-        returnValue: _i5.Future<_i3.RevenueSplit>.value(_FakeRevenueSplit_1(
+        returnValue: _i6.Future<_i4.RevenueSplit>.value(_FakeRevenueSplit_2(
           this,
           Invocation.method(
             #calculateNWaySplit,
@@ -255,10 +293,10 @@ class MockRevenueSplitService extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i3.RevenueSplit>);
+      ) as _i6.Future<_i4.RevenueSplit>);
 
   @override
-  _i5.Future<_i3.RevenueSplit> calculateFromPartnership({
+  _i6.Future<_i4.RevenueSplit> calculateFromPartnership({
     required String? partnershipId,
     required double? totalAmount,
     required int? ticketsSold,
@@ -273,7 +311,7 @@ class MockRevenueSplitService extends _i1.Mock
             #ticketsSold: ticketsSold,
           },
         ),
-        returnValue: _i5.Future<_i3.RevenueSplit>.value(_FakeRevenueSplit_1(
+        returnValue: _i6.Future<_i4.RevenueSplit>.value(_FakeRevenueSplit_2(
           this,
           Invocation.method(
             #calculateFromPartnership,
@@ -285,10 +323,10 @@ class MockRevenueSplitService extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i3.RevenueSplit>);
+      ) as _i6.Future<_i4.RevenueSplit>);
 
   @override
-  _i5.Future<_i3.RevenueSplit> lockSplit({
+  _i6.Future<_i4.RevenueSplit> lockSplit({
     required String? revenueSplitId,
     required String? lockedBy,
   }) =>
@@ -301,7 +339,7 @@ class MockRevenueSplitService extends _i1.Mock
             #lockedBy: lockedBy,
           },
         ),
-        returnValue: _i5.Future<_i3.RevenueSplit>.value(_FakeRevenueSplit_1(
+        returnValue: _i6.Future<_i4.RevenueSplit>.value(_FakeRevenueSplit_2(
           this,
           Invocation.method(
             #lockSplit,
@@ -312,10 +350,10 @@ class MockRevenueSplitService extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i3.RevenueSplit>);
+      ) as _i6.Future<_i4.RevenueSplit>);
 
   @override
-  _i5.Future<Map<String, double>> distributePayments({
+  _i6.Future<Map<String, double>> distributePayments({
     required String? revenueSplitId,
     required DateTime? eventEndTime,
   }) =>
@@ -328,11 +366,11 @@ class MockRevenueSplitService extends _i1.Mock
             #eventEndTime: eventEndTime,
           },
         ),
-        returnValue: _i5.Future<Map<String, double>>.value(<String, double>{}),
-      ) as _i5.Future<Map<String, double>>);
+        returnValue: _i6.Future<Map<String, double>>.value(<String, double>{}),
+      ) as _i6.Future<Map<String, double>>);
 
   @override
-  _i5.Future<double> trackEarnings({
+  _i6.Future<double> trackEarnings({
     required String? partyId,
     DateTime? startDate,
     DateTime? endDate,
@@ -347,21 +385,21 @@ class MockRevenueSplitService extends _i1.Mock
             #endDate: endDate,
           },
         ),
-        returnValue: _i5.Future<double>.value(0.0),
-      ) as _i5.Future<double>);
+        returnValue: _i6.Future<double>.value(0.0),
+      ) as _i6.Future<double>);
 
   @override
-  _i5.Future<_i3.RevenueSplit?> getRevenueSplit(String? revenueSplitId) =>
+  _i6.Future<_i4.RevenueSplit?> getRevenueSplit(String? revenueSplitId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getRevenueSplit,
           [revenueSplitId],
         ),
-        returnValue: _i5.Future<_i3.RevenueSplit?>.value(),
-      ) as _i5.Future<_i3.RevenueSplit?>);
+        returnValue: _i6.Future<_i4.RevenueSplit?>.value(),
+      ) as _i6.Future<_i4.RevenueSplit?>);
 
   @override
-  _i5.Future<List<_i3.RevenueSplit>> getRevenueSplitsForEvent(
+  _i6.Future<List<_i4.RevenueSplit>> getRevenueSplitsForEvent(
           String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -369,11 +407,11 @@ class MockRevenueSplitService extends _i1.Mock
           [eventId],
         ),
         returnValue:
-            _i5.Future<List<_i3.RevenueSplit>>.value(<_i3.RevenueSplit>[]),
-      ) as _i5.Future<List<_i3.RevenueSplit>>);
+            _i6.Future<List<_i4.RevenueSplit>>.value(<_i4.RevenueSplit>[]),
+      ) as _i6.Future<List<_i4.RevenueSplit>>);
 
   @override
-  _i5.Future<_i3.RevenueSplit> calculateNWayBrandSplit({
+  _i6.Future<_i4.RevenueSplit> calculateNWayBrandSplit({
     required String? eventId,
     required double? totalAmount,
     required int? ticketsSold,
@@ -390,7 +428,7 @@ class MockRevenueSplitService extends _i1.Mock
             #brandPercentages: brandPercentages,
           },
         ),
-        returnValue: _i5.Future<_i3.RevenueSplit>.value(_FakeRevenueSplit_1(
+        returnValue: _i6.Future<_i4.RevenueSplit>.value(_FakeRevenueSplit_2(
           this,
           Invocation.method(
             #calculateNWayBrandSplit,
@@ -403,10 +441,10 @@ class MockRevenueSplitService extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i3.RevenueSplit>);
+      ) as _i6.Future<_i4.RevenueSplit>);
 
   @override
-  _i5.Future<_i3.RevenueSplit> calculateProductSalesSplit({
+  _i6.Future<_i4.RevenueSplit> calculateProductSalesSplit({
     required String? productTrackingId,
     required double? totalSales,
   }) =>
@@ -419,7 +457,7 @@ class MockRevenueSplitService extends _i1.Mock
             #totalSales: totalSales,
           },
         ),
-        returnValue: _i5.Future<_i3.RevenueSplit>.value(_FakeRevenueSplit_1(
+        returnValue: _i6.Future<_i4.RevenueSplit>.value(_FakeRevenueSplit_2(
           this,
           Invocation.method(
             #calculateProductSalesSplit,
@@ -430,15 +468,15 @@ class MockRevenueSplitService extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i3.RevenueSplit>);
+      ) as _i6.Future<_i4.RevenueSplit>);
 
   @override
-  _i5.Future<Map<String, _i3.RevenueSplit>> calculateHybridSplit({
+  _i6.Future<Map<String, _i4.RevenueSplit>> calculateHybridSplit({
     required String? eventId,
     required double? cashAmount,
     required double? productSalesAmount,
     required int? ticketsSold,
-    required List<_i3.SplitParty>? parties,
+    required List<_i4.SplitParty>? parties,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -452,7 +490,7 @@ class MockRevenueSplitService extends _i1.Mock
             #parties: parties,
           },
         ),
-        returnValue: _i5.Future<Map<String, _i3.RevenueSplit>>.value(
-            <String, _i3.RevenueSplit>{}),
-      ) as _i5.Future<Map<String, _i3.RevenueSplit>>);
+        returnValue: _i6.Future<Map<String, _i4.RevenueSplit>>.value(
+            <String, _i4.RevenueSplit>{}),
+      ) as _i6.Future<Map<String, _i4.RevenueSplit>>);
 }

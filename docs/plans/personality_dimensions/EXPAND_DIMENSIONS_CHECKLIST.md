@@ -493,7 +493,7 @@ test('performance: vibe analysis with 12 dimensions', () async {
 
 ## 📦 **Day 5: Documentation & Polish**
 
-### **File: `VIBE_CODING/DIMENSIONS/core_dimensions.md`**
+### **File: `docs/_archive/vibe_coding/VIBE_CODING/DIMENSIONS/core_dimensions.md`**
 
 **Add New Dimensions:**
 - [ ] Copy existing dimension format

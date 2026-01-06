@@ -25,10 +25,13 @@ import 'package:spots/core/services/payment_event_service.dart';
 import 'package:spots/core/services/partnership_matching_service.dart';
 import 'package:spots/core/services/business_service.dart';
 import 'package:spots/core/services/business_account_service.dart';
+import 'package:spots/core/services/revenue_split_service.dart';
 import 'package:spots/core/services/stripe_service.dart';
+import 'package:spots/core/controllers/partnership_checkout_controller.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/getit_test_harness.dart';
 import '../../widget/mocks/mock_blocs.dart';
 
 @GenerateMocks([PaymentService, ExpertiseEventService, StripeService, PartnershipService, PaymentEventService, PartnershipMatchingService, BusinessService, BusinessAccountService])
@@ -50,19 +53,20 @@ void main() {
     late EventPartnership testPartnership;
     late MockPaymentService mockPaymentService;
     late MockExpertiseEventService mockEventService;
-    late MockStripeService mockStripeService;
     late MockPartnershipService mockPartnershipService;
     late MockPaymentEventService mockPaymentEventService;
     late MockPartnershipMatchingService mockPartnershipMatchingService;
     late MockBusinessService mockBusinessService;
     late MockBusinessAccountService mockBusinessAccountService;
     late MockAuthBloc mockAuthBloc;
+    late GetItTestHarness getIt;
 
     setUpAll(() {
+      getIt = GetItTestHarness(sl: GetIt.instance);
+
       // Register required services in GetIt
       mockPaymentService = MockPaymentService();
       mockEventService = MockExpertiseEventService();
-      mockStripeService = MockStripeService();
       mockPartnershipService = MockPartnershipService();
       mockPaymentEventService = MockPaymentEventService();
       mockPartnershipMatchingService = MockPartnershipMatchingService();
@@ -70,74 +74,61 @@ void main() {
       mockBusinessService = MockBusinessService();
       
       // Unregister if already registered
-      if (GetIt.instance.isRegistered<PaymentService>()) {
-        GetIt.instance.unregister<PaymentService>();
-      }
-      if (GetIt.instance.isRegistered<ExpertiseEventService>()) {
-        GetIt.instance.unregister<ExpertiseEventService>();
-      }
-      if (GetIt.instance.isRegistered<SalesTaxService>()) {
-        GetIt.instance.unregister<SalesTaxService>();
-      }
-      if (GetIt.instance.isRegistered<PartnershipService>()) {
-        GetIt.instance.unregister<PartnershipService>();
-      }
-      if (GetIt.instance.isRegistered<PaymentEventService>()) {
-        GetIt.instance.unregister<PaymentEventService>();
-      }
-      if (GetIt.instance.isRegistered<PartnershipMatchingService>()) {
-        GetIt.instance.unregister<PartnershipMatchingService>();
-      }
-      if (GetIt.instance.isRegistered<BusinessService>()) {
-        GetIt.instance.unregister<BusinessService>();
-      }
-      if (GetIt.instance.isRegistered<BusinessAccountService>()) {
-        GetIt.instance.unregister<BusinessAccountService>();
-      }
+      getIt.unregisterIfRegistered<PaymentService>();
+      getIt.unregisterIfRegistered<ExpertiseEventService>();
+      getIt.unregisterIfRegistered<SalesTaxService>();
+      getIt.unregisterIfRegistered<PartnershipService>();
+      getIt.unregisterIfRegistered<PaymentEventService>();
+      getIt.unregisterIfRegistered<PartnershipMatchingService>();
+      getIt.unregisterIfRegistered<BusinessService>();
+      getIt.unregisterIfRegistered<BusinessAccountService>();
+      getIt.unregisterIfRegistered<RevenueSplitService>();
+      getIt.unregisterIfRegistered<PartnershipCheckoutController>();
       
       // Register mocks
-      GetIt.instance.registerSingleton<PaymentService>(mockPaymentService);
-      GetIt.instance.registerSingleton<ExpertiseEventService>(mockEventService);
-      GetIt.instance.registerSingleton<PartnershipService>(mockPartnershipService);
-      GetIt.instance.registerSingleton<PaymentEventService>(mockPaymentEventService);
-      GetIt.instance.registerSingleton<PartnershipMatchingService>(mockPartnershipMatchingService);
-      GetIt.instance.registerSingleton<BusinessService>(mockBusinessService);
-      GetIt.instance.registerSingleton<BusinessAccountService>(mockBusinessAccountService);
+      getIt.registerSingletonReplace<PaymentService>(mockPaymentService);
+      getIt.registerSingletonReplace<ExpertiseEventService>(mockEventService);
+      getIt.registerSingletonReplace<PartnershipService>(mockPartnershipService);
+      getIt.registerSingletonReplace<PaymentEventService>(mockPaymentEventService);
+      getIt.registerSingletonReplace<PartnershipMatchingService>(
+        mockPartnershipMatchingService,
+      );
+      getIt.registerSingletonReplace<BusinessService>(mockBusinessService);
+      getIt.registerSingletonReplace<BusinessAccountService>(mockBusinessAccountService);
       // Register SalesTaxService (CheckoutPage requires it)
-      GetIt.instance.registerLazySingleton<SalesTaxService>(
+      getIt.registerLazySingletonReplace<SalesTaxService>(
         () => SalesTaxService(
           eventService: mockEventService,
           paymentService: mockPaymentService,
+        ),
+      );
+
+      // Register RevenueSplitService + PartnershipCheckoutController (PartnershipCheckoutPage requires it via GetIt).
+      getIt.registerLazySingletonReplace<RevenueSplitService>(
+        () => RevenueSplitService(partnershipService: mockPartnershipService),
+      );
+      getIt.registerLazySingletonReplace<PartnershipCheckoutController>(
+        () => PartnershipCheckoutController(
+          revenueSplitService: GetIt.instance<RevenueSplitService>(),
+          partnershipService: mockPartnershipService,
+          eventService: mockEventService,
+          salesTaxService: GetIt.instance<SalesTaxService>(),
         ),
       );
     });
     
     tearDownAll(() {
       // Unregister all services for test isolation
-      if (GetIt.instance.isRegistered<PaymentService>()) {
-        GetIt.instance.unregister<PaymentService>();
-      }
-      if (GetIt.instance.isRegistered<ExpertiseEventService>()) {
-        GetIt.instance.unregister<ExpertiseEventService>();
-      }
-      if (GetIt.instance.isRegistered<SalesTaxService>()) {
-        GetIt.instance.unregister<SalesTaxService>();
-      }
-      if (GetIt.instance.isRegistered<PartnershipService>()) {
-        GetIt.instance.unregister<PartnershipService>();
-      }
-      if (GetIt.instance.isRegistered<PaymentEventService>()) {
-        GetIt.instance.unregister<PaymentEventService>();
-      }
-      if (GetIt.instance.isRegistered<PartnershipMatchingService>()) {
-        GetIt.instance.unregister<PartnershipMatchingService>();
-      }
-      if (GetIt.instance.isRegistered<BusinessService>()) {
-        GetIt.instance.unregister<BusinessService>();
-      }
-      if (GetIt.instance.isRegistered<BusinessAccountService>()) {
-        GetIt.instance.unregister<BusinessAccountService>();
-      }
+      getIt.unregisterIfRegistered<PaymentService>();
+      getIt.unregisterIfRegistered<ExpertiseEventService>();
+      getIt.unregisterIfRegistered<SalesTaxService>();
+      getIt.unregisterIfRegistered<PartnershipService>();
+      getIt.unregisterIfRegistered<PaymentEventService>();
+      getIt.unregisterIfRegistered<PartnershipMatchingService>();
+      getIt.unregisterIfRegistered<BusinessService>();
+      getIt.unregisterIfRegistered<BusinessAccountService>();
+      getIt.unregisterIfRegistered<RevenueSplitService>();
+      getIt.unregisterIfRegistered<PartnershipCheckoutController>();
     });
 
     Widget wrapWithAuthBloc(Widget child) {

@@ -172,7 +172,7 @@ import 'package:spots/core/services/product_tracking_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/legal_document_service.dart';
 import 'package:spots/core/services/sales_tax_service.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/services/community_service.dart';
 import 'package:spots/core/services/geographic_expansion_service.dart';
 import 'package:spots/core/services/feature_flag_service.dart';
@@ -211,6 +211,7 @@ import 'package:spots/core/services/locality_agents/locality_agent_engine.dart';
 import 'package:spots/core/services/locality_agents/locality_agent_global_repository.dart';
 import 'package:spots/core/services/locality_agents/locality_agent_ingestion_service_v1.dart';
 import 'package:spots/core/services/locality_agents/locality_agent_local_store.dart';
+import 'package:spots/core/services/locality_agents/locality_agent_mesh_cache.dart';
 import 'package:spots/core/services/locality_agents/locality_agent_update_emitter_v1.dart';
 import 'package:spots/core/services/locality_agents/locality_geofence_planner.dart';
 import 'package:spots/core/services/locality_agents/os_geofence_registrar.dart';
@@ -616,6 +617,12 @@ Future<void> init() async {
   if (!sl.isRegistered<LocalityAgentLocalStoreV1>()) {
     sl.registerLazySingleton<LocalityAgentLocalStoreV1>(
       () => LocalityAgentLocalStoreV1(storage: sl<StorageService>()),
+    );
+  }
+  // NEW: Register LocalityAgentMeshCache for mesh-smoothed neighbor learning
+  if (!sl.isRegistered<LocalityAgentMeshCache>()) {
+    sl.registerLazySingleton<LocalityAgentMeshCache>(
+      () => LocalityAgentMeshCache(storage: sl<StorageService>()),
     );
   }
   if (!sl.isRegistered<LocalityAgentEngineV1>()) {

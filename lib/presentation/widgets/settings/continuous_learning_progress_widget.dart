@@ -207,62 +207,64 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
         margin: const EdgeInsets.only(bottom: 16),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.trending_up,
-                      color: AppColors.primary,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      'Learning Progress',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.trending_up,
+                        color: AppColors.primary,
+                        size: 24,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              
-              // Average Progress
-              _buildAverageProgress(averageProgress),
-              const SizedBox(height: 24),
-              
-              // Divider
-              const Divider(),
-              const SizedBox(height: 16),
-              
-              // Dimensions List
-              Text(
-                'Learning Dimensions (${_progress.length})',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Learning Progress',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 12),
-              ...sortedDimensions.map((entry) => _buildProgressItem(
-                entry.key,
-                entry.value,
-              )),
-            ],
+                const SizedBox(height: 16),
+
+                // Average Progress
+                _buildAverageProgress(averageProgress),
+                const SizedBox(height: 24),
+
+                // Divider
+                const Divider(),
+                const SizedBox(height: 16),
+
+                // Dimensions List
+                Text(
+                  'Learning Dimensions (${_progress.length})',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...sortedDimensions.map((entry) => _buildProgressItem(
+                      entry.key,
+                      entry.value,
+                    )),
+              ],
+            ),
           ),
         ),
       ),

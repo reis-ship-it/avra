@@ -182,11 +182,11 @@ class _MyReservationsPageState extends State<MyReservationsPage> with SingleTick
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 48, color: AppTheme.errorColor),
+                      const Icon(Icons.error_outline, size: 48, color: AppTheme.errorColor),
                       const SizedBox(height: 16),
                       Text(
                         _error!,
-                        style: TextStyle(color: AppTheme.errorColor),
+                        style: const TextStyle(color: AppTheme.errorColor),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
@@ -206,7 +206,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> with SingleTick
                   children: List.generate(4, (index) {
                     final reservations = _getReservationsForTab(index);
                     return reservations.isEmpty
-                        ? Center(
+                        ? const Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -215,7 +215,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> with SingleTick
                                   size: 64,
                                   color: AppColors.textSecondary,
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16),
                                 Text(
                                   'No reservations',
                                   style: TextStyle(
@@ -360,22 +360,22 @@ class _ReservationCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
-                    '${reservation.reservationTime.toLocal().toString().split('.')[0]}',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    reservation.reservationTime.toLocal().toString().split('.')[0],
+                    style: const TextStyle(color: AppColors.textSecondary),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
               Row(
                 children: [
-                  Icon(Icons.people, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.people, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     '${reservation.partySize} ${reservation.partySize == 1 ? 'person' : 'people'}',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: const TextStyle(color: AppColors.textSecondary),
                   ),
                 ],
               ),

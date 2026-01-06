@@ -12,9 +12,11 @@ import 'package:get_it/get_it.dart';
 import 'package:spots/core/services/payment_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/sales_tax_service.dart';
+import 'package:spots/core/controllers/checkout_controller.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/getit_test_harness.dart';
 import '../../widget/mocks/mock_blocs.dart';
 
 @GenerateMocks([PaymentService, ExpertiseEventService])
@@ -39,6 +41,7 @@ void main() {
     late MockAuthBloc mockAuthBloc;
     late MockPaymentService mockPaymentService;
     late MockExpertiseEventService mockEventService;
+    late GetItTestHarness getIt;
 
     Widget wrapWithAuthBloc(Widget child) {
       return BlocProvider<AuthBloc>.value(
@@ -48,44 +51,46 @@ void main() {
     }
 
     setUpAll(() {
+      getIt = GetItTestHarness(sl: GetIt.instance);
+
       // Register required services in GetIt
       mockPaymentService = MockPaymentService();
       mockEventService = MockExpertiseEventService();
       
       // Unregister if already registered
-      if (GetIt.instance.isRegistered<PaymentService>()) {
-        GetIt.instance.unregister<PaymentService>();
-      }
-      if (GetIt.instance.isRegistered<ExpertiseEventService>()) {
-        GetIt.instance.unregister<ExpertiseEventService>();
-      }
-      if (GetIt.instance.isRegistered<SalesTaxService>()) {
-        GetIt.instance.unregister<SalesTaxService>();
-      }
+      getIt.unregisterIfRegistered<PaymentService>();
+      getIt.unregisterIfRegistered<ExpertiseEventService>();
+      getIt.unregisterIfRegistered<SalesTaxService>();
+      getIt.unregisterIfRegistered<CheckoutController>();
       
       // Register mocks
-      GetIt.instance.registerSingleton<PaymentService>(mockPaymentService);
-      GetIt.instance.registerSingleton<ExpertiseEventService>(mockEventService);
+      getIt.registerSingletonReplace<PaymentService>(mockPaymentService);
+      getIt.registerSingletonReplace<ExpertiseEventService>(mockEventService);
       // Register SalesTaxService (CheckoutPage requires it)
-      GetIt.instance.registerLazySingleton<SalesTaxService>(
+      getIt.registerLazySingletonReplace<SalesTaxService>(
         () => SalesTaxService(
           eventService: mockEventService,
           paymentService: mockPaymentService,
+        ),
+      );
+
+      // Register CheckoutController for CheckoutPage.
+      // Payment processing is not exercised in these UI rendering tests, so we omit
+      // PaymentProcessingController wiring here.
+      getIt.registerLazySingletonReplace<CheckoutController>(
+        () => CheckoutController(
+          salesTaxService: GetIt.instance<SalesTaxService>(),
+          eventService: GetIt.instance<ExpertiseEventService>(),
         ),
       );
     });
     
     tearDownAll(() {
       // Unregister all services for test isolation
-      if (GetIt.instance.isRegistered<PaymentService>()) {
-        GetIt.instance.unregister<PaymentService>();
-      }
-      if (GetIt.instance.isRegistered<ExpertiseEventService>()) {
-        GetIt.instance.unregister<ExpertiseEventService>();
-      }
-      if (GetIt.instance.isRegistered<SalesTaxService>()) {
-        GetIt.instance.unregister<SalesTaxService>();
-      }
+      getIt.unregisterIfRegistered<PaymentService>();
+      getIt.unregisterIfRegistered<ExpertiseEventService>();
+      getIt.unregisterIfRegistered<SalesTaxService>();
+      getIt.unregisterIfRegistered<CheckoutController>();
     });
 
     setUp(() {

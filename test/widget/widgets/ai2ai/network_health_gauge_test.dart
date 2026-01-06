@@ -42,6 +42,7 @@ void main() {
         optimizationRecommendations: [],
         totalActiveConnections: 10,
         networkUtilization: 0.6,
+        aiPleasureAverage: 0.85,
         analysisTimestamp: DateTime.now(),
       );
       final widget1 = WidgetTestHelpers.createTestableWidget(
@@ -78,6 +79,7 @@ void main() {
         optimizationRecommendations: [],
         totalActiveConnections: 5,
         networkUtilization: 0.5,
+        aiPleasureAverage: 0.7,
         analysisTimestamp: DateTime.now(),
       );
       final widget2 = WidgetTestHelpers.createTestableWidget(
@@ -96,6 +98,7 @@ void main() {
         optimizationRecommendations: [],
         totalActiveConnections: 2,
         networkUtilization: 0.3,
+        aiPleasureAverage: 0.4,
         analysisTimestamp: DateTime.now(),
       );
       final widget3 = WidgetTestHelpers.createTestableWidget(
@@ -132,6 +135,7 @@ void main() {
         optimizationRecommendations: [],
         totalActiveConnections: 15,
         networkUtilization: 0.75,
+        aiPleasureAverage: 0.8,
         analysisTimestamp: DateTime.now(),
       );
       final widget4 = WidgetTestHelpers.createTestableWidget(

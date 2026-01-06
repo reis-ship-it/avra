@@ -9,18 +9,18 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i17;
 import 'package:spots/core/ai/personality_learning.dart' as _i5;
 import 'package:spots/core/ai/vibe_analysis_engine.dart' as _i7;
-import 'package:spots/core/models/atomic_timestamp.dart' as _i2;
 import 'package:spots/core/models/multi_path_expertise.dart' as _i12;
 import 'package:spots/core/models/outcome_result.dart' as _i13;
-import 'package:spots_ai/models/personality_profile.dart' as _i4;
-import 'package:spots_quantum/models/quantum_entity_state.dart' as _i11;
 import 'package:spots/core/models/unified_user.dart' as _i14;
 import 'package:spots/core/models/user_vibe.dart' as _i6;
 import 'package:spots/core/services/agent_id_service.dart' as _i16;
-import 'package:spots/core/services/atomic_clock_service.dart' as _i9;
-import 'package:spots/core/services/quantum/quantum_entanglement_service.dart'
-    as _i3;
 import 'package:spots/core/services/supabase_service.dart' as _i15;
+import 'package:spots_ai/models/personality_profile.dart' as _i4;
+import 'package:spots_core/models/atomic_timestamp.dart' as _i2;
+import 'package:spots_core/services/atomic_clock_service.dart' as _i9;
+import 'package:spots_quantum/models/quantum_entity_state.dart' as _i11;
+import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart'
+    as _i3;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i8;
 
 // ignore_for_file: type=lint
@@ -156,8 +156,18 @@ class _FakeSupabaseClient_10 extends _i1.SmartFake
         );
 }
 
-class _FakeAuthResponse_11 extends _i1.SmartFake implements _i8.AuthResponse {
-  _FakeAuthResponse_11(
+class _FakeDateTime_11 extends _i1.SmartFake implements DateTime {
+  _FakeDateTime_11(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeAuthResponse_12 extends _i1.SmartFake implements _i8.AuthResponse {
+  _FakeAuthResponse_12(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -174,6 +184,17 @@ class MockAtomicClockService extends _i1.Mock
   MockAtomicClockService() {
     _i1.throwOnMissingStub(this);
   }
+
+  @override
+  void configure({_i10.Future<DateTime> Function()? serverTimeProvider}) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #configure,
+          [],
+          {#serverTimeProvider: serverTimeProvider},
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   _i10.Future<void> initialize() => (super.noSuchMethod(
@@ -904,6 +925,21 @@ class MockSupabaseService extends _i1.Mock implements _i15.SupabaseService {
       ) as _i10.Future<bool>);
 
   @override
+  _i10.Future<DateTime> getServerTime() => (super.noSuchMethod(
+        Invocation.method(
+          #getServerTime,
+          [],
+        ),
+        returnValue: _i10.Future<DateTime>.value(_FakeDateTime_11(
+          this,
+          Invocation.method(
+            #getServerTime,
+            [],
+          ),
+        )),
+      ) as _i10.Future<DateTime>);
+
+  @override
   _i10.Future<_i8.AuthResponse> signInWithEmail(
     String? email,
     String? password,
@@ -916,7 +952,7 @@ class MockSupabaseService extends _i1.Mock implements _i15.SupabaseService {
             password,
           ],
         ),
-        returnValue: _i10.Future<_i8.AuthResponse>.value(_FakeAuthResponse_11(
+        returnValue: _i10.Future<_i8.AuthResponse>.value(_FakeAuthResponse_12(
           this,
           Invocation.method(
             #signInWithEmail,
@@ -941,7 +977,7 @@ class MockSupabaseService extends _i1.Mock implements _i15.SupabaseService {
             password,
           ],
         ),
-        returnValue: _i10.Future<_i8.AuthResponse>.value(_FakeAuthResponse_11(
+        returnValue: _i10.Future<_i8.AuthResponse>.value(_FakeAuthResponse_12(
           this,
           Invocation.method(
             #signUpWithEmail,
@@ -1133,6 +1169,40 @@ class MockAgentIdService extends _i1.Mock implements _i16.AgentIdService {
           ),
         )),
       ) as _i10.Future<String>);
+
+  @override
+  _i10.Future<void> rotateMappingEncryptionKey(
+    String? userId, {
+    _i16.EncryptedMapping? existingEncryptedMapping,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #rotateMappingEncryptionKey,
+          [userId],
+          {#existingEncryptedMapping: existingEncryptedMapping},
+        ),
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
+
+  @override
+  void clearCache() => super.noSuchMethod(
+        Invocation.method(
+          #clearCache,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i10.Future<void> flushAuditLogs() => (super.noSuchMethod(
+        Invocation.method(
+          #flushAuditLogs,
+          [],
+        ),
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
 
   @override
   _i10.Future<String> getBusinessAgentId(String? businessId) =>

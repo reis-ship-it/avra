@@ -9,7 +9,7 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/services/supabase_service.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
@@ -26,7 +26,6 @@ void main() {
   group('PersonalitySyncService', () {
     late PersonalitySyncService syncService;
     late MockSupabaseService mockSupabaseService;
-    late SharedPreferencesCompat prefs;
 
     setUpAll(() {
       real_prefs.SharedPreferences.setMockInitialValues({});
@@ -35,17 +34,27 @@ void main() {
     setUp(() async {
       mockSupabaseService = MockSupabaseService();
 
-      // Setup mock storage
-      final mockStorage = MockGetStorage.getInstance();
-      MockGetStorage.reset();
-      prefs = await SharedPreferencesCompat.getInstance(storage: mockStorage);
+      // Setup mock storage + init StorageService for cloud sync flags
+      final defaultStorage = MockGetStorage.getInstance(boxName: 'spots_default');
+      final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+      final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+      final analyticsStorage = MockGetStorage.getInstance(boxName: 'spots_analytics');
+      await StorageService.instance.initForTesting(
+        defaultStorage: defaultStorage,
+        userStorage: userStorage,
+        aiStorage: aiStorage,
+        analyticsStorage: analyticsStorage,
+      );
+      await SharedPreferencesCompat.getInstance(storage: defaultStorage);
 
       // Mock Supabase service - default to unavailable to avoid Supabase calls in most tests
       when(() => mockSupabaseService.isAvailable).thenReturn(false);
       
       // For tests that need Supabase, we'll override this in the specific test
-      syncService =
-          PersonalitySyncService(supabaseService: mockSupabaseService);
+      syncService = PersonalitySyncService(
+        supabaseService: mockSupabaseService,
+        storageService: StorageService.instance,
+      );
     });
 
     tearDown(() {
@@ -200,7 +209,7 @@ void main() {
         final profile1 = PersonalityProfile.initial(agentId1, userId: userId);
         
         // Disable cloud sync - this should not call Supabase
-        await syncService.setCloudSyncEnabled(userId, false);
+        await syncService.setCloudSyncEnabled(false);
         
         // syncToCloud should return early when sync is disabled, without calling Supabase
         await syncService.syncToCloud(userId, profile1, password);

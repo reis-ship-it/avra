@@ -100,6 +100,7 @@ void main() {
         mockService.setMilestones(milestones1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_header_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -113,6 +114,7 @@ void main() {
         mockService.setMilestones(milestones2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_header_5'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -168,6 +170,7 @@ void main() {
         mockService.setMilestones(milestones1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_details_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -184,6 +187,7 @@ void main() {
         mockService.setMilestones(milestones2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_details_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -201,6 +205,7 @@ void main() {
         mockService.setMilestones(milestones3);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_details_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -219,6 +224,7 @@ void main() {
         mockService.setMilestones(milestones4);
         final widget4 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_details_4'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -243,6 +249,7 @@ void main() {
         mockService.setMilestones(milestones1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_visual_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -257,6 +264,7 @@ void main() {
         mockService.setMilestones(milestones2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_visual_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -271,6 +279,7 @@ void main() {
         mockService.setMilestones(milestones3);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_visual_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -297,6 +306,7 @@ void main() {
         mockService.setMilestones(milestones1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_time_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -313,6 +323,7 @@ void main() {
         mockService.setMilestones(milestones2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_time_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -329,6 +340,7 @@ void main() {
         mockService.setMilestones(milestones3);
         final widget3 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_time_3'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -350,6 +362,7 @@ void main() {
         mockService.setMilestones(milestones1);
         final widget1 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_edge_1'),
             userId: 'test_user',
             trackingService: mockService,
           ),
@@ -362,6 +375,7 @@ void main() {
         mockService.setMilestones(milestones2);
         final widget2 = createScrollableTestWidget(
           child: AIImprovementTimelineWidget(
+            key: const ValueKey('ai_improvement_timeline_edge_2'),
             userId: 'test_user',
             trackingService: mockService,
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/presentation/widgets/payment/payment_form_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
@@ -31,12 +32,25 @@ void main() {
         (WidgetTester tester) async {
       // Test business logic: payment form display and state management
       mockAuthBloc = MockBlocFactory.createAuthenticatedAuthBloc();
+      final now = DateTime.now();
+      final event = ExpertiseEvent(
+        id: 'event-123',
+        title: 'Test Event',
+        description: 'Test event description',
+        category: 'Coffee',
+        eventType: ExpertiseEventType.tour,
+        host: WidgetTestHelpers.createTestUser(),
+        startTime: now.add(const Duration(hours: 1)),
+        endTime: now.add(const Duration(hours: 2)),
+        createdAt: now,
+        updatedAt: now,
+      );
 
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: PaymentFormWidget(
           amount: 25.0,
           quantity: 1,
-          eventId: 'event-123',
+          event: event,
           onPaymentSuccess: (paymentId, paymentIntentId) {},
           onPaymentFailure: (errorMessage, errorCode) {},
           onProcessingChange: (isProcessing) {},
@@ -47,13 +61,13 @@ void main() {
       expect(find.byType(PaymentFormWidget), findsOneWidget);
       expect(find.text('\$25.00'), findsOneWidget);
       expect(find.text('Quantity: 1'), findsOneWidget);
-      expect(find.byType(TextField), findsWidgets);
+      expect(find.byType(TextFormField), findsWidgets);
 
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: PaymentFormWidget(
           amount: 50.0,
           quantity: 2,
-          eventId: 'event-123',
+          event: event,
           onPaymentSuccess: (_, __) {},
           onPaymentFailure: (_, __) {},
           onProcessingChange: (_) {},
@@ -68,7 +82,7 @@ void main() {
         child: PaymentFormWidget(
           amount: 25.0,
           quantity: 1,
-          eventId: 'event-123',
+          event: event,
           isProcessing: true,
           onPaymentSuccess: (_, __) {},
           onPaymentFailure: (_, __) {},
@@ -83,7 +97,7 @@ void main() {
         child: PaymentFormWidget(
           amount: 25.0,
           quantity: 1,
-          eventId: 'event-123',
+          event: event,
           onPaymentSuccess: (_, __) {},
           onPaymentFailure: (errorMessage, errorCode) {},
           onProcessingChange: (_) {},
@@ -97,7 +111,7 @@ void main() {
         child: PaymentFormWidget(
           amount: 25.0,
           quantity: 1,
-          eventId: 'event-123',
+          event: event,
           onPaymentSuccess: (_, __) {},
           onPaymentFailure: (_, __) {},
           onProcessingChange: (_) {},

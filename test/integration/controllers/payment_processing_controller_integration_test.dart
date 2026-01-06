@@ -8,6 +8,7 @@ import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/payment_service.dart';
 import 'package:spots/data/datasources/local/sembast_database.dart';
 import 'package:spots/injection_container.dart' as di;
+import '../../helpers/platform_channel_helper.dart';
 import '../../helpers/integration_test_helpers.dart';
 
 /// Integration tests for PaymentProcessingController
@@ -28,6 +29,7 @@ void main() {
       await SembastDatabase.database;
       
       // Initialize dependency injection
+      await setupTestStorage();
       await di.init();
       
       // Get controller and services from DI

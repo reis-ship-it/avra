@@ -267,7 +267,9 @@ void main() {
       blocTest<ListsBloc, ListsState>(
         'triggers LoadLists after successful list deletion',
         build: () {
-          when(() => mockDeleteListUseCase(any())).thenAnswer((_) async {});
+          when(() => mockDeleteListUseCase(any())).thenAnswer((_) async {
+            return null;
+          });
           when(() => mockGetListsUseCase()).thenAnswer((_) async => existingLists);
           return listsBloc;
         },
@@ -546,7 +548,9 @@ void main() {
         build: () {
           when(() => mockCreateListUseCase(any())).thenAnswer((_) async => TestDataFactory.createTestList());
           when(() => mockUpdateListUseCase(any())).thenAnswer((_) async => TestDataFactory.createTestList());
-          when(() => mockDeleteListUseCase(any())).thenAnswer((_) async {});
+          when(() => mockDeleteListUseCase(any())).thenAnswer((_) async {
+            return null;
+          });
           when(() => mockGetListsUseCase()).thenAnswer((_) async => TestDataFactory.createTestLists(3));
           return listsBloc;
         },
@@ -592,7 +596,9 @@ void main() {
           when(() => mockGetListsUseCase()).thenAnswer((_) async => TestDataFactory.createTestLists(3));
           when(() => mockCreateListUseCase(any())).thenAnswer((_) async => TestDataFactory.createTestList());
           when(() => mockUpdateListUseCase(any())).thenAnswer((_) async => TestDataFactory.createTestList());
-          when(() => mockDeleteListUseCase(any())).thenAnswer((_) async {});
+          when(() => mockDeleteListUseCase(any())).thenAnswer((_) async {
+            return null;
+          });
           return listsBloc;
         },
         act: (bloc) {

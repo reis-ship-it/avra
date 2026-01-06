@@ -1,12 +1,48 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/network/device_discovery.dart';
+import 'package:fake_async/fake_async.dart';
+import 'package:spots_network/network/device_discovery.dart';
+
+class _FakeDeviceDiscoveryPlatform implements DeviceDiscoveryPlatform {
+  int scanCalls = 0;
+  Duration? lastScanWindow;
+
+  @override
+  Future<List<DiscoveredDevice>> scanForDevices({
+    Duration scanWindow = const Duration(seconds: 4),
+  }) async {
+    scanCalls += 1;
+    lastScanWindow = scanWindow;
+    return <DiscoveredDevice>[
+      DiscoveredDevice(
+        deviceId: 'device-$scanCalls',
+        deviceName: 'Test Device',
+        type: DeviceType.bluetooth,
+        isSpotsEnabled: true,
+        discoveredAt: DateTime.now(),
+      ),
+    ];
+  }
+
+  @override
+  Future<Map<String, dynamic>> getDeviceInfo() async => <String, dynamic>{};
+
+  @override
+  bool isSupported() => true;
+
+  @override
+  Future<bool> requestPermissions() async => true;
+}
 
 void main() {
   group('DeviceDiscoveryService', () {
     late DeviceDiscoveryService discoveryService;
+    late _FakeDeviceDiscoveryPlatform fakePlatform;
 
     setUp(() {
-      discoveryService = DeviceDiscoveryService();
+      fakePlatform = _FakeDeviceDiscoveryPlatform();
+      discoveryService = DeviceDiscoveryService(platform: fakePlatform);
     });
 
     tearDown(() {
@@ -15,19 +51,21 @@ void main() {
 
     group('startDiscovery', () {
       test('should start discovery and scan for devices', () async {
-        var devicesDiscovered = false;
+        var devicesDiscoveredCompleter = Completer<List<DiscoveredDevice>>();
         discoveryService.onDevicesDiscovered((devices) {
-          devicesDiscovered = true;
+          if (!devicesDiscoveredCompleter.isCompleted) {
+            devicesDiscoveredCompleter.complete(devices);
+          }
         });
 
-        // Note: Without platform implementation, this won't discover real devices
-        // But we can test the service structure
         await discoveryService.startDiscovery();
 
-        // Give it a moment to potentially discover
-        await Future.delayed(const Duration(milliseconds: 100));
+        final discovered = await devicesDiscoveredCompleter.future.timeout(
+          const Duration(seconds: 1),
+        );
 
-        expect(discoveryService.getDiscoveredDevices(), isA<List<DiscoveredDevice>>());
+        expect(discovered, isNotEmpty);
+        expect(fakePlatform.scanCalls, equals(1));
       });
 
       test('should not start discovery if already running', () async {
@@ -38,6 +76,77 @@ void main() {
         final afterCount = discoveryService.getDiscoveredDevices().length;
 
         expect(afterCount, equals(initialCount));
+      });
+
+      test('should pass scanWindow through to platform scan', () {
+        fakeAsync((async) {
+          unawaited(
+            discoveryService.startDiscovery(
+              scanInterval: const Duration(days: 1),
+              scanWindow: const Duration(seconds: 9),
+            ),
+          );
+
+          async.flushMicrotasks();
+
+          expect(fakePlatform.scanCalls, equals(1));
+          expect(fakePlatform.lastScanWindow, equals(const Duration(seconds: 9)));
+        });
+      });
+
+      test('continuous scan (scanInterval=0) should respect scanWindow cadence', () {
+        fakeAsync((async) {
+          unawaited(
+            discoveryService.startDiscovery(
+              scanInterval: Duration.zero,
+              scanWindow: const Duration(seconds: 4),
+            ),
+          );
+          async.flushMicrotasks();
+          expect(fakePlatform.scanCalls, equals(1));
+
+          async.elapse(const Duration(seconds: 3));
+          async.flushMicrotasks();
+          expect(fakePlatform.scanCalls, equals(1));
+
+          async.elapse(const Duration(seconds: 1));
+          async.flushMicrotasks();
+          expect(fakePlatform.scanCalls, equals(2));
+
+          discoveryService.stopDiscovery();
+          async.flushMicrotasks();
+        });
+      });
+
+      test('updateScanConfig should apply new scanWindow on next scan', () {
+        fakeAsync((async) {
+          unawaited(
+            discoveryService.startDiscovery(
+              scanInterval: Duration.zero,
+              scanWindow: const Duration(seconds: 4),
+            ),
+          );
+          async.flushMicrotasks();
+          expect(fakePlatform.scanCalls, equals(1));
+          expect(fakePlatform.lastScanWindow, equals(const Duration(seconds: 4)));
+
+          discoveryService.updateScanConfig(
+            scanWindow: const Duration(seconds: 1),
+          );
+
+          // Next scan won't start until the previous window has elapsed.
+          async.elapse(const Duration(seconds: 4));
+          async.flushMicrotasks();
+          expect(fakePlatform.scanCalls, equals(2));
+          expect(fakePlatform.lastScanWindow, equals(const Duration(seconds: 1)));
+
+          async.elapse(const Duration(seconds: 1));
+          async.flushMicrotasks();
+          expect(fakePlatform.scanCalls, equals(3));
+
+          discoveryService.stopDiscovery();
+          async.flushMicrotasks();
+        });
       });
     });
 

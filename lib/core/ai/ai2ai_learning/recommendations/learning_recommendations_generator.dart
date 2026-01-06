@@ -1,11 +1,30 @@
 import 'dart:developer' as developer;
 import 'dart:math';
+
 import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/ai/ai2ai_learning.dart';
+import 'package:spots/core/constants/vibe_constants.dart';
 
 /// Generates AI2AI learning recommendations
 class LearningRecommendationsGenerator {
   static const String _logName = 'LearningRecommendationsGenerator';
+
+  static double _compatibilityFromDimensions({
+    required Map<String, double> a,
+    required Map<String, double> b,
+  }) {
+    final keys = a.keys.toSet().intersection(b.keys.toSet());
+    if (keys.isEmpty) {
+      return 0.5;
+    }
+
+    var totalDiff = 0.0;
+    for (final k in keys) {
+      totalDiff += (a[k]! - b[k]!).abs();
+    }
+    final avgDiff = totalDiff / keys.length;
+    return (1.0 - avgDiff).clamp(0.0, 1.0);
+  }
 
   /// Identify optimal personality types for learning
   Future<List<OptimalPartner>> identifyOptimalLearningPartners(
@@ -17,31 +36,36 @@ class LearningRecommendationsGenerator {
           'Identifying optimal learning partners from ${learningPatterns.length} patterns',
           name: _logName);
 
-      final partners = <OptimalPartner>[];
+      final archetypes = VibeConstants.personalityArchetypes.keys.toList();
+      final baseline = currentPersonality.dimensions.isNotEmpty
+          ? currentPersonality.dimensions
+          : (VibeConstants.personalityArchetypes[currentPersonality.archetype] ??
+              const <String, double>{});
 
-      // Analyze patterns to find compatible personality types
-      // This is simplified - in production would analyze actual personality compatibility
-      for (final pattern in learningPatterns.where((p) =>
-          p.patternType == 'trust_building' || p.patternType == 'knowledge_sharing')) {
-        // Extract participant information from pattern characteristics
-        final participantCount = pattern.characteristics['unique_participants'] as int? ?? 0;
-        final trustScore = pattern.strength;
-
-        if (participantCount > 0 && trustScore >= 0.5) {
-          // Create partner recommendation (simplified - would use actual personality data)
-          partners.add(OptimalPartner(
-            pattern.patternType,
-            trustScore,
-          ));
+      final scored = <OptimalPartner>[];
+      for (final archetype in archetypes) {
+        if (archetype == currentPersonality.archetype) {
+          continue;
         }
+        final signature = VibeConstants.personalityArchetypes[archetype];
+        if (signature == null || signature.isEmpty) {
+          continue;
+        }
+        final compatibility = _compatibilityFromDimensions(
+          a: baseline,
+          b: signature,
+        );
+        scored.add(OptimalPartner(archetype, compatibility));
       }
 
-      // Sort by compatibility
-      partners.sort((a, b) => b.compatibility.compareTo(a.compatibility));
+      scored.sort((a, b) => b.compatibility.compareTo(a.compatibility));
 
-      developer.log('Identified ${partners.length} optimal learning partners',
+      // In early/empty-learning states we still want stable defaults, so ensure we
+      // return at least a small set (when archetypes exist).
+      final result = scored.take(3).toList(); // UI/tests expect <= 3
+      developer.log('Identified ${result.length} optimal learning partners',
           name: _logName);
-      return partners.take(5).toList(); // Return top 5
+      return result;
     } catch (e) {
       developer.log('Error identifying optimal partners: $e', name: _logName);
       return [];
@@ -59,7 +83,7 @@ class LearningRecommendationsGenerator {
 
       final topics = <LearningTopic>[];
 
-      // Extract topics from patterns
+      // Prefer pattern-driven topics when available.
       for (final pattern in learningPatterns) {
         if (pattern.patternType == 'knowledge_sharing') {
           final sharingScore = pattern.strength;
@@ -68,19 +92,44 @@ class LearningRecommendationsGenerator {
 
           if (sharingScore >= 0.3 && insightCount > 0) {
             topics.add(LearningTopic(
-              pattern.patternType.replaceAll('_', ' '),
-              sharingScore,
+              'Deepen knowledge sharing',
+              sharingScore.clamp(0.0, 1.0),
             ));
           }
         }
       }
 
-      // Sort by potential
+      // Fallback: derive topics from "interesting" dimensions (low confidence or
+      // extreme values), so recommendations work even with empty chat history.
+      if (topics.isEmpty) {
+        final dimEntries = currentPersonality.dimensions.entries.toList();
+        dimEntries.sort((a, b) {
+          final aScore = (a.value - 0.5).abs();
+          final bScore = (b.value - 0.5).abs();
+          return bScore.compareTo(aScore);
+        });
+
+        for (final entry in dimEntries.take(5)) {
+          final dim = entry.key;
+          final v = entry.value;
+          final potential = ((v - 0.5).abs() * 2.0).clamp(0.0, 1.0);
+          if (potential < 0.1) {
+            continue;
+          }
+          final desc = VibeConstants.dimensionDescriptions[dim] ?? dim;
+          topics.add(LearningTopic('Explore: $desc', potential));
+        }
+      }
+
+      // Ensure at least one topic is returned (stable behavior for UI/tests).
+      if (topics.isEmpty) {
+        topics.add(LearningTopic('Explore new learning patterns', 0.5));
+      }
+
       topics.sort((a, b) => b.potential.compareTo(a.potential));
 
-      developer.log('Generated ${topics.length} learning topics',
-          name: _logName);
-      return topics.take(10).toList(); // Return top 10
+      developer.log('Generated ${topics.length} learning topics', name: _logName);
+      return topics.take(5).toList();
     } catch (e) {
       developer.log('Error generating learning topics: $e', name: _logName);
       return [];
@@ -98,7 +147,7 @@ class LearningRecommendationsGenerator {
 
       final areas = <DevelopmentArea>[];
 
-      // Analyze patterns for development opportunities
+      // Analyze patterns for development opportunities (when present).
       for (final pattern in learningPatterns) {
         if (pattern.patternType == 'compatibility_evolution' ||
             pattern.patternType == 'learning_acceleration') {
@@ -109,9 +158,31 @@ class LearningRecommendationsGenerator {
           if (evolutionRate >= 0.2) {
             areas.add(DevelopmentArea(
               pattern.patternType.replaceAll('_', ' '),
-              evolutionRate,
+              evolutionRate.clamp(0.0, 1.0),
             ));
           }
+        }
+      }
+
+      // Fallback: recommend areas for low-confidence or extreme-value dimensions.
+      if (areas.isEmpty) {
+        final candidates = <MapEntry<String, double>>[];
+        for (final entry in currentPersonality.dimensions.entries) {
+          final v = entry.value;
+          final confidence = currentPersonality.dimensionConfidence[entry.key] ?? 0.8;
+          final isExtreme = v <= 0.2 || v >= 0.8;
+          final isLowConfidence = confidence < 0.5;
+          if (isExtreme || isLowConfidence) {
+            final priority = max(1.0 - confidence, ((v - 0.5).abs() * 2.0))
+                .clamp(0.0, 1.0);
+            candidates.add(MapEntry(entry.key, priority));
+          }
+        }
+
+        candidates.sort((a, b) => b.value.compareTo(a.value));
+        for (final c in candidates.take(5)) {
+          final desc = VibeConstants.dimensionDescriptions[c.key] ?? c.key;
+          areas.add(DevelopmentArea(desc, c.value));
         }
       }
 

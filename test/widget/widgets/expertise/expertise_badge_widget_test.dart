@@ -31,7 +31,7 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-      expect(find.text('Expert'), findsOneWidget);
+      expect(find.text('Verified by Experts'), findsOneWidget);
 
       final testPin2 = ExpertisePin(
         id: 'pin-123',
@@ -48,7 +48,7 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-      expect(find.text('Expert'), findsNothing);
+      expect(find.text('Verified by Experts'), findsNothing);
 
       final testPin3 = ExpertisePin(
         id: 'pin-123',

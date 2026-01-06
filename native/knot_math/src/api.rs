@@ -9,6 +9,8 @@ use crate::polynomial::Polynomial;
 use flutter_rust_bridge::frb;
 
 /// Result type for knot generation (FFI-compatible)
+/// Contains all knot invariants for complete knot classification
+#[frb]
 #[derive(Debug, Clone)]
 pub struct KnotResult {
     pub knot_data: Vec<f64>,
@@ -16,6 +18,14 @@ pub struct KnotResult {
     pub alexander_polynomial: Vec<f64>,
     pub crossing_number: usize,
     pub writhe: i32,
+    pub signature: i32,
+    pub unknotting_number: Option<usize>,
+    pub bridge_number: usize,
+    pub braid_index: usize,
+    pub determinant: i32,
+    pub arf_invariant: Option<i32>,
+    pub hyperbolic_volume: Option<f64>,
+    pub homfly_polynomial: Option<Vec<f64>>,
 }
 
 /// Generate knot from braid sequence data
@@ -59,6 +69,14 @@ pub fn generate_knot_from_braid(braid_data: Vec<f64>) -> Result<KnotResult, Stri
         alexander_polynomial: invariants.alexander_polynomial.to_vec(),
         crossing_number: invariants.crossing_number,
         writhe: invariants.writhe,
+        signature: invariants.signature,
+        unknotting_number: invariants.unknotting_number,
+        bridge_number: invariants.bridge_number,
+        braid_index: invariants.braid_index,
+        determinant: invariants.determinant,
+        arf_invariant: invariants.arf_invariant,
+        hyperbolic_volume: invariants.hyperbolic_volume,
+        homfly_polynomial: invariants.homfly_polynomial.map(|p| p.to_vec()),
     })
 }
 

@@ -6,9 +6,9 @@
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/services/knot/personality_knot_service.dart';
-import 'package:spots/core/services/knot/bridge/knot_math_bridge.dart/api.dart';
-import 'package:spots/core/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:spots_knot/services/knot/personality_knot_service.dart';
+import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 
 void main() {
   group('PersonalityKnotService Integration Tests', () {
@@ -245,6 +245,10 @@ class MockRustLibApi implements RustLibApi {
       alexanderPolynomial: Float64List.fromList([1.0, 0.0, -1.0]),
       crossingNumber: BigInt.from((braidData.length - 1) ~/ 2),
       writhe: (braidData.length - 1) ~/ 2,
+      signature: 0,
+      bridgeNumber: BigInt.from(1),
+      braidIndex: BigInt.from(1),
+      determinant: 1,
     );
   }
 

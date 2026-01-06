@@ -4,17 +4,22 @@
 .flutter-plugins-dependencies
 .packages
 build/
-*.dill
+*.dill  
+
 
 # Python
 .venv/
 __pycache__/
 *.pyc
 
+# Tokenizers
+assets/tokenizers/**
+
 # Large model files
 assets/models/*.onnx
 *.dylib
 cmdline-tools.zip
+assets/models/**
 
 # iOS
 ios/Pods/
@@ -22,7 +27,10 @@ ios/Flutter/
 *.xcworkspace/
 *.xcodeproj/
 *.framework/
-*.xcframework/
+*.xcframework/  
+ios/Runner/Assets.xcassets/
+ios/Runner/Assets.xcassets/**
+
 
 # Android
 android/.gradle/
@@ -30,6 +38,8 @@ android/app/build/
 android/build/
 android/gradle/
 android/local.properties
+android/app/src/main/assets/models/
+
 
 # IDE
 .idea/
@@ -41,14 +51,72 @@ android/local.properties
 # Misc
 .DS_Store
 *.log
+logs/
+tmp/
+temp/
+Pods/
 coverage/
 *.lock
+test.db
+Runner/
 
-# Backup directories (exclude from Gradle scanning)
-backups/
-**/backups/
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+*.config.dart
+
+# Test results
+test_results/
+
+# Coverage
+coverage/
+
+# Build artifacts
+build/
+
+# Quarantine (cleanup staging area)
+# NOTE: Intentionally NOT gitignored. We use this folder to move/retain
+# potentially-deletable content for review before permanent deletion.
 
 # Config files with API keys (use environment variables or .env files instead)
 lib/google_places_config.dart
 lib/supabase_config.dart
 lib/weather_config.dart
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+
+# Secrets
+secrets.dart
+api_keys.dart
+config/secrets.dart
+lib/config/secrets.dart
+lib/core/config/secrets.dart
+lib/core/constants/api_keys.dart
+lib/core/constants/secrets.dart
+
+# Firebase config
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+lib/firebase_options.dart
+
+# Certificates
+*.p12
+*.pem
+*.key
+*.crt
+*.cer
+*.der   
+
+# Network configuration
+.netrc
+.npmrc
+.yarnrc
+
+

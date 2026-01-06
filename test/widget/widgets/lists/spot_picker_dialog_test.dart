@@ -46,12 +46,11 @@ void main() {
 
       // Assert: Verify dialog displays correctly
       expect(find.byType(SpotPickerDialog), findsOneWidget);
-      expect(find.textContaining('Add Spots to'), findsOneWidget);
-      expect(find.text('Test List'), findsOneWidget);
+      expect(find.text('Add Spots to Test List'), findsOneWidget);
       expect(find.text('Search spots...'), findsOneWidget);
       expect(find.byIcon(Icons.search), findsOneWidget);
       expect(find.text('Cancel'), findsOneWidget);
-      expect(find.textContaining('Add'), findsOneWidget);
+      expect(find.byType(ElevatedButton), findsOneWidget);
       expect(find.text('0 selected'), findsOneWidget);
     });
 
@@ -77,7 +76,7 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
 
       // Act: Enter search query
-      final searchField = find.text('Search spots...');
+      final searchField = find.byType(TextField);
       await tester.enterText(searchField, 'Coffee');
       await tester.pumpAndSettle();
 
@@ -322,7 +321,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find and tap the Add button (which shows count)
-      final addButton = find.textContaining('Add');
+      final addButton = find.byType(ElevatedButton);
       await tester.tap(addButton);
       await tester.pumpAndSettle();
 
@@ -363,7 +362,7 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
 
       // Act: Tap add button without selecting any spots
-      final addButton = find.textContaining('Add');
+      final addButton = find.byType(ElevatedButton);
       await tester.tap(addButton);
       await tester.pumpAndSettle();
 
@@ -396,7 +395,7 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
 
       // Act: Enter search query
-      final searchField = find.text('Search spots...');
+      final searchField = find.byType(TextField);
       await tester.enterText(searchField, 'Coffee');
       await tester.pumpAndSettle();
 
@@ -435,7 +434,7 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
 
       // Act: Enter search query that matches nothing
-      final searchField = find.text('Search spots...');
+      final searchField = find.byType(TextField);
       await tester.enterText(searchField, 'NonExistentSpot');
       await tester.pumpAndSettle();
 

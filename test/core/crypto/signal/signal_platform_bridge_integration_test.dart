@@ -15,8 +15,9 @@ import 'package:spots/core/crypto/signal/signal_key_manager.dart';
 import 'package:spots/core/crypto/signal/signal_session_manager.dart';
 import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
 import 'package:spots/core/crypto/signal/signal_types.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sembast/sembast_memory.dart';
+
+import '../../../mocks/in_memory_flutter_secure_storage.dart';
 
 void main() {
   group('Signal Platform Bridge Integration', () {
@@ -44,7 +45,8 @@ void main() {
       rustWrapper = SignalRustWrapperBindings();
       
       keyManager = SignalKeyManager(
-        secureStorage: const FlutterSecureStorage(),
+        // Use in-memory secure storage to avoid platform channel dependence in tests.
+        secureStorage: InMemoryFlutterSecureStorage(),
         ffiBindings: ffiBindings,
       );
       
@@ -64,44 +66,8 @@ void main() {
     });
 
     tearDown(() {
-      // Hybrid disposal approach: Try to dispose (tests cleanup path), but don't fail tests if it crashes
-      // This gives us:
-      // - Disposal verification when libraries work correctly
-      // - Test reliability when native cleanup is broken
-      // - Production parity (same disposal code as production)
-      
-      // Dispose in reverse order of initialization (dependencies first)
-      try {
-        if (storeCallbacks.isInitialized) {
-          storeCallbacks.dispose();
-        }
-      } catch (e) {
-        // Silently ignore disposal failures - test already passed
-      }
-      
-      try {
-        if (platformBridge.isInitialized) {
-          platformBridge.dispose();
-        }
-      } catch (e) {
-        // Silently ignore disposal failures - test already passed
-      }
-      
-      try {
-        if (rustWrapper.isInitialized) {
-          rustWrapper.dispose();
-        }
-      } catch (e) {
-        // Silently ignore disposal failures - test already passed
-      }
-      
-      try {
-        if (ffiBindings.isInitialized) {
-          ffiBindings.dispose();
-        }
-      } catch (e) {
-        // Silently ignore disposal failures - test already passed
-      }
+      // NOTE: We intentionally avoid disposing native-backed Signal components in unit tests.
+      // Native teardown can cause SIGABRT during finalization on some platforms.
     });
 
     test('Platform Bridge can be initialized', () async {

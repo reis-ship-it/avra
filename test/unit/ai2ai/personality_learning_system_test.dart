@@ -81,7 +81,17 @@ void main() {
         );
 
         expect(evolved.dimensions['exploration_eagerness'], equals(0.8));
-        expect(evolved.dimensions['community_orientation'], equals(1.0)); // Clamped
+        // Drift resistance clamps to core + maxDriftFromCore (0.5 + 0.3 = 0.8).
+        final coreCommunity =
+            profile.corePersonality['community_orientation'] ??
+                VibeConstants.defaultDimensionValue;
+        expect(
+          evolved.dimensions['community_orientation'],
+          equals((coreCommunity + PersonalityProfile.maxDriftFromCore).clamp(
+            VibeConstants.minDimensionValue,
+            VibeConstants.maxDimensionValue,
+          )),
+        );
         expect(evolved.dimensionConfidence['exploration_eagerness'], equals(0.7));
         expect(evolved.archetype, equals('adventurous_explorer'));
         expect(evolved.authenticity, equals(0.8));

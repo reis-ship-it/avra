@@ -19,7 +19,6 @@ import 'dart:developer' as developer;
 
 // Flutter dependencies
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_memory.dart';
 
 // Signal Protocol imports
@@ -255,7 +254,8 @@ void main() async {
     final session = await aliceSessionManager.getSession('agent_bob');
     logStep('Session verification', data: {
       'sessionExists': session != null,
-      'sessionBytesLength': session?.sessionBytes.length ?? 0,
+      // SignalSessionState does not expose raw bytes; use JSON size as a proxy.
+      'sessionJsonLength': session == null ? 0 : session.toJson().toString().length,
     });
     
     print('');

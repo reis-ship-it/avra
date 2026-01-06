@@ -295,7 +295,7 @@ Each layer handles errors independently:
 - **Component Diagrams:** [`COMPONENT_DIAGRAMS.md`](./COMPONENT_DIAGRAMS.md)
 - **Architecture Decisions:** [`ARCHITECTURE_DECISIONS.md`](./ARCHITECTURE_DECISIONS.md)
 - **Expertise Network Layers:** [`EXPERTISE_NETWORK_LAYERS.md`](./EXPERTISE_NETWORK_LAYERS.md)
-- **Original Documentation:** `VIBE_CODING/ARCHITECTURE/architecture_layers.md`
+- **Original Documentation:** `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/architecture_layers.md`
 
 ---
 

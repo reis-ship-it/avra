@@ -23,27 +23,35 @@ void main() {
         (WidgetTester tester) async {
       // Test business logic: search bar display and interactions
       final widget1 = WidgetTestHelpers.createTestableWidget(
-        child: const CustomSearchBar(),
+        child: const CustomSearchBar(key: ValueKey('custom_search_bar_1')),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
       expect(find.text('Search...'), findsOneWidget);
       expect(find.byIcon(Icons.search), findsOneWidget);
 
       final widget2 = WidgetTestHelpers.createTestableWidget(
-        child: const CustomSearchBar(hintText: 'Search spots...'),
+        child: const CustomSearchBar(
+          key: ValueKey('custom_search_bar_2'),
+          hintText: 'Search spots...',
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       expect(find.text('Search spots...'), findsOneWidget);
 
       final widget3 = WidgetTestHelpers.createTestableWidget(
-        child: const CustomSearchBar(initialValue: 'test query'),
+        child: const CustomSearchBar(
+          key: ValueKey('custom_search_bar_3'),
+          initialValue: 'test query',
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget3);
-      expect(find.text('test query'), findsOneWidget);
+      final tfWithInitial = tester.widget<TextField>(find.byType(TextField));
+      expect(tfWithInitial.controller?.text, equals('test query'));
 
       String? changedValue;
       final widget4 = WidgetTestHelpers.createTestableWidget(
         child: CustomSearchBar(
+          key: const ValueKey('custom_search_bar_4'),
           onChanged: (value) => changedValue = value,
         ),
       );
@@ -53,7 +61,10 @@ void main() {
       expect(changedValue, equals('new query'));
 
       final widget5 = WidgetTestHelpers.createTestableWidget(
-        child: const CustomSearchBar(showClearButton: true),
+        child: const CustomSearchBar(
+          key: ValueKey('custom_search_bar_5'),
+          showClearButton: true,
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget5);
       await tester.enterText(find.byType(TextField), 'test');
@@ -61,7 +72,10 @@ void main() {
       expect(find.byIcon(Icons.clear), findsOneWidget);
 
       final widget6 = WidgetTestHelpers.createTestableWidget(
-        child: const CustomSearchBar(enabled: false),
+        child: const CustomSearchBar(
+          key: ValueKey('custom_search_bar_6'),
+          enabled: false,
+        ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget6);
       final textField = tester.widget<TextField>(find.byType(TextField));

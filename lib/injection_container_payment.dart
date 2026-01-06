@@ -10,7 +10,9 @@ import 'package:spots/core/services/refund_service.dart';
 import 'package:spots/core/services/cancellation_service.dart';
 import 'package:spots/core/services/partnership_service.dart';
 import 'package:spots/core/services/business_service.dart';
+import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:spots/core/services/sponsorship_service.dart';
+import 'package:spots/core/services/vibe_compatibility_service.dart';
 import 'package:spots/core/services/product_tracking_service.dart';
 import 'package:spots/core/services/product_sales_service.dart';
 import 'package:spots/core/services/brand_analytics_service.dart';
@@ -18,9 +20,12 @@ import 'package:spots/core/services/brand_discovery_service.dart';
 import 'package:spots/core/services/sales_tax_service.dart';
 import 'package:spots/core/config/stripe_config.dart';
 import 'package:spots/core/controllers/payment_processing_controller.dart';
+import 'package:spots/core/ai/personality_learning.dart';
+import 'package:spots_knot/services/knot/entity_knot_service.dart';
+import 'package:spots_knot/services/knot/personality_knot_service.dart';
 
 /// Payment Services Registration Module
-/// 
+///
 /// Registers all payment, revenue, and business-related services.
 /// This includes:
 /// - Payment processing (Stripe, PaymentService)
@@ -28,7 +33,8 @@ import 'package:spots/core/controllers/payment_processing_controller.dart';
 /// - Business services (Partnership, Sponsorship, Business)
 /// - Product tracking and brand analytics
 Future<void> registerPaymentServices(GetIt sl) async {
-  const logger = AppLogger(defaultTag: 'DI-Payment', minimumLevel: LogLevel.debug);
+  const logger =
+      AppLogger(defaultTag: 'DI-Payment', minimumLevel: LogLevel.debug);
   logger.debug('💳 [DI-Payment] Registering payment services...');
 
   // Payment Processing Services - Agent 1: Payment Processing & Revenue
@@ -61,17 +67,32 @@ Future<void> registerPaymentServices(GetIt sl) async {
 
   // Note: BusinessService is registered as a shared service in main container
 
+  // Truthful vibe compatibility service (quantum + knot).
+  //
+  // Registered here because Payment services (Partnership/Sponsorship) depend on it.
+  // The instance is created lazily; dependencies (PersonalityLearning, knot services)
+  // will be available after full container initialization.
+  sl.registerLazySingleton<VibeCompatibilityService>(
+    () => QuantumKnotVibeCompatibilityService(
+      personalityLearning: sl<PersonalityLearning>(),
+      personalityKnotService: sl<PersonalityKnotService>(),
+      entityKnotService: sl<EntityKnotService>(),
+    ),
+  );
+
   // Register PartnershipService (required by RevenueSplitService)
   sl.registerLazySingleton<PartnershipService>(() => PartnershipService(
         eventService: sl<ExpertiseEventService>(),
         businessService: sl<BusinessService>(),
+        vibeCompatibilityService: sl<VibeCompatibilityService>(),
+        ledgerRecorder: sl<LedgerRecorderServiceV0>(),
       ));
 
   // Register SponsorshipService (required by ProductTrackingService and BrandAnalyticsService)
   sl.registerLazySingleton(() => SponsorshipService(
         eventService: sl<ExpertiseEventService>(),
         partnershipService: sl<PartnershipService>(),
-        businessService: sl<BusinessService>(),
+        vibeCompatibilityService: sl<VibeCompatibilityService>(),
       ));
 
   // Register RevenueSplitService (required by PayoutService)
@@ -125,10 +146,13 @@ Future<void> registerPaymentServices(GetIt sl) async {
       ));
 
   // Payment Processing Controller (Phase 8.11)
-  sl.registerLazySingleton(() => PaymentProcessingController(
-    salesTaxService: sl<SalesTaxService>(),
-    paymentEventService: sl<PaymentEventService>(),
-  ));
+  if (!sl.isRegistered<PaymentProcessingController>()) {
+    sl.registerLazySingleton<PaymentProcessingController>(
+        () => PaymentProcessingController(
+              salesTaxService: sl<SalesTaxService>(),
+              paymentEventService: sl<PaymentEventService>(),
+            ));
+  }
 
   logger.debug('✅ [DI-Payment] Payment services registered');
 }

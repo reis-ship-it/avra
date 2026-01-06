@@ -82,7 +82,7 @@ All VIBE_CODING documentation has been successfully migrated to the new `docs/ai
 1. ✅ Created folder structure for LLM integration docs
 2. ✅ Migrated all VIBE_CODING files to appropriate locations
 3. ✅ Created README files for new folders
-4. ✅ Added archive note to VIBE_CODING/README.md
+4. ✅ Added archive note to docs/_archive/vibe_coding/VIBE_CODING/README.md
 5. ✅ Organized LLM docs in separate location
 
 ---

@@ -5,10 +5,14 @@
 // Patent #29: Multi-Entity Quantum Entanglement Matching System
 
 import 'dart:developer' as developer;
+import 'dart:math' as math;
+
 import 'package:spots/core/controllers/base/workflow_controller.dart';
 import 'package:spots/core/controllers/base/controller_result.dart';
 import 'package:spots/core/models/matching_result.dart';
 import 'package:spots/core/models/matching_input.dart';
+import 'package:spots/core/services/ledgers/ledger_audit_v0.dart';
+import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
 import 'package:spots_quantum/models/quantum_entity_state.dart';
 import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:spots_core/services/atomic_clock_service.dart';
@@ -20,15 +24,14 @@ import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots_quantum/services/quantum/meaningful_connection_metrics_service.dart';
+import 'package:spots/core/services/quantum/meaningful_connection_metrics_service.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/core/models/business_account.dart';
 import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots/core/models/unified_models.dart' hide UnifiedUser;
+import 'package:spots_core/models/unified_location_data.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
-import 'dart:math' as math;
 
 /// Result class for quantum matching controller
 class QuantumMatchingResult extends ControllerResult {
@@ -142,6 +145,19 @@ class QuantumMatchingController
       // Validate input
       final validation = validate(input);
       if (!validation.isValid) {
+        await LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.expertise,
+          eventType: 'quantum_matching_failed',
+          occurredAt: DateTime.now(),
+          entityType: 'user',
+          entityId: input.user.id,
+          payload: <String, Object?>{
+            'schema_version': 0,
+            'error_code': 'VALIDATION_ERROR',
+            'error': validation.firstError ?? 'Invalid input',
+            'validation_errors': validation.allErrors,
+          },
+        );
         return QuantumMatchingResult.failure(
           error: validation.firstError ?? 'Invalid input',
           errorCode: 'VALIDATION_ERROR',
@@ -160,6 +176,19 @@ class QuantumMatchingController
       );
 
       if (quantumStates.isEmpty) {
+        await LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.expertise,
+          eventType: 'quantum_matching_failed',
+          occurredAt: tAtomic.serverTime,
+          entityType: 'user',
+          entityId: input.user.id,
+          payload: <String, Object?>{
+            'schema_version': 0,
+            'atomic_timestamp_id': tAtomic.timestampId,
+            'error_code': 'QUANTUM_STATE_CONVERSION_ERROR',
+            'error': 'Failed to convert entities to quantum states',
+          },
+        );
         return QuantumMatchingResult.failure(
           error: 'Failed to convert entities to quantum states',
           errorCode: 'QUANTUM_STATE_CONVERSION_ERROR',
@@ -171,15 +200,18 @@ class QuantumMatchingController
         entityStates: quantumStates,
       );
 
-      // STEP 4: Calculate quantum compatibility
+      // STEP 4: Calculate quantum compatibility from entangled state
+      // Based on Patent #29: Multi-Entity Quantum Entanglement Matching
+      // Formula: F(|ψ_entangled⟩, |ψ_user⟩) = |⟨ψ_entangled_projected|ψ_user⟩|²
+      // The entangled state lives in a tensor-product space, so we project it
+      // to the user's dimension and calculate quantum fidelity.
       final userState = quantumStates.firstWhere(
         (s) => s.entityType == QuantumEntityType.user,
       );
-      final quantumFidelity = await _entanglementService.calculateFidelity(
-        await _entanglementService.createEntangledState(
-          entityStates: [userState],
-        ),
-        entangledState,
+      final quantumFidelity = _calculateQuantumFidelityFromEntangledState(
+        entangledState: entangledState,
+        userState: userState,
+        allStates: quantumStates,
       );
 
       // STEP 5: Apply location/timing factors
@@ -253,6 +285,27 @@ class QuantumMatchingController
         },
       );
 
+      await LedgerAuditV0.tryAppend(
+        domain: LedgerDomainV0.expertise,
+        eventType: 'quantum_matching_executed',
+        occurredAt: tAtomic.serverTime,
+        entityType: 'user',
+        entityId: input.user.id,
+        payload: <String, Object?>{
+          'schema_version': 0,
+          'atomic_timestamp_id': tAtomic.timestampId,
+          'entity_count': quantumStates.length,
+          'compatibility': combinedCompatibility,
+          'quantum_compatibility': quantumFidelity,
+          'location_compatibility': locationTimingFactors.locationCompatibility,
+          'timing_compatibility': locationTimingFactors.timingCompatibility,
+          if (knotCompatibility != null)
+            'knot_compatibility': knotCompatibility,
+          if (meaningfulConnectionScore != null)
+            'meaningful_connection_score': meaningfulConnectionScore,
+        },
+      );
+
       developer.log(
         '✅ Multi-entity quantum matching complete: compatibility=${combinedCompatibility.toStringAsFixed(3)}',
         name: _logName,
@@ -266,6 +319,18 @@ class QuantumMatchingController
         },
       );
     } catch (e, stackTrace) {
+      await LedgerAuditV0.tryAppend(
+        domain: LedgerDomainV0.expertise,
+        eventType: 'quantum_matching_failed',
+        occurredAt: DateTime.now(),
+        entityType: 'user',
+        entityId: input.user.id,
+        payload: <String, Object?>{
+          'schema_version': 0,
+          'error_code': 'MATCHING_ERROR',
+          'error': e.toString(),
+        },
+      );
       developer.log(
         '❌ Error in multi-entity quantum matching: $e',
         error: e,
@@ -523,7 +588,7 @@ class QuantumMatchingController
     // Get location quantum state
     EntityLocationQuantumState? locationState;
     try {
-      final unifiedLocation = UnifiedLocation(
+      final unifiedLocation = UnifiedLocationData(
         latitude: spot.latitude,
         longitude: spot.longitude,
         city: spot.address ?? spot.name,
@@ -707,6 +772,281 @@ class QuantumMatchingController
     return similarity.clamp(0.0, 1.0);
   }
 
+  List<double> _quantumEntityStateToVector(QuantumEntityState state) {
+    final vector = <double>[];
+
+    // Use sorted keys for stable ordering across entities.
+    final personalityKeys = state.personalityState.keys.toList()..sort();
+    for (final k in personalityKeys) {
+      vector.add(state.personalityState[k] ?? 0.0);
+    }
+
+    final vibeKeys = state.quantumVibeAnalysis.keys.toList()..sort();
+    for (final k in vibeKeys) {
+      vector.add(state.quantumVibeAnalysis[k] ?? 0.0);
+    }
+
+    if (state.location != null) {
+      vector.add(state.location!.latitudeQuantumState);
+      vector.add(state.location!.longitudeQuantumState);
+      vector.add(state.location!.accessibilityScore);
+      vector.add(state.location!.vibeLocationMatch);
+    }
+
+    if (state.timing != null) {
+      vector.add(state.timing!.timeOfDayPreference);
+      vector.add(state.timing!.dayOfWeekPreference);
+      vector.add(state.timing!.frequencyPreference);
+      vector.add(state.timing!.durationPreference);
+      vector.add(state.timing!.timingVibeMatch);
+    }
+
+    return vector;
+  }
+
+  double _cosineSimilarity(List<double> a, List<double> b) {
+    final maxLen = math.max(a.length, b.length);
+    if (maxLen == 0) return 0.5;
+
+    var dot = 0.0;
+    var normA = 0.0;
+    var normB = 0.0;
+    for (var i = 0; i < maxLen; i++) {
+      final av = i < a.length ? a[i] : 0.0;
+      final bv = i < b.length ? b[i] : 0.0;
+      dot += av * bv;
+      normA += av * av;
+      normB += bv * bv;
+    }
+
+    if (normA == 0.0 || normB == 0.0) {
+      return 0.5;
+    }
+
+    final sim = dot / (math.sqrt(normA) * math.sqrt(normB));
+    if (sim.isNaN || sim.isInfinite) return 0.5;
+    return sim.clamp(0.0, 1.0);
+  }
+
+  /// Calculate quantum fidelity from entangled state
+  ///
+  /// Based on Patent #29: Multi-Entity Quantum Entanglement Matching
+  /// Formula: F(|ψ_entangled⟩, |ψ_user⟩) = |⟨ψ_entangled_projected|ψ_user⟩|²
+  ///
+  /// **Approach:**
+  /// 1. Project high-dimensional entangled state to user's dimension
+  /// 2. Calculate quantum inner product: ⟨ψ_entangled_projected|ψ_user⟩
+  /// 3. Quantum fidelity: |inner_product|²
+  ///
+  /// **Fallback:**
+  /// If projection fails or dimensions don't match, falls back to
+  /// weighted average using entanglement coefficients.
+  double _calculateQuantumFidelityFromEntangledState({
+    required EntangledQuantumState entangledState,
+    required QuantumEntityState userState,
+    required List<QuantumEntityState> allStates,
+  }) {
+    try {
+      final userVector = _quantumEntityStateToVector(userState);
+      final userDimension = userVector.length;
+      final entangledVector = entangledState.entangledVector;
+      final entangledDimension = entangledVector.length;
+
+      // Case 1: Same dimension - direct inner product
+      if (entangledDimension == userDimension) {
+        var innerProduct = 0.0;
+        for (var i = 0; i < userDimension; i++) {
+          innerProduct += entangledVector[i] * userVector[i];
+        }
+        // Quantum fidelity: |⟨ψ_entangled|ψ_user⟩|²
+        final fidelity = (innerProduct * innerProduct).abs();
+        developer.log(
+          'Quantum fidelity (direct): ${fidelity.toStringAsFixed(4)}',
+          name: _logName,
+        );
+        return fidelity.clamp(0.0, 1.0);
+      }
+
+      // Case 2: Entangled state is higher dimension - project to user dimension
+      if (entangledDimension > userDimension) {
+        // Project by reshaping and averaging chunks (patent experiment method)
+        if (entangledDimension % userDimension == 0) {
+          // Perfect division: reshape and average
+          final chunks = entangledDimension ~/ userDimension;
+          final projected = List<double>.filled(userDimension, 0.0);
+
+          for (var chunk = 0; chunk < chunks; chunk++) {
+            for (var i = 0; i < userDimension; i++) {
+              final idx = chunk * userDimension + i;
+              projected[i] += entangledVector[idx];
+            }
+          }
+
+          // Average
+          for (var i = 0; i < userDimension; i++) {
+            projected[i] /= chunks;
+          }
+
+          // Normalize projection
+          final norm = math.sqrt(
+            projected.fold<double>(0.0, (sum, v) => sum + v * v),
+          );
+          if (norm > 0.0001) {
+            for (var i = 0; i < userDimension; i++) {
+              projected[i] /= norm;
+            }
+          }
+
+          // Calculate inner product: ⟨ψ_entangled_projected|ψ_user⟩
+          var innerProduct = 0.0;
+          for (var i = 0; i < userDimension; i++) {
+            innerProduct += projected[i] * userVector[i];
+          }
+
+          // Quantum fidelity: |⟨ψ_entangled_projected|ψ_user⟩|²
+          final fidelity = (innerProduct * innerProduct).abs();
+          developer.log(
+            'Quantum fidelity (projected, chunks=$chunks): ${fidelity.toStringAsFixed(4)}',
+            name: _logName,
+          );
+          return fidelity.clamp(0.0, 1.0);
+        } else {
+          // Not perfect division: take first userDimension elements and normalize
+          final projected = entangledVector.sublist(0, userDimension);
+          final norm = math.sqrt(
+            projected.fold<double>(0.0, (sum, v) => sum + v * v),
+          );
+
+          if (norm > 0.0001) {
+            for (var i = 0; i < userDimension; i++) {
+              projected[i] /= norm;
+            }
+          }
+
+          // Calculate inner product
+          var innerProduct = 0.0;
+          for (var i = 0; i < userDimension; i++) {
+            innerProduct += projected[i] * userVector[i];
+          }
+
+          // Quantum fidelity: |⟨ψ_entangled_projected|ψ_user⟩|²
+          final fidelity = (innerProduct * innerProduct).abs();
+          developer.log(
+            'Quantum fidelity (projected, first N): ${fidelity.toStringAsFixed(4)}',
+            name: _logName,
+          );
+          return fidelity.clamp(0.0, 1.0);
+        }
+      }
+
+      // Case 3: Entangled state is lower dimension - pad or use coefficient-weighted fallback
+      // This shouldn't happen in normal operation, but handle gracefully
+      developer.log(
+        '⚠️ Entangled dimension ($entangledDimension) < user dimension ($userDimension), using coefficient-weighted fallback',
+        name: _logName,
+      );
+      return _calculateCoefficientWeightedFidelity(
+        entangledState: entangledState,
+        userState: userState,
+        allStates: allStates,
+      );
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error calculating quantum fidelity from entangled state: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+      // Fallback to original method
+      return _calculateUserToTargetsFidelity(
+        userState: userState,
+        allStates: allStates,
+      );
+    }
+  }
+
+  /// Calculate fidelity using entanglement coefficients as weights
+  ///
+  /// Fallback method when direct projection isn't possible.
+  /// Uses entanglement coefficients to weight entity compatibility.
+  double _calculateCoefficientWeightedFidelity({
+    required EntangledQuantumState entangledState,
+    required QuantumEntityState userState,
+    required List<QuantumEntityState> allStates,
+  }) {
+    final userIndex = allStates.indexOf(userState);
+    if (userIndex < 0) {
+      return _calculateUserToTargetsFidelity(
+        userState: userState,
+        allStates: allStates,
+      );
+    }
+
+    final userVector = _quantumEntityStateToVector(userState);
+    double totalWeightedCompatibility = 0.0;
+    double totalWeight = 0.0;
+
+    for (var i = 0; i < allStates.length; i++) {
+      if (i != userIndex && allStates[i].entityType != QuantumEntityType.user) {
+        // Coefficient squared = probability/strength of entanglement
+        final coefficient = i < entangledState.coefficients.length
+            ? entangledState.coefficients[i]
+            : 1.0 / allStates.length;
+        final weight = coefficient * coefficient;
+
+        // Calculate state similarity
+        final targetVector = _quantumEntityStateToVector(allStates[i]);
+        final similarity = _cosineSimilarity(userVector, targetVector);
+
+        // Weighted combination: entanglement strength × state similarity
+        totalWeightedCompatibility += weight * similarity;
+        totalWeight += weight;
+      }
+    }
+
+    if (totalWeight > 0.0001) {
+      final fidelity =
+          (totalWeightedCompatibility / totalWeight).clamp(0.0, 1.0);
+      developer.log(
+        'Quantum fidelity (coefficient-weighted): ${fidelity.toStringAsFixed(4)}',
+        name: _logName,
+      );
+      return fidelity;
+    }
+
+    // Final fallback
+    return _calculateUserToTargetsFidelity(
+      userState: userState,
+      allStates: allStates,
+    );
+  }
+
+  double _calculateUserToTargetsFidelity({
+    required QuantumEntityState userState,
+    required List<QuantumEntityState> allStates,
+  }) {
+    final userVector = _quantumEntityStateToVector(userState);
+    var total = 0.0;
+    var count = 0;
+
+    for (final state in allStates) {
+      if (identical(state, userState) ||
+          state.entityType == QuantumEntityType.user) {
+        continue;
+      }
+      final targetVector = _quantumEntityStateToVector(state);
+      total += _cosineSimilarity(userVector, targetVector);
+      count++;
+    }
+
+    if (count == 0) {
+      // Should not happen (input validation requires at least one entity),
+      // but keep a neutral fallback.
+      return 0.5;
+    }
+    return (total / count).clamp(0.0, 1.0);
+  }
+
   /// Combine all compatibility factors
   double _combineCompatibilityFactors({
     required double quantumFidelity,
@@ -750,17 +1090,9 @@ class QuantumMatchingController
       double compatibility = 0.0;
 
       // 1. Quantum entanglement compatibility (40% weight)
-      final userEntangledState =
-          await _entanglementService.createEntangledState(
-        entityStates: [userState],
-      );
-      final eventEntangledState =
-          await _entanglementService.createEntangledState(
-        entityStates: quantumStates,
-      );
-      final quantumFidelity = await _entanglementService.calculateFidelity(
-        userEntangledState,
-        eventEntangledState,
+      final quantumFidelity = _calculateUserToTargetsFidelity(
+        userState: userState,
+        allStates: quantumStates,
       );
       compatibility += 0.4 * quantumFidelity;
 
@@ -872,14 +1204,15 @@ class QuantumMatchingController
     return alignment.clamp(0.0, 1.0);
   }
 
-  /// Parse location string to UnifiedLocation
-  Future<UnifiedLocation?> _parseLocationString(String locationString) async {
+  /// Parse location string to UnifiedLocationData
+  Future<UnifiedLocationData?> _parseLocationString(
+      String locationString) async {
     try {
       // Use geocoding to parse location string
       final placemarks = await geocoding.locationFromAddress(locationString);
       if (placemarks.isNotEmpty) {
         final placemark = placemarks.first;
-        return UnifiedLocation(
+        return UnifiedLocationData(
           latitude: placemark.latitude,
           longitude: placemark.longitude,
           city: locationString,

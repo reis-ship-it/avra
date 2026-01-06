@@ -1,26 +1,34 @@
 import 'package:get_it/get_it.dart';
 import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/storage_service.dart' show StorageService, SharedPreferencesCompat;
+import 'package:spots/core/services/storage_service.dart'
+    show StorageService, SharedPreferencesCompat;
 import 'package:spots/core/services/supabase_service.dart';
 import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:spots/core/services/post_event_feedback_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/ai2ai_learning_service.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/services/quantum_satisfaction_enhancer.dart';
 import 'package:spots/core/ai/feedback_learning.dart' show UserFeedbackAnalyzer;
 import 'package:spots/core/ml/nlp_processor.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/services/usage_pattern_tracker.dart';
 import 'package:spots/core/ai2ai/connection_log_queue.dart';
 import 'package:spots/core/ai2ai/cloud_intelligence_sync.dart';
-import 'package:spots/core/network/ai2ai_protocol.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots_ai/services/ai2ai_realtime_service.dart';
+import 'package:spots/core/crypto/signal/signal_key_manager.dart';
+import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
 import 'package:spots_ai/services/contextual_personality_service.dart';
+import 'package:spots_knot/services/knot/knot_evolution_coordinator_service.dart';
+import 'dart:developer' as developer;
 import 'package:spots/core/services/enhanced_connectivity_service.dart';
 import 'package:spots/core/p2p/federated_learning.dart';
+import 'package:spots/core/ai/continuous_learning/data_collector.dart';
+import 'package:spots/core/ai/continuous_learning/data_processor.dart';
+import 'package:spots/core/ai/continuous_learning/orchestrator.dart';
 import 'package:spots/core/ai/continuous_learning_system.dart';
 import 'package:spots/core/ai/event_queue.dart';
 import 'package:spots/core/ai/event_logger.dart';
@@ -36,6 +44,9 @@ import 'package:spots/core/services/user_name_resolution_service.dart';
 import 'package:spots/core/services/personality_agent_chat_service.dart';
 import 'package:spots/core/services/friend_chat_service.dart';
 import 'package:spots/core/services/community_chat_service.dart';
+import 'package:spots/core/services/dm_message_store.dart';
+import 'package:spots/core/services/community_message_store.dart';
+import 'package:spots/core/services/community_sender_key_service.dart';
 import 'package:spots/core/ai2ai/anonymous_communication.dart' as ai2ai;
 import 'package:spots/core/services/business_expert_chat_service_ai2ai.dart';
 import 'package:spots/core/services/business_business_chat_service_ai2ai.dart';
@@ -46,11 +57,18 @@ import 'package:spots/core/services/business_shared_agent_service.dart';
 import 'package:spots/core/services/business_account_service.dart';
 import 'package:spots/core/services/community_service.dart';
 import 'package:spots/core/services/geographic_expansion_service.dart';
+import 'package:spots/core/services/feature_flag_service.dart';
+import 'package:spots/data/repositories/hybrid_community_repository.dart';
+import 'package:spots/data/repositories/local_community_repository.dart';
+import 'package:spots/data/repositories/supabase_community_repository.dart';
+import 'package:spots/domain/repositories/community_repository.dart';
 import 'package:spots/core/services/message_encryption_service.dart';
 import 'package:spots/core/services/user_anonymization_service.dart';
-import 'package:spots/core/services/event_recommendation_service.dart' as event_rec_service;
+import 'package:spots/core/services/event_recommendation_service.dart'
+    as event_rec_service;
 import 'package:spots/core/services/event_matching_service.dart';
 import 'package:spots/core/services/spot_vibe_matching_service.dart';
+import 'package:spots/core/services/vibe_compatibility_service.dart';
 import 'package:spots/core/services/oauth_deep_link_handler.dart';
 import 'package:spots/core/services/social_media_connection_service.dart';
 import 'package:spots/core/services/social_media/base/social_media_common_utils.dart';
@@ -68,21 +86,22 @@ import 'package:spots/core/services/public_profile_analysis_service.dart';
 import 'package:spots/core/services/social_media_vibe_analyzer.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
 import 'package:spots/core/services/onboarding_data_service.dart';
+import 'package:spots/core/services/onboarding_suggestion_event_store.dart';
 import 'package:spots/core/services/onboarding_place_list_generator.dart';
 import 'package:spots/core/services/onboarding_recommendation_service.dart';
+import 'package:spots/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
 import 'package:spots/data/datasources/remote/google_places_datasource.dart';
 import 'package:spots/core/services/llm_service.dart';
 import 'package:spots/core/services/legal_document_service.dart';
-import 'package:spots/core/network/device_discovery.dart';
-import 'package:spots/core/network/device_discovery_factory.dart';
-import 'package:spots/core/network/personality_advertising_service.dart';
+import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:spots/core/services/ledgers/ledger_receipts_service_v0.dart';
 import 'package:spots/core/services/ai_improvement_tracking_service.dart';
 import 'package:spots/core/services/action_history_service.dart';
 import 'package:spots/core/services/location_obfuscation_service.dart';
 import 'package:spots/core/services/field_encryption_service.dart';
 import 'package:spots/core/services/audit_log_service.dart';
+import 'package:spots/core/controllers/quantum_matching_controller.dart';
 import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
-import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart';
 import 'package:spots_knot/services/knot/entity_knot_service.dart';
 import 'package:spots_knot/services/knot/personality_knot_service.dart';
 import 'package:spots_knot/services/knot/knot_fabric_service.dart';
@@ -125,6 +144,10 @@ Future<void> registerAIServices(GetIt sl) async {
   // Legal Document Service (for Terms of Service and Privacy Policy acceptance)
   sl.registerLazySingleton<LegalDocumentService>(() => LegalDocumentService(
         eventService: sl<ExpertiseEventService>(),
+        supabaseService: sl<SupabaseService>(),
+        storage: sl<StorageService>(),
+        ledger: sl<LedgerRecorderServiceV0>(),
+        receipts: sl<LedgerReceiptsServiceV0>(),
       ));
 
   sl.registerLazySingleton<DeviceDiscoveryService>(() {
@@ -134,9 +157,7 @@ Future<void> registerAIServices(GetIt sl) async {
 
   // Personality Advertising Service
   sl.registerLazySingleton<PersonalityAdvertisingService>(() {
-    final anonymizationService = sl<UserAnonymizationService>();
     return PersonalityAdvertisingService(
-      anonymizationService: anonymizationService,
     );
   });
 
@@ -180,7 +201,11 @@ Future<void> registerAIServices(GetIt sl) async {
   // PersonalitySyncService (Philosophy: "Cloud sync is optional and encrypted")
   sl.registerLazySingleton(() {
     final supabaseService = sl<SupabaseService>();
-    return PersonalitySyncService(supabaseService: supabaseService);
+    final storageService = sl<StorageService>();
+    return PersonalitySyncService(
+      supabaseService: supabaseService,
+      storageService: storageService,
+    );
   });
 
   // UsagePatternTracker (Philosophy: "The key adapts to YOUR usage")
@@ -193,7 +218,6 @@ Future<void> registerAIServices(GetIt sl) async {
   // Phase 14: Updated to use MessageEncryptionService (Signal Protocol ready)
   sl.registerLazySingleton(() => AI2AIProtocol(
         encryptionService: sl<MessageEncryptionService>(),
-        anonymizationService: sl<UserAnonymizationService>(),
       ));
 
   // Connection Log Queue (Philosophy: "Cloud is optional enhancement")
@@ -215,6 +239,8 @@ Future<void> registerAIServices(GetIt sl) async {
     final advertisingService = sl<PersonalityAdvertisingService>();
     final personalityLearning = sl<PersonalityLearning>();
     final ai2aiProtocol = sl<AI2AIProtocol>();
+    final signalKeyManager = sl<SignalKeyManager>();
+    final prefs = sl<SharedPreferencesCompat>();
 
     final orchestrator = VibeConnectionOrchestrator(
       vibeAnalyzer: vibeAnalyzer,
@@ -223,14 +249,42 @@ Future<void> registerAIServices(GetIt sl) async {
       advertisingService: advertisingService,
       personalityLearning: personalityLearning,
       protocol: ai2aiProtocol,
+      signalKeyManager: signalKeyManager,
+      prefs: prefs,
     );
+
+    // Wire personality evolution -> advertising refresh.
+    // This makes "continuous learning" visible to nearby peers when discovery is enabled.
+    // Also wire to knot evolution coordinator for automatic knot regeneration and tracking.
+    personalityLearning.setEvolutionCallback((userId, evolvedProfile) {
+      // Fire-and-forget: we don't want to block learning on BLE/advertising operations.
+      Future<void>(() async {
+        // Update advertising (existing functionality)
+        await orchestrator.updatePersonalityAdvertising(userId, evolvedProfile);
+        
+        // NEW: Handle knot evolution (automatic regeneration and snapshot creation)
+        // Knot services are registered before AI services, so coordinator should be available
+        if (sl.isRegistered<KnotEvolutionCoordinatorService>()) {
+          try {
+            final knotCoordinator = sl<KnotEvolutionCoordinatorService>();
+            await knotCoordinator.handleProfileEvolution(userId, evolvedProfile);
+          } catch (e) {
+            // Log but don't fail - knot evolution is non-blocking
+            developer.log(
+              '⚠️ Failed to handle knot evolution: $e',
+              name: 'injection_container_ai',
+            );
+          }
+        }
+      });
+    });
     // Build realtime with orchestrator and register it for app-wide access
     final realtimeBackend = sl<RealtimeBackend>();
-    final realtime = AI2AIRealtimeService(realtimeBackend, orchestrator);
+    final realtime = AI2AIBroadcastService(realtimeBackend);
     orchestrator.setRealtimeService(realtime);
     // Expose realtime service via DI for UI pages/debug tools
-    if (!sl.isRegistered<AI2AIRealtimeService>()) {
-      sl.registerSingleton<AI2AIRealtimeService>(realtime);
+    if (!sl.isRegistered<AI2AIBroadcastService>()) {
+      sl.registerSingleton<AI2AIBroadcastService>(realtime);
     }
     return orchestrator;
   });
@@ -241,8 +295,7 @@ Future<void> registerAIServices(GetIt sl) async {
   // AI Improvement Tracking Service
   sl.registerLazySingleton(() {
     final storageService = sl<StorageService>();
-    return AIImprovementTrackingService(
-        storage: storageService.defaultStorage);
+    return AIImprovementTrackingService(storage: storageService.defaultStorage);
   });
 
   // Action History Service
@@ -269,8 +322,19 @@ Future<void> registerAIServices(GetIt sl) async {
   // Continuous Learning System
   sl.registerLazySingleton<ContinuousLearningSystem>(() {
     final agentIdService = sl<AgentIdService>();
+    final dataCollector = LearningDataCollector(agentIdService: agentIdService);
+    final dataProcessor = LearningDataProcessor();
+    final orchestrator = ContinuousLearningOrchestrator(
+      dataCollector: dataCollector,
+      dataProcessor: dataProcessor,
+      // Perf triage: slow down in debug/dev to reduce CPU churn.
+      cycleInterval: SupabaseConfig.debug
+          ? const Duration(seconds: 5)
+          : const Duration(seconds: 1),
+    );
     return ContinuousLearningSystem(
       agentIdService: agentIdService,
+      orchestrator: orchestrator,
     );
   });
 
@@ -356,6 +420,13 @@ Future<void> registerAIServices(GetIt sl) async {
       eventService: sl<ExpertiseEventService>(),
       knotRecommendationEngine: sl<IntegratedKnotRecommendationEngine>(),
       personalityLearning: sl<PersonalityLearning>(),
+      vibeCompatibilityService: sl<VibeCompatibilityService>(),
+      agentIdService: sl<AgentIdService>(),
+      knotFabricService: sl<KnotFabricService>(),
+      knotStorageService: sl<KnotStorageService>(),
+      quantumMatchingController: sl.isRegistered<QuantumMatchingController>()
+          ? sl<QuantumMatchingController>()
+          : null,
     ),
   );
 
@@ -364,6 +435,13 @@ Future<void> registerAIServices(GetIt sl) async {
     () => EventMatchingService(
       knotRecommendationEngine: sl<IntegratedKnotRecommendationEngine>(),
       personalityLearning: sl<PersonalityLearning>(),
+      feedbackService: sl.isRegistered<PostEventFeedbackService>()
+          ? sl<PostEventFeedbackService>()
+          : null,
+      socialMediaConnectionService:
+          sl.isRegistered<SocialMediaConnectionService>()
+              ? sl<SocialMediaConnectionService>()
+              : null,
     ),
   );
 
@@ -371,7 +449,6 @@ Future<void> registerAIServices(GetIt sl) async {
   sl.registerLazySingleton<SpotVibeMatchingService>(
     () => SpotVibeMatchingService(
       vibeAnalyzer: sl<UserVibeAnalyzer>(),
-      crossEntityCompatibilityService: sl<CrossEntityCompatibilityService>(),
       entityKnotService: sl<EntityKnotService>(),
       personalityKnotService: sl<PersonalityKnotService>(),
     ),
@@ -489,19 +566,71 @@ Future<void> registerAIServices(GetIt sl) async {
         personalityLearning: sl<PersonalityLearning>(),
         searchRepository: sl<HybridSearchRepository>(),
       ));
-  sl.registerLazySingleton(() => FriendChatService(
-        encryptionService: sl<MessageEncryptionService>(),
-      ));
-  sl.registerLazySingleton(() => CommunityChatService(
+  // DM blob store (payloadless realtime)
+  if (!sl.isRegistered<DmMessageStore>()) {
+    sl.registerLazySingleton(
+        () => DmMessageStore(supabase: sl<SupabaseService>()));
+  }
+
+  // Community sender keys + message store (payloadless notify + single ciphertext)
+  sl.registerLazySingleton(
+      () => CommunityMessageStore(supabase: sl<SupabaseService>()));
+  sl.registerLazySingleton(() => CommunitySenderKeyService(
+        secureStorage: sl<FlutterSecureStorage>(),
+        supabase: sl<SupabaseService>(),
+        agentIdService: sl<AgentIdService>(),
         encryptionService: sl<MessageEncryptionService>(),
       ));
 
-  // Community Service (for community chat member lists)
-  sl.registerLazySingleton(() => CommunityService(
-        expansionService: GeographicExpansionService(),
-        knotFabricService: sl<KnotFabricService>(),
-        knotStorageService: sl<KnotStorageService>(),
+  sl.registerLazySingleton(() => FriendChatService(
+        encryptionService: sl<MessageEncryptionService>(),
+        agentIdService: sl<AgentIdService>(),
+        realtimeBackend: sl<RealtimeBackend>(),
+        atomicClock: sl<AtomicClockService>(),
+        dmStore: sl<DmMessageStore>(),
       ));
+  sl.registerLazySingleton(() => CommunityChatService(
+        encryptionService: sl<MessageEncryptionService>(),
+        agentIdService: sl<AgentIdService>(),
+        realtimeBackend: sl<RealtimeBackend>(),
+        atomicClock: sl<AtomicClockService>(),
+        dmStore: sl<DmMessageStore>(),
+        senderKeyService: sl<CommunitySenderKeyService>(),
+        communityMessageStore: sl<CommunityMessageStore>(),
+      ));
+
+  // Community Service (for community chat member lists)
+  if (!sl.isRegistered<CommunityRepository>() &&
+      sl.isRegistered<StorageService>() &&
+      sl.isRegistered<FeatureFlagService>()) {
+    sl.registerLazySingleton<CommunityRepository>(
+        () => HybridCommunityRepository(
+              local: LocalCommunityRepository(
+                storageService: sl<StorageService>(),
+              ),
+              remote: SupabaseCommunityRepository(
+                supabaseService: sl.isRegistered<SupabaseService>()
+                    ? sl<SupabaseService>()
+                    : SupabaseService(),
+              ),
+              featureFlags: sl<FeatureFlagService>(),
+            ));
+  }
+  if (!sl.isRegistered<CommunityService>()) {
+    sl.registerLazySingleton<CommunityService>(() => CommunityService(
+          expansionService: GeographicExpansionService(),
+          knotFabricService: sl<KnotFabricService>(),
+          knotStorageService: sl<KnotStorageService>(),
+          storageService:
+              sl.isRegistered<StorageService>() ? sl<StorageService>() : null,
+          atomicClockService: sl.isRegistered<AtomicClockService>()
+              ? sl<AtomicClockService>()
+              : AtomicClockService(),
+          repository: sl.isRegistered<CommunityRepository>()
+              ? sl<CommunityRepository>()
+              : null,
+        ));
+  }
 
   // Anonymous Communication Protocol (Phase 14: Signal Protocol ready)
   sl.registerLazySingleton(() => ai2ai.AnonymousCommunicationProtocol(
@@ -558,7 +687,20 @@ Future<void> registerAIServices(GetIt sl) async {
   // Onboarding & Agent Creation Services
   sl.registerLazySingleton(() => OnboardingDataService(
         agentIdService: sl<AgentIdService>(),
-        onboardingAggregationService: null, // Will be resolved lazily if available
+        onboardingAggregationService:
+            null, // Will be resolved lazily if available
+      ));
+
+  // Onboarding suggestion event store (provenance + user actions during onboarding).
+  sl.registerLazySingleton(() => OnboardingSuggestionEventStore(
+        agentIdService: sl<AgentIdService>(),
+      ));
+
+  // Post-install bootstrap: builds local system prompt/memory from onboarding signals.
+  sl.registerLazySingleton(() => LocalLlmPostInstallBootstrapService(
+        agentIdService: sl<AgentIdService>(),
+        onboardingDataService: sl<OnboardingDataService>(),
+        suggestionEventStore: sl<OnboardingSuggestionEventStore>(),
       ));
 
   // Phase 8.5: Onboarding Place List Generator

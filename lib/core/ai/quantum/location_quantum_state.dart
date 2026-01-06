@@ -156,17 +156,45 @@ class LocationQuantumState {
   ///
   /// Returns: `⟨ψ_location_A|ψ_location_B⟩`
   double innerProduct(LocationQuantumState other) {
-    if (stateVector.length != other.stateVector.length) {
-      throw ArgumentError(
-        'Location quantum states must have same dimension',
-      );
-    }
+    // The stateVector includes non-amplitude scalar features (locationType,
+    // accessibilityScore, vibeLocationMatch) which can cause dot products > 1.0
+    // and break the quantum inner product contract.
+    //
+    // Instead, we model location overlap as a Gaussian wavefunction overlap on
+    // normalized lat/lon (0..1), which yields an inner product in (0..1].
+    //
+    // This preserves the contract: `compatibility = |⟨ψA|ψB⟩|² ∈ [0,1]` and
+    // produces meaningful decay for distant locations.
+    const sigma = 0.1; // "spread" in normalized coordinate space
+    const denom = 2 * sigma * sigma;
 
-    double result = 0.0;
-    for (int i = 0; i < stateVector.length; i++) {
-      result += stateVector[i] * other.stateVector[i];
-    }
-    return result;
+    final latA = latitudeState.isNotEmpty ? latitudeState.first * latitudeState.first : 0.5;
+    final latB = other.latitudeState.isNotEmpty ? other.latitudeState.first * other.latitudeState.first : 0.5;
+    final lonA = longitudeState.isNotEmpty ? longitudeState.first * longitudeState.first : 0.5;
+    final lonB = other.longitudeState.isNotEmpty ? other.longitudeState.first * other.longitudeState.first : 0.5;
+
+    final dLat = (latA - latB).abs();
+    var dLon = (lonA - lonB).abs();
+    // Longitude is circular; take shortest wrap-around distance.
+    dLon = math.min(dLon, 1.0 - dLon);
+
+    final latOverlap = math.exp(-(dLat * dLat) / denom);
+    final lonOverlap = math.exp(-(dLon * dLon) / denom);
+
+    // Soft similarity for additional scalar features (0..1). Defaults are
+    // identical in many cases, so this does not dominate distance effects.
+    double scalarSimilarity(double a, double b) =>
+        (1.0 - (a - b).abs()).clamp(0.0, 1.0);
+
+    final typeOverlap = scalarSimilarity(locationType, other.locationType);
+    final accessibilityOverlap =
+        scalarSimilarity(accessibilityScore, other.accessibilityScore);
+    final vibeOverlap =
+        scalarSimilarity(vibeLocationMatch, other.vibeLocationMatch);
+
+    final inner = latOverlap * lonOverlap * typeOverlap * accessibilityOverlap * vibeOverlap;
+    if (inner.isNaN || inner.isInfinite) return 0.0;
+    return inner.clamp(0.0, 1.0);
   }
 
   /// Calculate location compatibility
@@ -174,7 +202,7 @@ class LocationQuantumState {
   /// Returns: `C_location = |⟨ψ_location_A|ψ_location_B⟩|²`
   double locationCompatibility(LocationQuantumState other) {
     final innerProd = innerProduct(other);
-    return innerProd * innerProd; // Squared magnitude
+    return (innerProd * innerProd).clamp(0.0, 1.0); // Squared magnitude
   }
 
   /// Normalize the location quantum state

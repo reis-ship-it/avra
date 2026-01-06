@@ -6,8 +6,12 @@ import 'package:spots/core/services/social_media_insight_service.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/services/preferences_profile_service.dart';
 import 'package:spots/core/services/onboarding_place_list_generator.dart';
+import 'package:spots/core/services/onboarding_geo_context_service.dart';
 import 'package:spots/core/services/onboarding_recommendation_service.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/geo_hierarchy_service.dart';
+import 'package:spots/core/services/locality_agents/locality_agent_ingestion_service_v1.dart';
+import 'package:spots/core/services/storage_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/core/models/onboarding_data.dart';
@@ -65,6 +69,9 @@ class AgentInitializationController
     implements
         WorkflowController<Map<String, dynamic>, AgentInitializationResult> {
   static const String _logName = 'AgentInitializationController';
+  static const int _homebaseGeohashPrecisionUsed = 7;
+  static const int _placesSearchRadiusMeters = 5000;
+
   final AppLogger _logger =
       const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
 
@@ -79,6 +86,8 @@ class AgentInitializationController
   // Phase 3: Knot generation during onboarding
   final PersonalityKnotService? _personalityKnotService;
   final KnotStorageService? _knotStorageService;
+  final GeoHierarchyService _geoHierarchyService;
+  final SharedPreferencesCompat? _prefs;
 
   AgentInitializationController({
     SocialMediaDataCollectionController? socialMediaDataController,
@@ -93,6 +102,8 @@ class AgentInitializationController
     SocialMediaInsightService? socialMediaInsightService,
     PersonalityKnotService? personalityKnotService,
     KnotStorageService? knotStorageService,
+    GeoHierarchyService? geoHierarchyService,
+    SharedPreferencesCompat? prefs,
   })  : _socialMediaDataController = socialMediaDataController ??
             GetIt.instance<SocialMediaDataCollectionController>(),
         _personalityLearning =
@@ -114,6 +125,14 @@ class AgentInitializationController
         _knotStorageService = knotStorageService ??
             (GetIt.instance.isRegistered<KnotStorageService>()
                 ? GetIt.instance<KnotStorageService>()
+                : null),
+        _geoHierarchyService = geoHierarchyService ??
+            (GetIt.instance.isRegistered<GeoHierarchyService>()
+                ? GetIt.instance<GeoHierarchyService>()
+                : GeoHierarchyService()),
+        _prefs = prefs ??
+            (GetIt.instance.isRegistered<SharedPreferencesCompat>()
+                ? GetIt.instance<SharedPreferencesCompat>()
                 : null);
 
   @override
@@ -349,6 +368,48 @@ class AgentInitializationController
           final homebaseForPlaces = onboardingData.homebase ?? '';
 
           if (homebaseForPlaces.isNotEmpty) {
+            final geo = await OnboardingGeoContextService(
+              geoHierarchyService: _geoHierarchyService,
+              prefs: _prefs,
+            ).resolveHomebaseGeoContextBestEffort();
+
+            final geoLabel =
+                (geo.displayName?.isNotEmpty ?? false) ? geo.displayName : null;
+
+            if (geo.hasCoordinates) {
+              _logger.info(
+                '🧭 Using cached homebase coords for place generation: '
+                '${geo.latitude}, ${geo.longitude}'
+                '${geoLabel != null ? ' ($geoLabel)' : ''}'
+                '${geo.cityCode != null ? ' city=${geo.cityCode}' : ''}'
+                '${geo.localityCode != null ? ' locality=${geo.localityCode}' : ''}',
+                tag: _logName,
+              );
+
+              // Seed locality agent with homebase context (best-effort).
+              try {
+                final ingestion =
+                    LocalityAgentIngestionServiceV1.tryGetFromDI();
+                if (ingestion != null) {
+                  await ingestion.seedHomebase(
+                    userId: userId,
+                    agentId: agentId,
+                    latitude: geo.latitude!,
+                    longitude: geo.longitude!,
+                    cityCode: geo.cityCode,
+                  );
+                }
+              } catch (e) {
+                _logger.warn('⚠️ Locality agent homebase seed failed: $e',
+                    tag: _logName);
+              }
+            } else {
+              _logger.debug(
+                'ℹ️ No cached homebase coords found; generating place lists without location bias',
+                tag: _logName,
+              );
+            }
+
             final onboardingDataMap = {
               'age': onboardingData.age,
               'birthday': onboardingData.birthday?.toIso8601String(),
@@ -360,8 +421,8 @@ class AgentInitializationController
             final placeLists = await _placeListGenerator.generatePlaceLists(
               onboardingData: onboardingDataMap,
               homebase: homebaseForPlaces,
-              latitude: null, // TODO: Get from location service
-              longitude: null, // TODO: Get from location service
+              latitude: geo.latitude,
+              longitude: geo.longitude,
               maxLists: 5,
             );
 
@@ -377,11 +438,28 @@ class AgentInitializationController
                               })
                           .toList(),
                       'relevanceScore': list.relevanceScore,
+                      'metadata': {
+                        ...list.metadata,
+                        'geoContext': {
+                          ...geo.toJson(),
+                          'geohashPrecisionUsed': _homebaseGeohashPrecisionUsed,
+                          'radiusMeters': _placesSearchRadiusMeters,
+                        },
+                      },
                     })
                 .toList();
 
             _logger.info('📍 Generated ${placeLists.length} place lists',
                 tag: _logName);
+
+            // Validation marker: confirms geo context was attached to list output.
+            if (geo.hasCoordinates) {
+              _logger.debug(
+                '✅ Place list geoContext attached '
+                '(city=${geo.cityCode ?? "unknown"}, locality=${geo.localityCode ?? "unknown"})',
+                tag: _logName,
+              );
+            }
           }
         } catch (e) {
           _logger.warn('⚠️ Could not generate place lists: $e', tag: _logName);

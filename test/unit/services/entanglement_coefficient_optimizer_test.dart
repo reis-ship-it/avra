@@ -8,7 +8,7 @@ import 'package:spots/core/services/quantum/entanglement_coefficient_optimizer.d
 import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
 import 'package:spots_quantum/models/quantum_entity_state.dart';
 import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 
 void main() {
   group('EntanglementCoefficientOptimizer', () {

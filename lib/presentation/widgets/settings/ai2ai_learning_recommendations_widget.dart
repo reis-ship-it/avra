@@ -1,13 +1,13 @@
 /// AI2AI Learning Recommendations Widget
-/// 
+///
 /// Phase 7, Week 38: AI2AI Learning Methods UI - Integration & Polish
-/// 
+///
 /// Widget displaying learning recommendations:
 /// - Optimal learning partners
 /// - Learning topics
 /// - Development areas
 /// - Recommendation cards
-/// 
+///
 /// Uses AppColors/AppTheme for 100% design token compliance.
 library;
 
@@ -20,21 +20,23 @@ import 'package:spots/core/ai/ai2ai_learning.dart';
 class AI2AILearningRecommendationsWidget extends StatefulWidget {
   /// User ID to show recommendations for
   final String userId;
-  
+
   /// AI2AI learning service
   final AI2AILearning learningService;
-  
+
   const AI2AILearningRecommendationsWidget({
     super.key,
     required this.userId,
     required this.learningService,
   });
-  
+
   @override
-  State<AI2AILearningRecommendationsWidget> createState() => _AI2AILearningRecommendationsWidgetState();
+  State<AI2AILearningRecommendationsWidget> createState() =>
+      _AI2AILearningRecommendationsWidgetState();
 }
 
-class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecommendationsWidget> {
+class _AI2AILearningRecommendationsWidgetState
+    extends State<AI2AILearningRecommendationsWidget> {
   AI2AILearningRecommendations? _recommendations;
   bool _isLoading = true;
   String? _errorMessage;
@@ -53,7 +55,8 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
 
     try {
       // Get learning recommendations
-      final recommendations = await widget.learningService.getLearningRecommendations(widget.userId);
+      final recommendations = await widget.learningService
+          .getLearningRecommendations(widget.userId);
 
       if (mounted) {
         setState(() {
@@ -167,7 +170,8 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
                   ),
                   if (_recommendations!.confidenceScore > 0)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.success.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
@@ -184,30 +188,33 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Optimal Partners
               if (_recommendations!.optimalPartners.isNotEmpty) ...[
                 _buildSectionTitle('Optimal Learning Partners'),
                 const SizedBox(height: 8),
-                ..._recommendations!.optimalPartners.map((partner) => _buildPartnerCard(partner)),
+                ..._recommendations!.optimalPartners
+                    .map((partner) => _buildPartnerCard(partner)),
                 const SizedBox(height: 16),
               ],
-              
+
               // Learning Topics
               if (_recommendations!.learningTopics.isNotEmpty) ...[
                 _buildSectionTitle('Learning Topics'),
                 const SizedBox(height: 8),
-                ..._recommendations!.learningTopics.map((topic) => _buildTopicCard(topic)),
+                ..._recommendations!.learningTopics
+                    .map((topic) => _buildTopicCard(topic)),
                 const SizedBox(height: 16),
               ],
-              
+
               // Development Areas
               if (_recommendations!.developmentAreas.isNotEmpty) ...[
                 _buildSectionTitle('Development Areas'),
                 const SizedBox(height: 8),
-                ..._recommendations!.developmentAreas.map((area) => _buildDevelopmentAreaCard(area)),
+                ..._recommendations!.developmentAreas
+                    .map((area) => _buildDevelopmentAreaCard(area)),
               ],
-              
+
               // Empty State
               if (_recommendations!.optimalPartners.isEmpty &&
                   _recommendations!.learningTopics.isEmpty &&
@@ -274,7 +281,8 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
                 LinearProgressIndicator(
                   value: partner.compatibility,
                   backgroundColor: AppColors.grey200,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(AppColors.primary),
                   minHeight: 4,
                 ),
               ],
@@ -337,7 +345,8 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
                 LinearProgressIndicator(
                   value: topic.potential,
                   backgroundColor: AppColors.grey200,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.success),
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(AppColors.success),
                   minHeight: 4,
                 ),
               ],
@@ -400,7 +409,8 @@ class _AI2AILearningRecommendationsWidgetState extends State<AI2AILearningRecomm
                 LinearProgressIndicator(
                   value: area.priority,
                   backgroundColor: AppColors.grey200,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.warning),
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(AppColors.warning),
                   minHeight: 4,
                 ),
               ],

@@ -20,22 +20,24 @@
 /// ✅ DO: Consolidate related checks into comprehensive test blocks
 /// 
 /// See: docs/plans/test_refactoring/TEST_WRITING_GUIDE.md
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:spots/core/services/reservation_quantum_service.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
 import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:spots_quantum/models/quantum_entity_state.dart';
 import 'package:spots_quantum/models/quantum_entity_type.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots/core/models/unified_models.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:spots_core/models/unified_location_data.dart';
 
 // Mock dependencies
 class MockAtomicClockService extends Mock implements AtomicClockService {}
@@ -48,6 +50,10 @@ void main() {
   setUpAll(() {
     // Register fallback values for mocktail
     registerFallbackValue(const UnifiedLocation(
+      latitude: 0.0,
+      longitude: 0.0,
+    ));
+    registerFallbackValue(const UnifiedLocationData(
       latitude: 0.0,
       longitude: 0.0,
     ));
@@ -80,8 +86,8 @@ void main() {
     group('createReservationQuantumState', () {
       test('should create reservation quantum state with user personality and vibe', () async {
         // Arrange
-        final userId = 'user-123';
-        final eventId = 'event-456';
+        const userId = 'user-123';
+        const eventId = 'event-456';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         // Create mock personality profile
@@ -176,7 +182,7 @@ void main() {
 
       test('should throw exception when personality profile not found', () async {
         // Arrange
-        final userId = 'user-123';
+        const userId = 'user-123';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         final atomicTimestamp = AtomicTimestamp.now(

@@ -1,7 +1,10 @@
 import 'dart:developer' as developer;
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
@@ -11,7 +14,16 @@ import 'package:spots/core/models/connection_metrics.dart';
 import 'package:spots/core/ai/personality_learning.dart' as pl;
 import 'package:spots/core/services/config_service.dart';
 import 'package:spots/core/ai/facts_index.dart';
+import 'package:spots/core/services/device_capability_service.dart';
+import 'package:spots/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
+import 'package:spots/core/services/on_device_ai_capability_gate.dart';
+import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
 import 'package:http/http.dart' as http;
+// NOTE: This is Android-only at runtime. We keep the dependency optional in
+// practice by only using it when `TargetPlatform.android`. Some lint runners
+// may not see newly added pub deps, so we suppress URI resolution warnings.
+// ignore: uri_does_not_exist
+import 'package:llama_flutter_android/llama_flutter_android.dart' as llama;
 
 /// LLM Service for Google Gemini integration
 /// Provides LLM-powered chat and text generation for SPOTS AI features
@@ -21,6 +33,11 @@ import 'package:http/http.dart' as http;
 /// TODO: Standardize error handling to use AppLogger (see week_42_error_handling_standard.md)
 class LLMService {
   static const String _logName = 'LLMService';
+  static const String _prefsKeyOfflineLlmEnabled = 'offline_llm_enabled_v1';
+  static const String _prefsKeyLocalLlmActiveModelDir =
+      'local_llm_active_model_dir_v1';
+  static const String _prefsKeyLocalLlmActiveModelId =
+      'local_llm_active_model_id_v1';
   
   // Resilience configuration
   static const Duration _defaultTimeout = Duration(seconds: 30);
@@ -29,23 +46,143 @@ class LLMService {
   
   final SupabaseClient client;
   final Connectivity connectivity;
+
+  // Local LLM backend (Option B: iOS CoreML + Android llama.cpp).
+  // This is intentionally optional: if the platform integration isn't present,
+  // we fall back to cloud (when online).
+  final LlmBackend _cloudBackend;
+  final LlmBackend _localBackend;
+  final Future<bool> Function({required bool isOnline})? _shouldUseLocalOverride;
+  final Future<bool> Function()? _isOnlineOverride;
   
   // Circuit breaker state
   int _consecutiveFailures = 0;
   DateTime? _circuitBreakerOpenedAt;
   bool _circuitBreakerOpen = false;
   
-  LLMService(this.client, {Connectivity? connectivity}) 
-      : connectivity = connectivity ?? Connectivity();
+  LLMService(
+    this.client, {
+    Connectivity? connectivity,
+    LlmBackend? cloudBackend,
+    LlmBackend? localBackend,
+    Future<bool> Function({required bool isOnline})? shouldUseLocalOverride,
+    Future<bool> Function()? isOnlineOverride,
+  })  : connectivity = connectivity ?? Connectivity(),
+        _cloudBackend = cloudBackend ??
+            CloudFailoverBackend(
+              primary: CloudGeminiBackend(),
+              fallback: CloudGeminiGenerationBackend(),
+            ),
+        _localBackend = localBackend ?? _createLocalBackend(),
+        _shouldUseLocalOverride = shouldUseLocalOverride,
+        _isOnlineOverride = isOnlineOverride;
+
+  static LlmBackend _createLocalBackend() {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return AndroidLlamaFlutterAndroidBackend();
+    }
+    return LocalPlatformLlmBackend();
+  }
   
   /// Check if device is online
   Future<bool> _isOnline() async {
+    final override = _isOnlineOverride;
+    if (override != null) {
+      try {
+        return await override();
+      } catch (_) {
+        // Fall through to connectivity-based check.
+      }
+    }
     try {
       final result = await connectivity.checkConnectivity();
       return !result.contains(ConnectivityResult.none);
     } catch (e) {
       developer.log('Connectivity check failed, assuming offline: $e', name: _logName);
       return false;
+    }
+  }
+
+  Future<SharedPreferencesCompat> _getPrefs() async {
+    return SharedPreferencesCompat.getInstance();
+  }
+
+  Future<bool> _shouldUseLocalLlm({required bool isOnline}) async {
+    final override = _shouldUseLocalOverride;
+    if (override != null) {
+      return await override(isOnline: isOnline);
+    }
+
+    // Local LLM is opt-in and device-gated. If not enabled or not eligible,
+    // keep using cloud (when online).
+    try {
+      final prefs = await _getPrefs();
+      final enabled = prefs.getBool(_prefsKeyOfflineLlmEnabled) ?? false;
+      if (!enabled) return false;
+
+      // Require a locally installed/activated model directory.
+      final activeDir = prefs.getString(_prefsKeyLocalLlmActiveModelDir);
+      if (activeDir == null || activeDir.isEmpty) return false;
+      final activeModelId = prefs.getString(_prefsKeyLocalLlmActiveModelId);
+      if (activeModelId == null || activeModelId.isEmpty) return false;
+
+      // Enforce device capability gate (mid/high only).
+      final caps = await DeviceCapabilityService().getCapabilities();
+      final gate = OnDeviceAiCapabilityGate().evaluate(caps);
+      if (!gate.eligible) return false;
+
+      // If we're offline, local is the only way to do real chat.
+      // If we're online, we still prefer local when enabled (quality + privacy),
+      // but will fall back to cloud if local errors.
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<LlmBackend> _selectBackend() async {
+    final online = await _isOnline();
+    final useLocal = await _shouldUseLocalLlm(isOnline: online);
+    if (!online && !useLocal) {
+      // Offline and local LLM is not available/enabled.
+      // Do not attempt cloud calls when we already know they cannot succeed.
+      throw OfflineException(
+        'No internet connection. Enable the offline LLM to use AI features offline.',
+      );
+    }
+    return useLocal ? _localBackend : _cloudBackend;
+  }
+
+  Future<List<ChatMessage>> _augmentMessagesForLocalIfPossible(
+    List<ChatMessage> messages,
+    LLMContext? context,
+  ) async {
+    // Only inject memory for local backends.
+    // Cloud already has a dedicated system-context builder in the Edge Function.
+    final userId = context?.userId ?? client.auth.currentUser?.id;
+    if (userId == null || userId.isEmpty) return messages;
+
+    try {
+      final sl = GetIt.instance;
+      final bootstrap = sl.isRegistered<LocalLlmPostInstallBootstrapService>()
+          ? sl<LocalLlmPostInstallBootstrapService>()
+          : LocalLlmPostInstallBootstrapService();
+      final prompt = await bootstrap.getOrBuildSystemPromptForUser(userId);
+      if (prompt == null || prompt.trim().isEmpty) return messages;
+
+      // Avoid duplicating system prompts if caller already provided one.
+      if (messages.isNotEmpty && messages.first.role == ChatRole.system) {
+        return messages;
+      }
+
+      return [
+        ChatMessage(role: ChatRole.system, content: prompt),
+        ...messages,
+      ];
+    } catch (e, st) {
+      developer.log('Failed to augment local messages: $e',
+          name: _logName, error: e, stackTrace: st);
+      return messages;
     }
   }
 
@@ -67,87 +204,50 @@ class LLMService {
     int maxTokens = 500,
     Duration? timeout,
   }) async {
-    // Check circuit breaker
-    if (_circuitBreakerOpen) {
-      final timeSinceOpen = DateTime.now().difference(_circuitBreakerOpenedAt!);
-      if (timeSinceOpen < _circuitBreakerOpenDuration) {
-        developer.log('Circuit breaker is open, rejecting request', name: _logName);
-        throw DataCenterFailureException(
-          'AI service temporarily unavailable. Please try again later.',
-        );
-      } else {
-        // Try to close circuit breaker (half-open state)
-        developer.log('Attempting to close circuit breaker', name: _logName);
-        _circuitBreakerOpen = false;
-        _consecutiveFailures = 0;
+    final backend = await _selectBackend();
+    // Treat the configured cloud backend as “cloud” even in tests where we
+    // inject a recording backend.
+    final isCloud = identical(backend, _cloudBackend);
+    final messagesToSend = isCloud
+        ? messages
+        : await _augmentMessagesForLocalIfPossible(messages, context);
+
+    if (isCloud) {
+      // Check circuit breaker (cloud-only).
+      if (_circuitBreakerOpen) {
+        final timeSinceOpen =
+            DateTime.now().difference(_circuitBreakerOpenedAt!);
+        if (timeSinceOpen < _circuitBreakerOpenDuration) {
+          developer.log('Circuit breaker is open, rejecting request',
+              name: _logName);
+          throw DataCenterFailureException(
+            'AI service temporarily unavailable. Please try again later.',
+          );
+        } else {
+          // Try to close circuit breaker (half-open state)
+          developer.log('Attempting to close circuit breaker', name: _logName);
+          _circuitBreakerOpen = false;
+          _consecutiveFailures = 0;
+        }
       }
-    }
-    
-    // Check connectivity before making request
-    final isOnline = await _isOnline();
-    if (!isOnline) {
-      developer.log('Device is offline, cannot use cloud AI', name: _logName);
-      throw OfflineException('Cloud AI requires internet connection. Please check your connection and try again.');
     }
 
     try {
-      developer.log('Sending chat request to LLM: ${messages.length} messages', name: _logName);
-      
-      final response = await client.functions.invoke(
-        'llm-chat',
-        body: jsonEncode({
-          // IMPORTANT: role must be JSON-encodable (string), not the enum itself.
-          'messages': messages.map((m) => m.toJson()).toList(),
-          'context': context?.toJson(),
-          'temperature': temperature,
-          'maxTokens': maxTokens,
-        }),
-      ).timeout(
-        timeout ?? _defaultTimeout,
-        onTimeout: () {
-          developer.log('LLM request timed out after ${timeout ?? _defaultTimeout}', name: _logName);
-          _recordFailure();
-          throw TimeoutException('LLM request timed out. The AI service may be experiencing issues.');
-        },
+      final result = await backend.chat(
+        service: this,
+        messages: messagesToSend,
+        context: context,
+        temperature: temperature,
+        maxTokens: maxTokens,
+        timeout: timeout ?? _defaultTimeout,
       );
-      
-      if (response.status != 200) {
-        final errorData = response.data is String 
-            ? jsonDecode(response.data as String) 
-            : response.data;
-        final errorMessage = errorData['error'] ?? 'Unknown error';
-        
-        // Record failure for circuit breaker
-        _recordFailure();
-        
-        // Check if it's a data center failure (5xx errors)
-        if (response.status >= 500) {
-          throw DataCenterFailureException(
-            'AI data center is experiencing issues (${response.status}). Please try again later.',
-          );
-        }
-        
-        throw Exception('LLM request failed: ${response.status} - $errorMessage');
-      }
-      
-      final data = response.data is String 
-          ? jsonDecode(response.data as String) 
-          : response.data;
-      
-      final responseText = data['response'] as String?;
-      if (responseText == null || responseText.isEmpty) {
-        _recordFailure();
-        throw Exception('Empty response from LLM');
-      }
-      
-      // Success - reset circuit breaker
-      _recordSuccess();
-      
-      developer.log('Received LLM response: ${responseText.length} characters', name: _logName);
-      return responseText;
+      if (isCloud) _recordSuccess();
+      return result;
     } on TimeoutException {
+      if (isCloud) _recordFailure();
       rethrow;
     } on DataCenterFailureException {
+      if (isCloud) _recordFailure();
       rethrow;
     } on OfflineException {
       rethrow;
@@ -155,18 +255,23 @@ class LLMService {
       developer.log('LLM service error: $e', name: _logName);
       
       // Record failure for circuit breaker
-      _recordFailure();
+      if (isCloud) _recordFailure();
       
-      // Check if it's a network/data center error
-      final errorString = e.toString().toLowerCase();
-      if (errorString.contains('socket') || 
-          errorString.contains('connection') ||
-          errorString.contains('network') ||
-          errorString.contains('unreachable') ||
-          errorString.contains('refused')) {
-        throw DataCenterFailureException(
-          'Unable to reach AI service. The data center may be experiencing issues.',
-        );
+      // If local failed and we are online, fall back to cloud once.
+      if (!isCloud) {
+        final online = await _isOnline();
+        if (online) {
+          developer.log('Local LLM failed; falling back to cloud once',
+              name: _logName);
+          return await _cloudBackend.chat(
+            service: this,
+            messages: messages,
+            context: context,
+            temperature: temperature,
+            maxTokens: maxTokens,
+            timeout: timeout ?? _defaultTimeout,
+          );
+        }
       }
 
       // Ensure we throw an Exception type (some Dart errors are not Exception).
@@ -389,23 +494,34 @@ class LLMService {
     bool useRealSSE = true, // Toggle between real and simulated streaming
     bool autoFallback = true, // Automatically fallback to non-streaming if SSE fails
   }) async* {
-    // Check connectivity before making request
-    final isOnline = await _isOnline();
-    if (!isOnline) {
-      developer.log('Device is offline, cannot use cloud AI', name: _logName);
-      throw OfflineException('Cloud AI requires internet connection. Please check your connection and try again.');
+    final backend = await _selectBackend();
+    final isCloud = identical(backend, _cloudBackend);
+    final messagesToSend = isCloud
+        ? messages
+        : await _augmentMessagesForLocalIfPossible(messages, context);
+
+    if (isCloud) {
+      // Check connectivity before making request (cloud-only).
+      final isOnline = await _isOnline();
+      if (!isOnline) {
+        developer.log('Device is offline, cannot use cloud AI', name: _logName);
+        throw OfflineException(
+            'Cloud AI requires internet connection. Please check your connection and try again.');
+      }
     }
 
     try {
       developer.log('Sending streaming chat request to LLM: ${messages.length} messages (realSSE: $useRealSSE, autoFallback: $autoFallback)', name: _logName);
-      
-      if (useRealSSE) {
-        // Use real SSE streaming from Edge Function (includes automatic fallback)
-        yield* _chatStreamSSE(messages, context, temperature, maxTokens);
-      } else {
-        // Use simulated streaming (fallback)
-        yield* _chatStreamSimulated(messages, context, temperature, maxTokens);
-      }
+
+      yield* backend.chatStream(
+        service: this,
+        messages: messagesToSend,
+        context: context,
+        temperature: temperature,
+        maxTokens: maxTokens,
+        useRealSse: useRealSSE,
+        autoFallback: autoFallback,
+      );
       
       developer.log('Completed streaming response', name: _logName);
     } catch (e) {
@@ -811,5 +927,586 @@ class DataCenterFailureException implements Exception {
   
   @override
   String toString() => 'DataCenterFailureException: $message';
+}
+
+// ============================================================================
+// Backends (Cloud vs Local)
+// ============================================================================
+
+/// Backend abstraction so we can route to cloud (Gemini) or local runtime
+/// (Option B: CoreML on iOS, llama.cpp on Android).
+abstract class LlmBackend {
+  Future<String> chat({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required Duration timeout,
+  });
+
+  Stream<String> chatStream({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required bool useRealSse,
+    required bool autoFallback,
+  });
+}
+
+/// Cloud Gemini backend using Supabase Edge Functions (existing behavior).
+class CloudGeminiBackend implements LlmBackend {
+  @override
+  Future<String> chat({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required Duration timeout,
+  }) async {
+    // Connectivity check before making request.
+    final isOnline = await service._isOnline();
+    if (!isOnline) {
+      developer.log('Device is offline, cannot use cloud AI', name: LLMService._logName);
+      throw OfflineException(
+        'Cloud AI requires internet connection. Please check your connection and try again.',
+      );
+    }
+
+    developer.log('Sending cloud chat request: ${messages.length} messages', name: LLMService._logName);
+
+    final response = await service.client.functions.invoke(
+      'llm-chat',
+      body: jsonEncode({
+        // IMPORTANT: role must be JSON-encodable (string), not the enum itself.
+        'messages': messages.map((m) => m.toJson()).toList(),
+        'context': context?.toJson(),
+        'temperature': temperature,
+        'maxTokens': maxTokens,
+      }),
+    ).timeout(
+      timeout,
+      onTimeout: () {
+        developer.log('LLM request timed out after $timeout', name: LLMService._logName);
+        throw TimeoutException(
+          'LLM request timed out. The AI service may be experiencing issues.',
+        );
+      },
+    );
+
+    if (response.status != 200) {
+      final errorData =
+          response.data is String ? jsonDecode(response.data as String) : response.data;
+      final errorMessage = errorData['error'] ?? 'Unknown error';
+
+      // Check if it's a data center failure (5xx errors)
+      if (response.status >= 500) {
+        throw DataCenterFailureException(
+          'AI data center is experiencing issues (${response.status}). Please try again later.',
+        );
+      }
+
+      throw Exception('LLM request failed: ${response.status} - $errorMessage');
+    }
+
+    final data =
+        response.data is String ? jsonDecode(response.data as String) : response.data;
+
+    final responseText = data['response'] as String?;
+    if (responseText == null || responseText.isEmpty) {
+      throw Exception('Empty response from LLM');
+    }
+
+    developer.log('Received cloud LLM response: ${responseText.length} chars', name: LLMService._logName);
+    return responseText;
+  }
+
+  @override
+  Stream<String> chatStream({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required bool useRealSse,
+    required bool autoFallback,
+  }) async* {
+    // Preserve existing streaming behavior: use SSE or simulated.
+    if (useRealSse) {
+      yield* service._chatStreamSSE(messages, context, temperature, maxTokens);
+    } else {
+      yield* service._chatStreamSimulated(messages, context, temperature, maxTokens);
+    }
+  }
+}
+
+/// Fallback cloud backend using `llm-generation`.
+///
+/// This is a **provider-routing/failover** path. It intentionally degrades
+/// conversation-history fidelity (query-first) in exchange for availability.
+class CloudGeminiGenerationBackend implements LlmBackend {
+  @override
+  Future<String> chat({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required Duration timeout,
+  }) async {
+    final isOnline = await service._isOnline();
+    if (!isOnline) {
+      throw OfflineException(
+        'Cloud AI requires internet connection. Please check your connection and try again.',
+      );
+    }
+
+    final query = _extractQuery(messages);
+    final structuredContext = <String, dynamic>{
+      'traits': context?.personality?.getDominantTraits() ?? const <String>[],
+      'places': context?.recentSpots ?? const <Map<String, dynamic>>[],
+      'social_graph': const <dynamic>[],
+      'onboarding_data': <String, dynamic>{
+        if (context?.preferences != null) 'preferences': context!.preferences,
+      },
+      if (context?.userId != null) 'agentId': context!.userId,
+    };
+
+    final response = await service.client.functions.invoke(
+      'llm-generation',
+      body: jsonEncode({
+        'query': query,
+        'structuredContext': structuredContext,
+        'dimensionScores': context?.personality?.dimensions ?? const <String, double>{},
+        'personalityProfile': context?.personality?.toJson(),
+      }),
+    ).timeout(timeout);
+
+    if (response.status != 200) {
+      final errorData =
+          response.data is String ? jsonDecode(response.data as String) : response.data;
+      final errorMessage = errorData['error'] ?? 'Unknown error';
+      throw Exception(
+        'LLM fallback request failed: ${response.status} - $errorMessage',
+      );
+    }
+
+    final data =
+        response.data is String ? jsonDecode(response.data as String) : response.data;
+    final responseText = data['response'] as String?;
+    if (responseText == null || responseText.isEmpty) {
+      throw Exception('Empty response from fallback LLM');
+    }
+    return responseText;
+  }
+
+  @override
+  Stream<String> chatStream({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required bool useRealSse,
+    required bool autoFallback,
+  }) async* {
+    // No streaming support for this backend; callers can use simulated streaming.
+    yield await chat(
+      service: service,
+      messages: messages,
+      context: context,
+      temperature: temperature,
+      maxTokens: maxTokens,
+      timeout: const Duration(seconds: 30),
+    );
+  }
+
+  static String _extractQuery(List<ChatMessage> messages) {
+    // Prefer the most recent user message.
+    for (var i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role == ChatRole.user) return messages[i].content;
+    }
+    // Fallback: last message or empty.
+    return messages.isNotEmpty ? messages.last.content : '';
+  }
+}
+
+/// Cloud backend wrapper that attempts a fallback backend on transient failures.
+class CloudFailoverBackend implements LlmBackend {
+  final LlmBackend primary;
+  final LlmBackend fallback;
+
+  const CloudFailoverBackend({
+    required this.primary,
+    required this.fallback,
+  });
+
+  @override
+  Future<String> chat({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required Duration timeout,
+  }) async {
+    try {
+      return await primary.chat(
+        service: service,
+        messages: messages,
+        context: context,
+        temperature: temperature,
+        maxTokens: maxTokens,
+        timeout: timeout,
+      );
+    } on OfflineException {
+      rethrow;
+    } on DataCenterFailureException catch (e) {
+      developer.log('Primary cloud backend unavailable, falling back: $e',
+          name: LLMService._logName);
+      return await fallback.chat(
+        service: service,
+        messages: messages,
+        context: context,
+        temperature: temperature,
+        maxTokens: maxTokens,
+        timeout: timeout,
+      );
+    } on TimeoutException catch (e) {
+      developer.log('Primary cloud backend timed out, falling back: $e',
+          name: LLMService._logName);
+      return await fallback.chat(
+        service: service,
+        messages: messages,
+        context: context,
+        temperature: temperature,
+        maxTokens: maxTokens,
+        timeout: timeout,
+      );
+    } catch (e) {
+      // Best-effort: also fail over on obvious rate limiting.
+      final msg = e.toString();
+      final looksRateLimited = msg.contains('429') || msg.toLowerCase().contains('rate');
+      if (!looksRateLimited) rethrow;
+
+      developer.log('Primary cloud backend rate-limited, falling back: $e',
+          name: LLMService._logName);
+      return await fallback.chat(
+        service: service,
+        messages: messages,
+        context: context,
+        temperature: temperature,
+        maxTokens: maxTokens,
+        timeout: timeout,
+      );
+    }
+  }
+
+  @override
+  Stream<String> chatStream({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required bool useRealSse,
+    required bool autoFallback,
+  }) {
+    // Keep streaming behavior stable: use primary stream path.
+    // (SSE already has non-streaming fallback higher up.)
+    return primary.chatStream(
+      service: service,
+      messages: messages,
+      context: context,
+      temperature: temperature,
+      maxTokens: maxTokens,
+      useRealSse: useRealSse,
+      autoFallback: autoFallback,
+    );
+  }
+}
+
+/// Local backend that calls into platform implementations.
+///
+/// This will be backed by:
+/// - iOS CoreML runner
+/// - Android llama.cpp runner
+class LocalPlatformLlmBackend implements LlmBackend {
+  static const MethodChannel _channel = MethodChannel('spots/local_llm');
+  static const EventChannel _streamChannel = EventChannel('avra/local_llm_stream');
+
+  String? _loadedModelDir;
+
+  Future<Map<String, String>> _getActiveModelPointers() async {
+    final prefs = await SharedPreferencesCompat.getInstance();
+    final dir = prefs.getString(LLMService._prefsKeyLocalLlmActiveModelDir) ?? '';
+    final id = prefs.getString(LLMService._prefsKeyLocalLlmActiveModelId) ?? '';
+    return <String, String>{
+      'model_dir': dir,
+      'model_id': id,
+    };
+  }
+
+  Future<void> _ensureLoaded(String modelDir) async {
+    if (_loadedModelDir == modelDir) return;
+    try {
+      final ok = await _channel.invokeMethod<bool>(
+        'loadModel',
+        <String, dynamic>{'model_dir': modelDir},
+      );
+      if (ok != true) {
+        throw Exception('Local LLM loadModel returned false');
+      }
+      _loadedModelDir = modelDir;
+    } on PlatformException catch (e) {
+      throw Exception('Local LLM loadModel platform error: ${e.code} ${e.message}');
+    }
+  }
+
+  @override
+  Future<String> chat({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required Duration timeout,
+  }) async {
+    // Local is allowed offline; errors should be explicit.
+    try {
+      final pointers = await _getActiveModelPointers();
+      final modelDir = pointers['model_dir'] ?? '';
+      if (modelDir.isEmpty) {
+        throw Exception('Local model not installed (missing model_dir)');
+      }
+      await _ensureLoaded(modelDir);
+
+      final payload = <String, dynamic>{
+        'model_dir': modelDir,
+        'model_id': pointers['model_id'],
+        'messages': messages.map((m) => m.toJson()).toList(),
+        'context': context?.toJson(),
+        'temperature': temperature,
+        'maxTokens': maxTokens,
+      };
+
+      final res = await _channel
+          .invokeMethod<String>('generate', payload)
+          .timeout(timeout);
+
+      if (res == null || res.isEmpty) {
+        throw Exception('Empty local response');
+      }
+      return res;
+    } on PlatformException catch (e) {
+      throw Exception('Local LLM platform error: ${e.code} ${e.message}');
+    } on TimeoutException {
+      throw TimeoutException('Local LLM timed out');
+    }
+  }
+
+  @override
+  Stream<String> chatStream({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required bool useRealSse,
+    required bool autoFallback,
+  }) async* {
+    // Local streaming uses EventChannel token stream.
+    // Emit cumulative text chunks for UI compatibility.
+    final pointers = await _getActiveModelPointers();
+    final modelDir = pointers['model_dir'] ?? '';
+    if (modelDir.isEmpty) {
+      throw Exception('Local model not installed (missing model_dir)');
+    }
+    await _ensureLoaded(modelDir);
+
+    final payload = <String, dynamic>{
+      'model_dir': modelDir,
+      'model_id': pointers['model_id'],
+      'messages': messages.map((m) => m.toJson()).toList(),
+      'context': context?.toJson(),
+      'temperature': temperature,
+      'maxTokens': maxTokens,
+    };
+
+    String acc = '';
+
+    try {
+      // Kick off generation (native side starts emitting stream events).
+      await _channel.invokeMethod<void>('startStream', payload);
+
+      final stream = _streamChannel.receiveBroadcastStream();
+      await for (final event in stream) {
+        if (event is Map) {
+          final type = event['type'];
+          if (type == 'token') {
+            final token = event['text'];
+            if (token is String && token.isNotEmpty) {
+              acc += token;
+              yield acc;
+            }
+          } else if (type == 'done') {
+            return;
+          } else if (type == 'error') {
+            throw Exception(event['message']?.toString() ?? 'Local stream error');
+          }
+        } else if (event is String) {
+          // Backward-compatible: treat as a token chunk
+          acc += event;
+          yield acc;
+        }
+      }
+    } on PlatformException catch (e) {
+      throw Exception('Local LLM stream platform error: ${e.code} ${e.message}');
+    }
+  }
+}
+
+/// Android implementation using `llama_flutter_android` (GGUF + token streaming).
+class AndroidLlamaFlutterAndroidBackend implements LlmBackend {
+  static const String _logName = 'AndroidLlamaBackend';
+
+  final llama.LlamaController _controller = llama.LlamaController();
+  String? _loadedModelPath;
+
+  Future<String> _findGgufPath(String modelDir) async {
+    final dir = Directory(modelDir);
+    if (!await dir.exists()) {
+      throw Exception('Model dir does not exist: $modelDir');
+    }
+
+    final files = dir
+        .listSync(recursive: true, followLinks: false)
+        .whereType<File>()
+        .where((f) => f.path.toLowerCase().endsWith('.gguf'))
+        .toList();
+
+    if (files.isEmpty) {
+      throw Exception('No .gguf file found under $modelDir');
+    }
+
+    // Prefer the largest .gguf in case multiple exist.
+    files.sort((a, b) => b.lengthSync().compareTo(a.lengthSync()));
+    return files.first.path;
+  }
+
+  Future<void> _ensureLoaded(String modelDir, {int contextSize = 4096}) async {
+    final prefs = await SharedPreferencesCompat.getInstance();
+    final activeDir = prefs.getString(LLMService._prefsKeyLocalLlmActiveModelDir) ?? '';
+    if (activeDir.isEmpty || activeDir != modelDir) {
+      // Safety: only load from active dir.
+      throw Exception('Local model dir is not active');
+    }
+
+    final ggufPath = await _findGgufPath(modelDir);
+    if (_loadedModelPath == ggufPath) {
+      return;
+    }
+
+    final alreadyLoaded = await _controller.isModelLoaded();
+    if (alreadyLoaded) {
+      // The plugin doesn’t expose unload + reload directly besides dispose.
+      await _controller.dispose();
+    }
+
+    final threads = (Platform.numberOfProcessors - 1).clamp(2, 8);
+
+    developer.log('Loading GGUF model: $ggufPath', name: _logName);
+    await _controller.loadModel(
+      modelPath: ggufPath,
+      threads: threads,
+      contextSize: contextSize,
+      // gpuLayers: null // CPU-only default for now.
+    );
+    _loadedModelPath = ggufPath;
+  }
+
+  List<llama.ChatMessage> _toLlamaMessages(List<ChatMessage> messages) {
+    return messages
+        .map(
+          (m) => llama.ChatMessage(
+            role: m.role.name,
+            content: m.content,
+          ),
+        )
+        .toList();
+  }
+
+  @override
+  Future<String> chat({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required Duration timeout,
+  }) async {
+    final prefs = await SharedPreferencesCompat.getInstance();
+    final modelDir = prefs.getString(LLMService._prefsKeyLocalLlmActiveModelDir) ?? '';
+    if (modelDir.isEmpty) {
+      throw Exception('Local model not installed (missing model_dir)');
+    }
+
+    await _ensureLoaded(modelDir, contextSize: 4096);
+
+    final llamaMessages = _toLlamaMessages(messages);
+    final tokens = <String>[];
+
+    final sub = _controller
+        .generateChat(
+          messages: llamaMessages,
+          template: null, // Let plugin auto-detect from filename when possible.
+          temperature: temperature,
+          maxTokens: maxTokens,
+        )
+        .listen(tokens.add);
+
+    try {
+      await sub.asFuture<void>().timeout(timeout);
+    } finally {
+      await sub.cancel();
+    }
+
+    return tokens.join();
+  }
+
+  @override
+  Stream<String> chatStream({
+    required LLMService service,
+    required List<ChatMessage> messages,
+    required LLMContext? context,
+    required double temperature,
+    required int maxTokens,
+    required bool useRealSse,
+    required bool autoFallback,
+  }) async* {
+    final prefs = await SharedPreferencesCompat.getInstance();
+    final modelDir = prefs.getString(LLMService._prefsKeyLocalLlmActiveModelDir) ?? '';
+    if (modelDir.isEmpty) {
+      throw Exception('Local model not installed (missing model_dir)');
+    }
+
+    await _ensureLoaded(modelDir, contextSize: 4096);
+
+    final llamaMessages = _toLlamaMessages(messages);
+
+    String acc = '';
+    await for (final token in _controller.generateChat(
+      messages: llamaMessages,
+      template: null,
+      temperature: temperature,
+      maxTokens: maxTokens,
+    )) {
+      acc += token;
+      yield acc;
+    }
+  }
 }
 

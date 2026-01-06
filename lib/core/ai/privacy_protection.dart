@@ -5,6 +5,11 @@ import 'package:crypto/crypto.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots/core/models/user_vibe.dart';
 import 'package:spots_ai/models/personality_profile.dart';
+import 'package:spots_network/network/models/anonymized_vibe_data.dart';
+
+// Back-compat export for call sites that historically imported AnonymizedVibeData
+// from `package:spots/core/ai/privacy_protection.dart`.
+export 'package:spots_network/network/models/anonymized_vibe_data.dart';
 
 /// OUR_GUTS.md: "Complete privacy protection with zero personal data exposure for AI2AI personality learning"
 /// Comprehensive privacy protection system that ensures no personal data enters the AI2AI network
@@ -604,65 +609,6 @@ class AnonymizedPersonalityData {
       'anonymization_quality': anonymizationQuality,
       'created_at': createdAt.toIso8601String(),
       'expires_at': expiresAt.toIso8601String(),
-    };
-  }
-}
-
-class AnonymizedVibeData {
-  final Map<String, double> noisyDimensions;
-  final AnonymizedVibeMetrics anonymizedMetrics;
-  final String temporalContextHash;
-  final String vibeSignature;
-  final String privacyLevel;
-  final double anonymizationQuality;
-  final String salt;
-  final DateTime createdAt;
-  final DateTime expiresAt;
-  
-  AnonymizedVibeData({
-    required this.noisyDimensions,
-    required this.anonymizedMetrics,
-    required this.temporalContextHash,
-    required this.vibeSignature,
-    required this.privacyLevel,
-    required this.anonymizationQuality,
-    required this.salt,
-    required this.createdAt,
-    required this.expiresAt,
-  });
-  
-  bool get isExpired => DateTime.now().isAfter(expiresAt);
-  
-  Map<String, dynamic> toJson() {
-    return {
-      'noisy_dimensions': noisyDimensions,
-      'anonymized_metrics': anonymizedMetrics.toJson(),
-      'temporal_context_hash': temporalContextHash,
-      'vibe_signature': vibeSignature,
-      'privacy_level': privacyLevel,
-      'anonymization_quality': anonymizationQuality,
-      'created_at': createdAt.toIso8601String(),
-      'expires_at': expiresAt.toIso8601String(),
-    };
-  }
-}
-
-class AnonymizedVibeMetrics {
-  final double energy;
-  final double social;
-  final double exploration;
-  
-  AnonymizedVibeMetrics({
-    required this.energy,
-    required this.social,
-    required this.exploration,
-  });
-  
-  Map<String, dynamic> toJson() {
-    return {
-      'energy': energy,
-      'social': social,
-      'exploration': exploration,
     };
   }
 }

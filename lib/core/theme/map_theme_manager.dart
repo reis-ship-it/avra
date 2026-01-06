@@ -7,6 +7,9 @@ class MapThemeManager {
 
   // Get the current theme from storage or default to SPOTS Blue
   static Future<MapTheme> getCurrentTheme() async {
+    if (!di.sl.isRegistered<SharedPreferences>()) {
+      return MapThemes.spotsBlue;
+    }
     final prefs = di.sl<SharedPreferences>();
     final themeName = prefs.getString(_themeKey) ?? 'SPOTS Blue';
 
@@ -18,6 +21,9 @@ class MapThemeManager {
 
   // Save the selected theme to storage
   static Future<void> setTheme(MapTheme theme) async {
+    if (!di.sl.isRegistered<SharedPreferences>()) {
+      return;
+    }
     final prefs = di.sl<SharedPreferences>();
     await prefs.setString(_themeKey, theme.name);
   }

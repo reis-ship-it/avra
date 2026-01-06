@@ -2,9 +2,9 @@
 
 **Date:** November 21, 2025  
 **Status:** 🎯 Active Master Registry  
-**Purpose:** Single source of truth for all implementation plans  
+**Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** December 23, 2025 (Phase 21 added - E-Commerce Data Enrichment Integration POC)
+**Last Updated:** January 2, 2026 (Registry-only; canonical status/progress lives in `docs/agents/status/status_tracker.md`)
 
 ---
 
@@ -16,6 +16,11 @@
 3. Keep in date order (newest first)
 4. Mark status: 🟢 Active | 🟡 In Progress | ✅ Complete | ⏸️ Paused | ❌ Deprecated
 
+**Important: Single canonical status source**
+- **Do not use this file as a real-time execution status dashboard.**
+- **Canonical status/progress:** `docs/agents/status/status_tracker.md`
+- **Execution plan/spec:** `docs/MASTER_PLAN.md`
+
 ---
 
 ## 🗂️ **Active Plans Registry**
@@ -24,6 +29,12 @@
 
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
+| **Comprehensive Patent Integration Plan** | 2026-01-03 | 🟢 Active | **CRITICAL** | ~18 days (parallel execution) | [`plans/patent_integration/COMPREHENSIVE_PATENT_INTEGRATION_PLAN.md`](./plans/patent_integration/COMPREHENSIVE_PATENT_INTEGRATION_PLAN.md) |
+| ↳ Patent Integration Quick Start | 2026-01-03 | 📋 Reference | - | Day 1 checklist | [`plans/patent_integration/PATENT_INTEGRATION_QUICK_START.md`](./plans/patent_integration/PATENT_INTEGRATION_QUICK_START.md) |
+| Architecture Stabilization + Repo Hygiene (Store-ready) | 2026-01-03 | ✅ Complete (Engineering) | HIGH | Completed (2026-01-03); baseline now 0 (no package→app imports tolerated) | [`agents/reports/agent_cursor/phase_4/2026-01-03_architecture_stabilization_repo_hygiene_store_ready_complete.md`](./agents/reports/agent_cursor/phase_4/2026-01-03_architecture_stabilization_repo_hygiene_store_ready_complete.md) |
+| Outside Data-Buyer Insights Data Contract (v1) | 2026-01-01 | ✅ Complete (Engineering) | HIGH | Deployed + sample export verified; pending policy/legal signoff + buyer onboarding | [`plans/architecture/OUTSIDE_DATA_BUYER_INSIGHTS_DATA_CONTRACT_V1.md`](./plans/architecture/OUTSIDE_DATA_BUYER_INSIGHTS_DATA_CONTRACT_V1.md) |
+| Ledgers (v0) — Shared Append-Only Journal + Domain Event Catalog | 2026-01-02 | 🟡 In Progress | HIGH | v0 schema + RLS + domain views migrated; initial writers wired; debug smoke test verified; RLS recursion fix applied (`058_ledgers_v0.sql`, `ledgers_v0_rls_recursion_fix`) | [`plans/ledgers/LEDGERS_V0_INDEX.md`](./plans/ledgers/LEDGERS_V0_INDEX.md) |
+| AI2AI Walk‑By BLE Optimization (Phase 23 execution slice — Event Mode broadcast-first + coherence gating) | 2026-01-02 | ✅ Implemented (pending device validation) | HIGH | Real-device RF/OS validation pending (Service Data frame v1 + connectability gating) | [`agents/status/status_tracker.md`](./agents/status/status_tracker.md) |
 | Philosophy Implementation Roadmap | 2025-11-21 | ✅ Complete | HIGH | 5 hours (all 6 phases) | [`plans/philosophy_implementation/PHILOSOPHY_IMPLEMENTATION_ROADMAP.md`](./plans/philosophy_implementation/PHILOSOPHY_IMPLEMENTATION_ROADMAP.md) |
 | Philosophy Implementation Dependency Analysis | 2025-11-21 | ✅ Complete | - | - | [`plans/philosophy_implementation/PHILOSOPHY_IMPLEMENTATION_DEPENDENCY_ANALYSIS.md`](./plans/philosophy_implementation/PHILOSOPHY_IMPLEMENTATION_DEPENDENCY_ANALYSIS.md) |
 | Offline AI2AI Implementation Plan | 2025-11-21 | ✅ Complete | HIGH | 90 min actual | [`plans/offline_ai2ai/OFFLINE_AI2AI_IMPLEMENTATION_PLAN.md`](./plans/offline_ai2ai/OFFLINE_AI2AI_IMPLEMENTATION_PLAN.md) |
@@ -42,12 +53,10 @@
 
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
-| Master Plan - Optimized Execution Sequence | 2025-11-21 | 🟡 In Progress | CRITICAL | 20 weeks | [`MASTER_PLAN.md`](./MASTER_PLAN.md) |
-| ↳ Phase 1: MVP Core (Weeks 1-4) | 2025-11-22 | ✅ Complete | P0 | 4 weeks | Trial Run Complete |
-| ↳ Phase 2: Post-MVP Enhancements (Weeks 5-8) | 2025-11-22 | 🟢 Active | P2 | 4 weeks | Ready to Start |
-| ↳ Phase 7: Feature Matrix Completion (Sections 33-52) | 2025-12-23 | ✅ Complete | P1 | 14 sections | All features complete, testing deferred |
-| ↳ Phase 8: Onboarding Process Plan (Sections 0-11) | 2025-12-23 | ✅ Complete | P1 | 12 sections | All sections complete, core functionality complete |
-| ↳ Phase 21: E-Commerce Data Enrichment Integration POC (Sections 1-4) | 2025-12-23 | 📋 Ready | P1 Revenue | 4-6 weeks | [`plans/ecommerce_integration/ECOMMERCE_DATA_ENRICHMENT_POC_PLAN.md`](./plans/ecommerce_integration/ECOMMERCE_DATA_ENRICHMENT_POC_PLAN.md) |
+| Master Plan - Execution Index (Condensed) | 2026-01-01 | 🟢 Active | CRITICAL | Ongoing | [`MASTER_PLAN.md`](./MASTER_PLAN.md) |
+| ↳ Master Plan Appendix - Detailed Specs | 2026-01-01 | 📋 Reference | - | - | [`MASTER_PLAN_APPENDIX.md`](./MASTER_PLAN_APPENDIX.md) |
+
+> Note: Phase-by-phase execution status lives in `docs/agents/status/status_tracker.md` to avoid drift/duplication.
 
 ### **Business & Expert Systems**
 
@@ -61,7 +70,9 @@
 
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
+| Section 29 (6.8) Clubs/Communities — True Compatibility + Join UX + Signal Pipeline (Execution Plan) | 2026-01-02 | ✅ Complete | HIGH | Completed (2026-01-02) | [`plans/feature_matrix/SECTION_29_6_8_CLUBS_COMMUNITIES_TRUE_COMPATIBILITY_EXECUTION_PLAN.md`](./plans/feature_matrix/SECTION_29_6_8_CLUBS_COMMUNITIES_TRUE_COMPATIBILITY_EXECUTION_PLAN.md) |
 | Operations & Compliance (P0 Critical Gaps) | 2025-11-21 | 🟢 Active | CRITICAL | 4 weeks | [`plans/operations_compliance/OPERATIONS_COMPLIANCE_PLAN.md`](./plans/operations_compliance/OPERATIONS_COMPLIANCE_PLAN.md) |
+| E-Commerce Data Enrichment Integration POC | 2025-12-23 | 📋 Ready | P1 Revenue | 4-6 weeks | [`plans/ecommerce_integration/ECOMMERCE_DATA_ENRICHMENT_POC_PLAN.md`](./plans/ecommerce_integration/ECOMMERCE_DATA_ENRICHMENT_POC_PLAN.md) |
 | Monetization System Gap Analysis | 2025-11-21 | 📋 Strategic | - | Review | [`plans/monetization_gap_analysis/MONETIZATION_SYSTEM_GAP_ANALYSIS.md`](./plans/monetization_gap_analysis/MONETIZATION_SYSTEM_GAP_ANALYSIS.md) |
 | Dynamic Expertise Thresholds Plan | 2025-11-21 | 🟢 Active | HIGH | 3.5 weeks | [`plans/dynamic_expertise/DYNAMIC_EXPERTISE_THRESHOLDS_PLAN.md`](./plans/dynamic_expertise/DYNAMIC_EXPERTISE_THRESHOLDS_PLAN.md) |
 | ↳ Professional & Local Expertise | 2025-11-21 | 📋 Reference | - | - | [`plans/dynamic_expertise/PROFESSIONAL_AND_LOCAL_EXPERTISE.md`](./plans/dynamic_expertise/PROFESSIONAL_AND_LOCAL_EXPERTISE.md) |
@@ -76,7 +87,7 @@
 | ↳ Master Plan Overlap Analysis | 2025-11-23 | 📋 Reference | - | - | [`plans/expertise_system/MASTER_PLAN_OVERLAP_ANALYSIS.md`](./plans/expertise_system/MASTER_PLAN_OVERLAP_ANALYSIS.md) |
 | ↳ New Components Required | 2025-11-23 | 📋 Reference | - | - | [`plans/expertise_system/NEW_COMPONENTS_REQUIRED.md`](./plans/expertise_system/NEW_COMPONENTS_REQUIRED.md) |
 | Easy Event Hosting Explanation | 2025-11-21 | ✅ Complete | HIGH | 60 min actual | [`plans/easy_event_hosting/EASY_EVENT_HOSTING_EXPLANATION.md`](./plans/easy_event_hosting/EASY_EVENT_HOSTING_EXPLANATION.md) |
-|| Web3 & NFT Comprehensive Plan | 2025-01-30 | 🟢 Active | MEDIUM | 6-12 months | [`plans/web3_nft/WEB3_NFT_COMPREHENSIVE_PLAN.md`](./plans/web3_nft/WEB3_NFT_COMPREHENSIVE_PLAN.md) |
+| Web3 & NFT Comprehensive Plan | 2025-01-30 | 🟢 Active | MEDIUM | 6-12 months | [`plans/web3_nft/WEB3_NFT_COMPREHENSIVE_PLAN.md`](./plans/web3_nft/WEB3_NFT_COMPREHENSIVE_PLAN.md) |
 | Feature Matrix Completion Plan | 2024-12 | 🟡 In Progress | HIGH | 12-14 weeks | [`plans/feature_matrix/FEATURE_MATRIX_COMPLETION_PLAN.md`](./plans/feature_matrix/FEATURE_MATRIX_COMPLETION_PLAN.md) |
 | AI2AI 360 Implementation Plan | 2024-12 | ⏸️ Paused | HIGH | 12-16 weeks | [`plans/ai2ai_360/AI2AI_360_IMPLEMENTATION_PLAN.md`](./plans/ai2ai_360/AI2AI_360_IMPLEMENTATION_PLAN.md) |
 | White-Label & VPN/Proxy Infrastructure | 2025-12-04 | 🟢 Active | HIGH (P2) | 7-8 weeks | [`plans/white_label/WHITE_LABEL_VPN_PROXY_PLAN.md`](./plans/white_label/WHITE_LABEL_VPN_PROXY_PLAN.md) |
@@ -122,6 +133,8 @@
 
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
+| AI Learning — User Journey Map (Install → Long‑Term Stability) | 2026-01-02 | 🟢 Active reference | HIGH | Ongoing (reference artifact; not an execution status board) | [`agents/guides/AI_LEARNING_USER_JOURNEY_MAP.md`](./agents/guides/AI_LEARNING_USER_JOURNEY_MAP.md) |
+| AI Learning — Plan Execution Log (Planned → Real) | 2026-01-02 | ✅ Complete (Engineering) | HIGH | Completed (2026-01-02); pending real-device validation for BLE/Signal runtime | [`agents/reports/agent_cursor/phase_8/2026-01-02_ai_learning_journey_plan_execution_complete.md`](./agents/reports/agent_cursor/phase_8/2026-01-02_ai_learning_journey_plan_execution_complete.md) |
 | Mock Data Replacement Protocol | 2025-11-23 | ✅ Complete | MEDIUM | 1.5-2 hours | [`plans/methodology/MOCK_DATA_REPLACEMENT_PROTOCOL.md`](./plans/methodology/MOCK_DATA_REPLACEMENT_PROTOCOL.md) |
 
 ---

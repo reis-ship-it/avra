@@ -7,13 +7,78 @@
 
 ---
 
-## Executive Summary
+## Cross-References to Related Applications
+
+None.
+
+---
+
+## Statement Regarding Federally Sponsored Research or Development
+
+Not applicable.
+
+---
+
+## Incorporation by Reference
+
+This disclosure references the accompanying visual/drawings document: `docs/patents/category_1_quantum_ai_systems/04_offline_quantum_privacy_ai2ai/04_offline_quantum_privacy_ai2ai_visuals.md`. The diagrams and formulas therein are incorporated by reference as non-limiting illustrative material supporting the written description and example embodiments.
+
+---
+
+## Definitions
+
+For purposes of this disclosure:
+- **“Entity”** means any actor or object represented for scoring/matching (e.g., user, device, business, event, sponsor), depending on the invention context.
+- **“Profile”** means a set of stored attributes used by the system (which may be multi-dimensional and may be anonymized).
+- **“Compatibility score”** means a bounded numeric value used to compare entities or an entity to an opportunity, typically normalized to \([0, 1]\).
+- **“agentId”** means a privacy-preserving identifier used in place of a user-linked identifier in network exchange and/or third-party outputs.
+- **“userId”** means an identifier associated with a user account. In privacy-preserving embodiments, user-linked identifiers are not exchanged externally.
+- **“Atomic timestamp”** means a time value derived from an atomic-time service or an equivalent high-precision time source used for synchronization and time-indexed computation.
+- **“Epsilon (ε)”** means a differential privacy budget parameter controlling the privacy/utility tradeoff in noise-calibrated transformations.
+
+---
+
+## Brief Description of the Drawings
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Complete Offline Workflow.
+- **FIG. 6**: Offline Quantum State Exchange.
+- **FIG. 7**: Privacy-Preserving Quantum Signatures.
+- **FIG. 8**: Local Quantum Compatibility Calculation.
+- **FIG. 9**: Offline Learning Exchange.
+- **FIG. 10**: Complete System Architecture.
+- **FIG. 11**: Privacy-Preserving Quantum State Flow.
+- **FIG. 12**: Offline vs. Cloud Comparison.
+- **FIG. 13**: Quantum State Property Preservation.
+- **FIG. 14**: Complete Offline Workflow Diagram.
+## Abstract
+
+A system and method for performing compatibility matching offline using quantum-inspired computations while preserving privacy during peer-to-peer exchange. The system discovers nearby devices via local transports, exchanges privacy-preserving signatures derived from multi-dimensional profiles, constructs normalized quantum state vectors on-device, and computes a compatibility score using a quantum inner product probability. In some embodiments, anonymization and differential privacy mechanisms are applied to the exchanged signature while maintaining compatibility-relevant properties of the underlying state representation. The system enables decentralized matching without cloud infrastructure, supports operation under intermittent connectivity, and reduces exposure of sensitive profile information during discovery and matching.
+
+---
+
+## Background
+
+Compatibility matching and personalization systems often depend on centralized infrastructure to compute scores and mediate exchanges. This architecture can fail in offline or degraded-connectivity environments and may introduce privacy risks by requiring sensitive profile information to transit or reside in the cloud.
+
+Accordingly, there is a need for systems that enable robust local matching using device-to-device communication while preserving privacy during exchange and maintaining the accuracy and interpretability of the computed compatibility results.
+
+---
+
+## Summary
 
 An integrated system that enables quantum-inspired personality compatibility matching to work completely offline using peer-to-peer connections (Bluetooth/NSD) with privacy-preserving anonymized vibe signatures, eliminating the need for cloud infrastructure while maintaining quantum state properties. This system solves the critical problem of enabling quantum matching in offline scenarios (rural areas, privacy-sensitive contexts) while preserving complete privacy.
 
 ---
 
-## Technical Innovation
+## Detailed Description
+
+### Implementation Notes (Non-Limiting)
+
+- In AI2AI embodiments, on-device agents may exchange limited, privacy-scoped information with peer agents to coordinate matching, learning, or inference without requiring centralized disclosure of personal identifiers.
 
 ### Core Innovation
 The system combines three technologies to create a unique offline quantum matching solution:
@@ -157,42 +222,37 @@ Future<PersonalityProfile?> exchangePersonalityProfile(
 
 ---
 
-## Patent Claims
+## Claims
 
-### Claim 1: Method for Offline Quantum Matching with Privacy
-A method for offline quantum-inspired personality matching using peer-to-peer connections and privacy-preserving anonymized signatures, comprising:
-- Exchanging personality profiles via Bluetooth/NSD without internet connectivity
-- Generating local quantum state vectors `|ψ_local⟩` and `|ψ_remote⟩` on-device
-- Creating anonymized vibe signatures that preserve quantum state properties
-- Calculating compatibility locally using quantum inner product `C = |⟨ψ_local|ψ_remote⟩|²`
-- Applying learning insights immediately without cloud infrastructure
+1. A method for offline quantum-inspired personality matching using peer-to-peer connections and privacy-preserving anonymized signatures, comprising:
+   (a) Exchanging personality profiles via Bluetooth/NSD without internet connectivity
+   (b) Generating local quantum state vectors `|ψ_local⟩` and `|ψ_remote⟩` on-device
+   (c) Creating anonymized vibe signatures that preserve quantum state properties
+   (d) Calculating compatibility locally using quantum inner product `C = |⟨ψ_local|ψ_remote⟩|²`
+   (e) Applying learning insights immediately without cloud infrastructure
 
-### Claim 2: System for Offline Quantum Compatibility with Privacy
-A system for offline quantum compatibility calculation with privacy preservation, comprising:
-- Peer-to-peer personality profile exchange via Bluetooth/NSD
-- Local quantum state vector generation on-device
-- Anonymized vibe signature creation using differential privacy
-- Local quantum compatibility calculation via `C = |⟨ψ_A|ψ_B⟩|²`
-- Immediate offline AI learning application without internet connectivity
+2. A system for offline quantum compatibility calculation with privacy preservation, comprising:
+   (a) Peer-to-peer personality profile exchange via Bluetooth/NSD
+   (b) Local quantum state vector generation on-device
+   (c) Anonymized vibe signature creation using differential privacy
+   (d) Local quantum compatibility calculation via `C = |⟨ψ_A|ψ_B⟩|²`
+   (e) Immediate offline AI learning application without internet connectivity
 
-### Claim 3: Method for Privacy-Preserving Offline AI2AI Quantum Matching
-A method for privacy-preserving offline AI2AI quantum matching, comprising:
-- Device discovery via Bluetooth/NSD without internet
-- Personality profile exchange peer-to-peer
-- Local anonymization of vibe signatures using differential privacy with post-normalization correction (correction_strength = 0.9, achieving 95.94% accuracy preservation)
-- On-device quantum compatibility calculation using quantum inner product
-- Local learning exchange without internet connectivity
+3. The method of claim 1, further comprising privacy-preserving offline AI2AI quantum matching:
+   (a) Device discovery via Bluetooth/NSD without internet
+   (b) Personality profile exchange peer-to-peer
+   (c) Local anonymization of vibe signatures using differential privacy with post-normalization correction (correction_strength = 0.9, achieving 95.94% accuracy preservation)
+   (d) On-device quantum compatibility calculation using quantum inner product
+   (e) Local learning exchange without internet connectivity
 
-### Claim 4: Offline-First Quantum Matching System
-An offline-first quantum matching system with privacy preservation, comprising:
-- Peer-to-peer connection protocol via Bluetooth/NSD
-- Local quantum state vector generation on-device
-- Anonymized signature exchange that preserves quantum properties
-- Local compatibility calculation using quantum formulas
-- Immediate offline AI evolution without cloud dependency
+4. An offline-first quantum matching system with privacy preservation, comprising:
+   (a) Peer-to-peer connection protocol via Bluetooth/NSD
+   (b) Local quantum state vector generation on-device
+   (c) Anonymized signature exchange that preserves quantum properties
+   (d) Local compatibility calculation using quantum formulas
+   (e) Immediate offline AI evolution without cloud dependency
 
----
-
+       ---
 ## Atomic Timing Integration
 
 **Date:** December 23, 2025  
@@ -900,8 +960,7 @@ The combination of Laplace noise addition, clamping, renormalization, and post-n
 
 ---
 
-## Experimental Validation
-
+## Appendix A — Experimental Validation (Non-Limiting)
 **Date:** December 28, 2025 (Updated with latest experimental results)  
 **Status:** ✅ Complete - All experiments validated and executed (including atomic timing integration)
 

@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/controllers/sync_controller.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Sync Controller Integration Tests
 /// 
@@ -23,6 +24,7 @@ void main() {
       await SembastDatabase.database;
       
       // Initialize dependency injection
+      await setupTestStorage();
       await di.init();
       
       controller = di.sl<SyncController>();
@@ -41,7 +43,7 @@ void main() {
         const password = 'test_password_123';
 
         // Ensure sync is disabled
-        await personalitySyncService.setCloudSyncEnabled(userId, false);
+        await personalitySyncService.setCloudSyncEnabled(false);
 
         // Act
         final result = await controller.syncUserData(
@@ -97,7 +99,7 @@ void main() {
         const password = 'test_password_123';
 
         // Ensure sync is disabled
-        await personalitySyncService.setCloudSyncEnabled(userId, false);
+        await personalitySyncService.setCloudSyncEnabled(false);
 
         // Act
         final result = await controller.loadFromCloud(
@@ -131,7 +133,7 @@ void main() {
         const password = 'test_password_123';
         
         // Ensure sync is disabled to test validation path
-        await personalitySyncService.setCloudSyncEnabled(userId, false);
+        await personalitySyncService.setCloudSyncEnabled(false);
 
         final input = SyncInput(
           userId: userId,

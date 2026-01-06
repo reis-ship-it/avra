@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/models/expertise_level.dart';
+import 'package:spots/core/services/geo_hierarchy_service.dart';
 import 'package:spots/core/services/geographic_scope_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/presentation/widgets/common/standard_error_widget.dart';
@@ -37,6 +38,7 @@ class LocalitySelectionWidget extends StatefulWidget {
 }
 
 class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
+  final GeoHierarchyService _geoHierarchyService = GeoHierarchyService();
   final GeographicScopeService _scopeService = GeographicScopeService();
   List<String> _availableLocalities = [];
   bool _isLoading = true;
@@ -53,6 +55,27 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
     });
 
     try {
+      // Stronger path: for city+ experts, prefer canonical geo hierarchy from Supabase
+      // (city_code → locality list), then fall back to local heuristics.
+      if (_isCityExpert() && widget.user.location != null) {
+        final remoteLocalities =
+            await _geoHierarchyService.listLocalityDisplayNamesForUserLocation(
+          widget.user.location!,
+        );
+        if (remoteLocalities.isNotEmpty) {
+          setState(() {
+            _availableLocalities = remoteLocalities;
+            _isLoading = false;
+          });
+
+          // Auto-select if only one option
+          if (_availableLocalities.length == 1 && widget.selectedLocality == null) {
+            widget.onLocalitySelected(_availableLocalities.first);
+          }
+          return;
+        }
+      }
+
       final scope = _scopeService.getHostingScope(
         user: widget.user,
         category: widget.category,

@@ -15,7 +15,6 @@ import 'package:spots/core/controllers/social_media_data_collection_controller.d
 import 'package:spots/core/models/multi_path_expertise.dart' as _i10;
 import 'package:spots/core/models/onboarding_data.dart' as _i13;
 import 'package:spots/core/models/outcome_result.dart' as _i11;
-import 'package:spots_ai/models/personality_profile.dart' as _i4;
 import 'package:spots/core/models/preferences_profile.dart' as _i6;
 import 'package:spots/core/models/social_media_connection.dart' as _i9;
 import 'package:spots/core/models/spot.dart' as _i14;
@@ -24,8 +23,9 @@ import 'package:spots/core/services/onboarding_place_list_generator.dart'
     as _i7;
 import 'package:spots/core/services/onboarding_recommendation_service.dart'
     as _i15;
-import 'package:spots_ai/services/personality_sync_service.dart' as _i16;
 import 'package:spots/core/services/preferences_profile_service.dart' as _i12;
+import 'package:spots_ai/models/personality_profile.dart' as _i4;
+import 'package:spots/core/services/personality_sync_service.dart' as _i16;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -798,6 +798,85 @@ class MockPersonalitySyncService extends _i1.Mock
   }
 
   @override
+  _i8.Future<bool> syncToCloud(
+    String? agentId,
+    _i4.PersonalityProfile? profile,
+    String? password,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #syncToCloud,
+          [
+            agentId,
+            profile,
+            password,
+          ],
+        ),
+        returnValue: _i8.Future<bool>.value(false),
+      ) as _i8.Future<bool>);
+
+  @override
+  _i8.Future<_i4.PersonalityProfile?> syncFromCloud({
+    required String? agentId,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #syncFromCloud,
+          [],
+          {
+            #agentId: agentId,
+            #password: password,
+          },
+        ),
+        returnValue: _i8.Future<_i4.PersonalityProfile?>.value(),
+      ) as _i8.Future<_i4.PersonalityProfile?>);
+
+  @override
+  _i8.Future<bool> isCloudSyncEnabled([String? _0]) => (super.noSuchMethod(
+        Invocation.method(
+          #isCloudSyncEnabled,
+          [_0],
+        ),
+        returnValue: _i8.Future<bool>.value(false),
+      ) as _i8.Future<bool>);
+
+  @override
+  _i8.Future<_i4.PersonalityProfile?> loadFromCloud(
+    String? agentId,
+    String? password,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #loadFromCloud,
+          [
+            agentId,
+            password,
+          ],
+        ),
+        returnValue: _i8.Future<_i4.PersonalityProfile?>.value(),
+      ) as _i8.Future<_i4.PersonalityProfile?>);
+
+  @override
+  _i8.Future<void> reEncryptWithNewPassword(
+    String? agentId,
+    String? currentPassword,
+    String? newPassword,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #reEncryptWithNewPassword,
+          [
+            agentId,
+            currentPassword,
+            newPassword,
+          ],
+        ),
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
+
+  @override
   _i8.Future<_i17.Uint8List> deriveKeyFromPassword(
     String? password,
     String? userId,
@@ -840,14 +919,14 @@ class MockPersonalitySyncService extends _i1.Mock
 
   @override
   _i8.Future<_i4.PersonalityProfile?> decryptProfileFromCloud(
-    String? encryptedJson,
+    String? payload,
     _i17.Uint8List? key,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #decryptProfileFromCloud,
           [
-            encryptedJson,
+            payload,
             key,
           ],
         ),
@@ -855,90 +934,10 @@ class MockPersonalitySyncService extends _i1.Mock
       ) as _i8.Future<_i4.PersonalityProfile?>);
 
   @override
-  _i8.Future<void> syncToCloud(
-    String? userId,
-    _i4.PersonalityProfile? profile,
-    String? password,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #syncToCloud,
-          [
-            userId,
-            profile,
-            password,
-          ],
-        ),
-        returnValue: _i8.Future<void>.value(),
-        returnValueForMissingStub: _i8.Future<void>.value(),
-      ) as _i8.Future<void>);
-
-  @override
-  _i8.Future<_i4.PersonalityProfile?> loadFromCloud(
-    String? userId,
-    String? password,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #loadFromCloud,
-          [
-            userId,
-            password,
-          ],
-        ),
-        returnValue: _i8.Future<_i4.PersonalityProfile?>.value(),
-      ) as _i8.Future<_i4.PersonalityProfile?>);
-
-  @override
-  _i8.Future<bool> isCloudSyncEnabled(String? userId) => (super.noSuchMethod(
-        Invocation.method(
-          #isCloudSyncEnabled,
-          [userId],
-        ),
-        returnValue: _i8.Future<bool>.value(false),
-      ) as _i8.Future<bool>);
-
-  @override
-  _i8.Future<void> setCloudSyncEnabled(
-    String? userId,
-    bool? enabled,
-  ) =>
-      (super.noSuchMethod(
+  _i8.Future<void> setCloudSyncEnabled(bool? enabled) => (super.noSuchMethod(
         Invocation.method(
           #setCloudSyncEnabled,
-          [
-            userId,
-            enabled,
-          ],
-        ),
-        returnValue: _i8.Future<void>.value(),
-        returnValueForMissingStub: _i8.Future<void>.value(),
-      ) as _i8.Future<void>);
-
-  @override
-  _i8.Future<void> deleteCloudProfile(String? userId) => (super.noSuchMethod(
-        Invocation.method(
-          #deleteCloudProfile,
-          [userId],
-        ),
-        returnValue: _i8.Future<void>.value(),
-        returnValueForMissingStub: _i8.Future<void>.value(),
-      ) as _i8.Future<void>);
-
-  @override
-  _i8.Future<void> reEncryptWithNewPassword(
-    String? userId,
-    String? oldPassword,
-    String? newPassword,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #reEncryptWithNewPassword,
-          [
-            userId,
-            oldPassword,
-            newPassword,
-          ],
+          [enabled],
         ),
         returnValue: _i8.Future<void>.value(),
         returnValueForMissingStub: _i8.Future<void>.value(),
@@ -967,6 +966,40 @@ class MockAgentIdService extends _i1.Mock implements _i19.AgentIdService {
           ),
         )),
       ) as _i8.Future<String>);
+
+  @override
+  _i8.Future<void> rotateMappingEncryptionKey(
+    String? userId, {
+    _i19.EncryptedMapping? existingEncryptedMapping,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #rotateMappingEncryptionKey,
+          [userId],
+          {#existingEncryptedMapping: existingEncryptedMapping},
+        ),
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
+
+  @override
+  void clearCache() => super.noSuchMethod(
+        Invocation.method(
+          #clearCache,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i8.Future<void> flushAuditLogs() => (super.noSuchMethod(
+        Invocation.method(
+          #flushAuditLogs,
+          [],
+        ),
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
   _i8.Future<String> getBusinessAgentId(String? businessId) =>

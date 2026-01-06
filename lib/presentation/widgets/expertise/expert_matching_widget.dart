@@ -54,6 +54,9 @@ class ExpertMatchingWidget extends StatelessWidget {
   }
 
   Future<List<ExpertMatch>> _getMatches() async {
+    // Ensure the Future completes asynchronously so the loading state renders
+    // for at least one frame (keeps UI/tests deterministic).
+    await Future<void>.delayed(Duration.zero);
     final service = ExpertiseMatchingService();
     
     switch (matchingType) {

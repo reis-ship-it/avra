@@ -5,9 +5,84 @@
 
 ---
 
-## Visual Diagrams and Formulas
 
-### 1. Differential Privacy Process
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Differential Privacy Process.
+- **FIG. 6**: Epsilon Privacy Budget.
+- **FIG. 7**: Entropy Validation.
+- **FIG. 8**: Temporal Decay Signature.
+- **FIG. 9**: Complete Anonymization Process.
+- **FIG. 10**: Laplace Distribution.
+- **FIG. 11**: Entropy Calculation.
+- **FIG. 12**: Temporal Protection Flow.
+- **FIG. 13**: Complete Privacy Framework.
+- **FIG. 14**: Privacy Guarantee.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Differential Privacy Implementation with Entropy Validation implementation.
+
+In the illustrated embodiment, a computing device receives raw values, a differential-privacy budget parameter (ε), and temporal context; constructs an internal representation; and applies noise calibration and entropy-based validation to produce an anonymized output and an entropy validation outcome.
+In offline embodiments, the computation is performed locally and results are stored on-device.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Differential Privacy Process.
+- Epsilon Privacy Budget.
+- Entropy Validation.
+- Temporal Decay Signature.
+- Complete Anonymization Process.
+- Laplace Distribution.
+- Entropy Calculation.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Differential Privacy Implementation with Entropy Validation implementation.
+
+1. Adding controlled Laplace noise using formula `noisyValue = originalValue + laplaceNoise(epsilon, sensitivity)` with epsilon privacy budget (default ε = 0.02).
+2. Calculating entropy of anonymized data and validating minimum entropy threshold (0.8+).
+3. Generating temporal decay signatures with 30-day expiration and 15-minute time windows.
+4. Creating cryptographically secure random salt per anonymization.
+5. Hashing all sensitive data using SHA-256 with multiple iterations.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Differential Privacy Implementation with Entropy Validation implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- PrivacyBudget: {epsilon, sensitivity, delta (optional), policy}
+- NoiseParameters: {distribution: Laplace, scale, seed/salt (optional)}
+- AnonymizedValue: {value, clampedRange:[0,1], generatedAt}
+- EntropyMetric: {H, threshold, passed}
+- TemporalSignature: {windowStart, expiresAt, signatureHash}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Differential Privacy Implementation with Entropy Validation implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+- Privacy/validation module (on-device)
+
+Example sequence:
+1. Client device selects privacy budget (ε) and sensitivity parameters.
+2. Client device transforms values by adding calibrated noise.
+3. Privacy/validation module computes entropy and validates randomness.
+4. If validation fails, client device re-transforms or strengthens privacy; otherwise continues.
+5. Client device emits/stores anonymized output for sharing or downstream computation.
+
+### FIG. 5 — Differential Privacy Process
+
 
 ```
 Original Value: v
@@ -40,7 +115,8 @@ where scale = sensitivity / epsilon
 
 ---
 
-### 2. Epsilon Privacy Budget
+### FIG. 6 — Epsilon Privacy Budget
+
 
 ```
 Privacy Levels:
@@ -66,7 +142,8 @@ Privacy-Utility Tradeoff:
 
 ---
 
-### 3. Entropy Validation
+### FIG. 7 — Entropy Validation
+
 
 ```
 Anonymized Data
@@ -97,7 +174,8 @@ Minimum Threshold: H(X) ≥ 0.8
 
 ---
 
-### 4. Temporal Decay Signature
+### FIG. 8 — Temporal Decay Signature
+
 
 ```
 Current Time: 2025-12-16 10:37:00
@@ -127,7 +205,8 @@ Current Time: 2025-12-16 10:37:00
 
 ---
 
-### 5. Complete Anonymization Process
+### FIG. 9 — Complete Anonymization Process
+
 
 ```
 Original Personality Data
@@ -165,7 +244,8 @@ Original Personality Data
 
 ---
 
-### 6. Laplace Distribution
+### FIG. 10 — Laplace Distribution
+
 
 ```
 Laplace Distribution: L(0, scale)
@@ -191,7 +271,8 @@ Laplace Distribution: L(0, scale)
 
 ---
 
-### 7. Entropy Calculation
+### FIG. 11 — Entropy Calculation
+
 
 ```
 Anonymized Dimensions: [d₁, d₂, ..., d₁₂]
@@ -216,7 +297,8 @@ Anonymized Dimensions: [d₁, d₂, ..., d₁₂]
 
 ---
 
-### 8. Temporal Protection Flow
+### FIG. 12 — Temporal Protection Flow
+
 
 ```
 Anonymization Request
@@ -248,7 +330,8 @@ Anonymization Request
 
 ---
 
-### 9. Complete Privacy Framework
+### FIG. 13 — Complete Privacy Framework
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -293,7 +376,8 @@ Anonymization Request
 
 ---
 
-### 10. Privacy Guarantee
+### FIG. 14 — Privacy Guarantee
+
 
 ```
 Differential Privacy Guarantee:
@@ -378,4 +462,3 @@ START
 ---
 
 **Last Updated:** December 16, 2025
-

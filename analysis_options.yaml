@@ -1,1 +1,6 @@
 include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    # Quarantine + backups (not part of build; can contain intentionally broken historical code)
+    - review_before_deletion/**

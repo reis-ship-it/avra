@@ -5,6 +5,7 @@ import 'package:spots/core/services/preferences_profile_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// PreferencesProfile Initialization Integration Test
 ///
@@ -24,6 +25,7 @@ void main() {
     
     // Initialize dependency injection for tests
     try {
+      await setupTestStorage();
       await di.init();
     } catch (e) {
       // ignore: avoid_print

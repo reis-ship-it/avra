@@ -8,7 +8,7 @@ import 'package:spots/domain/usecases/auth/sign_out_usecase.dart';
 import 'package:spots/domain/usecases/auth/sign_up_usecase.dart';
 import 'package:spots/domain/usecases/auth/update_password_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/ai2ai/connection_orchestrator.dart';

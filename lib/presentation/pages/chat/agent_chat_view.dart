@@ -1,11 +1,11 @@
 /// Agent Chat View
-/// 
+///
 /// Chat interface for Personality Agent (AI companion)
 /// - Encrypted messages (agentId ↔ userId)
 /// - Language learning enabled
 /// - Search integration
 /// - Personality profile integration
-/// 
+///
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
 library;
@@ -20,6 +20,9 @@ import 'package:spots/presentation/widgets/chat/unified_chat_message.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:spots/core/services/agent_happiness_service.dart';
+import 'package:spots/core/services/storage_service.dart'
+    show SharedPreferencesCompat;
 
 class AgentChatView extends StatefulWidget {
   const AgentChatView({super.key});
@@ -33,18 +36,28 @@ class _AgentChatViewState extends State<AgentChatView> {
   final _scrollController = ScrollController();
   final _chatService = GetIt.instance<PersonalityAgentChatService>();
   final _agentIdService = GetIt.instance<AgentIdService>();
-  
+
   List<Map<String, dynamic>> _messages = [];
   bool _isLoading = false;
   bool _isSending = false;
   String? _userId;
   String? _agentId;
+  SharedPreferencesCompat? _prefs;
 
   @override
   void initState() {
     super.initState();
     _loadUserAndAgent();
     _loadConversationHistory();
+    _initPrefs();
+  }
+
+  Future<void> _initPrefs() async {
+    try {
+      _prefs = await SharedPreferencesCompat.getInstance();
+    } catch (_) {
+      _prefs = null;
+    }
   }
 
   Future<void> _loadUserAndAgent() async {
@@ -53,7 +66,7 @@ class _AgentChatViewState extends State<AgentChatView> {
       setState(() {
         _userId = authState.user.id;
       });
-      
+
       try {
         final agentId = await _agentIdService.getUserAgentId(_userId!);
         setState(() {
@@ -74,14 +87,14 @@ class _AgentChatViewState extends State<AgentChatView> {
 
   Future<void> _loadConversationHistory() async {
     if (_userId == null || _agentId == null) return;
-    
+
     setState(() {
       _isLoading = true;
     });
 
     try {
       final history = await _chatService.getConversationHistory(_userId!);
-      
+
       // Wait for all messages to decrypt
       final decryptedMessages = await Future.wait(
         history.map((msg) async {
@@ -98,7 +111,7 @@ class _AgentChatViewState extends State<AgentChatView> {
           };
         }),
       );
-      
+
       if (mounted) {
         setState(() {
           _messages = decryptedMessages;
@@ -122,7 +135,9 @@ class _AgentChatViewState extends State<AgentChatView> {
   }
 
   Future<void> _sendMessage() async {
-    if (_messageController.text.trim().isEmpty || _userId == null || _agentId == null) {
+    if (_messageController.text.trim().isEmpty ||
+        _userId == null ||
+        _agentId == null) {
       return;
     }
 
@@ -168,6 +183,7 @@ class _AgentChatViewState extends State<AgentChatView> {
             'content': response,
             'isFromUser': false,
             'timestamp': DateTime.now(),
+            'happinessRated': false,
           });
           _isSending = false;
         });
@@ -185,6 +201,28 @@ class _AgentChatViewState extends State<AgentChatView> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _rateLastAgentMessage({
+    required String messageId,
+    required double score,
+  }) async {
+    // Score is 0..1. This is stored locally and can later drive scheduled LoRA
+    // training (charging/idle).
+    final prefs = _prefs;
+    if (prefs == null) return;
+    try {
+      final svc = AgentHappinessService(prefs: prefs);
+      await svc.recordSignal(
+        source: 'chat_rating',
+        score: score,
+        metadata: <String, dynamic>{
+          'message_id': messageId,
+        },
+      );
+    } catch (_) {
+      // Ignore.
     }
   }
 
@@ -258,16 +296,76 @@ class _AgentChatViewState extends State<AgentChatView> {
                       itemCount: _messages.length,
                       itemBuilder: (context, index) {
                         final message = _messages[index];
-                        return UnifiedChatMessage(
-                          message: message['content'] as String,
-                          isFromUser: message['isFromUser'] as bool,
-                          timestamp: message['timestamp'] as DateTime,
-                          chatType: ChatType.agent,
+                        final isFromUser = message['isFromUser'] as bool;
+                        final msgId = message['id'] as String;
+                        final rated =
+                            (message['happinessRated'] as bool?) ?? false;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            UnifiedChatMessage(
+                              message: message['content'] as String,
+                              isFromUser: isFromUser,
+                              timestamp: message['timestamp'] as DateTime,
+                              chatType: ChatType.agent,
+                            ),
+                            if (!isFromUser && !rated)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 56, right: 16, bottom: 8),
+                                child: Row(
+                                  children: [
+                                    const Text(
+                                      'Was this helpful?',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    IconButton(
+                                      icon: const Icon(Icons.thumb_up_outlined,
+                                          size: 18),
+                                      color: AppColors.success,
+                                      onPressed: () async {
+                                        setState(() {
+                                          _messages[index]['happinessRated'] =
+                                              true;
+                                        });
+                                        await _rateLastAgentMessage(
+                                          messageId: msgId,
+                                          score: 0.9,
+                                        );
+                                      },
+                                      tooltip: 'Helpful',
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                          Icons.thumb_down_outlined,
+                                          size: 18),
+                                      color: AppColors.error,
+                                      onPressed: () async {
+                                        setState(() {
+                                          _messages[index]['happinessRated'] =
+                                              true;
+                                        });
+                                        await _rateLastAgentMessage(
+                                          messageId: msgId,
+                                          score: 0.1,
+                                        );
+                                      },
+                                      tooltip: 'Not helpful',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
                         );
                       },
                     ),
         ),
-        
+
         // Typing indicator
         if (_isSending)
           Container(
@@ -291,7 +389,7 @@ class _AgentChatViewState extends State<AgentChatView> {
               ],
             ),
           ),
-        
+
         // Input bar
         Container(
           decoration: BoxDecoration(
@@ -316,7 +414,8 @@ class _AgentChatViewState extends State<AgentChatView> {
                         hintText: 'Message your AI companion...',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
-                          borderSide: const BorderSide(color: AppColors.grey300),
+                          borderSide:
+                              const BorderSide(color: AppColors.grey300),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -345,4 +444,3 @@ class _AgentChatViewState extends State<AgentChatView> {
     );
   }
 }
-

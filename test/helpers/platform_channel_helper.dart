@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 /// Platform Channel Helper for Tests
 /// 
 /// This helper provides utilities for handling platform channel dependencies

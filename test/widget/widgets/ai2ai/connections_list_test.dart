@@ -103,9 +103,11 @@ void main() {
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget5);
       final connectionTile = find.byType(ListTile).first;
+      // Connection rows should indicate navigability.
+      expect(find.byIcon(Icons.chevron_right), findsWidgets);
       await tester.tap(connectionTile);
       await tester.pumpAndSettle();
-      expect(find.byIcon(Icons.chevron_right), findsWidgets);
+      expect(find.textContaining('Connection:'), findsOneWidget);
     });
   });
 }

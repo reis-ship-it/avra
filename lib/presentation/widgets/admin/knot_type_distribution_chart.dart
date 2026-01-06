@@ -80,7 +80,7 @@ class KnotTypeDistributionChart extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: distribution.entries.asMap().entries.map((entry) {
+              children: distribution.entries.toList().asMap().entries.map((entry) {
                 final index = entry.key;
                 final mapEntry = entry.value;
                 final color = colors[index % colors.length];

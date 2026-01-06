@@ -141,6 +141,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
           }
 
           return ListView(
+            key: const Key('ai_improvement_page_list'),
             padding: const EdgeInsets.all(16),
             children: [
               // Header

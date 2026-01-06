@@ -18,12 +18,12 @@ import 'package:spots/core/services/reservation_quantum_service.dart';
 import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
 import 'package:spots_quantum/services/quantum/entanglement_coefficient_optimizer.dart';
 import 'package:spots_quantum/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots_quantum/services/quantum/real_time_user_calling_service.dart';
-import 'package:spots_quantum/services/quantum/meaningful_experience_calculator.dart';
-import 'package:spots_quantum/services/quantum/meaningful_connection_metrics_service.dart';
-import 'package:spots_quantum/services/quantum/user_journey_tracking_service.dart';
-import 'package:spots_quantum/services/quantum/quantum_outcome_learning_service.dart';
-import 'package:spots_quantum/services/quantum/ideal_state_learning_service.dart';
+import 'package:spots/core/services/quantum/real_time_user_calling_service.dart';
+import 'package:spots/core/services/quantum/meaningful_experience_calculator.dart';
+import 'package:spots/core/services/quantum/meaningful_connection_metrics_service.dart';
+import 'package:spots/core/services/quantum/user_journey_tracking_service.dart';
+import 'package:spots/core/services/quantum/quantum_outcome_learning_service.dart';
+import 'package:spots/core/services/quantum/ideal_state_learning_service.dart';
 import 'package:spots/core/controllers/quantum_matching_controller.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/personality_learning.dart';
@@ -33,6 +33,7 @@ import 'package:spots/core/services/preferences_profile_service.dart';
 import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
 import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart';
 import 'package:spots_knot/services/knot/personality_knot_service.dart';
+import 'package:spots_knot/services/knot/quantum_state_knot_service.dart';
 
 /// Quantum Services Registration Module
 ///
@@ -82,6 +83,7 @@ Future<void> registerQuantumServices(GetIt sl) async {
       atomicClock: sl<AtomicClockService>(),
       knotEngine: sl<IntegratedKnotRecommendationEngine>(),
       knotCompatibilityService: sl<CrossEntityCompatibilityService>(),
+      quantumStateKnotService: sl<QuantumStateKnotService>(),
     ),
   );
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:spots/app.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
+import '../helpers/platform_channel_helper.dart';
 
 /// Basic Integration Tests
 /// 
@@ -12,6 +13,9 @@ void main() {
     setUpAll(() async {
       // Use in-memory database for testing to avoid MissingPluginException
       SembastDatabase.useInMemoryForTests();
+
+      // Avoid path_provider / GetStorage.init in tests.
+      await setupTestStorage();
       
       // Initialize dependency injection for tests
       try {

@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/presentation/widgets/expertise/expert_search_widget.dart';
-import "../../helpers/widget_test_helpers.dart';
+import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for ExpertSearchWidget
 /// Tests expert search functionality
@@ -31,8 +33,10 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-      expect(find.text('Coffee'), findsOneWidget);
-      expect(find.text('Brooklyn'), findsOneWidget);
+      final categoryField = tester.widget<TextField>(find.byType(TextField).at(0));
+      final locationField = tester.widget<TextField>(find.byType(TextField).at(1));
+      expect(categoryField.controller?.text, equals('Coffee'));
+      expect(locationField.controller?.text, equals('Brooklyn'));
 
       UnifiedUser? selectedExpert;
       final widget3 = WidgetTestHelpers.createTestableWidget(

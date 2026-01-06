@@ -119,6 +119,32 @@ class DisputeResolutionService {
       rethrow;
     }
   }
+
+  /// Attach evidence references to an existing dispute.
+  ///
+  /// This is used by the UI after uploading evidence objects into the retention
+  /// bucket, so the dispute record can display them.
+  Future<Dispute> attachEvidence({
+    required String disputeId,
+    required List<String> evidenceUrls,
+  }) async {
+    try {
+      final dispute = await _getDispute(disputeId);
+      if (dispute == null) {
+        throw Exception('Dispute not found: $disputeId');
+      }
+      final merged = <String>[
+        ...dispute.evidenceUrls,
+        ...evidenceUrls,
+      ];
+      final updated = dispute.copyWith(evidenceUrls: merged);
+      await _saveDispute(updated);
+      return updated;
+    } catch (e) {
+      _logger.error('Error attaching evidence', error: e, tag: _logName);
+      rethrow;
+    }
+  }
   
   /// Admin reviews dispute
   /// 

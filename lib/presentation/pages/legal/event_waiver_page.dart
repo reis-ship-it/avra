@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/legal/event_waiver.dart';
 import 'package:spots/core/services/legal_document_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
@@ -34,9 +33,7 @@ class EventWaiverPage extends StatefulWidget {
 }
 
 class _EventWaiverPageState extends State<EventWaiverPage> {
-  final LegalDocumentService _legalService = LegalDocumentService(
-    eventService: GetIt.instance<ExpertiseEventService>(),
-  );
+  final LegalDocumentService _legalService = GetIt.instance<LegalDocumentService>();
 
   bool _acknowledgeRisks = false;
   bool _acknowledgeRelease = false;

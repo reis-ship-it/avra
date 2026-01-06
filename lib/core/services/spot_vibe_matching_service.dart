@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:math' as math;
 import 'package:spots/core/models/spot.dart';
 import 'package:spots/core/models/spot_vibe.dart';
 import 'package:spots/core/models/unified_user.dart';
@@ -9,10 +10,10 @@ import 'package:spots/core/ai/vibe_analysis_engine.dart';
 import 'package:spots/core/ai/quantum/location_compatibility_calculator.dart';
 import 'package:spots/core/services/calling_score_calculator.dart';
 import 'package:spots/core/services/feature_flag_service.dart';
-import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart';
 import 'package:spots_knot/services/knot/entity_knot_service.dart';
 import 'package:spots_knot/services/knot/personality_knot_service.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
 
 /// Spot Vibe Matching Service
 /// 
@@ -38,7 +39,6 @@ class SpotVibeMatchingService {
   final UserVibeAnalyzer _vibeAnalyzer;
   final CallingScoreCalculator? _callingScoreCalculator;
   final FeatureFlagService? _featureFlags;
-  final CrossEntityCompatibilityService? _crossEntityCompatibilityService;
   final EntityKnotService? _entityKnotService;
   final PersonalityKnotService? _personalityKnotService;
   
@@ -46,13 +46,11 @@ class SpotVibeMatchingService {
     required UserVibeAnalyzer vibeAnalyzer,
     CallingScoreCalculator? callingScoreCalculator,
     FeatureFlagService? featureFlags,
-    CrossEntityCompatibilityService? crossEntityCompatibilityService,
     EntityKnotService? entityKnotService,
     PersonalityKnotService? personalityKnotService,
   }) : _vibeAnalyzer = vibeAnalyzer,
        _callingScoreCalculator = callingScoreCalculator,
        _featureFlags = featureFlags,
-       _crossEntityCompatibilityService = crossEntityCompatibilityService,
        _entityKnotService = entityKnotService,
        _personalityKnotService = personalityKnotService;
   
@@ -294,8 +292,12 @@ class SpotVibeMatchingService {
 
   /// Calculate knot compatibility bonus for spot-user matching
   /// 
-  /// Uses CrossEntityCompatibilityService to calculate compatibility
-  /// between user personality knot and spot entity knot.
+  /// Calculates knot-only compatibility (topology + weave) between
+  /// the user personality knot and the spot entity knot.
+  ///
+  /// **Important:** We intentionally do **not** call
+  /// `CrossEntityCompatibilityService.calculateIntegratedCompatibility()` here,
+  /// because that method currently contains a placeholder "quantum" term.
   /// 
   /// **Returns:** Compatibility score (0.0 to 1.0), or 0.5 (neutral) if unavailable
   Future<double> _calculateKnotCompatibilityBonus({
@@ -304,8 +306,7 @@ class SpotVibeMatchingService {
     required Spot spot,
   }) async {
     // If knot services not available, return neutral score
-    if (_crossEntityCompatibilityService == null ||
-        _entityKnotService == null ||
+    if (_entityKnotService == null ||
         _personalityKnotService == null) {
       return 0.5;
     }
@@ -321,19 +322,18 @@ class SpotVibeMatchingService {
         entity: spot,
       );
 
-      // Calculate cross-entity compatibility
-      final compatibility = await _crossEntityCompatibilityService!
-          .calculateIntegratedCompatibility(
-        entityA: EntityKnot(
-          entityId: userPersonality.agentId,
-          entityType: EntityType.person,
-          knot: userKnot,
-          metadata: {},
-          createdAt: userKnot.createdAt,
-          lastUpdated: userKnot.lastUpdated,
-        ),
-        entityB: spotEntityKnot,
-      );
+      // Knot-only compatibility:
+      // - Topological compatibility from braid/invariants
+      // - Weave similarity from crossing + polynomial similarity
+      final topological = calculateTopologicalCompatibility(
+        braidDataA: userKnot.braidData,
+        braidDataB: spotEntityKnot.knot.braidData,
+      ).clamp(0.0, 1.0);
+
+      final weave = _calculateWeaveCompatibility(userKnot, spotEntityKnot.knot);
+
+      // Blend knot signals (knot-only). This is a "bonus" term elsewhere.
+      final compatibility = (0.6 * topological + 0.4 * weave).clamp(0.0, 1.0);
 
       developer.log(
         'Knot compatibility bonus for spot ${spot.name}: ${(compatibility * 100).toStringAsFixed(1)}%',
@@ -349,6 +349,25 @@ class SpotVibeMatchingService {
       // Return neutral score on error (don't break matching)
       return 0.5;
     }
+  }
+
+  double _calculateWeaveCompatibility(
+    dynamic knotA,
+    dynamic knotB,
+  ) {
+    final aCross = (knotA.invariants.crossingNumber as int).toDouble();
+    final bCross = (knotB.invariants.crossingNumber as int).toDouble();
+    final crossingDiff = (aCross - bCross).abs();
+    final maxCross = math.max(aCross, bCross).clamp(1.0, double.infinity);
+    final crossingSimilarity = (1.0 - (crossingDiff / maxCross)).clamp(0.0, 1.0);
+
+    final polyDistance = polynomialDistance(
+      coefficientsA: List<double>.from(knotA.invariants.jonesPolynomial as List),
+      coefficientsB: List<double>.from(knotB.invariants.jonesPolynomial as List),
+    );
+    final polynomialSimilarity = (1.0 / (1.0 + polyDistance)).clamp(0.0, 1.0);
+
+    return (0.6 * crossingSimilarity + 0.4 * polynomialSimilarity).clamp(0.0, 1.0);
   }
 }
 

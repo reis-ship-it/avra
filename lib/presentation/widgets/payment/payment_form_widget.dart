@@ -52,8 +52,16 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
   final _expiryController = TextEditingController();
   final _cvvController = TextEditingController();
   final _cardholderNameController = TextEditingController();
-  final _paymentController = GetIt.instance<PaymentProcessingController>();
   String? _error;
+
+  PaymentProcessingController _resolvePaymentController() {
+    // Avoid hard-crashing at build-time if DI isn't wired (common in widget tests).
+    // We surface a user-facing error only if the user attempts to submit payment.
+    if (!GetIt.instance.isRegistered<PaymentProcessingController>()) {
+      throw Exception('Payment processing is unavailable');
+    }
+    return GetIt.instance<PaymentProcessingController>();
+  }
 
   @override
   void dispose() {
@@ -85,7 +93,8 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
 
       // Process payment using PaymentProcessingController
       // This handles: validation, tax calculation, payment processing, and event registration
-      final result = await _paymentController.processEventPayment(
+      final paymentController = _resolvePaymentController();
+      final result = await paymentController.processEventPayment(
         event: widget.event,
         buyer: buyer,
         quantity: widget.quantity,
@@ -145,6 +154,52 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
               ),
             ),
           const SizedBox(height: 20),
+
+          // Order summary
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.grey100,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.grey200),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Total',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '\$${widget.amount.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Quantity: ${widget.quantity}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
 
           // Cardholder Name
           Semantics(

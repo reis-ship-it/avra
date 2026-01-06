@@ -15,6 +15,7 @@ import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/core/services/club_service.dart';
 import 'package:spots/core/services/community_service.dart';
 import 'package:spots/core/models/user.dart' as user_model;
+import 'package:go_router/go_router.dart';
 
 /// Event Discovery UI - Browse/Search Page
 /// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
@@ -103,7 +104,6 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   };
   
   // Event types
-  final List<ExpertiseEventType> _eventTypes = ExpertiseEventType.values;
 
   @override
   void initState() {
@@ -285,7 +285,6 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   /// Sort events by matching score using EventMatchingService
   /// Convert User to UnifiedUser for service compatibility
   UnifiedUser _convertUserToUnifiedUser(user_model.User user) {
-    final now = DateTime.now();
     return UnifiedUser(
       id: user.id,
       email: user.email,
@@ -571,6 +570,10 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
             
             // Filters
             _buildFilters(),
+
+            // Clubs/Communities scope: add a door to community discovery
+            if (_selectedScope == EventScope.clubsCommunities)
+              _buildCommunityDiscoveryCta(),
             
             // Event List
             Expanded(
@@ -657,6 +660,38 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildCommunityDiscoveryCta() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      color: AppColors.surface,
+      child: Row(
+        children: [
+          const Icon(Icons.group_outlined, color: AppColors.textSecondary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Discover communities ranked by true compatibility',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          ElevatedButton(
+            onPressed: () => context.push('/communities/discover'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.electricGreen,
+              foregroundColor: AppColors.black,
+            ),
+            child: const Text('Discover'),
+          ),
+        ],
       ),
     );
   }

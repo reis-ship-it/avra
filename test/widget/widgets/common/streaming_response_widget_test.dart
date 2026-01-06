@@ -6,12 +6,12 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/common/streaming_response_widget.dart';
-import 'package:spots/test/widget/helpers/widget_test_helpers.dart';
+import '../../helpers/widget_test_helpers.dart';
 import 'dart:async';
 
 void main() {
   setUpAll(() {
-    WidgetTestHelpers.setupTestEnvironment();
+    WidgetTestHelpers.setupWidgetTestEnvironment();
   });
 
   group('StreamingResponseWidget', () {
@@ -27,6 +27,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: StreamingResponseWidget(
+              key: const ValueKey('streaming_response_1'),
               textStream: controller1.stream,
               typingSpeed: const Duration(milliseconds: 1),
             ),
@@ -44,6 +45,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: StreamingResponseWidget(
+              key: const ValueKey('streaming_response_2'),
               textStream: controller2.stream,
               showCursor: true,
             ),
@@ -61,6 +63,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: StreamingResponseWidget(
+              key: const ValueKey('streaming_response_3'),
               textStream: controller3.stream,
               typingSpeed: const Duration(milliseconds: 1),
               onComplete: () {
@@ -70,9 +73,13 @@ void main() {
           ),
         ),
       );
+      await tester.pump(); // Ensure stream subscription is attached
       controller3.add('Done');
-      controller3.close();
-      await tester.pumpAndSettle();
+      await controller3.close();
+      // Advance time in small steps to allow timers + setState frames.
+      for (var i = 0; i < 50 && !completed; i++) {
+        await tester.pump(const Duration(milliseconds: 10));
+      }
       expect(completed, isTrue);
 
       final controller4 = StreamController<String>();
@@ -80,6 +87,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: StreamingResponseWidget(
+              key: const ValueKey('streaming_response_4'),
               textStream: controller4.stream,
               onStop: () {},
             ),
@@ -98,6 +106,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: StreamingResponseWidget(
+              key: const ValueKey('streaming_response_5'),
               textStream: controller5.stream,
               onStop: () {
                 stopped = true;
@@ -109,7 +118,7 @@ void main() {
       controller5.add('Streaming...');
       await tester.pump();
       await tester.tap(find.text('Stop Generating'));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 200));
       expect(stopped, isTrue);
       controller5.close();
     });
@@ -124,6 +133,7 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: TypingTextWidget(
+              key: ValueKey('typing_text_1'),
               text: 'Hello World',
               typingSpeed: Duration(milliseconds: 10),
             ),
@@ -140,6 +150,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: TypingTextWidget(
+              key: const ValueKey('typing_text_2'),
               text: 'Hi',
               typingSpeed: const Duration(milliseconds: 10),
               onComplete: () {
@@ -149,7 +160,9 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      for (var i = 0; i < 50 && !completed; i++) {
+        await tester.pump(const Duration(milliseconds: 10));
+      }
       expect(completed, isTrue);
     });
   });

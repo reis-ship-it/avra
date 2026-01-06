@@ -55,9 +55,12 @@ class CheckoutController
     implements WorkflowController<CheckoutInput, CheckoutResult> {
   static const String _logName = 'CheckoutController';
 
-  final PaymentProcessingController _paymentController;
+  // Payment processing is only needed when checkout is submitted.
+  // Keep this optional so read-only flows (e.g. totals calculation) don't require
+  // full payment DI setup in tests.
+  final PaymentProcessingController? _paymentController;
   final SalesTaxService _salesTaxService;
-  final LegalDocumentService _legalService;
+  final LegalDocumentService? _legalService;
   final ExpertiseEventService _eventService;
 
   CheckoutController({
@@ -65,17 +68,32 @@ class CheckoutController
     SalesTaxService? salesTaxService,
     LegalDocumentService? legalService,
     ExpertiseEventService? eventService,
-  })  : _paymentController =
-            paymentController ?? GetIt.instance<PaymentProcessingController>(),
+  })  : _paymentController = paymentController,
         _salesTaxService =
             salesTaxService ?? GetIt.instance<SalesTaxService>(),
-        _legalService =
-            legalService ??
-            LegalDocumentService(
-              eventService: GetIt.instance<ExpertiseEventService>(),
-            ),
+        _legalService = legalService,
         _eventService =
             eventService ?? GetIt.instance<ExpertiseEventService>();
+
+  PaymentProcessingController _resolvePaymentController() {
+    return _paymentController ?? GetIt.instance<PaymentProcessingController>();
+  }
+
+  LegalDocumentService? _resolveLegalServiceOrNull() {
+    if (_legalService != null) {
+      return _legalService;
+    }
+    try {
+      return GetIt.instance<LegalDocumentService>();
+    } catch (e) {
+      developer.log(
+        'LegalDocumentService is not registered in GetIt',
+        name: _logName,
+        error: e,
+      );
+      return null;
+    }
+  }
 
   /// Process checkout
   /// 
@@ -153,7 +171,15 @@ class CheckoutController
 
       // Step 3: Check waiver acceptance (if required)
       if (requireWaiver) {
-        final hasAcceptedWaiver = await _legalService.hasAcceptedEventWaiver(
+        final legalService = _resolveLegalServiceOrNull();
+        if (legalService == null) {
+          return CheckoutResult.failure(
+            error: 'Legal service unavailable',
+            errorCode: 'LEGAL_SERVICE_UNAVAILABLE',
+          );
+        }
+
+        final hasAcceptedWaiver = await legalService.hasAcceptedEventWaiver(
           buyer.id,
           event.id,
         );
@@ -196,7 +222,7 @@ class CheckoutController
       }
 
       // Step 5: Process payment via PaymentProcessingController
-      final paymentResult = await _paymentController.processEventPayment(
+      final paymentResult = await _resolvePaymentController().processEventPayment(
         event: updatedEvent,
         buyer: buyer,
         quantity: quantity,

@@ -154,7 +154,7 @@ class TestQualityChecker {
     for (int i = 0; i < lines.length; i++) {
       final line = lines[i];
       // Match test('name') or testWidgets('name') patterns
-      final match = RegExp(r'test(Widgets)?\([' r'"' r"'" r'](.*?)[' r'"' r"'" + r']\)').firstMatch(line);
+      final match = RegExp(r'test(Widgets)?\([' r'"' r"'" r'](.*?)[' r'"' r"'" r']\)').firstMatch(line);
       if (match != null && match.groupCount >= 2) {
         testNames.add(match.group(2) ?? '');
       }

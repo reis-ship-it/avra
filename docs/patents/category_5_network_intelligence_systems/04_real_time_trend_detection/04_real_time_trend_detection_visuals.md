@@ -4,7 +4,82 @@
 
 ---
 
-## 1. System Architecture
+
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: System Architecture.
+- **FIG. 6**: Real-Time Stream Processing Flow.
+- **FIG. 7**: Multi-Source Fusion Weights.
+- **FIG. 8**: Privacy-Preserving Aggregation.
+- **FIG. 9**: Trend Prediction Flow.
+- **FIG. 10**: Latency Performance.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Real-Time Trend Detection with Privacy Preservation implementation.
+
+In the illustrated embodiment, a computing device receives raw values, a differential-privacy budget parameter (ε), and temporal context; constructs an internal representation; and applies noise calibration and entropy-based validation to produce an anonymized output and an entropy validation outcome.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- System Architecture.
+- Real-Time Stream Processing Flow.
+- Multi-Source Fusion Weights.
+- Privacy-Preserving Aggregation.
+- Trend Prediction Flow.
+- Latency Performance.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Real-Time Trend Detection with Privacy Preservation implementation.
+
+1. Receiving anonymized data streams from multiple sources.
+2. Applying differential privacy noise to protect individual privacy.
+3. Extracting aggregate patterns only (no individual data).
+4. Processing trends in real-time using WebSocket-based stream processing.
+5. Achieving sub-second latency (< 1 second) for trend updates.
+6. Predicting emerging categories using growth rate and acceleration analysis.
+7. Forecasting future trends based on historical patterns.
+8. Fusing trends from multiple sources (AI network, community, temporal, location).
+9. Validating privacy preservation throughout the process.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Real-Time Trend Detection with Privacy Preservation implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- PrivacyBudget: {epsilon, sensitivity, delta (optional), policy}
+- NoiseParameters: {distribution: Laplace, scale, seed/salt (optional)}
+- AnonymizedValue: {value, clampedRange:[0,1], generatedAt}
+- EntropyMetric: {H, threshold, passed}
+- TemporalSignature: {windowStart, expiresAt, signatureHash}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Real-Time Trend Detection with Privacy Preservation implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+- Privacy/validation module (on-device)
+
+Example sequence:
+1. Client device selects privacy budget (ε) and sensitivity parameters.
+2. Client device transforms values by adding calibrated noise.
+3. Privacy/validation module computes entropy and validates randomness.
+4. If validation fails, client device re-transforms or strengthens privacy; otherwise continues.
+5. Client device emits/stores anonymized output for sharing or downstream computation.
+
+### FIG. 5 — System Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -56,7 +131,8 @@
 
 ---
 
-## 2. Real-Time Stream Processing Flow
+### FIG. 6 — Real-Time Stream Processing Flow
+
 
 ```
                     START
@@ -108,7 +184,8 @@
 
 ---
 
-## 3. Multi-Source Fusion Weights
+### FIG. 7 — Multi-Source Fusion Weights
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -136,7 +213,8 @@
 
 ---
 
-## 4. Privacy-Preserving Aggregation
+### FIG. 8 — Privacy-Preserving Aggregation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -179,7 +257,8 @@
 
 ---
 
-## 5. Trend Prediction Flow
+### FIG. 9 — Trend Prediction Flow
+
 
 ```
                     START
@@ -234,7 +313,8 @@
 
 ---
 
-## 6. Latency Performance
+### FIG. 10 — Latency Performance
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -270,4 +350,3 @@ This visual documentation provides comprehensive diagrams and visualizations for
 6. **Latency Performance** - Performance metrics
 
 These visuals support the deep-dive document and provide clear, patent-ready documentation of the system's technical implementation.
-

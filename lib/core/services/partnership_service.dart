@@ -1,7 +1,15 @@
+import 'dart:async';
+
 import 'package:spots/core/models/event_partnership.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/business_service.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:spots/core/services/logger.dart';
+import 'package:spots/core/services/storage_service.dart';
+import 'package:spots/core/services/supabase_service.dart';
+import 'package:spots/core/services/vibe_compatibility_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// Partnership Service
@@ -30,6 +38,8 @@ class PartnershipService {
 
   final ExpertiseEventService _eventService;
   final BusinessService _businessService;
+  final VibeCompatibilityService _vibeCompatibilityService;
+  final LedgerRecorderServiceV0 _ledger;
 
   // In-memory storage for partnerships (in production, use database)
   final Map<String, EventPartnership> _partnerships = {};
@@ -37,8 +47,53 @@ class PartnershipService {
   PartnershipService({
     required ExpertiseEventService eventService,
     required BusinessService businessService,
+    required VibeCompatibilityService vibeCompatibilityService,
+    LedgerRecorderServiceV0? ledgerRecorder,
   })  : _eventService = eventService,
-        _businessService = businessService;
+        _businessService = businessService,
+        _vibeCompatibilityService = vibeCompatibilityService,
+        _ledger = ledgerRecorder ??
+            LedgerRecorderServiceV0(
+              supabaseService: SupabaseService(),
+              agentIdService: AgentIdService(),
+              storage: StorageService.instance,
+            );
+
+  Future<void> _tryLedgerAppendForUser({
+    required String expectedOwnerUserId,
+    required String eventType,
+    required String entityType,
+    required String entityId,
+    String? category,
+    String? cityCode,
+    String? localityCode,
+    required Map<String, Object?> payload,
+  }) async {
+    try {
+      final currentUserId = SupabaseService().currentUser?.id;
+      if (currentUserId == null || currentUserId != expectedOwnerUserId) {
+        return;
+      }
+
+      await _ledger.append(
+        domain: LedgerDomainV0.expertise,
+        eventType: eventType,
+        occurredAt: DateTime.now(),
+        payload: payload,
+        entityType: entityType,
+        entityId: entityId,
+        category: category,
+        cityCode: cityCode,
+        localityCode: localityCode,
+        correlationId: entityId,
+      );
+    } catch (e) {
+      _logger.warning(
+        'Ledger write skipped/failed for $eventType: ${e.toString()}',
+        tag: _logName,
+      );
+    }
+  }
 
   /// Create a new partnership for an event
   ///
@@ -137,6 +192,32 @@ class PartnershipService {
 
       // Step 7: Save partnership
       await _savePartnership(partnership);
+
+      // Best-effort dual-write to ledger (must never block UX).
+      unawaited(_tryLedgerAppendForUser(
+        expectedOwnerUserId: userId,
+        eventType: 'partnership_proposed',
+        entityType: 'partnership',
+        entityId: partnership.id,
+        category: event.category,
+        cityCode: event.cityCode,
+        localityCode: event.localityCode,
+        payload: <String, Object?>{
+          'partnership_id': partnership.id,
+          'event_id': partnership.eventId,
+          'user_id': partnership.userId,
+          'business_id': partnership.businessId,
+          'status': partnership.status.name,
+          'type': partnership.type.name,
+          'vibe_compatibility_score': partnership.vibeCompatibilityScore,
+          'venue_location': partnership.venueLocation,
+          'shared_responsibilities_count':
+              partnership.sharedResponsibilities.length,
+          'has_agreement': partnership.agreement != null,
+          if (partnership.agreement != null)
+            'agreement': partnership.agreement!.toJson(),
+        },
+      ));
 
       _logger.info('Created partnership: ${partnership.id}', tag: _logName);
       return partnership;
@@ -248,6 +329,39 @@ class PartnershipService {
         );
         await _savePartnership(locked);
         _logger.info('Partnership locked: $partnershipId', tag: _logName);
+
+        // Best-effort dual-write to ledger (must never block UX).
+        unawaited(() async {
+          try {
+            final event = await _eventService.getEventById(locked.eventId);
+            await _tryLedgerAppendForUser(
+              expectedOwnerUserId: locked.userId,
+              eventType: 'partnership_locked',
+              entityType: 'partnership',
+              entityId: locked.id,
+              category: event?.category,
+              cityCode: event?.cityCode,
+              localityCode: event?.localityCode,
+              payload: <String, Object?>{
+                'partnership_id': locked.id,
+                'event_id': locked.eventId,
+                'user_id': locked.userId,
+                'business_id': locked.businessId,
+                'status': locked.status.name,
+                'type': locked.type.name,
+                'terms_version': locked.termsVersion,
+                'vibe_compatibility_score': locked.vibeCompatibilityScore,
+                'revenue_split_id': locked.revenueSplitId,
+              },
+            );
+          } catch (e) {
+            _logger.warning(
+              'Ledger write skipped/failed for partnership_locked: ${e.toString()}',
+              tag: _logName,
+            );
+          }
+        }());
+
         return locked;
       }
 
@@ -399,10 +513,10 @@ class PartnershipService {
   /// Compatibility score (0.0 to 1.0)
   ///
   /// **Note:**
-  /// This is a simplified implementation. In production, this would:
-  /// - Use VibeAnalysisEngine to get user vibes
-  /// - Use BusinessAccount preferences for business vibes
-  /// - Calculate sophisticated compatibility score
+  /// This is a **truthful** implementation:
+  /// - Quantum-inspired fidelity over the 12 SPOTS dimensions
+  /// - Knot topology + weave similarity when knot runtime is available
+  /// - Graceful degradation to quantum-only scoring when knot runtime isn’t available
   Future<double> calculateVibeCompatibility({
     required String userId,
     required String businessId,
@@ -412,17 +526,17 @@ class PartnershipService {
           'Calculating vibe compatibility: user=$userId, business=$businessId',
           tag: _logName);
 
-      // TODO: In production, integrate with VibeAnalysisEngine
-      // For now, return a placeholder compatibility score
-      // This should use:
-      // - UserVibe from VibeAnalysisEngine
-      // - BusinessAccount.expertPreferences for business vibe
-      // - Calculate compatibility using UserVibe.calculateVibeCompatibility()
+      final business = await _businessService.getBusinessById(businessId);
+      if (business == null) {
+        return 0.0;
+      }
 
-      // Placeholder: Return 0.75 (75% compatibility) for now
-      // This ensures partnerships can be created for testing
-      // In production, replace with actual vibe calculation
-      return 0.75;
+      final score = await _vibeCompatibilityService.calculateUserBusinessVibe(
+        userId: userId,
+        business: business,
+      );
+
+      return score.combined;
     } catch (e) {
       _logger.error('Error calculating vibe compatibility',
           error: e, tag: _logName);

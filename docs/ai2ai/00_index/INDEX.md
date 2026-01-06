@@ -138,10 +138,10 @@
 ### **Files to Move:**
 - `docs/plans/ai2ai_system/*` → `docs/ai2ai/09_implementation_plans/` or appropriate folders
 - `docs/plans/offline_ai2ai/*` → `docs/ai2ai/06_network_connectivity/`
-- `VIBE_CODING/ARCHITECTURE/*` → `docs/ai2ai/02_architecture/`
-- `VIBE_CODING/IMPLEMENTATION/*` → `docs/ai2ai/03_core_components/`
-- `VIBE_CODING/LEARNING/*` → `docs/ai2ai/04_learning_systems/`
-- `VIBE_CODING/MONITORING/*` → `docs/ai2ai/08_usage_operations/`
+- `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/*` → `docs/ai2ai/02_architecture/`
+- `docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/*` → `docs/ai2ai/03_core_components/`
+- `docs/_archive/vibe_coding/VIBE_CODING/LEARNING/*` → `docs/ai2ai/04_learning_systems/`
+- `docs/_archive/vibe_coding/VIBE_CODING/MONITORING/*` → `docs/ai2ai/08_usage_operations/`
 
 ### **Files to Create:**
 - Comprehensive documentation for each folder

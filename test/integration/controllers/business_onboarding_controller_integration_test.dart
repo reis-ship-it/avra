@@ -7,6 +7,7 @@ import 'package:spots/core/models/business_patron_preferences.dart';
 import 'package:spots/core/models/unified_user.dart';
 import 'package:spots/injection_container.dart' as di;
 import 'package:spots/data/datasources/local/sembast_database.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Business Onboarding Controller Integration Tests
 /// 
@@ -27,6 +28,7 @@ void main() {
       await SembastDatabase.database;
       
       // Initialize dependency injection
+      await setupTestStorage();
       await di.init();
       
       controller = di.sl<BusinessOnboardingController>();

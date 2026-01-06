@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:spots/core/models/revenue_split.dart';
 import 'package:spots/core/theme/colors.dart';
 import 'package:spots/core/theme/app_theme.dart';
@@ -22,6 +23,9 @@ class RevenueSplitDisplay extends StatelessWidget {
   final bool showDetails;
   final bool showLockStatus;
 
+  static final NumberFormat _currency =
+      NumberFormat.currency(locale: 'en_US', symbol: '\$', decimalDigits: 2);
+
   const RevenueSplitDisplay({
     super.key,
     required this.split,
@@ -38,9 +42,10 @@ class RevenueSplitDisplay extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             // Header
             Row(
               children: [
@@ -188,7 +193,8 @@ class RevenueSplitDisplay extends StatelessWidget {
                 ),
               ),
             ],
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -226,7 +232,7 @@ class RevenueSplitDisplay extends StatelessWidget {
           ],
         ),
         Text(
-          '\$${amount.toStringAsFixed(2)}',
+          _currency.format(amount),
           style: TextStyle(
             fontSize: isTotal ? 24 : 18,
             fontWeight: FontWeight.bold,
@@ -272,7 +278,7 @@ class RevenueSplitDisplay extends StatelessWidget {
           ),
         ),
         Text(
-          '\$${amount.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)',
+          '${_currency.format(amount)} (${percentage.toStringAsFixed(1)}%)',
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -351,7 +357,7 @@ class RevenueSplitDisplay extends StatelessWidget {
             ),
             if (party.amount != null)
               Text(
-                '\$${party.amount!.toStringAsFixed(2)}',
+                _currency.format(party.amount!),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

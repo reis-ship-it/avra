@@ -32,6 +32,14 @@ const CALLBACK_ID_GET_LOCAL_REGISTRATION_ID: CallbackId = 4;
 const CALLBACK_ID_SAVE_IDENTITY_KEY: CallbackId = 5;
 const CALLBACK_ID_GET_IDENTITY_KEY: CallbackId = 6;
 const CALLBACK_ID_IS_TRUSTED_IDENTITY: CallbackId = 7;
+const CALLBACK_ID_LOAD_PRE_KEY: CallbackId = 8;
+const CALLBACK_ID_STORE_PRE_KEY: CallbackId = 9;
+const CALLBACK_ID_REMOVE_PRE_KEY: CallbackId = 10;
+const CALLBACK_ID_LOAD_SIGNED_PRE_KEY: CallbackId = 11;
+const CALLBACK_ID_STORE_SIGNED_PRE_KEY: CallbackId = 12;
+const CALLBACK_ID_LOAD_KYBER_PRE_KEY: CallbackId = 13;
+const CALLBACK_ID_STORE_KYBER_PRE_KEY: CallbackId = 14;
+const CALLBACK_ID_MARK_KYBER_PRE_KEY_USED: CallbackId = 15;
 
 // Callback args struct (single parameter for dispatch function)
 #[repr(C)]
@@ -45,9 +53,10 @@ pub struct CallbackArgs {
 }
 
 // Dispatch function type
-// NOTE: Dart FFI cannot create function pointers for struct pointers!
-// We'll use int Function(int) where int is the pointer address
-type DispatchCallback = extern "C" fn(u64) -> c_int; // u64 = pointer address
+//
+// Dart can create a C function pointer for a single-parameter struct pointer,
+// so we pass the CallbackArgs pointer directly (no u64 address encoding).
+type DispatchCallback = extern "C" fn(*mut CallbackArgs) -> c_int;
 
 struct CallbackRegistry {
     dispatch: Option<DispatchCallback>,
@@ -57,6 +66,41 @@ struct CallbackRegistry {
 static CALLBACK_REGISTRY: Mutex<CallbackRegistry> = Mutex::new(CallbackRegistry {
     dispatch: None,
 });
+
+fn call_dispatch(
+    callback_id: CallbackId,
+    store_ctx: *mut c_void,
+    arg1: *mut c_void,
+    arg2: *mut c_void,
+    arg3: *mut c_void,
+    direction: u32,
+) -> c_int {
+    let registry = CALLBACK_REGISTRY.lock().unwrap();
+    if let Some(dispatch) = registry.dispatch {
+        let args = CallbackArgs {
+            callback_id,
+            store_ctx,
+            arg1,
+            arg2,
+            arg3,
+            direction,
+        };
+
+        let args_box = Box::new(args);
+        let args_ptr = Box::into_raw(args_box);
+
+        let result = dispatch(args_ptr);
+
+        // Free the struct
+        unsafe {
+            let _ = Box::from_raw(args_ptr);
+        }
+
+        result
+    } else {
+        1 // Error: dispatch callback not registered
+    }
+}
 
 // ============================================================================
 // CALLBACK REGISTRATION FUNCTIONS (CALLED FROM DART)
@@ -94,6 +138,21 @@ pub struct SignalPublicKey {
     _private: [u8; 0],
 }
 
+#[repr(C)]
+pub struct SignalPreKeyRecord {
+    _private: [u8; 0],
+}
+
+#[repr(C)]
+pub struct SignalSignedPreKeyRecord {
+    _private: [u8; 0],
+}
+
+#[repr(C)]
+pub struct SignalKyberPreKeyRecord {
+    _private: [u8; 0],
+}
+
 // Wrapper structs matching libsignal-ffi
 #[repr(C)]
 pub struct SignalMutPointerSessionRecord {
@@ -125,6 +184,36 @@ pub struct SignalMutPointerPublicKey {
     pub raw: *mut SignalPublicKey,
 }
 
+#[repr(C)]
+pub struct SignalMutPointerPreKeyRecord {
+    pub raw: *mut SignalPreKeyRecord,
+}
+
+#[repr(C)]
+pub struct SignalConstPointerPreKeyRecord {
+    pub raw: *const SignalPreKeyRecord,
+}
+
+#[repr(C)]
+pub struct SignalMutPointerSignedPreKeyRecord {
+    pub raw: *mut SignalSignedPreKeyRecord,
+}
+
+#[repr(C)]
+pub struct SignalConstPointerSignedPreKeyRecord {
+    pub raw: *const SignalSignedPreKeyRecord,
+}
+
+#[repr(C)]
+pub struct SignalMutPointerKyberPreKeyRecord {
+    pub raw: *mut SignalKyberPreKeyRecord,
+}
+
+#[repr(C)]
+pub struct SignalConstPointerKyberPreKeyRecord {
+    pub raw: *const SignalKyberPreKeyRecord,
+}
+
 // ============================================================================
 // WRAPPER FUNCTIONS (CALLED BY LIBSIGNAL-FFI)
 // ============================================================================
@@ -136,62 +225,33 @@ pub struct SignalMutPointerPublicKey {
 pub extern "C" fn spots_rust_load_session_wrapper(
     store_ctx: *mut c_void,
     recordp: *mut SignalMutPointerSessionRecord,
-    address: *const SignalConstPointerProtocolAddress,
+    address: SignalConstPointerProtocolAddress,
 ) -> c_int {
-    let registry = CALLBACK_REGISTRY.lock().unwrap();
-    if let Some(dispatch) = registry.dispatch {
-        // Use hardcoded callback ID for this wrapper function
-        let callback_id = CALLBACK_ID_LOAD_SESSION;
-        
-        // Pack parameters into struct
-        let args = CallbackArgs {
-            callback_id,
-            store_ctx,
-            arg1: recordp as *mut c_void,
-            arg2: address as *mut c_void,
-            arg3: std::ptr::null_mut(),
-            direction: 0,
-        };
-        
-        // Allocate struct on heap and pass address as u64
-        let args_box = Box::new(args);
-        let args_ptr = Box::into_raw(args_box);
-        let args_address = args_ptr as u64;
-        
-        // Call dispatch function with pointer address
-        let result = dispatch(args_address);
-        
-        // Free the struct
-        let _ = Box::from_raw(args_ptr);
-        
-        result
-    } else {
-        1 // Error: dispatch callback not registered
-    }
+    call_dispatch(
+        CALLBACK_ID_LOAD_SESSION,
+        store_ctx,
+        recordp as *mut c_void,
+        (&address as *const SignalConstPointerProtocolAddress) as *mut c_void,
+        std::ptr::null_mut(),
+        0,
+    )
 }
 
 // Store session wrapper
 #[no_mangle]
 pub extern "C" fn spots_rust_store_session_wrapper(
     store_ctx: *mut c_void,
-    address: *const SignalConstPointerProtocolAddress,
-    record: *const SignalConstPointerSessionRecord,
+    address: SignalConstPointerProtocolAddress,
+    record: SignalConstPointerSessionRecord,
 ) -> c_int {
-    let registry = CALLBACK_REGISTRY.lock().unwrap();
-    if let Some(dispatch) = registry.dispatch {
-        let callback_id = CALLBACK_ID_STORE_SESSION;
-        let args = CallbackArgs {
-            callback_id,
-            store_ctx,
-            arg1: address as *mut c_void,
-            arg2: record as *mut c_void,
-            arg3: std::ptr::null_mut(),
-            direction: 0,
-        };
-        dispatch(&args)
-    } else {
-        1
-    }
+    call_dispatch(
+        CALLBACK_ID_STORE_SESSION,
+        store_ctx,
+        (&address as *const SignalConstPointerProtocolAddress) as *mut c_void,
+        (&record as *const SignalConstPointerSessionRecord) as *mut c_void,
+        std::ptr::null_mut(),
+        0,
+    )
 }
 
 // Get identity key pair wrapper
@@ -200,21 +260,14 @@ pub extern "C" fn spots_rust_get_identity_key_pair_wrapper(
     store_ctx: *mut c_void,
     keyp: *mut SignalMutPointerPrivateKey,
 ) -> c_int {
-    let registry = CALLBACK_REGISTRY.lock().unwrap();
-    if let Some(dispatch) = registry.dispatch {
-        let callback_id = CALLBACK_ID_GET_IDENTITY_KEY_PAIR;
-        let args = CallbackArgs {
-            callback_id,
-            store_ctx,
-            arg1: keyp as *mut c_void,
-            arg2: std::ptr::null_mut(),
-            arg3: std::ptr::null_mut(),
-            direction: 0,
-        };
-        dispatch(&args)
-    } else {
-        1
-    }
+    call_dispatch(
+        CALLBACK_ID_GET_IDENTITY_KEY_PAIR,
+        store_ctx,
+        keyp as *mut c_void,
+        std::ptr::null_mut(),
+        std::ptr::null_mut(),
+        0,
+    )
 }
 
 // Get local registration ID wrapper
@@ -223,45 +276,31 @@ pub extern "C" fn spots_rust_get_local_registration_id_wrapper(
     store_ctx: *mut c_void,
     idp: *mut u32,
 ) -> c_int {
-    let registry = CALLBACK_REGISTRY.lock().unwrap();
-    if let Some(dispatch) = registry.dispatch {
-        let callback_id = CALLBACK_ID_GET_LOCAL_REGISTRATION_ID;
-        let args = CallbackArgs {
-            callback_id,
-            store_ctx,
-            arg1: idp as *mut c_void,
-            arg2: std::ptr::null_mut(),
-            arg3: std::ptr::null_mut(),
-            direction: 0,
-        };
-        dispatch(&args)
-    } else {
-        1
-    }
+    call_dispatch(
+        CALLBACK_ID_GET_LOCAL_REGISTRATION_ID,
+        store_ctx,
+        idp as *mut c_void,
+        std::ptr::null_mut(),
+        std::ptr::null_mut(),
+        0,
+    )
 }
 
 // Save identity key wrapper
 #[no_mangle]
 pub extern "C" fn spots_rust_save_identity_key_wrapper(
     store_ctx: *mut c_void,
-    address: *const SignalConstPointerProtocolAddress,
-    public_key: *const SignalConstPointerPublicKey,
+    address: SignalConstPointerProtocolAddress,
+    public_key: SignalConstPointerPublicKey,
 ) -> c_int {
-    let registry = CALLBACK_REGISTRY.lock().unwrap();
-    if let Some(dispatch) = registry.dispatch {
-        let callback_id = CALLBACK_ID_SAVE_IDENTITY_KEY;
-        let args = CallbackArgs {
-            callback_id,
-            store_ctx,
-            arg1: address as *mut c_void,
-            arg2: public_key as *mut c_void,
-            arg3: std::ptr::null_mut(),
-            direction: 0,
-        };
-        dispatch(&args)
-    } else {
-        1
-    }
+    call_dispatch(
+        CALLBACK_ID_SAVE_IDENTITY_KEY,
+        store_ctx,
+        (&address as *const SignalConstPointerProtocolAddress) as *mut c_void,
+        (&public_key as *const SignalConstPointerPublicKey) as *mut c_void,
+        std::ptr::null_mut(),
+        0,
+    )
 }
 
 // Get identity key wrapper
@@ -269,48 +308,225 @@ pub extern "C" fn spots_rust_save_identity_key_wrapper(
 pub extern "C" fn spots_rust_get_identity_key_wrapper(
     store_ctx: *mut c_void,
     public_keyp: *mut SignalMutPointerPublicKey,
-    address: *const SignalConstPointerProtocolAddress,
+    address: SignalConstPointerProtocolAddress,
 ) -> c_int {
-    let registry = CALLBACK_REGISTRY.lock().unwrap();
-    if let Some(dispatch) = registry.dispatch {
-        let callback_id = CALLBACK_ID_GET_IDENTITY_KEY;
-        let args = CallbackArgs {
-            callback_id,
-            store_ctx,
-            arg1: public_keyp as *mut c_void,
-            arg2: address as *mut c_void,
-            arg3: std::ptr::null_mut(),
-            direction: 0,
-        };
-        dispatch(&args)
-    } else {
-        1
-    }
+    call_dispatch(
+        CALLBACK_ID_GET_IDENTITY_KEY,
+        store_ctx,
+        public_keyp as *mut c_void,
+        (&address as *const SignalConstPointerProtocolAddress) as *mut c_void,
+        std::ptr::null_mut(),
+        0,
+    )
 }
 
 // Is trusted identity wrapper
 #[no_mangle]
 pub extern "C" fn spots_rust_is_trusted_identity_wrapper(
     store_ctx: *mut c_void,
-    address: *const SignalConstPointerProtocolAddress,
-    public_key: *const SignalConstPointerPublicKey,
+    address: SignalConstPointerProtocolAddress,
+    public_key: SignalConstPointerPublicKey,
     direction: u32,
 ) -> c_int {
-    let registry = CALLBACK_REGISTRY.lock().unwrap();
-    if let Some(dispatch) = registry.dispatch {
-        let callback_id = CALLBACK_ID_IS_TRUSTED_IDENTITY;
-        let args = CallbackArgs {
-            callback_id,
-            store_ctx,
-            arg1: address as *mut c_void,
-            arg2: public_key as *mut c_void,
-            arg3: std::ptr::null_mut(),
-            direction,
-        };
-        dispatch(&args)
-    } else {
-        1
+    call_dispatch(
+        CALLBACK_ID_IS_TRUSTED_IDENTITY,
+        store_ctx,
+        (&address as *const SignalConstPointerProtocolAddress) as *mut c_void,
+        (&public_key as *const SignalConstPointerPublicKey) as *mut c_void,
+        std::ptr::null_mut(),
+        direction,
+    )
+}
+
+// ============================================================================
+// PREKEY STORE WRAPPERS
+// ============================================================================
+
+#[no_mangle]
+pub extern "C" fn spots_rust_load_pre_key_wrapper(
+    store_ctx: *mut c_void,
+    recordp: *mut SignalMutPointerPreKeyRecord,
+    id: u32,
+) -> c_int {
+    let id_box = Box::new(id);
+    let id_ptr = Box::into_raw(id_box) as *mut c_void;
+    let result = call_dispatch(
+        CALLBACK_ID_LOAD_PRE_KEY,
+        store_ctx,
+        recordp as *mut c_void,
+        id_ptr,
+        std::ptr::null_mut(),
+        0,
+    );
+    unsafe {
+        let _ = Box::from_raw(id_ptr as *mut u32);
     }
+    result
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_store_pre_key_wrapper(
+    store_ctx: *mut c_void,
+    id: u32,
+    record: SignalConstPointerPreKeyRecord,
+) -> c_int {
+    let id_box = Box::new(id);
+    let id_ptr = Box::into_raw(id_box) as *mut c_void;
+    let result = call_dispatch(
+        CALLBACK_ID_STORE_PRE_KEY,
+        store_ctx,
+        (&record as *const SignalConstPointerPreKeyRecord) as *mut c_void,
+        id_ptr,
+        std::ptr::null_mut(),
+        0,
+    );
+    unsafe {
+        let _ = Box::from_raw(id_ptr as *mut u32);
+    }
+    result
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_remove_pre_key_wrapper(store_ctx: *mut c_void, id: u32) -> c_int {
+    let id_box = Box::new(id);
+    let id_ptr = Box::into_raw(id_box) as *mut c_void;
+    let result = call_dispatch(
+        CALLBACK_ID_REMOVE_PRE_KEY,
+        store_ctx,
+        id_ptr,
+        std::ptr::null_mut(),
+        std::ptr::null_mut(),
+        0,
+    );
+    unsafe {
+        let _ = Box::from_raw(id_ptr as *mut u32);
+    }
+    result
+}
+
+// ============================================================================
+// SIGNED PREKEY STORE WRAPPERS
+// ============================================================================
+
+#[no_mangle]
+pub extern "C" fn spots_rust_load_signed_pre_key_wrapper(
+    store_ctx: *mut c_void,
+    recordp: *mut SignalMutPointerSignedPreKeyRecord,
+    id: u32,
+) -> c_int {
+    let id_box = Box::new(id);
+    let id_ptr = Box::into_raw(id_box) as *mut c_void;
+    let result = call_dispatch(
+        CALLBACK_ID_LOAD_SIGNED_PRE_KEY,
+        store_ctx,
+        recordp as *mut c_void,
+        id_ptr,
+        std::ptr::null_mut(),
+        0,
+    );
+    unsafe {
+        let _ = Box::from_raw(id_ptr as *mut u32);
+    }
+    result
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_store_signed_pre_key_wrapper(
+    store_ctx: *mut c_void,
+    id: u32,
+    record: SignalConstPointerSignedPreKeyRecord,
+) -> c_int {
+    let id_box = Box::new(id);
+    let id_ptr = Box::into_raw(id_box) as *mut c_void;
+    let result = call_dispatch(
+        CALLBACK_ID_STORE_SIGNED_PRE_KEY,
+        store_ctx,
+        (&record as *const SignalConstPointerSignedPreKeyRecord) as *mut c_void,
+        id_ptr,
+        std::ptr::null_mut(),
+        0,
+    );
+    unsafe {
+        let _ = Box::from_raw(id_ptr as *mut u32);
+    }
+    result
+}
+
+// ============================================================================
+// KYBER PREKEY STORE WRAPPERS
+// ============================================================================
+
+#[no_mangle]
+pub extern "C" fn spots_rust_load_kyber_pre_key_wrapper(
+    store_ctx: *mut c_void,
+    recordp: *mut SignalMutPointerKyberPreKeyRecord,
+    id: u32,
+) -> c_int {
+    let id_box = Box::new(id);
+    let id_ptr = Box::into_raw(id_box) as *mut c_void;
+    let result = call_dispatch(
+        CALLBACK_ID_LOAD_KYBER_PRE_KEY,
+        store_ctx,
+        recordp as *mut c_void,
+        id_ptr,
+        std::ptr::null_mut(),
+        0,
+    );
+    unsafe {
+        let _ = Box::from_raw(id_ptr as *mut u32);
+    }
+    result
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_store_kyber_pre_key_wrapper(
+    store_ctx: *mut c_void,
+    id: u32,
+    record: SignalConstPointerKyberPreKeyRecord,
+) -> c_int {
+    let id_box = Box::new(id);
+    let id_ptr = Box::into_raw(id_box) as *mut c_void;
+    let result = call_dispatch(
+        CALLBACK_ID_STORE_KYBER_PRE_KEY,
+        store_ctx,
+        (&record as *const SignalConstPointerKyberPreKeyRecord) as *mut c_void,
+        id_ptr,
+        std::ptr::null_mut(),
+        0,
+    );
+    unsafe {
+        let _ = Box::from_raw(id_ptr as *mut u32);
+    }
+    result
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_mark_kyber_pre_key_used_wrapper(
+    store_ctx: *mut c_void,
+    id: u32,
+    signed_prekey_id: u32,
+    base_key: SignalConstPointerPublicKey,
+) -> c_int {
+    let id_box = Box::new(id);
+    let id_ptr = Box::into_raw(id_box) as *mut c_void;
+    let spk_box = Box::new(signed_prekey_id);
+    let spk_ptr = Box::into_raw(spk_box) as *mut c_void;
+
+    let result = call_dispatch(
+        CALLBACK_ID_MARK_KYBER_PRE_KEY_USED,
+        store_ctx,
+        (&base_key as *const SignalConstPointerPublicKey) as *mut c_void,
+        id_ptr,
+        spk_ptr,
+        0,
+    );
+
+    unsafe {
+        let _ = Box::from_raw(id_ptr as *mut u32);
+        let _ = Box::from_raw(spk_ptr as *mut u32);
+    }
+
+    result
 }
 
 // ============================================================================
@@ -352,4 +568,44 @@ pub extern "C" fn spots_rust_get_get_identity_key_wrapper_ptr() -> *mut c_void {
 #[no_mangle]
 pub extern "C" fn spots_rust_get_is_trusted_identity_wrapper_ptr() -> *mut c_void {
     spots_rust_is_trusted_identity_wrapper as *mut c_void
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_get_load_pre_key_wrapper_ptr() -> *mut c_void {
+    spots_rust_load_pre_key_wrapper as *mut c_void
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_get_store_pre_key_wrapper_ptr() -> *mut c_void {
+    spots_rust_store_pre_key_wrapper as *mut c_void
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_get_remove_pre_key_wrapper_ptr() -> *mut c_void {
+    spots_rust_remove_pre_key_wrapper as *mut c_void
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_get_load_signed_pre_key_wrapper_ptr() -> *mut c_void {
+    spots_rust_load_signed_pre_key_wrapper as *mut c_void
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_get_store_signed_pre_key_wrapper_ptr() -> *mut c_void {
+    spots_rust_store_signed_pre_key_wrapper as *mut c_void
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_get_load_kyber_pre_key_wrapper_ptr() -> *mut c_void {
+    spots_rust_load_kyber_pre_key_wrapper as *mut c_void
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_get_store_kyber_pre_key_wrapper_ptr() -> *mut c_void {
+    spots_rust_store_kyber_pre_key_wrapper as *mut c_void
+}
+
+#[no_mangle]
+pub extern "C" fn spots_rust_get_mark_kyber_pre_key_used_wrapper_ptr() -> *mut c_void {
+    spots_rust_mark_kyber_pre_key_used_wrapper as *mut c_void
 }

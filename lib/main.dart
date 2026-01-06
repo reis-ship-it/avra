@@ -10,7 +10,12 @@ import 'firebase_options.dart';
 import 'package:spots/core/services/storage_health_checker.dart';
 import 'package:spots/core/services/logger.dart';
 import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
+import 'package:spots/core/services/supabase_service.dart';
+import 'package:spots/core/crypto/signal/signal_protocol_service.dart';
 import 'package:spots/core/services/signal_protocol_initialization_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:spots/core/services/local_llm/local_llm_auto_install_service.dart';
+import 'dart:async';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +55,32 @@ void main() async {
     await di.init();
     logger.info('✅ [MAIN] Dependency injection initialized.');
 
+    // Best-effort: auto-install local LLM pack if user opted-in and eligible.
+    // This keeps “best quality” offline chat one tap away without bloating the app download.
+    try {
+      unawaited(LocalLlmAutoInstallService().maybeAutoInstall());
+    } catch (_) {
+      // Ignore.
+    }
+
+    // Initialize Atomic Clock (central time authority; best-effort).
+    try {
+      logger.info('🕰️ [MAIN] Initializing AtomicClockService...');
+      final atomicClock = di.sl<AtomicClockService>();
+      final supabaseService = di.sl<SupabaseService>();
+
+      // Configure server time provider (authoritative time source).
+      atomicClock.configure(
+          serverTimeProvider: () => supabaseService.getServerTime());
+
+      await atomicClock.initialize();
+      logger.info(
+          '✅ [MAIN] AtomicClockService initialized (synchronized=${atomicClock.isSynchronized()})');
+    } catch (e, stackTrace) {
+      logger.warn('⚠️ [MAIN] AtomicClockService init failed (non-fatal): $e');
+      logger.debug('Stack trace: $stackTrace');
+    }
+
     // Storage health check (non-fatal)
     try {
       logger.info('📦 [MAIN] Checking storage health...');
@@ -62,11 +93,11 @@ void main() async {
           'spot-images',
           'list-images',
         ]);
-        logger.info('✅ [MAIN] Storage health: ${results.entries
-                .map((e) => '${e.key}=${e.value ? 'OK' : 'FAIL'}')
-                .join(', ')}');
+        logger.info(
+            '✅ [MAIN] Storage health: ${results.entries.map((e) => '${e.key}=${e.value ? 'OK' : 'FAIL'}').join(', ')}');
       } catch (e) {
-        logger.warn('⚠️ [MAIN] Supabase not initialized, skipping storage health check: $e');
+        logger.warn(
+            '⚠️ [MAIN] Supabase not initialized, skipping storage health check: $e');
       }
     } catch (e) {
       logger.warn('⚠️ [MAIN] Storage health check error: $e');
@@ -81,13 +112,14 @@ void main() async {
     try {
       logger.info('🧹 [MAIN] Clearing demo user cache and data...');
       OnboardingCompletionService.clearAllCache();
-      await OnboardingCompletionService.resetOnboardingCompletion('demo-user-1');
-      
+      await OnboardingCompletionService.resetOnboardingCompletion(
+          'demo-user-1');
+
       // Delete demo user from database
       final db = await SembastDatabase.database;
       await SembastDatabase.usersStore.record('demo-user-1').delete(db);
       await SembastDatabase.preferencesStore.record('currentUser').delete(db);
-      
+
       logger.info('✅ [MAIN] Demo user cache and data cleared.');
     } catch (e) {
       logger.warn('⚠️ [MAIN] Error clearing demo user cache: $e');
@@ -121,6 +153,27 @@ void main() async {
       final signalInitService = di.sl<SignalProtocolInitializationService>();
       await signalInitService.initialize();
       logger.info('✅ [MAIN] Signal Protocol initialized');
+
+      // Best-effort: publish our prekey bundle if we already have an authenticated user session.
+      //
+      // This is required for other users/businesses to establish a Signal session to us
+      // (X3DH needs the recipient's prekey bundle to be available on the key server).
+      try {
+        final supabaseService = di.sl<SupabaseService>();
+        final currentUser = supabaseService.currentUser;
+        if (currentUser != null && currentUser.id.isNotEmpty) {
+          final signalProtocol = di.sl<SignalProtocolService>();
+          await signalProtocol.uploadPreKeyBundle(currentUser.id);
+          logger.info(
+              '✅ [MAIN] Published Signal prekey bundle for userId=${currentUser.id}');
+        } else {
+          logger.info(
+              'ℹ️ [MAIN] No authenticated user yet; skipping prekey bundle publish');
+        }
+      } catch (e, stackTrace) {
+        logger.warn('⚠️ [MAIN] Prekey bundle publish failed (non-fatal): $e');
+        logger.debug('Stack trace: $stackTrace');
+      }
     } catch (e, stackTrace) {
       logger.warn('⚠️ [MAIN] Signal Protocol initialization failed: $e');
       logger.debug('Stack trace: $stackTrace');

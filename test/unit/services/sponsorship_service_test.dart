@@ -4,7 +4,12 @@ import 'package:mockito/annotations.dart';
 import 'package:spots/core/services/sponsorship_service.dart';
 import 'package:spots/core/services/expertise_event_service.dart';
 import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/business_service.dart';
+import 'package:spots/core/services/vibe_compatibility_service.dart';
+import 'package:spots/core/services/agent_id_service.dart';
+import 'package:spots/core/ai/personality_learning.dart';
+import 'package:spots/injection_container.dart' as di;
+import 'package:spots_knot/services/knot/entity_knot_service.dart';
+import 'package:spots_knot/services/knot/personality_knot_service.dart';
 import 'package:spots/core/models/sponsorship.dart';
 import 'package:spots/core/models/expertise_event.dart';
 import 'package:spots/core/models/brand_account.dart';
@@ -13,25 +18,34 @@ import '../../fixtures/model_factories.dart';
 import 'sponsorship_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';
 
-@GenerateMocks([ExpertiseEventService, PartnershipService, BusinessService])
+@GenerateMocks([ExpertiseEventService, PartnershipService])
 void main() {
+  if (!di.sl.isRegistered<AgentIdService>()) {
+    di.sl.registerLazySingleton<AgentIdService>(() => AgentIdService());
+  }
+
+  final VibeCompatibilityService vibeCompatibilityService =
+      QuantumKnotVibeCompatibilityService(
+    personalityLearning: PersonalityLearning(),
+    personalityKnotService: PersonalityKnotService(),
+    entityKnotService: EntityKnotService(),
+  );
+
   group('SponsorshipService Tests', () {
     late SponsorshipService service;
     late MockExpertiseEventService mockEventService;
     late MockPartnershipService mockPartnershipService;
-    late MockBusinessService mockBusinessService;
     late ExpertiseEvent testEvent;
     late BrandAccount testBrand;
 
     setUp(() {
       mockEventService = MockExpertiseEventService();
       mockPartnershipService = MockPartnershipService();
-      mockBusinessService = MockBusinessService();
 
       service = SponsorshipService(
         eventService: mockEventService,
         partnershipService: mockPartnershipService,
-        businessService: mockBusinessService,
+        vibeCompatibilityService: vibeCompatibilityService,
       );
 
       final testUser = ModelFactories.createTestUser(
@@ -372,6 +386,13 @@ void main() {
 
     group('calculateCompatibility', () {
       test('should return compatibility score', () async {
+        // Arrange
+        when(mockEventService.getEventById('event-123'))
+            .thenAnswer((_) async => testEvent);
+        when(mockPartnershipService.getPartnershipsForEvent('event-123'))
+            .thenAnswer((_) async => []);
+        await service.registerBrand(testBrand);
+
         // Act
         final compatibility = await service.calculateCompatibility(
           eventId: 'event-123',

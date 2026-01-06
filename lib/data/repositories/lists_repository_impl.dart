@@ -3,108 +3,73 @@ import 'package:spots/core/models/list.dart';
 import 'package:spots/data/datasources/local/lists_local_datasource.dart';
 import 'package:spots/data/datasources/remote/lists_remote_datasource.dart';
 import 'package:spots/domain/repositories/lists_repository.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:spots/data/repositories/repository_patterns.dart';
 
-class ListsRepositoryImpl implements ListsRepository {
+/// Lists Repository Implementation
+///
+/// Uses offline-first pattern: returns local data immediately, syncs with remote if online.
+class ListsRepositoryImpl extends SimplifiedRepositoryBase
+    implements ListsRepository {
   final ListsLocalDataSource? localDataSource;
   final ListsRemoteDataSource? remoteDataSource;
-  final Connectivity? connectivity;
 
   ListsRepositoryImpl({
+    super.connectivity,
     this.localDataSource,
     this.remoteDataSource,
-    this.connectivity,
   });
 
   @override
   Future<List<SpotList>> getLists() async {
-    try {
-      // Check connectivity first - offline-first approach
-      final connectivityResult = await connectivity?.checkConnectivity() ?? [ConnectivityResult.none];
-      final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-      
-      if (isOnline && remoteDataSource != null) {
-        final lists = await remoteDataSource!.getLists();
-        // Cache locally
-        for (final list in lists) {
-          await localDataSource?.saveList(list);
+    return executeOfflineFirst<List<SpotList>>(
+      localOperation: () async =>
+          await localDataSource?.getLists() ?? <SpotList>[],
+      remoteOperation: remoteDataSource != null
+          ? () async => await remoteDataSource!.getLists()
+          : null,
+      syncToLocal: (remoteLists) async {
+        // Cache remote lists locally
+        if (localDataSource != null) {
+          for (final list in remoteLists) {
+            await localDataSource!.saveList(list);
+          }
         }
-        return lists;
-      }
-      
-      // Use local data (either offline or remote failed)
-      return await localDataSource?.getLists() ?? [];
-    } catch (e) {
-      developer.log('Error getting remote lists: $e', name: 'ListsRepository');
-      // Fallback to local
-      return await localDataSource?.getLists() ?? [];
-    }
+      },
+    );
   }
 
   @override
   Future<SpotList> createList(SpotList list) async {
-    try {
-      // Check connectivity first - offline-first approach
-      final connectivityResult = await connectivity?.checkConnectivity() ?? [ConnectivityResult.none];
-      final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-      
-      // Always save locally first
-      final savedList = await localDataSource?.saveList(list) ?? list;
-      
-      // Try to sync to remote if online
-      if (isOnline && remoteDataSource != null) {
-        try {
-          await remoteDataSource!.createList(savedList);
-        } catch (e) {
-          developer.log('Failed to sync list to remote: $e', name: 'ListsRepository');
-          // Continue with local version - no need to fail the operation
-        }
-      }
-      
-      return savedList;
-    } catch (e) {
-      developer.log('Error creating list: $e', name: 'ListsRepository');
-      // Fallback to local only
-      return await localDataSource?.saveList(list) ?? list;
-    }
+    return executeOfflineFirst<SpotList>(
+      localOperation: () async => await localDataSource?.saveList(list) ?? list,
+      remoteOperation: remoteDataSource != null
+          ? () async => await remoteDataSource!.createList(list)
+          : null,
+      syncToLocal: null, // Already saved locally first
+    );
   }
 
   @override
   Future<SpotList> updateList(SpotList list) async {
-    try {
-      // Try remote first
-      if (remoteDataSource != null) {
-        final updatedList = await remoteDataSource!.updateList(list);
-        await localDataSource?.saveList(updatedList);
-        return updatedList;
-      }
-      
-      // Fallback to local
-      final updatedList = await localDataSource?.saveList(list);
-      return updatedList ?? list;
-    } catch (e) {
-      developer.log('Error updating remote list: $e', name: 'ListsRepository');
-      // Fallback to local
-      final updatedList = await localDataSource?.saveList(list);
-      return updatedList ?? list;
-    }
+    return executeOfflineFirst<SpotList>(
+      localOperation: () async => await localDataSource?.saveList(list) ?? list,
+      remoteOperation: remoteDataSource != null
+          ? () async => await remoteDataSource!.updateList(list)
+          : null,
+      syncToLocal: (remoteList) async {
+        await localDataSource?.saveList(remoteList);
+      },
+    );
   }
 
   @override
   Future<void> deleteList(String id) async {
-    try {
-      // Try remote first
-      if (remoteDataSource != null) {
-        await remoteDataSource!.deleteList(id);
-      }
-      
-      // Always delete locally
-      await localDataSource?.deleteList(id);
-    } catch (e) {
-      developer.log('Error deleting remote list: $e', name: 'ListsRepository');
-      // Still delete locally
-      await localDataSource?.deleteList(id);
-    }
+    return executeOfflineFirst(
+      localOperation: () => localDataSource?.deleteList(id) ?? Future.value(),
+      remoteOperation: remoteDataSource != null
+          ? () => remoteDataSource!.deleteList(id)
+          : null,
+    );
   }
 
   @override
@@ -160,17 +125,19 @@ class ListsRepositoryImpl implements ListsRepository {
 
       final dataSource = localDataSource;
       if (dataSource == null) return;
-      
+
       for (final list in starterLists) {
         try {
           await dataSource.saveList(list);
         } catch (e) {
-          developer.log('Error saving starter list ${list.title}: $e', name: 'ListsRepository');
+          developer.log('Error saving starter list ${list.title}: $e',
+              name: 'ListsRepository');
           // Continue with next list even if one fails
         }
       }
     } catch (e) {
-      developer.log('Error creating starter lists: $e', name: 'ListsRepository');
+      developer.log('Error creating starter lists: $e',
+          name: 'ListsRepository');
     }
   }
 
@@ -189,7 +156,7 @@ class ListsRepositoryImpl implements ListsRepository {
 
       final dataSource = localDataSource;
       if (dataSource == null) return;
-      
+
       for (var i = 0; i < suggestions.length; i++) {
         try {
           final suggestion = suggestions[i];
@@ -204,44 +171,36 @@ class ListsRepositoryImpl implements ListsRepository {
           );
           await dataSource.saveList(list);
         } catch (e) {
-          developer.log('Error saving personalized list ${suggestions[i]['name']}: $e', name: 'ListsRepository');
+          developer.log(
+              'Error saving personalized list ${suggestions[i]['name']}: $e',
+              name: 'ListsRepository');
           // Continue with next list even if one fails
         }
       }
     } catch (e) {
-      developer.log('Error creating personalized lists: $e', name: 'ListsRepository');
+      developer.log('Error creating personalized lists: $e',
+          name: 'ListsRepository');
     }
   }
 
   @override
   Future<List<SpotList>> getPublicLists() async {
-    try {
-      // Check connectivity first - offline-first approach
-      final connectivityResult = await connectivity?.checkConnectivity() ?? [ConnectivityResult.none];
-      final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-      
-      if (isOnline && remoteDataSource != null) {
-        try {
-          final publicLists = await remoteDataSource!.getPublicLists(limit: 50);
-          // Cache locally
-          for (final list in publicLists) {
-            await localDataSource?.saveList(list);
+    return executeOfflineFirst(
+      localOperation: () async {
+        final allLists = await localDataSource?.getLists() ?? [];
+        return allLists.where((list) => list.isPublic).toList();
+      },
+      remoteOperation: remoteDataSource != null
+          ? () => remoteDataSource!.getPublicLists(limit: 50)
+          : null,
+      syncToLocal: (remoteLists) async {
+        // Cache remote public lists locally
+        if (localDataSource != null) {
+          for (final list in remoteLists) {
+            await localDataSource!.saveList(list);
           }
-          return publicLists;
-        } catch (e) {
-          developer.log('Error getting remote public lists: $e', name: 'ListsRepository');
-          // Fallback to local
         }
-      }
-      
-      // Use local data (either offline or remote failed)
-      final allLists = await localDataSource?.getLists() ?? [];
-      return allLists.where((list) => list.isPublic).toList();
-    } catch (e) {
-      developer.log('Error getting public lists: $e', name: 'ListsRepository');
-      // Fallback to local
-      final allLists = await localDataSource?.getLists() ?? [];
-      return allLists.where((list) => list.isPublic).toList();
-    }
+      },
+    );
   }
 }

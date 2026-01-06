@@ -89,7 +89,10 @@ void main() {
       )).thenAnswer((_) async => newEncryptedMapping);
 
       // Act
-      await agentIdService.rotateMappingEncryptionKey(userId);
+      await agentIdService.rotateMappingEncryptionKey(
+        userId,
+        existingEncryptedMapping: oldEncryptedMapping,
+      );
 
       // Assert
       verify(() => mockEncryptionService.rotateEncryptionKey(
@@ -120,7 +123,16 @@ void main() {
 
       // Act & Assert
       expect(
-        () => agentIdService.rotateMappingEncryptionKey(userId),
+        () => agentIdService.rotateMappingEncryptionKey(
+          userId,
+          existingEncryptedMapping: EncryptedMapping(
+            encryptedBlob: Uint8List.fromList([1, 2, 3]),
+            encryptionKeyId: 'key-old',
+            algorithm: EncryptionAlgorithm.aes256GCM,
+            encryptedAt: DateTime.now(),
+            version: 1,
+          ),
+        ),
         throwsException,
       );
     });
@@ -320,7 +332,16 @@ void main() {
       // Note: This will throw because Supabase client is not available in unit test
       // In real scenario, rotation failure should not corrupt existing data
       try {
-        await agentIdService.rotateMappingEncryptionKey(userId);
+        await agentIdService.rotateMappingEncryptionKey(
+          userId,
+          existingEncryptedMapping: EncryptedMapping(
+            encryptedBlob: Uint8List.fromList([1, 2, 3]),
+            encryptionKeyId: 'key-old',
+            algorithm: EncryptionAlgorithm.aes256GCM,
+            encryptedAt: DateTime.now(),
+            version: 1,
+          ),
+        );
         fail('Should have thrown exception');
       } catch (e) {
         expect(e, isA<Exception>());

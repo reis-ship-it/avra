@@ -25,7 +25,7 @@ void main() {
       mockOnboardingService = MockOnboardingDataService();
       mockAgentIdService = MockAgentIdService();
       mockLegalService = MockLegalDocumentService();
-      
+
       controller = OnboardingFlowController(
         onboardingDataService: mockOnboardingService,
         agentIdService: mockAgentIdService,
@@ -40,7 +40,9 @@ void main() {
           age: 25,
           homebase: 'New York',
           favoritePlaces: ['Central Park'],
-          preferences: {'Food': ['Coffee']},
+          preferences: {
+            'Food': ['Coffee']
+          },
           completedAt: DateTime.now(),
         );
 
@@ -127,7 +129,10 @@ void main() {
           completedAt: DateTime.now(),
         );
         const userId = 'user123';
+        const agentId = 'agent_test123456789012345678901234567890';
 
+        when(mockAgentIdService.getUserAgentId(userId))
+            .thenAnswer((_) async => agentId);
         when(mockLegalService.hasAcceptedTerms(userId))
             .thenAnswer((_) async => false);
         when(mockLegalService.hasAcceptedPrivacyPolicy(userId))
@@ -224,4 +229,3 @@ void main() {
     });
   });
 }
-

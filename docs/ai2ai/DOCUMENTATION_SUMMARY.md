@@ -135,7 +135,7 @@
 ### **From `docs/plans/offline_ai2ai/`:**
 - ✅ `OFFLINE_AI2AI_IMPLEMENTATION_PLAN.md` → `06_network_connectivity/OFFLINE_AI2AI_PLAN.md`
 
-### **From `VIBE_CODING/ARCHITECTURE/`:**
+### **From `docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/`:**
 - ✅ `network_flow.md` → `02_architecture/NETWORK_FLOWS.md`
 
 ---

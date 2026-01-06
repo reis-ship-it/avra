@@ -71,6 +71,7 @@ class DecoherenceTrackingService {
       final behaviorPhase = _detectBehaviorPhase(
         decoherenceRate,
         decoherenceStability,
+        updatedTimeline.length,
       );
 
       // Analyze temporal patterns
@@ -208,7 +209,15 @@ class DecoherenceTrackingService {
   BehaviorPhase _detectBehaviorPhase(
     double decoherenceRate,
     double decoherenceStability,
+    int sampleCount,
   ) {
+    // With very little data, treat users as exploring by default. A single
+    // measurement yields "high stability" mathematically, but that's not
+    // behaviorally meaningful yet.
+    if (sampleCount < 3) {
+      return BehaviorPhase.exploration;
+    }
+
     // High rate + low stability = exploration
     if (decoherenceRate > 0.1 && decoherenceStability < 0.7) {
       return BehaviorPhase.exploration;

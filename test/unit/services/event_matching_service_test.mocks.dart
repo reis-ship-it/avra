@@ -10,7 +10,6 @@ import 'package:spots/core/models/expertise_event.dart' as _i2;
 import 'package:spots/core/models/spot.dart' as _i6;
 import 'package:spots/core/models/unified_user.dart' as _i5;
 import 'package:spots/core/services/expertise_event_service.dart' as _i3;
-import 'package:spots/core/services/geographic_scope_service.dart' as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -59,6 +58,8 @@ class MockExpertiseEventService extends _i1.Mock
     String? location,
     double? latitude,
     double? longitude,
+    String? cityCode,
+    String? localityCode,
     int? maxAttendees = 20,
     double? price,
     bool? isPublic = true,
@@ -79,6 +80,8 @@ class MockExpertiseEventService extends _i1.Mock
             #location: location,
             #latitude: latitude,
             #longitude: longitude,
+            #cityCode: cityCode,
+            #localityCode: localityCode,
             #maxAttendees: maxAttendees,
             #price: price,
             #isPublic: isPublic,
@@ -101,6 +104,8 @@ class MockExpertiseEventService extends _i1.Mock
               #location: location,
               #latitude: latitude,
               #longitude: longitude,
+              #cityCode: cityCode,
+              #localityCode: localityCode,
               #maxAttendees: maxAttendees,
               #price: price,
               #isPublic: isPublic,
@@ -295,94 +300,4 @@ class MockExpertiseEventService extends _i1.Mock
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
-}
-
-/// A class which mocks [GeographicScopeService].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockGeographicScopeService extends _i1.Mock
-    implements _i7.GeographicScopeService {
-  MockGeographicScopeService() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  bool canHostInLocality({
-    required String? userId,
-    required _i5.UnifiedUser? user,
-    required String? category,
-    required String? locality,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #canHostInLocality,
-          [],
-          {
-            #userId: userId,
-            #user: user,
-            #category: category,
-            #locality: locality,
-          },
-        ),
-        returnValue: false,
-      ) as bool);
-
-  @override
-  bool canHostInCity({
-    required String? userId,
-    required _i5.UnifiedUser? user,
-    required String? category,
-    required String? city,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #canHostInCity,
-          [],
-          {
-            #userId: userId,
-            #user: user,
-            #category: category,
-            #city: city,
-          },
-        ),
-        returnValue: false,
-      ) as bool);
-
-  @override
-  Map<String, List<String>> getHostingScope({
-    required _i5.UnifiedUser? user,
-    required String? category,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getHostingScope,
-          [],
-          {
-            #user: user,
-            #category: category,
-          },
-        ),
-        returnValue: <String, List<String>>{},
-      ) as Map<String, List<String>>);
-
-  @override
-  bool validateEventLocation({
-    required String? userId,
-    required _i5.UnifiedUser? user,
-    required String? category,
-    required String? eventLocality,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #validateEventLocation,
-          [],
-          {
-            #userId: userId,
-            #user: user,
-            #category: category,
-            #eventLocality: eventLocality,
-          },
-        ),
-        returnValue: false,
-      ) as bool);
 }

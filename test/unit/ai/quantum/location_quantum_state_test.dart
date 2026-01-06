@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/ai/quantum/location_quantum_state.dart';
 import 'package:spots/core/models/unified_models.dart';
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {

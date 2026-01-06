@@ -1,17 +1,19 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+
+import 'package:get_it/get_it.dart';
 import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 import 'package:spots/core/models/multi_path_expertise.dart';
 import 'package:spots/core/models/outcome_result.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/services/golden_expert_ai_influence_service.dart';
-import 'package:spots_ai/services/personality_sync_service.dart';
+import 'package:spots/core/services/onboarding_dimension_mapper.dart';
+import 'package:spots/core/services/personality_sync_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/social_media_vibe_analyzer.dart';
 import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
 import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/injection_container.dart' as di;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // Lightweight preferences abstraction to allow in-memory prefs during tests
@@ -106,6 +108,36 @@ class PersonalityLearning {
       : _prefs = _SharedPreferencesAdapter(prefs),
         _goldenExpertService = GoldenExpertAIInfluenceService();
 
+  AgentIdService _resolveAgentIdService() {
+    try {
+      final sl = GetIt.instance;
+      if (sl.isRegistered<AgentIdService>()) {
+        return sl<AgentIdService>();
+      }
+    } catch (_) {}
+    return AgentIdService();
+  }
+
+  PersonalitySyncService? _tryResolvePersonalitySyncService() {
+    try {
+      final sl = GetIt.instance;
+      if (sl.isRegistered<PersonalitySyncService>()) {
+        return sl<PersonalitySyncService>();
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  QuantumVibeEngine _resolveQuantumVibeEngine() {
+    try {
+      final sl = GetIt.instance;
+      if (sl.isRegistered<QuantumVibeEngine>()) {
+        return sl<QuantumVibeEngine>();
+      }
+    } catch (_) {}
+    return QuantumVibeEngine();
+  }
+
   /// Set callback for personality evolution events
   void setEvolutionCallback(
       Function(String userId, PersonalityProfile evolvedProfile) callback) {
@@ -124,7 +156,7 @@ class PersonalityLearning {
 
     try {
       // Phase 8.3: Get agentId for privacy protection
-      final agentIdService = di.sl<AgentIdService>();
+      final agentIdService = _resolveAgentIdService();
       final agentId = await agentIdService.getUserAgentId(userId);
 
       // Try to load existing personality profile from local storage (by agentId)
@@ -141,49 +173,56 @@ class PersonalityLearning {
       if (password != null && password.isNotEmpty) {
         try {
           // Import here to avoid circular dependency
-          final syncService = di.sl<PersonalitySyncService>();
-          final syncEnabled = await syncService.isCloudSyncEnabled(userId);
-
-          if (syncEnabled) {
+          final syncService = _tryResolvePersonalitySyncService();
+          if (syncService == null) {
             developer.log(
-                'Cloud sync enabled, attempting to load from cloud...',
-                name: _logName);
-            final cloudProfile =
-                await syncService.loadFromCloud(userId, password);
+              'PersonalitySyncService not registered; skipping cloud sync',
+              name: _logName,
+            );
+          } else {
+            final syncEnabled = await syncService.isCloudSyncEnabled(userId);
 
-            if (cloudProfile != null) {
-              // Ensure cloud profile has correct agentId
-              final migratedProfile = cloudProfile.agentId == agentId
-                  ? cloudProfile
-                  : PersonalityProfile(
-                      agentId: agentId,
-                      userId: userId,
-                      dimensions: cloudProfile.dimensions,
-                      dimensionConfidence: cloudProfile.dimensionConfidence,
-                      archetype: cloudProfile.archetype,
-                      authenticity: cloudProfile.authenticity,
-                      createdAt: cloudProfile.createdAt,
-                      lastUpdated: cloudProfile.lastUpdated,
-                      evolutionGeneration: cloudProfile.evolutionGeneration,
-                      learningHistory: cloudProfile.learningHistory,
-                      corePersonality: cloudProfile.corePersonality,
-                      contexts: cloudProfile.contexts,
-                      evolutionTimeline: cloudProfile.evolutionTimeline,
-                      currentPhaseId: cloudProfile.currentPhaseId,
-                      isInTransition: cloudProfile.isInTransition,
-                      activeTransition: cloudProfile.activeTransition,
-                    );
-
-              // Save cloud profile locally
-              await _savePersonalityProfile(migratedProfile);
-              _currentProfile = migratedProfile;
+            if (syncEnabled) {
               developer.log(
-                  'Loaded personality profile from cloud (generation ${migratedProfile.evolutionGeneration})',
+                  'Cloud sync enabled, attempting to load from cloud...',
                   name: _logName);
-              return migratedProfile;
-            } else {
-              developer.log('No cloud profile found or decryption failed',
-                  name: _logName);
+              final cloudProfile =
+                  await syncService.loadFromCloud(userId, password);
+
+              if (cloudProfile != null) {
+                // Ensure cloud profile has correct agentId
+                final migratedProfile = cloudProfile.agentId == agentId
+                    ? cloudProfile
+                    : PersonalityProfile(
+                        agentId: agentId,
+                        userId: userId,
+                        dimensions: cloudProfile.dimensions,
+                        dimensionConfidence: cloudProfile.dimensionConfidence,
+                        archetype: cloudProfile.archetype,
+                        authenticity: cloudProfile.authenticity,
+                        createdAt: cloudProfile.createdAt,
+                        lastUpdated: cloudProfile.lastUpdated,
+                        evolutionGeneration: cloudProfile.evolutionGeneration,
+                        learningHistory: cloudProfile.learningHistory,
+                        corePersonality: cloudProfile.corePersonality,
+                        contexts: cloudProfile.contexts,
+                        evolutionTimeline: cloudProfile.evolutionTimeline,
+                        currentPhaseId: cloudProfile.currentPhaseId,
+                        isInTransition: cloudProfile.isInTransition,
+                        activeTransition: cloudProfile.activeTransition,
+                      );
+
+                // Save cloud profile locally
+                await _savePersonalityProfile(migratedProfile);
+                _currentProfile = migratedProfile;
+                developer.log(
+                    'Loaded personality profile from cloud (generation ${migratedProfile.evolutionGeneration})',
+                    name: _logName);
+                return migratedProfile;
+              } else {
+                developer.log('No cloud profile found or decryption failed',
+                    name: _logName);
+              }
             }
           }
         } catch (e) {
@@ -203,7 +242,7 @@ class PersonalityLearning {
       developer.log('Error initializing personality: $e', name: _logName);
 
       // Fallback to default profile
-      final agentIdService = di.sl<AgentIdService>();
+      final agentIdService = _resolveAgentIdService();
       final agentId = await agentIdService.getUserAgentId(userId);
       final fallbackProfile =
           PersonalityProfile.initial(agentId, userId: userId);
@@ -220,7 +259,7 @@ class PersonalityLearning {
     Map<String, dynamic>? socialMediaData,
   }) async {
     // Convert userId → agentId for privacy protection
-    final agentIdService = di.sl<AgentIdService>();
+    final agentIdService = _resolveAgentIdService();
     final agentId = await agentIdService.getUserAgentId(userId);
 
     developer.log(
@@ -299,7 +338,7 @@ class PersonalityLearning {
 
       // 3. Use quantum engine for final dimension calculation (Phase 4)
       try {
-        final quantumEngine = di.sl<QuantumVibeEngine>();
+        final quantumEngine = _resolveQuantumVibeEngine();
 
         // Convert initial dimensions to insight types for quantum compilation
         final personalityInsights = PersonalityVibeInsights(
@@ -403,6 +442,8 @@ class PersonalityLearning {
         learningHistory: {
           'total_interactions': 0,
           'successful_ai2ai_connections': 0,
+          // Phase 8.3: Record agentId for debugging/telemetry (privacy-safe).
+          'agent_id': agentId,
           'learning_sources': [
             if (onboardingData != null) 'onboarding',
             if (socialMediaData != null) 'social_media',
@@ -424,7 +465,7 @@ class PersonalityLearning {
       developer.log('Error initializing from onboarding: $e',
           name: _logName, error: e, stackTrace: stackTrace);
       // Fallback to default
-      final agentIdService = di.sl<AgentIdService>();
+      final agentIdService = _resolveAgentIdService();
       final agentId = await agentIdService.getUserAgentId(userId);
       return PersonalityProfile.initial(agentId, userId: userId);
     }
@@ -434,102 +475,8 @@ class PersonalityLearning {
   Map<String, double> _mapOnboardingToDimensions(
     Map<String, dynamic> onboardingData,
   ) {
-    final insights = <String, double>{};
-
-    // Age adjustments
-    final age = onboardingData['age'] as int?;
-    if (age != null) {
-      if (age < 25) {
-        insights['exploration_eagerness'] = 0.6;
-        insights['temporal_flexibility'] = 0.65;
-      } else if (age > 45) {
-        insights['authenticity_preference'] = 0.65;
-        insights['trust_network_reliance'] = 0.6;
-      }
-    }
-
-    // Homebase → location dimensions
-    final homebase = onboardingData['homebase'] as String?;
-    if (homebase != null && _isUrbanArea(homebase)) {
-      insights['location_adventurousness'] =
-          (insights['location_adventurousness'] ?? 0.5) + 0.1;
-    }
-
-    // Favorite places → exploration, location adventurousness
-    final favoritePlaces =
-        onboardingData['favoritePlaces'] as List<dynamic>? ?? [];
-    if (favoritePlaces.length > 5) {
-      insights['exploration_eagerness'] =
-          (insights['exploration_eagerness'] ?? 0.5) + 0.1;
-      insights['location_adventurousness'] =
-          (insights['location_adventurousness'] ?? 0.5) + 0.12;
-    }
-
-    // Preferences mapping
-    final preferences =
-        onboardingData['preferences'] as Map<String, dynamic>? ?? {};
-
-    // Food & Drink → curation, authenticity
-    if (preferences.containsKey('Food & Drink')) {
-      final foodPrefs = preferences['Food & Drink'] as List<dynamic>? ?? [];
-      if (foodPrefs.isNotEmpty) {
-        insights['curation_tendency'] =
-            (insights['curation_tendency'] ?? 0.5) + 0.05;
-        insights['authenticity_preference'] =
-            (insights['authenticity_preference'] ?? 0.5) + 0.03;
-      }
-    }
-
-    // Activities → exploration, social
-    if (preferences.containsKey('Activities')) {
-      final activityPrefs = preferences['Activities'] as List<dynamic>? ?? [];
-      if (activityPrefs.isNotEmpty) {
-        insights['exploration_eagerness'] =
-            (insights['exploration_eagerness'] ?? 0.5) + 0.08;
-        insights['social_discovery_style'] =
-            (insights['social_discovery_style'] ?? 0.5) + 0.05;
-      }
-    }
-
-    // Outdoor & Nature → location adventurousness, exploration
-    if (preferences.containsKey('Outdoor & Nature')) {
-      final outdoorPrefs =
-          preferences['Outdoor & Nature'] as List<dynamic>? ?? [];
-      if (outdoorPrefs.isNotEmpty) {
-        insights['location_adventurousness'] =
-            (insights['location_adventurousness'] ?? 0.5) + 0.1;
-        insights['exploration_eagerness'] =
-            (insights['exploration_eagerness'] ?? 0.5) + 0.08;
-      }
-    }
-
-    // Social preferences → community orientation, social discovery
-    if (preferences.containsKey('Social')) {
-      final socialPrefs = preferences['Social'] as List<dynamic>? ?? [];
-      if (socialPrefs.isNotEmpty) {
-        insights['community_orientation'] =
-            (insights['community_orientation'] ?? 0.5) + 0.1;
-        insights['social_discovery_style'] =
-            (insights['social_discovery_style'] ?? 0.5) + 0.08;
-      }
-    }
-
-    // Friends/Respected Lists → community orientation, trust network
-    final respectedFriends =
-        onboardingData['respectedFriends'] as List<dynamic>? ?? [];
-    if (respectedFriends.isNotEmpty) {
-      insights['community_orientation'] =
-          (insights['community_orientation'] ?? 0.5) + 0.08;
-      insights['trust_network_reliance'] =
-          (insights['trust_network_reliance'] ?? 0.5) + 0.06;
-    }
-
-    // Clamp all values to valid range
-    insights.forEach((key, value) {
-      insights[key] = value.clamp(0.0, 1.0);
-    });
-
-    return insights;
+    final mapper = OnboardingDimensionMapper();
+    return mapper.mapOnboardingToDimensions(onboardingData);
   }
 
   /// Determine archetype from initial dimensions
@@ -595,17 +542,24 @@ class PersonalityLearning {
 
       if (onboardingData['age'] != null) completedFields++;
       if (onboardingData['homebase'] != null &&
-          (onboardingData['homebase'] as String).isNotEmpty) completedFields++;
-      if ((onboardingData['favoritePlaces'] as List?)?.isNotEmpty ?? false)
+          (onboardingData['homebase'] as String).isNotEmpty) {
         completedFields++;
-      if ((onboardingData['preferences'] as Map?)?.isNotEmpty ?? false)
+      }
+      if ((onboardingData['favoritePlaces'] as List?)?.isNotEmpty ?? false) {
         completedFields++;
-      if ((onboardingData['baselineLists'] as List?)?.isNotEmpty ?? false)
+      }
+      if ((onboardingData['preferences'] as Map?)?.isNotEmpty ?? false) {
         completedFields++;
-      if ((onboardingData['respectedFriends'] as List?)?.isNotEmpty ?? false)
+      }
+      if ((onboardingData['baselineLists'] as List?)?.isNotEmpty ?? false) {
         completedFields++;
-      if ((onboardingData['socialMediaConnected'] as Map?)?.isNotEmpty ?? false)
+      }
+      if ((onboardingData['respectedFriends'] as List?)?.isNotEmpty ?? false) {
         completedFields++;
+      }
+      if ((onboardingData['socialMediaConnected'] as Map?)?.isNotEmpty ?? false) {
+        completedFields++;
+      }
 
       completenessBoost =
           (completedFields / totalFields) * 0.2; // Up to 0.2 boost
@@ -639,23 +593,6 @@ class PersonalityLearning {
     return (sum / confidence.length).clamp(0.0, 1.0);
   }
 
-  /// Check if homebase is an urban area
-  bool _isUrbanArea(String homebase) {
-    // Simple heuristic: check for common urban indicators
-    final lowerHomebase = homebase.toLowerCase();
-    return lowerHomebase.contains('city') ||
-        lowerHomebase.contains('san francisco') ||
-        lowerHomebase.contains('new york') ||
-        lowerHomebase.contains('los angeles') ||
-        lowerHomebase.contains('chicago') ||
-        lowerHomebase.contains('boston') ||
-        lowerHomebase.contains('seattle') ||
-        lowerHomebase.contains('portland') ||
-        lowerHomebase.contains('austin') ||
-        lowerHomebase.contains('miami') ||
-        lowerHomebase.contains('denver');
-  }
-
   /// Evolve personality based on user action
   ///
   /// **Parameters:**
@@ -668,7 +605,7 @@ class PersonalityLearning {
     LocalExpertise? localExpertise,
   }) async {
     // Phase 8.3: Get agentId for privacy protection
-    final agentIdService = di.sl<AgentIdService>();
+    final agentIdService = _resolveAgentIdService();
     final agentId = await agentIdService.getUserAgentId(userId);
 
     // Load profile for this specific agentId (don't rely on shared _currentProfile)
@@ -743,7 +680,7 @@ class PersonalityLearning {
       await _savePersonalityProfile(evolvedProfile);
       // Update cache only if it matches the userId we just evolved
       // Phase 8.3: Check by agentId
-      final agentIdService = di.sl<AgentIdService>();
+      final agentIdService = _resolveAgentIdService();
       final agentId = await agentIdService.getUserAgentId(userId);
       if (_currentProfile == null || _currentProfile!.agentId == agentId) {
         _currentProfile = evolvedProfile;
@@ -883,7 +820,7 @@ class PersonalityLearning {
   /// Phase 8.3: Uses agentId internally for privacy protection
   Future<PersonalityProfile?> getCurrentPersonality(String userId) async {
     // Get agentId for privacy protection
-    final agentIdService = di.sl<AgentIdService>();
+    final agentIdService = _resolveAgentIdService();
     final agentId = await agentIdService.getUserAgentId(userId);
 
     if (_currentProfile != null && _currentProfile!.agentId == agentId) {
@@ -899,7 +836,7 @@ class PersonalityLearning {
       String userId) async {
     try {
       // Get agentId for privacy protection
-      final agentIdService = di.sl<AgentIdService>();
+      final agentIdService = _resolveAgentIdService();
       final agentId = await agentIdService.getUserAgentId(userId);
 
       // Try agentId key first, then userId key for migration
@@ -983,7 +920,7 @@ class PersonalityLearning {
     developer.log('Resetting personality for user: $userId', name: _logName);
 
     // Get agentId for privacy protection
-    final agentIdService = di.sl<AgentIdService>();
+    final agentIdService = _resolveAgentIdService();
     final agentId = await agentIdService.getUserAgentId(userId);
 
     // Remove both agentId and userId keys (for migration cleanup)
@@ -1032,7 +969,7 @@ class PersonalityLearning {
         } else if (!identifier.startsWith('agent_')) {
           // This is a userId - need to get agentId and migrate
           try {
-            final agentIdService = di.sl<AgentIdService>();
+            final agentIdService = _resolveAgentIdService();
             final agentId = await agentIdService.getUserAgentId(identifier);
 
             // If profile doesn't have agentId, migrate it
@@ -1111,7 +1048,14 @@ class PersonalityLearning {
     // Run async without awaiting to avoid blocking evolution
     Future.microtask(() async {
       try {
-        final syncService = di.sl<PersonalitySyncService>();
+        final syncService = _tryResolvePersonalitySyncService();
+        if (syncService == null) {
+          developer.log(
+            'PersonalitySyncService not registered; skipping cloud sync',
+            name: _logName,
+          );
+          return null;
+        }
         // Note: syncService may still use userId for cloud sync (that's okay)
         final syncEnabled = await syncService.isCloudSyncEnabled(userId);
 
@@ -1325,7 +1269,7 @@ class PersonalityLearning {
   Future<PersonalityProfile> evolvePersonality(UserAction action) async {
     if (_currentProfile == null) {
       // Fallback - should not happen in normal flow
-      final agentIdService = di.sl<AgentIdService>();
+      final agentIdService = _resolveAgentIdService();
       const userId = 'user';
       final agentId = await agentIdService.getUserAgentId(userId);
       // Phase 8.3: Use agentId for privacy protection

@@ -8,7 +8,7 @@ import 'package:spots/presentation/pages/business/business_expert_chat_page.dart
 import 'package:intl/intl.dart';
 
 /// Business Conversations List Page
-/// 
+///
 /// Lists all conversations (business-expert and business-business) for a business.
 class BusinessConversationsListPage extends StatefulWidget {
   final String businessId;
@@ -19,13 +19,17 @@ class BusinessConversationsListPage extends StatefulWidget {
   });
 
   @override
-  State<BusinessConversationsListPage> createState() => _BusinessConversationsListPageState();
+  State<BusinessConversationsListPage> createState() =>
+      _BusinessConversationsListPageState();
 }
 
-class _BusinessConversationsListPageState extends State<BusinessConversationsListPage> with SingleTickerProviderStateMixin {
+class _BusinessConversationsListPageState
+    extends State<BusinessConversationsListPage>
+    with SingleTickerProviderStateMixin {
   final _expertChatService = GetIt.instance<BusinessExpertChatServiceAI2AI>();
-  final _businessChatService = GetIt.instance<BusinessBusinessChatServiceAI2AI>();
-  
+  final _businessChatService =
+      GetIt.instance<BusinessBusinessChatServiceAI2AI>();
+
   late TabController _tabController;
   List<Map<String, dynamic>> _expertConversations = [];
   List<Map<String, dynamic>> _businessConversations = [];
@@ -53,11 +57,13 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
 
     try {
       // Load expert conversations
-      final expertConvs = await _expertChatService.getBusinessConversations(widget.businessId);
-      
+      final expertConvs =
+          await _expertChatService.getBusinessConversations(widget.businessId);
+
       // Load business conversations
-      final businessConvs = await _businessChatService.getBusinessConversations(widget.businessId);
-      
+      final businessConvs = await _businessChatService
+          .getBusinessConversations(widget.businessId);
+
       setState(() {
         _expertConversations = expertConvs;
         _businessConversations = businessConvs;
@@ -76,15 +82,15 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
         widget.businessId,
         true, // isBusiness
       );
-      
+
       setState(() {
         _unreadCounts['experts'] = unreadCount;
       });
-      
+
       final businessUnreadCount = await _businessChatService.getUnreadCount(
         widget.businessId,
       );
-      
+
       setState(() {
         _unreadCounts['businesses'] = businessUnreadCount;
       });
@@ -108,10 +114,12 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text('Experts'),
-                  if (_unreadCounts['experts'] != null && _unreadCounts['experts']! > 0) ...[
+                  if (_unreadCounts['experts'] != null &&
+                      _unreadCounts['experts']! > 0) ...[
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppColors.error,
                         borderRadius: BorderRadius.circular(10),
@@ -134,10 +142,12 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text('Businesses'),
-                  if (_unreadCounts['businesses'] != null && _unreadCounts['businesses']! > 0) ...[
+                  if (_unreadCounts['businesses'] != null &&
+                      _unreadCounts['businesses']! > 0) ...[
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppColors.error,
                         borderRadius: BorderRadius.circular(10),
@@ -226,8 +236,7 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.business,
-                size: 64, color: AppColors.textSecondary),
+            Icon(Icons.business, size: 64, color: AppColors.textSecondary),
             SizedBox(height: 16),
             Text(
               'No conversations with businesses yet',
@@ -276,7 +285,7 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
 
     String title;
     String? subtitle;
-    
+
     if (isBusinessBusiness) {
       title = conversation['business_2_name'] as String? ?? 'Business';
       subtitle = conversation['business_1_name'] as String?;
@@ -381,4 +390,3 @@ class _BusinessConversationsListPageState extends State<BusinessConversationsLis
     }
   }
 }
-

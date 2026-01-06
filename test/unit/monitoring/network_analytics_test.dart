@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spots/core/monitoring/network_analytics.dart';
+import 'package:spots/core/services/storage_service.dart';
+
+import '../../helpers/platform_channel_helper.dart';
 
 /// SPOTS Network Analytics Tests
 /// Date: November 20, 2025
@@ -19,16 +20,24 @@ import 'package:spots/core/monitoring/network_analytics.dart';
 /// - Mock SharedPreferences: For storage operations
 /// - NetworkAnalytics: Core analytics system
 
-class MockSharedPreferences extends Mock implements SharedPreferences {}
-
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('NetworkAnalytics', () {
     late NetworkAnalytics networkAnalytics;
-    late MockSharedPreferences mockPrefs;
+    late SharedPreferencesCompat prefs;
+
+    setUpAll(() async {
+      await setupTestStorage();
+    });
 
     setUp(() async {
-      mockPrefs = MockSharedPreferences();
-      networkAnalytics = NetworkAnalytics(prefs: mockPrefs);
+      prefs = await SharedPreferencesCompat.getInstance(storage: getTestStorage());
+      networkAnalytics = NetworkAnalytics(prefs: prefs);
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
 
     group('analyzeNetworkHealth', () {
@@ -44,6 +53,8 @@ void main() {
         expect(report.learningEffectiveness, isNotNull);
         expect(report.privacyMetrics, isNotNull);
         expect(report.stabilityMetrics, isNotNull);
+        expect(report.aiPleasureAverage, greaterThanOrEqualTo(0.0));
+        expect(report.aiPleasureAverage, lessThanOrEqualTo(1.0));
         expect(report.analysisTimestamp, isA<DateTime>());
       });
 
@@ -57,8 +68,8 @@ void main() {
       });
 
       test('should return degraded report on error', () async {
-        // Arrange - Create analytics with invalid prefs
-        final invalidAnalytics = NetworkAnalytics(prefs: mockPrefs);
+        // Arrange - Create analytics instance (storage-backed) and ensure it doesn't throw
+        final invalidAnalytics = NetworkAnalytics(prefs: prefs);
         
         // Act - Force error by using invalid state
         final report = await invalidAnalytics.analyzeNetworkHealth();
@@ -230,6 +241,59 @@ void main() {
         expect(overallScore, greaterThanOrEqualTo(0.0));
         expect(overallScore, lessThanOrEqualTo(1.0));
         expect(overallScore, closeTo(0.955, 0.01)); // Average of the four scores
+      });
+    });
+
+    group('Overall health score formula (Phase 20.1)', () {
+      test('should weight AI pleasure at 10% and clamp to [0,1]', () {
+        final connectionQuality = ConnectionQualityMetrics(
+          averageCompatibility: 0.8,
+          connectionSuccessRate: 0.0,
+          stabilityScore: 0.0,
+          trustBuildingRate: 0.0,
+          mutualBenefitScore: 0.0,
+        );
+        final learningEffectiveness = LearningEffectivenessMetrics(
+          overallEffectiveness: 0.6,
+          personalityEvolutionRate: 0.0,
+          knowledgeAcquisitionSpeed: 0.0,
+          insightQualityScore: 0.0,
+          collectiveIntelligenceGrowth: 0.0,
+        );
+        final privacyMetrics = PrivacyMetrics(
+          complianceRate: 0.9,
+          anonymizationLevel: 0.0,
+          dataSecurityScore: 0.0,
+          privacyViolations: 0,
+          encryptionStrength: 0.0,
+        );
+        final stabilityMetrics = NetworkStabilityMetrics(
+          uptime: 0.5,
+          reliability: 0.0,
+          errorRate: 0.0,
+          recoveryTime: Duration.zero,
+          loadBalancing: 0.0,
+        );
+
+        final score = NetworkAnalytics.calculateOverallHealthScoreV1(
+          connectionQuality: connectionQuality,
+          learningEffectiveness: learningEffectiveness,
+          privacyMetrics: privacyMetrics,
+          stabilityMetrics: stabilityMetrics,
+          aiPleasureAverage: 0.7,
+        );
+
+        // 0.25*0.8 + 0.25*0.6 + 0.20*0.9 + 0.20*0.5 + 0.10*0.7 = 0.70
+        expect(score, closeTo(0.70, 0.0001));
+
+        final clamped = NetworkAnalytics.calculateOverallHealthScoreV1(
+          connectionQuality: connectionQuality,
+          learningEffectiveness: learningEffectiveness,
+          privacyMetrics: privacyMetrics,
+          stabilityMetrics: stabilityMetrics,
+          aiPleasureAverage: 2.0,
+        );
+        expect(clamped, inInclusiveRange(0.0, 1.0));
       });
     });
 

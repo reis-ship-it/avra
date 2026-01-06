@@ -13,7 +13,7 @@ import 'package:spots/presentation/widgets/ai2ai/privacy_controls_widget.dart';
 import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
 import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/ai/personality_learning.dart';
+import 'dart:developer' as developer;
 
 /// User-facing AI Personality Status Page
 /// Shows user's AI personality overview, connections, learning insights, evolution timeline, and privacy controls
@@ -47,14 +47,8 @@ class _AIPersonalityStatusPageState extends State<AIPersonalityStatusPage> {
       if (authState is Authenticated) {
         final userId = authState.user.id;
 
-        // Get personality profile - try to load from PersonalityLearning, otherwise create initial
-        // Note: PersonalityLearning expects SharedPreferencesCompat (via typedef), so we use GetIt
-        final sharedPrefsCompat = GetIt.instance<SharedPreferencesCompat>();
-        final personalityLearning = PersonalityLearning.withPrefs(sharedPrefsCompat);
-        
-        // Try to get existing personality profile
-        // Note: PersonalityLearning doesn't expose a direct getter, so we'll create initial for now
-        // In a real implementation, you'd load from storage or get from a service
+        // Try to get existing personality profile.
+        // In a real implementation, we'd load from storage or get from a service.
         // Phase 8.3: Use agentId for privacy protection
         final agentId = 'agent_$userId';
         _personalityProfile = PersonalityProfile.initial(agentId, userId: userId);
@@ -64,16 +58,12 @@ class _AIPersonalityStatusPageState extends State<AIPersonalityStatusPage> {
         final connectionMonitor = ConnectionMonitor(prefs: sharedPrefs);
         _connectionsOverview = await connectionMonitor.getActiveConnectionsOverview();
 
-        // Get recent learning insights - AI2AIChatAnalyzer expects SharedPreferencesCompat
-        final ai2aiLearning = AI2AIChatAnalyzer(
-          prefs: sharedPrefs,
-          personalityLearning: personalityLearning,
-        );
-        // Note: Would need to get actual chat history to generate insights
+        // Recent learning insights would come from chat history + AI2AIChatAnalyzer.
+        // This page currently renders a placeholder until that data source is wired up.
         _recentInsights = [];
       }
     } catch (e) {
-      debugPrint('Error loading personality data: $e');
+      developer.log('Error loading personality data', name: 'AIPersonalityStatusPage', error: e);
     } finally {
       setState(() {
         _isLoading = false;

@@ -4,6 +4,7 @@
 
 import 'dart:developer' as developer;
 import 'dart:math' as math;
+import 'package:spots/core/constants/vibe_constants.dart';
 import 'package:spots_ai/models/personality_profile.dart';
 
 /// Embedding Delta
@@ -195,22 +196,13 @@ class EmbeddingDeltaCollector {
   /// 
   /// Returns a normalized vector of dimension values
   List<double> _extractDimensionVector(PersonalityProfile personality) {
-    // Extract all dimension values in a consistent order
+    // Extract all dimension values in a consistent order.
+    //
+    // IMPORTANT: This MUST match the canonical 12-dimension contract used across
+    // the app (VibeConstants.coreDimensions). Federated deltas only make sense
+    // if everyone agrees on the axis ordering.
     final dimensions = personality.dimensions;
-    final orderedDimensions = [
-      'exploration_eagerness',
-      'community_orientation',
-      'location_adventurousness',
-      'authenticity_preference',
-      'trust_network_reliance',
-      'curation_tendency',
-      'temporal_flexibility',
-      'social_discovery_style',
-      'experience_openness',
-      'preference_stability',
-      'learning_adaptability',
-      'connection_depth',
-    ];
+    const orderedDimensions = VibeConstants.coreDimensions;
     
     final vector = <double>[];
     for (final dimension in orderedDimensions) {
@@ -226,7 +218,9 @@ class EmbeddingDeltaCollector {
     for (final value in delta) {
       sum += value * value;
     }
-    return math.sqrt(sum / delta.length);
+    // Use Euclidean norm (not RMS). Normalizing by vector length makes sparse,
+    // single-dimension changes look artificially “small” as dimension count grows.
+    return math.sqrt(sum);
   }
   
   /// Determine category based on largest dimension differences
@@ -258,16 +252,16 @@ class EmbeddingDeltaCollector {
     final dimensionNames = [
       'exploration_style',
       'community_style',
-      'location_style',
       'authenticity_style',
-      'trust_style',
-      'curation_style',
-      'temporal_style',
       'social_style',
-      'experience_style',
-      'preference_style',
-      'learning_style',
-      'connection_style',
+      'temporal_style',
+      'location_style',
+      'curation_style',
+      'trust_style',
+      'energy_style',
+      'novelty_style',
+      'value_style',
+      'crowd_style',
     ];
     
     if (maxIndex < dimensionNames.length) {

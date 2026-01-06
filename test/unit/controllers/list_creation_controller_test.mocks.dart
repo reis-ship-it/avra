@@ -6,10 +6,10 @@
 import 'dart:async' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:spots/core/models/atomic_timestamp.dart' as _i3;
 import 'package:spots/core/models/list.dart' as _i2;
-import 'package:spots/core/services/atomic_clock_service.dart' as _i6;
 import 'package:spots/domain/repositories/lists_repository.dart' as _i4;
+import 'package:spots_core/models/atomic_timestamp.dart' as _i3;
+import 'package:spots_core/services/atomic_clock_service.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -220,6 +220,17 @@ class MockAtomicClockService extends _i1.Mock
   MockAtomicClockService() {
     _i1.throwOnMissingStub(this);
   }
+
+  @override
+  void configure({_i5.Future<DateTime> Function()? serverTimeProvider}) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #configure,
+          [],
+          {#serverTimeProvider: serverTimeProvider},
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   _i5.Future<void> initialize() => (super.noSuchMethod(

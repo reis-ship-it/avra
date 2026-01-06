@@ -23,7 +23,13 @@ import 'package:get_it/get_it.dart';
 
 /// Widget displaying user-specific privacy metrics
 class PrivacyMetricsWidget extends StatefulWidget {
-  const PrivacyMetricsWidget({super.key});
+  /// Optional override for tests/debug: preloaded privacy metrics.
+  final PrivacyMetrics? privacyMetrics;
+
+  const PrivacyMetricsWidget({
+    super.key,
+    this.privacyMetrics,
+  });
 
   @override
   State<PrivacyMetricsWidget> createState() => _PrivacyMetricsWidgetState();
@@ -38,7 +44,32 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
   @override
   void initState() {
     super.initState();
+    if (widget.privacyMetrics != null) {
+      _privacyMetrics = widget.privacyMetrics;
+      _isLoading = false;
+      _errorMessage = null;
+      return;
+    }
     _loadPrivacyMetrics();
+  }
+
+  @override
+  void didUpdateWidget(covariant PrivacyMetricsWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Support test/debug overrides updating across rebuilds.
+    if (widget.privacyMetrics != oldWidget.privacyMetrics) {
+      if (widget.privacyMetrics != null) {
+        setState(() {
+          _privacyMetrics = widget.privacyMetrics;
+          _isLoading = false;
+          _errorMessage = null;
+        });
+      } else if (oldWidget.privacyMetrics != null && widget.privacyMetrics == null) {
+        // Transition back to live loading mode.
+        _loadPrivacyMetrics();
+      }
+    }
   }
 
   Future<void> _loadPrivacyMetrics() async {

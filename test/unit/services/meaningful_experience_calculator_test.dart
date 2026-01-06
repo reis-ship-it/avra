@@ -6,10 +6,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/core/services/quantum/meaningful_experience_calculator.dart';
 import 'package:spots_quantum/models/quantum_entity_state.dart';
 import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
 import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 

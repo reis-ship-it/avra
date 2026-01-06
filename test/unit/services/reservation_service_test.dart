@@ -21,17 +21,18 @@
 /// ✅ DO: Consolidate related checks into comprehensive test blocks
 /// 
 /// See: docs/plans/test_refactoring/TEST_WRITING_GUIDE.md
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:spots/core/services/reservation_service.dart';
-import 'package:spots/core/services/atomic_clock_service.dart';
+import 'package:spots_core/services/atomic_clock_service.dart';
 import 'package:spots/core/services/reservation_quantum_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
 import 'package:spots/core/services/storage_service.dart';
 import 'package:spots/core/services/supabase_service.dart';
 import 'package:spots/core/models/reservation.dart';
-import 'package:spots/core/models/atomic_timestamp.dart';
+import 'package:spots_core/models/atomic_timestamp.dart';
 import 'package:spots_quantum/models/quantum_entity_state.dart';
 import 'package:spots_quantum/models/quantum_entity_type.dart';
 
@@ -70,9 +71,9 @@ void main() {
     group('createReservation', () {
       test('should create reservation with quantum state and atomic timestamp', () async {
         // Arrange
-        final userId = 'user-123';
-        final agentId = 'agent-123';
-        final eventId = 'event-456';
+        const userId = 'user-123';
+        const agentId = 'agent-123';
+        const eventId = 'event-456';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         final atomicTimestamp = AtomicTimestamp.now(
@@ -134,9 +135,9 @@ void main() {
 
       test('should sync to cloud when online', () async {
         // Arrange
-        final userId = 'user-123';
-        final agentId = 'agent-123';
-        final eventId = 'event-456';
+        const userId = 'user-123';
+        const agentId = 'agent-123';
+        const eventId = 'event-456';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         final atomicTimestamp = AtomicTimestamp.now(
@@ -185,8 +186,8 @@ void main() {
     group('getUserReservations', () {
       test('should get reservations from local storage when offline', () async {
         // Arrange
-        final userId = 'user-123';
-        final agentId = 'agent-123';
+        const userId = 'user-123';
+        const agentId = 'agent-123';
 
         // Create test reservation
         final testReservation = Reservation(
@@ -220,9 +221,9 @@ void main() {
     group('hasExistingReservation', () {
       test('should return true when reservation exists for same target and time', () async {
         // Arrange
-        final userId = 'user-123';
-        final agentId = 'agent-123';
-        final eventId = 'event-456';
+        const userId = 'user-123';
+        const agentId = 'agent-123';
+        const eventId = 'event-456';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         // Create existing reservation
@@ -259,8 +260,8 @@ void main() {
 
       test('should return false when no reservation exists', () async {
         // Arrange
-        final userId = 'user-123';
-        final eventId = 'event-456';
+        const userId = 'user-123';
+        const eventId = 'event-456';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         // Setup mocks
@@ -285,8 +286,8 @@ void main() {
     group('updateReservation', () {
       test('should update reservation and increment modification count', () async {
         // Arrange
-        final reservationId = 'reservation-1';
-        final agentId = 'agent-123';
+        const reservationId = 'reservation-1';
+        const agentId = 'agent-123';
         final originalTime = DateTime.now().add(const Duration(days: 7));
         final newTime = DateTime.now().add(const Duration(days: 8));
 
@@ -326,8 +327,8 @@ void main() {
 
       test('should throw exception when reservation cannot be modified', () async {
         // Arrange
-        final reservationId = 'reservation-1';
-        final agentId = 'agent-123';
+        const reservationId = 'reservation-1';
+        const agentId = 'agent-123';
         final originalTime = DateTime.now().add(const Duration(hours: 30)); // Too close
 
         // Create existing reservation with max modifications
@@ -365,8 +366,8 @@ void main() {
     group('cancelReservation', () {
       test('should cancel reservation and update status', () async {
         // Arrange
-        final reservationId = 'reservation-1';
-        final agentId = 'agent-123';
+        const reservationId = 'reservation-1';
+        const agentId = 'agent-123';
         final reservationTime = DateTime.now().add(const Duration(days: 7));
 
         // Create existing reservation
@@ -403,8 +404,8 @@ void main() {
 
       test('should throw exception when reservation cannot be cancelled', () async {
         // Arrange
-        final reservationId = 'reservation-1';
-        final agentId = 'agent-123';
+        const reservationId = 'reservation-1';
+        const agentId = 'agent-123';
 
         // Create existing reservation that's already cancelled
         final existingReservation = Reservation(

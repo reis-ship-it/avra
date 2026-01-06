@@ -1,13 +1,13 @@
 /// AI2AI Learning Insights Widget
-/// 
+///
 /// Phase 7, Week 38: AI2AI Learning Methods UI - Integration & Polish
-/// 
+///
 /// Widget displaying recent learning insights:
 /// - Recent learning insights list
 /// - Cross-personality insights
 /// - Emerging patterns
 /// - Expandable details
-/// 
+///
 /// Uses AppColors/AppTheme for 100% design token compliance.
 library;
 
@@ -19,21 +19,23 @@ import 'package:spots/core/services/ai2ai_learning_service.dart';
 class AI2AILearningInsightsWidget extends StatefulWidget {
   /// User ID to show insights for
   final String userId;
-  
+
   /// AI2AI learning service
   final AI2AILearning learningService;
-  
+
   const AI2AILearningInsightsWidget({
     super.key,
     required this.userId,
     required this.learningService,
   });
-  
+
   @override
-  State<AI2AILearningInsightsWidget> createState() => _AI2AILearningInsightsWidgetState();
+  State<AI2AILearningInsightsWidget> createState() =>
+      _AI2AILearningInsightsWidgetState();
 }
 
-class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidget> {
+class _AI2AILearningInsightsWidgetState
+    extends State<AI2AILearningInsightsWidget> {
   List<LearningInsight> _insights = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -53,11 +55,13 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
 
     try {
       // Get learning insights
-      final insightsList = await widget.learningService.getLearningInsights(widget.userId);
-      final chatHistory = await widget.learningService.getChatHistoryForAdmin(widget.userId);
-      
+      final insightsList =
+          await widget.learningService.getLearningInsights(widget.userId);
+      final chatHistory =
+          await widget.learningService.getChatHistoryForAdmin(widget.userId);
+
       final insights = <LearningInsight>[];
-      
+
       // Convert insights from service to widget format
       for (final insight in insightsList) {
         insights.add(LearningInsight(
@@ -70,7 +74,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
           details: 'Value: ${insight.value.toStringAsFixed(2)}',
         ));
       }
-      
+
       // If no insights from service, generate from chat history
       if (insights.isEmpty && chatHistory.isNotEmpty) {
         // Insight 1: Cross-personality patterns
@@ -78,16 +82,18 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
           insights.add(LearningInsight(
             id: 'cross_personality_1',
             title: 'Cross-Personality Pattern Detected',
-            description: 'Your AI has identified patterns across ${chatHistory.length} different personality interactions. '
+            description:
+                'Your AI has identified patterns across ${chatHistory.length} different personality interactions. '
                 'This suggests strong learning from diverse AI personalities.',
             type: InsightType.crossPersonality,
             timestamp: chatHistory.last.timestamp,
             reliability: 0.85,
-            details: 'Pattern strength: ${(chatHistory.length / 10.0).clamp(0.0, 1.0).toStringAsFixed(2)}',
+            details:
+                'Pattern strength: ${(chatHistory.length / 10.0).clamp(0.0, 1.0).toStringAsFixed(2)}',
           ));
         }
       }
-      
+
       // If no insights, add placeholder
       if (insights.isEmpty) {
         insights.add(LearningInsight(
@@ -270,7 +276,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
 
   Widget _buildInsightCard(LearningInsight insight) {
     final isExpanded = _expandedInsights[insight.id] ?? false;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -293,7 +299,8 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: _getInsightTypeColor(insight.type).withValues(alpha: 0.1),
+                      color: _getInsightTypeColor(insight.type)
+                          .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Icon(
@@ -468,7 +475,7 @@ class _AI2AILearningInsightsWidgetState extends State<AI2AILearningInsightsWidge
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inDays > 0) {
       return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
     } else if (difference.inHours > 0) {

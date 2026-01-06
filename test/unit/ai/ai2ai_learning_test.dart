@@ -1,28 +1,34 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spots/core/ai/ai2ai_learning.dart';
 import 'package:spots/core/ai/personality_learning.dart';
 import 'package:spots/core/models/connection_metrics.dart' hide ChatMessage, ChatMessageType;
+import 'package:spots/core/services/storage_service.dart';
 
-import 'ai2ai_learning_test.mocks.dart';
+import '../../helpers/platform_channel_helper.dart';
 
-@GenerateMocks([SharedPreferences, PersonalityLearning])
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('AI2AIChatAnalyzer', () {
     late AI2AIChatAnalyzer analyzer;
-    late MockSharedPreferences mockPrefs;
-    late MockPersonalityLearning mockPersonalityLearning;
+    late SharedPreferencesCompat prefs;
+    late PersonalityLearning personalityLearning;
 
-    setUp(() {
-      mockPrefs = MockSharedPreferences();
-      mockPersonalityLearning = MockPersonalityLearning();
-      
+    setUpAll(() async {
+      await setupTestStorage();
+    });
+
+    setUp(() async {
+      prefs = await SharedPreferencesCompat.getInstance(storage: getTestStorage());
+      personalityLearning = PersonalityLearning.withPrefs(prefs);
       analyzer = AI2AIChatAnalyzer(
-        prefs: mockPrefs,
-        personalityLearning: mockPersonalityLearning,
+        prefs: prefs,
+        personalityLearning: personalityLearning,
       );
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
     });
 
     group('Chat Analysis', () {
@@ -50,9 +56,6 @@ void main() {
           compatibility: 0.8,
         );
 
-        when(mockPrefs.getString(any)).thenReturn(null);
-        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
-
         final result = await analyzer.analyzeChatConversation(
           localUserId,
           chatEvent,
@@ -78,9 +81,6 @@ void main() {
           remoteAISignature: 'ai2',
           compatibility: 0.8,
         );
-
-        when(mockPrefs.getString(any)).thenReturn(null);
-        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
 
         for (final messageType in messageTypes) {
           final chatEvent = AI2AIChatEvent(
@@ -136,9 +136,6 @@ void main() {
           compatibility: 0.8,
         );
 
-        when(mockPrefs.getString(any)).thenReturn(null);
-        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
-
         final result = await analyzer.analyzeChatConversation(
           localUserId,
           chatEvent,
@@ -173,9 +170,6 @@ void main() {
           remoteAISignature: 'ai2',
           compatibility: 0.8,
         );
-
-        when(mockPrefs.getString(any)).thenReturn(null);
-        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
 
         final result = await analyzer.analyzeChatConversation(
           localUserId,

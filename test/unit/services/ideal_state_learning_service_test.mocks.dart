@@ -6,11 +6,11 @@
 import 'dart:async' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:spots/core/models/atomic_timestamp.dart' as _i2;
 import 'package:spots/core/models/expertise_event.dart' as _i8;
+import 'package:spots_core/models/atomic_timestamp.dart' as _i2;
+import 'package:spots_core/services/atomic_clock_service.dart' as _i5;
 import 'package:spots_quantum/models/quantum_entity_state.dart' as _i7;
-import 'package:spots/core/services/atomic_clock_service.dart' as _i5;
-import 'package:spots/core/services/quantum/quantum_entanglement_service.dart'
+import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart'
     as _i3;
 import 'package:spots/core/services/quantum/quantum_outcome_learning_service.dart'
     as _i4;
@@ -91,6 +91,17 @@ class MockAtomicClockService extends _i1.Mock
   MockAtomicClockService() {
     _i1.throwOnMissingStub(this);
   }
+
+  @override
+  void configure({_i6.Future<DateTime> Function()? serverTimeProvider}) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #configure,
+          [],
+          {#serverTimeProvider: serverTimeProvider},
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   _i6.Future<void> initialize() => (super.noSuchMethod(

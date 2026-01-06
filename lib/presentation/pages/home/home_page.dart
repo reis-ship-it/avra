@@ -20,6 +20,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:spots/presentation/widgets/common/offline_indicator_widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:spots/presentation/pages/events/events_browse_page.dart';
+import 'package:spots/presentation/pages/communities/communities_discover_page.dart';
 import 'package:spots/presentation/widgets/chat/chat_button_with_badge.dart';
 import 'package:go_router/go_router.dart';
 
@@ -543,7 +544,7 @@ class _ExploreTabState extends State<ExploreTab>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -588,6 +589,7 @@ class _ExploreTabState extends State<ExploreTab>
             Tab(icon: Icon(Icons.people), text: 'Users'),
             Tab(icon: Icon(Icons.smart_toy), text: 'AI'),
             Tab(icon: Icon(Icons.event), text: 'Events'),
+            Tab(icon: Icon(Icons.groups), text: 'Communities'),
           ],
         ),
       ),
@@ -597,6 +599,7 @@ class _ExploreTabState extends State<ExploreTab>
           UsersSubTab(),
           AISubTab(),
           EventsSubTab(),
+          CommunitiesDiscoverPage(showAppBar: false),
         ],
       ),
     );

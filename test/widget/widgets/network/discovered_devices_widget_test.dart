@@ -7,16 +7,15 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/network/device_discovery.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
+import 'package:spots_network/network/device_discovery.dart';
+import 'package:spots/core/ai/privacy_protection.dart';
 import 'package:spots/presentation/widgets/network/discovered_devices_widget.dart';
-import '../../helpers/widget_test_helpers.dart';
 
 void main() {
   setUpAll(() {});
 
-  tearDown(() {
-    GetIt.instance.reset();
+  tearDown(() async {
+    await GetIt.instance.reset();
   });
 
   group('DiscoveredDevicesWidget', () {
@@ -67,10 +66,20 @@ void main() {
           deviceName: 'AI Device',
           type: DeviceType.bluetooth,
           isSpotsEnabled: true,
-          personalityData: const AnonymizedVibeData(
-            personalityId: 'test-id',
+          personalityData: AnonymizedVibeData(
+            noisyDimensions: const {'adventure': 0.5},
+            anonymizedMetrics: AnonymizedVibeMetrics(
+              energy: 0.5,
+              social: 0.5,
+              exploration: 0.5,
+            ),
+            temporalContextHash: 'temporal_hash',
             vibeSignature: 'signature',
-            timestamp: '2025-01-01T00:00:00Z',
+            privacyLevel: 'MAXIMUM_ANONYMIZATION',
+            anonymizationQuality: 1.0,
+            salt: 'salt',
+            createdAt: DateTime.now(),
+            expiresAt: DateTime.now().add(const Duration(days: 1)),
           ),
           discoveredAt: DateTime.now(),
         ),

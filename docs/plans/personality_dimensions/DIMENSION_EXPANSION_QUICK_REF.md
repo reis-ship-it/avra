@@ -200,7 +200,7 @@ flutter analyze
 
 - **Comprehensive Plan:** `docs/EXPAND_PERSONALITY_DIMENSIONS_PLAN.md`
 - **Implementation Checklist:** `docs/EXPAND_DIMENSIONS_CHECKLIST.md`
-- **Dimension Definitions:** `VIBE_CODING/DIMENSIONS/core_dimensions.md`
+- **Dimension Definitions:** `docs/_archive/vibe_coding/VIBE_CODING/DIMENSIONS/core_dimensions.md`
 
 ---
 

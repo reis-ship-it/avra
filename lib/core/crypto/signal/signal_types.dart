@@ -131,6 +131,31 @@ class SignalPreKeyBundle {
   }
 }
 
+/// Local-only prekey material (includes private-state needed for decryption).
+///
+/// This **must never** be uploaded to the key server. Only `bundle` is safe to upload.
+class SignalLocalPreKeyMaterial {
+  final SignalPreKeyBundle bundle;
+
+  /// Serialized PreKeyRecord (one-time prekey; contains private key material).
+  ///
+  /// If `bundle.oneTimePreKeyId` is null, this will be empty.
+  final Uint8List preKeyRecordSerialized;
+
+  /// Serialized SignedPreKeyRecord (contains private key material).
+  final Uint8List signedPreKeyRecordSerialized;
+
+  /// Serialized KyberPreKeyRecord (contains secret key material).
+  final Uint8List kyberPreKeyRecordSerialized;
+
+  SignalLocalPreKeyMaterial({
+    required this.bundle,
+    required this.preKeyRecordSerialized,
+    required this.signedPreKeyRecordSerialized,
+    required this.kyberPreKeyRecordSerialized,
+  });
+}
+
 /// Signal Protocol Encrypted Message
 /// 
 /// Contains encrypted message data and metadata needed for decryption.

@@ -1,8 +1,18 @@
-# Master Plan - Simple Timeline
+# Master Plan - Simple Timeline (Historical)
 
 **Date:** January 30, 2025  
-**Status:** 🎯 Active Execution Plan  
-**Purpose:** Simple timeline view of all phases and weeks
+**Status:** ❌ Deprecated (Historical Snapshot)  
+**Purpose:** Historical timeline snapshot from early 2025
+
+---
+
+## 🚨 Deprecation Notice
+
+This document is **not maintained** and reflects an older “weeks” planning model.
+
+**Use instead:**
+- `docs/MASTER_PLAN.md` for the execution plan/spec
+- `docs/agents/status/status_tracker.md` for the single source of truth on current status/progress
 
 ---
 

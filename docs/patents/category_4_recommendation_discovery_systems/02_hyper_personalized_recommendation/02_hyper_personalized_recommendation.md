@@ -19,7 +19,65 @@
 
 ---
 
-## Executive Summary
+## Cross-References to Related Applications
+
+None.
+
+---
+
+## Statement Regarding Federally Sponsored Research or Development
+
+Not applicable.
+
+---
+
+## Incorporation by Reference
+
+This disclosure references the accompanying visual/drawings document: `docs/patents/category_4_recommendation_discovery_systems/02_hyper_personalized_recommendation/02_hyper_personalized_recommendation_visuals.md`. The diagrams and formulas therein are incorporated by reference as non-limiting illustrative material supporting the written description and example embodiments.
+
+---
+
+## Definitions
+
+For purposes of this disclosure:
+- **“Entity”** means any actor or object represented for scoring/matching (e.g., user, device, business, event, sponsor), depending on the invention context.
+- **“Profile”** means a set of stored attributes used by the system (which may be multi-dimensional and may be anonymized).
+- **“Compatibility score”** means a bounded numeric value used to compare entities or an entity to an opportunity, typically normalized to \([0, 1]\).
+- **“userId”** means an identifier associated with a user account. In privacy-preserving embodiments, user-linked identifiers are not exchanged externally.
+- **“Atomic timestamp”** means a time value derived from an atomic-time service or an equivalent high-precision time source used for synchronization and time-indexed computation.
+
+---
+
+## Brief Description of the Drawings
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Multi-Source Fusion Architecture.
+- **FIG. 6**: Weight Distribution.
+- **FIG. 7**: Fusion Algorithm Flow.
+- **FIG. 8**: Weighted Score Calculation.
+- **FIG. 9**: Hyper-Personalization Layer.
+- **FIG. 10**: Diversity Scoring.
+- **FIG. 11**: Confidence Calculation.
+- **FIG. 12**: System Integration Points.
+- **FIG. 13**: Complete Recommendation Pipeline.
+## Abstract
+
+A system and method for generating recommendations by fusing outputs from multiple recommendation sources using predefined weights and applying personalization and diversity controls. The method receives candidate recommendations from a plurality of sources, combines or re-ranks the candidates using a weighted fusion algorithm, and applies a hyper-personalization layer based on user profile and context. In some embodiments, the system computes a diversity score and enforces diversity constraints to avoid over-concentration of similar recommendations. The approach produces more accurate and varied recommendations than single-source systems by integrating real-time context, community signals, peer-network insights, and privacy-preserving learning signals.
+
+---
+
+## Background
+
+Single-source recommendation systems often suffer from bias, narrow coverage, and limited adaptability to changing context. Simple aggregation of multiple sources can also amplify redundancy and reduce diversity, leading to repetitive recommendations and degraded user experience.
+
+Accordingly, there is a need for recommendation engines that fuse multiple sources using explicit weighting, incorporate personalization tuned to the user and context, and preserve diversity to maintain breadth and novelty in recommended results.
+
+---
+
+## Summary
 
 The Hyper-Personalized Recommendation Fusion System is a multi-source recommendation engine that combines recommendations from four distinct sources (real-time contextual, community insights, AI2AI network, and federated learning) using a weighted combination algorithm. The system applies a hyper-personalization layer to the fused recommendations and includes diversity scoring to ensure recommendation variety.
 
@@ -31,7 +89,7 @@ The Hyper-Personalized Recommendation Fusion System is a multi-source recommenda
 
 ---
 
-## Technical Innovation
+## Detailed Description
 
 ### Multi-Source Recommendation Fusion
 
@@ -337,62 +395,49 @@ class HyperPersonalizedRecommendations {
 
 ---
 
-## Patent Claims
+## Claims
 
-### Claim 1: Method for Fusing Multiple Recommendation Sources
+1. A method for fusing multiple recommendation sources with weighted combination, comprising:
+   (a) Collecting recommendations from four distinct sources: real-time contextual engine (40% weight), community insights (30% weight), AI2AI network (20% weight), and federated learning (10% weight)
+   (b) Applying source-specific weights to each recommendation score
+   (c) Combining weighted recommendations into a unified list
+   (d) Sorting combined recommendations by weighted score
+   (e) Applying hyper-personalization layer based on user preferences and behavior history
+   (f) Calculating diversity score across categories, locations, and price ranges
+   (g) Enforcing minimum diversity threshold (0.5) to prevent filter bubbles
+   (h) Calculating overall confidence score from source confidences and recommendation count
+   (i) Returning top N hyper-personalized recommendations with confidence and diversity scores
 
-A method for fusing multiple recommendation sources with weighted combination, comprising:
+2. A system for hyper-personalized recommendations from multi-source AI systems, comprising:
+   (a) A real-time recommendation engine providing contextually relevant recommendations (40% weight)
+   (b) A community insights service providing community-validated recommendations (30% weight)
+   (c) An AI2AI network providing personality-matched recommendations (20% weight)
+   (d) A federated learning system providing privacy-preserving recommendations (10% weight)
+   (e) A weighted fusion module combining recommendations with source-specific weights
+   (f) A hyper-personalization layer applying user preferences and behavior history
+   (g) A diversity scoring module ensuring recommendation variety
+   (h) A confidence calculation module computing overall recommendation confidence
 
-1. Collecting recommendations from four distinct sources: real-time contextual engine (40% weight), community insights (30% weight), AI2AI network (20% weight), and federated learning (10% weight)
-2. Applying source-specific weights to each recommendation score
-3. Combining weighted recommendations into a unified list
-4. Sorting combined recommendations by weighted score
-5. Applying hyper-personalization layer based on user preferences and behavior history
-6. Calculating diversity score across categories, locations, and price ranges
-7. Enforcing minimum diversity threshold (0.5) to prevent filter bubbles
-8. Calculating overall confidence score from source confidences and recommendation count
-9. Returning top N hyper-personalized recommendations with confidence and diversity scores
+3. The method of claim 1, further comprising diversity-preserving recommendation fusion:
+   (a) Collecting recommendations from multiple sources with weighted combination
+   (b) Calculating category diversity as ratio of unique categories to total recommendations
+   (c) Calculating location diversity as ratio of unique locations to total recommendations
+   (d) Calculating price range diversity as ratio of unique price ranges to total recommendations
+   (e) Computing overall diversity score as weighted average: (category × 50%) + (location × 30%) + (price × 20%)
+   (f) Enforcing minimum diversity threshold (0.5)
+   (g) Re-ranking recommendations with diversity boost if threshold not met
+   (h) Ensuring minimum category diversity (at least 3 categories in top 10)
 
-### Claim 2: System for Hyper-Personalized Recommendations
+4. A multi-source recommendation fusion system with hyper-personalization, comprising:
+   (a) Four recommendation sources with specific weights: real-time (40%), community (30%), AI2AI (20%), federated (10%)
+   (b) Weighted combination algorithm applying source weights to recommendation scores
+   (c) Hyper-personalization layer filtering and boosting based on user preferences
+   (d) Behavior history integration adjusting scores based on recent actions
+   (e) Diversity scoring ensuring category, location, and price range variety
+   (f) Confidence calculation from source confidences and recommendation count
+   (g) Privacy-preserving processing throughout the fusion pipeline
 
-A system for hyper-personalized recommendations from multi-source AI systems, comprising:
-
-1. A real-time recommendation engine providing contextually relevant recommendations (40% weight)
-2. A community insights service providing community-validated recommendations (30% weight)
-3. An AI2AI network providing personality-matched recommendations (20% weight)
-4. A federated learning system providing privacy-preserving recommendations (10% weight)
-5. A weighted fusion module combining recommendations with source-specific weights
-6. A hyper-personalization layer applying user preferences and behavior history
-7. A diversity scoring module ensuring recommendation variety
-8. A confidence calculation module computing overall recommendation confidence
-
-### Claim 3: Method for Diversity-Preserving Recommendation Fusion
-
-A method for diversity-preserving recommendation fusion, comprising:
-
-1. Collecting recommendations from multiple sources with weighted combination
-2. Calculating category diversity as ratio of unique categories to total recommendations
-3. Calculating location diversity as ratio of unique locations to total recommendations
-4. Calculating price range diversity as ratio of unique price ranges to total recommendations
-5. Computing overall diversity score as weighted average: (category × 50%) + (location × 30%) + (price × 20%)
-6. Enforcing minimum diversity threshold (0.5)
-7. Re-ranking recommendations with diversity boost if threshold not met
-8. Ensuring minimum category diversity (at least 3 categories in top 10)
-
-### Claim 4: Multi-Source Recommendation Fusion with Hyper-Personalization
-
-A multi-source recommendation fusion system with hyper-personalization, comprising:
-
-1. Four recommendation sources with specific weights: real-time (40%), community (30%), AI2AI (20%), federated (10%)
-2. Weighted combination algorithm applying source weights to recommendation scores
-3. Hyper-personalization layer filtering and boosting based on user preferences
-4. Behavior history integration adjusting scores based on recent actions
-5. Diversity scoring ensuring category, location, and price range variety
-6. Confidence calculation from source confidences and recommendation count
-7. Privacy-preserving processing throughout the fusion pipeline
-
----
-
+       ---
 ## Patentability Assessment
 
 ### Novelty Score: 3/10
@@ -958,8 +1003,7 @@ Cov[R_i(t), R_j(t)] = 0 for i ≠ j, all t
 
 ---
 
-## Experimental Validation
-
+## Appendix A — Experimental Validation (Non-Limiting)
 **Date:** Original (see individual experiments), December 23, 2025 (Atomic Timing Integration)  
 **Status:** ✅ Complete - All experiments validated (including atomic timing integration)  
 **Purpose:** Validate hyper-personalized recommendation fusion system through technical experiments and simulated marketing scenarios

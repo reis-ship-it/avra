@@ -6,6 +6,7 @@ import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
 import 'package:spots/presentation/pages/onboarding/social_media_connection_page.dart';
 import 'package:spots/core/services/social_media_connection_service.dart';
 import 'package:spots/core/services/agent_id_service.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Phase 8 Section 2 (8.2) - Social Media Data Collection Integration Test
 ///
@@ -26,6 +27,7 @@ void main() {
 
     // Initialize dependency injection for tests
     try {
+      await setupTestStorage();
       await di.init();
     } catch (e) {
       // DI may fail in test environment, that's okay

@@ -4,7 +4,83 @@
 
 ---
 
-## 1. Multi-Source Fusion Architecture
+
+
+## Figures
+
+- **FIG. 1**: System block diagram.
+- **FIG. 2**: Method flow.
+- **FIG. 3**: Data structures / state representation.
+- **FIG. 4**: Example embodiment sequence diagram.
+- **FIG. 5**: Multi-Source Fusion Architecture.
+- **FIG. 6**: Weight Distribution.
+- **FIG. 7**: Fusion Algorithm Flow.
+- **FIG. 8**: Weighted Score Calculation.
+- **FIG. 9**: Hyper-Personalization Layer.
+- **FIG. 10**: Diversity Scoring.
+- **FIG. 11**: Confidence Calculation.
+- **FIG. 12**: System Integration Points.
+- **FIG. 13**: Complete Recommendation Pipeline.
+---
+
+
+### FIG. 1 — System block diagram
+
+FIG. 1 illustrates a system block diagram of the Hyper-Personalized Recommendation Fusion System implementation.
+
+In the illustrated embodiment, a computing device receives input signals and stored profile/state data; constructs an internal representation; and applies representation construction and scoring/decision logic to produce an output score/decision and optional stored record.
+In AI2AI embodiments, limited information may be exchanged between devices/agents using privacy-preserving identifiers and/or anonymized representations.
+
+In some embodiments, the diagram includes:
+- Multi-Source Fusion Architecture.
+- Weight Distribution.
+- Fusion Algorithm Flow.
+- Weighted Score Calculation.
+- Hyper-Personalization Layer.
+- Diversity Scoring.
+- Confidence Calculation.
+
+### FIG. 2 — Method flow
+
+FIG. 2 illustrates a method flow for operating the Hyper-Personalized Recommendation Fusion System implementation.
+
+1. Collecting recommendations from four distinct sources: real-time contextual engine (40% weight), community insights (30% weight), AI2AI network (20% weight), and federated learning (10% weight).
+2. Applying source-specific weights to each recommendation score.
+3. Combining weighted recommendations into a unified list.
+4. Sorting combined recommendations by weighted score.
+5. Applying hyper-personalization layer based on user preferences and behavior history.
+6. Calculating diversity score across categories, locations, and price ranges.
+7. Enforcing minimum diversity threshold (0.5) to prevent filter bubbles.
+8. Calculating overall confidence score from source confidences and recommendation count.
+9. Returning top N hyper-personalized recommendations with confidence and diversity scores.
+
+### FIG. 3 — Data structures / state representation
+
+FIG. 3 illustrates example data structures and state representations used by the Hyper-Personalized Recommendation Fusion System implementation.
+
+In some embodiments, the implementation stores and operates on one or more of the following structures (non-limiting):
+- InputSignals: {signals[ ], observedAt, source}
+- RepresentationState: {features, parameters, version}
+- ConstraintPolicy: {thresholds, privacy/timing rules}
+- ComputationResult: {score/decision, confidence (optional)}
+- LocalStoreRecord: {id, createdAt, payload}
+
+### FIG. 4 — Example embodiment sequence diagram
+
+FIG. 4 illustrates an example embodiment interaction/sequence for the Hyper-Personalized Recommendation Fusion System implementation.
+
+Participants (non-limiting):
+- Client device / local agent
+- Peer device / peer agent
+- Atomic time source (local or remote)
+
+Example sequence:
+1. Client device gathers inputs and constructs a representation/state.
+2. Client device applies core computation and constraints.
+3. Client device emits an output and stores a record as needed.
+
+### FIG. 5 — Multi-Source Fusion Architecture
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -61,7 +137,8 @@
 
 ---
 
-## 2. Weight Distribution
+### FIG. 6 — Weight Distribution
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -89,7 +166,8 @@
 
 ---
 
-## 3. Fusion Algorithm Flow
+### FIG. 7 — Fusion Algorithm Flow
+
 
 ```
                     START
@@ -155,7 +233,8 @@
 
 ---
 
-## 4. Weighted Score Calculation
+### FIG. 8 — Weighted Score Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -187,7 +266,8 @@
 
 ---
 
-## 5. Hyper-Personalization Layer
+### FIG. 9 — Hyper-Personalization Layer
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -230,7 +310,8 @@
 
 ---
 
-## 6. Diversity Scoring
+### FIG. 10 — Diversity Scoring
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -274,7 +355,8 @@
 
 ---
 
-## 7. Confidence Calculation
+### FIG. 11 — Confidence Calculation
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -310,7 +392,8 @@
 
 ---
 
-## 8. System Integration Points
+### FIG. 12 — System Integration Points
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -353,7 +436,8 @@
 
 ---
 
-## 9. Complete Recommendation Pipeline
+### FIG. 13 — Complete Recommendation Pipeline
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -431,4 +515,3 @@ This visual documentation provides comprehensive diagrams and visualizations for
 9. **Complete Recommendation Pipeline** - End-to-end process
 
 These visuals support the deep-dive document and provide clear, patent-ready documentation of the system's technical implementation.
-

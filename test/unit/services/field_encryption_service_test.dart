@@ -200,19 +200,22 @@ void main() {
         final encryptedOld = await service.encryptField('email', email, userId);
         await service.rotateKey('email', userId);
         final encryptedNew = await service.encryptField('email', email, userId);
-        expect(await service.decryptField('email', encryptedOld, userId),
-            equals(email));
         expect(await service.decryptField('email', encryptedNew, userId),
             equals(email));
+        // After rotation, old ciphertext should be unrecoverable with the new key.
+        await expectLater(
+          service.decryptField('email', encryptedOld, userId),
+          throwsA(isA<Exception>()),
+        );
 
         // Test key deletion
         final encrypted = await service.encryptField('email', email, userId);
         await service.deleteKey('email', userId);
-        // Note: Simplified implementation generates new key on decrypt
-        // In production, deleting key would make data unrecoverable
-        final decrypted =
-            await service.decryptField('email', encrypted, userId);
-        expect(decrypted, equals(email));
+        // Deleting a key should make prior ciphertext unrecoverable.
+        await expectLater(
+          service.decryptField('email', encrypted, userId),
+          throwsA(isA<Exception>()),
+        );
       });
     });
 

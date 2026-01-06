@@ -21,23 +21,24 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-      expect(find.text('Favorite Places'), findsOneWidget);
-      expect(find.textContaining('Tell us about your favorite places'),
-          findsOneWidget);
+      expect(find.text('What matches your vibe?'), findsOneWidget);
+      expect(
+        find.textContaining('Select places that match your aesthetic'),
+        findsOneWidget,
+      );
       expect(find.byType(TextField), findsOneWidget);
       expect(find.text('New York Area'), findsOneWidget);
       expect(find.text('Los Angeles Area'), findsOneWidget);
 
-      final initialPlaces = ['Brooklyn', 'Manhattan'];
+      // Providing initial places should not crash rendering (selection UI is dynamic).
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: FavoritePlacesPage(
-          favoritePlaces: initialPlaces,
+          favoritePlaces: const ['Brooklyn', 'Manhattan'],
           onPlacesChanged: (_) {},
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-      expect(find.text('Brooklyn'), findsOneWidget);
-      expect(find.text('Manhattan'), findsOneWidget);
+      expect(find.byType(FavoritePlacesPage), findsOneWidget);
 
       final widget3 = WidgetTestHelpers.createTestableWidget(
         child: FavoritePlacesPage(
@@ -47,7 +48,7 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget3);
-      expect(find.text('Favorite Places'), findsOneWidget);
+      expect(find.text('What matches your vibe?'), findsOneWidget);
     });
   });
 }

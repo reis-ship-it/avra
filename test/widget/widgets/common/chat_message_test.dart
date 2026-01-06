@@ -1,7 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots/presentation/widgets/common/chat_message.dart';
-import "../../helpers/widget_test_helpers.dart';
-import '../../../helpers/test_helpers.dart';
+import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for ChatMessage
 /// Tests chat message display for user and AI messages
@@ -12,7 +12,8 @@ void main() {
 
     testWidgets('should display user message correctly, display AI message correctly, display timestamp for user/AI messages, display "Just now" for recent messages, align user message to the right, align AI message to the left, or handle long messages correctly', (WidgetTester tester) async {
       // Test business logic: chat message display and formatting
-      final timestamp = TestHelpers.createTestDateTime();
+      // Use a timestamp recent enough to render as "Xm ago" (not a calendar date).
+      final timestamp = DateTime.now().subtract(const Duration(minutes: 5));
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: ChatMessage(
           message: 'Hello, AI!',

@@ -3,8 +3,8 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/services/knot/personality_knot_service.dart';
-import 'package:spots/core/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:spots_knot/services/knot/personality_knot_service.dart';
+import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 
 void main() {
   group('Knot Math iOS Integration', () {

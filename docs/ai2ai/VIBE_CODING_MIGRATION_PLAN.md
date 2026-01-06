@@ -19,7 +19,7 @@
 
 ## 📋 **Migration Mapping**
 
-### **VIBE_CODING/ARCHITECTURE/** → **docs/ai2ai/02_architecture/**
+### **docs/_archive/vibe_coding/VIBE_CODING/ARCHITECTURE/** → **docs/ai2ai/02_architecture/**
 
 | VIBE_CODING File | New Location | Status |
 |-----------------|--------------|--------|
@@ -30,7 +30,7 @@
 
 ---
 
-### **VIBE_CODING/IMPLEMENTATION/** → **docs/ai2ai/03_core_components/**
+### **docs/_archive/vibe_coding/VIBE_CODING/IMPLEMENTATION/** → **docs/ai2ai/03_core_components/**
 
 | VIBE_CODING File | New Location | Status |
 |-----------------|--------------|--------|
@@ -44,7 +44,7 @@
 
 ---
 
-### **VIBE_CODING/LEARNING/** → **docs/ai2ai/04_learning_systems/**
+### **docs/_archive/vibe_coding/VIBE_CODING/LEARNING/** → **docs/ai2ai/04_learning_systems/**
 
 | VIBE_CODING File | New Location | Status |
 |-----------------|--------------|--------|
@@ -55,7 +55,7 @@
 
 ---
 
-### **VIBE_CODING/MONITORING/** → **docs/ai2ai/08_usage_operations/**
+### **docs/_archive/vibe_coding/VIBE_CODING/MONITORING/** → **docs/ai2ai/08_usage_operations/**
 
 | VIBE_CODING File | New Location | Status |
 |-----------------|--------------|--------|
@@ -65,7 +65,7 @@
 
 ---
 
-### **VIBE_CODING/DIMENSIONS/** → **docs/ai2ai/03_core_components/**
+### **docs/_archive/vibe_coding/VIBE_CODING/DIMENSIONS/** → **docs/ai2ai/03_core_components/**
 
 | VIBE_CODING File | New Location | Status |
 |-----------------|--------------|--------|
@@ -79,7 +79,7 @@
 
 ---
 
-### **VIBE_CODING/DEPLOYMENT/** → **Mixed Locations**
+### **docs/_archive/vibe_coding/VIBE_CODING/DEPLOYMENT/** → **Mixed Locations**
 
 | VIBE_CODING File | New Location | Status | Notes |
 |-----------------|--------------|--------|-------|
@@ -132,7 +132,7 @@
 3. Update index files
 
 ### **Phase 8: Archive VIBE_CODING**
-1. Create archive note in VIBE_CODING/README.md
+1. Create archive note in docs/_archive/vibe_coding/VIBE_CODING/README.md
 2. Point to new location
 3. Keep VIBE_CODING for reference (or remove after migration complete)
 

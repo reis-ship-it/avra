@@ -18,6 +18,19 @@
 
 Fix the complete onboarding → agent generation pipeline to match the architecture specification. Currently, the implementation is a "best-effort approximation" with critical gaps that prevent the system from working as designed. This plan addresses all identified gaps to ensure the product matches the architecture spec.
 
+## 🤖 Onboarding ↔ LLM suggestions ↔ local model-pack provisioning (source of truth)
+
+This plan covers the onboarding pipeline overall. The **canonical architecture** for how onboarding uses LLM suggestions (cloud/local/heuristics), how those interactions feed personality learning, and how the **local model pack** is provisioned (opt-out, Wi‑Fi-first, signed manifest) is defined here:
+
+- `docs/plans/onboarding/ONBOARDING_LLM_DOWNLOAD_AND_BOOTSTRAP_ARCHITECTURE.md`
+- `docs/plans/architecture/LOCAL_LLM_MODEL_PACK_SYSTEM.md`
+
+### ✅ Implementation status (current)
+
+The Phase 8 onboarding↔local-LLM integration work has been implemented and verified (tests run) in this repo. Canonical completion report:
+
+- `docs/agents/reports/agent_cursor/phase_8/2026-01-02_onboarding_local_llm_download_bootstrap_enhancements.md`
+
 **Current State:**
 - ✅ **FIXED:** Onboarding navigates to AILoadingPage correctly (Phase 0 complete)
 - ✅ Onboarding flow includes baseline lists step (Phase 1 complete)
