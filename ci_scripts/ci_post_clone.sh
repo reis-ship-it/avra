@@ -3,36 +3,53 @@ set -e
 
 echo "🚀 Starting Flutter setup for Xcode Cloud..."
 
-# Check if Flutter is available (Xcode Cloud may have it pre-installed)
+# Set CI_WORKSPACE if not set (Xcode Cloud should set this, but we'll default to current directory)
+CI_WORKSPACE=${CI_WORKSPACE:-$(pwd)}
+cd "$CI_WORKSPACE"
+
+# Check if Flutter is available (Xcode Cloud doesn't have it pre-installed)
 if ! command -v flutter &> /dev/null; then
-    echo "❌ Flutter not found. Attempting to install Flutter..."
+    echo "📥 Flutter not found. Installing Flutter from GitHub..."
     
-    # Check if Flutter SDK is in common locations
-    FLUTTER_PATHS=(
-        "$HOME/flutter/bin/flutter"
-        "/usr/local/bin/flutter"
-        "/opt/flutter/bin/flutter"
-    )
+    # Install Flutter using git (stable channel)
+    # Xcode Cloud provides git, so we can clone Flutter
+    if [ ! -d "$HOME/flutter" ]; then
+        echo "📦 Cloning Flutter repository..."
+        git clone https://github.com/flutter/flutter.git --depth 1 -b stable "$HOME/flutter"
+    else
+        echo "✅ Flutter directory exists, updating..."
+        cd "$HOME/flutter"
+        git pull
+        cd "$CI_WORKSPACE"
+    fi
     
-    FLUTTER_FOUND=false
-    for FLUTTER_PATH in "${FLUTTER_PATHS[@]}"; do
-        if [ -f "$FLUTTER_PATH" ]; then
-            echo "✅ Found Flutter at: $FLUTTER_PATH"
-            export PATH="$(dirname "$FLUTTER_PATH"):$PATH"
-            FLUTTER_FOUND=true
-            break
-        fi
-    done
+    # Add Flutter to PATH for this session and export for subsequent commands
+    export PATH="$HOME/flutter/bin:$PATH"
     
-    if [ "$FLUTTER_FOUND" = false ]; then
-        echo "⚠️  Flutter not found in common locations."
-        echo "Please ensure Flutter is installed and available in PATH."
-        echo "Xcode Cloud may need Flutter configured in workflow settings."
+    # Verify Flutter is now available
+    if ! command -v flutter &> /dev/null; then
+        echo "❌ Error: Flutter installation failed"
         exit 1
     fi
+    
+    echo "✅ Flutter installed successfully"
+else
+    echo "✅ Flutter found in PATH"
 fi
 
-echo "✅ Flutter found: $(flutter --version | head -n 1)"
+# Ensure Flutter is in PATH (in case it was found but PATH wasn't exported)
+export PATH="$HOME/flutter/bin:${PATH:-}"
+
+# Verify Flutter version
+echo "✅ Flutter version: $(flutter --version | head -n 1)"
+
+# Accept Flutter licenses (required for first-time setup)
+echo "📝 Accepting Flutter licenses..."
+flutter doctor --android-licenses 2>/dev/null || echo "⚠️  Android licenses skipped (iOS build only)"
+
+# Pre-cache Flutter dependencies (speeds up pub get)
+echo "📦 Pre-caching Flutter dependencies..."
+flutter precache --ios || echo "⚠️  Pre-cache warning (continuing...)"
 
 # Get Flutter dependencies (creates Generated.xcconfig)
 echo "📦 Running flutter pub get..."
@@ -53,16 +70,37 @@ cd ios
 
 # Check if pod is available
 if ! command -v pod &> /dev/null; then
-    echo "❌ CocoaPods not found. Attempting to install..."
-    if command -v gem &> /dev/null; then
-        gem install cocoapods
-    else
-        echo "⚠️  gem not found. CocoaPods may need to be pre-installed."
+    echo "📥 CocoaPods not found. Installing CocoaPods..."
+    
+    # Check if gem is available (Ruby's package manager)
+    if ! command -v gem &> /dev/null; then
+        echo "❌ Error: gem (Ruby) not found. CocoaPods requires Ruby."
+        echo "Xcode Cloud should have Ruby available, but it's not in PATH."
         exit 1
     fi
+    
+    # Install CocoaPods using gem
+    echo "📦 Installing CocoaPods via gem..."
+    gem install cocoapods --no-document || {
+        echo "⚠️  gem install cocoapods failed, trying with sudo..."
+        sudo gem install cocoapods --no-document || {
+            echo "❌ Error: CocoaPods installation failed"
+            exit 1
+        }
+    }
+    
+    echo "✅ CocoaPods installed successfully"
+else
+    echo "✅ CocoaPods found in PATH"
 fi
 
-pod install
+# Run pod install
+echo "📦 Running pod install..."
+pod install --repo-update || pod install || {
+    echo "❌ Error: pod install failed"
+    exit 1
+}
+
 cd ..
 
 # Verify Pods directory was created
