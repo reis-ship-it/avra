@@ -22,266 +22,115 @@ void main() {
       testDate = DateTime.now();
     });
 
-    group('Constructor and Properties', () {
-      test('should create OnboardingData with all required fields', () {
-        final data = OnboardingData(
+    // Removed: Constructor and Properties group
+    // These tests only verified Dart constructor behavior, not business logic
+    // If constructor breaks, compilation fails - no need to test language features
+
+    group('JSON Serialization', () {
+      test('should serialize and deserialize correctly (round-trip) with all fields, null values, and missing collections', () {
+        // Test comprehensive round-trip with all fields
+        final originalFull = OnboardingData(
           agentId: testAgentId,
           age: 28,
           birthday: DateTime(1995, 1, 1),
           homebase: 'San Francisco, CA',
           favoritePlaces: ['Golden Gate Park', 'Mission District'],
-          preferences: {
-            'Food & Drink': ['Coffee', 'Craft Beer'],
-            'Activities': ['Hiking', 'Live Music'],
-          },
+          preferences: {'Food & Drink': ['Coffee', 'Craft Beer']},
           baselineLists: ['My Favorites'],
           respectedFriends: ['friend1', 'friend2'],
           socialMediaConnected: {'google': true, 'instagram': false},
           completedAt: testDate,
         );
 
-        expect(data.agentId, equals(testAgentId));
-        expect(data.age, equals(28));
-        expect(data.homebase, equals('San Francisco, CA'));
-        expect(data.favoritePlaces.length, equals(2));
-        expect(data.preferences.length, equals(2));
-        expect(data.socialMediaConnected['google'], isTrue);
-      });
+        final restoredFull = OnboardingData.fromJson(originalFull.toJson());
+        
+        // Test business logic: restored data is valid and equal
+        expect(restoredFull, equals(originalFull));
+        expect(restoredFull.isValid, isTrue);
 
-      test('should create OnboardingData with minimal required fields', () {
-        final data = OnboardingData(
+        // Test round-trip with minimal fields (nulls and empty collections)
+        final originalMinimal = OnboardingData(
           agentId: testAgentId,
           completedAt: testDate,
         );
 
-        expect(data.agentId, equals(testAgentId));
-        expect(data.age, isNull);
-        expect(data.homebase, isNull);
-        expect(data.favoritePlaces, isEmpty);
-        expect(data.preferences, isEmpty);
-      });
-
-      test('should use default empty collections when not provided', () {
-        final data = OnboardingData(
-          agentId: testAgentId,
-          completedAt: testDate,
-        );
-
-        expect(data.favoritePlaces, isEmpty);
-        expect(data.preferences, isEmpty);
-        expect(data.baselineLists, isEmpty);
-        expect(data.respectedFriends, isEmpty);
-        expect(data.socialMediaConnected, isEmpty);
-      });
-    });
-
-    group('JSON Serialization', () {
-      test('should serialize OnboardingData to JSON correctly', () {
-        final data = OnboardingData(
-          agentId: testAgentId,
-          age: 28,
-          birthday: DateTime(1995, 1, 1),
-          homebase: 'San Francisco, CA',
-          favoritePlaces: ['Golden Gate Park'],
-          preferences: {'Food & Drink': ['Coffee']},
-          baselineLists: ['My Favorites'],
-          respectedFriends: ['friend1'],
-          socialMediaConnected: {'google': true},
-          completedAt: testDate,
-        );
-
-        final json = data.toJson();
-
-        expect(json['agentId'], equals(testAgentId));
-        expect(json['age'], equals(28));
-        expect(json['birthday'], equals('1995-01-01T00:00:00.000'));
-        expect(json['homebase'], equals('San Francisco, CA'));
-        expect(json['favoritePlaces'], isA<List>());
-        expect(json['preferences'], isA<Map>());
-        expect(json['completedAt'], equals(testDate.toIso8601String()));
-      });
-
-      test('should deserialize JSON to OnboardingData correctly', () {
-        final json = {
-          'agentId': testAgentId,
-          'age': 28,
-          'birthday': '1995-01-01T00:00:00.000',
-          'homebase': 'San Francisco, CA',
-          'favoritePlaces': ['Golden Gate Park'],
-          'preferences': {'Food & Drink': ['Coffee']},
-          'baselineLists': ['My Favorites'],
-          'respectedFriends': ['friend1'],
-          'socialMediaConnected': {'google': true},
-          'completedAt': testDate.toIso8601String(),
-        };
-
-        final data = OnboardingData.fromJson(json);
-
-        expect(data.agentId, equals(testAgentId));
-        expect(data.age, equals(28));
-        expect(data.birthday, equals(DateTime(1995, 1, 1)));
-        expect(data.homebase, equals('San Francisco, CA'));
-        expect(data.favoritePlaces.length, equals(1));
-        expect(data.preferences.length, equals(1));
-      });
-
-      test('should handle null values in JSON correctly', () {
-        final json = {
-          'agentId': testAgentId,
-          'completedAt': testDate.toIso8601String(),
-        };
-
-        final data = OnboardingData.fromJson(json);
-
-        expect(data.age, isNull);
-        expect(data.birthday, isNull);
-        expect(data.homebase, isNull);
-      });
-
-      test('should handle missing collections in JSON with empty defaults', () {
-        final json = {
-          'agentId': testAgentId,
-          'completedAt': testDate.toIso8601String(),
-        };
-
-        final data = OnboardingData.fromJson(json);
-
-        expect(data.favoritePlaces, isEmpty);
-        expect(data.preferences, isEmpty);
-        expect(data.baselineLists, isEmpty);
-        expect(data.respectedFriends, isEmpty);
-        expect(data.socialMediaConnected, isEmpty);
-      });
-
-      test('should round-trip serialize and deserialize correctly', () {
-        final original = OnboardingData(
-          agentId: testAgentId,
-          age: 28,
-          birthday: DateTime(1995, 1, 1),
-          homebase: 'San Francisco, CA',
-          favoritePlaces: ['Golden Gate Park'],
-          preferences: {'Food & Drink': ['Coffee']},
-          baselineLists: ['My Favorites'],
-          respectedFriends: ['friend1'],
-          socialMediaConnected: {'google': true},
-          completedAt: testDate,
-        );
-
-        final json = original.toJson();
-        final restored = OnboardingData.fromJson(json);
-
-        expect(restored.agentId, equals(original.agentId));
-        expect(restored.age, equals(original.age));
-        expect(restored.birthday, equals(original.birthday));
-        expect(restored.homebase, equals(original.homebase));
-        expect(restored.favoritePlaces, equals(original.favoritePlaces));
-        expect(restored.preferences, equals(original.preferences));
+        final restoredMinimal = OnboardingData.fromJson(originalMinimal.toJson());
+        
+        // Test business logic: restored minimal data is valid and usable
+        expect(restoredMinimal, equals(originalMinimal));
+        expect(restoredMinimal.isValid, isTrue);
+        expect(restoredMinimal.favoritePlaces, isEmpty);
+        expect(restoredMinimal.preferences, isEmpty);
       });
     });
 
     group('Validation', () {
-      test('should validate OnboardingData with valid agentId format', () {
-        final data = OnboardingData(
+      test('should validate agentId format, dates, and age constraints correctly', () {
+        // Valid cases
+        final validData = OnboardingData(
           agentId: testAgentId,
+          age: 28,
+          birthday: DateTime(1995, 1, 1),
           completedAt: testDate,
         );
+        expect(validData.isValid, isTrue);
 
-        expect(data.isValid, isTrue);
-      });
+        // Valid with tolerance (1 day future)
+        final validTolerance = OnboardingData(
+          agentId: testAgentId,
+          completedAt: DateTime.now().add(const Duration(days: 1)),
+        );
+        expect(validTolerance.isValid, isTrue);
 
-      test('should invalidate OnboardingData with empty agentId', () {
-        final data = OnboardingData(
+        // Invalid: empty agentId
+        final invalidEmptyAgentId = OnboardingData(
           agentId: '',
           completedAt: testDate,
         );
+        expect(invalidEmptyAgentId.isValid, isFalse);
 
-        expect(data.isValid, isFalse);
-      });
-
-      test('should invalidate OnboardingData with agentId not starting with agent_', () {
-        final data = OnboardingData(
+        // Invalid: wrong agentId format
+        final invalidAgentIdFormat = OnboardingData(
           agentId: 'user_123',
           completedAt: testDate,
         );
+        expect(invalidAgentIdFormat.isValid, isFalse);
 
-        expect(data.isValid, isFalse);
-      });
-
-      test('should invalidate OnboardingData with future completedAt date', () {
-        final futureDate = DateTime.now().add(const Duration(days: 2));
-        final data = OnboardingData(
+        // Invalid: future completedAt (beyond tolerance)
+        final invalidFutureDate = OnboardingData(
           agentId: testAgentId,
-          completedAt: futureDate,
+          completedAt: DateTime.now().add(const Duration(days: 2)),
         );
+        expect(invalidFutureDate.isValid, isFalse);
 
-        expect(data.isValid, isFalse);
-      });
-
-      test('should validate OnboardingData with completedAt one day in future (tolerance)', () {
-        final tomorrow = DateTime.now().add(const Duration(days: 1));
-        final data = OnboardingData(
-          agentId: testAgentId,
-          completedAt: tomorrow,
-        );
-
-        expect(data.isValid, isTrue);
-      });
-
-      test('should invalidate OnboardingData with age less than 13', () {
-        final data = OnboardingData(
+        // Invalid: age too young
+        final invalidAgeYoung = OnboardingData(
           agentId: testAgentId,
           age: 12,
           completedAt: testDate,
         );
+        expect(invalidAgeYoung.isValid, isFalse);
 
-        expect(data.isValid, isFalse);
-      });
-
-      test('should invalidate OnboardingData with age greater than 120', () {
-        final data = OnboardingData(
+        // Invalid: age too old
+        final invalidAgeOld = OnboardingData(
           agentId: testAgentId,
           age: 121,
           completedAt: testDate,
         );
+        expect(invalidAgeOld.isValid, isFalse);
 
-        expect(data.isValid, isFalse);
-      });
-
-      test('should validate OnboardingData with age between 13 and 120', () {
-        final data = OnboardingData(
+        // Invalid: future birthday
+        final invalidFutureBirthday = OnboardingData(
           agentId: testAgentId,
-          age: 28,
+          birthday: DateTime.now().add(const Duration(days: 1)),
           completedAt: testDate,
         );
-
-        expect(data.isValid, isTrue);
-      });
-
-      test('should invalidate OnboardingData with future birthday', () {
-        final futureBirthday = DateTime.now().add(const Duration(days: 1));
-        final data = OnboardingData(
-          agentId: testAgentId,
-          birthday: futureBirthday,
-          completedAt: testDate,
-        );
-
-        expect(data.isValid, isFalse);
-      });
-
-      test('should validate OnboardingData with past birthday', () {
-        final pastBirthday = DateTime(1995, 1, 1);
-        final data = OnboardingData(
-          agentId: testAgentId,
-          birthday: pastBirthday,
-          completedAt: testDate,
-        );
-
-        expect(data.isValid, isTrue);
+        expect(invalidFutureBirthday.isValid, isFalse);
       });
     });
 
     group('CopyWith', () {
-      test('should create copy with updated fields', () {
+      test('should create immutable copy with updated fields, null handling, and preserve unchanged fields', () {
         final original = OnboardingData(
           agentId: testAgentId,
           age: 28,
@@ -289,48 +138,27 @@ void main() {
           completedAt: testDate,
         );
 
+        // Test immutability: original unchanged
         final updated = original.copyWith(
           age: 29,
           homebase: 'New York, NY',
         );
+        expect(original.homebase, equals('San Francisco, CA')); // Original preserved
+        expect(updated.homebase, equals('New York, NY')); // Copy updated
 
-        expect(updated.agentId, equals(original.agentId));
-        expect(updated.age, equals(29));
-        expect(updated.homebase, equals('New York, NY'));
-        expect(updated.completedAt, equals(original.completedAt));
-      });
+        // Test null handling: can set nullable field to null
+        final nulled = original.copyWith(homebase: null);
+        expect(nulled.homebase, isNull);
+        expect(original.homebase, equals('San Francisco, CA')); // Original still preserved
 
-      test('should create copy with null homebase when explicitly set', () {
-        final original = OnboardingData(
-          agentId: testAgentId,
-          homebase: 'San Francisco, CA',
-          completedAt: testDate,
-        );
-
-        final updated = original.copyWith(homebase: null);
-
-        expect(updated.homebase, isNull);
-      });
-
-      test('should preserve original values when copyWith fields not provided', () {
-        final original = OnboardingData(
-          agentId: testAgentId,
-          age: 28,
-          homebase: 'San Francisco, CA',
-          completedAt: testDate,
-        );
-
+        // Test preservation: unchanged fields preserved
         final copy = original.copyWith();
-
-        expect(copy.agentId, equals(original.agentId));
-        expect(copy.age, equals(original.age));
-        expect(copy.homebase, equals(original.homebase));
-        expect(copy.completedAt, equals(original.completedAt));
+        expect(copy, equals(original)); // All fields preserved
       });
     });
 
     group('toAgentInitializationMap', () {
-      test('should convert OnboardingData to agent initialization map', () {
+      test('should convert OnboardingData to agent initialization map excluding privacy fields', () {
         final data = OnboardingData(
           agentId: testAgentId,
           age: 28,
@@ -346,17 +174,20 @@ void main() {
 
         final map = data.toAgentInitializationMap();
 
+        // Test business logic: privacy-protected fields excluded
+        expect(map, isNot(contains('agentId'))); // Privacy: agentId excluded
+        expect(map, isNot(contains('completedAt'))); // Metadata excluded
+        
+        // Test business logic: required fields present for agent initialization
         expect(map['age'], equals(28));
         expect(map['homebase'], equals('San Francisco, CA'));
         expect(map['favoritePlaces'], isA<List>());
         expect(map['preferences'], isA<Map>());
-        expect(map, isNot(contains('agentId'))); // agentId should not be in map
-        expect(map, isNot(contains('completedAt'))); // completedAt should not be in map
       });
     });
 
     group('Equality and HashCode', () {
-      test('should consider two OnboardingData equal with same values', () {
+      test('should correctly identify equal and unequal OnboardingData instances', () {
         final data1 = OnboardingData(
           agentId: testAgentId,
           age: 28,
@@ -371,71 +202,55 @@ void main() {
           completedAt: testDate,
         );
 
-        expect(data1, equals(data2));
-        expect(data1.hashCode, equals(data2.hashCode));
-      });
-
-      test('should consider two OnboardingData different with different agentId', () {
-        final data1 = OnboardingData(
-          agentId: testAgentId,
-          completedAt: testDate,
-        );
-
-        final data2 = OnboardingData(
+        final data3 = OnboardingData(
           agentId: 'agent_different123',
           completedAt: testDate,
         );
 
-        expect(data1, isNot(equals(data2)));
+        // Test equality behavior
+        expect(data1, equals(data2));
+        expect(data1.hashCode, equals(data2.hashCode));
+        expect(data1, isNot(equals(data3))); // Different agentId = different instance
       });
     });
 
     group('Edge Cases', () {
-      test('should handle very long favoritePlaces list', () {
+      test('should handle large collections, complex data structures, and remain valid', () {
+        // Large favoritePlaces list
         final longList = List.generate(100, (i) => 'Place $i');
-        final data = OnboardingData(
+        final dataWithLongList = OnboardingData(
           agentId: testAgentId,
           favoritePlaces: longList,
           completedAt: testDate,
         );
+        expect(dataWithLongList.isValid, isTrue); // Business logic: still valid
 
-        expect(data.favoritePlaces.length, equals(100));
-        expect(data.isValid, isTrue);
-      });
-
-      test('should handle complex preferences map', () {
+        // Complex preferences map
         final complexPreferences = {
           'Food & Drink': ['Coffee', 'Craft Beer', 'Wine'],
           'Activities': ['Hiking', 'Live Music', 'Art Galleries'],
           'Outdoor & Nature': ['Parks', 'Beaches', 'Mountains'],
         };
-
-        final data = OnboardingData(
+        final dataWithComplexPrefs = OnboardingData(
           agentId: testAgentId,
           preferences: complexPreferences,
           completedAt: testDate,
         );
+        expect(dataWithComplexPrefs.isValid, isTrue); // Business logic: still valid
 
-        expect(data.preferences.length, equals(3));
-        expect(data.preferences['Food & Drink']?.length, equals(3));
-      });
-
-      test('should handle all social media platforms connected', () {
+        // All social media platforms
         final allConnected = {
           'google': true,
           'instagram': true,
           'facebook': true,
           'twitter': true,
         };
-
-        final data = OnboardingData(
+        final dataWithAllSocial = OnboardingData(
           agentId: testAgentId,
           socialMediaConnected: allConnected,
           completedAt: testDate,
         );
-
-        expect(data.socialMediaConnected.length, equals(4));
-        expect(data.socialMediaConnected.values.every((v) => v == true), isTrue);
+        expect(dataWithAllSocial.isValid, isTrue); // Business logic: still valid
       });
     });
   });

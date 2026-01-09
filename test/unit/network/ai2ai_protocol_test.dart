@@ -46,56 +46,56 @@ void main() {
     });
 
     group('encodeMessage', () {
-      test('should encode a message successfully', () async {
-        final message = await protocol.encodeMessage(
+      test('should encode messages with correct structure and include recipient ID when provided', () async {
+        // Test business logic: message encoding creates usable protocol messages
+        final messageWithoutRecipient = await protocol.encodeMessage(
           type: MessageType.heartbeat,
           payload: {'timestamp': DateTime.now().toIso8601String()},
           senderNodeId: 'node1',
         );
 
-        expect(message.version, equals('1.0'));
-        expect(message.type, equals(MessageType.heartbeat));
-        expect(message.senderId, equals('node1'));
-        expect(message.payload, isNotEmpty);
-      });
+        // Test behavior: message has correct structure for protocol use
+        expect(messageWithoutRecipient.type, equals(MessageType.heartbeat));
+        expect(messageWithoutRecipient.senderId, equals('node1'));
+        expect(messageWithoutRecipient.payload, isNotEmpty);
+        expect(messageWithoutRecipient.recipientId, isNull); // No recipient for broadcast
 
-      test('should include recipient ID when provided', () async {
-        final message = await protocol.encodeMessage(
+        // Test behavior: recipient ID included when provided
+        final messageWithRecipient = await protocol.encodeMessage(
           type: MessageType.connectionRequest,
           payload: {},
           senderNodeId: 'node1',
           recipientNodeId: 'node2',
         );
 
-        expect(message.recipientId, equals('node2'));
+        expect(messageWithRecipient.recipientId, equals('node2'));
+        expect(messageWithRecipient.type, equals(MessageType.connectionRequest));
       });
     });
 
     group('decodeMessage', () {
-      test('should decode a valid message', () async {
+      test('should encode messages that can be serialized for transmission', () async {
+        // Test business logic: encoded messages can be serialized for transmission
         final originalMessage = await protocol.encodeMessage(
           type: MessageType.heartbeat,
           payload: {'test': 'value'},
           senderNodeId: 'node1',
         );
 
-        // Convert message to bytes (simulating transmission)
+        // Test behavior: message can be converted to JSON for transmission
         final json = originalMessage.toJson();
-      // ignore: unused_local_variable
-      // ignore: unused_local_variable - May be used in callback or assertion
-        final jsonString = json.toString();
-        // Note: bytes would be used in actual decodeMessage test
-        // final bytes = Uint8List.fromList(jsonString.codeUnits);
-
-        // Note: In real implementation, decodeMessage would parse the protocol packet
-        // For testing, we verify the encoding works correctly
-        expect(originalMessage.type, equals(MessageType.heartbeat));
-        expect(originalMessage.senderId, equals('node1'));
+        expect(json, isA<Map<String, dynamic>>());
+        expect(json.containsKey('type'), isTrue);
+        expect(json.containsKey('senderId'), isTrue);
+        expect(json['type'], equals(MessageType.heartbeat.name));
+        expect(json['senderId'], equals('node1'));
+        // Note: decodeMessage would parse protocol packet in real implementation
       });
     });
 
     group('Connection message encoding', () {
-      test('should encode connection request with anonymized vibe payload', () async {
+      test('should encode connection request with anonymized vibe payload and enforce privacy protection', () async {
+        // Test business logic: privacy protection and message encoding
         final vibe = UserVibe.fromPersonalityProfile('user1', {
           'exploration_eagerness': 0.8,
           'community_orientation': 0.6,
@@ -112,9 +112,11 @@ void main() {
           recipientNodeId: 'node2',
         );
 
+        // Test behavior: message structure is correct for connection requests
         expect(message.type, equals(MessageType.connectionRequest));
         expect(message.senderId, equals('node1'));
         expect(message.recipientId, equals('node2'));
+        // Test behavior: payload contains anonymized data (privacy protection)
         expect(message.payload['requestId'], equals('req123'));
         expect(message.payload['senderVibe'], isNotNull);
       });
@@ -134,7 +136,8 @@ void main() {
         );
       });
 
-      test('should encode connection response payload', () async {
+      test('should encode connection response payload with acceptance status and compatibility', () async {
+        // Test business logic: connection response encoding
         final message = await protocol.encodeMessage(
           type: MessageType.connectionResponse,
           payload: const {
@@ -146,6 +149,7 @@ void main() {
           recipientNodeId: 'node1',
         );
 
+        // Test behavior: response message contains acceptance decision and compatibility
         expect(message.type, equals(MessageType.connectionResponse));
         expect(message.payload['accepted'], isTrue);
         expect(message.payload['compatibilityScore'], equals(0.85));
@@ -154,7 +158,8 @@ void main() {
     });
 
     group('Learning message encoding', () {
-      test('should encode learning exchange payload', () async {
+      test('should encode learning exchange payload with learning data and timestamp', () async {
+        // Test business logic: learning exchange message encoding
         final message = await protocol.encodeMessage(
           type: MessageType.learningExchange,
           payload: const {
@@ -169,6 +174,7 @@ void main() {
           recipientNodeId: 'node2',
         );
 
+        // Test behavior: learning exchange message contains learning data
         expect(message.type, equals(MessageType.learningExchange));
         expect(message.payload['learningData'], isNotNull);
         expect(message.payload['timestamp'], isNotNull);
@@ -176,11 +182,13 @@ void main() {
     });
 
     group('createHeartbeat', () {
-      test('should create heartbeat message', () async {
+      test('should create heartbeat message with timestamp for connection monitoring', () async {
+        // Test business logic: heartbeat message creation
         final message = await protocol.createHeartbeat(
           senderNodeId: 'node1',
         );
 
+        // Test behavior: heartbeat message has correct type and timestamp
         expect(message.type, equals(MessageType.heartbeat));
         expect(message.senderId, equals('node1'));
         expect(message.payload['timestamp'], isNotNull);
@@ -188,65 +196,41 @@ void main() {
     });
 
     group('Encryption/Decryption', () {
-      test('should encrypt and decrypt data correctly', () async {
-        // Encrypt
+      test('should encode messages successfully with encryption service and handle null key gracefully', () async {
+        // Test business logic: encryption service integration and graceful degradation
         final encrypted = await protocol.encodeMessage(
           type: MessageType.heartbeat,
           payload: {'data': 'Test message data'},
           senderNodeId: 'node1',
         );
         
-        // Verify encryption happened (data should be different)
-        // Note: The encrypted data is in the protocol packet, not directly accessible
-        // But we can verify the message was created successfully
-        expect(encrypted, isNotNull);
+        // Test behavior: message encoding succeeds with encryption service
+        expect(encrypted.type, equals(MessageType.heartbeat));
         expect(encrypted.senderId, equals('node1'));
-      });
+        expect(encrypted.payload['data'], equals('Test message data'));
 
-      test('should produce different encrypted values for same data', () async {
-        final payload = {'test': 'data'};
-        
-        // Encode same message twice
-        final message1 = await protocol.encodeMessage(
-          type: MessageType.heartbeat,
-          payload: payload,
-          senderNodeId: 'node1',
-        );
-        
-        final message2 = await protocol.encodeMessage(
-          type: MessageType.heartbeat,
-          payload: payload,
-          senderNodeId: 'node1',
-        );
-        
-        // Messages should be created (encryption happens internally)
-        expect(message1, isNotNull);
-        expect(message2, isNotNull);
-        // Note: Encrypted bytes are in protocol packet, not directly comparable
-        // But we verify encryption is working by successful message creation
-      });
-
-      test('should handle encryption with null key (no encryption)', () async {
+        // Test behavior: protocol handles null encryption key gracefully
         final protocolNoKey = AI2AIProtocol(
           encryptionService: mockEncryptionService,
           encryptionKey: null,
         );
         
-        final message = await protocolNoKey.encodeMessage(
+        final messageNoKey = await protocolNoKey.encodeMessage(
           type: MessageType.heartbeat,
           payload: {'test': 'data'},
           senderNodeId: 'node1',
         );
         
-        // Should still create message (just not encrypted)
-        expect(message, isNotNull);
-        expect(message.senderId, equals('node1'));
+        // Test behavior: message encoding succeeds even without encryption key
+        expect(messageNoKey.type, equals(MessageType.heartbeat));
+        expect(messageNoKey.senderId, equals('node1'));
       });
     });
   });
 
   group('ProtocolMessage', () {
-    test('should serialize and deserialize correctly', () {
+    test('should serialize and deserialize correctly (round-trip)', () {
+      // Test business logic: protocol message round-trip serialization
       final original = ProtocolMessage(
         version: '1.0',
         type: MessageType.connectionRequest,
@@ -259,11 +243,16 @@ void main() {
       final json = original.toJson();
       final restored = ProtocolMessage.fromJson(json);
 
+      // Test behavior: round-trip preserves all critical protocol data
       expect(restored.version, equals(original.version));
       expect(restored.type, equals(original.type));
       expect(restored.senderId, equals(original.senderId));
       expect(restored.recipientId, equals(original.recipientId));
       expect(restored.payload['test'], equals('value'));
+      // Verify JSON structure is correct for protocol transmission
+      expect(json, isA<Map<String, dynamic>>());
+      expect(json.containsKey('type'), isTrue);
+      expect(json.containsKey('senderId'), isTrue);
     });
   });
 }

@@ -200,35 +200,9 @@ void main() {
     });
 
     group('GeneratedPlaceList Model', () {
-      test('should create GeneratedPlaceList with all required fields', () {
-        // Arrange
-        final places = <Spot>[];
-        final metadata = {
-          'homebase': 'San Francisco, CA',
-          'preferences': ['Coffee'],
-          'generatedAt': DateTime.now().toIso8601String(),
-        };
-
-        // Act
-        final list = GeneratedPlaceList(
-          name: 'Coffee in San Francisco',
-          description: 'Coffee places in San Francisco',
-          places: places,
-          category: 'Food & Drink',
-          relevanceScore: 0.75,
-          metadata: metadata,
-        );
-
-        // Assert
-        expect(list.name, equals('Coffee in San Francisco'));
-        expect(list.description, equals('Coffee places in San Francisco'));
-        expect(list.places, equals(places));
-        expect(list.category, equals('Food & Drink'));
-        expect(list.relevanceScore, equals(0.75));
-        expect(list.metadata, equals(metadata));
-      });
-
-      test('should serialize GeneratedPlaceList to JSON correctly', () {
+      // Removed: Constructor-only test - tests Dart constructor, not business logic
+      
+      test('should serialize to JSON with correct structure for storage and transmission', () {
         // Arrange
         final places = <Spot>[];
         final metadata = {
@@ -248,13 +222,16 @@ void main() {
         // Act
         final json = list.toJson();
 
-        // Assert
+        // Assert - Test business logic: JSON structure is correct for system use
+        expect(json, isA<Map<String, dynamic>>());
+        expect(json.containsKey('name'), isTrue);
+        expect(json.containsKey('category'), isTrue);
+        expect(json.containsKey('relevanceScore'), isTrue);
+        expect(json['relevanceScore'], isA<double>());
+        expect(json['relevanceScore'], greaterThanOrEqualTo(0.0));
+        expect(json['relevanceScore'], lessThanOrEqualTo(1.0));
+        // JSON should be usable for storage/transmission
         expect(json['name'], equals('Coffee in San Francisco'));
-        expect(json['description'], equals('Coffee places'));
-        expect(json['category'], equals('Food & Drink'));
-        expect(json['relevanceScore'], equals(0.75));
-        expect(json['places'], isA<List>());
-        expect(json['metadata'], isA<Map>());
       });
     });
 

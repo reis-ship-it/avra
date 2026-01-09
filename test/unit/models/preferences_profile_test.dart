@@ -175,19 +175,13 @@ void main() {
       final json = original.toJson();
       final restored = PreferencesProfile.fromJson(json);
 
-      // Assert
-      expect(restored.agentId, equals(original.agentId));
-      expect(restored.categoryPreferences, equals(original.categoryPreferences));
-      expect(restored.localityPreferences, equals(original.localityPreferences));
-      expect(restored.scopePreferences, equals(original.scopePreferences));
-      expect(restored.eventTypePreferences, equals(original.eventTypePreferences));
-      expect(restored.localExpertPreferenceWeight, equals(original.localExpertPreferenceWeight));
-      expect(restored.explorationWillingness, equals(original.explorationWillingness));
-      expect(restored.lastUpdated, equals(original.lastUpdated));
-      expect(restored.eventsAnalyzed, equals(original.eventsAnalyzed));
-      expect(restored.spotsAnalyzed, equals(original.spotsAnalyzed));
-      expect(restored.listsAnalyzed, equals(original.listsAnalyzed));
-      expect(restored.source, equals(original.source));
+      // Assert - Test business logic: round-trip preserves all data
+      expect(restored, equals(original));
+      // Verify JSON structure is correct for storage/transmission
+      expect(json, isA<Map<String, dynamic>>());
+      expect(json.containsKey('agentId'), isTrue);
+      expect(json.containsKey('categoryPreferences'), isTrue);
+      expect(json.containsKey('localityPreferences'), isTrue);
     });
 
     test('should get top categories', () {
@@ -253,15 +247,19 @@ void main() {
       expect(profileFamiliar.isOpenToExploration, isFalse);
     });
 
-    test('should create empty PreferencesProfile', () {
+    test('should create empty PreferencesProfile with correct defaults and behavior', () {
       // Act
       final profile = PreferencesProfile.empty(agentId: 'agent_test_123');
 
-      // Assert
+      // Assert - Test business logic: empty profile has correct defaults and behavior
       expect(profile.agentId, equals('agent_test_123'));
       expect(profile.categoryPreferences, isEmpty);
       expect(profile.localityPreferences, isEmpty);
       expect(profile.source, equals('empty'));
+      // Test behavior: empty profile methods work correctly
+      expect(profile.getTopCategories(n: 5), isEmpty);
+      expect(profile.prefersLocalExperts, isFalse); // Default weight is 0.5, threshold is 0.5
+      expect(profile.isOpenToExploration, isFalse); // Default willingness is 0.3, threshold is 0.5
     });
   });
 }

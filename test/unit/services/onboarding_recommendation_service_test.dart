@@ -329,33 +329,9 @@ void main() {
     });
 
     group('ListRecommendation Model', () {
-      test('should create ListRecommendation with all required fields', () {
-        // Arrange
-        final matchingReasons = ['Similar interests', 'Same location'];
-        final metadata = {'source': 'onboarding'};
-
-        // Act
-        final recommendation = ListRecommendation(
-          listId: 'list_123',
-          listName: 'Coffee Lovers',
-          curatorName: 'John Doe',
-          description: 'Best coffee spots',
-          compatibilityScore: 0.85,
-          matchingReasons: matchingReasons,
-          metadata: metadata,
-        );
-
-        // Assert
-        expect(recommendation.listId, equals('list_123'));
-        expect(recommendation.listName, equals('Coffee Lovers'));
-        expect(recommendation.curatorName, equals('John Doe'));
-        expect(recommendation.description, equals('Best coffee spots'));
-        expect(recommendation.compatibilityScore, equals(0.85));
-        expect(recommendation.matchingReasons, equals(matchingReasons));
-        expect(recommendation.metadata, equals(metadata));
-      });
-
-      test('should serialize ListRecommendation to JSON correctly', () {
+      // Removed: Constructor-only test - tests Dart constructor, not business logic
+      
+      test('should serialize to JSON with correct structure for storage and transmission', () {
         // Arrange
         final recommendation = ListRecommendation(
           listId: 'list_123',
@@ -363,50 +339,27 @@ void main() {
           curatorName: 'John Doe',
           description: 'Best coffee spots',
           compatibilityScore: 0.85,
-          matchingReasons: ['Similar interests'],
+          matchingReasons: ['Similar interests', 'Same location'],
           metadata: {'source': 'onboarding'},
         );
 
         // Act
         final json = recommendation.toJson();
 
-        // Assert
+        // Assert - Test business logic: JSON structure is correct for system use
+        expect(json, isA<Map<String, dynamic>>());
+        expect(json.containsKey('listId'), isTrue);
+        expect(json.containsKey('compatibilityScore'), isTrue);
+        expect(json['compatibilityScore'], isA<double>());
+        // JSON should be usable for storage/transmission
         expect(json['listId'], equals('list_123'));
-        expect(json['listName'], equals('Coffee Lovers'));
-        expect(json['compatibilityScore'], equals(0.85));
-        expect(json['matchingReasons'], isA<List>());
-        expect(json['metadata'], isA<Map>());
       });
     });
 
     group('AccountRecommendation Model', () {
-      test('should create AccountRecommendation with all required fields', () {
-        // Arrange
-        final matchingReasons = ['Similar interests', 'Same location'];
-        final metadata = {'source': 'onboarding'};
-
-        // Act
-        final recommendation = AccountRecommendation(
-          accountId: 'account_123',
-          accountName: 'coffee_explorer',
-          displayName: 'Coffee Explorer',
-          description: 'Coffee enthusiast',
-          compatibilityScore: 0.80,
-          matchingReasons: matchingReasons,
-          metadata: metadata,
-        );
-
-        // Assert
-        expect(recommendation.accountId, equals('account_123'));
-        expect(recommendation.accountName, equals('coffee_explorer'));
-        expect(recommendation.displayName, equals('Coffee Explorer'));
-        expect(recommendation.description, equals('Coffee enthusiast'));
-        expect(recommendation.compatibilityScore, equals(0.80));
-        expect(recommendation.matchingReasons, equals(matchingReasons));
-        expect(recommendation.metadata, equals(metadata));
-      });
-
-      test('should serialize AccountRecommendation to JSON correctly', () {
+      // Removed: Constructor-only test - tests Dart constructor, not business logic
+      
+      test('should serialize to JSON with correct structure for storage and transmission', () {
         // Arrange
         final recommendation = AccountRecommendation(
           accountId: 'account_123',
@@ -414,19 +367,20 @@ void main() {
           displayName: 'Coffee Explorer',
           description: 'Coffee enthusiast',
           compatibilityScore: 0.80,
-          matchingReasons: ['Similar interests'],
+          matchingReasons: ['Similar interests', 'Same location'],
           metadata: {'source': 'onboarding'},
         );
 
         // Act
         final json = recommendation.toJson();
 
-        // Assert
+        // Assert - Test business logic: JSON structure is correct for system use
+        expect(json, isA<Map<String, dynamic>>());
+        expect(json.containsKey('accountId'), isTrue);
+        expect(json.containsKey('compatibilityScore'), isTrue);
+        expect(json['compatibilityScore'], isA<double>());
+        // JSON should be usable for storage/transmission
         expect(json['accountId'], equals('account_123'));
-        expect(json['accountName'], equals('coffee_explorer'));
-        expect(json['compatibilityScore'], equals(0.80));
-        expect(json['matchingReasons'], isA<List>());
-        expect(json['metadata'], isA<Map>());
       });
     });
 

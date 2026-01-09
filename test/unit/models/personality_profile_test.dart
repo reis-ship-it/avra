@@ -28,20 +28,24 @@ void main() {
     // These tests only verified Dart constructor behavior, not business logic
 
     group('Initial Personality Profile Factory', () {
-      test('should create initial profile with correct business defaults', () {
-        // Test business logic: factory method behavior
+      test('should create initial profile with correct business defaults and usable state', () {
+        // Test business logic: factory method creates usable profile with correct defaults
         // Phase 8.3: Use agentId for privacy protection
         const agentId = 'agent_test_123';
         final profile = PersonalityProfile.initial(agentId, userId: 'user-123');
 
+        // Test business logic: profile is usable (can calculate compatibility, has dimensions)
         expect(profile.agentId, equals(agentId));
-        expect(profile.userId, equals('user-123'));
-        expect(profile.archetype, equals('developing'));
-        expect(profile.authenticity, equals(0.5));
-        expect(profile.evolutionGeneration, equals(1));
         expect(profile.dimensions.length,
             equals(VibeConstants.coreDimensions.length));
-        expect(profile.learningHistory['total_interactions'], equals(0));
+        expect(profile.evolutionGeneration, equals(1));
+        // Test behavior: initial profile can be used for compatibility calculations
+        final otherProfile = PersonalityProfile.initial('agent_test_456', userId: 'user-456');
+        final compatibility = profile.calculateCompatibility(otherProfile);
+        expect(compatibility, greaterThanOrEqualTo(0.0));
+        expect(compatibility, lessThanOrEqualTo(1.0));
+        // Test behavior: initial profile is not well-developed (needs evolution)
+        expect(profile.isWellDeveloped, isFalse);
       });
     });
 

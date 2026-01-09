@@ -130,7 +130,7 @@ void main() {
     });
 
     group('JSON Serialization Testing', () {
-      test('should serialize and deserialize without data loss', () {
+      test('should serialize and deserialize without data loss (round-trip)', () {
         final originalSpot = ModelFactories.createTestSpot(
           name: 'Test Spot',
           category: 'Restaurant',
@@ -141,7 +141,8 @@ void main() {
         final json = originalSpot.toJson();
         final reconstructed = Spot.fromJson(json);
 
-        // Compare critical fields (Spot doesn't implement Equatable)
+        // Test business logic: round-trip preserves all critical data
+        // (Spot doesn't implement Equatable, so we verify key fields)
         expect(reconstructed.id, equals(originalSpot.id));
         expect(reconstructed.name, equals(originalSpot.name));
         expect(reconstructed.latitude, equals(originalSpot.latitude));
@@ -149,6 +150,11 @@ void main() {
         expect(reconstructed.category, equals(originalSpot.category));
         expect(reconstructed.tags, equals(originalSpot.tags));
         expect(reconstructed.address, equals(originalSpot.address));
+        // Verify JSON structure is correct for storage/transmission
+        expect(json, isA<Map<String, dynamic>>());
+        expect(json.containsKey('id'), isTrue);
+        expect(json.containsKey('latitude'), isTrue);
+        expect(json.containsKey('longitude'), isTrue);
       });
 
       test('should handle missing and null fields with sensible defaults', () {
@@ -202,14 +208,22 @@ void main() {
     });
 
     group('Edge Cases and Error Handling', () {
-      test('should handle extreme coordinate values', () {
+      test('should handle extreme coordinate values and preserve them in JSON round-trip', () {
+        // Test business logic: extreme values are preserved through serialization
         final spot = ModelFactories.createSpotAtLocation(
           double.maxFinite,
           double.maxFinite,
         );
 
-        expect(spot.latitude, equals(double.maxFinite));
-        expect(spot.longitude, equals(double.maxFinite));
+        // Test that extreme values are preserved in JSON round-trip
+        final json = spot.toJson();
+        final reconstructed = Spot.fromJson(json);
+        
+        expect(reconstructed.latitude, equals(double.maxFinite));
+        expect(reconstructed.longitude, equals(double.maxFinite));
+        // Verify JSON can handle extreme values
+        expect(json['latitude'], equals(double.maxFinite));
+        expect(json['longitude'], equals(double.maxFinite));
       });
 
       test('should handle very long strings', () {
