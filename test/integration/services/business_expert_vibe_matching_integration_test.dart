@@ -1,17 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/business_expert_matching_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/services/business_expert_matching_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/business_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/expertise_level.dart';
 import '../../helpers/integration_test_helpers.dart';
 
 /// Integration tests for Business-Expert Vibe-First Matching
@@ -64,6 +64,8 @@ void main() {
         );
 
         // Create local expert with required expertise
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final localExpert = IntegrationTestHelpers.createUserWithLocalExpertise(
           id: 'local-expert-1',
           category: 'food',
@@ -127,8 +129,12 @@ void main() {
           createdBy: 'user-3',
           requiredExpertise: const ['events'],
         );
+      // ignore: unused_local_variable
 
+      // ignore: unused_local_variable - May be used in callback or assertion
         // Create expert with known expertise level
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final expert = IntegrationTestHelpers.createUserWithExpertise(
           id: 'expert-1',
           category: 'events',
@@ -196,10 +202,14 @@ void main() {
           updatedAt: DateTime.now(),
           createdBy: 'user-5',
           requiredExpertise: const ['consulting'],
+      // ignore: unused_local_variable
           preferredLocation: 'San Francisco',
         );
+      // ignore: unused_local_variable
 
         // Create remote expert (different location)
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final remoteExpert = IntegrationTestHelpers.createUserWithExpertise(
           id: 'remote-expert-1',
           category: 'consulting',
@@ -253,11 +263,16 @@ void main() {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           createdBy: 'user-7',
+      // ignore: unused_local_variable
           requiredExpertise: const ['remote'],
           preferredLocation: 'San Francisco',
+      // ignore: unused_local_variable
         );
+      // ignore: unused_local_variable
 
         // Create remote expert
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final remoteExpert = IntegrationTestHelpers.createUserWithExpertise(
           id: 'remote-expert-2',
           category: 'remote',

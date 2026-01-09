@@ -1,8 +1,8 @@
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_verification.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_verification.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Business Service

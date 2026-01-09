@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// Business Authentication Service
 /// Handles business login and session management

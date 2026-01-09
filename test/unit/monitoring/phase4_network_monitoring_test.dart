@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 import '../../../test/mocks/mock_storage_service.dart';
 
 /// Phase 4: Connection Monitor Test

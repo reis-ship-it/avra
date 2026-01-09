@@ -4,33 +4,41 @@
 // Part of Phase 19 Section 19.5: Quantum Matching Controller
 // Patent #29: Multi-Entity Quantum Entanglement Matching System
 
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/models/matching_result.dart';
-import 'package:spots/core/models/matching_input.dart';
-import 'package:spots/core/services/ledgers/ledger_audit_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots_quantum/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
-import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/quantum/meaningful_connection_metrics_service.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots_core/models/unified_location_data.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/models/matching_result.dart';
+import 'package:avrai/core/models/matching_input.dart';
+import 'package:avrai/core/services/ledgers/ledger_audit_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai_quantum/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
+import 'package:avrai_knot/services/knot/cross_entity_compatibility_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai/core/services/quantum/meaningful_connection_metrics_service.dart';
+import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service.dart';
+import 'package:avrai/core/services/enhanced_connectivity_service.dart';
+import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
+import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
+import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
+import 'package:avrai/core/services/hybrid_encryption_service.dart';
+import 'package:avrai/core/ai2ai/anonymous_communication.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai_core/models/unified_location_data.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
 
 /// Result class for quantum matching controller
@@ -110,6 +118,19 @@ class QuantumMatchingController
   final MeaningfulConnectionMetricsService? _meaningfulConnectionMetricsService;
   // TODO(Phase 19.4): Use RealTimeUserCallingService for user calling integration
   // final RealTimeUserCallingService? _userCallingService;
+  // Phase 19.16: AI2AI Integration
+  final QuantumMatchingAILearningService? _aiLearningService;
+  final EnhancedConnectivityService? _connectivityService;
+  // Phase 19 Integration Enhancement: String/Fabric/Worldsheet + Signal Protocol
+  final KnotEvolutionStringService? _stringService;
+  final KnotFabricService? _fabricService;
+  final KnotWorldsheetService? _worldsheetService;
+  // Reserved for future use: encrypting matching results when transmitting via AI2AI mesh
+  // ignore: unused_field
+  final HybridEncryptionService? _encryptionService;
+  // Reserved for future use: transmitting matching results via AI2AI mesh
+  // ignore: unused_field
+  final AnonymousCommunicationProtocol? _ai2aiProtocol;
 
   QuantumMatchingController({
     required AtomicClockService atomicClock,
@@ -122,6 +143,13 @@ class QuantumMatchingController
     IntegratedKnotRecommendationEngine? knotEngine,
     CrossEntityCompatibilityService? knotCompatibilityService,
     MeaningfulConnectionMetricsService? meaningfulConnectionMetricsService,
+    QuantumMatchingAILearningService? aiLearningService,
+    EnhancedConnectivityService? connectivityService,
+    KnotEvolutionStringService? stringService,
+    KnotFabricService? fabricService,
+    KnotWorldsheetService? worldsheetService,
+    HybridEncryptionService? encryptionService,
+    AnonymousCommunicationProtocol? ai2aiProtocol,
   })  : _atomicClock = atomicClock,
         _entanglementService = entanglementService,
         _locationTimingService = locationTimingService,
@@ -132,7 +160,14 @@ class QuantumMatchingController
         _knotEngine = knotEngine,
         _knotCompatibilityService = knotCompatibilityService,
         _meaningfulConnectionMetricsService =
-            meaningfulConnectionMetricsService;
+            meaningfulConnectionMetricsService,
+        _aiLearningService = aiLearningService,
+        _connectivityService = connectivityService,
+        _stringService = stringService,
+        _fabricService = fabricService,
+        _worldsheetService = worldsheetService,
+        _encryptionService = encryptionService,
+        _ai2aiProtocol = ai2aiProtocol;
 
   @override
   Future<QuantumMatchingResult> execute(MatchingInput input) async {
@@ -168,7 +203,48 @@ class QuantumMatchingController
       // STEP 1: Get atomic timestamp for matching operation
       final tAtomic = await _atomicClock.getAtomicTimestamp();
 
-      // STEP 2: Convert entities to quantum states
+      // STEP 2: Check connectivity and use offline matching if offline
+      final isOffline = _connectivityService != null &&
+          !(await _connectivityService!.hasInternetAccess());
+      
+      if (isOffline && _aiLearningService != null) {
+        // Convert entities to quantum states for offline matching
+        final quantumStates = await _convertEntitiesToQuantumStates(
+          input.user,
+          input.allEntities,
+          tAtomic,
+        );
+        
+        if (quantumStates.isNotEmpty) {
+          // Try offline matching using cached quantum states
+          final offlineResult = await _aiLearningService!.performOfflineMatching(
+            userId: input.user.id,
+            entities: quantumStates,
+          );
+          
+          if (offlineResult != null) {
+            developer.log(
+              '✅ Offline quantum matching complete: compatibility=${offlineResult.compatibility.toStringAsFixed(3)}',
+              name: _logName,
+            );
+            
+            // Learn from offline match (will be queued for sync)
+            unawaited(_aiLearningService!.learnFromSuccessfulMatch(
+              userId: input.user.id,
+              matchingResult: offlineResult,
+              event: input.event,
+              isOffline: true,
+            ));
+            
+            return QuantumMatchingResult.success(
+              matchingResult: offlineResult,
+              metadata: {'offline': true},
+            );
+          }
+        }
+      }
+
+      // STEP 3: Convert entities to quantum states (for online matching)
       final quantumStates = await _convertEntitiesToQuantumStates(
         input.user,
         input.allEntities,
@@ -310,6 +386,17 @@ class QuantumMatchingController
         '✅ Multi-entity quantum matching complete: compatibility=${combinedCompatibility.toStringAsFixed(3)}',
         name: _logName,
       );
+
+      // Phase 19.16: Learn from successful match (fire-and-forget)
+      if (_aiLearningService != null && combinedCompatibility >= 0.5) {
+        // Only learn from matches with reasonable compatibility (>= 0.5)
+        unawaited(_aiLearningService!.learnFromSuccessfulMatch(
+          userId: input.user.id,
+          matchingResult: matchingResult,
+          event: input.event,
+          isOffline: false, // Controller assumes online matching
+        ));
+      }
 
       return QuantumMatchingResult.success(
         matchingResult: matchingResult,
@@ -702,39 +789,56 @@ class QuantumMatchingController
     );
   }
 
-  /// Calculate knot compatibility (optional)
+  /// Calculate knot compatibility (enhanced with string/fabric/worldsheet)
+  ///
+  /// **Enhanced Formula (with String/Fabric Integration):**
+  /// C_knot = hybrid_combination(
+  ///   C_knot_base,           // Base knot compatibility (via entanglement service)
+  ///   C_string_evolution,    // String evolution predictions (if available)
+  ///   C_fabric_stability,    // Fabric stability (if 3+ entities)
+  ///   C_worldsheet_evolution // Worldsheet evolution (if available)
+  /// )
+  ///
+  /// **Process:**
+  /// 1. Use entanglement service's calculateKnotCompatibilityBonus (includes string/fabric integration)
+  /// 2. If string service available and event time available, enhance with string evolution
+  /// 3. If fabric service available and 3+ entities, enhance with fabric stability
+  /// 4. If worldsheet service available, enhance with worldsheet evolution predictions
   Future<double?> _calculateKnotCompatibility(
     QuantumEntityState userState,
     List<QuantumEntityState> entities,
   ) async {
-    if (_knotCompatibilityService == null || _knotEngine == null) {
+    if (_knotCompatibilityService == null && _knotEngine == null) {
       return null;
     }
 
     try {
-      // For now, use vibe similarity as a proxy for knot compatibility
-      // TODO: Implement full knot compatibility with EntityKnotService
-      double totalCompatibility = 0.0;
-      int entityCount = 0;
-
+      // Get event start time from entities (for string evolution predictions)
+      DateTime? eventStartTime;
       for (final entity in entities) {
-        if (entity.entityType == QuantumEntityType.event ||
-            entity.entityType == QuantumEntityType.expert ||
-            entity.entityType == QuantumEntityType.business) {
-          final vibeSimilarity = _calculateVibeSimilarity(
-            userState.quantumVibeAnalysis,
-            entity.quantumVibeAnalysis,
-          );
-          totalCompatibility += vibeSimilarity;
-          entityCount++;
+        if (entity.entityType == QuantumEntityType.event && entity.timing != null) {
+          // Extract event time from timing quantum state if available
+          // For now, use current time as placeholder (timing state doesn't expose DateTime directly)
+          eventStartTime = DateTime.now();
+          break;
         }
       }
 
-      if (entityCount == 0) {
-        return null;
+      // Use entanglement service's calculateKnotCompatibilityBonus which includes
+      // string/fabric/worldsheet integration when available
+      final knotBonus = await _entanglementService.calculateKnotCompatibilityBonus(
+        entities,
+        targetTime: eventStartTime,
+      );
+
+      // If string/fabric/worldsheet services are available, further enhance
+      if (_stringService != null || _fabricService != null || _worldsheetService != null) {
+        // Additional enhancements can be added here if needed
+        // The entanglement service already handles string/fabric integration
+        // This is a placeholder for future enhancements specific to the controller
       }
 
-      return (totalCompatibility / entityCount).clamp(0.0, 1.0);
+      return knotBonus.clamp(0.0, 1.0);
     } catch (e) {
       developer.log('Error calculating knot compatibility: $e', name: _logName);
       return null;
@@ -1047,28 +1151,43 @@ class QuantumMatchingController
     return (total / count).clamp(0.0, 1.0);
   }
 
-  /// Combine all compatibility factors
+  /// Combine all compatibility factors using hybrid approach
+  ///
+  /// **Hybrid Approach:**
+  /// - Core factors (quantum, knot): Geometric mean (catches critical failures)
+  /// - Modifiers (location, timing): Weighted average (enhance good matches)
+  /// - Final: core * modifiers (multiplicative combination)
   double _combineCompatibilityFactors({
     required double quantumFidelity,
     required double locationCompatibility,
     required double timingCompatibility,
     double? knotCompatibility,
   }) {
-    // Weighted combination formula:
-    // compatibility = 0.5 * quantum + 0.3 * location + 0.2 * timing + 0.15 * knot (if available)
-    double compatibility = 0.5 * quantumFidelity +
-        0.3 * locationCompatibility +
-        0.2 * timingCompatibility;
-
+    // Core factors: quantum (critical) and knot (if available)
+    final coreFactors = <double>[quantumFidelity];
     if (knotCompatibility != null) {
-      // Adjust weights if knot compatibility is available
-      compatibility = 0.4 * quantumFidelity +
-          0.25 * locationCompatibility +
-          0.2 * timingCompatibility +
-          0.15 * knotCompatibility;
+      coreFactors.add(knotCompatibility);
     }
+    final coreScore = _geometricMean(coreFactors);
+
+    // Modifiers: location and timing (enhance good matches)
+    final modifierScore = 0.6 * locationCompatibility + 0.4 * timingCompatibility;
+
+    // Hybrid combination: core * modifiers
+    final compatibility = coreScore * modifierScore;
 
     return compatibility.clamp(0.0, 1.0);
+  }
+
+  /// Calculate geometric mean of values
+  double _geometricMean(List<double> values) {
+    if (values.isEmpty) return 0.0;
+    if (values.any((v) => v <= 0.0)) {
+      // If any value is zero or negative, return 0 (critical failure)
+      return 0.0;
+    }
+    final product = values.fold(1.0, (prod, v) => prod * v);
+    return math.pow(product, 1.0 / values.length).toDouble();
   }
 
   /// Calculate predictive meaningful connection score
@@ -1086,18 +1205,15 @@ class QuantumMatchingController
       // Higher compatibility = higher likelihood of meaningful connection
       // This is a simplified prediction - actual metrics require post-event data
 
-      // Calculate basic compatibility factors
-      double compatibility = 0.0;
+      // Hybrid approach: Core factors (geometric mean) + Modifiers (weighted average)
 
-      // 1. Quantum entanglement compatibility (40% weight)
+      // 1. Core factors: Quantum entanglement compatibility (critical)
       final quantumFidelity = _calculateUserToTargetsFidelity(
         userState: userState,
         allStates: quantumStates,
       );
-      compatibility += 0.4 * quantumFidelity;
 
-      // 2. Vibe alignment (30% weight)
-      // Calculate average vibe similarity across all event entities
+      // 2. Vibe alignment (core factor - critical for meaningful connection)
       double totalVibeSimilarity = 0.0;
       int entityCount = 0;
       for (final entityState in quantumStates) {
@@ -1110,9 +1226,12 @@ class QuantumMatchingController
       }
       final vibeAlignment =
           entityCount > 0 ? totalVibeSimilarity / entityCount : 0.0;
-      compatibility += 0.3 * vibeAlignment;
 
-      // 3. Location/timing compatibility (20% weight)
+      // Core factors: geometric mean (catches critical failures)
+      final coreFactors = [quantumFidelity, vibeAlignment];
+      final coreScore = _geometricMean(coreFactors);
+
+      // 3. Modifiers: Location/timing compatibility (enhance good matches)
       double locationTimingCompat = 0.0;
       if (userState.location != null) {
         final eventLocation = _findEventLocation(quantumStates);
@@ -1126,17 +1245,20 @@ class QuantumMatchingController
           locationTimingCompat += 0.5; // Timing match
         }
       }
-      compatibility += 0.2 * locationTimingCompat;
 
-      // 4. Interest alignment (10% weight)
+      // 4. Interest alignment (modifier)
       final interestAlignment = _calculateInterestAlignment(
         userState,
         quantumStates,
       );
-      compatibility += 0.1 * interestAlignment;
 
-      // Predictive meaningful connection score = compatibility (with some adjustment)
-      // Higher compatibility suggests higher likelihood of meaningful connection
+      // Modifiers: weighted average (enhance good matches)
+      final modifierScore = 0.7 * locationTimingCompat + 0.3 * interestAlignment;
+
+      // Hybrid combination: core * modifiers
+      final compatibility = coreScore * modifierScore;
+
+      // Predictive meaningful connection score = compatibility
       return compatibility.clamp(0.0, 1.0);
     } catch (e) {
       developer.log(

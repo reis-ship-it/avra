@@ -1,13 +1,13 @@
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/data/datasources/local/spots_local_datasource.dart';
-import 'package:spots/data/datasources/remote/spots_remote_datasource.dart';
-import 'package:spots/data/datasources/local/lists_local_datasource.dart';
-import 'package:spots/data/datasources/remote/lists_remote_datasource.dart';
-import 'package:spots/data/datasources/local/auth_local_datasource.dart';
-import 'package:spots/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/data/datasources/local/spots_local_datasource.dart';
+import 'package:avrai/data/datasources/remote/spots_remote_datasource.dart';
+import 'package:avrai/data/datasources/local/lists_local_datasource.dart';
+import 'package:avrai/data/datasources/remote/lists_remote_datasource.dart';
+import 'package:avrai/data/datasources/local/auth_local_datasource.dart';
+import 'package:avrai/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 import 'mock_dependencies.mocks.dart';
 

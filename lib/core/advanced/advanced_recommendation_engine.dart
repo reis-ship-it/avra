@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-// import 'package:spots/core/ml/real_time_recommendations.dart';
-import 'package:spots/core/ai2ai/anonymous_communication.dart' show AnonymousCommunicationProtocol, MessageType;
-import 'package:spots/core/p2p/federated_learning.dart' as federated;
+// import 'package:avrai/core/ml/real_time_recommendations.dart';
+import 'package:avrai/core/ai2ai/anonymous_communication.dart' show AnonymousCommunicationProtocol, MessageType;
+import 'package:avrai/core/p2p/federated_learning.dart' as federated;
 
 // Stub class for missing RealTimeRecommendationEngine
 class RealTimeRecommendationEngine {

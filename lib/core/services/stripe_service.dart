@@ -1,6 +1,6 @@
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:spots/core/config/stripe_config.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/config/stripe_config.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Stripe Service
 /// 

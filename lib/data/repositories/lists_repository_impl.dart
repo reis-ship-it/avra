@@ -1,9 +1,9 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/list.dart';
-import 'package:spots/data/datasources/local/lists_local_datasource.dart';
-import 'package:spots/data/datasources/remote/lists_remote_datasource.dart';
-import 'package:spots/domain/repositories/lists_repository.dart';
-import 'package:spots/data/repositories/repository_patterns.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/data/datasources/local/lists_local_datasource.dart';
+import 'package:avrai/data/datasources/remote/lists_remote_datasource.dart';
+import 'package:avrai/domain/repositories/lists_repository.dart';
+import 'package:avrai/data/repositories/repository_patterns.dart';
 
 /// Lists Repository Implementation
 ///

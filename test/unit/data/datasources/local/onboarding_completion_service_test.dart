@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/local/onboarding_completion_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 /// Onboarding Completion Service Tests
 /// Tests onboarding completion tracking

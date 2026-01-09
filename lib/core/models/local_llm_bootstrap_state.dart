@@ -1,5 +1,5 @@
-import 'package:spots/core/models/onboarding_suggestion_event.dart';
-import 'package:spots/core/models/local_llm_memory_profile.dart';
+import 'package:avrai/core/models/onboarding_suggestion_event.dart';
+import 'package:avrai/core/models/local_llm_memory_profile.dart';
 
 /// One-time bootstrap output that “personalizes” the local LLM once a model pack
 /// is installed.

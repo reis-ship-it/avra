@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/ai/action_history_entry.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/ai/action_history_entry.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// Service for managing action history and undo functionality
 /// 

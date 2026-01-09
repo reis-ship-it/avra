@@ -4,10 +4,10 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai2ai/embedding_delta_collector.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/ml/onnx_dimension_scorer.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/ai2ai/embedding_delta_collector.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/ml/onnx_dimension_scorer.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 import '../../helpers/platform_channel_helper.dart';
 

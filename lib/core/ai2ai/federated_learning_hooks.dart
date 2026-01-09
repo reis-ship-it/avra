@@ -3,9 +3,9 @@
 // Hooks into AI2AI connections to collect embedding deltas for federated learning
 
 import 'dart:developer' as developer;
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/ai2ai/embedding_delta_collector.dart';
-import 'package:spots/core/ml/onnx_dimension_scorer.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/ai2ai/embedding_delta_collector.dart';
+import 'package:avrai/core/ml/onnx_dimension_scorer.dart';
 import 'package:get_it/get_it.dart';
 
 /// Federated Learning Hooks

@@ -10,9 +10,9 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Standardized error widget for consistent error display across the app
 class StandardErrorWidget extends StatelessWidget {

@@ -25,16 +25,16 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/reservation_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/reservation_quantum_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/models/reservation.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
+import 'package:avrai/core/services/reservation_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/reservation_quantum_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/models/reservation.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
 
 // Mock dependencies
 class MockAtomicClockService extends Mock implements AtomicClockService {}

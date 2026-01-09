@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:share_plus/share_plus.dart';
 
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_op_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipt_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipts_service_v0.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_op_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipt_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipts_service_v0.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 class ReceiptDetailPage extends StatefulWidget {
   final String ledgerRowId;
@@ -130,7 +130,7 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
       'signature_row': receipt.signature?.toJson(),
     };
 
-    await Share.share(jsonEncode(bundle));
+    await SharePlus.instance.share(ShareParams(text: jsonEncode(bundle)));
   }
 
   @override

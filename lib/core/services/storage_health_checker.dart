@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Lightweight storage health checker.
 /// Uses per-bucket object listing (reliable under anon role) and optional canary verification.

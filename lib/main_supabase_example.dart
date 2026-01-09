@@ -1,4 +1,5 @@
 // Moved to examples/supabase/main_supabase_example.dart
+import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Example of how to use Supabase in your actual app
@@ -12,9 +13,9 @@ class SupabaseUsageExample {
         email: email,
         password: password,
       );
-      print('✅ User signed in: ${response.user?.email}');
+      developer.log('✅ User signed in: ${response.user?.email}', name: 'SupabaseExample');
     } catch (e) {
-      print('❌ Sign in failed: $e');
+      developer.log('❌ Sign in failed: $e', name: 'SupabaseExample', error: e);
       rethrow;
     }
   }
@@ -30,9 +31,9 @@ class SupabaseUsageExample {
       };
       
       await _supabase.from('spots').insert(spotData);
-      print('✅ Spot created: $name');
+      developer.log('✅ Spot created: $name', name: 'SupabaseExample');
     } catch (e) {
-      print('❌ Failed to create spot: $e');
+      developer.log('❌ Failed to create spot: $e', name: 'SupabaseExample', error: e);
       rethrow;
     }
   }
@@ -43,7 +44,7 @@ class SupabaseUsageExample {
       final response = await _supabase.from('spots').select('*');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      print('❌ Failed to get spots: $e');
+      developer.log('❌ Failed to get spots: $e', name: 'SupabaseExample', error: e);
       return [];
     }
   }

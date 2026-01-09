@@ -4,9 +4,9 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai2ai/embedding_delta_collector.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/ai2ai/embedding_delta_collector.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 void main() {
   group('EmbeddingDeltaCollector', () {

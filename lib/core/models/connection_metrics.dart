@@ -1,4 +1,4 @@
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 
 /// OUR_GUTS.md: "AI2AI connection tracking that measures learning effectiveness and AI pleasure"
 /// Tracks the quality and effectiveness of AI2AI personality connections

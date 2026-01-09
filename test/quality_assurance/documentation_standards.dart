@@ -2,6 +2,7 @@
 /// Date: August 5, 2025 23:11:54 CDT  
 /// Purpose: Comprehensive documentation framework for maintainable test suites
 /// Focus: Ensure clear, consistent, and valuable test documentation for optimal development
+// ignore_for_file: constant_identifier_names - Test constants use UPPER_CASE convention
 library;
 
 import 'dart:io';
@@ -14,6 +15,7 @@ class TestDocumentationStandards {
   
   /// Generate comprehensive test documentation for the entire suite
   static Future<void> generateTestDocumentation() async {
+      // ignore: avoid_print
     print('📝 Generating comprehensive test documentation...');
     
     await _createDocumentationStructure();
@@ -24,7 +26,9 @@ class TestDocumentationStandards {
     await _generateQualityStandards();
     await _generateOnboardingGuide();
     await _generateMaintenanceGuide();
+      // ignore: avoid_print
     
+      // ignore: avoid_print
     print('✅ Test documentation generation complete');
   }
   
@@ -416,7 +420,7 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
 // Import your component and dependencies
-// import 'package:spots/core/models/your_model.dart';
+// import 'package:avrai/core/models/your_model.dart';
 
 // Import generated mocks
 // import 'component_name_test.mocks.dart';
@@ -494,7 +498,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mockito/mockito.dart';
 
 // Import your widget and dependencies
-// import 'package:spots/presentation/widgets/your_widget.dart';
+// import 'package:avrai/presentation/widgets/your_widget.dart';
 
 void main() {
   group('[WidgetName] Widget Tests', () {
@@ -575,7 +579,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 // Import your app and test utilities
-// import 'package:spots/main.dart' as app;
+// import 'package:avrai/main.dart' as app;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -737,15 +741,15 @@ testWidgets('SpotCard displays spot information correctly', (tester) async {
 
 ```dart
 // ✅ GOOD: Domain doesn't depend on outer layers
-import 'package:spots/domain/entities/unified_user.dart';
+import 'package:avrai/domain/entities/unified_user.dart';
 // No imports from data, presentation, or external frameworks
 
 // ✅ GOOD: Data layer depends on domain
-import 'package:spots/domain/repositories/spots_repository.dart';
-import 'package:spots/data/datasources/spots_remote_datasource.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
+import 'package:avrai/data/datasources/spots_remote_datasource.dart';
 
 // ❌ BAD: Domain depending on data layer
-import 'package:spots/data/models/spot_model.dart'; // In domain test
+import 'package:avrai/data/models/spot_model.dart'; // In domain test
 ```
 
 ### Mock Strategy by Layer
@@ -1239,14 +1243,14 @@ Presentation Layer (UI)
 ```dart
 // ✅ GOOD: Test dependencies flow inward
 // Domain tests import only domain code
-import 'package:spots/domain/entities/unified_user.dart';
+import 'package:avrai/domain/entities/unified_user.dart';
 
 // Data tests can import domain interfaces
-import 'package:spots/domain/repositories/spots_repository.dart';
-import 'package:spots/data/repositories/spots_repository_impl.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
+import 'package:avrai/data/repositories/spots_repository_impl.dart';
 
 // ❌ BAD: Domain importing outer layers
-import 'package:spots/data/models/spot_model.dart'; // In domain test
+import 'package:avrai/data/models/spot_model.dart'; // In domain test
 ```
 
 ## 🔐 Privacy & Security Testing Essentials

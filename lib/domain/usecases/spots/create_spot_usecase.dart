@@ -1,5 +1,5 @@
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/domain/repositories/spots_repository.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
 
 class CreateSpotUseCase {
   final SpotsRepository repository;

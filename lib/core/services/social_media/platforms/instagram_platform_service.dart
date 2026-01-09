@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter_appauth/flutter_appauth.dart';
-import 'package:spots/core/models/social_media_connection.dart';
-import 'package:spots/core/services/social_media/base/social_media_platform_service.dart';
-import 'package:spots/core/services/social_media/base/social_media_common_utils.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/config/oauth_config.dart';
+import 'package:avrai/core/models/social_media_connection.dart';
+import 'package:avrai/core/services/social_media/base/social_media_platform_service.dart';
+import 'package:avrai/core/services/social_media/base/social_media_common_utils.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/config/oauth_config.dart';
 
 /// Instagram platform-specific social media connection service
 ///

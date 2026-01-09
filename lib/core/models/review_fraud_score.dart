@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/fraud_signal.dart';
-import 'package:spots/core/models/fraud_recommendation.dart';
+import 'package:avrai/core/models/fraud_signal.dart';
+import 'package:avrai/core/models/fraud_recommendation.dart';
 
 /// Review Fraud Score Model
 /// 

@@ -4,23 +4,23 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/core/ai/ai_master_orchestrator.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/search_cache_service.dart';
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
-import 'package:spots/domain/repositories/spots_repository.dart';
-import 'package:spots/domain/usecases/spots/get_spots_usecase.dart';
-import 'package:spots/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
-import 'package:spots/domain/usecases/spots/create_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/update_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/delete_spot_usecase.dart';
-import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
-import 'package:spots/domain/usecases/search/hybrid_search_usecase.dart';
-import 'package:spots/core/services/ai_search_suggestions_service.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/core/ai/ai_master_orchestrator.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/search_cache_service.dart';
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_usecase.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
+import 'package:avrai/domain/usecases/spots/create_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/update_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/delete_spot_usecase.dart';
+import 'package:avrai/presentation/blocs/search/hybrid_search_bloc.dart';
+import 'package:avrai/domain/usecases/search/hybrid_search_usecase.dart';
+import 'package:avrai/core/services/ai_search_suggestions_service.dart';
 import 'dart:io';
 
 void main() {
@@ -61,6 +61,7 @@ void main() {
           lessThanOrEqualTo(memoryAfter + (2 * 1024 * 1024)),
         );
 
+      // ignore: avoid_print
         print('Memory usage - Before: ${_formatBytes(memoryBefore)}, '
             'After: ${_formatBytes(memoryAfter)}, '
             'After cleanup: ${_formatBytes(memoryAfterCleanup)}');
@@ -100,7 +101,9 @@ void main() {
           memoryAfterCleanup,
           lessThanOrEqualTo(memoryAfter + (10 * 1024 * 1024)),
         );
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('List memory test - Increase: ${_formatBytes(memoryIncrease)}, '
             'Cleanup ratio: ${((memoryAfter - memoryAfterCleanup) / memoryAfter * 100).toStringAsFixed(1)}%');
       });
@@ -144,8 +147,11 @@ void main() {
         expect(
           memoryAfterMaintenance,
           lessThanOrEqualTo(memoryAfterCaching + (2 * 1024 * 1024)),
+      // ignore: avoid_print
         );
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('Cache memory - Usage: ${_formatBytes(cacheMemoryUsage)}, '
             'After maintenance: ${_formatBytes(memoryAfterMaintenance - memoryBefore)}');
       });
@@ -187,9 +193,13 @@ void main() {
         // that cleanup doesn't *increase* memory materially.
         expect(
           memoryAfterCleanup,
+      // ignore: avoid_print
           lessThanOrEqualTo(memoryAfterProcessing + (2 * 1024 * 1024)),
+      // ignore: avoid_print
         );
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('AI memory - Usage: ${_formatBytes(aiMemoryUsage)}, '
             'Cleanup: ${(cleanupRatio * 100).toStringAsFixed(1)}%');
       });
@@ -232,10 +242,15 @@ void main() {
             increasingTrend++;
           }
         }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Should not have more than 50% of readings showing significant increase
+      // ignore: avoid_print
         expect(increasingTrend / memoryReadings.length, lessThan(0.5));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Memory readings during continuous learning: ${memoryReadings.map(_formatBytes)}');
       });
@@ -283,11 +298,17 @@ void main() {
         if (memoryFreed > 0 && blocMemoryUsage > 0) {
           expect(cleanupEfficiency, greaterThan(0.7)); // At least 70% cleanup
         } else {
+      // ignore: avoid_print
           // Memory measurement variance - verify cleanup didn't cause excessive memory growth
+      // ignore: avoid_print
           expect(memoryAfterCleanup - memoryBefore,
+      // ignore: avoid_print
               lessThan(50 * 1024 * 1024)); // Should be reasonable
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('BLoC memory - Usage: ${_formatBytes(blocMemoryUsage)}, '
             'Cleanup: ${(cleanupEfficiency * 100).toStringAsFixed(1)}%');
       });
@@ -306,18 +327,27 @@ void main() {
             await _forceGarbageCollection();
           }
         }
+      // ignore: unused_local_variable
 
         final memoryAfterSearches = _getMemoryUsage();
 
         // Clean up search bloc
         await searchBloc.close();
         await _forceGarbageCollection();
+      // ignore: avoid_print
+      // ignore: unused_local_variable - May be used in callback or assertion
         final memoryAfterCleanup = _getMemoryUsage();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         final searchMemoryUsage = memoryAfterSearches - memoryBefore;
+      // ignore: avoid_print
         expect(searchMemoryUsage, lessThan(150 * 1024 * 1024)); // Relaxed
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('Search BLoC memory - Usage: ${_formatBytes(searchMemoryUsage)}');
       });
     });
@@ -339,14 +369,22 @@ void main() {
 
         // Assert
         final leakDetected = memoryTracker.analyzeForLeaks();
+      // ignore: avoid_print
         final memoryTrend = memoryTracker.getMemoryTrend();
 
+      // ignore: avoid_print
         // Memory should not continuously increase
+      // ignore: avoid_print
         expect(leakDetected, false,
+      // ignore: avoid_print
             reason: 'Memory leak detected in test operations');
+      // ignore: avoid_print
         expect(memoryTrend['slope'],
+      // ignore: avoid_print
             lessThan(1024 * 1024)); // Less than 1MB per cycle increase
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('Memory trend analysis: $memoryTrend');
       });
 
@@ -364,15 +402,24 @@ void main() {
             await _forceGarbageCollection();
           }
         }
+      // ignore: avoid_print
 
         final allocationReport = objectTracker.generateReport();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(allocationReport['total_allocations'],
+      // ignore: avoid_print
             equals(200)); // 100 spots + 100 lists
+      // ignore: avoid_print
         expect(allocationReport['active_objects'],
+      // ignore: avoid_print
             lessThan(150)); // Some should be released
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('Object allocation report: $allocationReport');
       });
     });
@@ -382,9 +429,11 @@ void main() {
         // Arrange - Create memory pressure
         final memoryPressureData = <List<int>>[];
         for (int i = 0; i < 10; i++) {
+      // ignore: unused_local_variable
           memoryPressureData.add(List.filled(1024 * 1024, i)); // 1MB chunks
         }
 
+      // ignore: unused_local_variable
         // Act - Perform operations under memory pressure
         final operationTimes = <int>[];
 
@@ -393,6 +442,7 @@ void main() {
 
           // Simulate typical app operations
           final spots = _generateTestSpots(100);
+      // ignore: unused_local_variable - May be used in callback or assertion
           final searchResult = _performSimulatedSearch(spots, 'test');
 
           stopwatch.stop();
@@ -409,16 +459,26 @@ void main() {
 
         // Assert - Operations should remain reasonably fast
         final averageTime = operationTimes.fold(0, (sum, time) => sum + time) /
+      // ignore: avoid_print
             operationTimes.length;
+      // ignore: avoid_print
         expect(averageTime, lessThan(500)); // Average under 500ms
 
+      // ignore: avoid_print
         // Performance should not degrade severely over time
+      // ignore: avoid_print
         final firstHalf =
+      // ignore: avoid_print
             operationTimes.take(10).fold(0, (sum, time) => sum + time) / 10;
+      // ignore: avoid_print
         final secondHalf =
+      // ignore: avoid_print
             operationTimes.skip(10).fold(0, (sum, time) => sum + time) / 10;
+      // ignore: avoid_print
         expect(secondHalf, lessThan(firstHalf * 2)); // No more than 2x slowdown
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Performance under memory pressure - Average: ${averageTime.toStringAsFixed(1)}ms, '
             'First half: ${firstHalf.toStringAsFixed(1)}ms, Second half: ${secondHalf.toStringAsFixed(1)}ms');
@@ -496,6 +556,7 @@ SpotList _createComplexTestList(int index) {
   );
 }
 
+// ignore: unused_element - Reserved for future cache testing scenarios
 dynamic _createTestSearchResult(int index) {
   // Mock search result for cache testing
   return {
@@ -567,11 +628,14 @@ HybridSearchBloc _createTestHybridSearchBloc() {
   return HybridSearchBloc(
     hybridSearchUseCase: usecase,
     cacheService: SearchCacheService(),
+      // ignore: unused_local_variable
     suggestionsService: AISearchSuggestionsService(),
   );
+      // ignore: unused_local_variable
 }
 
 Future<void> _simulateMemoryIntensiveOperation(int cycle) async {
+      // ignore: unused_local_variable
   // Create temporary objects that should be garbage collected
   final tempData = <String, dynamic>{};
 
@@ -580,6 +644,7 @@ Future<void> _simulateMemoryIntensiveOperation(int cycle) async {
   }
 
   // Process the data
+      // ignore: unused_local_variable - May be used in callback or assertion
   var totalLength = 0;
   for (var value in tempData.values) {
     if (value is List) {

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/action_parser.dart';
-import 'package:spots/core/ai/action_executor.dart';
-import 'package:spots/core/ai/action_models.dart';
+import 'package:avrai/core/ai/action_parser.dart';
+import 'package:avrai/core/ai/action_executor.dart';
+import 'package:avrai/core/ai/action_models.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../helpers/test_helpers.dart';
 
@@ -10,6 +10,8 @@ import '../../helpers/test_helpers.dart';
 void main() {
   group('Action Execution Flow Integration', () {
     late ActionParser parser;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late ActionExecutor executor;
 
     setUp(() {

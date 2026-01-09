@@ -1,22 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/business_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../fixtures/integration_test_fixtures.dart';
 import '../../fixtures/model_factories.dart';
@@ -86,7 +86,7 @@ void main() {
       when(() => mockStripeService.isInitialized).thenReturn(true);
       when(() => mockStripeService.initializeStripe())
           .thenAnswer((_) async {
-            return null;
+            return;
           });
     });
     

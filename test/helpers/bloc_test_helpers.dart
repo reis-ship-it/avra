@@ -5,9 +5,9 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/user.dart';
-import 'package:spots/core/models/list.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/core/models/list.dart';
 
 /// Common test utilities for BLoC testing
 class BlocTestHelpers {

@@ -1,4 +1,4 @@
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/spot.dart';
 
 /// Google Places API Data Source Interface
 /// OUR_GUTS.md: "Authenticity Over Algorithms" - External data supplements community content

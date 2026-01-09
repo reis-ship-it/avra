@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/controllers/checkout_controller.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/widgets/payment/payment_form_widget.dart';
-import 'package:spots/presentation/pages/payment/payment_success_page.dart';
-import 'package:spots/presentation/pages/payment/payment_failure_page.dart';
-import 'package:spots/presentation/pages/legal/event_waiver_page.dart';
-import 'package:spots/presentation/widgets/common/page_transitions.dart';
-import 'package:spots/core/services/legal_document_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/controllers/checkout_controller.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/payment/payment_form_widget.dart';
+import 'package:avrai/presentation/pages/payment/payment_success_page.dart';
+import 'package:avrai/presentation/pages/payment/payment_failure_page.dart';
+import 'package:avrai/presentation/pages/legal/event_waiver_page.dart';
+import 'package:avrai/presentation/widgets/common/page_transitions.dart';
+import 'package:avrai/core/services/legal_document_service.dart';
 import 'package:get_it/get_it.dart';
 
 /// Checkout Page

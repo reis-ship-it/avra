@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/profile/partnerships_page.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/presentation/pages/profile/partnerships_page.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/models/user.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
 

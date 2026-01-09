@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/crypto/key_exchange.dart';
+import 'package:avrai/core/crypto/key_exchange.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 

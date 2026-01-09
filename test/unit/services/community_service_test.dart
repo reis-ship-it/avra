@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/models/community_event.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/models/community_event.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 import '../../helpers/platform_channel_helper.dart';

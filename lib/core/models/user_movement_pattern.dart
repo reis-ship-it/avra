@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/cross_locality_connection.dart';
+import 'package:avrai/core/models/cross_locality_connection.dart';
 
 /// User Movement Pattern Model
 /// 

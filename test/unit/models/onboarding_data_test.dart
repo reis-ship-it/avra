@@ -11,7 +11,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/onboarding_data.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
 
 void main() {
   group('OnboardingData Model Tests', () {

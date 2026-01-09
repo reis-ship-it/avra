@@ -4,9 +4,9 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// Community sender key service (Signal-style Sender Keys).

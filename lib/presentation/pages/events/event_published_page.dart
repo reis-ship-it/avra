@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/pages/events/event_details_page.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/pages/events/event_details_page.dart';
 
 /// Event Published Page
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.11)
@@ -38,7 +38,10 @@ ${event.isPaid ? '💰 \$${event.price}' : '🎫 Free'}
 Join me on SPOTS!
 SPOTS - know you belong.''';
 
-    Share.share(shareText, subject: 'Check out my event: ${event.title}');
+    SharePlus.instance.share(ShareParams(
+      text: shareText,
+      subject: 'Check out my event: ${event.title}',
+    ));
   }
 
   void _viewEvent(BuildContext context) {

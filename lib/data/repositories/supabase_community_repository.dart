@@ -1,9 +1,9 @@
 import 'dart:developer' as developer;
 
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/domain/repositories/community_repository.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/domain/repositories/community_repository.dart';
 
 /// Supabase-backed community repository (remote).
 ///

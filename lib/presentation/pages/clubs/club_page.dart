@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/club.dart';
-import 'package:spots/core/models/club_hierarchy.dart';
-import 'package:spots/core/services/club_service.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/pages/events/create_community_event_page.dart';
-import 'package:spots/presentation/widgets/clubs/expertise_coverage_widget.dart';
-import 'package:spots/presentation/widgets/clubs/expansion_timeline_widget.dart';
-import 'package:spots/presentation/widgets/golden_expert_indicator.dart';
-import 'package:spots/presentation/widgets/boundaries/border_visualization_widget.dart';
-import 'package:spots/presentation/widgets/boundaries/border_management_widget.dart';
+import 'package:avrai/core/models/club.dart';
+import 'package:avrai/core/models/club_hierarchy.dart';
+import 'package:avrai/core/services/club_service.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/pages/events/create_community_event_page.dart';
+import 'package:avrai/presentation/widgets/clubs/expertise_coverage_widget.dart';
+import 'package:avrai/presentation/widgets/clubs/expansion_timeline_widget.dart';
+import 'package:avrai/presentation/widgets/golden_expert_indicator.dart';
+import 'package:avrai/presentation/widgets/boundaries/border_visualization_widget.dart';
+import 'package:avrai/presentation/widgets/boundaries/border_management_widget.dart';
 
 /// Club Page
 /// Agent 2: Frontend & UX Specialist (Phase 6, Week 29)
@@ -74,6 +74,7 @@ class _ClubPageState extends State<ClubPage> {
       }
       
       // Check if user is member/leader/admin
+      if (!mounted) return;
       final authState = context.read<AuthBloc>().state;
       bool isMember = false;
       bool isLeader = false;
@@ -1086,6 +1087,7 @@ class _ClubPageState extends State<ClubPage> {
                             color: AppColors.textPrimary,
                           ),
                         ),
+                        // ignore: dead_code - Reserved for future golden expert feature
                         if (isGoldenExpert && locality != null) ...[
                           const SizedBox(width: 8),
                           GoldenExpertIndicator(

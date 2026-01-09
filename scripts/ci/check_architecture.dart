@@ -4,7 +4,7 @@ import 'dart:io';
 /// Enforces repository architecture rules (package dependency boundaries).
 ///
 /// Current rule:
-/// - Nothing under `packages/` may import or export `package:spots/...` (the app).
+/// - Nothing under `packages/` may import or export `package:avrai/...` (the app).
 ///
 /// To support incremental cleanup, this script supports an allowlist "baseline":
 /// - Any current violations present in the baseline are tolerated.
@@ -43,7 +43,7 @@ Future<void> main(List<String> args) async {
 
   if (newViolations.isNotEmpty) {
     stderr.writeln(
-      'ERROR: New architecture violations detected (packages importing app `package:spots/...`).',
+      'ERROR: New architecture violations detected (packages importing app `package:avrai/...`).',
     );
     stderr.writeln('Baseline: $baselinePath');
     stderr.writeln('');
@@ -81,7 +81,7 @@ String? _argValue(List<String> args, String prefix) {
 Future<Set<String>> _findSpotsImports({required String rootPath}) async {
   final violations = <String>{};
   final importRe = RegExp(
-    r'''^\s*(import|export)\s+(['"])(package:spots/[^'"]+)\2''',
+    r'''^\s*(import|export)\s+(['"])(package:avrai/[^'"]+)\2''',
   );
 
   await for (final entity in Directory('packages')

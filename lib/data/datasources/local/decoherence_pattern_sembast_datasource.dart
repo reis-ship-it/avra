@@ -1,8 +1,8 @@
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots/core/models/decoherence_pattern.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/data/datasources/local/decoherence_pattern_local_datasource.dart';
+import 'package:avrai/core/models/decoherence_pattern.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/local/decoherence_pattern_local_datasource.dart';
 
 /// Sembast Data Source Implementation for Decoherence Patterns
 ///

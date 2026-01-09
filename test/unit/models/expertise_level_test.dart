@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_level.dart';
 
 /// Comprehensive tests for ExpertiseLevel enum
 /// Tests enum values, display names, descriptions, emojis, parsing, and level comparisons

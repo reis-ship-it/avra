@@ -2,15 +2,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:spots/core/controllers/event_attendance_controller.dart';
-import 'package:spots/core/controllers/payment_processing_controller.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_status.dart';
+import 'package:avrai/core/controllers/event_attendance_controller.dart';
+import 'package:avrai/core/controllers/payment_processing_controller.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_status.dart';
 
 import 'event_attendance_controller_test.mocks.dart';
 

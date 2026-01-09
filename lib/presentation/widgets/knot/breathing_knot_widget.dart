@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots_knot/models/dynamic_knot.dart';
-import 'package:spots/presentation/widgets/knot/personality_knot_widget.dart';
+import 'package:avrai_knot/models/dynamic_knot.dart';
+import 'package:avrai/presentation/widgets/knot/personality_knot_widget.dart';
 
 /// Widget for visualizing a breathing knot for meditation
 /// Phase 4: Dynamic Knots (Mood/Energy)

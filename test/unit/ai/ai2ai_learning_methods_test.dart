@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {

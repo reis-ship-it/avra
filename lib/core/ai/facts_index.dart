@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/ai/structured_facts.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/ai/structured_facts.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// Facts Index
 /// 

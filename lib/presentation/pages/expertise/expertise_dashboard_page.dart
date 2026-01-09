@@ -1,17 +1,18 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/expertise_pin.dart';
-import 'package:spots/core/models/expertise_progress.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/expertise_service.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/widgets/expertise/expertise_display_widget.dart';
-import 'package:spots/presentation/widgets/expertise/expertise_progress_widget.dart';
-import 'package:spots/presentation/widgets/expertise/partnership_expertise_boost_widget.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/expertise_pin.dart';
+import 'package:avrai/core/models/expertise_progress.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/expertise_service.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/widgets/expertise/expertise_display_widget.dart';
+import 'package:avrai/presentation/widgets/expertise/expertise_progress_widget.dart';
+import 'package:avrai/presentation/widgets/expertise/partnership_expertise_boost_widget.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';
 import 'package:go_router/go_router.dart';
 
@@ -76,16 +77,16 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
               // If UnifiedUser.fromJson worked, use it directly
               if (user.expertiseMap.isNotEmpty) {
                 // User loaded successfully with expertiseMap
-                print('✅ Loaded user with ${user.expertiseMap.length} expertise categories');
+                developer.log('✅ Loaded user with ${user.expertiseMap.length} expertise categories', name: 'ExpertiseDashboard');
               } else {
                 // User exists but has no expertise - add it now
-                print('⚠️ User exists but has no expertiseMap, adding universal expertise...');
+                developer.log('⚠️ User exists but has no expertiseMap, adding universal expertise...', name: 'ExpertiseDashboard');
                 await _addExpertiseToUser(authState.user.id, db);
                 // Reload user after adding expertise
                 final updatedRecord = await SembastDatabase.usersStore.record(authState.user.id).get(db);
                 if (updatedRecord != null) {
                   user = UnifiedUser.fromJson(updatedRecord);
-                  print('✅ Updated user with ${user.expertiseMap.length} expertise categories');
+                  developer.log('✅ Updated user with ${user.expertiseMap.length} expertise categories', name: 'ExpertiseDashboard');
                 }
               }
             } catch (e) {
@@ -95,16 +96,16 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                 expertiseMap = Map<String, String>.from(
                   storedExpertiseMap.map((key, value) => MapEntry(key, value.toString())),
                 );
-                print('✅ Loaded ${expertiseMap.length} expertise categories from database');
+                developer.log('✅ Loaded ${expertiseMap.length} expertise categories from database', name: 'ExpertiseDashboard');
               } else {
-                print('⚠️ No expertiseMap found in user record');
+                developer.log('⚠️ No expertiseMap found in user record', name: 'ExpertiseDashboard');
               }
             }
           } else {
-            print('⚠️ User record not found in database for: ${authState.user.id}');
+            developer.log('⚠️ User record not found in database for: ${authState.user.id}', name: 'ExpertiseDashboard');
           }
         } catch (e) {
-          print('❌ Error loading user from database: $e');
+          developer.log('❌ Error loading user from database: $e', name: 'ExpertiseDashboard', error: e);
           // If loading fails, use empty map
           expertiseMap = {};
         }
@@ -125,19 +126,19 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
 
       if (user != null) {
         _currentUser = user;
-        print('🔍 Expertise Dashboard: User loaded with ${user.expertiseMap.length} expertise categories');
-        print('🔍 Expertise Dashboard: ExpertiseMap keys: ${user.expertiseMap.keys.take(5).toList()}');
-        print('🔍 Expertise Dashboard: First few values: ${user.expertiseMap.values.take(5).toList()}');
+        developer.log('🔍 Expertise Dashboard: User loaded with ${user.expertiseMap.length} expertise categories', name: 'ExpertiseDashboard');
+        developer.log('🔍 Expertise Dashboard: ExpertiseMap keys: ${user.expertiseMap.keys.take(5).toList()}', name: 'ExpertiseDashboard');
+        developer.log('🔍 Expertise Dashboard: First few values: ${user.expertiseMap.values.take(5).toList()}', name: 'ExpertiseDashboard');
         
         final pins = _expertiseService.getUserPins(user);
-        print('🔍 Expertise Dashboard: Generated ${pins.length} pins from expertiseMap');
+        developer.log('🔍 Expertise Dashboard: Generated ${pins.length} pins from expertiseMap', name: 'ExpertiseDashboard');
         
         if (pins.isEmpty && user.expertiseMap.isNotEmpty) {
-          print('⚠️ Expertise Dashboard: WARNING - expertiseMap has ${user.expertiseMap.length} entries but getUserPins returned 0 pins');
+          developer.log('⚠️ Expertise Dashboard: WARNING - expertiseMap has ${user.expertiseMap.length} entries but getUserPins returned 0 pins', name: 'ExpertiseDashboard');
           // Debug: Check why pins aren't being created
           for (final entry in user.expertiseMap.entries.take(3)) {
             final level = ExpertiseLevel.fromString(entry.value);
-            print('🔍 Entry: ${entry.key} = "${entry.value}" -> level: $level');
+            developer.log('🔍 Entry: ${entry.key} = "${entry.value}" -> level: $level', name: 'ExpertiseDashboard');
           }
         }
         
@@ -205,9 +206,9 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
       // Update user record with expertiseMap
       userRecord['expertiseMap'] = expertiseMap;
       await SembastDatabase.usersStore.record(userId).put(db, userRecord);
-      print('✅ Added ${expertiseMap.length} expertise categories to user');
+      developer.log('✅ Added ${expertiseMap.length} expertise categories to user', name: 'ExpertiseDashboard');
     } catch (e) {
-      print('❌ Error adding expertise to user: $e');
+      developer.log('❌ Error adding expertise to user: $e', name: 'ExpertiseDashboard', error: e);
     }
   }
 

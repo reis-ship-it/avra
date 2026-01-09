@@ -20,8 +20,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/presentation/widgets/settings/continuous_learning_data_widget.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/presentation/widgets/settings/continuous_learning_data_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
 

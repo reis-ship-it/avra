@@ -1,7 +1,7 @@
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 import 'dart:convert';
-import 'package:spots/core/models/usage_pattern.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/usage_pattern.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// OUR_GUTS.md: "Always Learning With You"
 /// Tracks how users engage with SPOTS to adapt AI behavior

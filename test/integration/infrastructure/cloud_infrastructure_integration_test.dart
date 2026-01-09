@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/cloud/microservices_manager.dart';
-import 'package:spots/core/cloud/realtime_sync_manager.dart';
+import 'package:avrai/core/cloud/microservices_manager.dart';
+import 'package:avrai/core/cloud/realtime_sync_manager.dart';
 
 /// Cloud Infrastructure Integration Test
 /// OUR_GUTS.md: "Scalable cloud infrastructure with privacy-first design"

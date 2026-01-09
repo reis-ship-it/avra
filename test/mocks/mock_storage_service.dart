@@ -45,7 +45,7 @@ class InMemoryGetStorage extends Mock implements GetStorage {
     });
   }
   
-  /// Override noSuchMethod to handle generic read<T>() calls
+  /// Override noSuchMethod to handle generic read&lt;T&gt;() calls
   @override
   dynamic noSuchMethod(Invocation invocation) {
     // Handle read<T>(key) calls

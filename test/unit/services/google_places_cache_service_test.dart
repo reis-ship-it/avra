@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/google_places_cache_service.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/services/google_places_cache_service.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart' as sembast;
 import '../../fixtures/model_factories.dart';
 import '../../helpers/platform_channel_helper.dart';

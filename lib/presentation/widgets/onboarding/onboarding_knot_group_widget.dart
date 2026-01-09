@@ -5,11 +5,11 @@
 // Phase 3: Onboarding Integration
 
 import 'package:flutter/material.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/knot/personality_knot_widget.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/knot/personality_knot_widget.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:get_it/get_it.dart';
 
 /// Widget for displaying onboarding groups with knots

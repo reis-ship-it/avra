@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/expertise_pin.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/expertise_service.dart';
+import 'package:avrai/core/models/expertise_pin.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/expertise_service.dart';
 
 /// Unified User model that combines core and domain features
 /// Includes role system for curator/collaborator/follower architecture

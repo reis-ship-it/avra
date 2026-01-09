@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/cloud/microservices_manager.dart';
+import 'package:avrai/core/cloud/microservices_manager.dart';
 
 /// SPOTS Microservices Manager Tests
 /// Date: November 20, 2025

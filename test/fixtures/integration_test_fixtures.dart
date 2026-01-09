@@ -1,8 +1,8 @@
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/expertise_requirements.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/payment_status.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_requirements.dart';
 import '../helpers/integration_test_helpers.dart';
 import 'model_factories.dart';
 

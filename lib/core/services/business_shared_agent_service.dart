@@ -1,9 +1,9 @@
-import 'package:spots/core/models/business_member.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/business_member_service.dart';
-import 'package:spots/core/ai/personality_learning.dart' as pl;
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/business_member.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/business_member_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart' as pl;
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Business Shared Agent Service

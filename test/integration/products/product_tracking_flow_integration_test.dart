@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/models/sponsorship_integration.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/models/payment_status.dart';
+import 'package:avrai/core/models/sponsorship_integration.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Product Tracking Flow Integration Tests

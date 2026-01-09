@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/admin_auth_service.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import '../../helpers/supabase_test_helper.dart';
 import '../../mocks/mock_storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
@@ -28,7 +28,9 @@ void main() {
       supabaseAvailable = await SupabaseTestHelper.initialize();
       
       if (!supabaseAvailable) {
+      // ignore: avoid_print
         print('⚠️  Supabase not available. Admin auth integration tests will be skipped.');
+      // ignore: avoid_print
         print('   Set SUPABASE_URL and SUPABASE_ANON_KEY to run these tests.');
       }
     });

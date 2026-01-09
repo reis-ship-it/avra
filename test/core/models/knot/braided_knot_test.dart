@@ -5,8 +5,8 @@
 // Phase 2: Knot Weaving
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots_knot/models/knot/braided_knot.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_knot/models/knot/braided_knot.dart';
 
 void main() {
   group('BraidedKnot Tests', () {

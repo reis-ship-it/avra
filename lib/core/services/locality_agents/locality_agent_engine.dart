@@ -2,13 +2,13 @@ import 'dart:developer' as developer;
 import 'dart:math' as math;
 
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/visit.dart';
-import 'package:spots/core/services/geohash_service.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_global_repository.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_local_store.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_mesh_cache.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_models_v1.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/models/visit.dart';
+import 'package:avrai/core/services/geohash_service.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_global_repository.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_local_store.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_mesh_cache.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_models_v1.dart';
 
 /// Locality Agent Engine (v1)
 ///

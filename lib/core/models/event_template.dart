@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 
 /// OUR_GUTS.md: "The key opens doors to events"
 /// Easy Event Hosting - Phase 1: Event Templates

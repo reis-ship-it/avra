@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:spots/core/controllers/sync_controller.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
+import 'package:avrai/core/controllers/sync_controller.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/services/personality_sync_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Sync Controller Integration Tests

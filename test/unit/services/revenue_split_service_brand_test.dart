@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/product_tracking_service.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/product_tracking.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/product_tracking_service.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/product_tracking.dart';
 
 import 'revenue_split_service_brand_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';

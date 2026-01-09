@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/ai2ai/privacy_controls_widget.dart';
+import 'package:avrai/presentation/widgets/ai2ai/privacy_controls_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for PrivacyControlsWidget

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/brand/sponsorable_event_card.dart';
-import 'package:spots/core/models/brand_discovery.dart';
+import 'package:avrai/presentation/widgets/brand/sponsorable_event_card.dart';
+import 'package:avrai/core/models/brand_discovery.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for SponsorableEventCard

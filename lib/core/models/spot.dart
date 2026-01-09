@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:spots/core/models/source_indicator.dart';
+import 'package:avrai/core/models/source_indicator.dart';
 
 class _Sentinel {
   const _Sentinel();

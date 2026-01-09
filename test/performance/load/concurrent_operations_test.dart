@@ -4,24 +4,24 @@
 library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/data/datasources/remote/spots_remote_datasource.dart';
-import 'package:spots/data/datasources/local/spots_local_datasource.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/data/repositories/spots_repository_impl.dart';
-import 'package:spots/data/repositories/lists_repository_impl.dart';
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
-import 'package:spots/core/services/search_cache_service.dart';
-import 'package:spots/core/ai/ai_master_orchestrator.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
-import 'package:spots/domain/usecases/spots/get_spots_usecase.dart';
-import 'package:spots/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
-import 'package:spots/domain/usecases/spots/create_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/update_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/delete_spot_usecase.dart';
-import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
-import 'package:spots/domain/usecases/search/hybrid_search_usecase.dart';
-import 'package:spots/core/services/ai_search_suggestions_service.dart';
+import 'package:avrai/data/datasources/remote/spots_remote_datasource.dart';
+import 'package:avrai/data/datasources/local/spots_local_datasource.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/data/repositories/spots_repository_impl.dart';
+import 'package:avrai/data/repositories/lists_repository_impl.dart';
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai/core/services/search_cache_service.dart';
+import 'package:avrai/core/ai/ai_master_orchestrator.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_usecase.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
+import 'package:avrai/domain/usecases/spots/create_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/update_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/delete_spot_usecase.dart';
+import 'package:avrai/presentation/blocs/search/hybrid_search_bloc.dart';
+import 'package:avrai/domain/usecases/search/hybrid_search_usecase.dart';
+import 'package:avrai/core/services/ai_search_suggestions_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'dart:math' as math;
@@ -56,6 +56,7 @@ void main() {
         final avgTimePerOperation = stopwatch.elapsedMilliseconds / totalOperations;
         expect(avgTimePerOperation, lessThan(15)); // Under 15ms per operation
         
+      // ignore: avoid_print
         print('Concurrent spot creation: $totalOperations operations in ${stopwatch.elapsedMilliseconds}ms '
               '(${avgTimePerOperation.toStringAsFixed(1)}ms avg)');
       });
@@ -86,7 +87,9 @@ void main() {
         final finalSpot = await repository.getSpotById(baseSpot.id);
         expect(finalSpot, isNotNull);
         expect(finalSpot!.id, equals(baseSpot.id));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Concurrent updates: $concurrentUpdates operations in ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -117,8 +120,11 @@ void main() {
         expect(searchResults.length, equals(concurrentSearches));
         
         final avgSearchTime = stopwatch.elapsedMilliseconds / concurrentSearches;
+      // ignore: avoid_print
         expect(avgSearchTime, lessThan(100)); // Under 100ms per search
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Concurrent searches: $concurrentSearches in ${stopwatch.elapsedMilliseconds}ms '
               '(${avgSearchTime.toStringAsFixed(1)}ms avg)');
       });
@@ -146,9 +152,13 @@ void main() {
         // Assert
         expect(stopwatch.elapsedMilliseconds, lessThan(30000)); // Under 30 seconds
         
+      // ignore: avoid_print
         final avgAITime = stopwatch.elapsedMilliseconds / concurrentAIOperations;
+      // ignore: avoid_print
         expect(avgAITime, lessThan(300)); // Under 300ms per AI operation
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Concurrent AI operations: $concurrentAIOperations in ${stopwatch.elapsedMilliseconds}ms '
               '(${avgAITime.toStringAsFixed(1)}ms avg)');
       });
@@ -175,10 +185,15 @@ void main() {
         // Assert
         expect(stopwatch.elapsedMilliseconds, lessThan(45000)); // Under 45 seconds
         
+      // ignore: avoid_print
         const totalLearningOperations = concurrentLearners * learningCycles;
+      // ignore: avoid_print
         final avgLearningTime = stopwatch.elapsedMilliseconds / totalLearningOperations;
+      // ignore: avoid_print
         expect(avgLearningTime, lessThan(45)); // Under 45ms per learning operation
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Concurrent AI learning: $totalLearningOperations operations in ${stopwatch.elapsedMilliseconds}ms '
               '(${avgLearningTime.toStringAsFixed(1)}ms avg)');
       });
@@ -213,11 +228,17 @@ void main() {
         stopwatch.stop();
         
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(10000)); // Under 10 seconds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         final avgCacheTime = stopwatch.elapsedMilliseconds / concurrentCacheOps;
+      // ignore: avoid_print
         expect(avgCacheTime, lessThan(20)); // Under 20ms per cache operation
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Concurrent cache operations: $concurrentCacheOps in ${stopwatch.elapsedMilliseconds}ms '
               '(${avgCacheTime.toStringAsFixed(1)}ms avg)');
       });
@@ -252,12 +273,19 @@ void main() {
         await Future.wait(futures);
         stopwatch.stop();
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(5000)); // Under 5 seconds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         final hitRate = cacheHits / concurrentReads;
+      // ignore: avoid_print
         expect(hitRate, greaterThan(0.8)); // At least 80% hit rate
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Cache load test: $concurrentReads reads in ${stopwatch.elapsedMilliseconds}ms, '
               'Hit rate: ${(hitRate * 100).toStringAsFixed(1)}%');
       });
@@ -281,13 +309,21 @@ void main() {
         stopwatch.stop();
         
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(8000)); // Under 8 seconds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         final avgEventTime = stopwatch.elapsedMilliseconds / concurrentEvents;
+      // ignore: avoid_print
         expect(avgEventTime, lessThan(40)); // Under 40ms per event
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         await spotsBloc.close();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Concurrent BLoC events: $concurrentEvents in ${stopwatch.elapsedMilliseconds}ms '
               '(${avgEventTime.toStringAsFixed(1)}ms avg)');
       });
@@ -308,14 +344,23 @@ void main() {
         await Future.wait(futures);
         stopwatch.stop();
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(12000)); // Under 12 seconds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Verify final state consistency
+      // ignore: avoid_print
         expect(searchBloc.state, isA<HybridSearchState>());
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         await searchBloc.close();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Concurrent search events: $concurrentSearchEvents in ${stopwatch.elapsedMilliseconds}ms');
       });
     });
@@ -336,19 +381,30 @@ void main() {
         
         final journeyResults = await Future.wait(futures);
         stopwatch.stop();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(60000)); // Under 60 seconds
+      // ignore: avoid_print
         expect(journeyResults.length, equals(simulatedUsers));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         const totalOperations = simulatedUsers * operationsPerUser;
+      // ignore: avoid_print
         final avgOperationTime = stopwatch.elapsedMilliseconds / totalOperations;
+      // ignore: avoid_print
         expect(avgOperationTime, lessThan(240)); // Under 240ms per operation
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Complete user journeys: $simulatedUsers users, $totalOperations operations '
               'in ${stopwatch.elapsedMilliseconds}ms (${avgOperationTime.toStringAsFixed(1)}ms avg)');
       });
 
+      // ignore: unused_local_variable
       test('should maintain performance under sustained load', () async {
         // Arrange
         const loadDuration = Duration(seconds: 5);
@@ -359,6 +415,7 @@ void main() {
         final futures = <Future>[];
         var operationCount = 0;
         
+      // ignore: unused_local_variable - May be used in callback or assertion
         final timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
           if (stopwatch.elapsed >= loadDuration) {
             timer.cancel();
@@ -372,17 +429,28 @@ void main() {
         
         // Wait for load duration
         await Future.delayed(loadDuration);
+      // ignore: avoid_print
         
         // Wait for all operations to complete
+      // ignore: avoid_print
         await Future.wait(futures);
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(operationCount, greaterThan(20)); // Minimum operations performed in shortened run
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         final avgOperationTime = stopwatch.elapsedMilliseconds / operationCount;
+      // ignore: avoid_print
         expect(avgOperationTime, lessThan(200)); // Consistent performance
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Sustained load test: $operationCount operations in ${stopwatch.elapsedSeconds} seconds '
               '(${avgOperationTime.toStringAsFixed(1)}ms avg)');
       });
@@ -403,18 +471,30 @@ void main() {
         }
         
         await Future.wait(futures);
+      // ignore: avoid_print
         stopwatch.stop();
         
+      // ignore: avoid_print
         // Force garbage collection and measure memory
+      // ignore: avoid_print
         await _forceGarbageCollection();
+      // ignore: avoid_print
         final memoryAfter = _getMemoryUsage();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(30000)); // Under 30 seconds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         final memoryIncrease = memoryAfter - memoryBefore;
+      // ignore: avoid_print
         expect(memoryIncrease, lessThan(200 * 1024 * 1024)); // Less than 200MB increase
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Memory load test: $heavyOperations operations in ${stopwatch.elapsedMilliseconds}ms, '
               'Memory increase: ${_formatBytes(memoryIncrease)}');
       });
@@ -438,19 +518,32 @@ void main() {
         }
         
         // AI operations
+      // ignore: avoid_print
         for (int i = 0; i < resourceIntensiveOps ~/ 3; i++) {
           futures.add(_simulateResourceIntensiveAIOperation(i));
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         await Future.wait(futures);
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(45000)); // Under 45 seconds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         final avgTime = stopwatch.elapsedMilliseconds / resourceIntensiveOps;
+      // ignore: avoid_print
         expect(avgTime, lessThan(450)); // Under 450ms per operation
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Resource contention test: $resourceIntensiveOps operations in ${stopwatch.elapsedMilliseconds}ms '
               '(${avgTime.toStringAsFixed(1)}ms avg)');
       });
@@ -564,9 +657,11 @@ Future<Map<String, dynamic>> _simulateCompleteUserJourney(int userId, int operat
 
 Future<void> _simulateRandomOperation(int operationIndex) async {
   final operations = [
+      // ignore: unused_local_variable
     () => _simulateSearch('random_$operationIndex'),
     () => _simulateSpotCreation(operationIndex % 100, operationIndex),
     () => _simulateSpotRating(operationIndex % 100, operationIndex),
+      // ignore: unused_local_variable
     () => _simulateAIInteraction(operationIndex % 100, operationIndex),
   ];
   
@@ -579,6 +674,7 @@ Future<void> _simulateMemoryIntensiveOperation(int operationIndex) async {
   final largeList = List.generate(10000, (i) => _createTestSpot(operationIndex * 10000 + i));
   
   // Process the data
+      // ignore: unused_local_variable - May be used in callback or assertion
   var totalRating = 0.0;
   for (final spot in largeList) {
     totalRating += spot.rating;
@@ -948,10 +1044,17 @@ class _FakeAISearchSuggestionsService implements AISearchSuggestionsService {
 }
 
 // Mock use cases
+// ignore: unused_element - Reserved for future test scenarios
 dynamic _mockGetSpotsUseCase() => null;
+// ignore: unused_element - Reserved for future test scenarios
 dynamic _mockCreateSpotUseCase() => null;
+// ignore: unused_element - Reserved for future test scenarios
 dynamic _mockUpdateSpotUseCase() => null;
+// ignore: unused_element - Reserved for future test scenarios
 dynamic _mockDeleteSpotUseCase() => null;
+// ignore: unused_element - Reserved for future test scenarios
 dynamic _mockGetSpotsFromRespectedListsUseCase() => null;
+// ignore: unused_element - Reserved for future test scenarios
 dynamic _mockHybridSearchUseCase() => null;
+// ignore: unused_element - Reserved for future test scenarios
 dynamic _mockAISearchSuggestionsService() => null;

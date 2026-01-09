@@ -15,12 +15,12 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots_network/network/device_discovery.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/presentation/widgets/network/discovered_devices_widget.dart';
-import 'package:spots/presentation/widgets/network/ai2ai_connection_view_widget.dart';
-import 'package:spots/presentation/pages/settings/discovery_settings_page.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai_network/network/device_discovery.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/presentation/widgets/network/discovered_devices_widget.dart';
+import 'package:avrai/presentation/widgets/network/ai2ai_connection_view_widget.dart';
+import 'package:avrai/presentation/pages/settings/discovery_settings_page.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
@@ -590,7 +590,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage> with Single
     );
   }
   
-  void _handleHumanConnectionEnabled(connection) {
+  void _handleHumanConnectionEnabled(dynamic connection) {
     // Handle navigation to human chat or other UI flow
     // This is where you'd integrate with your chat/messaging system
     debugPrint('Human connection enabled for: ${connection.connectionId}');

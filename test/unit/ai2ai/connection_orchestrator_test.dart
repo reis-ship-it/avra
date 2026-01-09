@@ -2,14 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/ai2ai/aipersonality_node.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/ai2ai/aipersonality_node.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 
 /// Tests for AI2AI Connection Orchestrator
 /// OUR_GUTS.md: "AI2AI vibe-based connections that enable cross-personality learning while preserving privacy"

@@ -1,7 +1,7 @@
 import 'dart:math';
-import 'package:spots/core/models/connection_metrics.dart'
+import 'package:avrai/core/models/connection_metrics.dart'
     hide SharedInsight, ChatMessage;
-import 'package:spots/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
 
 /// Shared utility functions for AI2AI learning
 class AI2AILearningUtils {

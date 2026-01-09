@@ -1,4 +1,4 @@
-import 'package:spots/core/ml/nlp_enums.dart';
+import 'package:avrai/core/ml/nlp_enums.dart';
 
 // Sentiment analysis result
 class SentimentAnalysis {

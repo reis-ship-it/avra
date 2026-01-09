@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/core/models/user.dart';
 
 /// OUR_GUTS.md: "You don't have to take your phone out or check in"
 /// Passive location tracking and pattern analysis

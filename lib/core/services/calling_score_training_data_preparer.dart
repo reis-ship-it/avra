@@ -4,8 +4,8 @@
 
 import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/ml/calling_score_neural_model.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/ml/calling_score_neural_model.dart';
 
 /// Calling Score Training Data Preparer
 /// 

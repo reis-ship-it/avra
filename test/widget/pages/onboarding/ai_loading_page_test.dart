@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/onboarding/ai_loading_page.dart';
+import 'package:avrai/presentation/pages/onboarding/ai_loading_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
 import '../../helpers/widget_test_helpers.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/core/models/user.dart';
-import 'package:spots/domain/usecases/lists/create_list_usecase.dart';
-import 'package:spots/domain/usecases/lists/delete_list_usecase.dart';
-import 'package:spots/domain/usecases/lists/get_lists_usecase.dart';
-import 'package:spots/domain/usecases/lists/update_list_usecase.dart';
-import 'package:spots/data/repositories/lists_repository_impl.dart';
-import 'package:spots/data/datasources/local/lists_local_datasource.dart';
-import 'package:spots/data/datasources/remote/lists_remote_datasource.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/domain/usecases/lists/create_list_usecase.dart';
+import 'package:avrai/domain/usecases/lists/delete_list_usecase.dart';
+import 'package:avrai/domain/usecases/lists/get_lists_usecase.dart';
+import 'package:avrai/domain/usecases/lists/update_list_usecase.dart';
+import 'package:avrai/data/repositories/lists_repository_impl.dart';
+import 'package:avrai/data/datasources/local/lists_local_datasource.dart';
+import 'package:avrai/data/datasources/remote/lists_remote_datasource.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 import '../../mocks/mock_blocs.dart';
 
 /// Widget tests for AILoadingPage

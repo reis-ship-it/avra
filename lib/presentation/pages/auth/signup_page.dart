@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/routes/app_router.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/routes/app_router.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:go_router/go_router.dart';
 
 class SignupPage extends StatefulWidget {

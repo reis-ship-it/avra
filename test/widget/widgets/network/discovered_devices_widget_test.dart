@@ -7,9 +7,9 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots_network/network/device_discovery.dart';
-import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots/presentation/widgets/network/discovered_devices_widget.dart';
+import 'package:avrai_network/network/device_discovery.dart';
+import 'package:avrai/core/ai/privacy_protection.dart';
+import 'package:avrai/presentation/widgets/network/discovered_devices_widget.dart';
 
 void main() {
   setUpAll(() {});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/ai2ai/learning_insights_widget.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart';
+import 'package:avrai/presentation/widgets/ai2ai/learning_insights_widget.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../helpers/test_helpers.dart';
 

@@ -1,9 +1,9 @@
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/product_tracking_service.dart';
-import 'package:spots/core/services/product_sales_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/product_tracking_service.dart';
+import 'package:avrai/core/services/product_sales_service.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Brand Analytics Service
 ///

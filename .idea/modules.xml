@@ -2,15 +2,16 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/packages/spots_ai/melos_spots_ai.iml" filepath="$PROJECT_DIR$/packages/spots_ai/melos_spots_ai.iml" />
-      <module fileurl="file://$PROJECT_DIR$/packages/spots_app/melos_spots_app.iml" filepath="$PROJECT_DIR$/packages/spots_app/melos_spots_app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/packages/spots_core/melos_spots_core.iml" filepath="$PROJECT_DIR$/packages/spots_core/melos_spots_core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/packages/spots_data/melos_spots_data.iml" filepath="$PROJECT_DIR$/packages/spots_data/melos_spots_data.iml" />
-      <module fileurl="file://$PROJECT_DIR$/packages/spots_knot/melos_spots_knot.iml" filepath="$PROJECT_DIR$/packages/spots_knot/melos_spots_knot.iml" />
-      <module fileurl="file://$PROJECT_DIR$/packages/spots_ml/melos_spots_ml.iml" filepath="$PROJECT_DIR$/packages/spots_ml/melos_spots_ml.iml" />
-      <module fileurl="file://$PROJECT_DIR$/packages/spots_network/melos_spots_network.iml" filepath="$PROJECT_DIR$/packages/spots_network/melos_spots_network.iml" />
-      <module fileurl="file://$PROJECT_DIR$/packages/spots_quantum/melos_spots_quantum.iml" filepath="$PROJECT_DIR$/packages/spots_quantum/melos_spots_quantum.iml" />
-      <module fileurl="file://$PROJECT_DIR$/melos_spots.iml" filepath="$PROJECT_DIR$/melos_spots.iml" />
+<module fileurl="file://$PROJECT_DIR$/melos_avrai.iml" filepath="$PROJECT_DIR$/melos_avrai.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/spots_ai/melos_spots_ai.iml" filepath="$PROJECT_DIR$/packages/spots_ai/melos_spots_ai.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/spots_app/melos_spots_app.iml" filepath="$PROJECT_DIR$/packages/spots_app/melos_spots_app.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/spots_core/melos_spots_core.iml" filepath="$PROJECT_DIR$/packages/spots_core/melos_spots_core.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/spots_data/melos_spots_data.iml" filepath="$PROJECT_DIR$/packages/spots_data/melos_spots_data.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/spots_knot/melos_spots_knot.iml" filepath="$PROJECT_DIR$/packages/spots_knot/melos_spots_knot.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/spots_ml/melos_spots_ml.iml" filepath="$PROJECT_DIR$/packages/spots_ml/melos_spots_ml.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/spots_network/melos_spots_network.iml" filepath="$PROJECT_DIR$/packages/spots_network/melos_spots_network.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/spots_quantum/melos_spots_quantum.iml" filepath="$PROJECT_DIR$/packages/spots_quantum/melos_spots_quantum.iml"/>
+<module fileurl="file://$PROJECT_DIR$/melos_spots.iml" filepath="$PROJECT_DIR$/melos_spots.iml"/>
     </modules>
   </component>
 </project>

@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/domain/usecases/auth/get_current_user_usecase.dart';
-import 'package:spots/domain/repositories/auth_repository.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/domain/usecases/auth/get_current_user_usecase.dart';
+import 'package:avrai/domain/repositories/auth_repository.dart';
+import 'package:avrai/core/models/user.dart';
 
 import 'get_current_user_usecase_test.mocks.dart';
 

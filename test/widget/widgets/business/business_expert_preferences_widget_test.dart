@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/business_expert_preferences.dart';
-import 'package:spots/presentation/widgets/business/business_expert_preferences_widget.dart';
+import 'package:avrai/core/models/business_expert_preferences.dart';
+import 'package:avrai/presentation/widgets/business/business_expert_preferences_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for BusinessExpertPreferencesWidget
@@ -14,6 +14,8 @@ void main() {
         'should display preferences form, load initial preferences when provided, or call onPreferencesChanged when preferences change',
         (WidgetTester tester) async {
       // Test business logic: Business expert preferences widget display and functionality
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       bool preferencesChanged = false;
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: BusinessExpertPreferencesWidget(

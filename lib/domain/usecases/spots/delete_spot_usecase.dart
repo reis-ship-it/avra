@@ -1,4 +1,4 @@
-import 'package:spots/domain/repositories/spots_repository.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
 
 class DeleteSpotUseCase {
   final SpotsRepository spotsRepository;

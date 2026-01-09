@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/data/datasources/remote/google_places_datasource.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/data/datasources/remote/google_places_datasource.dart';
 
 /// OnboardingPlaceListGenerator
 /// 

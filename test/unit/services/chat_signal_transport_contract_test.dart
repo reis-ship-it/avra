@@ -3,18 +3,18 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/community_chat_service.dart';
-import 'package:spots/core/services/friend_chat_service.dart';
-import 'package:spots/core/services/dm_message_store.dart';
-import 'package:spots/core/services/community_message_store.dart';
-import 'package:spots/core/services/community_sender_key_service.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots_core/spots_core.dart';
-import 'package:spots_network/interfaces/realtime_backend.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/community_chat_service.dart';
+import 'package:avrai/core/services/friend_chat_service.dart';
+import 'package:avrai/core/services/dm_message_store.dart';
+import 'package:avrai/core/services/community_message_store.dart';
+import 'package:avrai/core/services/community_sender_key_service.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai_core/avra_core.dart';
+import 'package:avrai_network/interfaces/realtime_backend.dart';
 import '../../mocks/in_memory_flutter_secure_storage.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// In-memory realtime backend for unit tests.
 ///

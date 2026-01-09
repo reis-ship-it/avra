@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-import 'package:spots/core/services/model_safety_supervisor.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/model_safety_supervisor.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 
 /// Dev/helper flow: import a local GGUF file into the model-pack directory and
 /// activate it (no hosting, no manifest URL).

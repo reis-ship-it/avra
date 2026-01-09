@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:get_storage/get_storage.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// Service for tracking and aggregating AI improvement metrics
 /// Provides data for AI Self-Improvement Visibility UI

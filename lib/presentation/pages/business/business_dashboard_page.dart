@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/business_auth_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/business_auth_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/presentation/pages/business/business_login_page.dart';
-import 'package:spots/presentation/pages/business/business_conversations_list_page.dart';
-import 'package:spots/presentation/pages/business/business_expert_discovery_page.dart';
+import 'package:avrai/presentation/pages/business/business_login_page.dart';
+import 'package:avrai/presentation/pages/business/business_conversations_list_page.dart';
+import 'package:avrai/presentation/pages/business/business_expert_discovery_page.dart';
 
 /// Business Dashboard Page
 /// Main dashboard for business accounts after login

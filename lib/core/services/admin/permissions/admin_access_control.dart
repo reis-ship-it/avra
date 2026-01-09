@@ -1,5 +1,5 @@
-import 'package:spots/core/services/admin/permissions/admin_permission_checker.dart';
-import 'package:spots/core/services/admin_auth_service.dart';
+import 'package:avrai/core/services/admin/permissions/admin_permission_checker.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
 
 /// Admin access control wrapper
 /// Provides authorization helpers and exception handling

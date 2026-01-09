@@ -1,7 +1,7 @@
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Expertise Curation Service
 /// Manages expert-based curation and validation

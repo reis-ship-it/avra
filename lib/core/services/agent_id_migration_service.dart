@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/secure_mapping_encryption_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/secure_mapping_encryption_service.dart';
 import 'dart:typed_data';
 
 /// Agent ID Migration Service

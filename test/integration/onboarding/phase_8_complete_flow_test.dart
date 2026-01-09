@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/app.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
-import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
-import 'package:spots/presentation/pages/onboarding/ai_loading_page.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/app.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/local/onboarding_completion_service.dart';
+import 'package:avrai/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:avrai/presentation/pages/onboarding/ai_loading_page.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Phase 8 Complete Flow Integration Test
@@ -83,6 +83,8 @@ void main() {
     // Reset onboarding completion state before each test
     // This ensures tests can actually run the onboarding flow
     try {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       final completionService = OnboardingCompletionService();
       // Clear any existing onboarding completion flags
       // Note: OnboardingCompletionService uses SharedPreferences, which is cleared
@@ -101,7 +103,9 @@ void main() {
 
       // Check if onboarding is available
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router - test skipped');
         return;
       }
@@ -123,8 +127,11 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
+      // ignore: avoid_print
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped - test skipped');
         return;
       }

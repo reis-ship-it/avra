@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/data/datasources/local/auth_sembast_datasource.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/data/datasources/local/auth_sembast_datasource.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/user.dart';
 
 /// Auth Sembast Data Source Tests
 /// Tests local authentication data storage using Sembast

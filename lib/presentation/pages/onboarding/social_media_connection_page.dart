@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// Social Media Connection Page for Onboarding
 /// Allows users to optionally connect their social media accounts
@@ -614,6 +614,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
           agentId: agentId,
         );
 
+        if (!mounted) return;
         setState(() {
           _connectedPlatforms[platform] = false;
         });
@@ -621,6 +622,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
         // Report changes to parent
         widget
             .onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
+        if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -630,6 +632,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
           ),
         );
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to disconnect $platform: $e'),

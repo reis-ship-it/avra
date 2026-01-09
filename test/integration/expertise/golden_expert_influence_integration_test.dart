@@ -16,10 +16,10 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/golden_expert_ai_influence_service.dart';
-import 'package:spots/core/services/locality_personality_service.dart';
-import 'package:spots/core/models/multi_path_expertise.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/services/golden_expert_ai_influence_service.dart';
+import 'package:avrai/core/services/locality_personality_service.dart';
+import 'package:avrai/core/models/multi_path_expertise.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 import '../../helpers/test_helpers.dart';
 
 void main() {

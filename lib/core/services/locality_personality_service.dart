@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:get_it/get_it.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/multi_path_expertise.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/golden_expert_ai_influence_service.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots_core/services/logger.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/multi_path_expertise.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/golden_expert_ai_influence_service.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai_core/services/logger.dart';
 
 /// Locality Personality Service
 ///

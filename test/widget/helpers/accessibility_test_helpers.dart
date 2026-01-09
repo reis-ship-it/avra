@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Accessibility testing helpers for WCAG 2.1 AA compliance
 class AccessibilityTestHelpers {

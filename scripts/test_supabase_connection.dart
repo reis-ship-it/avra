@@ -1,4 +1,5 @@
 import 'dart:io';
+// ignore_for_file: avoid_print - Script file
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Test script to verify Supabase connection
@@ -58,6 +59,7 @@ void main() async {
 Future<void> testAuthentication(SupabaseClient client) async {
   try {
     // Test anonymous sign in
+    // ignore: unused_local_variable - Script file, response verification
     final response = await client.auth.signInAnonymously();
     print('✅ Anonymous sign in successful');
     
@@ -75,6 +77,7 @@ Future<void> testAuthentication(SupabaseClient client) async {
 Future<void> testDatabaseOperations(SupabaseClient client) async {
   try {
     // Test reading from users table
+    // ignore: unused_local_variable - Script file, response verification
     final response = await client
         .from('users')
         .select()
@@ -135,9 +138,10 @@ Future<void> testRealtime(SupabaseClient client) async {
     final channel = client.channel('test-channel');
     
     channel.subscribe((status, [error]) {
-      if (status == 'SUBSCRIBED') {
+      // ignore: unrelated_type_equality_checks - Script file, status comparison needed for testing
+      if (status.toString().contains('subscribed') || status.toString() == 'SUBSCRIBED') {
         print('✅ Realtime subscription successful');
-      } else if (status == 'CHANNEL_ERROR') {
+      } else if (status.toString().contains('error') || status.toString() == 'CHANNEL_ERROR') {
         print('❌ Realtime subscription failed: $error');
       }
     });

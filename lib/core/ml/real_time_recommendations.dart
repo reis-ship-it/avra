@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/user.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/age_compatibility_filter.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/age_compatibility_filter.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// OUR_GUTS.md: "Effortless, Seamless Discovery"

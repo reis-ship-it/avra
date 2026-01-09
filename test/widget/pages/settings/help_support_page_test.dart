@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/settings/help_support_page.dart';
+import 'package:avrai/presentation/pages/settings/help_support_page.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for HelpSupportPage

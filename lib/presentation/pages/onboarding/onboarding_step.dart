@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/services/permissions_persistence_service.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/services/permissions_persistence_service.dart';
 
 class PermissionsPage extends StatefulWidget {
   const PermissionsPage({super.key});
@@ -640,8 +640,8 @@ class _PermissionsPageState extends State<PermissionsPage> {
                                         await _showPermanentlyDeniedDialog(
                                             permission);
                                       } else if (newStatus != null &&
-                                          !newStatus.isGranted &&
-                                          mounted) {
+                                          !newStatus.isGranted) {
+                                        if (!mounted || !context.mounted) return;
                                         // Show helpful message for simulator limitations
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
@@ -657,20 +657,19 @@ class _PermissionsPageState extends State<PermissionsPage> {
                                     } else if (!value && isGranted) {
                                       // Refresh to show actual state
                                       await _refreshStatuses();
-                                      if (mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              'To revoke permissions, please use your device settings.',
-                                            ),
-                                            duration: Duration(seconds: 2),
+                                      if (!mounted || !context.mounted) return;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'To revoke permissions, please use your device settings.',
                                           ),
-                                        );
-                                      }
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
                                     }
                                   },
-                          ),
+                            ),
                         ),
                       );
                     }),

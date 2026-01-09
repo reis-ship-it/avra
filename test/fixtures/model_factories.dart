@@ -1,9 +1,9 @@
-import 'package:spots/core/models/unified_user.dart' show UnifiedUser, UserRole;
-import 'package:spots/core/models/unified_list.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/unified_models.dart' hide UnifiedUser;
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai/core/models/unified_user.dart' show UnifiedUser, UserRole;
+import 'package:avrai/core/models/unified_list.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/unified_models.dart' hide UnifiedUser;
+import 'package:avrai/core/constants/vibe_constants.dart';
 import '../helpers/test_helpers.dart';
 
 /// Factory methods for creating test model instances

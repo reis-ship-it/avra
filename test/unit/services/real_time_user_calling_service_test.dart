@@ -4,21 +4,25 @@
 // Patent #29: Multi-Entity Quantum Entanglement Matching System
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/quantum/real_time_user_calling_service.dart';
-import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots/core/services/quantum/meaningful_experience_calculator.dart';
-import 'package:spots/core/services/quantum/user_journey_tracking_service.dart';
+import 'package:avrai/core/services/quantum/real_time_user_calling_service.dart';
+import 'package:avrai/core/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai/core/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai/core/services/quantum/meaningful_experience_calculator.dart';
+import 'package:avrai/core/services/quantum/user_journey_tracking_service.dart';
+import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
+import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
+import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {
@@ -69,6 +73,17 @@ void main() {
         supabaseService: supabaseService,
       );
       
+      // Create knot services with proper dependencies
+      final storageService = StorageService.instance;
+      final knotStorage = KnotStorageService(storageService: storageService);
+      final stringService = KnotEvolutionStringService(storageService: knotStorage);
+      final fabricService = KnotFabricService();
+      final worldsheetService = KnotWorldsheetService(
+        storageService: knotStorage,
+        stringService: stringService,
+        fabricService: fabricService,
+      );
+      
       service = RealTimeUserCallingService(
         atomicClock: atomicClock,
         entanglementService: entanglementService,
@@ -82,6 +97,10 @@ void main() {
         personalityKnotService: personalityKnotService,
         meaningfulExperienceCalculator: meaningfulExperienceCalculator,
         journeyTrackingService: journeyTrackingService,
+        stringService: stringService,
+        worldsheetService: worldsheetService,
+        fabricService: fabricService,
+        knotStorage: knotStorage,
       );
     });
 

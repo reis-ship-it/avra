@@ -1,11 +1,11 @@
 import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/edge_function_service.dart';
-import 'package:spots/core/services/onboarding_dimension_mapper.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/edge_function_service.dart';
+import 'package:avrai/core/services/onboarding_dimension_mapper.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// Service for syncing aggregated onboarding data to an edge function.
 ///

@@ -39,7 +39,7 @@ def googleMapsApiKey =
         'YOUR_ANDROID_GOOGLE_MAPS_API_KEY'
 
 android {
-    namespace "com.avra.app"
+    namespace "com.avrai.app"
     compileSdkVersion 36
     ndkVersion "27.0.12077973"
 
@@ -59,7 +59,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.avra.app"
+        applicationId "com.avrai.app"
         minSdkVersion 26
         targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
@@ -74,7 +74,7 @@ android {
         // IMPORTANT: use += so we don't clobber Flutter's own placeholders
         // (e.g. ${applicationName}).
         manifestPlaceholders += [
-                appAuthRedirectScheme: "com.avra.app"
+                appAuthRedirectScheme: "com.avrai.app"
         ]
     }
 

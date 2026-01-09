@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:spots/core/services/geo_city_pack_service.dart';
-import 'package:spots/core/services/geo_locality_pack_service.dart';
+import 'package:avrai/core/services/geo_city_pack_service.dart';
+import 'package:avrai/core/services/geo_locality_pack_service.dart';
 
 void main() {
   test('GeoLocalityPackService: can load pack and resolve point->locality', () async {

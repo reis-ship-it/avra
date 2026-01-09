@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/event_success_level.dart';
+import 'package:avrai/core/models/event_success_level.dart';
 
 /// Event Success Metrics Model
 /// 

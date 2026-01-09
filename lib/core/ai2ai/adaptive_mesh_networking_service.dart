@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:battery_plus/battery_plus.dart';
-import 'package:spots/core/ai2ai/adaptive_mesh_hop_policy.dart' as mesh_policy
+import 'package:avrai/core/ai2ai/adaptive_mesh_hop_policy.dart' as mesh_policy
     show AdaptiveMeshHopPolicy, MessagePriority, MessageType;
-import 'package:spots/core/ai2ai/battery_adaptive_ble_scheduler.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots_network/spots_network.dart';
+import 'package:avrai/core/ai2ai/battery_adaptive_ble_scheduler.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai_network/avra_network.dart';
 
 /// Adaptive mesh networking service
 /// 

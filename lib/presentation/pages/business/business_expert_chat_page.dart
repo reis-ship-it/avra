@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/business_expert_chat_service_ai2ai.dart';
-import 'package:spots/core/models/business_expert_message.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/business_expert_chat_service_ai2ai.dart';
+import 'package:avrai/core/models/business_expert_message.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:async';
 
@@ -154,6 +154,7 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
       _messageController.clear();
       await _loadMessages(); // Reload to get the new message
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error sending message: $e'),

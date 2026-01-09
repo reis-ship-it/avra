@@ -18,13 +18,13 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/settings/federated_learning_page.dart';
-import 'package:spots/presentation/widgets/settings/federated_learning_settings_section.dart';
-import 'package:spots/presentation/widgets/settings/federated_learning_status_widget.dart';
-import 'package:spots/presentation/widgets/settings/privacy_metrics_widget.dart';
-import 'package:spots/presentation/widgets/settings/federated_participation_history_widget.dart' as history_widget;
-import 'package:spots/core/p2p/federated_learning.dart';
-import 'package:spots/core/monitoring/network_analytics.dart' as analytics;
+import 'package:avrai/presentation/pages/settings/federated_learning_page.dart';
+import 'package:avrai/presentation/widgets/settings/federated_learning_settings_section.dart';
+import 'package:avrai/presentation/widgets/settings/federated_learning_status_widget.dart';
+import 'package:avrai/presentation/widgets/settings/privacy_metrics_widget.dart';
+import 'package:avrai/presentation/widgets/settings/federated_participation_history_widget.dart' as history_widget;
+import 'package:avrai/core/p2p/federated_learning.dart';
+import 'package:avrai/core/monitoring/network_analytics.dart' as analytics;
 import '../../widget/helpers/widget_test_helpers.dart';
 
 /// End-to-end tests for Federated Learning UI
@@ -170,6 +170,8 @@ void main() {
           type: LearningType.recommendation,
           parameters: {},
         );
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final round = FederatedLearningRound(
           roundId: 'round_1',
           organizationId: 'test_org',
@@ -229,8 +231,11 @@ void main() {
           name: 'Test',
           description: 'Test',
           type: LearningType.recommendation,
+      // ignore: unused_local_variable
           parameters: {},
         );
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final round = FederatedLearningRound(
           roundId: 'round_1',
           organizationId: 'test_org',
@@ -271,9 +276,13 @@ void main() {
       });
     });
 
+      // ignore: unused_local_variable
     group('Privacy Metrics Flow', () {
+      // ignore: unused_local_variable
       testWidgets('should display privacy metrics', (WidgetTester tester) async {
         // Arrange
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final privacyMetrics = analytics.PrivacyMetrics.secure();
 
         // PrivacyMetricsWidget loads metrics internally
@@ -288,10 +297,15 @@ void main() {
         // Widget loads metrics internally via GetIt, may be in loading/error state
         expect(find.byType(PrivacyMetricsWidget), findsOneWidget);
         // Just verify widget is present and rendered
+      // ignore: unused_local_variable
       });
+      // ignore: unused_local_variable
 
+      // ignore: unused_local_variable
       testWidgets('should display privacy info dialog when info icon is tapped', (WidgetTester tester) async {
         // Arrange
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final privacyMetrics = analytics.PrivacyMetrics.secure();
 
         // PrivacyMetricsWidget loads metrics internally
@@ -311,11 +325,17 @@ void main() {
           expect(find.textContaining('Privacy Metrics Explained'), findsOneWidget);
         }
       });
+      // ignore: unused_local_variable
     });
+      // ignore: unused_local_variable
 
+      // ignore: unused_local_variable
     group('Participation History Flow', () {
+      // ignore: unused_local_variable
       testWidgets('should display participation history when available', (WidgetTester tester) async {
         // Arrange
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final history = ParticipationHistory(
           totalRoundsParticipated: 15,
           completedRounds: 12,

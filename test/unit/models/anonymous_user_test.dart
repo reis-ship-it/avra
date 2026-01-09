@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/anonymous_user.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/models/anonymous_user.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 /// Tests for AnonymousUser model
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"

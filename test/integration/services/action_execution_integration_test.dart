@@ -20,10 +20,10 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/ai/action_parser.dart';
-import 'package:spots/core/ai/action_executor.dart';
-import 'package:spots/core/services/action_history_service.dart';
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/ai/action_parser.dart';
+import 'package:avrai/core/ai/action_executor.dart';
+import 'package:avrai/core/services/action_history_service.dart';
 import '../../mocks/mock_storage_service.dart';
 import '../../helpers/test_helpers.dart';
 

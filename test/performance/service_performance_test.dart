@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/tax_compliance_service.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
-import 'package:spots/core/services/expert_recommendations_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/tax_compliance_service.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/services/expert_recommendations_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../fixtures/model_factories.dart';
 import '../helpers/test_helpers.dart';
 
@@ -100,6 +100,7 @@ void main() {
         // Assert
         expect(stopwatch.elapsedMilliseconds, lessThan(1000),
             reason: 'Tax compliance check should complete within 1 second');
+      // ignore: avoid_print
         print('Tax compliance check took: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -123,7 +124,9 @@ void main() {
 
         // Assert
         expect(stopwatch.elapsedMilliseconds, lessThan(100),
+      // ignore: avoid_print
             reason: 'Geographic scope check should complete within 100ms');
+      // ignore: avoid_print
         print(
             'Geographic scope check took: ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -149,8 +152,11 @@ void main() {
         stopwatch.stop();
 
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(2000),
+      // ignore: avoid_print
             reason: 'Expert recommendations should complete within 2 seconds');
+      // ignore: avoid_print
         print(
             'Expert recommendations took: ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -188,9 +194,13 @@ void main() {
         stopwatch.stop();
 
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(5000),
+      // ignore: avoid_print
             reason:
+      // ignore: avoid_print
                 'Multiple sequential calls should complete within 5 seconds');
+      // ignore: avoid_print
         print(
             '5 sequential service calls took: ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -210,10 +220,15 @@ void main() {
         await taxService.needsTaxDocuments('user-123', 2025);
         stopwatch.stop();
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         // Query should be efficient (assuming in-memory storage for now)
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(500),
+      // ignore: avoid_print
             reason: 'Payment data query should complete within 500ms');
+      // ignore: avoid_print
         print('Payment data query took: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -233,11 +248,17 @@ void main() {
         await taxService.needsTaxDocuments('user-123', 2025);
 
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         // Should scale roughly linearly (3x single query time)
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(2000),
+      // ignore: avoid_print
             reason: 'Multiple year queries should complete within 2 seconds');
+      // ignore: avoid_print
         print('3 year queries took: ${stopwatch.elapsedMilliseconds}ms');
       });
     });
@@ -304,12 +325,19 @@ void main() {
           futures.add(taxService.needsTaxDocuments('user-$i', 2025));
         }
 
+      // ignore: avoid_print
         await Future.wait(futures);
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(2000),
+      // ignore: avoid_print
             reason: '10 concurrent calls should complete within 2 seconds');
+      // ignore: avoid_print
         print(
             '10 concurrent tax compliance checks took: ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -334,13 +362,21 @@ void main() {
           ));
         }
 
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(500),
+      // ignore: avoid_print
             reason:
+      // ignore: avoid_print
                 '50 concurrent geographic checks should complete within 500ms');
+      // ignore: avoid_print
         expect(results.length, equals(50));
+      // ignore: avoid_print
         print(
             '50 concurrent geographic checks took: ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -373,14 +409,23 @@ void main() {
             category: 'Coffee',
             locality: 'Greenpoint',
           );
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         await Future.wait(futures);
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(2000),
+      // ignore: avoid_print
             reason: 'Mixed concurrent calls should complete within 2 seconds');
+      // ignore: avoid_print
         print(
             'Mixed concurrent calls took: ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -401,15 +446,25 @@ void main() {
           final sw = Stopwatch()..start();
           await taxService.needsTaxDocuments('user-$i', 2025);
           sw.stop();
+      // ignore: avoid_print
           baselineTimes.add(sw.elapsedMilliseconds);
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         final avgBaseline =
+      // ignore: avoid_print
             baselineTimes.reduce((a, b) => a + b) / baselineTimes.length;
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert - Performance should be consistent
+      // ignore: avoid_print
         expect(avgBaseline, lessThan(1000),
+      // ignore: avoid_print
             reason: 'Average response time should be under 1 second');
+      // ignore: avoid_print
         print('Average baseline time: ${avgBaseline.toStringAsFixed(2)}ms');
 
         // Verify no significant outliers
@@ -436,16 +491,27 @@ void main() {
             category: 'Coffee',
             locality: 'Greenpoint',
           );
+      // ignore: avoid_print
           sw.stop();
+      // ignore: avoid_print
           times.add(sw.elapsedMilliseconds);
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         final avgTime = times.reduce((a, b) => a + b) / times.length;
+      // ignore: avoid_print
         final maxTime = times.reduce((a, b) => a > b ? a : b);
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert - Should be consistently fast
+      // ignore: avoid_print
         expect(avgTime, lessThan(10), reason: 'Average should be under 10ms');
+      // ignore: avoid_print
         expect(maxTime, lessThan(50), reason: 'Max should be under 50ms');
+      // ignore: avoid_print
         print(
             'Geographic scope - Average: ${avgTime.toStringAsFixed(2)}ms, Max: ${maxTime}ms');
       });

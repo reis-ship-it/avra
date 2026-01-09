@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/data/datasources/remote/openstreetmap_datasource.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/data/datasources/remote/openstreetmap_datasource.dart';
 
 /// OpenStreetMap Implementation
 /// OUR_GUTS.md: "Community, Not Just Places" - Community-driven external data

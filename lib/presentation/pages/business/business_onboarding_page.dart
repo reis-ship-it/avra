@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/controllers/business_onboarding_controller.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/pages/business/business_dashboard_page.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/controllers/business_onboarding_controller.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/pages/business/business_dashboard_page.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// Business Onboarding Page
 ///
@@ -27,7 +27,9 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
   int _currentStep = 0;
 
   // Onboarding data
+  // ignore: unused_field
   final Map<String, dynamic> _expertPreferences = {};
+  // ignore: unused_field - Reserved for future patron preferences
   final Map<String, dynamic> _patronPreferences = {};
   final List<String> _teamMembers = [];
   bool _setupSharedAgent = true;

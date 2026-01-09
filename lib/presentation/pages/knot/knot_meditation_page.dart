@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:developer' as developer;
-import 'package:spots_knot/services/knot/dynamic_knot_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots/core/services/wearable_data_service.dart';
-import 'package:spots_knot/models/dynamic_knot.dart';
-import 'package:spots/presentation/widgets/knot/breathing_knot_widget.dart';
+import 'package:avrai_knot/services/knot/dynamic_knot_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai/core/services/wearable_data_service.dart';
+import 'package:avrai_knot/models/dynamic_knot.dart';
+import 'package:avrai/presentation/widgets/knot/breathing_knot_widget.dart';
 
 /// Page for knot meditation feature
 /// Phase 4: Dynamic Knots (Mood/Energy)

@@ -17,9 +17,9 @@ import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart'; // Required for memory management (malloc, free)
-import 'package:spots/core/crypto/signal/signal_types.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_store_callbacks.dart';
-import 'package:spots/core/crypto/signal/signal_library_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_store_callbacks.dart';
+import 'package:avrai/core/crypto/signal/signal_library_manager.dart';
 
 // ============================================================================
 // FFI TYPE DEFINITIONS

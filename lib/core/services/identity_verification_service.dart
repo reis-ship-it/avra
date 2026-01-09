@@ -1,7 +1,7 @@
-import 'package:spots/core/models/verification_session.dart';
-import 'package:spots/core/models/verification_result.dart';
-import 'package:spots/core/services/tax_compliance_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/verification_session.dart';
+import 'package:avrai/core/models/verification_result.dart';
+import 'package:avrai/core/services/tax_compliance_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Identity Verification Service
@@ -82,7 +82,9 @@ class IdentityVerificationService {
       
       // Get current year and month
       final now = DateTime.now();
+      // ignore: unused_local_variable - Reserved for future date-based validation
       final currentYear = now.year;
+      // ignore: unused_local_variable - Reserved for future date-based validation
       final currentMonth = now.month;
       
       // Calculate monthly earnings for current month

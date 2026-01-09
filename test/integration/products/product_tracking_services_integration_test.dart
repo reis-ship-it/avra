@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/services/product_tracking_service.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/services/product_tracking_service.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
 import '../../helpers/integration_test_helpers.dart';
 
 // Mock dependencies
@@ -33,6 +33,8 @@ void main() {
     late MockSponsorshipService mockSponsorshipService;
     late MockRevenueSplitService mockRevenueSplitService;
     
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late DateTime testDate;
     late Sponsorship testSponsorship;
     

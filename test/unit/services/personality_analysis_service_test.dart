@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/personality_analysis_service.dart';
+import 'package:avrai/core/services/personality_analysis_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Personality Analysis Service Tests

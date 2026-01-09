@@ -7,9 +7,9 @@ import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:spots/core/ml/model_version_registry.dart';
-import 'package:spots/core/ml/model_version_info.dart';
-import 'package:spots/core/services/model_version_manager.dart';
+import 'package:avrai/core/ml/model_version_registry.dart';
+import 'package:avrai/core/ml/model_version_info.dart';
+import 'package:avrai/core/services/model_version_manager.dart';
 
 /// Model Retraining Service
 /// 

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:math';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/services/ledgers/ledger_audit_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/services/ledgers/ledger_audit_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
 
 /// OUR_GUTS.md: "Network analytics that monitor AI2AI personality network health while preserving privacy"
 /// Comprehensive network analytics system for monitoring AI2AI personality learning effectiveness

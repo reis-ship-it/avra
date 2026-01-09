@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/spots/spot_card.dart';
+import 'package:avrai/presentation/widgets/spots/spot_card.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../fixtures/model_factories.dart';
 

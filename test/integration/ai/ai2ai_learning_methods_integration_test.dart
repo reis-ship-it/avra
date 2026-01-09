@@ -21,8 +21,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/settings/ai2ai_learning_methods_page.dart';
-import 'package:spots/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
+import 'package:avrai/presentation/pages/settings/ai2ai_learning_methods_page.dart';
+import 'package:avrai/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
 import '../../widget/helpers/widget_test_helpers.dart';
 import '../../widget/mocks/mock_blocs.dart';
 

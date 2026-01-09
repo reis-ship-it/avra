@@ -4,12 +4,12 @@
 // Patent #29: Multi-Entity Quantum Entanglement Matching System
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart';
-import 'package:spots_knot/services/knot/quantum_state_knot_service.dart';
+import 'package:avrai/core/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_knot/services/knot/cross_entity_compatibility_service.dart';
+import 'package:avrai_knot/services/knot/quantum_state_knot_service.dart';
 
 void main() {
   group('QuantumEntanglementService', () {

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
 
 /// Experiment 6: Network-Wide Quantum Temporal Synchronization
 ///
@@ -116,6 +116,8 @@ void main() {
       final t1Initial = await node1.getAtomicTimestamp();
       final t2Initial = await node2.getAtomicTimestamp();
       
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       final initialDiff = (t1Initial.serverTime
           .difference(t2Initial.serverTime).inMilliseconds).abs();
       

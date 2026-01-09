@@ -1,20 +1,20 @@
 import 'dart:async';
 
-import 'package:spots/core/models/tax_document.dart';
-import 'package:spots/core/models/tax_profile.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/pdf_generation_service.dart';
-import 'package:spots/core/services/irs_filing_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/tax_document_storage_service.dart';
-import 'package:spots/core/utils/secure_ssn_encryption.dart';
-import 'package:spots/data/repositories/tax_profile_repository.dart';
-import 'package:spots/data/repositories/tax_document_repository.dart';
+import 'package:avrai/core/models/tax_document.dart';
+import 'package:avrai/core/models/tax_profile.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/pdf_generation_service.dart';
+import 'package:avrai/core/services/irs_filing_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/tax_document_storage_service.dart';
+import 'package:avrai/core/utils/secure_ssn_encryption.dart';
+import 'package:avrai/data/repositories/tax_profile_repository.dart';
+import 'package:avrai/data/repositories/tax_document_repository.dart';
 import 'package:uuid/uuid.dart';
 
 /// Tax Compliance Service

@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/quantum_matching_controller.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/matching_input.dart';
-import 'package:spots/core/models/matching_result.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/event_recommendation_service.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/quantum_matching_controller.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/matching_input.dart';
+import 'package:avrai/core/models/matching_result.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/event_recommendation_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
 
 class _DeterministicQuantumMatchingController
     implements WorkflowController<MatchingInput, QuantumMatchingResult> {

@@ -17,22 +17,22 @@ import 'package:mocktail/mocktail.dart';
 import 'package:sembast/sembast_memory.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:spots_network/network/ai2ai_protocol.dart' as ai2ai;
-import 'package:spots/core/ai2ai/anonymous_communication.dart' as anonymous;
-import 'package:spots/core/services/message_encryption_service.dart' as message_encryption;
-import 'package:spots/core/services/hybrid_encryption_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/signal_protocol_encryption_service.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_key_manager.dart';
-import 'package:spots/core/crypto/signal/signal_session_manager.dart';
-import 'package:spots/core/crypto/signal/signal_protocol_service.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_store_callbacks.dart';
-import 'package:spots/core/crypto/signal/signal_platform_bridge_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_rust_wrapper_bindings.dart';
-import 'package:spots/core/services/signal_protocol_initialization_service.dart';
-import 'package:spots/core/services/user_anonymization_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:avrai_network/network/ai2ai_protocol.dart' as ai2ai;
+import 'package:avrai/core/ai2ai/anonymous_communication.dart' as anonymous;
+import 'package:avrai/core/services/message_encryption_service.dart' as message_encryption;
+import 'package:avrai/core/services/hybrid_encryption_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/signal_protocol_encryption_service.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_protocol_service.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_store_callbacks.dart';
+import 'package:avrai/core/crypto/signal/signal_platform_bridge_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_rust_wrapper_bindings.dart';
+import 'package:avrai/core/services/signal_protocol_initialization_service.dart';
+import 'package:avrai/core/services/user_anonymization_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
 import '../../mocks/in_memory_flutter_secure_storage.dart';
 
 /// Mock Supabase client for testing

@@ -1,6 +1,6 @@
 import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai2ai/battery_adaptive_ble_scheduler.dart';
+import 'package:avrai/core/ai2ai/battery_adaptive_ble_scheduler.dart';
 
 void main() {
   test('Battery scan policy is aggressive when charging', () {

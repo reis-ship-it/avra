@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/secure_mapping_encryption_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/secure_mapping_encryption_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 import 'dart:typed_data';
 
 /// Mock services
@@ -49,7 +49,11 @@ void main() {
       // The implementation in agent_id_service.dart uses agentId
       // This is a code verification test
       
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       const userId = 'test-user-123';
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       const agentId = 'agent_test_abc123';
       
       // Verify _logMappingAccess uses agentId

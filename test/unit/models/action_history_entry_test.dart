@@ -14,8 +14,8 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/action_history_entry.dart';
-import 'package:spots/core/ai/action_models.dart';
+import 'package:avrai/core/ai/action_history_entry.dart';
+import 'package:avrai/core/ai/action_models.dart';
 
 void main() {
   group('ActionHistoryEntry', () {

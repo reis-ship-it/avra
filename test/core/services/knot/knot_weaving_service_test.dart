@@ -7,12 +7,12 @@
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots_knot/models/knot/braided_knot.dart';
-import 'package:spots_knot/services/knot/knot_weaving_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_knot/models/knot/braided_knot.dart';
+import 'package:avrai_knot/services/knot/knot_weaving_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 
 class MockPersonalityKnotService extends Mock implements PersonalityKnotService {}
 

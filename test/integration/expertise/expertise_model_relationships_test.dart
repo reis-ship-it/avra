@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/visit.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/services/automatic_check_in_service.dart';
+import 'package:avrai/core/models/visit.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/services/automatic_check_in_service.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../helpers/test_helpers.dart';
 import '../../fixtures/model_factories.dart';
@@ -24,6 +24,8 @@ import '../../fixtures/model_factories.dart';
 void main() {
   group('Expertise Model Relationships Test', () {
     late AutomaticCheckInService checkInService;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late DateTime testDate;
     
     setUp(() {
@@ -73,8 +75,11 @@ void main() {
       test('should support multiple visits contributing to expertise', () async {
         // Arrange
         final user = ModelFactories.createTestUser(
+      // ignore: unused_local_variable
           id: 'user-2',
         );
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         const category = 'Coffee';
         
         // Create multiple visits

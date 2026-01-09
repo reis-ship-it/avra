@@ -1,4 +1,4 @@
-import 'package:spots/core/models/list.dart';
+import 'package:avrai/core/models/list.dart';
 
 abstract class ListsRepository {
   Future<List<SpotList>> getLists();

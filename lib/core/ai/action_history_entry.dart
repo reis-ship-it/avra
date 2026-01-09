@@ -10,7 +10,7 @@
 /// - Whether the action has been undone
 library;
 
-import 'package:spots/core/ai/action_models.dart';
+import 'package:avrai/core/ai/action_models.dart';
 
 /// Represents a single action history entry
 class ActionHistoryEntry {

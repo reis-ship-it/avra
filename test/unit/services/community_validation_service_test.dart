@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:spots/core/services/community_validation_service.dart';
-import 'package:spots/core/models/community_validation.dart';
+import 'package:avrai/core/services/community_validation_service.dart';
+import 'package:avrai/core/models/community_validation.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 import '../../mocks/mock_dependencies.mocks.dart';
 import '../../mocks/mock_storage_service.dart';

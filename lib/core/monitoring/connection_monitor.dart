@@ -2,9 +2,9 @@ import 'dart:developer' as developer;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/services/storage_service.dart'
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/core/services/storage_service.dart'
     show SharedPreferencesCompat;
 
 /// OUR_GUTS.md: "Connection monitoring that tracks AI2AI personality interactions while preserving privacy"

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/domain/usecases/spots/delete_spot_usecase.dart';
-import 'package:spots/domain/repositories/spots_repository.dart';
+import 'package:avrai/domain/usecases/spots/delete_spot_usecase.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
 
 import 'delete_spot_usecase_test.mocks.dart';
 

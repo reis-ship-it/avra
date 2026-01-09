@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 class PreferenceSurveyPage extends StatefulWidget {
   final Map<String, List<String>> preferences;

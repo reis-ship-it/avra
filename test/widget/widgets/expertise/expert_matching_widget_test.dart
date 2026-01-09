@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/expertise/expert_matching_widget.dart';
+import 'package:avrai/presentation/widgets/expertise/expert_matching_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for ExpertMatchingWidget

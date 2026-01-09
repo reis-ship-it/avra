@@ -1,10 +1,10 @@
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Payment Event Service
 /// 

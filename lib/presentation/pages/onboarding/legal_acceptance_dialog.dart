@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/presentation/pages/legal/terms_of_service_page.dart';
-import 'package:spots/presentation/pages/legal/privacy_policy_page.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/presentation/pages/legal/terms_of_service_page.dart';
+import 'package:avrai/presentation/pages/legal/privacy_policy_page.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Legal Acceptance Dialog
 /// 

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'expertise_level.dart';
 
 /// Expertise Pin Model

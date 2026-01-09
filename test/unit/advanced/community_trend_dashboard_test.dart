@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/advanced/community_trend_dashboard.dart';
+import 'package:avrai/core/advanced/community_trend_dashboard.dart';
 
 /// SPOTS Community Trend Dashboard Tests
 /// Date: November 20, 2025

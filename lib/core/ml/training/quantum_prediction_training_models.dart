@@ -1,4 +1,4 @@
-import 'package:spots/core/models/quantum_prediction_features.dart';
+import 'package:avrai/core/models/quantum_prediction_features.dart';
 
 /// Training example with features and ground truth
 class QuantumTrainingExample {

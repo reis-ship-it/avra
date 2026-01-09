@@ -5,8 +5,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/presentation/widgets/common/action_success_widget.dart';
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/presentation/widgets/common/action_success_widget.dart';
 
 void main() {
   group('ActionSuccessWidget', () {

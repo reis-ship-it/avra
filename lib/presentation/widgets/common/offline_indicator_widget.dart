@@ -16,7 +16,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget that displays offline status and functionality information
 class OfflineIndicatorWidget extends StatefulWidget {
@@ -350,9 +350,7 @@ class _AutoOfflineIndicatorState extends State<AutoOfflineIndicator> {
       final result = await _connectivity.checkConnectivity();
       if (mounted) {
         setState(() {
-          _isOffline = result is List 
-              ? result.contains(ConnectivityResult.none)
-              : result == ConnectivityResult.none;
+          _isOffline = result.contains(ConnectivityResult.none);
         });
       }
     } catch (e) {
@@ -369,9 +367,7 @@ class _AutoOfflineIndicatorState extends State<AutoOfflineIndicator> {
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen((result) {
       if (mounted) {
         setState(() {
-          _isOffline = result is List 
-              ? result.contains(ConnectivityResult.none)
-              : result == ConnectivityResult.none;
+          _isOffline = result.contains(ConnectivityResult.none);
         });
       }
     });

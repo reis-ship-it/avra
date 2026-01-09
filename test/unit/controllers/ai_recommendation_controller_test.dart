@@ -2,15 +2,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:spots/core/controllers/ai_recommendation_controller.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/event_recommendation_service.dart' as event_rec_service;
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/preferences_profile.dart';
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/core/controllers/ai_recommendation_controller.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai/core/services/event_recommendation_service.dart' as event_rec_service;
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/preferences_profile.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 
 import 'ai_recommendation_controller_test.mocks.dart';
 

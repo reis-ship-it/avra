@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:intl/intl.dart';
 
 /// User Detail Page

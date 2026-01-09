@@ -1,8 +1,8 @@
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/models/social_media_connection.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/models/social_media_connection.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:get_it/get_it.dart';
 
 /// Social Media Data Collection Controller

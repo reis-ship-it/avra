@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/models/brand_discovery.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
-import 'package:spots/presentation/widgets/brand/sponsorable_event_card.dart';
-import 'package:spots/presentation/pages/brand/sponsorship_checkout_page.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/models/brand_discovery.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
+import 'package:avrai/presentation/widgets/brand/sponsorable_event_card.dart';
+import 'package:avrai/presentation/pages/brand/sponsorship_checkout_page.dart';
 import 'package:get_it/get_it.dart';
 
 /// Brand Discovery Page
@@ -36,11 +36,17 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
   
   // Search and filters
   final _searchController = TextEditingController();
+  // ignore: unused_field
   String? _selectedCategory;
+  // ignore: unused_field
   String? _selectedLocation;
+  // ignore: unused_field
   DateTimeRange? _dateRange;
+  // ignore: unused_field - Reserved for future budget filtering
   double? _minBudget;
+  // ignore: unused_field - Reserved for future budget filtering
   double? _maxBudget;
+  // ignore: unused_field - Reserved for future attendee filtering
   int? _minAttendees;
   
   @override

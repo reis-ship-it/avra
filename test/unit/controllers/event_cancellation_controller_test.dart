@@ -2,17 +2,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:spots/core/controllers/event_cancellation_controller.dart';
-import 'package:spots/core/services/cancellation_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/models/cancellation.dart';
-import 'package:spots/core/models/cancellation_initiator.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/refund_status.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/controllers/event_cancellation_controller.dart';
+import 'package:avrai/core/services/cancellation_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/models/cancellation.dart';
+import 'package:avrai/core/models/cancellation_initiator.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/refund_status.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_status.dart';
+import 'package:avrai/core/models/unified_user.dart';
 
 import 'event_cancellation_controller_test.mocks.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/platform_channel_helper.dart';
 

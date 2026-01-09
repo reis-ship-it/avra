@@ -1,19 +1,19 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/spot_vibe.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_knot/models/entity_knot.dart';
-import 'package:spots/core/models/unified_models.dart' hide UnifiedUser;
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/ai/quantum/location_compatibility_calculator.dart';
-import 'package:spots/core/services/calling_score_calculator.dart';
-import 'package:spots/core/services/feature_flag_service.dart';
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/spot_vibe.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_knot/models/entity_knot.dart';
+import 'package:avrai/core/models/unified_models.dart' hide UnifiedUser;
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/ai/quantum/location_compatibility_calculator.dart';
+import 'package:avrai/core/services/calling_score_calculator.dart';
+import 'package:avrai/core/services/feature_flag_service.dart';
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
 
 /// Spot Vibe Matching Service
 /// 

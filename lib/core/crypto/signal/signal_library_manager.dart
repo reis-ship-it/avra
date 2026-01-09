@@ -8,7 +8,7 @@
 import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
-import 'package:spots/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
 
 /// Signal Protocol Library Manager
 /// 

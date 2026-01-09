@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/multi_path_expertise.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/multi_path_expertise.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Multi-Path Expertise Widget
 /// 

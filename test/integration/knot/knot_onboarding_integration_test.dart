@@ -12,16 +12,16 @@
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/controllers/agent_initialization_controller.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots_knot/services/knot/knot_community_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:avrai/core/controllers/agent_initialization_controller.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_knot/services/knot/knot_community_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Mock Rust API for testing

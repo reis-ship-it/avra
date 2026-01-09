@@ -2,18 +2,27 @@
 // Phase 12 Section 3.2.1: Continuous Learning
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/online_learning_service.dart';
-import 'package:spots/core/services/model_retraining_service.dart';
-import 'package:spots/core/services/model_version_manager.dart';
+import 'package:avrai/core/services/online_learning_service.dart';
+import 'package:avrai/core/services/model_retraining_service.dart';
+import 'package:avrai/core/services/model_version_manager.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/services/calling_score_data_collector.dart';
+import 'package:avrai/core/services/calling_score_data_collector.dart';
 
 void main() {
   group('OnlineLearningService', () {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late OnlineLearningService service;
+      // ignore: unused_local_variable
     late SupabaseClient mockSupabase;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late CallingScoreDataCollector mockDataCollector;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late ModelVersionManager mockVersionManager;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late ModelRetrainingService mockRetrainingService;
     
     setUp(() {
@@ -49,10 +58,18 @@ void main() {
       // final metrics = service.getPerformanceMetrics('v1.0-hybrid');
       // expect(metrics, isNotNull);
     });
+      // ignore: unused_local_variable
   });
+      // ignore: unused_local_variable
   
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
   group('ModelRetrainingService', () {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late ModelRetrainingService service;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late ModelVersionManager mockVersionManager;
     
     setUp(() {

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/behavior_analysis_service.dart';
+import 'package:avrai/core/services/behavior_analysis_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Behavior Analysis Service Tests

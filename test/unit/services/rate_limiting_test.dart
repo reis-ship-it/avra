@@ -8,7 +8,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/rate_limiting_service.dart';
+import 'package:avrai/core/services/rate_limiting_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {

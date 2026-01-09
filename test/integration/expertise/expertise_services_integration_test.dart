@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/expertise_calculation_service.dart';
-import 'package:spots/core/services/saturation_algorithm_service.dart';
-import 'package:spots/core/services/multi_path_expertise_service.dart';
-import 'package:spots/core/services/automatic_check_in_service.dart';
-import 'package:spots/core/models/platform_phase.dart';
-import 'package:spots/core/models/expertise_requirements.dart';
-import 'package:spots/core/models/multi_path_expertise.dart';
+import 'package:avrai/core/services/expertise_calculation_service.dart';
+import 'package:avrai/core/services/saturation_algorithm_service.dart';
+import 'package:avrai/core/services/multi_path_expertise_service.dart';
+import 'package:avrai/core/services/automatic_check_in_service.dart';
+import 'package:avrai/core/models/platform_phase.dart';
+import 'package:avrai/core/models/expertise_requirements.dart';
+import 'package:avrai/core/models/multi_path_expertise.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Integration tests for expertise services
@@ -218,6 +218,8 @@ void main() {
           curatedLists: 10,
         );
 
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final pathScores = MultiPathExpertiseScores(
           exploration: exploration,
           credential: credential,

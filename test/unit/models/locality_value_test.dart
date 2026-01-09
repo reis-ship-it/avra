@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/locality_value.dart';
+import 'package:avrai/core/models/locality_value.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for LocalityValue model

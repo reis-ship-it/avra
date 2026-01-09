@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/presentation/pages/business/business_account_creation_page.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/presentation/pages/business/business_account_creation_page.dart';
 import '../../fixtures/model_factories.dart';
 
 /// Business UI Integration Tests

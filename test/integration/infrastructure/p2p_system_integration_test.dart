@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/p2p/node_manager.dart';
-import 'package:spots/core/p2p/federated_learning.dart';
+import 'package:avrai/core/p2p/node_manager.dart';
+import 'package:avrai/core/p2p/federated_learning.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// P2P System Integration Test  

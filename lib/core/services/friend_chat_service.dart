@@ -1,13 +1,12 @@
 import 'dart:developer' as developer;
 
-import 'package:spots_ai/models/friend_chat_message.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/dm_message_store.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai_ai/models/friend_chat_message.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/dm_message_store.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_network/spots_network.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_network/avra_network.dart';
 import 'package:uuid/uuid.dart';
 
 /// FriendChatService

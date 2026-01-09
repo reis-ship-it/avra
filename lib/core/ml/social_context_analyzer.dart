@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/core/models/user.dart';
 
 /// OUR_GUTS.md: "Community, Not Just Places"
 /// Analyzes social context patterns for community-focused recommendations

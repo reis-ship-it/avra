@@ -12,8 +12,8 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/onboarding_recommendation_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/onboarding_recommendation_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 import '../../helpers/test_helpers.dart';
 
 // Mock classes

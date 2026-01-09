@@ -16,10 +16,10 @@ library;
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/community_chat_service.dart';
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/services/community_chat_service.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import '../../helpers/test_helpers.dart';
 
 // Mock classes
@@ -42,6 +42,8 @@ void main() {
     
     const String testUserId = 'user_123';
     const String testCommunityId = 'community_456';
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     const String testChatId = 'community_chat_$testCommunityId';
     
     late Community testCommunity;

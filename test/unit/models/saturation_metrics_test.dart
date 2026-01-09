@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/saturation_metrics.dart';
+import 'package:avrai/core/models/saturation_metrics.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for SaturationMetrics model

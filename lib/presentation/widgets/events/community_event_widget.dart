@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Community Event Widget
 /// Displays non-expert community events

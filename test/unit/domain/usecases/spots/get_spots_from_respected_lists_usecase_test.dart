@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
-import 'package:spots/domain/repositories/spots_repository.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
+import 'package:avrai/core/models/spot.dart';
 
 import 'get_spots_from_respected_lists_usecase_test.mocks.dart';
 

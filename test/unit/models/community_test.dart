@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/community_event.dart';
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/community_event.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 

@@ -2,16 +2,16 @@ import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
 
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/models/user.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/preferences_profile.dart';
-import 'package:spots/domain/repositories/auth_repository.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/preferences_profile.dart';
+import 'package:avrai/domain/repositories/auth_repository.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai/core/services/personality_sync_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
 
 /// Profile Update Controller
 ///

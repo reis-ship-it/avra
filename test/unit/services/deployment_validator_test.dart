@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:spots/core/services/deployment_validator.dart';
-import 'package:spots/core/services/performance_monitor.dart';
-import 'package:spots/core/services/security_validator.dart';
+import 'package:avrai/core/services/deployment_validator.dart';
+import 'package:avrai/core/services/performance_monitor.dart';
+import 'package:avrai/core/services/security_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 import '../../mocks/mock_dependencies.mocks.dart';
 import '../../mocks/mock_storage_service.dart';

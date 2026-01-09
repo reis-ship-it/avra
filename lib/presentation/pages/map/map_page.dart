@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spots/presentation/widgets/map/map_view.dart';
+import 'package:avrai/presentation/widgets/map/map_view.dart';
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});

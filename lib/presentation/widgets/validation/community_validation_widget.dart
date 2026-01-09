@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 class CommunityValidationWidget extends StatefulWidget {
   final Spot spot;
@@ -338,6 +338,7 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
       // 3. Flag for review if accuracy is low
       // 4. Track user's validation history
       
+      // ignore: unused_local_variable - Reserved for future validation analytics
       final validationData = {
         'spot_id': widget.spot.id,
         'source': _dataSource,

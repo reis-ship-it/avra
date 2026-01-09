@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/edge_function_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/services/edge_function_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// Service for enriching social data via edge function
 /// Phase 11 Section 4: Edge Mesh Functions

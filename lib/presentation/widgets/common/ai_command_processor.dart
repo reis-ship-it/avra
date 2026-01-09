@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/llm_service.dart' as llm
+import 'package:avrai/core/services/llm_service.dart' as llm
     show
         LLMService,
         ChatMessage,
@@ -10,23 +10,23 @@ import 'package:spots/core/services/llm_service.dart' as llm
         LLMContext,
         OfflineException,
         DataCenterFailureException;
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/ai/personality_learning.dart' as pl;
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/core/ai/action_parser.dart';
-import 'package:spots/core/ai/action_executor.dart';
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/services/action_history_service.dart';
-import 'package:spots/core/services/action_error_handler.dart';
-import 'package:spots/presentation/widgets/common/action_confirmation_dialog.dart';
-import 'package:spots/presentation/widgets/common/action_error_dialog.dart';
-import 'package:spots/presentation/widgets/common/action_success_widget.dart';
-import 'package:spots/presentation/widgets/common/ai_thinking_indicator.dart';
-import 'package:spots/presentation/widgets/common/streaming_response_widget.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/core/ai/personality_learning.dart' as pl;
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/core/ai/action_parser.dart';
+import 'package:avrai/core/ai/action_executor.dart';
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/services/action_history_service.dart';
+import 'package:avrai/core/services/action_error_handler.dart';
+import 'package:avrai/presentation/widgets/common/action_confirmation_dialog.dart';
+import 'package:avrai/presentation/widgets/common/action_error_dialog.dart';
+import 'package:avrai/presentation/widgets/common/action_success_widget.dart';
+import 'package:avrai/presentation/widgets/common/ai_thinking_indicator.dart';
+import 'package:avrai/presentation/widgets/common/streaming_response_widget.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -117,6 +117,7 @@ class AICommandProcessor {
 
               try {
                 // Execute the action with retry support
+                if (!context.mounted) return '';
                 final serviceForAction = llmService ?? _tryGetLLMService();
                 final result = await _executeActionWithUI(
                   context,
@@ -715,6 +716,7 @@ class AICommandProcessor {
     if (retry) {
       developer.log('Retrying action after error', name: _logName);
       // Retry the action
+      if (!context.mounted) return '';
       return await _executeActionWithUI(
         context,
         intent,

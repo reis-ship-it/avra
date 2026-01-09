@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/ai_improvement_tracking_service.dart';
+import 'package:avrai/core/services/ai_improvement_tracking_service.dart';
 import '../../helpers/test_helpers.dart';
 import '../../helpers/platform_channel_helper.dart';
 

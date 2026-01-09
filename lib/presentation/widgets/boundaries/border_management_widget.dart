@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/presentation/widgets/common/standard_error_widget.dart';
-import 'package:spots/presentation/widgets/common/standard_loading_widget.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/presentation/widgets/common/standard_error_widget.dart';
+import 'package:avrai/presentation/widgets/common/standard_loading_widget.dart';
 
 /// Border Management Widget
 /// 

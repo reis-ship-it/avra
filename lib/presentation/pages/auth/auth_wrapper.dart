@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/pages/auth/login_page.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/pages/auth/login_page.dart';
 
 /// Simplified AuthWrapper - only triggers auth check and shows loading states
 /// All navigation decisions are handled by the router redirect function

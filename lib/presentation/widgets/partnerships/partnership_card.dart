@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/widgets/partnerships/compatibility_badge.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 
 /// Partnership Card Widget
 /// 

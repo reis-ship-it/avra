@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/ai2ai/connection_visualization_widget.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
+import 'package:avrai/presentation/widgets/ai2ai/connection_visualization_widget.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../helpers/test_helpers.dart';
 

@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
-import 'package:spots/core/services/cross_locality_connection_service.dart';
-import 'package:spots/core/services/community_event_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/services/cross_locality_connection_service.dart';
+import 'package:avrai/core/services/community_event_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/spot.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'expertise_event_service_test.mocks.dart';

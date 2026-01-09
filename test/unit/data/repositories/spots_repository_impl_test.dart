@@ -2,10 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/data/repositories/spots_repository_impl.dart';
-import 'package:spots/data/datasources/local/spots_local_datasource.dart';
-import 'package:spots/data/datasources/remote/spots_remote_datasource.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/data/repositories/spots_repository_impl.dart';
+import 'package:avrai/data/datasources/local/spots_local_datasource.dart';
+import 'package:avrai/data/datasources/remote/spots_remote_datasource.dart';
 
 import 'spots_repository_impl_test.mocks.dart';
 

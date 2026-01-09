@@ -5,7 +5,7 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
-import 'package:spots/core/crypto/aes256gcm_fixed_key_codec.dart';
+import 'package:avrai/core/crypto/aes256gcm_fixed_key_codec.dart';
 import 'package:supabase/supabase.dart';
 import 'package:uuid/uuid.dart';
 

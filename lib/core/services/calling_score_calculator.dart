@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/spot_vibe.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/services/behavior_assessment_service.dart';
-import 'package:spots/core/services/calling_score_data_collector.dart';
-import 'package:spots/core/services/calling_score_ab_testing_service.dart';
-import 'package:spots/core/ml/calling_score_neural_model.dart';
-import 'package:spots/core/services/outcome_prediction_service.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/models/spot_vibe.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/services/behavior_assessment_service.dart';
+import 'package:avrai/core/services/calling_score_data_collector.dart';
+import 'package:avrai/core/services/calling_score_ab_testing_service.dart';
+import 'package:avrai/core/ml/calling_score_neural_model.dart';
+import 'package:avrai/core/services/outcome_prediction_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Calling Score Calculator

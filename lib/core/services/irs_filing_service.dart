@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:spots/core/models/tax_document.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/tax_document.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:dio/dio.dart';
 
 /// IRS Filing Service

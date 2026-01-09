@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/business_patron_preferences.dart';
-import 'package:spots/core/models/business_expert_preferences.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/business_patron_preferences.dart';
+import 'package:avrai/core/models/business_expert_preferences.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Business Patron Preferences Widget
 /// Allows businesses to set preferences for the types of patrons they want to attract
@@ -108,6 +108,7 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
     'Regular', 'Occasional', 'One-time', 'Weekly', 'Monthly',
   ];
 
+  // ignore: unused_field
   static const List<String> _expertiseLevels = [
     'Novice', 'Intermediate', 'Expert', 'Enthusiast',
   ];

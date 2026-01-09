@@ -9,11 +9,11 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:spots/core/crypto/signal/signal_types.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
-import 'package:spots/core/services/ledgers/ledger_audit_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:avrai/core/services/ledgers/ledger_audit_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// Signal Protocol Key Manager
 ///

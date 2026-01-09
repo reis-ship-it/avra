@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
-import 'package:spots/core/services/storage_service.dart'
+import 'package:avrai/core/services/storage_service.dart'
     show SharedPreferencesCompat;
-import 'package:spots/core/services/model_safety_supervisor.dart';
+import 'package:avrai/core/services/model_safety_supervisor.dart';
 
 class AgentHappinessSnapshot {
   final double score; // 0..1

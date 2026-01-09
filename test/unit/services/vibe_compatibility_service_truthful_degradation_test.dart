@@ -7,13 +7,13 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_knot/models/entity_knot.dart';
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_knot/models/entity_knot.dart';
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 
 final class _MockPersonalityLearning extends Mock implements PersonalityLearning {}
 final class _MockPersonalityKnotService extends Mock

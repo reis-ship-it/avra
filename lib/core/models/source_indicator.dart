@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Source Indicator for transparent data source visualization
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable" - Users must know data sources

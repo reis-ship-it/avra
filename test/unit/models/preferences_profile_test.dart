@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/preferences_profile.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/user_preferences.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/models/preferences_profile.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/user_preferences.dart';
+import 'package:avrai/core/models/unified_user.dart';
 
 /// PreferencesProfile Model Unit Tests
 ///

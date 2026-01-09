@@ -6,8 +6,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/admin/knot_admin_service.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/admin/knot_admin_service.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Tab for analyzing knot matching insights
 class KnotMatchingTab extends StatefulWidget {

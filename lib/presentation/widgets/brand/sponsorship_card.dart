@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Sponsorship Card Widget
 /// 

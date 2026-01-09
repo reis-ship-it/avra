@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/advanced_communication.dart' show AdvancedAICommunication, AI2AIMessage, SecureCommunicationChannel;
+import 'package:avrai/core/ai/advanced_communication.dart' show AdvancedAICommunication, AI2AIMessage, SecureCommunicationChannel;
 
 /// Advanced AI Communication Tests
 /// Tests secure, encrypted AI2AI communication system

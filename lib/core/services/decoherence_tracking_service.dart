@@ -1,9 +1,9 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/models/decoherence_pattern.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/domain/repositories/decoherence_pattern_repository.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/models/decoherence_pattern.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/domain/repositories/decoherence_pattern_repository.dart';
 
 /// Decoherence Tracking Service
 ///

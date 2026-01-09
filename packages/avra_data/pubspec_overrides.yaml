@@ -1,6 +1,0 @@
-# melos_managed_dependency_overrides: avra_core,avra_network
-dependency_overrides:
-  avra_core:
-    path: ../avra_core
-  avra_network:
-    path: ../avra_network

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/reservation.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/reservation_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/pages/reservations/reservation_detail_page.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/models/reservation.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/reservation_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/pages/reservations/reservation_detail_page.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// My Reservations Page
 /// Phase 15: Reservation System Implementation
@@ -165,7 +165,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> with SingleTick
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.white,
-          unselectedLabelColor: AppColors.white.withOpacity(0.7),
+          unselectedLabelColor: AppColors.white.withValues(alpha: 0.7),
           indicatorColor: AppColors.white,
           tabs: [
             Tab(text: _getTabTitle(0)),
@@ -332,7 +332,7 @@ class _ReservationCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(reservation.status).withOpacity(0.1),
+                      color: _getStatusColor(reservation.status).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(color: _getStatusColor(reservation.status)),
                     ),

@@ -15,8 +15,8 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/services/ai_improvement_tracking_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/services/ai_improvement_tracking_service.dart';
 
 /// Widget displaying AI improvement metrics section
 class AIImprovementSection extends StatefulWidget {

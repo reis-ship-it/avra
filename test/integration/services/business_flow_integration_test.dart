@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/models/business_verification.dart';
-import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
+import 'package:avrai/core/models/business_verification.dart';
+import 'package:avrai/core/services/business_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../fixtures/model_factories.dart';
 

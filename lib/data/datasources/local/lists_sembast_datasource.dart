@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 import 'package:sembast/sembast.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/data/datasources/local/lists_local_datasource.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/data/datasources/local/lists_local_datasource.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 class ListsSembastDataSource implements ListsLocalDataSource {
   final StoreRef<String, Map<String, dynamic>> _store;

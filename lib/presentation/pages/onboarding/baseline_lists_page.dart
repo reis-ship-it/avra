@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/models/onboarding_suggestion_event.dart';
-import 'package:spots/core/services/onboarding_suggestion_event_store.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/models/onboarding_suggestion_event.dart';
+import 'package:avrai/core/services/onboarding_suggestion_event_store.dart';
 
 class BaselineListsPage extends StatefulWidget {
   final List<String> baselineLists;

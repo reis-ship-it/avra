@@ -2,16 +2,16 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/controllers/partnership_proposal_controller.dart';
-import 'package:spots/core/services/partnership_matching_service.dart';
-import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/widgets/partnerships/compatibility_badge.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/controllers/partnership_proposal_controller.dart';
+import 'package:avrai/core/services/partnership_matching_service.dart';
+import 'package:avrai/core/services/business_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 import 'package:get_it/get_it.dart';
 
 /// Partnership Proposal Page

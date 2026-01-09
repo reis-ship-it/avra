@@ -1,9 +1,9 @@
-import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/payment_status.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Product Tracking Service
@@ -88,6 +88,7 @@ class ProductTrackingService {
       }
       
       // Step 3: Calculate product value
+      // ignore: unused_local_variable - Reserved for future product tracking
       final productValue = quantityProvided * unitPrice;
       
       // Step 4: Create ProductTracking record

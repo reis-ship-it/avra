@@ -7,21 +7,21 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb, kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/local_llm_bootstrap_state.dart';
-import 'package:spots/core/services/agent_happiness_service.dart';
-import 'package:spots/core/services/device_capability_service.dart';
-import 'package:spots/core/services/device_capabilities.dart';
-import 'package:spots/core/services/ledgers/proof_run_service_v0.dart';
-import 'package:spots/core/services/local_llm/local_llm_import_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_provisioning_state_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
-import 'package:spots/core/services/model_safety_supervisor.dart';
-import 'package:spots/core/services/on_device_ai_capability_gate.dart';
-import 'package:spots/core/services/storage_service.dart'
+import 'package:avrai/core/models/local_llm_bootstrap_state.dart';
+import 'package:avrai/core/services/agent_happiness_service.dart';
+import 'package:avrai/core/services/device_capability_service.dart';
+import 'package:avrai/core/services/device_capabilities.dart';
+import 'package:avrai/core/services/ledgers/proof_run_service_v0.dart';
+import 'package:avrai/core/services/local_llm/local_llm_import_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_provisioning_state_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
+import 'package:avrai/core/services/model_safety_supervisor.dart';
+import 'package:avrai/core/services/on_device_ai_capability_gate.dart';
+import 'package:avrai/core/services/storage_service.dart'
     show SharedPreferencesCompat;
-import 'package:spots/core/ml/model_version_registry.dart';
-import 'package:spots/core/services/local_llm/model_pack_manager.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/ml/model_version_registry.dart';
+import 'package:avrai/core/services/local_llm/model_pack_manager.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OnDeviceAiSettingsPage extends StatefulWidget {

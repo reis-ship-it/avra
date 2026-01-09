@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/domain/usecases/search/hybrid_search_usecase.dart';
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/domain/usecases/search/hybrid_search_usecase.dart';
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai/core/models/spot.dart';
 
 import 'hybrid_search_usecase_test.mocks.dart';
 

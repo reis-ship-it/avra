@@ -1,24 +1,24 @@
-import 'package:spots/core/services/admin_auth_service.dart';
-import 'package:spots/core/services/admin_communication_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/expertise_service.dart';
-import 'package:spots/core/services/club_service.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/ml/predictive_analytics.dart';
-import 'package:spots/core/models/expertise_progress.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/monitoring/network_analytics.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart';
-import 'package:spots/core/models/collaborative_activity_metrics.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/p2p/federated_learning.dart' as federated;
-import 'package:spots/core/services/admin/permissions/admin_permission_checker.dart';
-import 'package:spots/core/services/admin/permissions/admin_access_control.dart';
-import 'package:spots/core/services/admin/user/admin_user_management_service.dart';
-import 'package:spots/core/services/admin/analytics/admin_analytics_service.dart';
-import 'package:spots/core/services/admin/monitoring/admin_system_monitoring_service.dart';
-import 'package:spots/core/services/admin/export/admin_data_export_service.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
+import 'package:avrai/core/services/admin_communication_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/expertise_service.dart';
+import 'package:avrai/core/services/club_service.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/ml/predictive_analytics.dart';
+import 'package:avrai/core/models/expertise_progress.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/monitoring/network_analytics.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/models/collaborative_activity_metrics.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/p2p/federated_learning.dart' as federated;
+import 'package:avrai/core/services/admin/permissions/admin_permission_checker.dart';
+import 'package:avrai/core/services/admin/permissions/admin_access_control.dart';
+import 'package:avrai/core/services/admin/user/admin_user_management_service.dart';
+import 'package:avrai/core/services/admin/analytics/admin_analytics_service.dart';
+import 'package:avrai/core/services/admin/monitoring/admin_system_monitoring_service.dart';
+import 'package:avrai/core/services/admin/export/admin_data_export_service.dart';
 
 /// God-Mode Admin Service (Orchestrator)
 /// Provides comprehensive real-time access to all system data

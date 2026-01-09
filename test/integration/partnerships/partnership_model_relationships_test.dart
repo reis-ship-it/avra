@@ -21,6 +21,8 @@ import '../../fixtures/model_factories.dart';
 /// - Scenario 5: Complete Relationship Chain
 void main() {
   group('Partnership Model Relationships Test', () {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late DateTime testDate;
 
     setUp(() {

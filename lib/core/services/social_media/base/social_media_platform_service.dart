@@ -1,4 +1,4 @@
-import 'package:spots/core/models/social_media_connection.dart';
+import 'package:avrai/core/models/social_media_connection.dart';
 
 /// Base interface for platform-specific social media connection services
 ///

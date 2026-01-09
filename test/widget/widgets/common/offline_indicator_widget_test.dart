@@ -5,7 +5,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/common/offline_indicator_widget.dart';
+import 'package:avrai/presentation/widgets/common/offline_indicator_widget.dart';
 
 void main() {
   group('OfflineIndicatorWidget', () {

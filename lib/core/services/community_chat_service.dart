@@ -1,18 +1,17 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
-import 'package:spots_ai/models/community_chat_message.dart';
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/crypto/aes256gcm_fixed_key_codec.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/dm_message_store.dart';
-import 'package:spots/core/services/community_message_store.dart';
-import 'package:spots/core/services/community_sender_key_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai_ai/models/community_chat_message.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/crypto/aes256gcm_fixed_key_codec.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/dm_message_store.dart';
+import 'package:avrai/core/services/community_message_store.dart';
+import 'package:avrai/core/services/community_sender_key_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_network/spots_network.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_network/avra_network.dart';
 import 'package:uuid/uuid.dart';
 
 /// CommunityChatService

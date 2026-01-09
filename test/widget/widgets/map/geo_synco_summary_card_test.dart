@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:spots/presentation/widgets/map/geo_synco_summary_card.dart';
-import 'package:spots/core/services/geo_locality_pack_service.dart';
+import 'package:avrai/presentation/widgets/map/geo_synco_summary_card.dart';
+import 'package:avrai/core/services/geo_locality_pack_service.dart';
 
 void main() {
   testWidgets('GeoSyncoSummaryCard shows one_liner from installed pack', (tester) async {

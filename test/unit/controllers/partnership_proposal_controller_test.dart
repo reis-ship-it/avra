@@ -2,12 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:spots/core/controllers/partnership_proposal_controller.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/revenue_split.dart';
+import 'package:avrai/core/controllers/partnership_proposal_controller.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/business_service.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/revenue_split.dart';
 
 import 'partnership_proposal_controller_test.mocks.dart';
 

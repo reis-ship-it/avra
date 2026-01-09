@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/user_partnership.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/partnership_expertise_boost.dart';
+import 'package:avrai/core/models/user_partnership.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/partnership_expertise_boost.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Expertise Boost Partnership Integration Test
@@ -23,6 +23,8 @@ void main() {
   group('Expertise Boost Partnership Integration Tests', () {
     late DateTime testDate;
     late DateTime startDate;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late DateTime endDate;
 
     setUp(() {

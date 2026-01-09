@@ -1,19 +1,19 @@
 import 'dart:async';
 
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/models/club.dart';
-import 'package:spots/core/models/club_hierarchy.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/services/geographic_expansion_service.dart';
-import 'package:spots/core/services/expansion_expertise_gain_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/models/club.dart';
+import 'package:avrai/core/models/club_hierarchy.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/services/geographic_expansion_service.dart';
+import 'package:avrai/core/services/expansion_expertise_gain_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// Club Service
 ///

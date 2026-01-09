@@ -1,6 +1,6 @@
 import 'dart:math' as math;
-import 'package:spots/core/ml/nlp_enums.dart';
-import 'package:spots/core/ml/nlp_classes.dart';
+import 'package:avrai/core/ml/nlp_enums.dart';
+import 'package:avrai/core/ml/nlp_classes.dart';
 
 // NLP Processor for text analysis and processing
 class NLPProcessor {

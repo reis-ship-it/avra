@@ -1,10 +1,10 @@
 import 'dart:developer' as developer;
 import 'dart:typed_data';
 import 'dart:async';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/models/business_expert_message.dart';
-import 'package:spots/core/services/partnership_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
+import 'package:avrai/core/models/business_expert_message.dart';
+import 'package:avrai/core/services/partnership_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

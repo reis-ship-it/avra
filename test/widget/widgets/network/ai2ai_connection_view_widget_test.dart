@@ -6,8 +6,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/presentation/widgets/network/ai2ai_connection_view_widget.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/presentation/widgets/network/ai2ai_connection_view_widget.dart';
 
 void main() {
   setUpAll(() {});

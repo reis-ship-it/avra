@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/secure_mapping_encryption_service.dart';
+import 'package:avrai/core/services/secure_mapping_encryption_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Mock FlutterSecureStorage for testing
@@ -57,6 +57,7 @@ void main() {
       expect(encrypted.encryptedBlob, isNotEmpty);
       
       final elapsedMs = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
       print('Encryption time: ${elapsedMs}ms');
       
       expect(elapsedMs, lessThan(100), 
@@ -84,7 +85,9 @@ void main() {
       
       expect(decrypted, equals(agentId));
       
+      // ignore: avoid_print
       final elapsedMs = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
       print('Decryption time: ${elapsedMs}ms');
       
       expect(elapsedMs, lessThan(100),
@@ -113,8 +116,11 @@ void main() {
       stopwatch.stop();
       
       expect(decrypted, equals(agentId));
+      // ignore: avoid_print
       
+      // ignore: avoid_print
       final elapsedMs = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
       print('Round-trip time: ${elapsedMs}ms');
       
       expect(elapsedMs, lessThan(200),
@@ -136,10 +142,15 @@ void main() {
       
       stopwatch.stop();
       
+      // ignore: avoid_print
       final elapsedMs = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
       final avgMs = elapsedMs / agentIds.length;
+      // ignore: avoid_print
       
+      // ignore: avoid_print
       print('Total time for 10 encryptions: ${elapsedMs}ms');
+      // ignore: avoid_print
       print('Average per encryption: ${avgMs}ms');
       
       expect(avgMs, lessThan(100),

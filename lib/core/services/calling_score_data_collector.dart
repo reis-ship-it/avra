@@ -4,11 +4,11 @@
 
 import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/spot_vibe.dart';
-import 'package:spots/core/services/calling_score_calculator.dart';
-import 'package:spots/core/models/outcome_result.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/models/spot_vibe.dart';
+import 'package:avrai/core/services/calling_score_calculator.dart';
+import 'package:avrai/core/models/outcome_result.dart';
 import 'package:get_it/get_it.dart';
 
 /// Calling Score Data Collector

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/device_capabilities.dart';
-import 'package:spots/core/services/on_device_ai_capability_gate.dart';
+import 'package:avrai/core/services/device_capabilities.dart';
+import 'package:avrai/core/services/on_device_ai_capability_gate.dart';
 
 void main() {
   test('Gate rejects when RAM/disk are unknown', () {

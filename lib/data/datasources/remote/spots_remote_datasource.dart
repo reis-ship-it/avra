@@ -1,4 +1,4 @@
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/spot.dart';
 abstract class SpotsRemoteDataSource {
   Future<List<Spot>> getSpots();
   Future<Spot> createSpot(Spot spot);

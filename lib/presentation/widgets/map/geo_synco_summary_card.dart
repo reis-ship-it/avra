@@ -2,9 +2,9 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 
-import 'package:spots/core/services/geo_locality_pack_service.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/geo_locality_pack_service.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Offline-first “synco” summary card for a geo entity (v1).
 ///

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying recent learning insights
 class LearningInsightsWidget extends StatelessWidget {

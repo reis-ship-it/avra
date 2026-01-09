@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/expertise_calculation_service.dart';
-import 'package:spots/core/services/saturation_algorithm_service.dart';
-import 'package:spots/core/services/multi_path_expertise_service.dart';
-import 'package:spots/core/services/automatic_check_in_service.dart';
-import 'package:spots/core/models/visit.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/platform_phase.dart';
-import 'package:spots/core/models/expertise_requirements.dart';
+import 'package:avrai/core/services/expertise_calculation_service.dart';
+import 'package:avrai/core/services/saturation_algorithm_service.dart';
+import 'package:avrai/core/services/multi_path_expertise_service.dart';
+import 'package:avrai/core/services/automatic_check_in_service.dart';
+import 'package:avrai/core/models/visit.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/platform_phase.dart';
+import 'package:avrai/core/models/expertise_requirements.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../helpers/test_helpers.dart';
 
@@ -177,6 +177,8 @@ void main() {
         
         // Step 10: Check if expertise level unlocks features
         // (Local level unlocks event hosting)
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final canHostEvents = result.expertiseLevel == ExpertiseLevel.local ||
             result.expertiseLevel == ExpertiseLevel.city ||
             result.expertiseLevel == ExpertiseLevel.national;

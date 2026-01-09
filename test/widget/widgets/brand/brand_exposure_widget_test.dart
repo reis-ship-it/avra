@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/brand/brand_exposure_widget.dart';
-import 'package:spots/presentation/pages/brand/brand_analytics_page.dart';
+import 'package:avrai/presentation/widgets/brand/brand_exposure_widget.dart';
+import 'package:avrai/presentation/pages/brand/brand_analytics_page.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for BrandExposureWidget

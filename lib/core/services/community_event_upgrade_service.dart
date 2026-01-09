@@ -1,9 +1,9 @@
-import 'package:spots/core/models/community_event.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/community_event_service.dart';
+import 'package:avrai/core/models/community_event.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/community_event_service.dart';
 
 /// Community Event Upgrade Service
 /// 
@@ -364,6 +364,7 @@ class CommunityEventUpgradeService {
       // Update upgraded event with attendee information
       // (createEvent doesn't include attendeeIds, so we need to register them)
       // In production, you would transfer all attendees from community event
+      // ignore: unused_local_variable - Reserved for future attendee transfer
       for (final attendeeId in event.attendeeIds) {
         // Note: This would require getting UnifiedUser for each attendee
         // For now, we'll skip individual attendee registration
@@ -393,6 +394,7 @@ class CommunityEventUpgradeService {
   }
 
   /// Generate upgraded event ID
+  // ignore: unused_element - Reserved for future event ID generation
   String _generateUpgradedEventId(String originalEventId) {
     // Keep original ID or generate new one with prefix
     // Using original ID with suffix to preserve history

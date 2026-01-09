@@ -1,5 +1,5 @@
-import 'package:spots/core/models/multi_path_expertise.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/multi_path_expertise.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Golden Expert AI Influence Service
 /// 

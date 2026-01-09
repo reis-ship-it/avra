@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
-import 'package:spots/core/services/message_encryption_service.dart' as message_encryption_service;
+import 'package:avrai/core/services/message_encryption_service.dart' as message_encryption_service;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/user_anonymization_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/user_anonymization_service.dart';
 
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"
 /// Anonymous AI2AI communication protocol with zero user data exposure

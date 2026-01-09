@@ -1,13 +1,13 @@
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/geo_hierarchy_service.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:get_it/get_it.dart';
 
 /// Event Creation Controller

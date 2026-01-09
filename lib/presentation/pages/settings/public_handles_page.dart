@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/services/public_profile_analysis_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/services/public_profile_analysis_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// Public Handles Page
 ///
@@ -94,6 +94,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
 
       final userId = authState.user.id;
       final agentId = await _agentIdService.getUserAgentId(userId);
+      if (!mounted) return;
 
       // Collect handles (only non-empty)
       final handles = <String, String>{};
@@ -105,6 +106,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
       });
 
       if (handles.isEmpty) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please provide at least one handle'),
@@ -187,6 +189,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
     if (confirmed != true) return;
 
     try {
+      if (!mounted) return;
       final authBloc = context.read<AuthBloc>();
       final authState = authBloc.state;
       if (authState is! Authenticated) return;

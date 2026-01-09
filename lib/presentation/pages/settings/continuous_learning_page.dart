@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/widgets/settings/continuous_learning_status_widget.dart';
-import 'package:spots/presentation/widgets/settings/continuous_learning_progress_widget.dart';
-import 'package:spots/presentation/widgets/settings/continuous_learning_data_widget.dart';
-import 'package:spots/presentation/widgets/settings/continuous_learning_controls_widget.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/settings/continuous_learning_status_widget.dart';
+import 'package:avrai/presentation/widgets/settings/continuous_learning_progress_widget.dart';
+import 'package:avrai/presentation/widgets/settings/continuous_learning_data_widget.dart';
+import 'package:avrai/presentation/widgets/settings/continuous_learning_controls_widget.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 /// Continuous Learning Page

@@ -2,12 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/services/google_places_sync_service.dart';
-import 'package:spots/core/services/google_place_id_finder_service_new.dart';
-import 'package:spots/core/services/google_places_cache_service.dart';
-import 'package:spots/data/datasources/remote/google_places_datasource.dart';
-import 'package:spots/data/datasources/local/spots_local_datasource.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/services/google_places_sync_service.dart';
+import 'package:avrai/core/services/google_place_id_finder_service_new.dart';
+import 'package:avrai/core/services/google_places_cache_service.dart';
+import 'package:avrai/data/datasources/remote/google_places_datasource.dart';
+import 'package:avrai/data/datasources/local/spots_local_datasource.dart';
+import 'package:avrai/core/models/spot.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'google_places_sync_service_test.mocks.dart';
@@ -83,7 +83,7 @@ void main() {
         when(mockGooglePlacesDataSource.getPlaceDetails(placeId))
             .thenAnswer((_) async => googlePlace);
         when(mockSpotsLocalDataSource.updateSpot(any))
-            .thenAnswer((_) async => Future.value());
+            .thenAnswer((_) async => googlePlace);
         final result3 = await service.syncSpot(spot);
         expect(result3, isNotNull);
         verify(mockPlaceIdFinder.findPlaceId(spot)).called(1);

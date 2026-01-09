@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/models/payment_status.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/models/payment_status.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for ProductTracking model

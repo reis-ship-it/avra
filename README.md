@@ -1,10 +1,10 @@
-# AVRA
+# AVRAI
 
 **Authentic Value Recognition Application**
 
 An AI2AI-powered, offline-first mobile application that helps people discover meaningful places, build authentic communities, and find belonging through personalized recommendations and event hosting.
 
-[![GitHub](https://img.shields.io/badge/GitHub-reis--ship--it-blue)](https://github.com/reis-ship-it/AVRA)
+[![GitHub](https://img.shields.io/badge/GitHub-AVRA--CADAVRA-blue)](https://github.com/AVRA-CADAVRA/avrai)
 [![Flutter](https://img.shields.io/badge/Flutter-3.8+-blue)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.6+-blue)](https://dart.dev)
 
@@ -14,7 +14,7 @@ An AI2AI-powered, offline-first mobile application that helps people discover me
 
 > **"There is no secret to life. Just doors that haven't been opened yet."**
 
-AVRA is **the key** that helps you open those doors. Every spot is a door:
+AVRAI is **the key** that helps you open those doors. Every spot is a door:
 - To experiences
 - To communities  
 - To people
@@ -123,8 +123,8 @@ You discover your favorite spots, those spots have communities, those communitie
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/reis-ship-it/AVRA.git
-cd AVRA
+git clone https://github.com/AVRA-CADAVRA/avra.git
+cd avra
 ```
 
 2. **Install dependencies:**
@@ -148,7 +148,7 @@ flutter run
 
 ### ML Model Setup (Optional)
 
-AVRA uses ONNX models for AI2AI functionality:
+AVRAI uses ONNX models for AI2AI functionality:
 
 ```bash
 ./scripts/ml/setup_models.sh
@@ -339,9 +339,9 @@ AVRA is built on the philosophy that technology should open doors, not create ba
 
 ## 📞 Contact & Links
 
-- **GitHub:** [reis-ship-it/AVRA](https://github.com/reis-ship-it/AVRA)
+- **GitHub:** [AVRA-CADAVRA/avra](https://github.com/AVRA-CADAVRA/avra)
 - **Documentation:** See [`docs/`](docs/) directory
-- **Issues:** [GitHub Issues](https://github.com/reis-ship-it/AVRA/issues)
+- **Issues:** [GitHub Issues](https://github.com/AVRA-CADAVRA/avra/issues)
 
 ---
 

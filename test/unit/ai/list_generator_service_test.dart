@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/list_generator_service.dart';
+import 'package:avrai/core/ai/list_generator_service.dart';
 
 /// AI List Generator Service Tests
 /// Tests AI-powered personalized list generation functionality

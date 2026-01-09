@@ -4,8 +4,8 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import 'package:spots/core/services/geo_city_pack_service.dart';
-import 'package:spots/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/core/services/geo_city_pack_service.dart';
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
 
 /// Reads locality polygons + summaries from installed city packs.
 ///

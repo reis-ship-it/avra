@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_verification.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/business_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_verification.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'business_service_test.mocks.dart';
@@ -16,6 +16,8 @@ void main() {
   group('BusinessService Tests', () {
     late BusinessService service;
     late MockBusinessAccountService mockAccountService;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late UnifiedUser testCreator;
 
     setUp(() {

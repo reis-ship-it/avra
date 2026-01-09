@@ -17,8 +17,8 @@ library;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/settings/ai_improvement_progress_widget.dart';
-import 'package:spots/core/services/ai_improvement_tracking_service.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_progress_widget.dart';
+import 'package:avrai/core/services/ai_improvement_tracking_service.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for AIImprovementProgressWidget
@@ -405,7 +405,9 @@ class MockAIImprovementTrackingService implements AIImprovementTrackingService {
   final Map<String, List<ImprovementMilestone>> _milestones = {};
   final StreamController<AIImprovementMetrics> _metricsController = 
       StreamController<AIImprovementMetrics>.broadcast();
+  // ignore: unused_field - Reserved for future initialization tracking
   bool _isInitialized = false;
+  // ignore: unused_field - Reserved for future user tracking
   String? _trackingUserId;
 
   /// Set history for a user (for testing)

@@ -6,15 +6,20 @@
 
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots_core/models/user.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai_core/models/user.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
+import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
+import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_core/models/personality_knot.dart';
 
 /// Meaningful connection metrics result
 class MeaningfulConnectionMetrics {
@@ -79,6 +84,11 @@ class MeaningfulConnectionMetricsService {
   final UserVibeAnalyzer _vibeAnalyzer;
   final SupabaseService _supabaseService;
   final AgentIdService _agentIdService;
+  final KnotEvolutionStringService _stringService;
+  final KnotWorldsheetService _worldsheetService;
+  final KnotFabricService _fabricService;
+  // ignore: unused_field
+  final KnotStorageService _knotStorage;
 
   // Time windows for metrics
   static const Duration _postEventInteractionWindow = Duration(days: 30);
@@ -99,12 +109,20 @@ class MeaningfulConnectionMetricsService {
     required UserVibeAnalyzer vibeAnalyzer,
     required AgentIdService agentIdService,
     required SupabaseService supabaseService,
+    required KnotEvolutionStringService stringService,
+    required KnotWorldsheetService worldsheetService,
+    required KnotFabricService fabricService,
+    required KnotStorageService knotStorage,
   })  : _atomicClock = atomicClock,
         _entanglementService = entanglementService,
         _personalityLearning = personalityLearning,
         _vibeAnalyzer = vibeAnalyzer,
         _agentIdService = agentIdService,
-        _supabaseService = supabaseService;
+        _supabaseService = supabaseService,
+        _stringService = stringService,
+        _worldsheetService = worldsheetService,
+        _fabricService = fabricService,
+        _knotStorage = knotStorage;
 
   /// Calculate meaningful connection metrics for an event
   ///
@@ -141,7 +159,7 @@ class MeaningfulConnectionMetricsService {
         tAtomic: tAtomic,
       );
 
-      // 3. Vibe evolution score (25% weight)
+      // 3. Vibe evolution score (25% weight) - Enhanced with knot evolution strings
       final vibeEvolutionScore = await _calculateVibeEvolutionScore(
         event: event,
         attendees: attendees,
@@ -156,7 +174,14 @@ class MeaningfulConnectionMetricsService {
         tAtomic: tAtomic,
       );
 
-      // 5. Transformative impact score (calculated separately, not in weighted average)
+      // 5. Fabric evolution score (NEW) - Using worldsheets
+      final fabricEvolutionScore = await _calculateFabricEvolutionScore(
+        event: event,
+        attendees: attendees,
+        tAtomic: tAtomic,
+      );
+
+      // 6. Transformative impact score (calculated separately, not in weighted average)
       final transformativeImpactScore =
           await _calculateTransformativeImpactScore(
         event: event,
@@ -164,12 +189,25 @@ class MeaningfulConnectionMetricsService {
         tAtomic: tAtomic,
       );
 
-      // Calculate overall meaningful connection score
-      final meaningfulConnectionScore = (0.30 * repeatingInteractionsRate +
-              0.30 * eventContinuationRate +
-              0.25 * vibeEvolutionScore +
-              0.15 * connectionPersistenceRate)
+      // Calculate overall meaningful connection score using hybrid approach
+      // Core factors (must all be reasonable): vibe evolution, connection persistence
+      // Modifiers (can enhance): repeating interactions, event continuation, fabric evolution
+      
+      // Core factors: geometric mean
+      final coreFactors = [
+        vibeEvolutionScore.clamp(0.0, 1.0),
+        connectionPersistenceRate.clamp(0.0, 1.0),
+      ];
+      final coreScore = _geometricMean(coreFactors);
+
+      // Modifiers: weighted average
+      final modifiers = (0.35 * repeatingInteractionsRate +
+              0.35 * eventContinuationRate +
+              0.30 * fabricEvolutionScore)
           .clamp(0.0, 1.0);
+
+      // Final: core * (base + modifier_boost)
+      final meaningfulConnectionScore = coreScore * (0.7 + 0.3 * modifiers);
 
       developer.log(
         'Meaningful connection metrics calculated: score=${meaningfulConnectionScore.toStringAsFixed(3)}',
@@ -358,6 +396,13 @@ class MeaningfulConnectionMetricsService {
   ///
   /// **Positive Evolution:**
   /// User's vibe moving toward event type = Meaningful impact
+  /// Calculate vibe evolution score using knot evolution strings
+  ///
+  /// **Enhanced Process:**
+  /// 1. Get pre-event knot (1 day before event)
+  /// 2. Get post-event knot (30 days after event, or predicted if not available)
+  /// 3. Calculate knot evolution: how much the knot changed
+  /// 4. Higher evolution = more meaningful impact
   Future<double> _calculateVibeEvolutionScore({
     required ExpertiseEvent event,
     required List<User> attendees,
@@ -368,50 +413,61 @@ class MeaningfulConnectionMetricsService {
     }
 
     try {
-      // Get event type quantum state (from event category/characteristics)
-      final eventTypeVibe = _getEventTypeVibe(event);
+      // Pre-event time (1 day before)
+      final preEventTime = event.startTime.subtract(const Duration(days: 1));
+      // Post-event time (30 days after)
+      final postEventTime = event.endTime.add(const Duration(days: 30));
 
-      // Calculate vibe evolution for each attendee
       double totalEvolutionScore = 0.0;
       int validAttendees = 0;
 
       for (final attendee in attendees) {
         try {
-          // Get pre-event vibe (from personality profile before event)
-          final preEventVibe = await _getUserVibeAtTime(
-            userId: attendee.id,
-            timestamp: event.startTime,
-          );
+          final agentId = await _agentIdService.getUserAgentId(attendee.id);
 
-          // Get post-event vibe (from personality profile after event)
-          final postEventVibe = await _getUserVibeAtTime(
-            userId: attendee.id,
-            timestamp: event.endTime
-                .add(const Duration(days: 7)), // 1 week after event
-          );
-
-          if (preEventVibe != null && postEventVibe != null) {
-            // Calculate vibe evolution: Δ|ψ_vibe⟩ = |ψ_post⟩ - |ψ_pre⟩
-            final vibeEvolution = _calculateVibeDifference(
-              preVibe: preEventVibe,
-              postVibe: postEventVibe,
-            );
-
-            // Calculate evolution score: |⟨Δ|ψ_vibe⟩|ψ_event_type⟩|²
-            final evolutionScore = _calculateVibeEvolutionInnerProduct(
-              vibeEvolution: vibeEvolution,
-              eventTypeVibe: eventTypeVibe,
-            );
-
-            totalEvolutionScore += evolutionScore;
-            validAttendees++;
+          // Get knot evolution string
+          final string = await _stringService.createStringFromHistory(agentId);
+          if (string == null) {
+            continue;
           }
+
+          // Get pre-event knot
+          final preEventKnot = string.getKnotAtTime(preEventTime);
+          if (preEventKnot == null) {
+            continue;
+          }
+
+          // Get post-event knot (or predicted if not available)
+          final postEventKnot = string.getKnotAtTime(postEventTime);
+          PersonalityKnot? knotToUse;
+          if (postEventKnot != null) {
+            knotToUse = postEventKnot;
+          } else {
+            // Use predicted future knot if actual knot not available
+            final predictedKnot = await _stringService.predictFutureKnot(
+              agentId,
+              postEventTime,
+            );
+            if (predictedKnot == null) {
+              continue;
+            }
+            knotToUse = predictedKnot;
+          }
+
+          // Calculate knot evolution: how much the knot changed
+          final evolution = _calculateKnotEvolution(
+            preKnot: preEventKnot,
+            postKnot: knotToUse,
+            );
+
+          totalEvolutionScore += evolution;
+            validAttendees++;
         } catch (e) {
           developer.log(
             'Error calculating vibe evolution for user ${attendee.id}: $e',
             name: _logName,
           );
-          // Continue with next attendee
+          continue;
         }
       }
 
@@ -421,9 +477,127 @@ class MeaningfulConnectionMetricsService {
 
       final averageEvolutionScore = totalEvolutionScore / validAttendees;
       return averageEvolutionScore.clamp(0.0, 1.0);
-    } catch (e) {
+    } catch (e, stackTrace) {
       developer.log(
         'Error calculating vibe evolution score: $e',
+        error: e,
+        stackTrace: stackTrace,
+        name: _logName,
+      );
+      return 0.0;
+    }
+  }
+
+  /// Calculate knot evolution between two knots
+  ///
+  /// **Formula:**
+  /// evolution = f(crossing_diff, writhe_diff, complexity_change)
+  ///
+  /// Higher evolution = more meaningful impact
+  double _calculateKnotEvolution({
+    required PersonalityKnot preKnot,
+    required PersonalityKnot postKnot,
+  }) {
+    try {
+      // Calculate differences in knot invariants
+      final crossingDiff = (postKnot.invariants.crossingNumber - 
+                           preKnot.invariants.crossingNumber).abs();
+      final writheDiff = (postKnot.invariants.writhe - 
+                         preKnot.invariants.writhe).abs();
+
+      // Evolution score: normalized difference
+      // Higher difference = more evolution = more meaningful impact
+      final maxCrossings = math.max(
+        preKnot.invariants.crossingNumber,
+        postKnot.invariants.crossingNumber,
+      );
+      final crossingEvolution = maxCrossings > 0 
+          ? (crossingDiff / maxCrossings).clamp(0.0, 1.0)
+          : 0.0;
+
+      final writheEvolution = writheDiff.clamp(0.0, 1.0);
+
+      // Combined: 60% crossing evolution + 40% writhe evolution
+      return (0.6 * crossingEvolution + 0.4 * writheEvolution).clamp(0.0, 1.0);
+    } catch (e) {
+      developer.log(
+        'Error calculating knot evolution: $e',
+        name: _logName,
+      );
+      return 0.0;
+    }
+  }
+
+  /// Calculate fabric evolution score using worldsheet
+  ///
+  /// **Process:**
+  /// 1. Create worldsheet for event group
+  /// 2. Get fabric at pre-event time
+  /// 3. Get fabric at post-event time
+  /// 4. Calculate fabric stability evolution
+  /// 5. Positive change = fabric improved = meaningful connection
+  Future<double> _calculateFabricEvolutionScore({
+    required ExpertiseEvent event,
+    required List<User> attendees,
+    required AtomicTimestamp tAtomic,
+  }) async {
+    if (attendees.length < 2) {
+      return 0.0; // Need at least 2 users for fabric
+    }
+
+    try {
+      final attendeeIds = attendees.map((a) => a.id).toList();
+      final agentIds = <String>[];
+      for (final userId in attendeeIds) {
+        final agentId = await _agentIdService.getUserAgentId(userId);
+        agentIds.add(agentId);
+      }
+
+      // Create worldsheet for event group
+      final worldsheet = await _worldsheetService.createWorldsheet(
+        groupId: event.id,
+        userIds: agentIds,
+        startTime: event.startTime.subtract(const Duration(days: 30)),
+        endTime: event.endTime.add(const Duration(days: 30)),
+      );
+
+      if (worldsheet == null) {
+        return 0.0;
+      }
+
+      // Get fabric at pre-event time
+      final preEventFabric = worldsheet.getFabricAtTime(
+        event.startTime.subtract(const Duration(days: 1)),
+      );
+      if (preEventFabric == null) {
+        return 0.0;
+      }
+
+      // Get fabric at post-event time
+      final postEventFabric = worldsheet.getFabricAtTime(
+        event.endTime.add(const Duration(days: 30)),
+      );
+      if (postEventFabric == null) {
+        return 0.0;
+      }
+
+      // Calculate fabric stability evolution
+      final preStability = await _fabricService.measureFabricStability(
+        preEventFabric,
+      );
+      final postStability = await _fabricService.measureFabricStability(
+        postEventFabric,
+      );
+
+      // Evolution score: how much fabric stability changed
+      // Positive change = fabric improved = meaningful connection
+      final stabilityChange = postStability - preStability;
+      return stabilityChange.clamp(0.0, 1.0);
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error calculating fabric evolution score: $e',
+        error: e,
+        stackTrace: stackTrace,
         name: _logName,
       );
       return 0.0;
@@ -550,6 +724,7 @@ class MeaningfulConnectionMetricsService {
   // Helper methods
 
   /// Get event type vibe (from event category/characteristics)
+  // ignore: unused_element
   Map<String, double> _getEventTypeVibe(ExpertiseEvent event) {
     // Create a vibe representation based on event category
     // This is a simplified version - in production, would use actual event quantum state
@@ -576,6 +751,7 @@ class MeaningfulConnectionMetricsService {
   }
 
   /// Get user vibe at a specific time
+  // ignore: unused_element
   Future<Map<String, double>?> _getUserVibeAtTime({
     required String userId,
     required DateTime timestamp,
@@ -604,6 +780,7 @@ class MeaningfulConnectionMetricsService {
   }
 
   /// Calculate vibe difference: Δ|ψ_vibe⟩ = |ψ_post⟩ - |ψ_pre⟩
+  // ignore: unused_element
   Map<String, double> _calculateVibeDifference({
     required Map<String, double> preVibe,
     required Map<String, double> postVibe,
@@ -621,6 +798,7 @@ class MeaningfulConnectionMetricsService {
   }
 
   /// Calculate vibe evolution score: |⟨Δ|ψ_vibe⟩|ψ_event_type⟩|²
+  // ignore: unused_element
   double _calculateVibeEvolutionInnerProduct({
     required Map<String, double> vibeEvolution,
     required Map<String, double> eventTypeVibe,
@@ -656,6 +834,34 @@ class MeaningfulConnectionMetricsService {
 
     // Positive evolution (moving toward event type) = higher score
     return evolutionScore.clamp(0.0, 1.0);
+  }
+
+  /// Calculate geometric mean of values
+  ///
+  /// **Formula:** (x₁ * x₂ * ... * xₙ)^(1/n)
+  ///
+  /// **Properties:**
+  /// - If any value is 0, result is 0 (critical failure)
+  /// - More sensitive to low values than arithmetic mean
+  /// - Appropriate for multiplicative relationships
+  double _geometricMean(List<double> values) {
+    if (values.isEmpty) return 0.0;
+    
+    // Filter out zeros (if any core factor is 0, score is 0)
+    final nonZeroValues = values.where((v) => v > 0.0).toList();
+    if (nonZeroValues.length < values.length) {
+      return 0.0; // At least one core factor is 0
+    }
+
+    // Calculate product
+    double product = 1.0;
+    for (final value in nonZeroValues) {
+      product *= value.clamp(0.0, 1.0);
+    }
+
+    // Calculate geometric mean: (product)^(1/n)
+    final n = nonZeroValues.length.toDouble();
+    return math.pow(product, 1.0 / n).toDouble();
   }
 
   /// Get user behavior pattern at a specific time

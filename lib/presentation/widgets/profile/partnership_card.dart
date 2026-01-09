@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/user_partnership.dart';
-import 'package:spots/core/models/event_partnership.dart' show PartnershipStatus;
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/models/user_partnership.dart';
+import 'package:avrai/core/models/event_partnership.dart' show PartnershipStatus;
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Partnership Card Widget for Profile Display
 /// 

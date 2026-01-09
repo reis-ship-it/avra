@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// Feature Flag Service
 ///
@@ -29,7 +29,7 @@ class FeatureFlagService {
   final StorageService _storage;
 
   /// Remote feature flag configuration (can be loaded from server)
-  /// Format: { 'feature_name': { 'enabled': bool, 'rolloutPercentage': double, 'targetUsers': List<String>? } }
+  /// Format: { 'feature_name': { 'enabled': bool, 'rolloutPercentage': double, 'targetUsers': List&lt;String&gt;? } }
   Map<String, FeatureFlagConfig> _remoteConfig = {};
 
   FeatureFlagService({

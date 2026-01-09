@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/business_expert_matching_service.dart';
-import 'package:spots/core/services/expertise_matching_service.dart';
-import 'package:spots/core/services/expertise_community_service.dart';
-import 'package:spots/core/services/llm_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_expert_preferences.dart';
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/services/business_expert_matching_service.dart';
+import 'package:avrai/core/services/expertise_matching_service.dart';
+import 'package:avrai/core/services/expertise_community_service.dart';
+import 'package:avrai/core/services/llm_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_expert_preferences.dart';
+import 'package:avrai/core/models/expertise_level.dart';
 import '../../helpers/integration_test_helpers.dart';
 
 import 'business_expert_matching_service_test.mocks.dart';

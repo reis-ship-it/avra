@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 
-import 'package:spots/core/services/geo_locality_asset_service.dart';
-import 'package:spots/core/services/geo_locality_pack_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/geo_locality_asset_service.dart';
+import 'package:avrai/core/services/geo_locality_pack_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 class GeoCityV1 {
   final String cityCode;

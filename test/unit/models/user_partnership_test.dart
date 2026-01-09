@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/user_partnership.dart';
-import 'package:spots/core/models/event_partnership.dart';
+import 'package:avrai/core/models/user_partnership.dart';
+import 'package:avrai/core/models/event_partnership.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for UserPartnership model

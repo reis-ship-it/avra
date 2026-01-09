@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/local_expert_qualification.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/expertise_requirements.dart';
+import 'package:avrai/core/models/local_expert_qualification.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_requirements.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for LocalExpertQualification model

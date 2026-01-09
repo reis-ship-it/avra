@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/community_validation.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/unified_list.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat, StorageService;
+import 'package:avrai/core/models/community_validation.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/unified_list.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat, StorageService;
 
 /// OUR_GUTS.md: "Community, Not Just Places" - Community-driven quality assurance
 /// Service for validating spots and lists through community and expert curation
@@ -11,10 +11,13 @@ class CommunityValidationService {
   
   // Storage keys
   static const String _validationsKey = 'community_validations';
+  // ignore: unused_field
   static const String _spotValidationsKey = 'spot_validations';
   static const String _listValidationsKey = 'list_validations';
   
+  // ignore: unused_field
   final StorageService _storageService;
+  // ignore: unused_field - Reserved for future preferences storage
   final SharedPreferencesCompat _prefs;
   
   // In-memory cache
@@ -93,6 +96,7 @@ class CommunityValidationService {
       }
       
       // Validate all spots in the list
+      // ignore: unused_local_variable - Reserved for future validation tracking
       final spotValidations = <CommunityValidation>[];
       int validatedCount = 0;
       int rejectedCount = 0;

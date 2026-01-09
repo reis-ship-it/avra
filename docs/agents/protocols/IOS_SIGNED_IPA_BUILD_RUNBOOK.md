@@ -1,4 +1,4 @@
-## iOS signed IPA build runbook (SPOTS)
+## iOS signed IPA build runbook (AVRAI)
 
 This runbook captures the exact blockers and steps discovered while trying to produce an **installable iOS IPA** from this repo.
 
@@ -33,8 +33,8 @@ Xcode must have an account added under:
 The bundle id must be **available under your team**.
 
 **Example**
-- ✅ `com.reisgordon.spots`
-- ❌ `com.spots.app` (was not available; already claimed by another team)
+  - ✅ `com.reisgordon.avrai`
+  - ❌ `com.avra.app` (was not available; already claimed by another team)
 
 ### 4) Device registration (for Development/Ad Hoc)
 For development-style IPAs, your device must be registered to the team.
@@ -56,7 +56,7 @@ For development-style IPAs, your device must be registered to the team.
    - Runner → Signing & Capabilities
    - Automatically manage signing ✅
    - Team: your team
-   - Bundle Identifier: unique id (e.g. `com.reisgordon.spots`)
+   - Bundle Identifier: unique id (e.g. `com.reisgordon.avrai`)
 5. Build:
 
 ```bash
@@ -78,6 +78,6 @@ flutter build ipa --release --export-method app-store
 ## Repo-specific notes (what we changed during packaging)
 
 - iOS team id is set in `ios/Runner.xcodeproj/project.pbxproj` for automatic signing.
-- iOS bundle identifier was changed to a unique value (`com.reisgordon.spots`) to avoid collisions.
+- iOS bundle identifier is set to `com.avrai.app` (already configured).
 - Android release packaging is produced successfully; release minification (R8) was disabled to avoid missing-class failures from optional SDK components.
 

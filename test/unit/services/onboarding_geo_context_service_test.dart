@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/geo_hierarchy_service.dart';
-import 'package:spots/core/services/onboarding_geo_context_service.dart';
-import 'package:spots/core/services/storage_service.dart'
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/core/services/onboarding_geo_context_service.dart';
+import 'package:avrai/core/services/storage_service.dart'
     show SharedPreferencesCompat;
 
 import '../../mocks/mock_storage_service.dart';

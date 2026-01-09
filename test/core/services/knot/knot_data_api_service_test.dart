@@ -4,13 +4,13 @@
 // Phase 8: Data Sale & Research Integration
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_knot/services/knot/knot_data_api_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots_knot/services/knot/knot_privacy_service.dart';
-import 'package:spots_knot/models/knot/knot_pattern_analysis.dart';
-import 'package:spots_knot/models/knot/anonymized_knot_data.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai_knot/services/knot/knot_data_api_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_knot/services/knot/knot_privacy_service.dart';
+import 'package:avrai_knot/models/knot/knot_pattern_analysis.dart';
+import 'package:avrai_knot/models/knot/anonymized_knot_data.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 void main() {
   group('KnotDataAPI', () {

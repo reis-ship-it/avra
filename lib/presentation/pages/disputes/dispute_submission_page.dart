@@ -5,15 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/dispute_type.dart';
-import 'package:spots/core/services/dispute_resolution_service.dart';
-import 'package:spots/core/services/disputes/dispute_evidence_storage_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/widgets/common/page_transitions.dart';
-import 'package:spots/presentation/pages/disputes/dispute_status_page.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/dispute_type.dart';
+import 'package:avrai/core/services/dispute_resolution_service.dart';
+import 'package:avrai/core/services/disputes/dispute_evidence_storage_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/common/page_transitions.dart';
+import 'package:avrai/presentation/pages/disputes/dispute_status_page.dart';
 
 /// Dispute Submission Page
 /// 

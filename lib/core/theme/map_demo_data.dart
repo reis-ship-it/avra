@@ -1,5 +1,5 @@
 import 'package:latlong2/latlong.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/spot.dart';
 
 class MapDemoData {
   static List<Spot> getDemoSpots() {

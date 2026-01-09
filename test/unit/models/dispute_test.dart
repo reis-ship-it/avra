@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/dispute.dart';
-import 'package:spots/core/models/dispute_type.dart';
-import 'package:spots/core/models/dispute_status.dart';
+import 'package:avrai/core/models/dispute.dart';
+import 'package:avrai/core/models/dispute_type.dart';
+import 'package:avrai/core/models/dispute_status.dart';
 
 /// SPOTS Dispute Model Unit Tests
 /// Date: December 1, 2025

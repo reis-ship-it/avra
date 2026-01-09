@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/data/datasources/local/spots_sembast_datasource.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/data/datasources/local/spots_sembast_datasource.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/spot.dart';
 
 /// Spots Sembast Data Source Tests
 /// Tests local spots data storage using Sembast

@@ -1,14 +1,14 @@
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_intent.dart';
-import 'package:spots/core/models/payment_result.dart';
-import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/models/revenue_split.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_intent.dart';
+import 'package:avrai/core/models/payment_result.dart';
+import 'package:avrai/core/models/payment_status.dart';
+import 'package:avrai/core/models/revenue_split.dart';
 import 'package:uuid/uuid.dart';
 import 'package:meta/meta.dart';
 

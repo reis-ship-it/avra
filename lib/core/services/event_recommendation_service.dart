@@ -1,21 +1,21 @@
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/event_matching_service.dart';
-import 'package:spots/core/services/user_preference_learning_service.dart';
-import 'package:spots/core/services/cross_locality_connection_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/quantum_matching_controller.dart';
-import 'package:spots/core/models/matching_input.dart';
-import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots_knot/services/knot/knot_fabric_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/event_matching_service.dart';
+import 'package:avrai/core/services/user_preference_learning_service.dart';
+import 'package:avrai/core/services/cross_locality_connection_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/quantum_matching_controller.dart';
+import 'package:avrai/core/models/matching_input.dart';
+import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
 
 /// Event Recommendation Service
 ///

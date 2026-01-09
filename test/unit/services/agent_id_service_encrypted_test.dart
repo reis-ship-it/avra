@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/secure_mapping_encryption_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/secure_mapping_encryption_service.dart';
 import 'dart:typed_data';
 
 /// Mock SupabaseService for testing
@@ -57,6 +57,8 @@ void main() {
       const userId = 'user-123';
       const agentId = 'agent_abc123def456ghi789jkl012mno345pqr678';
       
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       final encryptedMapping = EncryptedMapping(
         encryptedBlob: Uint8List.fromList([1, 2, 3, 4, 5]),
         encryptionKeyId: 'key-123',
@@ -122,8 +124,11 @@ void main() {
       // Mock encryption
       when(() => mockEncryptionService.encryptMapping(
         userId: userId,
+      // ignore: unused_local_variable
         agentId: any(named: 'agentId'),
       )).thenAnswer((invocation) async {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final agentId = invocation.namedArguments[#agentId] as String;
         return EncryptedMapping(
           encryptedBlob: Uint8List.fromList([1, 2, 3, 4, 5]),

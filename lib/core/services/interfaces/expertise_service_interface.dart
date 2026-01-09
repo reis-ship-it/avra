@@ -1,7 +1,7 @@
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/expertise_pin.dart';
-import 'package:spots/core/models/expertise_progress.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_pin.dart';
+import 'package:avrai/core/models/expertise_progress.dart';
+import 'package:avrai/core/models/unified_user.dart';
 
 /// Expertise Service Interface
 ///

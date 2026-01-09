@@ -1,4 +1,4 @@
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/spot.dart';
 
 class _Sentinel {
   const _Sentinel();

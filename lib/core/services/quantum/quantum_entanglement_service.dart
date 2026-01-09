@@ -1,4 +1,4 @@
-/// Compatibility export for quantum services (migrated to `spots_quantum`).
+/// Compatibility export for quantum services (migrated to `avrai_quantum`).
 library;
-export 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
+export 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
 

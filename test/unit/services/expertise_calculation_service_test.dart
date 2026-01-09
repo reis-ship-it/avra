@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/expertise_calculation_service.dart';
-import 'package:spots/core/services/saturation_algorithm_service.dart';
-import 'package:spots/core/services/multi_path_expertise_service.dart';
-import 'package:spots/core/models/platform_phase.dart' as platform_phase;
-import 'package:spots/core/models/platform_phase.dart'
+import 'package:avrai/core/services/expertise_calculation_service.dart';
+import 'package:avrai/core/services/saturation_algorithm_service.dart';
+import 'package:avrai/core/services/multi_path_expertise_service.dart';
+import 'package:avrai/core/models/platform_phase.dart' as platform_phase;
+import 'package:avrai/core/models/platform_phase.dart'
     show PhaseName, PlatformPhase;
-import 'package:spots/core/models/saturation_metrics.dart';
-import 'package:spots/core/models/multi_path_expertise.dart';
-import 'package:spots/core/models/expertise_requirements.dart';
+import 'package:avrai/core/models/saturation_metrics.dart';
+import 'package:avrai/core/models/multi_path_expertise.dart';
+import 'package:avrai/core/models/expertise_requirements.dart';
 import '../../helpers/test_helpers.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';

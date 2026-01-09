@@ -1,4 +1,4 @@
-import 'package:spots/core/ai/quantum/quantum_vibe_state.dart';
+import 'package:avrai/core/ai/quantum/quantum_vibe_state.dart';
 
 /// Quantum vibe dimension state
 /// Wraps a quantum state with dimension name and confidence

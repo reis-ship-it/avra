@@ -15,11 +15,11 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/ai/action_history_entry.dart' as entry;
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/services/action_history_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/actions/action_history_item_widget.dart';
+import 'package:avrai/core/ai/action_history_entry.dart' as entry;
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/services/action_history_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/actions/action_history_item_widget.dart';
 
 /// Page that displays action execution history
 /// 

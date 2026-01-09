@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/geographic_scope.dart';
-import 'package:spots/core/models/locality.dart';
-import 'package:spots/core/models/large_city.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/geographic_scope.dart';
+import 'package:avrai/core/models/locality.dart';
+import 'package:avrai/core/models/large_city.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../helpers/test_helpers.dart';
 import '../../fixtures/integration_test_fixtures.dart';

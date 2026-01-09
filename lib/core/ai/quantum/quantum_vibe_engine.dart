@@ -1,11 +1,11 @@
 import 'dart:developer' as developer;
 import 'dart:math';
-import 'package:spots/core/ai/quantum/quantum_vibe_state.dart';
-import 'package:spots/core/ai/quantum/quantum_vibe_dimension.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/services/decoherence_tracking_service.dart';
-import 'package:spots/core/services/feature_flag_service.dart';
+import 'package:avrai/core/ai/quantum/quantum_vibe_state.dart';
+import 'package:avrai/core/ai/quantum/quantum_vibe_dimension.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/services/decoherence_tracking_service.dart';
+import 'package:avrai/core/services/feature_flag_service.dart';
 
 /// Quantum Vibe Engine
 /// Compiles vibe dimensions using quantum mathematics instead of classical weighted averages

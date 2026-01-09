@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/dispute_resolution_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/refund_service.dart';
-import 'package:spots/core/models/dispute.dart';
-import 'package:spots/core/models/dispute_type.dart';
-import 'package:spots/core/models/dispute_status.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/dispute_resolution_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/refund_service.dart';
+import 'package:avrai/core/models/dispute.dart';
+import 'package:avrai/core/models/dispute_type.dart';
+import 'package:avrai/core/models/dispute_status.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
 
 import 'dispute_resolution_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';

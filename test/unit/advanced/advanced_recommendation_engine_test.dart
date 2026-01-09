@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/advanced/advanced_recommendation_engine.dart';
-import 'package:spots/core/ai2ai/anonymous_communication.dart';
-import 'package:spots/core/p2p/federated_learning.dart';
+import 'package:avrai/core/advanced/advanced_recommendation_engine.dart';
+import 'package:avrai/core/ai2ai/anonymous_communication.dart';
+import 'package:avrai/core/p2p/federated_learning.dart';
 
 /// SPOTS Advanced Recommendation Engine Tests
 /// Date: November 20, 2025

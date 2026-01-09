@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math';
 import 'package:geolocator/geolocator.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/spot.dart';
 
 /// AI-Powered Search Suggestions Service for Phase 4
 /// OUR_GUTS.md: "Effortless, Seamless Discovery" - Intelligent, context-aware search assistance
@@ -468,10 +468,15 @@ class AISearchSuggestionsService {
       
       if (hour < 6) {
         period = 'night';
-      } else if (hour < 12) period = 'morning';
-      else if (hour < 17) period = 'afternoon';
-      else if (hour < 21) period = 'evening';
-      else period = 'night';
+      } else if (hour < 12) {
+        period = 'morning';
+      } else if (hour < 17) {
+        period = 'afternoon';
+      } else if (hour < 21) {
+        period = 'evening';
+      } else {
+        period = 'night';
+      }
       
       patterns[period] = (patterns[period] ?? 0) + 1;
     }

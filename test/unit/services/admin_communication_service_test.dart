@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/admin_communication_service.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/services/admin_communication_service.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
 
 import 'admin_communication_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';

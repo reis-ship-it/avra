@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
-import 'package:spots/core/services/ai2ai_learning_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
+import 'package:avrai/core/services/ai2ai_learning_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import '../../../helpers/platform_channel_helper.dart';
 import '../../../widget/helpers/widget_test_helpers.dart';
 import '../../../widget/mocks/mock_blocs.dart';

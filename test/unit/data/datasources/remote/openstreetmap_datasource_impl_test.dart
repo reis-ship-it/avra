@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
-import 'package:spots/data/datasources/remote/openstreetmap_datasource_impl.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/data/datasources/remote/openstreetmap_datasource_impl.dart';
+import 'package:avrai/core/models/spot.dart';
 
 import 'openstreetmap_datasource_impl_test.mocks.dart';
 

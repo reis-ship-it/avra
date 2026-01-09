@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/verification_session.dart';
-import 'package:spots/core/models/verification_result.dart';
+import 'package:avrai/core/models/verification_session.dart';
+import 'package:avrai/core/models/verification_result.dart';
 
 /// Integration tests for identity verification flow
 /// 

@@ -5,7 +5,7 @@ import 'package:app_links/app_links.dart';
 /// OAuth Deep Link Handler
 ///
 /// Handles OAuth callback deep links in the format:
-/// `spots://oauth/[platform]/callback?code=...&state=...`
+/// `avrai://oauth?code=...&state=...&platform=...`
 ///
 /// **Usage:**
 /// ```dart
@@ -49,29 +49,23 @@ class OAuthDeepLinkHandler {
     );
 
     // Check if this is an OAuth callback
-    if (uri.scheme == 'spots' && uri.host == 'oauth') {
-      final pathSegments = uri.pathSegments;
-      
-      if (pathSegments.isNotEmpty && pathSegments[0] == 'callback') {
-        // Extract platform from path: spots://oauth/[platform]/callback
-        final platform = pathSegments.length > 1
-            ? pathSegments[1]
-            : (uri.queryParameters['platform'] ?? 'unknown');
+    if (uri.scheme == 'avrai' && uri.host == 'oauth') {
+      // Extract platform from query parameter: avrai://oauth?platform=...&code=...
+      final platform = uri.queryParameters['platform'] ?? 'unknown';
 
-        developer.log(
-          '✅ OAuth callback received for platform: $platform',
-          name: _logName,
-        );
+      developer.log(
+        '✅ OAuth callback received for platform: $platform',
+        name: _logName,
+      );
 
-        // Convert query parameters to Map<String, String>
-        final params = <String, String>{};
-        uri.queryParameters.forEach((key, value) {
-          params[key] = value;
-        });
+      // Convert query parameters to Map<String, String>
+      final params = <String, String>{};
+      uri.queryParameters.forEach((key, value) {
+        params[key] = value;
+      });
 
-        // Trigger callback
-        onOAuthCallback?.call(platform, params);
-      }
+      // Trigger callback
+      onOAuthCallback?.call(platform, params);
     }
   }
 
@@ -103,4 +97,3 @@ class OAuthDeepLinkHandler {
     developer.log('🔗 Stopped listening for OAuth deep links', name: _logName);
   }
 }
-

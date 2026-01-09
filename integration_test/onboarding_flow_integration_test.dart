@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:spots/app.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
-import 'package:spots/presentation/pages/onboarding/homebase_selection_page.dart';
-import 'package:spots/presentation/pages/onboarding/favorite_places_page.dart';
-import 'package:spots/presentation/pages/onboarding/preference_survey_page.dart';
-import 'package:spots/presentation/pages/onboarding/baseline_lists_page.dart';
-import 'package:spots/presentation/pages/onboarding/friends_respect_page.dart';
-import 'package:spots/presentation/pages/onboarding/age_collection_page.dart';
-import 'package:spots/presentation/pages/home/home_page.dart';
+import 'package:avrai/app.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:avrai/presentation/pages/onboarding/homebase_selection_page.dart';
+import 'package:avrai/presentation/pages/onboarding/favorite_places_page.dart';
+import 'package:avrai/presentation/pages/onboarding/preference_survey_page.dart';
+import 'package:avrai/presentation/pages/onboarding/baseline_lists_page.dart';
+import 'package:avrai/presentation/pages/onboarding/friends_respect_page.dart';
+import 'package:avrai/presentation/pages/onboarding/age_collection_page.dart';
+import 'package:avrai/presentation/pages/home/home_page.dart';
 
 /// SPOTS Onboarding Flow Integration Test (Basic Version)
 /// Date: November 20, 2025

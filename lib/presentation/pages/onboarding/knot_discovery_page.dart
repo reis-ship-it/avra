@@ -7,16 +7,16 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_knot/models/knot/knot_community.dart';
-import 'package:spots_knot/services/knot/knot_community_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/onboarding/knot_tribe_finder_widget.dart';
-import 'package:spots/presentation/widgets/onboarding/onboarding_knot_group_widget.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_knot/models/knot/knot_community.dart';
+import 'package:avrai_knot/services/knot/knot_community_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/onboarding/knot_tribe_finder_widget.dart';
+import 'package:avrai/presentation/widgets/onboarding/onboarding_knot_group_widget.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 

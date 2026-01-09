@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/events/template_selection_widget.dart';
+import 'package:avrai/presentation/widgets/events/template_selection_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for TemplateSelectionWidget

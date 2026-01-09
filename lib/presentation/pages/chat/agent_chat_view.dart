@@ -12,16 +12,16 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/services/personality_agent_chat_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/presentation/widgets/chat/unified_chat_message.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/services/personality_agent_chat_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/presentation/widgets/chat/unified_chat_message.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:spots/core/services/agent_happiness_service.dart';
-import 'package:spots/core/services/storage_service.dart'
+import 'package:avrai/core/services/agent_happiness_service.dart';
+import 'package:avrai/core/services/storage_service.dart'
     show SharedPreferencesCompat;
 
 class AgentChatView extends StatefulWidget {

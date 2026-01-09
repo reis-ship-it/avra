@@ -2,6 +2,7 @@
 /// Date: August 5, 2025 23:11:54 CDT
 /// Purpose: Comprehensive deployment readiness validation for optimal production releases
 /// Focus: Ensure maximum confidence in production deployments through rigorous validation
+// ignore_for_file: constant_identifier_names - Test constants use UPPER_CASE convention
 library;
 
 import 'dart:io';
@@ -23,6 +24,7 @@ class DeploymentReadinessValidator {
   /// Comprehensive deployment readiness assessment
   /// Returns detailed validation with go/no-go recommendation
   static Future<DeploymentReadinessReport> validateDeploymentReadiness() async {
+      // ignore: avoid_print
     print('🚀 Starting comprehensive deployment readiness validation...');
 
     final timestamp = DateTime.now();
@@ -708,7 +710,9 @@ class DeploymentReadinessValidator {
     await reportFile.writeAsString(
       const JsonEncoder.withIndent('  ').convert(reportContent),
     );
+      // ignore: avoid_print
 
+      // ignore: avoid_print
     print('📋 Deployment readiness report generated: ${reportFile.path}');
   }
 
@@ -726,10 +730,15 @@ class DeploymentReadinessValidator {
   }
 
   /// Approve deployment and prepare production release
+      // ignore: avoid_print
   static Future<void> _approveDeployment(
+      // ignore: avoid_print
       DeploymentReadinessReport report) async {
+      // ignore: avoid_print
     print('✅ DEPLOYMENT APPROVED');
+      // ignore: avoid_print
     print('Overall Score: ${report.overallScore.toStringAsFixed(2)}/10.0');
+      // ignore: avoid_print
     print('All validation criteria met for production release');
 
     // Create deployment approval file
@@ -737,26 +746,43 @@ class DeploymentReadinessValidator {
     await approvalFile.writeAsString(jsonEncode({
       'timestamp': DateTime.now().toIso8601String(),
       'approvedBy': 'SPOTS Automated Validation System',
+      // ignore: avoid_print
       'overallScore': report.overallScore,
       'validationsSummary': report.getValidationSummary(),
     }));
 
+      // ignore: avoid_print
     print('🚀 Production deployment pipeline can proceed');
+      // ignore: avoid_print
   }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   /// Block deployment and provide remediation guidance
   static Future<void> _blockDeployment(DeploymentReadinessReport report) async {
+      // ignore: avoid_print
     print('🚫 DEPLOYMENT BLOCKED');
+      // ignore: avoid_print
+      // ignore: avoid_print
     print('Overall Score: ${report.overallScore.toStringAsFixed(2)}/10.0');
+      // ignore: avoid_print
     print('Critical issues must be resolved before deployment');
+      // ignore: avoid_print
 
+      // ignore: avoid_print
     print('\n❌ Critical Blockers:');
+      // ignore: avoid_print
     for (final blocker in report.criticalBlockers) {
+      // ignore: avoid_print
       print('  - $blocker');
     }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
     print('\n🔧 Required Actions:');
+      // ignore: avoid_print
     for (final action in report.nextSteps) {
+      // ignore: avoid_print
       print('  - $action');
     }
 

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_network/network/ai2ai_protocol.dart';
-import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
+import 'package:avrai_network/network/ai2ai_protocol.dart';
+import 'package:avrai/core/ai/privacy_protection.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
 import 'dart:typed_data';
 import 'dart:convert';
 
@@ -81,6 +81,8 @@ void main() {
 
         // Convert message to bytes (simulating transmission)
         final json = originalMessage.toJson();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final jsonString = json.toString();
         // Note: bytes would be used in actual decodeMessage test
         // final bytes = Uint8List.fromList(jsonString.codeUnits);

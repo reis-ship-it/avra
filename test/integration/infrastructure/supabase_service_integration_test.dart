@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 import '../../helpers/supabase_test_helper.dart';
 import '../../helpers/platform_channel_helper.dart';
 
@@ -30,7 +30,9 @@ void main() {
       supabaseAvailable = await SupabaseTestHelper.initialize();
       
       if (!supabaseAvailable) {
+      // ignore: avoid_print
         print('⚠️  Supabase not available. SupabaseService integration tests will be skipped.');
+      // ignore: avoid_print
         print('   Set SUPABASE_URL and SUPABASE_ANON_KEY to run these tests.');
       }
       

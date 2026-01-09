@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/services/feature_flag_service.dart';
-import 'package:spots/domain/repositories/community_repository.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/services/feature_flag_service.dart';
+import 'package:avrai/domain/repositories/community_repository.dart';
 
 /// Local-first community repository with optional Supabase sync behind a feature flag.
 class HybridCommunityRepository implements CommunityRepository {

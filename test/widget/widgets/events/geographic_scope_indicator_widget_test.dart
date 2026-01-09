@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/events/geographic_scope_indicator_widget.dart';
+import 'package:avrai/presentation/widgets/events/geographic_scope_indicator_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../fixtures/model_factories.dart';
 

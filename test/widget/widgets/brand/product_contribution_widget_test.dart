@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/brand/product_contribution_widget.dart';
+import 'package:avrai/presentation/widgets/brand/product_contribution_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for ProductContributionWidget
@@ -48,6 +48,8 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget3);
       expect(find.byType(ProductContributionWidget), findsOneWidget);
 
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       String? changedName;
       final widget4 = WidgetTestHelpers.createTestableWidget(
         child: ProductContributionWidget(
@@ -55,8 +57,11 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget4);
+      // ignore: unused_local_variable
       expect(find.byType(ProductContributionWidget), findsOneWidget);
 
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       int? changedQuantity;
       final widget5 = WidgetTestHelpers.createTestableWidget(
         child: ProductContributionWidget(

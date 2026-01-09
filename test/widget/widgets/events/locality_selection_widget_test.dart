@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/events/locality_selection_widget.dart';
+import 'package:avrai/presentation/widgets/events/locality_selection_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../fixtures/model_factories.dart';
 
@@ -16,6 +16,8 @@ void main() {
         (WidgetTester tester) async {
       // Test business logic: locality selection widget display and interactions
       final user1 = ModelFactories.createTestUser();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       String? selectedLocality;
       final widget1 = WidgetTestHelpers.createTestableWidget(
         child: LocalitySelectionWidget(

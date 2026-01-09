@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 

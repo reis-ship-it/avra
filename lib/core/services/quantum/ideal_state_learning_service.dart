@@ -6,13 +6,13 @@
 
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots/core/services/quantum/quantum_outcome_learning_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai/core/services/quantum/quantum_outcome_learning_service.dart';
 
 /// Ideal state for quantum matching
 class IdealState {

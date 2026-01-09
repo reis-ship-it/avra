@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/cloud/realtime_sync_manager.dart';
+import 'package:avrai/core/cloud/realtime_sync_manager.dart';
 
 /// SPOTS Real-Time Sync Manager Tests
 /// Date: November 20, 2025

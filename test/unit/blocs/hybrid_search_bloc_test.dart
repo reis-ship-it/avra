@@ -9,8 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai/presentation/blocs/search/hybrid_search_bloc.dart';
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
 import '../../helpers/bloc_test_helpers.dart';
 import '../../mocks/bloc_mock_dependencies.dart';
 

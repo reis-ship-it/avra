@@ -14,7 +14,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/network/discovery_settings_page.dart';
+import 'package:avrai/presentation/pages/network/discovery_settings_page.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../mocks/mock_storage_service.dart';
 

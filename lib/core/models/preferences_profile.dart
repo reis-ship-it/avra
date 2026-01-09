@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/models/user_preferences.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/models/user_preferences.dart';
 
 /// PreferencesProfile Model
 /// 

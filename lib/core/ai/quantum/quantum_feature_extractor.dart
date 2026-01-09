@@ -1,10 +1,10 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots/core/models/quantum_prediction_features.dart';
-import 'package:spots/core/ai/quantum/quantum_vibe_state.dart';
-import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/services/decoherence_tracking_service.dart';
+import 'package:avrai/core/models/quantum_prediction_features.dart';
+import 'package:avrai/core/ai/quantum/quantum_vibe_state.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/services/decoherence_tracking_service.dart';
 
 /// Quantum Feature Extractor
 ///

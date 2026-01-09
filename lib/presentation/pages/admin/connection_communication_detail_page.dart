@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/admin_communication_service.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart';
-import 'package:spots/core/models/connection_metrics.dart' hide ChatMessage;
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/admin_communication_service.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/models/connection_metrics.dart' hide ChatMessage;
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 

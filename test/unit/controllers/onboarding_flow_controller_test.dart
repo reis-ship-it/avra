@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/controllers/onboarding_flow_controller.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/legal_document_service.dart';
+import 'package:avrai/core/controllers/onboarding_flow_controller.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/legal_document_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 

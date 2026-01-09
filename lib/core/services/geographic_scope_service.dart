@@ -1,7 +1,7 @@
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/large_city_detection_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/large_city_detection_service.dart';
 
 /// Geographic Scope Service
 /// 

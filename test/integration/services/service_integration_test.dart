@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/tax_compliance_service.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
-import 'package:spots/core/services/large_city_detection_service.dart';
-import 'package:spots/core/services/expert_recommendations_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/tax_compliance_service.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/services/large_city_detection_service.dart';
+import 'package:avrai/core/services/expert_recommendations_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 

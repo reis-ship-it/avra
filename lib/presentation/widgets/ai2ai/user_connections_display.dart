@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying user's active AI2AI connections
 class UserConnectionsDisplay extends StatelessWidget {

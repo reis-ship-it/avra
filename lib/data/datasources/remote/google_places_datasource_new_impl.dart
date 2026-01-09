@@ -1,10 +1,10 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:spots/data/datasources/remote/google_places_datasource.dart';
-import 'package:spots/core/services/google_places_cache_service.dart';
-import 'package:spots_core/spots_core.dart' hide Spot;
-import 'package:spots/core/models/spot.dart' show Spot;
+import 'package:avrai/data/datasources/remote/google_places_datasource.dart';
+import 'package:avrai/core/services/google_places_cache_service.dart';
+import 'package:avrai_core/avra_core.dart' hide Spot;
+import 'package:avrai/core/models/spot.dart' show Spot;
 
 /// Google Places API (New) Implementation
 /// Migrated to new Places API with field masking and POST requests

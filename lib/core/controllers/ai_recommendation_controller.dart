@@ -2,20 +2,20 @@ import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
 
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/event_recommendation_service.dart' as event_rec_service;
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/preferences_profile.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai/core/services/event_recommendation_service.dart' as event_rec_service;
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/preferences_profile.dart';
 
 // Import for SharedPreferencesCompat (matches injection_container.dart)
 // This is the type registered in DI container
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 
 /// AI Recommendation Controller
 /// 

@@ -1,24 +1,24 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/data/datasources/local/onboarding_completion_service.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spots/core/ai/list_generator_service.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/domain/usecases/lists/create_list_usecase.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/models/onboarding_suggestion_event.dart';
-import 'package:spots/core/services/onboarding_suggestion_event_store.dart';
-import 'package:spots/core/controllers/agent_initialization_controller.dart';
-import 'package:spots/presentation/widgets/knot/knot_audio_loading_widget.dart';
+import 'package:avrai/core/ai/list_generator_service.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/domain/usecases/lists/create_list_usecase.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/models/onboarding_suggestion_event.dart';
+import 'package:avrai/core/services/onboarding_suggestion_event_store.dart';
+import 'package:avrai/core/controllers/agent_initialization_controller.dart';
+import 'package:avrai/presentation/widgets/knot/knot_audio_loading_widget.dart';
 import 'dart:async';
 
 class _PendingDelay {
@@ -226,6 +226,7 @@ class _AILoadingPageState extends State<AILoadingPage>
 
       // Best-effort: log list suggestions used for onboarding bootstrap.
       try {
+        if (!mounted) return;
         final authState = context.read<AuthBloc>().state;
         final userId = authState is Authenticated ? authState.user.id : null;
         if (userId != null && userId.isNotEmpty && generatedLists.isNotEmpty) {
@@ -337,6 +338,7 @@ class _AILoadingPageState extends State<AILoadingPage>
 
       // Initialize personalized agent/personality for user using controller
       try {
+        if (!mounted) return;
         final authBloc = context.read<AuthBloc>();
         final authState = authBloc.state;
         if (authState is Authenticated) {
@@ -507,6 +509,7 @@ class _AILoadingPageState extends State<AILoadingPage>
           // Get user ID for verification
           for (int i = 0; i < 5; i++) {
             try {
+              if (!mounted) return;
               final authBloc = context.read<AuthBloc>();
               final state = authBloc.state;
               if (state is Authenticated) {
@@ -824,6 +827,7 @@ class _AILoadingPageState extends State<AILoadingPage>
       // Try to get auth state with retries
       for (int i = 0; i < 5; i++) {
         try {
+          if (!mounted) return;
           authBloc = context.read<AuthBloc>();
           final state = authBloc.state;
           if (state is Authenticated) {

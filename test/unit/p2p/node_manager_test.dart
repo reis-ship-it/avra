@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/p2p/node_manager.dart';
+import 'package:avrai/core/p2p/node_manager.dart';
 
 void main() {
   group('P2PNodeManager', () {

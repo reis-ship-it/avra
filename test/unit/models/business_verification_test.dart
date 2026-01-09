@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/business_verification.dart';
+import 'package:avrai/core/models/business_verification.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for BusinessVerification model

@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/services/geohash_service.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_models_v1.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/geohash_service.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_models_v1.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// Cache for locality agent updates received through mesh network
 ///

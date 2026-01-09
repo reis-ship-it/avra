@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/feedback_learning.dart' show UserFeedbackAnalyzer, FeedbackEvent, FeedbackType, FeedbackAnalysisResult, BehavioralPattern, SatisfactionPrediction, FeedbackLearningInsights;
-import 'package:spots/core/ai/personality_learning.dart' show PersonalityLearning;
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/ai/feedback_learning.dart' show UserFeedbackAnalyzer, FeedbackEvent, FeedbackType, FeedbackAnalysisResult, BehavioralPattern, SatisfactionPrediction, FeedbackLearningInsights;
+import 'package:avrai/core/ai/personality_learning.dart' show PersonalityLearning;
+import 'package:avrai/core/services/storage_service.dart';
 
 import '../../helpers/platform_channel_helper.dart';
 

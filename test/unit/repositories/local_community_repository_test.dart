@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/data/repositories/local_community_repository.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/data/repositories/local_community_repository.dart';
 
 import '../../helpers/platform_channel_helper.dart';
 

@@ -1,8 +1,8 @@
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/social_media_vibe_analyzer.dart';
-import 'package:spots/core/services/social_media_insight_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/social_media_vibe_analyzer.dart';
+import 'package:avrai/core/services/social_media_insight_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
 
 /// Public Profile Analysis Service
 ///

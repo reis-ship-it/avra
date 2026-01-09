@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math';
-import 'package:spots/core/models/connection_metrics.dart' hide SharedInsight;
-import 'package:spots/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/models/connection_metrics.dart' hide SharedInsight;
+import 'package:avrai/core/ai/ai2ai_learning.dart';
 
 /// Validates AI2AI learning data
 class AI2AIDataValidator {

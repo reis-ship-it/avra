@@ -24,20 +24,20 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/reservation_quantum_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/unified_models.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots_core/models/unified_location_data.dart';
+import 'package:avrai/core/services/reservation_quantum_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai/core/ai/quantum/quantum_vibe_engine.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/models/unified_models.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/unified_location_data.dart';
 
 // Mock dependencies
 class MockAtomicClockService extends Mock implements AtomicClockService {}

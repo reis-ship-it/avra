@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/ai_master_orchestrator.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/unified_models.dart';
+import 'package:avrai/core/ai/ai_master_orchestrator.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/unified_models.dart';
 
 /// AI Master Orchestrator Tests
 /// Tests the master AI orchestrator that coordinates all AI systems

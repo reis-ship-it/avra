@@ -6,12 +6,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
 import 'package:get_it/get_it.dart';
 
-import 'package:spots/core/services/device_capability_service.dart';
-import 'package:spots/core/services/on_device_ai_capability_gate.dart';
-import 'package:spots/core/services/local_llm/model_pack_manager.dart';
-import 'package:spots/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_provisioning_state_service.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/device_capability_service.dart';
+import 'package:avrai/core/services/on_device_ai_capability_gate.dart';
+import 'package:avrai/core/services/local_llm/model_pack_manager.dart';
+import 'package:avrai/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_provisioning_state_service.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 
 /// Best-effort auto-downloader for local LLM packs.
 ///

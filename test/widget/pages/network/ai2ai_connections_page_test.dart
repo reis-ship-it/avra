@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots_network/network/device_discovery.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
-import 'package:spots/presentation/pages/network/ai2ai_connections_page.dart';
+import 'package:avrai_network/network/device_discovery.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/presentation/pages/network/ai2ai_connections_page.dart';
 import '../../../helpers/platform_channel_helper.dart';
 
 void main() {

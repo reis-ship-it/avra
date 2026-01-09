@@ -2,7 +2,7 @@
 // Section 3.2.2: Model Versioning
 // Manages model versions, metadata, and configuration
 
-import 'package:spots/core/ml/model_version_info.dart';
+import 'package:avrai/core/ml/model_version_info.dart';
 
 /// Model Version Registry
 /// 

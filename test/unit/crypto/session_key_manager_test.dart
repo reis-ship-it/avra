@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/crypto/session_key_manager.dart';
+import 'package:avrai/core/crypto/session_key_manager.dart';
 import 'dart:convert';
 
 void main() {

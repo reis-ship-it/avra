@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/spots/spots_page.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/presentation/pages/spots/spots_page.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
 

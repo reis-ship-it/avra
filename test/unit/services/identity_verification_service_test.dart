@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/identity_verification_service.dart';
-import 'package:spots/core/services/tax_compliance_service.dart';
-import 'package:spots/core/models/verification_session.dart';
-import 'package:spots/core/models/verification_result.dart' as models;
+import 'package:avrai/core/services/identity_verification_service.dart';
+import 'package:avrai/core/services/tax_compliance_service.dart';
+import 'package:avrai/core/models/verification_session.dart';
+import 'package:avrai/core/models/verification_result.dart' as models;
 
 import 'identity_verification_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';
@@ -87,6 +87,8 @@ void main() {
         // Arrange
         final session = await service.initiateVerification('user-123');
         // Simulate verification completion
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final updatedSession = session.copyWith(
           status: VerificationStatus.verified,
           completedAt: DateTime.now(),

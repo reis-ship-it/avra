@@ -1,4 +1,4 @@
-import 'package:spots/core/models/list.dart';
+import 'package:avrai/core/models/list.dart';
 abstract class ListsRemoteDataSource {
   Future<List<SpotList>> getLists();
   Future<List<SpotList>> getPublicLists({int? limit});

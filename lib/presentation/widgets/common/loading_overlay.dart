@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Loading Overlay Widget
 /// Agent 2: Event Discovery & Hosting UI (Week 4, Task 2.12)

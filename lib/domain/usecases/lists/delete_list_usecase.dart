@@ -1,4 +1,4 @@
-import 'package:spots/domain/repositories/lists_repository.dart';
+import 'package:avrai/domain/repositories/lists_repository.dart';
 class DeleteListUseCase {
   final ListsRepository repository;
 

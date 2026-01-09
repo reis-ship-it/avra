@@ -11,8 +11,8 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_network/network/personality_advertising_service.dart';
-import 'package:spots_network/network/models/anonymized_vibe_data.dart';
+import 'package:avrai_network/network/personality_advertising_service.dart';
+import 'package:avrai_network/network/models/anonymized_vibe_data.dart';
 
 void main() {
   // Initialize bindings before anything else

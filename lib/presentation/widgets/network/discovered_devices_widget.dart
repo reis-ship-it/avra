@@ -18,9 +18,9 @@ library;
 
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots_network/network/device_discovery.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai_network/network/device_discovery.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
 import 'package:get_it/get_it.dart';
 
 /// Widget displaying discovered devices with connection options

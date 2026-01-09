@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/search_cache_service.dart';
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai/core/services/search_cache_service.dart';
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Search Cache Service Tests

@@ -1,10 +1,10 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/google_place_id_finder_service_new.dart';
-import 'package:spots/core/services/google_places_cache_service.dart';
-import 'package:spots/data/datasources/remote/google_places_datasource.dart';
-import 'package:spots/data/datasources/local/spots_local_datasource.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/google_place_id_finder_service_new.dart';
+import 'package:avrai/core/services/google_places_cache_service.dart';
+import 'package:avrai/data/datasources/remote/google_places_datasource.dart';
+import 'package:avrai/data/datasources/local/spots_local_datasource.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 /// Google Places Sync Service

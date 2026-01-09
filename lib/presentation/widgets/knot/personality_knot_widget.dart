@@ -6,8 +6,8 @@
 
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget for visualizing a single personality knot
 /// 
@@ -95,9 +95,9 @@ class PersonalityKnotWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(
         '$label: ${value.toStringAsFixed(0)}',

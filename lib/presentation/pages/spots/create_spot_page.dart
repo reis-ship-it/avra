@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/common/success_animation.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/common/success_animation.dart';
 import 'package:geolocator/geolocator.dart';
 
 class CreateSpotPage extends StatefulWidget {
@@ -151,8 +151,9 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
       );
 
       // Pop the page after a brief delay to let animation show
+      if (!mounted) return;
       Future.delayed(const Duration(milliseconds: 500), () {
-        if (context.mounted) {
+        if (mounted && context.mounted) {
           Navigator.pop(context);
         }
       });

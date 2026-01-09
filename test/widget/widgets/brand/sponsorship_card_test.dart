@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/brand/sponsorship_card.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/product_tracking.dart';
+import 'package:avrai/presentation/widgets/brand/sponsorship_card.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/product_tracking.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for SponsorshipCard

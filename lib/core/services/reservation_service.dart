@@ -8,13 +8,13 @@
 
 import 'dart:developer' as developer;
 import 'dart:convert';
-import 'package:spots/core/models/reservation.dart';
+import 'package:avrai/core/models/reservation.dart';
 // AtomicTimestamp import removed - only used in model, not directly in service
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/reservation_quantum_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/reservation_quantum_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// Reservation Service

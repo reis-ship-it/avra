@@ -4,10 +4,10 @@
 // Part of Phase 19 Section 19.5: Quantum Matching Controller
 
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/business_account.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/business_account.dart';
 
 /// Input data for multi-entity quantum matching
 ///

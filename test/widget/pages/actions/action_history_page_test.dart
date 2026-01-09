@@ -23,9 +23,9 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/services/action_history_service.dart';
-import 'package:spots/presentation/pages/actions/action_history_page.dart';
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/services/action_history_service.dart';
+import 'package:avrai/presentation/pages/actions/action_history_page.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../mocks/mock_storage_service.dart';
 
@@ -44,6 +44,7 @@ void main() {
       service = ActionHistoryService(storage: testStorage);
     });
 
+    // ignore: unused_element - Reserved for future test cleanup
     tearDown() {
       MockGetStorage.reset();
     }
@@ -73,6 +74,7 @@ void main() {
 
       // Test business logic: Action history page display, interactions, and action display
       // Pre-load history to avoid async issues in initState
+      // ignore: dead_code - Reserved for future test implementation
       await service.getHistory(); // Ensure service is ready
 
       final widget1 = MaterialApp(

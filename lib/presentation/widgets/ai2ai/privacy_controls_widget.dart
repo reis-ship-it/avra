@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying privacy controls for AI2AI participation
 class PrivacyControlsWidget extends StatefulWidget {

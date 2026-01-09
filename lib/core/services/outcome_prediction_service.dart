@@ -3,11 +3,11 @@
 // Service to predict outcome probability and filter recommendations
 
 import 'dart:developer' as developer;
-import 'package:spots/core/ml/outcome_prediction_model.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/spot_vibe.dart';
-import 'package:spots/core/services/calling_score_calculator.dart';
-import 'package:spots/core/services/calling_score_data_collector.dart';
+import 'package:avrai/core/ml/outcome_prediction_model.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/models/spot_vibe.dart';
+import 'package:avrai/core/services/calling_score_calculator.dart';
+import 'package:avrai/core/services/calling_score_data_collector.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Outcome Prediction Service

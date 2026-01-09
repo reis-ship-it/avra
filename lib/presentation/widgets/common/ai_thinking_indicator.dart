@@ -14,7 +14,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Enum representing different AI processing stages
 enum AIThinkingStage {

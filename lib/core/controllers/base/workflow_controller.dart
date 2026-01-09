@@ -1,4 +1,4 @@
-import 'package:spots/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
 
 /// Base interface for all workflow controllers
 /// 

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/widgets/brand/brand_stats_card.dart';
-import 'package:spots/presentation/widgets/brand/sponsorship_card.dart';
-import 'package:spots/presentation/pages/brand/brand_analytics_page.dart';
-import 'package:spots/presentation/pages/brand/brand_discovery_page.dart';
-import 'package:spots/presentation/pages/brand/sponsorship_management_page.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/brand/brand_stats_card.dart';
+import 'package:avrai/presentation/widgets/brand/sponsorship_card.dart';
+import 'package:avrai/presentation/pages/brand/brand_analytics_page.dart';
+import 'package:avrai/presentation/pages/brand/brand_discovery_page.dart';
+import 'package:avrai/presentation/pages/brand/sponsorship_management_page.dart';
 import 'package:get_it/get_it.dart';
 
 /// Brand Dashboard Page
@@ -31,6 +31,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
   // final _brandAccountService = GetIt.instance<BrandAccountService>();
   // final _brandAnalyticsService = GetIt.instance<BrandAnalyticsService>();
   // final _sponsorshipService = GetIt.instance<SponsorshipService>();
+  // ignore: unused_field
   final _eventService = GetIt.instance<ExpertiseEventService>();
   
   BrandAccount? _brandAccount;
@@ -50,6 +51,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
   Future<void> _loadDashboardData() async {
     final authState = context.read<AuthBloc>().state;
     if (authState is! Authenticated) return;
+    // ignore: unused_local_variable - Reserved for future user-specific dashboard data
     final userId = authState.user.id;
     
     setState(() => _isLoading = true);

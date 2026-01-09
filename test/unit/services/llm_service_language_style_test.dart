@@ -10,8 +10,8 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/llm_service.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/services/llm_service.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 void main() {
   group('LLM Service Language Style Integration Tests', () {

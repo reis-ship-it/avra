@@ -1,10 +1,10 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/quantum_prediction_features.dart';
-import 'package:spots/core/ai/quantum/quantum_feature_extractor.dart';
-import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
-import 'package:spots/core/ml/training/quantum_prediction_training_pipeline.dart';
-import 'package:spots/core/ml/training/quantum_prediction_training_models.dart';
-import 'package:spots/core/services/feature_flag_service.dart';
+import 'package:avrai/core/models/quantum_prediction_features.dart';
+import 'package:avrai/core/ai/quantum/quantum_feature_extractor.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
+import 'package:avrai/core/ml/training/quantum_prediction_training_pipeline.dart';
+import 'package:avrai/core/ml/training/quantum_prediction_training_models.dart';
+import 'package:avrai/core/services/feature_flag_service.dart';
 
 /// Quantum Prediction Enhancer
 ///

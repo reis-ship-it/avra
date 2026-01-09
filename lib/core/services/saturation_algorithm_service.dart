@@ -1,5 +1,5 @@
-import 'package:spots/core/models/saturation_metrics.dart' show SaturationFactors, SaturationMetrics, SaturationRecommendation;
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/saturation_metrics.dart' show SaturationFactors, SaturationMetrics, SaturationRecommendation;
+import 'package:avrai/core/services/logger.dart';
 
 /// Saturation Algorithm Service
 /// 

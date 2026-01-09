@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/expert_search_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/expertise/expertise_pin_widget.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/expert_search_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/expertise/expertise_pin_widget.dart';
 
 /// Expert Search Widget
 /// UI for searching and finding experts

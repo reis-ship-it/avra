@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 
 /// Tests for the AI2AI Personality Learning System
 /// OUR_GUTS.md: "AI personality that evolves and learns while preserving privacy"

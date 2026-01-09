@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/ai2ai/anonymous_communication.dart';
+import 'package:avrai/core/ai2ai/anonymous_communication.dart';
 
 /// Error handler for anonymization and privacy-related errors
 /// 

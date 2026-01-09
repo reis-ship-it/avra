@@ -2,6 +2,7 @@
 /// Date: August 5, 2025 23:11:54 CDT
 /// Purpose: Automated test quality validation and scoring for optimal development
 /// Focus: Ensure deployment-ready code quality through comprehensive test analysis
+// ignore_for_file: constant_identifier_names - Test constants use UPPER_CASE convention
 library;
 
 import 'dart:io';
@@ -109,6 +110,7 @@ class TestHealthMetrics {
       
       return math.min(score, 10.0);
     } catch (e) {
+      // ignore: avoid_print
       print('Coverage analysis failed: $e');
       return 0.0;
     }

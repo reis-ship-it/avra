@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 import 'dart:async';
 import 'dart:io';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat, StorageService;
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat, StorageService;
+import 'package:avrai/core/services/logger.dart';
 
 /// OUR_GUTS.md: "Effortless, Seamless Discovery" - Performance monitoring for seamless UX
 /// Service for monitoring application performance metrics
@@ -15,6 +15,7 @@ class PerformanceMonitor {
   static const String _alertsKey = 'performance_alerts';
   
   final StorageService _storageService;
+  // ignore: unused_field
   final SharedPreferencesCompat _prefs;
   
   // Monitoring state

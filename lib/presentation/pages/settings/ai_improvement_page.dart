@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/widgets/settings/ai_improvement_section.dart';
-import 'package:spots/presentation/widgets/settings/ai_improvement_progress_widget.dart';
-import 'package:spots/presentation/widgets/settings/ai_improvement_timeline_widget.dart';
-import 'package:spots/presentation/widgets/settings/ai_improvement_impact_widget.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/services/ai_improvement_tracking_service.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_section.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_progress_widget.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_timeline_widget.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_impact_widget.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/services/ai_improvement_tracking_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 
 /// AI Improvement Page
 /// 

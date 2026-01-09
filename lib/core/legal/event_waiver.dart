@@ -1,4 +1,4 @@
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 
 /// Event Waiver Class
 /// 

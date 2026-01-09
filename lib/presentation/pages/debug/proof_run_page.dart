@@ -5,18 +5,18 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/privacy_protection.dart'
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/privacy_protection.dart'
     show AnonymizedVibeData, AnonymizedVibeMetrics;
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/services/ledgers/proof_run_service_v0.dart';
-import 'package:spots/core/services/local_llm/local_llm_provisioning_state_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/widgets/common/ai_command_processor.dart';
-import 'package:spots_network/network/device_discovery.dart'
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/services/ledgers/proof_run_service_v0.dart';
+import 'package:avrai/core/services/local_llm/local_llm_provisioning_state_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/common/ai_command_processor.dart';
+import 'package:avrai_network/network/device_discovery.dart'
     show DiscoveredDevice, DeviceType;
 
 class ProofRunPage extends StatefulWidget {

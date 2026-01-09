@@ -31,7 +31,7 @@ library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 // TODO: Replace with actual component import
-// import 'package:spots/core/path/component.dart';
+// import 'package:avrai/core/path/component.dart';
 
 // TODO: Replace with actual dependency type
 // Example:

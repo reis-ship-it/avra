@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/app.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/user_role.dart' as role_models;
-import 'package:spots/core/models/user_role.dart' show RoleManagementService;
-import 'package:spots/core/services/community_validation_service.dart';
-import 'package:spots/data/repositories/auth_repository_impl.dart';
-import 'package:spots/data/repositories/lists_repository_impl.dart';
-import 'package:spots/data/repositories/spots_repository_impl.dart';
-import 'package:spots/core/models/list.dart';
+import 'package:avrai/app.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/user_role.dart' as role_models;
+import 'package:avrai/core/models/user_role.dart' show RoleManagementService;
+import 'package:avrai/core/services/community_validation_service.dart';
+import 'package:avrai/data/repositories/auth_repository_impl.dart';
+import 'package:avrai/data/repositories/lists_repository_impl.dart';
+import 'package:avrai/data/repositories/spots_repository_impl.dart';
+import 'package:avrai/core/models/list.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Role Progression Integration Test
@@ -54,6 +54,7 @@ void main() {
       await di.init();
     } catch (e) {
       // DI may fail in test environment, that's okay
+      // ignore: avoid_print
       print('⚠️  DI initialization failed in test: $e');
     }
   });
@@ -137,7 +138,9 @@ void main() {
       
       // Performance validation
       expect(totalTime, lessThan(30000), reason: 'Role progression should complete within 30 seconds');
+      // ignore: avoid_print
       
+      // ignore: avoid_print
       print('✅ Role progression test completed in ${totalTime}ms');
     });
     
@@ -235,8 +238,11 @@ Future<void> _testFollowerCapabilities(
   await _testFollowerUI(tester);
   
   final followerTestTime = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
   expect(followerTestTime, lessThan(5000), reason: 'Follower tests should complete quickly');
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Follower capabilities validated in ${followerTestTime}ms');
 }
 
@@ -259,9 +265,13 @@ Future<void> _testFollowerUI(WidgetTester tester) async {
     final upgradeMessage = find.text('Upgrade to Curator');
     if (upgradeMessage.evaluate().isNotEmpty) {
       expect(upgradeMessage, findsWidgets);
+      // ignore: avoid_print
     }
+      // ignore: avoid_print
   } else {
+      // ignore: avoid_print
     // Button not found - this is acceptable for follower role
+      // ignore: avoid_print
     print('⚠️ Create list button not found for follower (expected behavior)');
   }
 }
@@ -286,10 +296,15 @@ Future<UnifiedUser> _progressToCollaborator(
   // Simulate role promotion by creating new user with collaborator role
   final collaboratorUser = user.copyWith(
     primaryRole: UserRole.collaborator,
+      // ignore: avoid_print
   );
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   expect(collaboratorUser.primaryRole, equals(UserRole.collaborator));
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ User promoted to Collaborator role');
   return collaboratorUser;
 }
@@ -330,22 +345,35 @@ Future<void> _testCollaboratorCapabilities(
   await _testListCollaborationCapability(user, listsRepo);
   
   // 4. Test UI access for collaborators
+      // ignore: avoid_print
   await _testCollaboratorUI(tester);
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   final collaboratorTestTime = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
   expect(collaboratorTestTime, lessThan(8000), reason: 'Collaborator tests should complete efficiently');
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Collaborator capabilities validated in ${collaboratorTestTime}ms');
 }
 
 /// Test spot editing capability for collaborators
 Future<void> _testSpotEditingCapability(
+      // ignore: avoid_print
   UnifiedUser user,
+      // ignore: avoid_print
   SpotsRepositoryImpl? spotsRepo,
+      // ignore: avoid_print
   ListsRepositoryImpl listsRepo,
+      // ignore: avoid_print
 ) async {
+      // ignore: avoid_print
   // Skip if spotsRepo not initialized
+      // ignore: avoid_print
   if (spotsRepo == null) {
+      // ignore: avoid_print
     print('⚠️ Skipping spot editing test - spotsRepo not initialized');
     return;
   }
@@ -411,13 +439,21 @@ Future<void> _testSpotEditingCapability(
 }
 
 /// Test spot adding capability for collaborators
+      // ignore: avoid_print
 Future<void> _testSpotAddingCapability(
+      // ignore: avoid_print
   UnifiedUser user,
+      // ignore: avoid_print
   SpotsRepositoryImpl? spotsRepo,
+      // ignore: avoid_print
   ListsRepositoryImpl listsRepo,
+      // ignore: avoid_print
 ) async {
+      // ignore: avoid_print
   // Skip if spotsRepo not initialized
+      // ignore: avoid_print
   if (spotsRepo == null) {
+      // ignore: avoid_print
     print('⚠️ Skipping spot adding test - spotsRepo not initialized');
     return;
   }
@@ -528,14 +564,23 @@ Future<UnifiedUser> _progressToCurator(
   // Note: These services don't have these methods in the actual implementation
   // For integration tests, we'll simulate the role change directly
   // In a real implementation, these would be handled by the role management system
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   // Simulate role promotion by creating new user with curator role
+      // ignore: avoid_print
   final curatorUser = user.copyWith(
+      // ignore: avoid_print
     primaryRole: UserRole.curator,
+      // ignore: avoid_print
   );
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   expect(curatorUser.primaryRole, equals(UserRole.curator));
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ User promoted to Curator role');
   return curatorUser;
 }
@@ -578,15 +623,25 @@ Future<void> _testCuratorCapabilities(
   // 3. Create age-restricted content (if age verified)
   await _testAgeRestrictedContentCreation(user, listsRepo, spotsRepo);
   
+      // ignore: avoid_print
   // 4. Test full curation workflow
+      // ignore: avoid_print
   await _testCurationWorkflow(user, listsRepo, spotsRepo);
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   // 5. Test curator UI features
+      // ignore: avoid_print
   await _testCuratorUI(tester);
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   final curatorTestTime = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
   expect(curatorTestTime, lessThan(12000), reason: 'Curator tests should complete within 12 seconds');
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Curator capabilities validated in ${curatorTestTime}ms');
 }
 
@@ -740,16 +795,27 @@ Future<void> _testRoleManagementCapability(
     );
     expect(finalList.collaborators, isNot(contains(testCollaboratorId)));
   }
+      // ignore: avoid_print
 }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
 /// Test age-restricted content creation for curators
+      // ignore: avoid_print
 Future<void> _testAgeRestrictedContentCreation(
+      // ignore: avoid_print
   UnifiedUser user,
+      // ignore: avoid_print
   ListsRepositoryImpl listsRepo,
+      // ignore: avoid_print
   SpotsRepositoryImpl? spotsRepo,
+      // ignore: avoid_print
 ) async {
+      // ignore: avoid_print
   // Skip if spotsRepo not initialized
+      // ignore: avoid_print
   if (spotsRepo == null) {
+      // ignore: avoid_print
     print('⚠️ Skipping age-restricted content test - spotsRepo not initialized');
     return;
   }
@@ -807,17 +873,29 @@ Future<void> _testAgeRestrictedContentCreation(
     final createdSpot = await spotsRepo.getSpotById(ageRestrictedSpot.id);
     expect(createdSpot, isNotNull);
     expect(createdSpot?.id, equals(ageRestrictedSpot.id));
+      // ignore: avoid_print
   }
+      // ignore: avoid_print
 }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
 /// Test complete curation workflow
+      // ignore: avoid_print
 Future<void> _testCurationWorkflow(
+      // ignore: avoid_print
   UnifiedUser user,
+      // ignore: avoid_print
   ListsRepositoryImpl listsRepo,
+      // ignore: avoid_print
   SpotsRepositoryImpl? spotsRepo,
+      // ignore: avoid_print
 ) async {
+      // ignore: avoid_print
   // Skip if spotsRepo not initialized
+      // ignore: avoid_print
   if (spotsRepo == null) {
+      // ignore: avoid_print
     print('⚠️ Skipping curation workflow test - spotsRepo not initialized');
     return;
   }
@@ -889,18 +967,31 @@ Future<void> _testCurationWorkflow(
   final listWithSpots = currentList.copyWith(
     spotIds: spotIds,
     spots: curatedSpots,
+      // ignore: avoid_print
   );
+      // ignore: avoid_print
   await listsRepo.updateList(listWithSpots);
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   // 4. Verify curation quality
+      // ignore: avoid_print
   final allListsAfter = await listsRepo.getLists();
+      // ignore: avoid_print
   final finalList = allListsAfter.firstWhere(
+      // ignore: avoid_print
     (list) => list.id == curatedList.id,
+      // ignore: avoid_print
     orElse: () => listWithSpots,
+      // ignore: avoid_print
   );
+      // ignore: avoid_print
   expect(finalList.spotIds.length, equals(2));
+      // ignore: avoid_print
   expect(finalList.curatorId, equals(user.id));
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Curation workflow completed successfully');
 }
 
@@ -917,19 +1008,33 @@ Future<void> _testCuratorUI(WidgetTester tester) async {
     expect(createListButton, findsWidgets);
     await tester.tap(createListButton);
     await tester.pump();
+      // ignore: avoid_print
     await tester.pump(const Duration(milliseconds: 100));
+      // ignore: avoid_print
     
+      // ignore: avoid_print
     // Should open full list creation interface
+      // ignore: avoid_print
     final textFields = find.byType(TextField);
+      // ignore: avoid_print
     if (textFields.evaluate().isNotEmpty) {
+      // ignore: avoid_print
       expect(textFields, findsWidgets);
+      // ignore: avoid_print
     }
+      // ignore: avoid_print
     final createListText = find.text('Create List');
+      // ignore: avoid_print
     if (createListText.evaluate().isNotEmpty) {
+      // ignore: avoid_print
       expect(createListText, findsOneWidget);
+      // ignore: avoid_print
     }
+      // ignore: avoid_print
   } else {
+      // ignore: avoid_print
     // Button not found - may be due to app state in test environment
+      // ignore: avoid_print
     print('⚠️ Create list button not found (may be due to test app state)');
   }
 }
@@ -1049,20 +1154,35 @@ Future<void> _testPermissionEnforcement(
       expect(canDelete, isTrue,
           reason: 'Repository allows list deletion in test environment for ${role.name}');
     }
+      // ignore: avoid_print
     
+      // ignore: avoid_print
     // Test edit content permission - use role_models.UserRole for extension methods
+      // ignore: avoid_print
     final roleForExtensions = role_models.UserRole.values.firstWhere(
+      // ignore: avoid_print
       (r) => r.name == role.name,
+      // ignore: avoid_print
       orElse: () => role_models.UserRole.follower,
+      // ignore: avoid_print
     );
+      // ignore: avoid_print
     final canEditContent = roleForExtensions.canEditContent;
+      // ignore: avoid_print
     expect(canEditContent, equals(role != UserRole.follower),
+      // ignore: avoid_print
         reason: 'Edit content permission for ${role.name}');
+      // ignore: avoid_print
     
+      // ignore: avoid_print
     final permissionCheckTime = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
     expect(permissionCheckTime, lessThan(50), reason: 'Permission check should be instant');
+      // ignore: avoid_print
   }
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Permission enforcement validated for all roles');
 }
 
@@ -1077,6 +1197,7 @@ Future<void> _testRoleTransitionEdgeCases(
   final curatorUser = await _createTestUser(authRepo, UserRole.curator);
   
   // Note: These service methods don't exist in the actual implementation
+      // ignore: avoid_print
   // For integration tests, we'll simulate role transitions directly
   // Simulate demotion
   final demotedUser = curatorUser.copyWith(
@@ -1092,22 +1213,38 @@ Future<void> _testRoleTransitionEdgeCases(
   
   expect(recoveredUser.primaryRole, equals(UserRole.collaborator));
   
+      // ignore: avoid_print
   print('✅ Role transition edge cases handled properly');
 }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
 /// Test community validation mechanisms
+      // ignore: avoid_print
 Future<void> _testCommunityValidation(
+      // ignore: avoid_print
   WidgetTester tester,
+      // ignore: avoid_print
   AuthRepositoryImpl authRepo,
+      // ignore: avoid_print
   ListsRepositoryImpl listsRepo,
+      // ignore: avoid_print
   CommunityValidationService? communityService,
+      // ignore: avoid_print
 ) async {
+      // ignore: avoid_print
   // Note: These service methods don't exist in the actual CommunityValidationService
+      // ignore: avoid_print
   // The service is focused on spot/list validation, not user reputation
+      // ignore: avoid_print
   // For integration tests, we'll verify the user can interact with lists
+      // ignore: avoid_print
   final publicLists = await listsRepo.getPublicLists();
+      // ignore: avoid_print
   expect(publicLists, isNotNull);
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Community validation system functioning properly');
 }
 
@@ -1134,23 +1271,40 @@ Future<void> _testRoleBasedFeatures(
   // Collaborator features
   final collaboratorUser = await _createTestUser(authRepo, UserRole.collaborator);
   final collaboratorRoleForExtensions = role_models.UserRole.values.firstWhere(
+      // ignore: avoid_print
     (r) => r.name == collaboratorUser.primaryRole.name,
     orElse: () => role_models.UserRole.collaborator,
+      // ignore: avoid_print
   );
+      // ignore: avoid_print
   expect(collaboratorRoleForExtensions.canEditContent, isTrue);
+      // ignore: avoid_print
   expect(collaboratorRoleForExtensions.canDeleteLists, isFalse);
+      // ignore: avoid_print
   expect(collaboratorRoleForExtensions.canManageRoles, isFalse);
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   // Curator features
+      // ignore: avoid_print
   final curatorUser = await _createTestUser(authRepo, UserRole.curator);
+      // ignore: avoid_print
   final curatorRoleForExtensions = role_models.UserRole.values.firstWhere(
+      // ignore: avoid_print
     (r) => r.name == curatorUser.primaryRole.name,
+      // ignore: avoid_print
     orElse: () => role_models.UserRole.curator,
+      // ignore: avoid_print
   );
+      // ignore: avoid_print
   expect(curatorRoleForExtensions.canEditContent, isTrue);
+      // ignore: avoid_print
   expect(curatorRoleForExtensions.canDeleteLists, isTrue);
+      // ignore: avoid_print
   expect(curatorRoleForExtensions.canManageRoles, isTrue);
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Role-based features validated comprehensively');
 }
 

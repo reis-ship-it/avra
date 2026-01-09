@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_requirements.dart';
-import 'package:spots/core/services/dynamic_threshold_service.dart';
-import 'package:spots/core/services/locality_value_analysis_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_requirements.dart';
+import 'package:avrai/core/services/dynamic_threshold_service.dart';
+import 'package:avrai/core/services/locality_value_analysis_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Locality Threshold Widget
 /// Agent 2: Phase 6, Week 25 - Qualification UI

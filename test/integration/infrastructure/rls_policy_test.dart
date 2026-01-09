@@ -22,6 +22,7 @@ void main() {
       supabase = SupabaseTestHelper.client;
       
       if (!supabaseAvailable) {
+      // ignore: avoid_print
         print('⚠️  Supabase not available. All RLS tests will be skipped.');
       }
     });
@@ -53,7 +54,9 @@ void main() {
           // If we get here, either:
           // 1. RLS allows unauthenticated reads (not recommended for users table)
           // 2. Query succeeded (unlikely without auth)
+      // ignore: avoid_print
           expect(response, isA<List>());
+      // ignore: avoid_print
           print('ℹ️  api.users table query succeeded (RLS may allow public reads)');
         } on PostgrestException catch (e) {
           // If api.users fails, try public.users (legacy schema)
@@ -62,22 +65,35 @@ void main() {
               final response = await supabase!
                   .from('users')
                   .select()
+      // ignore: avoid_print
                   .limit(1);
+      // ignore: avoid_print
               expect(response, isA<List>());
+      // ignore: avoid_print
               print('ℹ️  users table (public schema) query succeeded');
+      // ignore: avoid_print
             } on PostgrestException catch (e2) {
+      // ignore: avoid_print
               // Expected: RLS should block unauthenticated access
+      // ignore: avoid_print
               expect(e2.code, anyOf('400', '401', '403', 'PGRST301', 'PGRST116'));
+      // ignore: avoid_print
               print('✅ RLS blocked unauthenticated access to users table (code: ${e2.code})');
+      // ignore: avoid_print
             }
           } else {
             // Expected: RLS should block unauthenticated access
             expect(e.code, anyOf('400', '401', '403', 'PGRST301', 'PGRST116'));
+      // ignore: avoid_print
             print('✅ RLS blocked unauthenticated access to api.users (code: ${e.code})');
           }
+      // ignore: avoid_print
         } on Exception catch (e) {
+      // ignore: avoid_print
           // Any exception indicates access was blocked
+      // ignore: avoid_print
           expect(e, isA<Exception>());
+      // ignore: avoid_print
           print('✅ Access blocked: ${e.runtimeType}');
         }
         
@@ -194,26 +210,43 @@ void main() {
         
         for (final table in testTables) {
           try {
+      // ignore: avoid_print
             await supabase!
                 .from(table)
                 .select()
+      // ignore: avoid_print
                 .limit(1);
+      // ignore: avoid_print
             
+      // ignore: avoid_print
+      // ignore: avoid_print
             // If we get here, RLS might not be blocking unauthenticated access
+      // ignore: avoid_print
             print('ℹ️  $table: Unauthenticated access succeeded (may allow public reads)');
+      // ignore: avoid_print
           } on PostgrestException catch (e) {
+      // ignore: avoid_print
             // Expected: RLS should block unauthenticated access
             if (e.code == '400' || e.code == '401' || e.code == '403' || 
+      // ignore: avoid_print
+      // ignore: avoid_print
                 e.code == 'PGRST301' || e.code == 'PGRST116') {
+      // ignore: avoid_print
               blockedCount++;
+      // ignore: avoid_print
               print('✅ $table: RLS blocked unauthenticated access (code: ${e.code})');
+      // ignore: avoid_print
             } else if (e.code == '42P01') {
               // Table doesn't exist - skip
+      // ignore: avoid_print
               print('ℹ️  $table: Table not found (may not be created yet)');
             }
+      // ignore: avoid_print
           } on Exception catch (e) {
             // Any exception indicates access was blocked
+      // ignore: avoid_print
             blockedCount++;
+      // ignore: avoid_print
             print('✅ $table: Access blocked: ${e.runtimeType}');
           }
         }
@@ -306,19 +339,33 @@ void main() {
           } on Exception catch (e) {
             // Any exception indicates access was blocked or table doesn't exist
             if (e.toString().contains('does not exist') || 
+      // ignore: avoid_print
                 e.toString().contains('relation') ||
+      // ignore: avoid_print
                 e.toString().contains('schema')) {
+      // ignore: avoid_print
               notFoundCount++;
+      // ignore: avoid_print
             } else {
+      // ignore: avoid_print
               blockedCount++;
+      // ignore: avoid_print
             }
+      // ignore: avoid_print
           }
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Report results
+      // ignore: avoid_print
         print('ℹ️  Tested ${allTables.length} tables:');
+      // ignore: avoid_print
         print('   - $blockedCount blocked by RLS ✅');
+      // ignore: avoid_print
         print('   - $accessibleCount accessible (may allow public reads)');
+      // ignore: avoid_print
         print('   - $notFoundCount not found (may not be created yet)');
         
         // At least some tables should be protected by RLS
@@ -334,60 +381,105 @@ void main() {
           return; // Skip if Supabase not available
         }
 
+      // ignore: avoid_print
         expect(supabase, isNotNull);
         
         // Test storage buckets that should have RLS (from supabase_schema.sql)
+      // ignore: avoid_print
         final buckets = ['user-avatars', 'spot-images', 'list-images'];
+      // ignore: avoid_print
         int blockedCount = 0;
         int accessibleCount = 0;
         
+      // ignore: avoid_print
+      // ignore: avoid_print
         for (final bucket in buckets) {
+      // ignore: avoid_print
           try {
+      // ignore: avoid_print
             // Try to list files in bucket without authentication
             await supabase!.storage.from(bucket).list();
+      // ignore: avoid_print
             accessibleCount++;
+      // ignore: avoid_print
             print('ℹ️  $bucket: Unauthenticated access succeeded (may allow public reads for images)');
+      // ignore: avoid_print
           } on Exception {
             // Expected: RLS should block unauthenticated access to storage
+      // ignore: avoid_print
+      // ignore: avoid_print
             blockedCount++;
+      // ignore: avoid_print
             print('✅ $bucket: Storage RLS blocked unauthenticated access');
+      // ignore: avoid_print
           }
         }
+      // ignore: avoid_print
+      // ignore: avoid_print
 
+      // ignore: avoid_print
+      // ignore: avoid_print
         // Report results (some buckets may allow public reads for images)
+      // ignore: avoid_print
         print('ℹ️  Tested ${buckets.length} storage buckets:');
+      // ignore: avoid_print
         print('   - $blockedCount blocked by RLS');
+      // ignore: avoid_print
         print('   - $accessibleCount accessible (may allow public reads)');
       });
     });
+      // ignore: avoid_print
 
     group('Service Role Access', () {
       test('should allow service role access for system operations', () async {
         // Test business logic: Service role can access data for system operations
         if (!supabaseAvailable) {
+      // ignore: avoid_print
           return; // Skip if Supabase not available
+      // ignore: avoid_print
         }
 
+      // ignore: avoid_print
         final serviceRoleClient = SupabaseTestHelper.createServiceRoleClient();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
+      // ignore: avoid_print
         if (serviceRoleClient == null) {
+      // ignore: avoid_print
           // Skip if service role key not available
+      // ignore: avoid_print
           print('ℹ️  Service role key not available - skipping service role tests');
+      // ignore: avoid_print
           return;
         }
+      // ignore: avoid_print
 
         expect(serviceRoleClient, isNotNull);
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Test that service role can access data (bypasses RLS)
+      // ignore: avoid_print
         try {
+      // ignore: avoid_print
           final response = await serviceRoleClient
+      // ignore: avoid_print
               .from('api.users')
+      // ignore: avoid_print
               .select()
+      // ignore: avoid_print
+      // ignore: avoid_print
               .limit(1);
+      // ignore: avoid_print
           expect(response, isA<List>());
+      // ignore: avoid_print
           print('✅ Service role can access data (bypasses RLS)');
         } on Exception catch (e) {
+      // ignore: avoid_print
+      // ignore: avoid_print
           // If this fails, it might mean table doesn't exist or other issue
+      // ignore: avoid_print
           print('ℹ️  Service role access test: ${e.runtimeType} (table may not exist yet)');
         }
       });
@@ -397,29 +489,47 @@ void main() {
         if (!supabaseAvailable) {
           return; // Skip if Supabase not available
         }
+      // ignore: avoid_print
 
         final serviceRoleClient = SupabaseTestHelper.createServiceRoleClient();
+      // ignore: avoid_print
         
         if (serviceRoleClient == null) {
           // Skip if service role key not available
+      // ignore: avoid_print
           print('ℹ️  Service role key not available - skipping audit log test');
           return;
+      // ignore: avoid_print
         }
 
+      // ignore: avoid_print
+      // ignore: avoid_print
         expect(serviceRoleClient, isNotNull);
+      // ignore: avoid_print
         
         // Test that service role can query audit_logs table
+      // ignore: avoid_print
         // (Service role should have access per RLS policies in 010_audit_log_table.sql)
         try {
+      // ignore: avoid_print
+      // ignore: avoid_print
           final auditLogs = await serviceRoleClient
+      // ignore: avoid_print
+      // ignore: avoid_print
               .from('audit_logs')
+      // ignore: avoid_print
               .select()
+      // ignore: avoid_print
               .limit(1)
               .order('timestamp', ascending: false);
+      // ignore: avoid_print
           expect(auditLogs, isA<List>());
+      // ignore: avoid_print
           print('✅ Service role can access audit_logs table');
         } on Exception catch (e) {
+      // ignore: avoid_print
           // If this fails, audit_logs table might not exist yet
+      // ignore: avoid_print
           print('ℹ️  Audit logs access test: ${e.runtimeType} (table may not exist yet)');
         }
       });

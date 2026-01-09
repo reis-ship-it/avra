@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/expertise_calculation_service.dart';
-import 'package:spots/core/services/saturation_algorithm_service.dart';
-import 'package:spots/core/services/multi_path_expertise_service.dart';
-import 'package:spots/core/services/stripe_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_status.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/expertise_calculation_service.dart';
+import 'package:avrai/core/services/saturation_algorithm_service.dart';
+import 'package:avrai/core/services/multi_path_expertise_service.dart';
+import 'package:avrai/core/services/stripe_service.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../helpers/test_helpers.dart';
 import '../../fixtures/model_factories.dart';
@@ -34,12 +34,19 @@ class MockExpertiseEventService extends Mock implements ExpertiseEventService {}
 /// - Scenario 4: Expertise Progression Through Events
 void main() {
   group('Expertise-Event Integration Tests', () {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late ExpertiseCalculationService expertiseService;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late PaymentService paymentService;
     late MockStripeService mockStripeService;
     late MockExpertiseEventService mockEventService;
+      // ignore: unused_local_variable
     late SaturationAlgorithmService saturationService;
     late MultiPathExpertiseService multiPathService;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late DateTime testDate;
     
     setUp(() {

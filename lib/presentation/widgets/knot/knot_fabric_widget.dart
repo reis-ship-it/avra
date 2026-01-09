@@ -6,7 +6,7 @@
 
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:spots_knot/models/knot/knot_fabric.dart';
+import 'package:avrai_knot/models/knot/knot_fabric.dart';
 
 /// Widget for visualizing a knot fabric
 class KnotFabricWidget extends StatelessWidget {

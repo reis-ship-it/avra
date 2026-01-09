@@ -1,14 +1,16 @@
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/expertise_pin.dart';
-import 'package:spots/core/models/expertise_progress.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/interfaces/expertise_service_interface.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_pin.dart';
+import 'package:avrai/core/models/expertise_progress.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/interfaces/expertise_service_interface.dart';
 
 /// Expertise Service
 /// OUR_GUTS.md: "Pins, Not Badges" - Calculates expertise based on authentic contributions
 class ExpertiseService implements IExpertiseService {
+  // ignore: unused_field
   static const String _logName = 'ExpertiseService';
+  // ignore: unused_field - Reserved for future logging
   final AppLogger _logger =
       const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
 
@@ -30,6 +32,7 @@ class ExpertiseService implements IExpertiseService {
     // Global: 21+ respected lists OR 200+ thoughtful reviews
     // Universal: Exceptional contributions + high community trust
 
+    // ignore: unused_local_variable - Reserved for future contribution calculation
     final totalContributions = respectedListsCount * 5 + thoughtfulReviewsCount;
     final hasHighTrust = communityTrustScore >= 0.8;
 

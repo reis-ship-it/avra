@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/controllers/payment_processing_controller.dart';
-import 'package:spots/core/controllers/event_creation_controller.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/controllers/payment_processing_controller.dart';
+import 'package:avrai/core/controllers/event_creation_controller.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/injection_container.dart' as di;
 import '../../helpers/platform_channel_helper.dart';
 import '../../helpers/integration_test_helpers.dart';
 

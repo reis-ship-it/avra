@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ml/pattern_recognition.dart';
-import 'package:spots/core/models/list.dart';
+import 'package:avrai/core/ml/pattern_recognition.dart';
+import 'package:avrai/core/models/list.dart';
 
 /// Pattern Recognition System Integration Test
 /// OUR_GUTS.md: "Authenticity Over Algorithms" - Privacy-preserving pattern detection

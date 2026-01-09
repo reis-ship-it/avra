@@ -4,8 +4,8 @@
 
 import 'dart:developer' as developer;
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/ml/inference_orchestrator.dart';
-import 'package:spots/core/services/config_service.dart';
+import 'package:avrai/core/ml/inference_orchestrator.dart';
+import 'package:avrai/core/services/config_service.dart';
 
 /// Decision Coordinator
 /// 

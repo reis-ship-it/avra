@@ -1,11 +1,11 @@
 import 'dart:math' as math;
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/data/datasources/local/spots_local_datasource.dart';
-import 'package:spots/data/datasources/remote/spots_remote_datasource.dart';
-import 'package:spots/data/datasources/remote/google_places_datasource.dart';
-import 'package:spots/data/datasources/remote/openstreetmap_datasource.dart';
-import 'package:spots/core/services/google_places_cache_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/data/datasources/local/spots_local_datasource.dart';
+import 'package:avrai/data/datasources/remote/spots_remote_datasource.dart';
+import 'package:avrai/data/datasources/remote/google_places_datasource.dart';
+import 'package:avrai/data/datasources/remote/openstreetmap_datasource.dart';
+import 'package:avrai/core/services/google_places_cache_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 /// Hybrid Search Repository
@@ -27,6 +27,7 @@ class HybridSearchRepository {
   
   // Search result cache (privacy-preserving, short-lived)
   final Map<String, HybridSearchResult> _searchCache = {};
+  // ignore: unused_field
   static const Duration _cacheExpiration = Duration(minutes: 5);
   
   HybridSearchRepository({
@@ -567,7 +568,6 @@ class HybridSearchRepository {
     try {
       final result = await _connectivity!.checkConnectivity();
       return result.contains(ConnectivityResult.none);
-          return result == ConnectivityResult.none;
     } catch (e) {
       _logger.error('Error checking connectivity', error: e, tag: _logName);
       return false; // Assume online on error

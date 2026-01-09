@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/spots/create_spot_page.dart';
+import 'package:avrai/presentation/pages/spots/create_spot_page.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
 

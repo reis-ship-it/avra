@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Product Contribution Widget
 /// 
@@ -223,6 +223,7 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
 
   void _updateTotalValue() {
     if (_unitPrice != null) {
+      // ignore: unused_local_variable - Reserved for future total display
       final total = _unitPrice! * _quantity;
       widget.onUnitPriceChanged?.call(_unitPrice!);
     }

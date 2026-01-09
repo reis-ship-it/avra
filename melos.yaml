@@ -1,5 +1,5 @@
-name: AVRA
-repository: https://github.com/yourusername/spots
+name: AVRAI
+repository: https://github.com/AVRA-CADAVRA/avrai
 
 packages:
   - packages/**
@@ -10,14 +10,14 @@ command:
   bootstrap:
     usePubspecOverrides: true
     hooks:
-      pre: echo "🚀 Bootstrapping AVRA workspace..."
+      pre: echo "🚀 Bootstrapping AVRAI workspace..."
       post: echo "✅ Bootstrap complete!"
 
 scripts:
   # Repo guardrails (architecture + hygiene)
   check:architecture:
     run: dart run scripts/ci/check_architecture.dart
-    description: Enforce package dependency boundaries (no package:spots/* from packages/)
+    description: Enforce package dependency boundaries (no package:avra/* from packages/)
 
   check:repo_hygiene:
     run: dart run scripts/ci/check_repo_hygiene.dart
@@ -41,38 +41,38 @@ scripts:
     run: flutter test
     description: Test network module only
     packageFilters:
-      scope: "avra_network"
+      scope: "avrai_network"
   
   test:core:
     run: flutter test
     description: Test core module only
     packageFilters:
-      scope: "avra_core"
+      scope: "avrai_core"
   
   test:data:
     run: flutter test
     description: Test data module only
     packageFilters:
-      scope: "avra_data"
+      scope: "avrai_data"
   
   test:ai:
     run: flutter test
     description: Test AI module only
     packageFilters:
-      scope: "avra_ai"
+      scope: "avrai_ai"
   
   test:ml:
     run: flutter test
     description: Test ML module only
     packageFilters:
-      scope: "avra_ml"
+      scope: "avrai_ml"
   
   # Building
   build:
     run: flutter build apk
     description: Build main app
     packageFilters:
-      scope: "avra_app"
+      scope: "avrai_app"
   
   # Dependency management
   deps:get:

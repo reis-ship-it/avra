@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/cloud/microservices_manager.dart';
-import 'package:spots/core/cloud/realtime_sync_manager.dart';
-import 'package:spots/core/cloud/edge_computing_manager.dart';
-import 'package:spots/core/deployment/production_manager.dart';
+import 'package:avrai/core/cloud/microservices_manager.dart';
+import 'package:avrai/core/cloud/realtime_sync_manager.dart';
+import 'package:avrai/core/cloud/edge_computing_manager.dart';
+import 'package:avrai/core/deployment/production_manager.dart';
 
 /// OUR_GUTS.md: "Production-ready deployment with complete system integration"
 /// Comprehensive production readiness manager for SPOTS platform

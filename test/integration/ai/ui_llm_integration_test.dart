@@ -17,11 +17,11 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/common/ai_command_processor.dart';
-import 'package:spots/presentation/widgets/common/action_success_widget.dart';
-import 'package:spots/presentation/widgets/common/offline_indicator_widget.dart' show OfflineIndicatorWidget, OfflineBanner;
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/ai/action_executor.dart';
+import 'package:avrai/presentation/widgets/common/ai_command_processor.dart';
+import 'package:avrai/presentation/widgets/common/action_success_widget.dart';
+import 'package:avrai/presentation/widgets/common/offline_indicator_widget.dart' show OfflineIndicatorWidget, OfflineBanner;
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/ai/action_executor.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../widget/helpers/widget_test_helpers.dart';
 
@@ -632,9 +632,12 @@ void main() {
           if (dialog.evaluate().isNotEmpty) {
             // Dialog exists, message format might be different
             expect(dialog, findsOneWidget);
+      // ignore: avoid_print
             print('⚠️ Success dialog found but message format may differ');
           } else {
+      // ignore: avoid_print
             // Dialog might not have appeared yet or action didn't complete
+      // ignore: avoid_print
             print('⚠️ Success dialog not found - action may not have completed');
           }
         } else {

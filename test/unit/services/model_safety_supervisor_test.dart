@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ml/model_version_registry.dart';
-import 'package:spots/core/services/agent_happiness_service.dart';
-import 'package:spots/core/services/model_safety_supervisor.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/ml/model_version_registry.dart';
+import 'package:avrai/core/services/agent_happiness_service.dart';
+import 'package:avrai/core/services/model_safety_supervisor.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import '../../mocks/mock_storage_service.dart';
 
 void main() {

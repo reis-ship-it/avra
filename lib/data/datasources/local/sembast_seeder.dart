@@ -1,9 +1,9 @@
 import 'dart:developer' as developer;
 import 'package:sembast/sembast.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/user.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 class SembastSeeder {
   static Future<void> seedDatabase() async {

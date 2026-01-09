@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
-import 'package:spots/presentation/widgets/settings/ai2ai_learning_effectiveness_widget.dart';
-import 'package:spots/presentation/widgets/settings/ai2ai_learning_insights_widget.dart';
-import 'package:spots/presentation/widgets/settings/ai2ai_learning_recommendations_widget.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/services/ai2ai_learning_service.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
+import 'package:avrai/presentation/widgets/settings/ai2ai_learning_effectiveness_widget.dart';
+import 'package:avrai/presentation/widgets/settings/ai2ai_learning_insights_widget.dart';
+import 'package:avrai/presentation/widgets/settings/ai2ai_learning_recommendations_widget.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/services/ai2ai_learning_service.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// AI2AI Learning Methods Page
 ///

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/secure_mapping_encryption_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/secure_mapping_encryption_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Integration tests for Agent ID Migration
@@ -19,6 +19,8 @@ void main() {
   group('AgentIdMigration Integration', () {
     late SupabaseService supabaseService;
     late SecureMappingEncryptionService encryptionService;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late AgentIdService agentIdService;
 
     setUpAll(() {

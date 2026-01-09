@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 /// Anonymous User model for AI2AI network communication
 /// 

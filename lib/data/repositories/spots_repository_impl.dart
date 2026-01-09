@@ -1,9 +1,9 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/data/datasources/local/spots_local_datasource.dart';
-import 'package:spots/data/datasources/remote/spots_remote_datasource.dart';
-import 'package:spots/domain/repositories/spots_repository.dart';
-import 'package:spots/data/repositories/repository_patterns.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/data/datasources/local/spots_local_datasource.dart';
+import 'package:avrai/data/datasources/remote/spots_remote_datasource.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
+import 'package:avrai/data/repositories/repository_patterns.dart';
 
 /// Spots Repository Implementation
 ///

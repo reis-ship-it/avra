@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
-import 'package:spots/presentation/widgets/brand/sponsorship_card.dart';
-import 'package:spots/presentation/pages/brand/brand_discovery_page.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
+import 'package:avrai/presentation/widgets/brand/sponsorship_card.dart';
+import 'package:avrai/presentation/pages/brand/brand_discovery_page.dart';
 import 'package:get_it/get_it.dart';
 
 /// Sponsorship Management Page
@@ -30,6 +30,7 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
   // TODO: Get services when available (Agent 1, Week 11)
   // final _sponsorshipService = GetIt.instance<SponsorshipService>();
   // final _productTrackingService = GetIt.instance<ProductTrackingService>();
+  // ignore: unused_field
   final _eventService = GetIt.instance<ExpertiseEventService>();
   
   BrandAccount? _currentBrand;

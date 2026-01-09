@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/outside_buyer/outside_buyer_insights_v1_validator.dart';
+import 'package:avrai/core/services/outside_buyer/outside_buyer_insights_v1_validator.dart';
 
 void main() {
   group('OutsideBuyerInsightsV1Validator', () {

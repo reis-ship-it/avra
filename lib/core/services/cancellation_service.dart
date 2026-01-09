@@ -1,12 +1,12 @@
-import 'package:spots/core/models/cancellation.dart';
-import 'package:spots/core/models/cancellation_initiator.dart';
-import 'package:spots/core/models/refund_status.dart';
-import 'package:spots/core/models/refund_policy.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/refund_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/cancellation.dart';
+import 'package:avrai/core/models/cancellation_initiator.dart';
+import 'package:avrai/core/models/refund_status.dart';
+import 'package:avrai/core/models/refund_policy.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/refund_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Cancellation Service
@@ -136,6 +136,7 @@ class CancellationService {
       // Step 6: Process refund
       if (refundAmount > 0) {
         try {
+          // ignore: unused_local_variable - Reserved for future refund distribution tracking
           final distributions = await _refundService.processRefund(
             paymentId: payment.id,
             amount: refundAmount,
@@ -270,6 +271,7 @@ class CancellationService {
       // Step 8: Process batch refunds
       if (totalRefunds > 0) {
         try {
+          // ignore: unused_local_variable - Reserved for future refund tracking
           final distributions = await _refundService.processBatchRefunds(
             payments: payments,
             cancellationId: cancellation.id,
@@ -387,6 +389,7 @@ class CancellationService {
       // Step 5: Process batch refunds (full refund including platform fee)
       if (totalRefunds > 0) {
         try {
+          // ignore: unused_local_variable - Reserved for future refund tracking
           final distributions = await _refundService.processBatchRefunds(
             payments: payments,
             cancellationId: cancellation.id,

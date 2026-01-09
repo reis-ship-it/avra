@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/quantum_prediction_features.dart';
+import 'package:avrai/core/models/quantum_prediction_features.dart';
 
 void main() {
   group('QuantumPredictionFeatures', () {

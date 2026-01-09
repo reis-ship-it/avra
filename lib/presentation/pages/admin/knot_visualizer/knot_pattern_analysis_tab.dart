@@ -6,9 +6,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/admin/knot_admin_service.dart';
-import 'package:spots_knot/models/knot/knot_pattern_analysis.dart';
-import 'package:spots/presentation/widgets/admin/knot_pattern_heatmap.dart';
+import 'package:avrai/core/services/admin/knot_admin_service.dart';
+import 'package:avrai_knot/models/knot/knot_pattern_analysis.dart';
+import 'package:avrai/presentation/widgets/admin/knot_pattern_heatmap.dart';
 
 /// Tab for analyzing knot patterns
 class KnotPatternAnalysisTab extends StatefulWidget {

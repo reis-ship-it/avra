@@ -1,4 +1,4 @@
-import 'package:spots/core/services/admin_auth_service.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
 
 /// Centralized permission checking for admin operations
 /// Phase 1.6: Extracted from AdminGodModeService

@@ -1,10 +1,10 @@
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/multi_party_sponsorship.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/models/brand_discovery.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/multi_party_sponsorship.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/models/brand_discovery.dart';
 
 /// Sponsorship Integration Utilities
 /// 

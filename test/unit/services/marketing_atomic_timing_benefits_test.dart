@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
 
 /// Marketing Experiment 1: Atomic Timing Precision Benefits
 ///

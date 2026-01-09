@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/quantum_prediction_features.dart';
-import 'package:spots/core/ml/training/quantum_prediction_training_models.dart';
+import 'package:avrai/core/models/quantum_prediction_features.dart';
+import 'package:avrai/core/ml/training/quantum_prediction_training_models.dart';
 
 /// Quantum Prediction Training Pipeline
 ///

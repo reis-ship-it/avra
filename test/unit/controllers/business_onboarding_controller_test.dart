@@ -2,12 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:spots/core/controllers/business_onboarding_controller.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/business_shared_agent_service.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_expert_preferences.dart';
-import 'package:spots/core/models/business_patron_preferences.dart';
+import 'package:avrai/core/controllers/business_onboarding_controller.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/business_shared_agent_service.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_expert_preferences.dart';
+import 'package:avrai/core/models/business_patron_preferences.dart';
 
 import 'business_onboarding_controller_test.mocks.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/user_anonymization_service.dart';
-import 'package:spots/core/services/field_encryption_service.dart';
-import 'package:spots/core/services/location_obfuscation_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/user_anonymization_service.dart';
+import 'package:avrai/core/services/field_encryption_service.dart';
+import 'package:avrai/core/services/location_obfuscation_service.dart';
 import '../helpers/platform_channel_helper.dart';
 import '../mocks/in_memory_flutter_secure_storage.dart';
 

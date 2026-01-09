@@ -5,10 +5,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

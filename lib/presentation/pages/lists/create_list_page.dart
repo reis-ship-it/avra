@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/controllers/list_creation_controller.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/controllers/list_creation_controller.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 class CreateListPage extends StatefulWidget {

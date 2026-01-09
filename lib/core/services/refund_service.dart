@@ -1,8 +1,8 @@
-import 'package:spots/core/models/refund_distribution.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/refund_distribution.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Refund Service
@@ -37,6 +37,7 @@ import 'package:uuid/uuid.dart';
 class RefundService {
   static const String _logName = 'RefundService';
   final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
+  // ignore: unused_field
   final Uuid _uuid = const Uuid();
   
   final StripeService _stripeService;

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/spots/edit_spot_page.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/presentation/pages/spots/edit_spot_page.dart';
+import 'package:avrai/core/models/spot.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
 import '../../../fixtures/model_factories.dart';

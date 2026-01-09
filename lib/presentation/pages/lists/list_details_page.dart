@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/services/social_media_sharing_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/presentation/widgets/lists/spot_picker_dialog.dart';
+import 'package:avrai/core/services/social_media_sharing_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/presentation/widgets/lists/spot_picker_dialog.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spots/presentation/widgets/common/source_indicator_widget.dart';
+import 'package:avrai/presentation/widgets/common/source_indicator_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/ai/event_logger.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/ai/event_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ListDetailsPage extends StatefulWidget {
@@ -665,8 +665,10 @@ ${widget.list.isPublic ? 'This is a public list on SPOTS' : 'Shared from SPOTS'}
 
 SPOTS - know you belong.''';
 
-    Share.share(shareText,
-        subject: 'Check out this list: ${widget.list.title}');
+    SharePlus.instance.share(ShareParams(
+      text: shareText,
+      subject: 'Check out this list: ${widget.list.title}',
+    ));
   }
 
   void _copyListLink(BuildContext context) {
@@ -692,7 +694,7 @@ View on SPOTS: https://spots.app/list/${widget.list.id}
 
 SPOTS - know you belong.''';
 
-    Share.share(publicText);
+    SharePlus.instance.share(ShareParams(text: publicText));
   }
 
   void _showDeleteConfirmation(BuildContext context) {
@@ -745,8 +747,9 @@ SPOTS - know you belong.''';
         updatedAt: DateTime.now(),
       );
 
+      if (!mounted || !context.mounted) return;
       context.read<ListsBloc>().add(UpdateList(updatedList));
-
+      if (!mounted || !context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

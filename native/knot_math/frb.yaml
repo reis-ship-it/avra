@@ -6,4 +6,4 @@ rust_input:
   - "src/api.rs"
 
 dart_output:
-  - "packages/spots_knot/lib/services/knot/bridge/knot_math_bridge.dart"
+  - "packages/avrai_knot/lib/services/knot/bridge/knot_math_bridge.dart"

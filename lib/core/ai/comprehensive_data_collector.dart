@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/ml/pattern_recognition.dart';
+import 'package:avrai/core/ml/pattern_recognition.dart';
 
 /// Comprehensive Data Collector for AI Learning
 /// Collects all available data for continuous AI improvement

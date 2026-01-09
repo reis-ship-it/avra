@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/services/social_media_discovery_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/services/social_media_discovery_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:go_router/go_router.dart';
 
 /// Friend Discovery Page
 ///
@@ -198,6 +199,13 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
       appBar: AppBar(
         title: const Text('Find Friends'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.group),
+            onPressed: () {
+              context.go('/group/formation');
+            },
+            tooltip: 'Start Group Search',
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _isLoading ? null : _findFriends,

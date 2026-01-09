@@ -17,7 +17,7 @@ library;
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math' as math;
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 class FloatingTextWidget extends StatefulWidget {
   /// The text to display with floating animation

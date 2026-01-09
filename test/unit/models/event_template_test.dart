@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/event_template.dart';
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_template.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 
 /// SPOTS EventTemplate Model Unit Tests
 /// Date: December 1, 2025

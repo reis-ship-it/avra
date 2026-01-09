@@ -7,9 +7,9 @@ import 'dart:developer' as developer;
 import 'dart:typed_data';
 
 import 'package:sembast/sembast.dart';
-import 'package:spots/core/crypto/signal/signal_types.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_key_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 
 /// Signal Protocol Session Manager
 /// 

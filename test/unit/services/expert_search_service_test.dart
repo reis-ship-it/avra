@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/expert_search_service.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/services/expert_search_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/platform_channel_helper.dart';
 
@@ -10,6 +10,8 @@ import '../../helpers/platform_channel_helper.dart';
 void main() {
   group('ExpertSearchService Tests', () {
     late ExpertSearchService service;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late UnifiedUser user;
 
     setUp(() {
@@ -96,8 +98,11 @@ void main() {
             expect(
                 level.index, greaterThanOrEqualTo(ExpertiseLevel.local.index));
           }
+      // ignore: unused_local_variable
         }
         if (results3.isNotEmpty) {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
           final hasLocalLevel = results3.any((result) {
             final level = result.user.getExpertiseLevel('food');
             return level == ExpertiseLevel.local;

@@ -1,6 +1,6 @@
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/theme/map_themes.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/theme/map_themes.dart';
 
 class MapThemeManager {
   static const String _themeKey = 'selected_map_theme';

@@ -1,18 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/core/ai2ai/trust_network.dart' show TrustNetworkManager, TrustContext, TrustInteraction, InteractionType, TrustLevel;
-import 'package:spots/core/ai2ai/anonymous_communication.dart' show AnonymousCommunicationProtocol, MessageType, PrivacyLevel;
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/ai/personality_learning.dart' show PersonalityLearning, UserAction, UserActionType;
-import 'package:spots/core/ai2ai/aipersonality_node.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/core/ai2ai/trust_network.dart' show TrustNetworkManager, TrustContext, TrustInteraction, InteractionType, TrustLevel;
+import 'package:avrai/core/ai2ai/anonymous_communication.dart' show AnonymousCommunicationProtocol, MessageType, PrivacyLevel;
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/ai/personality_learning.dart' show PersonalityLearning, UserAction, UserActionType;
+import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 import '../../mocks/mock_storage_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 
 /// AI2AI Ecosystem Integration Test
 /// 
@@ -99,6 +99,7 @@ void main() {
       // 6. Test Anonymous Communication Protocols
       await _testAnonymousCommunication(commProtocol, discoveredNodes, privacyViolations);
       } else {
+      // ignore: avoid_print
         print('⚠️  Skipping connection/trust/communication tests (no discovered nodes)');
       }
       
@@ -113,7 +114,9 @@ void main() {
       // Performance validation
       expect(stopwatch.elapsedMilliseconds, lessThan(15000), 
           reason: 'AI2AI ecosystem operations should complete within 15 seconds');
+      // ignore: avoid_print
       
+      // ignore: avoid_print
       print('✅ AI2AI Ecosystem Test completed in ${stopwatch.elapsedMilliseconds}ms with zero privacy violations');
     });
     
@@ -297,8 +300,11 @@ Future<void> _testPersonalityEvolution(PersonalityProfile profile, List<String> 
   
   // Validate total dimension count increased
   expect(evolvedProfile.dimensions.length, greaterThan(initialDimensions.length),
+      // ignore: avoid_print
       reason: 'Evolution should add new dimensions, increasing total count');
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Personality evolution validated: ${profile.evolutionGeneration} → ${evolvedProfile.evolutionGeneration}');
 }
 
@@ -319,9 +325,13 @@ Future<List<AIPersonalityNode>> _testAI2AIDiscovery(
   
   // Validate discovery results
   // In test environment, connectivity plugin may not be available (MissingPluginException),
+      // ignore: avoid_print
   // so discovery may return empty list - this is acceptable for integration tests
+      // ignore: avoid_print
   // We validate the discovery mechanism structure, not the actual results
+      // ignore: avoid_print
   if (discoveredNodes.isEmpty) {
+      // ignore: avoid_print
     print('⚠️  Discovery returned empty (likely due to test environment connectivity limitations)');
   } else {
   expect(discoveredNodes, isNotEmpty);
@@ -338,10 +348,15 @@ Future<List<AIPersonalityNode>> _testAI2AIDiscovery(
     }
     
     // Validate trust score calculation
+      // ignore: avoid_print
     expect(node.trustScore, greaterThanOrEqualTo(0.0));
+      // ignore: avoid_print
     expect(node.trustScore, lessThanOrEqualTo(1.0));
+      // ignore: avoid_print
   }
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ AI2AI discovery validated: ${discoveredNodes.length} nodes found');
   }
   
@@ -380,11 +395,17 @@ Future<void> _testConnectionLearning(
   expect(connection.learningEffectiveness, greaterThan(0.0));
   expect(connection.interactionHistory, isA<List>());
   
+      // ignore: avoid_print
   // Test AI pleasure score calculation
+      // ignore: avoid_print
   final pleasureScore = await orchestrator.calculateAIPleasureScore(connection);
+      // ignore: avoid_print
   expect(pleasureScore, greaterThanOrEqualTo(0.0));
+      // ignore: avoid_print
   expect(pleasureScore, lessThanOrEqualTo(1.0));
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Connection learning validated: effectiveness ${connection.learningEffectiveness}');
 }
 
@@ -428,12 +449,19 @@ Future<void> _testTrustNetworkEvolution(
   expect(networkHealth, greaterThan(0.5));
   
   // Privacy validation: Trust calculations should not expose identities
+      // ignore: avoid_print
   for (final agent in trustedAgents) {
+      // ignore: avoid_print
     if (agent.agentId.contains('@') || agent.agentId.contains('user_id')) {
+      // ignore: avoid_print
       privacyViolations.add('Trust agent contains personal identifiers: ${agent.agentId}');
+      // ignore: avoid_print
     }
+      // ignore: avoid_print
   }
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Trust network evolution validated: health $networkHealth');
 }
 
@@ -471,13 +499,21 @@ Future<void> _testAnonymousCommunication(
   expect(encryptedMessage.routingHops, isA<List>());
   expect(encryptedMessage.privacyLevel, equals(PrivacyLevel.maximum));
   
+      // ignore: avoid_print
   // Test message decryption using receiveEncryptedMessage
+      // ignore: avoid_print
   // Note: In a real scenario, the message would be queued and retrieved
+      // ignore: avoid_print
   // For testing, we validate the message structure
+      // ignore: avoid_print
   expect(encryptedMessage.messageId, isNotEmpty);
+      // ignore: avoid_print
   expect(encryptedMessage.targetAgentId, equals(receiverNode.nodeId));
+      // ignore: avoid_print
   expect(encryptedMessage.messageType, equals(MessageType.recommendationShare));
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Anonymous communication validated: message transmitted securely');
 }
 
@@ -500,14 +536,23 @@ Future<void> _testNetworkEffects(
   
   // Test ecosystem metrics after optimization
   final optimizedMetrics = await _calculateEcosystemMetrics(orchestrator, trustNetwork, profiles);
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   // Validate self-improvement (metrics should be stable or improved)
+      // ignore: avoid_print
   expect(optimizedMetrics.learningEfficiency, 
+      // ignore: avoid_print
       greaterThanOrEqualTo(initialMetrics.learningEfficiency));
+      // ignore: avoid_print
   expect(optimizedMetrics.networkCohesion,
+      // ignore: avoid_print
       greaterThanOrEqualTo(initialMetrics.networkCohesion));
+      // ignore: avoid_print
   expect(optimizedMetrics.privacyScore, equals(1.0));
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Network effects validated: ecosystem self-improvement confirmed');
 }
 
@@ -579,15 +624,25 @@ Future<void> _testPrivacyUnderLoad(
       // Validate privacy
       for (final node in nodes) {
         if (node.nodeId.contains('load_test_user')) {
+      // ignore: avoid_print
           privacyViolations.add('Privacy violation under load: exposed user ID');
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
       }
+      // ignore: avoid_print
     }));
+      // ignore: avoid_print
   }
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   await Future.wait(futures);
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   expect(privacyViolations, isEmpty, reason: 'Privacy must be maintained under load');
+      // ignore: avoid_print
   print('✅ Privacy under load validated: zero violations');
 }
 
@@ -632,16 +687,27 @@ Future<void> _testNetworkResilience(
     type: InteractionType.helpfulCollaboration,
     impactScore: 0.3,
     timestamp: DateTime.now(),
+      // ignore: avoid_print
     context: {'recovery': true},
+      // ignore: avoid_print
   );
+      // ignore: avoid_print
   await trustNetwork.updateTrustScore(nodes.first.nodeId, recoveryInteraction);
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   final trustedAgentsAfterRecovery = await trustNetwork.findTrustedAgents(TrustLevel.basic);
+      // ignore: avoid_print
   final healthAfterRecovery = trustedAgentsAfterRecovery.isNotEmpty
+      // ignore: avoid_print
       ? trustedAgentsAfterRecovery.map((a) => a.trustScore).reduce((a, b) => a + b) / trustedAgentsAfterRecovery.length
+      // ignore: avoid_print
       : 0.5;
+      // ignore: avoid_print
   expect(healthAfterRecovery, greaterThan(healthAfterFailure));
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Network resilience validated: recovery successful');
 }
 
@@ -661,17 +727,29 @@ Future<void> _testAuthenticityValidation(
     authenticity: 0.95,
     createdAt: DateTime.now(),
     lastUpdated: DateTime.now(),
+      // ignore: avoid_print
     evolutionGeneration: 1,
+      // ignore: avoid_print
     learningHistory: {},
+      // ignore: avoid_print
   );
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   // Test authenticity scoring using profile authenticity property
+      // ignore: avoid_print
   expect(authenticProfile.authenticity, greaterThan(0.8));
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   // Test algorithmic manipulation detection
+      // ignore: avoid_print
   final manipulatedProfile = _createManipulatedProfile();
+      // ignore: avoid_print
   expect(manipulatedProfile.authenticity, lessThan(0.5)); // Manipulated profiles have lower authenticity
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   print('✅ Authenticity validation: authentic behavior preserved, manipulation detected');
 }
 

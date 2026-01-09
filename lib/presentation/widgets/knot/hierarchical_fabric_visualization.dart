@@ -6,11 +6,11 @@
 
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
-import 'package:spots_knot/models/knot/knot_fabric.dart';
-import 'package:spots_knot/models/knot/hierarchical_layout.dart';
-import 'package:spots_knot/services/knot/hierarchical_layout_service.dart';
-import 'package:spots_knot/models/entity_knot.dart';
-import 'package:spots/presentation/widgets/knot/hierarchical_fabric_painter.dart';
+import 'package:avrai_knot/models/knot/knot_fabric.dart';
+import 'package:avrai_knot/models/knot/hierarchical_layout.dart';
+import 'package:avrai_knot/services/knot/hierarchical_layout_service.dart';
+import 'package:avrai_knot/models/entity_knot.dart';
+import 'package:avrai/presentation/widgets/knot/hierarchical_fabric_painter.dart';
 
 /// Widget for visualizing hierarchical fabric layouts
 class HierarchicalFabricVisualization extends StatefulWidget {

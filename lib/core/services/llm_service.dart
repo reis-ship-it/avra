@@ -8,16 +8,16 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/ai/personality_learning.dart' as pl;
-import 'package:spots/core/services/config_service.dart';
-import 'package:spots/core/ai/facts_index.dart';
-import 'package:spots/core/services/device_capability_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
-import 'package:spots/core/services/on_device_ai_capability_gate.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/core/ai/personality_learning.dart' as pl;
+import 'package:avrai/core/services/config_service.dart';
+import 'package:avrai/core/ai/facts_index.dart';
+import 'package:avrai/core/services/device_capability_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
+import 'package:avrai/core/services/on_device_ai_capability_gate.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 import 'package:http/http.dart' as http;
 // NOTE: This is Android-only at runtime. We keep the dependency optional in
 // practice by only using it when `TargetPlatform.android`. Some lint runners
@@ -472,7 +472,7 @@ class LLMService {
   /// [temperature] - Controls randomness (0.0-1.0), default 0.7
   /// [maxTokens] - Maximum tokens in response, default 500
   /// 
-  /// Returns a Stream<String> that emits chunks of text as they arrive
+  /// Returns a Stream&lt;String&gt; that emits chunks of text as they arrive
   /// Throws [OfflineException] if device is offline
   /// 
   /// Note: Streaming support depends on Edge Function configuration

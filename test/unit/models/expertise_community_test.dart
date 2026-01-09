@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/expertise_community.dart';
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_community.dart';
+import 'package:avrai/core/models/expertise_level.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 

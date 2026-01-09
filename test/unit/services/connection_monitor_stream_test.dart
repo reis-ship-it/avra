@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Tests for ConnectionMonitor stream methods

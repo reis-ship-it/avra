@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots/core/controllers/sync_controller.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/services/personality_sync_service.dart';
+import 'package:avrai/core/controllers/sync_controller.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 class PrivacySettingsPage extends StatefulWidget {
   const PrivacySettingsPage({super.key});

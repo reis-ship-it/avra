@@ -7,12 +7,12 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/services/calling_score_data_collector.dart';
-import 'package:spots/core/services/model_version_manager.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/model_retraining_service.dart';
-import 'package:spots/core/ml/model_version_registry.dart';
-import 'package:spots/core/ml/model_version_info.dart';
+import 'package:avrai/core/services/calling_score_data_collector.dart';
+import 'package:avrai/core/services/model_version_manager.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/model_retraining_service.dart';
+import 'package:avrai/core/ml/model_version_registry.dart';
+import 'package:avrai/core/ml/model_version_info.dart';
 
 /// Online Learning Service
 /// 

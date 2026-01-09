@@ -1,7 +1,7 @@
-import 'package:spots/core/models/neighborhood_boundary.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/large_city_detection_service.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/models/neighborhood_boundary.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/large_city_detection_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import 'dart:convert';
 import 'dart:io';
 

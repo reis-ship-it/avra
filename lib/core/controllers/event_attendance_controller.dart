@@ -2,15 +2,15 @@ import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
 
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/controllers/payment_processing_controller.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/controllers/payment_processing_controller.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 
 /// Event Attendance Controller
 /// 

@@ -11,9 +11,9 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/onboarding_place_list_generator.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/data/datasources/remote/google_places_datasource.dart';
+import 'package:avrai/core/services/onboarding_place_list_generator.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/data/datasources/remote/google_places_datasource.dart';
 
 void main() {
   group('OnboardingPlaceListGenerator Tests', () {

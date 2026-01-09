@@ -4,9 +4,9 @@
 // Patent #29: Multi-Entity Quantum Entanglement Matching System
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_core/models/unified_location_data.dart';
+import 'package:avrai/core/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/unified_location_data.dart';
 
 void main() {
   group('LocationTimingQuantumStateService', () {

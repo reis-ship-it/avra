@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/models/usage_pattern.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/models/usage_pattern.dart';
 
 /// OUR_GUTS.md: "See your door journey"
 /// Shows which doors user has opened (spots → communities → events)

@@ -153,45 +153,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.1"
-  avra_ai:
+  avrai_ai:
     dependency: "direct main"
     description:
-      path: "packages/avra_ai"
+      path: "packages/avrai_ai"
       relative: true
     source: path
     version: "1.0.0"
-  avra_core:
+  avrai_core:
     dependency: "direct main"
     description:
-      path: "packages/avra_core"
+      path: "packages/avrai_core"
       relative: true
     source: path
     version: "1.0.0"
-  avra_knot:
+  avrai_knot:
     dependency: "direct main"
     description:
-      path: "packages/avra_knot"
+      path: "packages/avrai_knot"
       relative: true
     source: path
     version: "1.0.0"
-  avra_ml:
-    dependency: transitive
+  avrai_network:
+    dependency: "direct main"
     description:
-      path: "packages/avra_ml"
+      path: "packages/avrai_network"
       relative: true
     source: path
     version: "1.0.0"
-  avra_network:
+  avrai_quantum:
     dependency: "direct main"
     description:
-      path: "packages/avra_network"
-      relative: true
-    source: path
-    version: "1.0.0"
-  avra_quantum:
-    dependency: "direct main"
-    description:
-      path: "packages/avra_quantum"
+      path: "packages/avrai_quantum"
       relative: true
     source: path
     version: "1.0.0"
@@ -1578,7 +1571,7 @@ packages:
     source: hosted
     version: "7.4.0-dev.0"
   meta:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: meta
       sha256: e3641ec5d63ebf0d9b41bd43201a66e3fc79a65db5f61fc181f04cd27aab950c

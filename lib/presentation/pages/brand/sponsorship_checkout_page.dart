@@ -2,18 +2,18 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/controllers/sponsorship_checkout_controller.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
-import 'package:spots/presentation/widgets/payment/payment_form_widget.dart';
-import 'package:spots/presentation/widgets/brand/product_contribution_widget.dart';
-import 'package:spots/presentation/widgets/brand/sponsorship_revenue_split_display.dart';
-import 'package:spots/presentation/pages/payment/payment_success_page.dart';
-import 'package:spots/presentation/widgets/common/page_transitions.dart';
+import 'package:avrai/core/controllers/sponsorship_checkout_controller.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart' show AuthBloc, Authenticated;
+import 'package:avrai/presentation/widgets/payment/payment_form_widget.dart';
+import 'package:avrai/presentation/widgets/brand/product_contribution_widget.dart';
+import 'package:avrai/presentation/widgets/brand/sponsorship_revenue_split_display.dart';
+import 'package:avrai/presentation/pages/payment/payment_success_page.dart';
+import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:get_it/get_it.dart';
 
 /// Brand Sponsorship Checkout Page
@@ -629,6 +629,8 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
       if (!result.success) {
         throw Exception(result.error ?? 'Failed to submit sponsorship');
       }
+
+      if (!mounted) return;
 
       // Navigate to success page
       Navigator.pushReplacement(

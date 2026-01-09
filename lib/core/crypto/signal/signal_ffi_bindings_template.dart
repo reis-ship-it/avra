@@ -11,7 +11,7 @@ import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:spots/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
 
 /// Signal Protocol FFI Bindings (Template)
 /// 

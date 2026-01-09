@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/tax_document.dart';
-import 'package:spots/core/models/tax_profile.dart';
+import 'package:avrai/core/models/tax_document.dart';
+import 'package:avrai/core/models/tax_profile.dart';
 
 /// Integration tests for tax compliance flow
 ///

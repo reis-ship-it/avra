@@ -14,8 +14,8 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/onboarding/floating_text_widget.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/onboarding/floating_text_widget.dart';
 
 class WelcomePage extends StatefulWidget {
   /// Callback when user taps to continue

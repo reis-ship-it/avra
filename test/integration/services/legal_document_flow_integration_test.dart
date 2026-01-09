@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/user_agreement.dart';
-import 'package:spots/core/legal/terms_of_service.dart';
-import 'package:spots/core/legal/event_waiver.dart';
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/core/models/user_agreement.dart';
+import 'package:avrai/core/legal/terms_of_service.dart';
+import 'package:avrai/core/legal/event_waiver.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 import '../../fixtures/model_factories.dart';
 
 /// Integration tests for legal document flow

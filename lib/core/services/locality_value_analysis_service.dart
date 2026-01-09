@@ -1,4 +1,4 @@
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Locality Value Analysis Service
 /// 

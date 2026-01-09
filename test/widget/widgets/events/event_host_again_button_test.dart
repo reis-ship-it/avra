@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/events/event_host_again_button.dart';
+import 'package:avrai/presentation/widgets/events/event_host_again_button.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../fixtures/model_factories.dart';
 import '../../../helpers/integration_test_helpers.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
 
 /// Marketing Experiment 4: Timezone-Aware Quantum Atomic Time Benefits
 ///

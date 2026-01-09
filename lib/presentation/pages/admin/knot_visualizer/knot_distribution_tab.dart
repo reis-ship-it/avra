@@ -6,10 +6,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/admin/knot_admin_service.dart';
-import 'package:spots_knot/models/knot/knot_distribution_data.dart';
-import 'package:spots/presentation/widgets/admin/knot_type_distribution_chart.dart';
-import 'package:spots/presentation/widgets/admin/knot_complexity_distribution_chart.dart';
+import 'package:avrai/core/services/admin/knot_admin_service.dart';
+import 'package:avrai_knot/models/knot/knot_distribution_data.dart';
+import 'package:avrai/presentation/widgets/admin/knot_type_distribution_chart.dart';
+import 'package:avrai/presentation/widgets/admin/knot_complexity_distribution_chart.dart';
 
 /// Tab for viewing knot distributions
 class KnotDistributionTab extends StatefulWidget {

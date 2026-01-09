@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/cross_locality_connection_service.dart';
-import 'package:spots/core/models/cross_locality_connection.dart' as models;
-import 'package:spots/core/models/user_movement_pattern.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/cross_locality_connection_service.dart';
+import 'package:avrai/core/models/cross_locality_connection.dart' as models;
+import 'package:avrai/core/models/user_movement_pattern.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/platform_channel_helper.dart';
 

@@ -2,15 +2,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:spots/core/controllers/checkout_controller.dart';
-import 'package:spots/core/controllers/payment_processing_controller.dart';
-import 'package:spots/core/services/sales_tax_service.dart';
-import 'package:spots/core/services/legal_document_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_status.dart';
+import 'package:avrai/core/controllers/checkout_controller.dart';
+import 'package:avrai/core/controllers/payment_processing_controller.dart';
+import 'package:avrai/core/services/sales_tax_service.dart';
+import 'package:avrai/core/services/legal_document_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_status.dart';
 
 import 'checkout_controller_test.mocks.dart';
 

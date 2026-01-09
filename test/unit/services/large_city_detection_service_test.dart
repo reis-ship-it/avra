@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/large_city_detection_service.dart';
+import 'package:avrai/core/services/large_city_detection_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Large City Detection Service Tests

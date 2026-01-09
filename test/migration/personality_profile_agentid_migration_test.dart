@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/injection_container.dart' as di;
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
 import '../mocks/mock_storage_service.dart';
 
@@ -26,6 +26,7 @@ void main() {
       await di.init();
     } catch (e) {
       // DI may fail in test environment, that's okay
+      // ignore: avoid_print
       print('⚠️  DI initialization failed in test: $e');
     }
   });

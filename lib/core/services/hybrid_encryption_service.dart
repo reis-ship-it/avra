@@ -2,9 +2,9 @@
 // Tries Signal Protocol first, falls back to AES-256-GCM if Signal Protocol is unavailable
 
 import 'dart:developer' as developer;
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/signal_protocol_encryption_service.dart';
-import 'package:spots/core/services/message_encryption_service.dart' as aes;
+import 'package:avrai/core/services/message_encryption_service.dart';
+import 'package:avrai/core/services/signal_protocol_encryption_service.dart';
+import 'package:avrai/core/services/message_encryption_service.dart' as aes;
 
 /// Hybrid Encryption Service
 /// 

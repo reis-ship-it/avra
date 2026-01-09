@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/widgets/brand/roi_chart_widget.dart';
-import 'package:spots/presentation/widgets/brand/performance_metrics_widget.dart';
-import 'package:spots/presentation/widgets/brand/brand_exposure_widget.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/brand/roi_chart_widget.dart';
+import 'package:avrai/presentation/widgets/brand/performance_metrics_widget.dart';
+import 'package:avrai/presentation/widgets/brand/brand_exposure_widget.dart';
 
 /// Brand Analytics Page
 /// 
@@ -33,6 +33,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
   // final _brandAnalyticsService = GetIt.instance<BrandAnalyticsService>();
   // final _brandAccountService = GetIt.instance<BrandAccountService>();
   
+  // ignore: unused_field
   BrandAccount? _brandAccount;
   BrandAnalytics? _analytics;
   bool _isLoading = true;
@@ -47,6 +48,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
   Future<void> _loadAnalytics() async {
     final authState = context.read<AuthBloc>().state;
     if (authState is! Authenticated) return;
+    // ignore: unused_local_variable - Reserved for future user-specific analytics
     final userId = authState.user.id;
     
     setState(() => _isLoading = true);

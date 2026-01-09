@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/payment_event_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/cross_locality_connection_service.dart';
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/config/stripe_config.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/payment_event_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/cross_locality_connection_service.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/config/stripe_config.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../../helpers/platform_channel_helper.dart';
 // UserRole is exported from unified_user.dart, no need for separate import
 

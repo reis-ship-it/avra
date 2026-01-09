@@ -1,6 +1,6 @@
-import 'package:spots/core/models/expertise_requirements.dart';
-import 'package:spots/core/services/locality_value_analysis_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/expertise_requirements.dart';
+import 'package:avrai/core/services/locality_value_analysis_service.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Dynamic Threshold Service
 /// 

@@ -2,16 +2,16 @@ import 'dart:developer' as developer;
 import 'dart:typed_data';
 import 'dart:async';
 import 'dart:convert';
-import 'package:spots/core/ai2ai/anonymous_communication.dart' as ai2ai;
-import 'package:spots_network/network/message_encryption_service.dart';
-import 'package:spots/core/models/business_expert_message.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/ai2ai/anonymous_communication.dart' as ai2ai;
+import 'package:avrai_network/network/message_encryption_service.dart';
+import 'package:avrai/core/models/business_expert_message.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/injection_container.dart' as di;
 import 'package:uuid/uuid.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 /// Business-Expert Chat Service (AI2AI Network Routing)
 /// 

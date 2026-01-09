@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 import 'dart:developer' as developer;
-import 'package:spots/core/ai/continuous_learning/base/learning_dimension_engine.dart';
-import 'package:spots/core/ai/continuous_learning/data_processor.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/ai/continuous_learning/base/learning_dimension_engine.dart';
+import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
 
 /// Behavior Learning Engine
 ///

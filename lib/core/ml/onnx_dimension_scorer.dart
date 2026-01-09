@@ -5,10 +5,10 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/services/onboarding_dimension_mapper.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/ai2ai/embedding_delta_collector.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/services/onboarding_dimension_mapper.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/ai2ai/embedding_delta_collector.dart';
 
 /// Scores personality dimensions from onboarding inputs
 /// Uses ONNX model for fast, privacy-sensitive scoring

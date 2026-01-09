@@ -13,8 +13,8 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// Settings section widget for federated learning participation
 class FederatedLearningSettingsSection extends StatefulWidget {

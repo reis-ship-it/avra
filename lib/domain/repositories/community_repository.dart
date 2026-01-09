@@ -1,4 +1,4 @@
-import 'package:spots/core/models/community.dart';
+import 'package:avrai/core/models/community.dart';
 
 /// Community repository abstraction.
 ///

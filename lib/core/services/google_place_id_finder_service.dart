@@ -2,8 +2,8 @@ import 'dart:developer' as developer;
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:http/http.dart' as http;
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Google Place ID Finder Service (LEGACY - DEPRECATED)
 /// 

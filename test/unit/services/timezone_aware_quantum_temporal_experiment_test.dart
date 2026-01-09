@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
 
 /// Experiment 7: Timezone-Aware Quantum Temporal Matching
 ///
@@ -71,6 +71,8 @@ void main() {
 
       // Calculate compatibility between all pairs
       int highCompatibilityCount = 0;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       int totalPairs = 0;
       final compatibilities = <double>[];
 

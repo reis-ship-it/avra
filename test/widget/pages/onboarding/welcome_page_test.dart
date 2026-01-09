@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/onboarding/welcome_page.dart';
-import 'package:spots/presentation/widgets/onboarding/floating_text_widget.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/presentation/pages/onboarding/welcome_page.dart';
+import 'package:avrai/presentation/widgets/onboarding/floating_text_widget.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 void main() {
   group('WelcomePage', () {

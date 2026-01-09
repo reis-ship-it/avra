@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:spots/core/services/ai_improvement_tracking_service.dart';
+import 'package:avrai/core/services/ai_improvement_tracking_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// SPOTS AIImprovementTrackingService Unit Tests

@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/event_safety_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/event_safety_guidelines.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/event_safety_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_safety_guidelines.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'event_safety_service_test.mocks.dart';

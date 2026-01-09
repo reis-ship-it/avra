@@ -16,9 +16,9 @@ library;
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/friend_chat_service.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/services/friend_chat_service.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import '../../helpers/test_helpers.dart';
 
 // Mock classes

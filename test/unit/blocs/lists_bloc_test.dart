@@ -8,8 +8,8 @@ library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/core/models/list.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/core/models/list.dart';
 import '../../helpers/bloc_test_helpers.dart';
 import '../../mocks/bloc_mock_dependencies.dart';
 
@@ -268,7 +268,7 @@ void main() {
         'triggers LoadLists after successful list deletion',
         build: () {
           when(() => mockDeleteListUseCase(any())).thenAnswer((_) async {
-            return null;
+            return;
           });
           when(() => mockGetListsUseCase()).thenAnswer((_) async => existingLists);
           return listsBloc;
@@ -549,7 +549,7 @@ void main() {
           when(() => mockCreateListUseCase(any())).thenAnswer((_) async => TestDataFactory.createTestList());
           when(() => mockUpdateListUseCase(any())).thenAnswer((_) async => TestDataFactory.createTestList());
           when(() => mockDeleteListUseCase(any())).thenAnswer((_) async {
-            return null;
+            return;
           });
           when(() => mockGetListsUseCase()).thenAnswer((_) async => TestDataFactory.createTestLists(3));
           return listsBloc;
@@ -597,7 +597,7 @@ void main() {
           when(() => mockCreateListUseCase(any())).thenAnswer((_) async => TestDataFactory.createTestList());
           when(() => mockUpdateListUseCase(any())).thenAnswer((_) async => TestDataFactory.createTestList());
           when(() => mockDeleteListUseCase(any())).thenAnswer((_) async {
-            return null;
+            return;
           });
           return listsBloc;
         },

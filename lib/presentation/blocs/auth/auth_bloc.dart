@@ -1,19 +1,19 @@
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/user.dart';
-import 'package:spots/domain/usecases/auth/get_current_user_usecase.dart';
-import 'package:spots/domain/usecases/auth/sign_in_usecase.dart';
-import 'package:spots/domain/usecases/auth/sign_out_usecase.dart';
-import 'package:spots/domain/usecases/auth/sign_up_usecase.dart';
-import 'package:spots/domain/usecases/auth/update_password_usecase.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/domain/usecases/auth/get_current_user_usecase.dart';
+import 'package:avrai/domain/usecases/auth/sign_in_usecase.dart';
+import 'package:avrai/domain/usecases/auth/sign_out_usecase.dart';
+import 'package:avrai/domain/usecases/auth/sign_up_usecase.dart';
+import 'package:avrai/domain/usecases/auth/update_password_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/core/services/storage_service.dart' show StorageService;
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/services/personality_sync_service.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/core/services/storage_service.dart' show StorageService;
+import 'package:avrai/injection_container.dart' as di;
 
 // Events
 abstract class AuthEvent {}

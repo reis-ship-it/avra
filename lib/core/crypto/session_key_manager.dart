@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:spots/core/crypto/key_exchange.dart';
+import 'package:avrai/core/crypto/key_exchange.dart';
 
 /// Session Key Manager for Forward Secrecy
 ///

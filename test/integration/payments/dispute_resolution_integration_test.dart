@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/dispute.dart';
-import 'package:spots/core/models/dispute_status.dart';
-import 'package:spots/core/models/dispute_type.dart';
-import 'package:spots/core/models/cancellation.dart';
-import 'package:spots/core/models/cancellation_initiator.dart';
-import 'package:spots/core/models/refund_status.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/models/event_partnership.dart';
+import 'package:avrai/core/models/dispute.dart';
+import 'package:avrai/core/models/dispute_status.dart';
+import 'package:avrai/core/models/dispute_type.dart';
+import 'package:avrai/core/models/cancellation.dart';
+import 'package:avrai/core/models/cancellation_initiator.dart';
+import 'package:avrai/core/models/refund_status.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_status.dart';
+import 'package:avrai/core/models/event_partnership.dart';
 
 /// Integration tests for dispute resolution flow
 /// 

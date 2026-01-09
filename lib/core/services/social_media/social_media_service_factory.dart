@@ -1,4 +1,4 @@
-import 'package:spots/core/services/social_media/base/social_media_platform_service.dart';
+import 'package:avrai/core/services/social_media/base/social_media_platform_service.dart';
 
 /// Factory for creating platform-specific social media services
 ///

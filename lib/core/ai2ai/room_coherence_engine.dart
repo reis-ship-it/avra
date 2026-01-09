@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:spots_network/network/spots_broadcast_frame_v1.dart';
+import 'package:avrai_network/network/avra_broadcast_frame_v1.dart';
 
 /// Computes a broadcast-safe “room coherence” signal from nearby AI frames.
 ///

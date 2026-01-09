@@ -1,4 +1,4 @@
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/core/models/user.dart';
 
 abstract class AuthRepository {
   Future<User?> signIn(String email, String password);

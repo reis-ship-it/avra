@@ -1,8 +1,8 @@
-import 'package:spots/core/models/tax_document.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/tax_document.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/data/repositories/repository_patterns.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/data/repositories/repository_patterns.dart';
 
 /// Tax Document Repository
 ///

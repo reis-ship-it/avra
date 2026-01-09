@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 
 /// OUR_GUTS.md: "Anonymous vibe signatures that preserve privacy while enabling AI2AI connections"
 /// Represents an anonymized user vibe that can be safely shared for AI2AI personality matching

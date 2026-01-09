@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipt_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipts_service_v0.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipt_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipts_service_v0.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 class ReceiptsPage extends StatefulWidget {
   const ReceiptsPage({super.key});

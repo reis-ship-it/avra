@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/user_partnership.dart';
-import 'package:spots/core/models/event_partnership.dart' show PartnershipStatus, PartnershipStatusExtension;
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/widgets/profile/partnership_card.dart';
+import 'package:avrai/core/models/user_partnership.dart';
+import 'package:avrai/core/models/event_partnership.dart' show PartnershipStatus, PartnershipStatusExtension;
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/widgets/profile/partnership_card.dart';
 
 /// Partnership Display Widget
 /// 

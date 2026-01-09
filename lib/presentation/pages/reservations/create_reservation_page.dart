@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/reservation.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/reservation_service.dart';
-import 'package:spots/core/services/reservation_recommendation_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/models/reservation.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/reservation_service.dart';
+import 'package:avrai/core/services/reservation_recommendation_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// Reservation Creation Page
 /// Phase 15: Reservation System Implementation
@@ -161,6 +161,7 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
         );
       },
     );
+    if (!mounted) return;
 
     if (picked != null) {
       // Also select time
@@ -323,7 +324,7 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                         padding: const EdgeInsets.all(12),
                         margin: const EdgeInsets.only(bottom: 16),
                         decoration: BoxDecoration(
-                          color: AppTheme.errorColor.withOpacity(0.1),
+                          color: AppTheme.errorColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: AppTheme.errorColor),
                         ),
@@ -499,7 +500,7 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withOpacity(0.1),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: AppTheme.primaryColor),
                         ),

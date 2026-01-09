@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/source_indicator.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/source_indicator.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget to display source indicator badge for data transparency
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable" - Users must know data sources

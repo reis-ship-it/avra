@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_level.dart';
 
 /// Geographic Scope Model
 /// Represents a user's event hosting scope based on their expertise level

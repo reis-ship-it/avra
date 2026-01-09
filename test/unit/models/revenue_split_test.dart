@@ -1,11 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/revenue_split.dart';
+import 'package:avrai/core/models/revenue_split.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for RevenueSplit model
 /// Tests solo event splits, N-way splits, locking, and validation
 void main() {
   group('RevenueSplit Model Tests', () {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late DateTime testDate;
 
     setUp(() {

@@ -1,12 +1,12 @@
 import 'dart:developer' as developer;
 
 // Re-export types used in public method signatures.
-export 'package:spots/core/services/secure_mapping_encryption_service.dart'
+export 'package:avrai/core/services/secure_mapping_encryption_service.dart'
     show EncryptedMapping;
 
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/secure_mapping_encryption_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/secure_mapping_encryption_service.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:math' as math;

@@ -7,16 +7,16 @@
 // Provides quantum-matched reservation recommendations using full entanglement.
 
 import 'dart:developer' as developer;
-import 'package:spots/core/models/reservation.dart';
+import 'package:avrai/core/models/reservation.dart';
 // ExpertiseEvent import removed - not directly used
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/services/reservation_quantum_service.dart';
-import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/services/reservation_quantum_service.dart';
+import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 
 /// Reservation Recommendation
 ///
@@ -69,6 +69,7 @@ class ReservationRecommendationService {
   final ReservationQuantumService _quantumService;
   // ignore: unused_field - Reserved for future Phase 19 integration
   final QuantumEntanglementService?
+  // ignore: unused_field
       _entanglementService; // Optional, graceful degradation
   final AtomicClockService _atomicClock;
   final ExpertiseEventService? _eventService;

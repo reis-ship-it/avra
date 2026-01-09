@@ -17,10 +17,11 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots_network/network/device_discovery.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai_network/network/device_discovery.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:async';
+import 'package:go_router/go_router.dart';
 
 /// Page displaying device discovery status and discovered devices
 class DeviceDiscoveryPage extends StatefulWidget {
@@ -121,6 +122,14 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         actions: [
+          if (_discoveredDevices.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.group),
+              onPressed: () {
+                context.go('/group/formation');
+              },
+              tooltip: 'Form Group',
+            ),
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: _showInfoDialog,

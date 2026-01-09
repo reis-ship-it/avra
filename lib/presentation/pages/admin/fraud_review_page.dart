@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/fraud_score.dart';
-import 'package:spots/core/models/fraud_recommendation.dart';
-import 'package:spots/core/services/fraud_detection_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/fraud_score.dart';
+import 'package:avrai/core/models/fraud_recommendation.dart';
+import 'package:avrai/core/services/fraud_detection_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Fraud Review Page (Admin)
 /// 

@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/app.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
-import 'package:spots/presentation/pages/onboarding/baseline_lists_page.dart';
-import 'package:spots/presentation/pages/onboarding/preference_survey_page.dart';
-import 'package:spots/presentation/pages/onboarding/social_media_connection_page.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
+import 'package:avrai/app.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:avrai/presentation/pages/onboarding/baseline_lists_page.dart';
+import 'package:avrai/presentation/pages/onboarding/preference_survey_page.dart';
+import 'package:avrai/presentation/pages/onboarding/social_media_connection_page.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Phase 8 Section 1 (8.1) - Baseline Lists Integration Test
@@ -32,6 +32,7 @@ void main() {
       await di.init();
     } catch (e) {
       // DI may fail in test environment, that's okay
+      // ignore: avoid_print
       print('⚠️  DI initialization failed in test: $e');
     }
   });
@@ -45,7 +46,9 @@ void main() {
 
       // Check if onboarding is available
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }
@@ -73,8 +76,11 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
+      // ignore: avoid_print
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }
@@ -98,9 +104,13 @@ void main() {
       await tester.pumpWidget(const SpotsApp());
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }
@@ -138,10 +148,15 @@ void main() {
       // Arrange
       await tester.pumpWidget(const SpotsApp());
       await tester.pump();
+      // ignore: avoid_print
       await tester.pump(const Duration(milliseconds: 100));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }
@@ -174,11 +189,17 @@ void main() {
     testWidgets('onboarding data includes baselineLists and socialMediaConnected', (WidgetTester tester) async {
       // Arrange
       await tester.pumpWidget(const SpotsApp());
+      // ignore: avoid_print
       await tester.pump();
+      // ignore: avoid_print
       await tester.pump(const Duration(milliseconds: 100));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }
@@ -201,12 +222,19 @@ void main() {
 
     testWidgets('step order is correct: preferences -> baselineLists -> socialMedia', (WidgetTester tester) async {
       // Arrange
+      // ignore: avoid_print
       await tester.pumpWidget(const SpotsApp());
+      // ignore: avoid_print
       await tester.pump();
+      // ignore: avoid_print
       await tester.pump(const Duration(milliseconds: 100));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }

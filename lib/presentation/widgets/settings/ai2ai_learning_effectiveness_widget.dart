@@ -12,9 +12,9 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/services/ai2ai_learning_service.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/services/ai2ai_learning_service.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
 
 /// Widget displaying AI2AI learning effectiveness metrics
 class AI2AILearningEffectivenessWidget extends StatefulWidget {

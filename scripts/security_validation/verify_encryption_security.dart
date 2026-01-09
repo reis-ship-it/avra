@@ -1,4 +1,7 @@
 #!/usr/bin/env dart
+// ignore_for_file: avoid_print
+library;
+
 /// Security Validation Script
 /// 
 /// Verifies encryption security for agent ID mappings:

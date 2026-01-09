@@ -1,9 +1,9 @@
-import 'package:spots/core/models/review_fraud_score.dart';
-import 'package:spots/core/models/fraud_signal.dart';
-import 'package:spots/core/models/fraud_recommendation.dart';
-import 'package:spots/core/models/event_feedback.dart';
-import 'package:spots/core/services/post_event_feedback_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/review_fraud_score.dart';
+import 'package:avrai/core/models/fraud_signal.dart';
+import 'package:avrai/core/models/fraud_recommendation.dart';
+import 'package:avrai/core/models/event_feedback.dart';
+import 'package:avrai/core/services/post_event_feedback_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import 'dart:io';

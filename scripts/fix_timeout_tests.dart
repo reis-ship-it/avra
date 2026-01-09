@@ -1,4 +1,5 @@
 #!/usr/bin/env dart
+// ignore_for_file: avoid_print
 // scripts/fix_timeout_tests.dart
 // Analyzes and fixes testWidgets that should be converted to test
 

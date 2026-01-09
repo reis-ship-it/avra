@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 import 'dart:developer' as developer;
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// Tax Document Storage Service
 ///

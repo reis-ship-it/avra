@@ -1,5 +1,5 @@
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Payout Service
@@ -20,6 +20,7 @@ class PayoutService {
   final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
   final Uuid _uuid = const Uuid();
   
+  // ignore: unused_field
   final RevenueSplitService _revenueSplitService;
   
   // In-memory storage for payouts (in production, use database)

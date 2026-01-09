@@ -1,10 +1,10 @@
-import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/services/product_tracking_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/models/payment_status.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/services/product_tracking_service.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Product Sales Service
@@ -32,6 +32,7 @@ class ProductSalesService {
   final PaymentService? _paymentService; // Optional for payment processing
   
   // In-memory storage for product sales (in production, use database)
+  // ignore: unused_field
   final Map<String, ProductSale> _productSales = {};
   
   ProductSalesService({
@@ -91,7 +92,9 @@ class ProductSalesService {
       final saleTotal = quantity * price;
       
       // Step 4: Process payment (if PaymentService available)
+      // ignore: unused_local_variable - Reserved for future payment processing
       String? paymentIntentId;
+      // ignore: unused_local_variable - Reserved for future payment status tracking
       PaymentStatus paymentStatus = PaymentStatus.pending;
       
       if (_paymentService != null && paymentMethod != null) {

@@ -20,9 +20,9 @@ library;
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/core/models/connection_metrics.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
 import 'package:get_it/get_it.dart';
 
 /// Widget displaying AI2AI connections with compatibility information

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/business_auth_service.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/business_auth_service.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/presentation/pages/business/business_dashboard_page.dart';
+import 'package:avrai/presentation/pages/business/business_dashboard_page.dart';
 
 /// Business Login Page
 /// Secure login for business account access

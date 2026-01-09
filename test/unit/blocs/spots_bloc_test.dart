@@ -8,8 +8,8 @@ library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/core/models/spot.dart';
 import '../../helpers/bloc_test_helpers.dart';
 import '../../mocks/bloc_mock_dependencies.dart';
 
@@ -400,7 +400,7 @@ void main() {
         'triggers LoadSpots after successful spot deletion',
         build: () {
           when(() => mockDeleteSpotUseCase(any())).thenAnswer((_) async {
-            return null;
+            return;
           });
           when(() => mockGetSpotsUseCase()).thenAnswer((_) async => existingSpots);
           return spotsBloc;

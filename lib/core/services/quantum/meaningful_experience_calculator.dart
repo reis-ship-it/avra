@@ -6,12 +6,12 @@
 
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots_quantum/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai_quantum/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
 
 /// Calculates meaningful experience scores and timing flexibility factors
 ///
@@ -108,8 +108,12 @@ class MeaningfulExperienceCalculator {
             quantumTemporalCompat = entityTimingCompat;
           }
 
-          // Weighted combination: 60% entity timing, 40% quantum temporal
-          timingCompatibility = 0.6 * entityTimingCompat + 0.4 * quantumTemporalCompat;
+          // Hybrid approach: Core (entity timing) + Modifier (quantum temporal)
+          // Entity timing is core (critical), quantum temporal enhances it
+          final coreScore = entityTimingCompat;
+          final modifierScore = quantumTemporalCompat;
+          // Hybrid: core * (1 + modifier boost), but clamp to 1.0
+          timingCompatibility = (coreScore * (1.0 + 0.3 * modifierScore)).clamp(0.0, 1.0);
         }
       }
 
@@ -161,7 +165,9 @@ class MeaningfulExperienceCalculator {
     required List<QuantumEntityState> eventEntities,
   }) async {
     try {
-      // 1. Core compatibility: F(ρ_user, ρ_entangled) (40% weight)
+      // Hybrid approach: Core factors (geometric mean) + Modifiers (weighted average)
+      
+      // 1. Core compatibility: F(ρ_user, ρ_entangled) (critical)
       final userEntangledState = await _entanglementService.createEntangledState(
         entityStates: [userState],
       );
@@ -169,28 +175,28 @@ class MeaningfulExperienceCalculator {
         userEntangledState,
         entangledState,
       );
-      final coreCompatibility = 0.40 * quantumFidelity;
 
-      // 2. Vibe alignment: F(ρ_user_vibe, ρ_event_vibe) (30% weight)
+      // 2. Vibe alignment: F(ρ_user_vibe, ρ_event_vibe) (critical)
       final vibeAlignment = _calculateVibeAlignment(userState, eventEntities);
-      final vibeContribution = 0.30 * vibeAlignment;
 
-      // 3. Interest alignment: F(ρ_user_interests, ρ_event_category) (20% weight)
+      // Core factors: geometric mean (catches critical failures)
+      final coreFactors = [quantumFidelity, vibeAlignment];
+      final coreScore = _geometricMean(coreFactors);
+
+      // 3. Interest alignment: F(ρ_user_interests, ρ_event_category) (modifier)
       final interestAlignment = _calculateInterestAlignment(userState, eventEntities);
-      final interestContribution = 0.20 * interestAlignment;
 
-      // 4. Transformative potential (10% weight)
+      // 4. Transformative potential (modifier)
       final transformativePotential = await _calculateTransformativePotential(
         userState: userState,
         eventEntities: eventEntities,
       );
-      final transformativeContribution = 0.10 * transformativePotential;
 
-      // Combined meaningful experience score
-      final meaningfulScore = coreCompatibility +
-          vibeContribution +
-          interestContribution +
-          transformativeContribution;
+      // Modifiers: weighted average (enhance good matches)
+      final modifierScore = 0.6 * interestAlignment + 0.4 * transformativePotential;
+
+      // Hybrid combination: core * modifiers
+      final meaningfulScore = coreScore * modifierScore;
 
       return meaningfulScore.clamp(0.0, 1.0);
     } catch (e, stackTrace) {
@@ -240,11 +246,17 @@ class MeaningfulExperienceCalculator {
       // 4. Vibe expansion potential (how much can user's vibe expand)
       final vibeExpansionPotential = _calculateVibeExpansionPotential(userState, eventEntities);
 
-      // Weighted combination
-      final transformativePotential = 0.25 * eventNovelty +
-          0.25 * userGrowthPotential +
-          0.25 * connectionOpportunity +
-          0.25 * vibeExpansionPotential;
+      // Hybrid approach: Core factors (geometric mean) + Modifiers (weighted average)
+      
+      // Core factors: event novelty and user growth potential (critical for transformation)
+      final coreFactors = [eventNovelty, userGrowthPotential];
+      final coreScore = _geometricMean(coreFactors);
+
+      // Modifiers: connection opportunity and vibe expansion (enhance good matches)
+      final modifierScore = 0.5 * connectionOpportunity + 0.5 * vibeExpansionPotential;
+
+      // Hybrid combination: core * modifiers
+      final transformativePotential = coreScore * modifierScore;
 
       return transformativePotential.clamp(0.0, 1.0);
     } catch (e) {
@@ -486,6 +498,17 @@ class MeaningfulExperienceCalculator {
 
     final distance = math.sqrt(sumSquaredDiff / count);
     return distance.clamp(0.0, 1.0);
+  }
+
+  /// Calculate geometric mean of values
+  double _geometricMean(List<double> values) {
+    if (values.isEmpty) return 0.0;
+    if (values.any((v) => v <= 0.0)) {
+      // If any value is zero or negative, return 0 (critical failure)
+      return 0.0;
+    }
+    final product = values.fold(1.0, (prod, v) => prod * v);
+    return math.pow(product, 1.0 / values.length).toDouble();
   }
 
   /// Find event timing from event entities

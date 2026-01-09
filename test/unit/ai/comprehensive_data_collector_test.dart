@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/comprehensive_data_collector.dart';
+import 'package:avrai/core/ai/comprehensive_data_collector.dart';
 
 /// Tests for Comprehensive Data Collector
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"

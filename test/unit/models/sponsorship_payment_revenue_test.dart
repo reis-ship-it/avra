@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/multi_party_sponsorship.dart';
-import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_status.dart';
-import 'package:spots/core/models/sponsorship_integration.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/multi_party_sponsorship.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_status.dart';
+import 'package:avrai/core/models/sponsorship_integration.dart';
 import 'dart:convert';
 import 'dart:io';
 import '../../helpers/test_helpers.dart';
@@ -22,6 +22,7 @@ import '../../helpers/test_helpers.dart';
 /// - Hybrid sponsorship revenue splits
 void main() {
   // #region agent log
+  // ignore: unused_element - Reserved for future debugging/logging
   void dbgLog({
     required String runId,
     required String hypothesisId,

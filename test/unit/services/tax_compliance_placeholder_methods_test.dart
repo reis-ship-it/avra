@@ -12,13 +12,13 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/tax_compliance_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/cross_locality_connection_service.dart';
-import 'package:spots/core/config/stripe_config.dart';
-import 'package:spots/core/models/tax_document.dart';
+import 'package:avrai/core/services/tax_compliance_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/cross_locality_connection_service.dart';
+import 'package:avrai/core/config/stripe_config.dart';
+import 'package:avrai/core/models/tax_document.dart';
 
 // Mock to break circular dependency
 class MockCrossLocalityConnectionService extends Mock

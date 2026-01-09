@@ -1,6 +1,6 @@
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 class OnboardingCompletionService {
   static const String _logName = 'OnboardingCompletionService';

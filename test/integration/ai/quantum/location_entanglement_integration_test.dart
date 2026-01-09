@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/unified_models.dart';
-import 'package:spots/core/ai/quantum/location_quantum_state.dart';
-import 'package:spots/core/ai/quantum/location_compatibility_calculator.dart';
+import 'package:avrai/core/models/unified_models.dart';
+import 'package:avrai/core/ai/quantum/location_quantum_state.dart';
+import 'package:avrai/core/ai/quantum/location_compatibility_calculator.dart';
 import '../../../helpers/test_helpers.dart';
 
 /// Integration tests for location entanglement in compatibility calculations

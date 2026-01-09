@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
-import 'package:spots/core/services/admin_god_mode_service.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:intl/intl.dart';
 
 /// AI Live Map Page

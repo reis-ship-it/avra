@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/geohash_service.dart';
+import 'package:avrai/core/services/geohash_service.dart';
 
 void main() {
   group('GeohashService', () {

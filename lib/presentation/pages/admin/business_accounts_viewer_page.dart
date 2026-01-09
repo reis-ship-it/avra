@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Business Accounts Viewer Page
 /// View and manage business accounts

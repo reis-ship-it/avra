@@ -33,7 +33,7 @@ library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 // TODO: Replace with actual service import
-// import 'package:spots/core/services/service_name.dart';
+// import 'package:avrai/core/services/service_name.dart';
 
 // TODO: Replace with actual dependency types
 // Example:

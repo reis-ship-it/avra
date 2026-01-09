@@ -1,10 +1,10 @@
 import 'dart:developer' as developer;
 import 'dart:math';
-import 'package:spots/core/models/connection_metrics.dart'
+import 'package:avrai/core/models/connection_metrics.dart'
     hide SharedInsight, ChatMessage;
-import 'package:spots/core/ai/ai2ai_learning.dart';
-import 'package:spots/core/ai/ai2ai_learning/utils/ai2ai_learning_utils.dart';
-import 'package:spots/core/ai/ai2ai_learning/validators/ai2ai_data_validator.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/ai/ai2ai_learning/utils/ai2ai_learning_utils.dart';
+import 'package:avrai/core/ai/ai2ai_learning/validators/ai2ai_data_validator.dart';
 
 /// Extracts insights from AI2AI conversations
 class ConversationInsightsExtractor {

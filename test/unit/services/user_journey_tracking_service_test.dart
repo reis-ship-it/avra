@@ -3,15 +3,15 @@
 // Tests for Phase 19 Section 19.8: User Journey Tracking
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/quantum/user_journey_tracking_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
+import 'package:avrai/core/services/quantum/user_journey_tracking_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 

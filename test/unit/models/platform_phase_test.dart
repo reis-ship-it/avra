@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/platform_phase.dart';
+import 'package:avrai/core/models/platform_phase.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for PlatformPhase model

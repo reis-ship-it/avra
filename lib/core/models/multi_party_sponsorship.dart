@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/revenue_split.dart';
+import 'package:avrai/core/models/revenue_split.dart';
 
 /// Multi-Party Sponsorship Model
 /// 

@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/preferences_profile.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/models/preferences_profile.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// PreferencesProfile Service
 /// 

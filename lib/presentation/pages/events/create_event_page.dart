@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/pages/events/event_review_page.dart';
-import 'package:spots/presentation/widgets/events/locality_selection_widget.dart';
-import 'package:spots/presentation/widgets/events/geographic_scope_indicator_widget.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/pages/events/event_review_page.dart';
+import 'package:avrai/presentation/widgets/events/locality_selection_widget.dart';
+import 'package:avrai/presentation/widgets/events/geographic_scope_indicator_widget.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
 
 /// Event Creation Form Page
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.8)
@@ -147,6 +147,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         );
       },
     );
+    if (!mounted) return;
 
     if (picked != null) {
       final time = await showTimePicker(
@@ -165,6 +166,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
           );
         },
       );
+      if (!mounted) return;
 
       if (time != null) {
         setState(() {
@@ -187,6 +189,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
   Future<void> _selectEndTime() async {
     if (_startTime == null) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please select start time first'),
@@ -211,8 +214,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
           ),
           child: child!,
         );
-      },
-    );
+        },
+      );
+    if (!mounted) return;
 
     if (picked != null) {
       final time = await showTimePicker(
@@ -231,6 +235,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
           );
         },
       );
+      if (!mounted) return;
 
       if (time != null) {
         final selectedEnd = DateTime(
@@ -242,6 +247,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         );
 
         if (selectedEnd.isBefore(_startTime!)) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('End time must be after start time'),

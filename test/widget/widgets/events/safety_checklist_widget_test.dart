@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/events/safety_checklist_widget.dart';
+import 'package:avrai/presentation/widgets/events/safety_checklist_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../fixtures/model_factories.dart';
 import '../../../helpers/integration_test_helpers.dart';
@@ -28,6 +28,8 @@ void main() {
 
       final host2 = ModelFactories.createTestUser();
       final event2 = IntegrationTestHelpers.createTestEvent(host: host2);
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       bool acknowledged = false;
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: SafetyChecklistWidget(

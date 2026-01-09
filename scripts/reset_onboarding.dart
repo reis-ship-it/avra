@@ -1,5 +1,6 @@
-import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/local/onboarding_completion_service.dart';
+// ignore_for_file: avoid_print - Script file
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 void main() async {
   print('🔄 Resetting onboarding completion for demo-user-1...');

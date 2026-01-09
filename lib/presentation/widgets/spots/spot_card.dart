@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/category_colors.dart';
-import 'package:spots/presentation/widgets/common/source_indicator_widget.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/category_colors.dart';
+import 'package:avrai/presentation/widgets/common/source_indicator_widget.dart';
 
 class SpotCard extends StatelessWidget {
   final Spot spot;

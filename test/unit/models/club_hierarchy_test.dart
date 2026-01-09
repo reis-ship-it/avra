@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/club_hierarchy.dart';
+import 'package:avrai/core/models/club_hierarchy.dart';
 
 /// Comprehensive tests for ClubHierarchy Model
 /// Tests roles enum, permissions system, role hierarchy

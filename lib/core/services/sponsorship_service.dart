@@ -1,9 +1,9 @@
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// Sponsorship Service

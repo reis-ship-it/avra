@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 
-import 'package:spots/core/services/geohash_service.dart';
-import 'package:spots/core/services/locality_agents/os_geofence_registrar.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/geohash_service.dart';
+import 'package:avrai/core/services/locality_agents/os_geofence_registrar.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// Locality geofence planner (v1)
 ///

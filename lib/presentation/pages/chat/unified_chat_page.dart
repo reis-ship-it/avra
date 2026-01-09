@@ -10,11 +10,11 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/pages/chat/agent_chat_view.dart';
-import 'package:spots/presentation/pages/chat/friends_chat_list_view.dart';
-import 'package:spots/presentation/pages/chat/communities_chat_list_view.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/pages/chat/agent_chat_view.dart';
+import 'package:avrai/presentation/pages/chat/friends_chat_list_view.dart';
+import 'package:avrai/presentation/pages/chat/communities_chat_list_view.dart';
 
 class UnifiedChatPage extends StatefulWidget {
   final int initialTabIndex;

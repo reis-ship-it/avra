@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/ai/quantum/quantum_vibe_engine.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {

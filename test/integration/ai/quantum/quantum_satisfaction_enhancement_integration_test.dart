@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/feedback_learning.dart';
-import 'package:spots/core/services/quantum_satisfaction_enhancer.dart';
-import 'package:spots/core/ai/quantum/quantum_satisfaction_feature_extractor.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai/core/ai/feedback_learning.dart';
+import 'package:avrai/core/services/quantum_satisfaction_enhancer.dart';
+import 'package:avrai/core/ai/quantum/quantum_satisfaction_feature_extractor.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 import '../../../helpers/platform_channel_helper.dart';
 import '../../../helpers/test_helpers.dart';
 

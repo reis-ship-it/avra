@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/services/club_service.dart';
-import 'package:spots/core/models/club.dart';
-import 'package:spots/core/models/club_hierarchy.dart';
-import 'package:spots/core/models/community_event.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/services/club_service.dart';
+import 'package:avrai/core/models/club.dart';
+import 'package:avrai/core/models/club_hierarchy.dart';
+import 'package:avrai/core/models/community_event.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 

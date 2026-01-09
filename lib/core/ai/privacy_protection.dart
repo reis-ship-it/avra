@@ -2,14 +2,14 @@ import 'dart:developer' as developer;
 import 'dart:math';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_network/network/models/anonymized_vibe_data.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_network/network/models/anonymized_vibe_data.dart';
 
 // Back-compat export for call sites that historically imported AnonymizedVibeData
-// from `package:spots/core/ai/privacy_protection.dart`.
-export 'package:spots_network/network/models/anonymized_vibe_data.dart';
+// from `package:avrai/core/ai/privacy_protection.dart`.
+export 'package:avrai_network/network/models/anonymized_vibe_data.dart';
 
 /// OUR_GUTS.md: "Complete privacy protection with zero personal data exposure for AI2AI personality learning"
 /// Comprehensive privacy protection system that ensures no personal data enters the AI2AI network

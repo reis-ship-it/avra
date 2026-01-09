@@ -15,9 +15,9 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/p2p/federated_learning.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/p2p/federated_learning.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:get_it/get_it.dart';
 

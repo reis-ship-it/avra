@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/controllers/profile_update_controller.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/controllers/profile_update_controller.dart';
+import 'package:avrai/core/models/user.dart';
 import 'package:get_it/get_it.dart';
 
 class EditProfilePage extends StatefulWidget {

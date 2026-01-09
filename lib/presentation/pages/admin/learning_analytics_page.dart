@@ -4,8 +4,8 @@
 
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 import 'package:get_it/get_it.dart';
 
 /// Learning Analytics Page

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/community_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/core/models/community_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 import '../../helpers/test_helpers.dart';
 import '../../helpers/integration_test_helpers.dart';
 
@@ -16,6 +16,8 @@ void main() {
   group('CommunityEvent Model Tests', () {
     late DateTime testDate;
     late UnifiedUser nonExpertHost;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late UnifiedUser expertHost;
 
     setUp(() {

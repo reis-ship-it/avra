@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/monitoring/network_analytics.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/monitoring/network_analytics.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying performance issues and optimization recommendations
 class PerformanceIssuesList extends StatelessWidget {
@@ -129,14 +129,12 @@ class PerformanceIssuesList extends StatelessWidget {
         recommendation.recommendation,
         style: Theme.of(context).textTheme.bodyMedium,
       ),
-      subtitle: recommendation.priority != null
-          ? Text(
-              'Priority: ${recommendation.priority}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            )
-          : null,
+      subtitle: Text(
+        'Priority: ${recommendation.priority}',
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+            ),
+      ),
     );
   }
 }

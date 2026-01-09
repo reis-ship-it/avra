@@ -1,9 +1,9 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/user.dart';
-import 'package:spots/data/datasources/local/auth_local_datasource.dart';
-import 'package:spots/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:spots/domain/repositories/auth_repository.dart';
-import 'package:spots/data/repositories/repository_patterns.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/data/datasources/local/auth_local_datasource.dart';
+import 'package:avrai/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:avrai/domain/repositories/auth_repository.dart';
+import 'package:avrai/data/repositories/repository_patterns.dart';
 
 /// Auth Repository Implementation
 ///

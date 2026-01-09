@@ -1,14 +1,15 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 
-/// Supabase service for SPOTS app
+/// Supabase service for AVRAI app
 /// Provides a clean interface to Supabase backend
 class SupabaseService {
   static final SupabaseService _instance = SupabaseService._internal();
   factory SupabaseService() => _instance;
   SupabaseService._internal();
   static const String _logName = 'SupabaseService';
-  final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
+  final AppLogger _logger =
+      const AppLogger(defaultTag: 'AVRAI', minimumLevel: LogLevel.debug);
 
   // In tests we cannot rely on Supabase.instance being initialized (it asserts).
   // Provide a safe override for unit tests and guard access in production.
@@ -50,7 +51,7 @@ class SupabaseService {
       return false;
     }
   }
-  
+
   /// Safely get client if available (returns null if not initialized)
   SupabaseClient? tryGetClient() => _tryGetClient();
 
@@ -95,7 +96,8 @@ class SupabaseService {
       if (res is DateTime) {
         return res;
       }
-      throw Exception('Unexpected get_server_time() result type: ${res.runtimeType}');
+      throw Exception(
+          'Unexpected get_server_time() result type: ${res.runtimeType}');
     } catch (e) {
       _logger.error('Failed to fetch server time', error: e, tag: _logName);
       rethrow;
@@ -162,7 +164,8 @@ class SupabaseService {
         'user_id': currentUser?.id,
       };
 
-      final response = await _client.from('spots').insert(spotData).select().single();
+      final response =
+          await _client.from('spots').insert(spotData).select().single();
       _logger.info('Spot created: $name', tag: _logName);
       return response;
     } catch (e) {
@@ -174,7 +177,10 @@ class SupabaseService {
   /// Get all spots
   Future<List<Map<String, dynamic>>> getSpots() async {
     try {
-      final response = await _client.from('spots').select('*').order('created_at', ascending: false);
+      final response = await _client
+          .from('spots')
+          .select('*')
+          .order('created_at', ascending: false);
       final spots = List<Map<String, dynamic>>.from(response);
       _logger.info('Retrieved ${spots.length} spots', tag: _logName);
       return spots;
@@ -193,7 +199,8 @@ class SupabaseService {
           .eq('user_id', userId)
           .order('created_at', ascending: false);
       final spots = List<Map<String, dynamic>>.from(response);
-      _logger.info('Retrieved ${spots.length} spots for user $userId', tag: _logName);
+      _logger.info('Retrieved ${spots.length} spots for user $userId',
+          tag: _logName);
       return spots;
     } catch (e) {
       _logger.error('Failed to get spots by user', error: e, tag: _logName);
@@ -216,7 +223,8 @@ class SupabaseService {
         'user_id': currentUser?.id,
       };
 
-      final response = await _client.from('spot_lists').insert(listData).select().single();
+      final response =
+          await _client.from('spot_lists').insert(listData).select().single();
       _logger.info('Spot list created: $name', tag: _logName);
       return response;
     } catch (e) {
@@ -228,7 +236,10 @@ class SupabaseService {
   /// Get all spot lists
   Future<List<Map<String, dynamic>>> getSpotLists() async {
     try {
-      final response = await _client.from('spot_lists').select('*').order('created_at', ascending: false);
+      final response = await _client
+          .from('spot_lists')
+          .select('*')
+          .order('created_at', ascending: false);
       final lists = List<Map<String, dynamic>>.from(response);
       _logger.info('Retrieved ${lists.length} spot lists', tag: _logName);
       return lists;
@@ -253,7 +264,11 @@ class SupabaseService {
         'user_id': currentUser?.id,
       };
 
-      final response = await _client.from('spot_list_items').insert(itemData).select().single();
+      final response = await _client
+          .from('spot_list_items')
+          .insert(itemData)
+          .select()
+          .single();
       _logger.info('Spot added to list: $spotId -> $listId', tag: _logName);
       return response;
     } catch (e) {
@@ -267,10 +282,8 @@ class SupabaseService {
     try {
       final c = _tryGetClient();
       if (c == null) return const Stream.empty();
-      return c
-          .from('spots')
-          .stream(primaryKey: ['id'])
-          .map((event) => List<Map<String, dynamic>>.from(event));
+      return c.from('spots').stream(primaryKey: ['id']).map(
+          (event) => List<Map<String, dynamic>>.from(event));
     } catch (_) {
       return const Stream.empty();
     }
@@ -281,10 +294,8 @@ class SupabaseService {
     try {
       final c = _tryGetClient();
       if (c == null) return const Stream.empty();
-      return c
-          .from('spot_lists')
-          .stream(primaryKey: ['id'])
-          .map((event) => List<Map<String, dynamic>>.from(event));
+      return c.from('spot_lists').stream(primaryKey: ['id']).map(
+          (event) => List<Map<String, dynamic>>.from(event));
     } catch (_) {
       return const Stream.empty();
     }
@@ -315,7 +326,7 @@ class SupabaseService {
           .eq('id', userId)
           .select()
           .single();
-      
+
       _logger.info('User profile updated', tag: _logName);
       return response;
     } catch (e) {
@@ -327,12 +338,9 @@ class SupabaseService {
   /// Get user profile
   Future<Map<String, dynamic>?> getUserProfile(String userId) async {
     try {
-      final response = await _client
-          .from('users')
-          .select('*')
-          .eq('id', userId)
-          .single();
-      
+      final response =
+          await _client.from('users').select('*').eq('id', userId).single();
+
       _logger.info('Retrieved user profile for $userId', tag: _logName);
       return response;
     } catch (e) {

@@ -1,10 +1,10 @@
-import 'package:spots/core/models/dispute.dart';
-import 'package:spots/core/models/dispute_type.dart';
-import 'package:spots/core/models/dispute_status.dart';
-import 'package:spots/core/models/refund_policy.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/refund_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/dispute.dart';
+import 'package:avrai/core/models/dispute_type.dart';
+import 'package:avrai/core/models/dispute_status.dart';
+import 'package:avrai/core/models/refund_policy.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/refund_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Dispute Resolution Service

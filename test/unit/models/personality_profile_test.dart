@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 
@@ -9,6 +9,8 @@ import '../../helpers/test_helpers.dart';
 /// OUR_GUTS.md: "AI personality that evolves and learns while preserving privacy"
 void main() {
   group('PersonalityProfile Model Tests', () {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late PersonalityProfile testProfile;
     late DateTime testDate;
 

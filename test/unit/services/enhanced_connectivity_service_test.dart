@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
-import 'package:spots/core/services/enhanced_connectivity_service.dart';
+import 'package:avrai/core/services/enhanced_connectivity_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// SPOTS EnhancedConnectivityService Unit Tests

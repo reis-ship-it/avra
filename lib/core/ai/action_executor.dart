@@ -1,14 +1,14 @@
 import 'dart:developer' as developer;
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/core/services/action_error_handler.dart';
-import 'package:spots/domain/usecases/spots/create_spot_usecase.dart';
-import 'package:spots/domain/usecases/lists/create_list_usecase.dart';
-import 'package:spots/domain/usecases/lists/update_list_usecase.dart';
-import 'package:spots/domain/repositories/spots_repository.dart';
-import 'package:spots/domain/repositories/lists_repository.dart';
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/core/services/action_error_handler.dart';
+import 'package:avrai/domain/usecases/spots/create_spot_usecase.dart';
+import 'package:avrai/domain/usecases/lists/create_list_usecase.dart';
+import 'package:avrai/domain/usecases/lists/update_list_usecase.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
+import 'package:avrai/domain/repositories/lists_repository.dart';
 
 /// Action Executor for Phase 5: Action Execution System
 /// Executes action intents by calling appropriate use cases

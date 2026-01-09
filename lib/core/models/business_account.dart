@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/business_expert_preferences.dart';
-import 'package:spots/core/models/business_patron_preferences.dart';
-import 'package:spots/core/models/business_verification.dart';
-import 'package:spots/core/models/business_member.dart';
+import 'package:avrai/core/models/business_expert_preferences.dart';
+import 'package:avrai/core/models/business_patron_preferences.dart';
+import 'package:avrai/core/models/business_verification.dart';
+import 'package:avrai/core/models/business_member.dart';
 
 /// Business Account Model
 /// Represents a business account that can connect with experts

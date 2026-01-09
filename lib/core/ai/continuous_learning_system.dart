@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/interaction_events.dart';
-import 'package:spots/core/ai/structured_facts_extractor.dart';
-import 'package:spots/core/ai/facts_index.dart';
-import 'package:spots/core/ai/continuous_learning/orchestrator.dart';
-import 'package:spots/core/ai/continuous_learning/data_collector.dart';
-import 'package:spots/core/ai/continuous_learning/data_processor.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/interaction_events.dart';
+import 'package:avrai/core/ai/structured_facts_extractor.dart';
+import 'package:avrai/core/ai/facts_index.dart';
+import 'package:avrai/core/ai/continuous_learning/orchestrator.dart';
+import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
+import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
 
 /// Continuous AI Learning System for SPOTS
 /// Enables AI to learn from everything and improve itself every second

@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:spots/core/models/tax_profile.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/utils/secure_ssn_encryption.dart';
+import 'package:avrai/core/models/tax_profile.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/utils/secure_ssn_encryption.dart';
 
 /// PDF Generation Service
 /// 

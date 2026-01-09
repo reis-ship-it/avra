@@ -5,10 +5,10 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:spots/core/services/storage_service.dart' as storage;
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/services/storage_service.dart' as storage;
+import 'package:avrai_core/models/personality_profile.dart';
 
 import '../../helpers/platform_channel_helper.dart';
 

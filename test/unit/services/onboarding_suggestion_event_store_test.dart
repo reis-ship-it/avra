@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/onboarding_suggestion_event.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/onboarding_suggestion_event_store.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/onboarding_suggestion_event.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/onboarding_suggestion_event_store.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 /// Unit tests for OnboardingSuggestionEventStore
 ///

@@ -1,4 +1,4 @@
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
 
 /// Hybrid Search Use Case
 /// OUR_GUTS.md: "Authenticity Over Algorithms" - Community data prioritized over external sources

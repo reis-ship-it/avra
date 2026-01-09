@@ -1,9 +1,9 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/services/llm_service.dart';
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/services/llm_service.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:spots/core/services/event_template_service.dart';
+import 'package:avrai/core/services/event_template_service.dart';
 import 'package:get_it/get_it.dart';
 
 /// Action Parser for Phase 5: Action Execution System

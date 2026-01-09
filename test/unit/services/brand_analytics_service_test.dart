@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/brand_analytics_service.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/product_tracking_service.dart';
-import 'package:spots/core/services/product_sales_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/models/sponsorship.dart';
+import 'package:avrai/core/services/brand_analytics_service.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/product_tracking_service.dart';
+import 'package:avrai/core/services/product_sales_service.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/models/sponsorship.dart';
 
 import 'brand_analytics_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';

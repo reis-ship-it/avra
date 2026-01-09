@@ -1,5 +1,5 @@
-import 'package:spots/core/models/list.dart';
-import 'package:spots/domain/repositories/lists_repository.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/domain/repositories/lists_repository.dart';
 
 class CreateListUseCase {
   final ListsRepository repository;

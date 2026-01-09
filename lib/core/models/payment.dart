@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/payment_status.dart';
+import 'package:avrai/core/models/payment_status.dart';
 
 /// Payment Model
 /// 

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/locality_value_analysis_service.dart';
-import 'package:spots/core/models/locality_value.dart';
-import 'package:spots/core/models/local_expert_qualification.dart';
+import 'package:avrai/core/services/locality_value_analysis_service.dart';
+import 'package:avrai/core/models/locality_value.dart';
+import 'package:avrai/core/models/local_expert_qualification.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../helpers/test_helpers.dart';
 import '../../fixtures/integration_test_fixtures.dart';

@@ -4,26 +4,26 @@
 // Part of Phase 19 Section 19.5: Quantum Matching Controller
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/controllers/quantum_matching_controller.dart';
-import 'package:spots/core/models/matching_input.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart' show QuantumEntityState, EntityLocationQuantumState, EntityTimingQuantumState;
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/quantum/quantum_entanglement_service.dart' show QuantumEntanglementService, EntangledQuantumState;
-import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
-import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/preferences_profile.dart';
+import 'package:avrai/core/controllers/quantum_matching_controller.dart';
+import 'package:avrai/core/models/matching_input.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart' show QuantumEntityState, EntityTimingQuantumState;
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/quantum/quantum_entanglement_service.dart' show QuantumEntanglementService, EntangledQuantumState;
+import 'package:avrai/core/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
+import 'package:avrai_knot/services/knot/cross_entity_compatibility_service.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/models/preferences_profile.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 

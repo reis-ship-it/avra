@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_expert_preferences.dart';
-import 'package:spots/core/models/business_patron_preferences.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/business/business_expert_preferences_widget.dart';
-import 'package:spots/presentation/widgets/business/business_patron_preferences_widget.dart';
-import 'package:spots/presentation/widgets/business/business_verification_widget.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_expert_preferences.dart';
+import 'package:avrai/core/models/business_patron_preferences.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/business/business_expert_preferences_widget.dart';
+import 'package:avrai/presentation/widgets/business/business_patron_preferences_widget.dart';
+import 'package:avrai/presentation/widgets/business/business_verification_widget.dart';
 
 /// Business Account Form Widget
 /// Allows businesses to create accounts

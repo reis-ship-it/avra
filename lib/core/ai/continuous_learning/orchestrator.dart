@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots/core/ai/advanced_communication.dart';
-import 'package:spots/core/ai/continuous_learning/data_collector.dart';
-import 'package:spots/core/ai/continuous_learning/data_processor.dart';
-import 'package:spots/core/ai/continuous_learning/base/learning_dimension_engine.dart';
-import 'package:spots/core/ai/continuous_learning/engines/personality_learning_engine.dart';
-import 'package:spots/core/ai/continuous_learning/engines/behavior_learning_engine.dart';
-import 'package:spots/core/ai/continuous_learning/engines/preference_learning_engine.dart';
-import 'package:spots/core/ai/continuous_learning/engines/interaction_learning_engine.dart';
-import 'package:spots/core/ai/continuous_learning/engines/location_intelligence_engine.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/ai/advanced_communication.dart';
+import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
+import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
+import 'package:avrai/core/ai/continuous_learning/base/learning_dimension_engine.dart';
+import 'package:avrai/core/ai/continuous_learning/engines/personality_learning_engine.dart';
+import 'package:avrai/core/ai/continuous_learning/engines/behavior_learning_engine.dart';
+import 'package:avrai/core/ai/continuous_learning/engines/preference_learning_engine.dart';
+import 'package:avrai/core/ai/continuous_learning/engines/interaction_learning_engine.dart';
+import 'package:avrai/core/ai/continuous_learning/engines/location_intelligence_engine.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
 
 /// Orchestrates the continuous learning system
 ///

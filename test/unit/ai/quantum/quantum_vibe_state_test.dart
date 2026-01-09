@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/quantum/quantum_vibe_state.dart';
+import 'package:avrai/core/ai/quantum/quantum_vibe_state.dart';
 import 'dart:math';
 import '../../../helpers/test_helpers.dart';
 

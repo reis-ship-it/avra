@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:math';
-import 'package:spots/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
 
 /// Builds consensus knowledge from aggregated insights
 class ConsensusKnowledgeBuilder {

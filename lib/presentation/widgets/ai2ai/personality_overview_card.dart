@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying personality overview with dimensions, confidence, and archetype
 class PersonalityOverviewCard extends StatelessWidget {

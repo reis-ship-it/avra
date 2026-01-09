@@ -1,11 +1,12 @@
 import 'dart:io';
+// ignore_for_file: avoid_print - Script file
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 /// Helper script to generate password hash for admin credentials
 /// 
 /// Usage:
-///   dart run scripts/add_admin_credential.dart <username> <password>
+///   dart run scripts/add_admin_credential.dart &lt;username&gt; &lt;password&gt;
 /// 
 /// This will output the SQL INSERT statement to add the credential to Supabase.
 /// 

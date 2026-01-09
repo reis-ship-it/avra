@@ -2,9 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:spots/core/ai/cloud_learning.dart' show CloudLearningInterface, CloudContributionResult, CloudLearningResult, CollectiveIntelligenceTrends, CloudBasedRecommendations, CloudLearningMetrics;
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/ai/cloud_learning.dart' show CloudLearningInterface, CloudContributionResult, CloudLearningResult, CollectiveIntelligenceTrends, CloudBasedRecommendations, CloudLearningMetrics;
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 import 'cloud_learning_test.mocks.dart';
 

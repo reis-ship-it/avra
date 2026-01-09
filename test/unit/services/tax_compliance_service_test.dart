@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/tax_compliance_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/models/tax_document.dart';
-import 'package:spots/core/models/tax_profile.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/utils/secure_ssn_encryption.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/services/tax_compliance_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/models/tax_document.dart';
+import 'package:avrai/core/models/tax_profile.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/utils/secure_ssn_encryption.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 import 'tax_compliance_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';

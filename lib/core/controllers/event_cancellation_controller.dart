@@ -2,14 +2,14 @@ import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
 
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/models/cancellation.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/refund_status.dart';
-import 'package:spots/core/services/cancellation_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/payment_service.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/models/cancellation.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/refund_status.dart';
+import 'package:avrai/core/services/cancellation_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
 
 /// Event Cancellation Controller
 /// 

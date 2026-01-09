@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// OnboardingRecommendationService
 /// 

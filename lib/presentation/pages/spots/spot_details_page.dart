@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/category_colors.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/presentation/widgets/validation/community_validation_widget.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/category_colors.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/presentation/widgets/validation/community_validation_widget.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spots/presentation/widgets/common/source_indicator_widget.dart';
+import 'package:avrai/presentation/widgets/common/source_indicator_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
-import 'package:spots/core/services/social_media_sharing_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/ai/event_logger.dart';
+import 'package:avrai/core/services/social_media_sharing_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/ai/event_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SpotDetailsPage extends StatefulWidget {
@@ -518,7 +518,10 @@ Location: ${widget.spot.latitude.toStringAsFixed(6)}, ${widget.spot.longitude.to
 
 Shared from SPOTS - know you belong.''';
 
-    Share.share(shareText, subject: 'Check out this spot: ${widget.spot.name}');
+    SharePlus.instance.share(ShareParams(
+      text: shareText,
+      subject: 'Check out this spot: ${widget.spot.name}',
+    ));
   }
 
   void _copySpotLink(BuildContext context) {
@@ -541,7 +544,7 @@ ${widget.spot.address ?? 'Coordinates: ${widget.spot.latitude.toStringAsFixed(6)
 
 Shared from SPOTS''';
 
-    Share.share(locationText);
+    SharePlus.instance.share(ShareParams(text: locationText));
   }
 
   void _openInMaps(BuildContext context, Spot spot) {

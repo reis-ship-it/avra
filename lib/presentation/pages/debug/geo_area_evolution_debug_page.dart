@@ -3,8 +3,8 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Debug-only page to inspect `stable_key -> area_id` mapping and dual-city fields.
 class GeoAreaEvolutionDebugPage extends StatefulWidget {

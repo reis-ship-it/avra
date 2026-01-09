@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/monitoring/network_analytics.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/monitoring/network_analytics.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying network health score as an enhanced gauge with visual improvements
 /// Features: Better gradients, historical trend indicators (sparkline), animated transitions,

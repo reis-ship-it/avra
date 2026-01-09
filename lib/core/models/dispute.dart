@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/dispute_type.dart';
-import 'package:spots/core/models/dispute_status.dart';
+import 'package:avrai/core/models/dispute_type.dart';
+import 'package:avrai/core/models/dispute_status.dart';
 
 /// Dispute Model
 /// 

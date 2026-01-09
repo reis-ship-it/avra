@@ -3,15 +3,15 @@
 // Tests for Phase 19 Section 19.10: Ideal State Learning System
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/quantum/ideal_state_learning_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots/core/services/quantum/quantum_outcome_learning_service.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/quantum/ideal_state_learning_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai/core/services/quantum/quantum_outcome_learning_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 

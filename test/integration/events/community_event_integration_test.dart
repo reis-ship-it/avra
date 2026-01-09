@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/community_event_service.dart';
-import 'package:spots/core/services/community_event_upgrade_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/models/community_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/core/services/community_event_service.dart';
+import 'package:avrai/core/services/community_event_upgrade_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/models/community_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../helpers/test_helpers.dart';
 import '../../fixtures/model_factories.dart';
@@ -190,6 +190,7 @@ void main() {
         // Let's check the actual score and adjust if needed
         if (upgradeScore < 0.70) {
           // Debug: print actual metrics
+      // ignore: avoid_print
           print('Debug: upgradeScore=$upgradeScore, engagement=${updatedEvent.engagementScore}, growth=${updatedEvent.growthMetrics}, diversity=${updatedEvent.diversityMetrics}, timesHosted=${updatedEvent.timesHosted}');
         }
         expect(upgradeScore, greaterThanOrEqualTo(0.70), reason: 'Upgrade score must be >= 70% (actual: ${upgradeScore.toStringAsFixed(3)})');

@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots/app.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_seeder.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/app.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_seeder.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:spots/core/services/storage_health_checker.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/crypto/signal/signal_protocol_service.dart';
-import 'package:spots/core/services/signal_protocol_initialization_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_auto_install_service.dart';
+import 'package:avrai/core/services/storage_health_checker.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/data/datasources/local/onboarding_completion_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/crypto/signal/signal_protocol_service.dart';
+import 'package:avrai/core/services/signal_protocol_initialization_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_auto_install_service.dart';
+import 'package:avrai/core/services/quantum/quantum_matching_connectivity_listener.dart';
 import 'dart:async';
 
 void main() async {
@@ -50,7 +51,7 @@ void main() async {
   }
 
   try {
-    // Initialize DI and backend (spots_network creates Supabase backend under the hood)
+    // Initialize DI and backend (avra_network creates Supabase backend under the hood)
     logger.info('🔧 [MAIN] Initializing dependency injection...');
     await di.init();
     logger.info('✅ [MAIN] Dependency injection initialized.');
@@ -179,6 +180,21 @@ void main() async {
       logger.debug('Stack trace: $stackTrace');
       logger.info('ℹ️ [MAIN] App will use fallback encryption (AES-256-GCM)');
       // Continue - Signal Protocol is optional, app can work with fallback
+    }
+
+    // Phase 19.16: Start quantum matching connectivity listener (non-blocking)
+    try {
+      logger.info('📡 [MAIN] Starting quantum matching connectivity listener...');
+      if (di.sl.isRegistered<QuantumMatchingConnectivityListener>()) {
+        final connectivityListener = di.sl<QuantumMatchingConnectivityListener>();
+        await connectivityListener.start();
+        logger.info('✅ [MAIN] Quantum matching connectivity listener started');
+      } else {
+        logger.debug('ℹ️ [MAIN] QuantumMatchingConnectivityListener not registered, skipping');
+      }
+    } catch (e, stackTrace) {
+      logger.warn('⚠️ [MAIN] Connectivity listener init failed (non-fatal): $e');
+      logger.debug('Stack trace: $stackTrace');
     }
 
     logger.info('🎬 [MAIN] Running app...');

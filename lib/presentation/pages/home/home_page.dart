@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/pages/lists/list_details_page.dart';
-import 'package:spots/presentation/widgets/lists/spot_list_card.dart';
-import 'package:spots/presentation/widgets/map/map_view.dart';
-import 'package:spots/presentation/widgets/common/search_bar.dart';
-import 'package:spots/presentation/widgets/common/chat_message.dart';
-import 'package:spots/presentation/widgets/common/universal_ai_search.dart';
-import 'package:spots/presentation/widgets/common/ai_command_processor.dart';
-import 'package:spots/domain/repositories/lists_repository.dart';
-import 'package:spots/core/models/list.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/pages/lists/list_details_page.dart';
+import 'package:avrai/presentation/widgets/lists/spot_list_card.dart';
+import 'package:avrai/presentation/widgets/map/map_view.dart';
+import 'package:avrai/presentation/widgets/common/search_bar.dart';
+import 'package:avrai/presentation/widgets/common/chat_message.dart';
+import 'package:avrai/presentation/widgets/common/universal_ai_search.dart';
+import 'package:avrai/presentation/widgets/common/ai_command_processor.dart';
+import 'package:avrai/domain/repositories/lists_repository.dart';
+import 'package:avrai/core/models/list.dart';
 import 'package:geolocator/geolocator.dart';
 // Phase 1 Integration: Offline indicator
-import 'package:spots/presentation/widgets/common/offline_indicator_widget.dart';
+import 'package:avrai/presentation/widgets/common/offline_indicator_widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/presentation/pages/events/events_browse_page.dart';
-import 'package:spots/presentation/pages/communities/communities_discover_page.dart';
-import 'package:spots/presentation/widgets/chat/chat_button_with_badge.dart';
+import 'package:avrai/presentation/pages/events/events_browse_page.dart';
+import 'package:avrai/presentation/pages/communities/communities_discover_page.dart';
+import 'package:avrai/presentation/widgets/chat/chat_button_with_badge.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
@@ -891,6 +891,7 @@ class _AISubTabState extends State<AISubTab> {
     }
 
     // Process command and get response
+    if (!mounted) return;
     final response = await AICommandProcessor.processCommand(
       command, 
       context,
@@ -898,6 +899,7 @@ class _AISubTabState extends State<AISubTab> {
       currentLocation: currentLocation,
     );
 
+    if (!mounted) return;
     if (mounted) {
       setState(() {
         _isProcessingCommand = false;
@@ -958,6 +960,23 @@ class _AISubTabState extends State<AISubTab> {
                       subtitle: 'Chat & Commands',
                       color: AppColors.grey600,
                       onTap: null, // Current tab
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildFeatureCard(
+                      context,
+                      icon: Icons.group,
+                      title: 'Group Matching',
+                      subtitle: 'Find spots with friends',
+                      color: AppTheme.primaryColor,
+                      onTap: () {
+                        context.go('/group/formation');
+                      },
                     ),
                   ),
                 ],

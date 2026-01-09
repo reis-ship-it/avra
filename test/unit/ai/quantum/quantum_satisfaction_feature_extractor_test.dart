@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/quantum/quantum_satisfaction_feature_extractor.dart';
-import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
-import 'package:spots/core/ai/quantum/location_quantum_state.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/models/decoherence_pattern.dart';
-import 'package:spots/core/models/unified_models.dart' as unified_models;
-import 'package:spots/core/services/decoherence_tracking_service.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai/core/ai/quantum/quantum_satisfaction_feature_extractor.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
+import 'package:avrai/core/ai/quantum/location_quantum_state.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/models/decoherence_pattern.dart';
+import 'package:avrai/core/models/unified_models.dart' as unified_models;
+import 'package:avrai/core/services/decoherence_tracking_service.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 import '../../../helpers/test_helpers.dart';
 
 // Mock class for DecoherenceTrackingService
@@ -30,7 +30,6 @@ class MockDecoherenceTrackingService implements DecoherenceTrackingService {
     return pattern?.behaviorPhase;
   }
 
-  @override
   Future<void> recordVibeStateChange({
     required String userId,
     required Map<String, double> previousVibeDimensions,

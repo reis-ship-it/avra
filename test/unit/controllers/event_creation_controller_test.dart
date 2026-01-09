@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/controllers/event_creation_controller.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/geo_hierarchy_service.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/controllers/event_creation_controller.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 

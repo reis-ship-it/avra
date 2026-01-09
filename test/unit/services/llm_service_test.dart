@@ -20,7 +20,7 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/services/llm_service.dart';
+import 'package:avrai/core/services/llm_service.dart';
 
 import 'llm_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';

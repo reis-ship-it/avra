@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai2ai/trust_network.dart';
+import 'package:avrai/core/ai2ai/trust_network.dart';
 
 /// Tests for AI2AI Trust Network Management
 /// OUR_GUTS.md: "Trust network establishment without identity exposure"
@@ -122,6 +122,8 @@ void main() {
           communityScore: 0.1,
         );
 
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final initial = await trustManager.establishTrust('bounds-agent', context);
 
         final extremeNegative = TrustInteraction(

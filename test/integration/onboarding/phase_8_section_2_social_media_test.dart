@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/app.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
-import 'package:spots/presentation/pages/onboarding/social_media_connection_page.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/app.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:avrai/presentation/pages/onboarding/social_media_connection_page.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Phase 8 Section 2 (8.2) - Social Media Data Collection Integration Test
@@ -31,6 +31,7 @@ void main() {
       await di.init();
     } catch (e) {
       // DI may fail in test environment, that's okay
+      // ignore: avoid_print
       print('⚠️  DI initialization failed in test: $e');
     }
   });
@@ -226,7 +227,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }

@@ -9,11 +9,11 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/services/personality_sync_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../mocks/mock_storage_service.dart';
 

@@ -20,11 +20,11 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 /// Settings page for device discovery configuration

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/settings/federated_learning_page.dart';
-import 'package:spots/presentation/widgets/settings/federated_learning_settings_section.dart';
-import 'package:spots/presentation/widgets/settings/federated_learning_status_widget.dart';
-import 'package:spots/presentation/widgets/settings/privacy_metrics_widget.dart';
-import 'package:spots/presentation/widgets/settings/federated_participation_history_widget.dart';
+import 'package:avrai/presentation/pages/settings/federated_learning_page.dart';
+import 'package:avrai/presentation/widgets/settings/federated_learning_settings_section.dart';
+import 'package:avrai/presentation/widgets/settings/federated_learning_status_widget.dart';
+import 'package:avrai/presentation/widgets/settings/privacy_metrics_widget.dart';
+import 'package:avrai/presentation/widgets/settings/federated_participation_history_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 void main() {

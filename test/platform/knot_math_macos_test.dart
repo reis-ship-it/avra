@@ -2,9 +2,9 @@
 // Tests Rust FFI integration on macOS platform
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 
 void main() {
   group('Knot Math macOS Integration', () {
@@ -28,6 +28,7 @@ void main() {
     });
 
     test('should load Rust library on macOS', () {
+      // ignore: invalid_use_of_internal_member - Testing internal RustLib instance
       expect(RustLib.instance, isNotNull);
     });
 

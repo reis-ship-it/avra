@@ -1,5 +1,5 @@
-import 'package:spots/core/services/ledgers/ledger_event_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipt_signature_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_event_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipt_signature_v0.dart';
 
 /// A v0 ledger event optionally paired with its server-minted signature.
 ///

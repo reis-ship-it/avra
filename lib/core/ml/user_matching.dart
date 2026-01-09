@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots/core/models/user.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/core/models/spot.dart';
 
 /// OUR_GUTS.md: "Authenticity Over Algorithms"
 /// Matches users based on authentic behavior patterns, not commercial interests

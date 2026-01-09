@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/models/multi_party_sponsorship.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/sponsorship_integration.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/payment_status.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/models/multi_party_sponsorship.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/sponsorship_integration.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/payment_status.dart';
 import '../../helpers/test_helpers.dart';
 import '../../fixtures/model_factories.dart';
 
@@ -26,8 +26,14 @@ import '../../fixtures/model_factories.dart';
 void main() {
   group('Sponsorship Model Relationships Verification', () {
     late DateTime testDate;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late UnifiedUser testUser;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late BusinessAccount testBusiness;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late BrandAccount testBrand;
 
     setUp(() {

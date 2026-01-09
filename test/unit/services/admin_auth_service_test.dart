@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/admin_auth_service.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 import '../../mocks/mock_storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';

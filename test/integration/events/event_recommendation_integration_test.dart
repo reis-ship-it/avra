@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/event_recommendation_service.dart';
-import 'package:spots/core/services/user_preference_learning_service.dart';
-import 'package:spots/core/services/event_matching_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/services/event_recommendation_service.dart';
+import 'package:avrai/core/services/user_preference_learning_service.dart';
+import 'package:avrai/core/services/event_matching_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/expertise_level.dart';
 import '../../helpers/integration_test_helpers.dart';
 
 /// Integration tests for event recommendation system
@@ -74,6 +74,8 @@ void main() {
 
       test('should prioritize local experts for users who prefer them', () async {
         // Create user who prefers local experts
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final user = IntegrationTestHelpers.createUserWithCityExpertise(
           id: 'user-1',
           location: 'Mission District, San Francisco',

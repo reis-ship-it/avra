@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/secure_mapping_encryption_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/secure_mapping_encryption_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Integration tests for Key Rotation Service
@@ -19,6 +19,8 @@ void main() {
   group('Key Rotation Integration', () {
     late SupabaseService supabaseService;
     late SecureMappingEncryptionService encryptionService;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late AgentIdService agentIdService;
 
     setUpAll(() {
@@ -54,8 +56,11 @@ void main() {
       expect(supabaseService.isAvailable, isTrue);
     });
 
+      // ignore: unused_local_variable
     test('should verify rotated mappings work correctly', () async {
       // Arrange
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       const userId = 'user-1';
 
       // This test verifies:

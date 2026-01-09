@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
-import 'package:spots_core/services/logger.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai_core/services/logger.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 /// Service for secure cross-device personality profile sync
 ///

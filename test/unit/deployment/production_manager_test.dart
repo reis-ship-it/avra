@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/deployment/production_manager.dart';
+import 'package:avrai/core/deployment/production_manager.dart';
 
 /// SPOTS Production Deployment Manager Tests
 /// Date: November 20, 2025

@@ -1,12 +1,14 @@
 import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai2ai/adaptive_mesh_networking_service.dart';
-import 'package:spots/core/ai2ai/adaptive_mesh_hop_policy.dart' as mesh_policy;
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/core/ai2ai/adaptive_mesh_hop_policy.dart' as mesh_policy;
+import 'package:avrai/core/models/expertise_level.dart';
 
 void main() {
   group('AdaptiveMeshNetworkingService', () {
     late AdaptiveMeshNetworkingService service;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late Battery mockBattery;
 
     setUp(() {

@@ -6,7 +6,7 @@ import 'dart:developer' as developer;
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:onnxruntime/onnxruntime.dart';
-import 'package:spots/core/ml/model_version_registry.dart';
+import 'package:avrai/core/ml/model_version_registry.dart';
 
 /// Calling Score Neural Model
 /// 

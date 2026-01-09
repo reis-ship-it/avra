@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/controllers/partnership_checkout_controller.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/widgets/payment/payment_form_widget.dart';
-import 'package:spots/presentation/widgets/partnerships/revenue_split_display.dart';
-import 'package:spots/presentation/pages/payment/payment_success_page.dart';
-import 'package:spots/presentation/pages/payment/payment_failure_page.dart';
-import 'package:spots/presentation/widgets/common/page_transitions.dart';
+import 'package:avrai/core/controllers/partnership_checkout_controller.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/widgets/payment/payment_form_widget.dart';
+import 'package:avrai/presentation/widgets/partnerships/revenue_split_display.dart';
+import 'package:avrai/presentation/pages/payment/payment_success_page.dart';
+import 'package:avrai/presentation/pages/payment/payment_failure_page.dart';
+import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:get_it/get_it.dart';
 
 /// Partnership Checkout Page

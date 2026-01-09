@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/presentation/pages/lists/create_list_page.dart';
-import 'package:spots/presentation/widgets/lists/spot_list_card.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/presentation/pages/lists/create_list_page.dart';
+import 'package:avrai/presentation/widgets/lists/spot_list_card.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spots/presentation/widgets/common/offline_indicator.dart';
+import 'package:avrai/presentation/widgets/common/offline_indicator.dart';
 
 class ListsPage extends StatelessWidget {
   const ListsPage({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 import '../helpers/accessibility_test_helpers.dart';
 import '../helpers/widget_test_helpers.dart';
 
@@ -27,8 +27,11 @@ void main() {
           AccessibilityTestHelpers.validateAppColorsContrast();
       final violations = contrastResults['violations'] as List<String>;
       if (violations.isNotEmpty) {
+      // ignore: avoid_print
         print('\n⚠️ Color Contrast Violations Found:');
+      // ignore: avoid_print
         for (final violation in violations) {
+      // ignore: avoid_print
           print('  - $violation');
         }
       }

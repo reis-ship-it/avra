@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/presentation/widgets/payment/payment_form_widget.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/presentation/widgets/payment/payment_form_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
 

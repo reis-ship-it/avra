@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipt_signature_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipt_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipt_verifier_v0.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipt_signature_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipt_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipt_verifier_v0.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// Reads and verifies v0 ledger receipts.
 ///

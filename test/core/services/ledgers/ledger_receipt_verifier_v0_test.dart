@@ -4,12 +4,12 @@ import 'package:cryptography/cryptography.dart';
 import 'package:crypto/crypto.dart' show sha256;
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_event_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_op_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipt_signature_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipt_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipt_verifier_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_event_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_op_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipt_signature_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipt_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipt_verifier_v0.dart';
 
 void main() {
   test(

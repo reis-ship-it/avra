@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/presentation/pages/admin/ai2ai_admin_dashboard.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/presentation/pages/admin/ai2ai_admin_dashboard.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart' as legacy_prefs;
 import '../../../helpers/getit_test_harness.dart';
 import '../../../helpers/platform_channel_helper.dart';

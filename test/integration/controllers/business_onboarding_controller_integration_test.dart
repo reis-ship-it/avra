@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:spots/core/controllers/business_onboarding_controller.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/models/business_expert_preferences.dart';
-import 'package:spots/core/models/business_patron_preferences.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/controllers/business_onboarding_controller.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/models/business_expert_preferences.dart';
+import 'package:avrai/core/models/business_patron_preferences.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Business Onboarding Controller Integration Tests

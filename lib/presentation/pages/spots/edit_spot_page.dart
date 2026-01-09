@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
 class EditSpotPage extends StatefulWidget {
@@ -389,9 +389,10 @@ class _EditSpotPageState extends State<EditSpotPage> {
                       child: OutlinedButton(
                         onPressed: () async {
                           final shouldDiscard = await _onWillPop();
-                          if (shouldDiscard && mounted) {
-                            Navigator.pop(context);
-                          }
+                          if (!mounted) return;
+                          if (!shouldDiscard) return;
+                          if (!context.mounted) return;
+                          Navigator.pop(context);
                         },
                         child: const Text('Cancel'),
                       ),

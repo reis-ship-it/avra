@@ -2,6 +2,7 @@
 // Phase 14: Signal Protocol Implementation - Option 1
 // 
 // Provides Dart callbacks for libsignal-ffi store interfaces
+// ignore_for_file: non_constant_identifier_names - FFI bindings match Rust/C API (snake_case)
 
 import 'dart:async';
 import 'dart:developer' as developer;
@@ -9,12 +10,12 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_rust_wrapper_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_platform_bridge_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_key_manager.dart';
-import 'package:spots/core/crypto/signal/signal_session_manager.dart';
-import 'package:spots/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_rust_wrapper_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_platform_bridge_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
 
 /// Store context for FFI callbacks
 /// 
@@ -1018,6 +1019,7 @@ class SignalFFIStoreCallbacks {
   /// Returns a pointer to SignalSessionStore struct
   /// 
   /// Uses Rust wrapper functions that bridge Dart callbacks with libsignal-ffi.
+  // ignore: library_private_types_in_public_api - FFI bindings require private struct types
   Pointer<_SignalSessionStore> createSessionStore() {
     if (!_rustWrapper.isInitialized) {
       throw SignalProtocolException(
@@ -1043,6 +1045,7 @@ class SignalFFIStoreCallbacks {
   /// Returns a pointer to SignalIdentityKeyStore struct
   /// 
   /// Uses Rust wrapper functions that bridge Dart callbacks with libsignal-ffi.
+  // ignore: library_private_types_in_public_api - FFI bindings require private struct types
   Pointer<_SignalIdentityKeyStore> createIdentityKeyStore() {
     if (!_rustWrapper.isInitialized) {
       throw SignalProtocolException(
@@ -1066,6 +1069,7 @@ class SignalFFIStoreCallbacks {
   }
 
   /// Create prekey store struct for FFI (one-time prekeys).
+  // ignore: library_private_types_in_public_api - FFI bindings require private struct types
   Pointer<_SignalPreKeyStore> createPreKeyStore() {
     if (!_rustWrapper.isInitialized) {
       throw SignalProtocolException(
@@ -1082,6 +1086,7 @@ class SignalFFIStoreCallbacks {
   }
 
   /// Create signed prekey store struct for FFI.
+  // ignore: library_private_types_in_public_api - FFI bindings require private struct types
   Pointer<_SignalSignedPreKeyStore> createSignedPreKeyStore() {
     if (!_rustWrapper.isInitialized) {
       throw SignalProtocolException(
@@ -1100,6 +1105,7 @@ class SignalFFIStoreCallbacks {
   }
 
   /// Create Kyber prekey store struct for FFI.
+  // ignore: library_private_types_in_public_api - FFI bindings require private struct types
   Pointer<_SignalKyberPreKeyStore> createKyberPreKeyStore() {
     if (!_rustWrapper.isInitialized) {
       throw SignalProtocolException(

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/payment_intent.dart';
-import 'package:spots/core/models/payment_status.dart';
+import 'package:avrai/core/models/payment_intent.dart';
+import 'package:avrai/core/models/payment_status.dart';
 
 /// SPOTS PaymentIntent Model Unit Tests
 /// Date: December 1, 2025

@@ -16,15 +16,15 @@ library;
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/personality_agent_chat_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/language_pattern_learning_service.dart';
-import 'package:spots/core/services/llm_service.dart';
-import 'package:spots/core/ai/personality_learning.dart' as pl;
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/services/personality_agent_chat_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
+import 'package:avrai/core/services/language_pattern_learning_service.dart';
+import 'package:avrai/core/services/llm_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart' as pl;
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import '../../helpers/test_helpers.dart';
 
 // Mock classes

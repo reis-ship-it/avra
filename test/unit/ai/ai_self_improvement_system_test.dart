@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/ai_self_improvement_system.dart';
+import 'package:avrai/core/ai/ai_self_improvement_system.dart';
 
 /// AI Self-Improvement System Tests
 /// Tests the AI system that continuously improves itself through meta-learning

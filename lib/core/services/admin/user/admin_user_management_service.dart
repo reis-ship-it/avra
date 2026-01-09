@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import 'package:spots/core/services/admin/permissions/admin_access_control.dart';
-import 'package:spots/core/services/admin_privacy_filter.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/ml/predictive_analytics.dart' hide JourneyStep;
-import 'package:spots/core/models/user.dart';
-import 'package:spots/core/models/expertise_progress.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart' as admin_models
+import 'package:avrai/core/services/admin/permissions/admin_access_control.dart';
+import 'package:avrai/core/services/admin_privacy_filter.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/ml/predictive_analytics.dart' hide JourneyStep;
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/core/models/expertise_progress.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart' as admin_models
     show
         UserProgressData,
         UserPredictionsData,

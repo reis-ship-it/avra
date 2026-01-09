@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/admin_auth_service.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/presentation/pages/admin/god_mode_dashboard_page.dart';
+import 'package:avrai/presentation/pages/admin/god_mode_dashboard_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/models/user.dart' show UserRole;
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/models/user.dart' show UserRole;
 
 /// God-Mode Admin Login Page
 /// Secure login for admin access with god-mode privileges

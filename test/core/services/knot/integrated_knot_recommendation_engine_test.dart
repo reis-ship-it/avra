@@ -5,12 +5,12 @@
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:avrai/injection_container.dart' as di;
 import '../../../helpers/platform_channel_helper.dart';
 
 /// Mock Rust API for testing
@@ -143,6 +143,7 @@ void main() {
         engine = di.sl<IntegratedKnotRecommendationEngine>();
       } catch (e) {
         // If initialization fails, log and rethrow
+      // ignore: avoid_print
         print('Error in setUpAll: $e');
         rethrow;
       }

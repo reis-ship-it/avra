@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
-import 'package:spots/core/monitoring/network_analytics.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/ai2ai/network_health_gauge.dart';
-import 'package:spots/presentation/widgets/ai2ai/connections_list.dart';
-import 'package:spots/presentation/widgets/ai2ai/learning_metrics_chart.dart';
-import 'package:spots/presentation/widgets/ai2ai/privacy_compliance_card.dart';
-import 'package:spots/presentation/widgets/ai2ai/performance_issues_list.dart';
-import 'package:spots/presentation/widgets/admin/admin_collaborative_activity_widget.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/monitoring/network_analytics.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/ai2ai/network_health_gauge.dart';
+import 'package:avrai/presentation/widgets/ai2ai/connections_list.dart';
+import 'package:avrai/presentation/widgets/ai2ai/learning_metrics_chart.dart';
+import 'package:avrai/presentation/widgets/ai2ai/privacy_compliance_card.dart';
+import 'package:avrai/presentation/widgets/ai2ai/performance_issues_list.dart';
+import 'package:avrai/presentation/widgets/admin/admin_collaborative_activity_widget.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 import 'package:get_it/get_it.dart';
 
 /// Admin Dashboard for AI2AI Network Monitoring

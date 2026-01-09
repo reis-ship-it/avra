@@ -11,14 +11,14 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_memory.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_key_manager.dart';
-import 'package:spots/core/crypto/signal/signal_session_manager.dart';
-import 'package:spots/core/crypto/signal/signal_protocol_service.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_store_callbacks.dart';
-import 'package:spots/core/crypto/signal/signal_types.dart';
-import 'package:spots/core/crypto/signal/signal_platform_bridge_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_rust_wrapper_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_protocol_service.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_store_callbacks.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_platform_bridge_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_rust_wrapper_bindings.dart';
 import '../mocks/in_memory_flutter_secure_storage.dart';
 import 'dart:developer' as developer;
 
@@ -219,6 +219,8 @@ void main() {
           ffiBindings: aliceFFI,
           keyManager: aliceKeyManager,
         );
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final bobSessionManager = SignalSessionManager(
           database: await databaseFactoryMemory.openDatabase('bob_x3dh_$i.db'),
           ffiBindings: bobFFI,

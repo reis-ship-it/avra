@@ -1,220 +1,223 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:spots/injection_container_core.dart';
-import 'package:spots/injection_container_payment.dart';
-import 'package:spots/injection_container_admin.dart';
-import 'package:spots/injection_container_knot.dart';
-import 'package:spots/injection_container_quantum.dart';
-import 'package:spots/injection_container_ai.dart';
+import 'package:avrai/injection_container_core.dart';
+import 'package:avrai/injection_container_payment.dart';
+import 'package:avrai/injection_container_admin.dart';
+import 'package:avrai/injection_container_knot.dart';
+import 'package:avrai/injection_container_quantum.dart';
+import 'package:avrai/injection_container_ai.dart';
+import 'package:avrai/injection_container_predictive_outreach.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
 
 // Database
 // Note: SembastDatabase is now initialized in registerCoreServices() (injection_container_core.dart)
 
 // Auth
-import 'package:spots/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:spots/data/datasources/remote/auth_remote_datasource_impl.dart';
-import 'package:spots/data/datasources/local/auth_local_datasource.dart';
-import 'package:spots/data/datasources/local/auth_sembast_datasource.dart';
-import 'package:spots/data/repositories/auth_repository_impl.dart';
-import 'package:spots/domain/repositories/auth_repository.dart';
-import 'package:spots/domain/usecases/auth/sign_in_usecase.dart';
-import 'package:spots/domain/usecases/auth/sign_up_usecase.dart';
-import 'package:spots/domain/usecases/auth/sign_out_usecase.dart';
-import 'package:spots/domain/usecases/auth/get_current_user_usecase.dart';
-import 'package:spots/domain/usecases/auth/update_password_usecase.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:avrai/data/datasources/remote/auth_remote_datasource_impl.dart';
+import 'package:avrai/data/datasources/local/auth_local_datasource.dart';
+import 'package:avrai/data/datasources/local/auth_sembast_datasource.dart';
+import 'package:avrai/data/repositories/auth_repository_impl.dart';
+import 'package:avrai/domain/repositories/auth_repository.dart';
+import 'package:avrai/domain/usecases/auth/sign_in_usecase.dart';
+import 'package:avrai/domain/usecases/auth/sign_up_usecase.dart';
+import 'package:avrai/domain/usecases/auth/sign_out_usecase.dart';
+import 'package:avrai/domain/usecases/auth/get_current_user_usecase.dart';
+import 'package:avrai/domain/usecases/auth/update_password_usecase.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 
 // Spots
-import 'package:spots/data/datasources/remote/spots_remote_datasource.dart';
-import 'package:spots/data/datasources/remote/spots_remote_datasource_impl.dart';
-import 'package:spots/data/datasources/local/spots_local_datasource.dart';
-import 'package:spots/data/datasources/local/spots_sembast_datasource.dart';
-import 'package:spots/data/repositories/spots_repository_impl.dart';
-import 'package:spots/domain/repositories/spots_repository.dart';
-import 'package:spots/domain/usecases/spots/get_spots_usecase.dart';
-import 'package:spots/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
-import 'package:spots/domain/usecases/spots/create_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/update_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/delete_spot_usecase.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/data/datasources/remote/spots_remote_datasource.dart';
+import 'package:avrai/data/datasources/remote/spots_remote_datasource_impl.dart';
+import 'package:avrai/data/datasources/local/spots_local_datasource.dart';
+import 'package:avrai/data/datasources/local/spots_sembast_datasource.dart';
+import 'package:avrai/data/repositories/spots_repository_impl.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_usecase.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
+import 'package:avrai/domain/usecases/spots/create_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/update_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/delete_spot_usecase.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
 
 // Lists
-import 'package:spots/data/datasources/remote/lists_remote_datasource.dart';
-import 'package:spots/data/datasources/remote/lists_remote_datasource_impl.dart';
-import 'package:spots/data/datasources/local/lists_local_datasource.dart';
-import 'package:spots/data/datasources/local/lists_sembast_datasource.dart';
-import 'package:spots/data/repositories/lists_repository_impl.dart';
-import 'package:spots/domain/repositories/lists_repository.dart';
-import 'package:spots/domain/usecases/lists/get_lists_usecase.dart';
-import 'package:spots/domain/usecases/lists/create_list_usecase.dart';
-import 'package:spots/domain/usecases/lists/update_list_usecase.dart';
-import 'package:spots/domain/usecases/lists/delete_list_usecase.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/data/datasources/remote/lists_remote_datasource.dart';
+import 'package:avrai/data/datasources/remote/lists_remote_datasource_impl.dart';
+import 'package:avrai/data/datasources/local/lists_local_datasource.dart';
+import 'package:avrai/data/datasources/local/lists_sembast_datasource.dart';
+import 'package:avrai/data/repositories/lists_repository_impl.dart';
+import 'package:avrai/domain/repositories/lists_repository.dart';
+import 'package:avrai/domain/usecases/lists/get_lists_usecase.dart';
+import 'package:avrai/domain/usecases/lists/create_list_usecase.dart';
+import 'package:avrai/domain/usecases/lists/update_list_usecase.dart';
+import 'package:avrai/domain/usecases/lists/delete_list_usecase.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
 
 // Hybrid Search (Phase 2: External Data Integration)
-import 'package:spots/data/datasources/remote/google_places_datasource.dart';
-import 'package:spots/data/datasources/remote/openstreetmap_datasource.dart';
-import 'package:spots/data/datasources/remote/openstreetmap_datasource_impl.dart';
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
-import 'package:spots/domain/usecases/search/hybrid_search_usecase.dart';
-import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
+import 'package:avrai/data/datasources/remote/google_places_datasource.dart';
+import 'package:avrai/data/datasources/remote/openstreetmap_datasource.dart';
+import 'package:avrai/data/datasources/remote/openstreetmap_datasource_impl.dart';
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai/domain/usecases/search/hybrid_search_usecase.dart';
+import 'package:avrai/presentation/blocs/search/hybrid_search_bloc.dart';
+import 'package:avrai/presentation/blocs/group_matching_bloc.dart';
+import 'package:avrai/core/controllers/group_matching_controller.dart';
+import 'package:avrai/core/services/group_formation_service.dart';
 
 // Phase 2: Missing Services
-import 'package:spots/core/services/role_management_service.dart';
-import 'package:spots/core/models/user_role.dart';
+import 'package:avrai/core/services/role_management_service.dart';
+import 'package:avrai/core/models/user_role.dart';
 // Note: SearchCacheService, AISearchSuggestionsService, CommunityValidationService,
 // PerformanceMonitor, SecurityValidator, and DeploymentValidator are now registered
 // in registerCoreServices() (injection_container_core.dart)
 
 // Patent #30: Quantum Atomic Clock System
-import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
 
 // Patent #31: Topological Knot Theory for Personality Representation
 // Note: Most knot services are registered in registerKnotServices() (injection_container_knot.dart)
 // Import only services needed in main container (for CommunityService dependencies)
-import 'package:spots_knot/services/knot/knot_fabric_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 // Quantum Enhancement Implementation Plan - Phase 2.1: Decoherence Tracking
 // Quantum Enhancement Implementation Plan - Phase 3.1: Quantum Prediction Features
 // Quantum Enhancement Implementation Plan - Phase 4.1: Quantum Satisfaction Enhancement
 // Feature Flag System
 // Supabase Backend Integration
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/enhanced_connectivity_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/enhanced_connectivity_service.dart';
 // Note: LargeCityDetectionService, NeighborhoodBoundaryService, and GeographicScopeService
 // are now registered in registerCoreServices() (injection_container_core.dart)
-import 'package:spots/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
 // Business Chat Services (AI2AI routing)
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipts_service_v0.dart';
-import 'package:spots/core/services/ledgers/proof_run_service_v0.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/business_shared_agent_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipts_service_v0.dart';
+import 'package:avrai/core/services/ledgers/proof_run_service_v0.dart';
+import 'package:avrai/core/services/business_shared_agent_service.dart';
 // Onboarding & Agent Creation Services (Phase 1: Foundation)
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/edge_function_service.dart';
-import 'package:spots/core/services/onboarding_aggregation_service.dart';
-import 'package:spots/core/services/social_enrichment_service.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/services/onboarding_place_list_generator.dart';
-import 'package:spots/core/services/onboarding_recommendation_service.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/event_recommendation_service.dart'
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/services/edge_function_service.dart';
+import 'package:avrai/core/services/onboarding_aggregation_service.dart';
+import 'package:avrai/core/services/social_enrichment_service.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/services/onboarding_place_list_generator.dart';
+import 'package:avrai/core/services/onboarding_recommendation_service.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai/core/services/event_recommendation_service.dart'
     as event_rec_service;
 // Controllers (Phase 8.11)
-import 'package:spots/core/controllers/onboarding_flow_controller.dart';
-import 'package:spots/core/controllers/agent_initialization_controller.dart';
-import 'package:spots/core/controllers/event_creation_controller.dart';
-import 'package:spots/core/controllers/social_media_data_collection_controller.dart';
-import 'package:spots/core/controllers/payment_processing_controller.dart';
-import 'package:spots/core/controllers/ai_recommendation_controller.dart';
-import 'package:spots/core/controllers/business_onboarding_controller.dart';
-import 'package:spots/core/controllers/event_attendance_controller.dart';
-import 'package:spots/core/controllers/list_creation_controller.dart';
-import 'package:spots/core/controllers/checkout_controller.dart';
-import 'package:spots/core/controllers/event_cancellation_controller.dart';
-import 'package:spots/core/controllers/partnership_checkout_controller.dart';
-import 'package:spots/core/controllers/partnership_proposal_controller.dart';
-import 'package:spots/core/controllers/profile_update_controller.dart';
-import 'package:spots/core/controllers/sponsorship_checkout_controller.dart';
-import 'package:spots/core/services/cancellation_service.dart';
-import 'package:spots/core/services/tax_document_storage_service.dart';
-import 'package:spots/core/services/dispute_resolution_service.dart';
-import 'package:spots/core/services/disputes/dispute_evidence_storage_service.dart';
-import 'package:spots/core/controllers/sync_controller.dart';
-import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
+import 'package:avrai/core/controllers/onboarding_flow_controller.dart';
+import 'package:avrai/core/controllers/agent_initialization_controller.dart';
+import 'package:avrai/core/controllers/event_creation_controller.dart';
+import 'package:avrai/core/controllers/social_media_data_collection_controller.dart';
+import 'package:avrai/core/controllers/payment_processing_controller.dart';
+import 'package:avrai/core/controllers/ai_recommendation_controller.dart';
+import 'package:avrai/core/controllers/business_onboarding_controller.dart';
+import 'package:avrai/core/controllers/event_attendance_controller.dart';
+import 'package:avrai/core/controllers/list_creation_controller.dart';
+import 'package:avrai/core/controllers/checkout_controller.dart';
+import 'package:avrai/core/controllers/event_cancellation_controller.dart';
+import 'package:avrai/core/controllers/partnership_checkout_controller.dart';
+import 'package:avrai/core/controllers/partnership_proposal_controller.dart';
+import 'package:avrai/core/controllers/profile_update_controller.dart';
+import 'package:avrai/core/controllers/sponsorship_checkout_controller.dart';
+import 'package:avrai/core/services/cancellation_service.dart';
+import 'package:avrai/core/services/tax_document_storage_service.dart';
+import 'package:avrai/core/services/dispute_resolution_service.dart';
+import 'package:avrai/core/services/disputes/dispute_evidence_storage_service.dart';
+import 'package:avrai/core/controllers/sync_controller.dart';
+import 'package:avrai/core/ai/quantum/quantum_vibe_engine.dart';
 
 // Phase 19: Multi-Entity Quantum Entanglement Matching System
-import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots_quantum/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai_quantum/services/quantum/location_timing_quantum_state_service.dart';
 
 // Phase 15: Reservation System with Quantum Integration
-import 'package:spots/core/services/reservation_quantum_service.dart';
-import 'package:spots/core/services/reservation_service.dart';
-import 'package:spots/core/services/reservation_recommendation_service.dart';
-import 'package:spots/core/services/event_success_analysis_service.dart';
-import 'package:spots/core/services/post_event_feedback_service.dart';
+import 'package:avrai/core/services/reservation_quantum_service.dart';
+import 'package:avrai/core/services/reservation_service.dart';
+import 'package:avrai/core/services/reservation_recommendation_service.dart';
+import 'package:avrai/core/services/event_success_analysis_service.dart';
+import 'package:avrai/core/services/post_event_feedback_service.dart';
 import 'package:http/http.dart' as http;
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 // Device Discovery & Advertising
 // Single integration boundary
-import 'package:spots_network/spots_network.dart';
-import 'package:spots/supabase_config.dart';
+import 'package:avrai_network/avra_network.dart';
+import 'package:avrai/supabase_config.dart';
 // ML (cloud-only, simplified)
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/ml/embedding_cloud_client.dart';
-import 'package:spots/core/services/llm_service.dart';
+import 'package:avrai/core/ml/embedding_cloud_client.dart';
+import 'package:avrai/core/services/llm_service.dart';
 // Google Places integration
-import 'package:spots/core/services/google_places_cache_service.dart';
-import 'package:spots/core/services/google_place_id_finder_service_new.dart';
-import 'package:spots/core/services/google_places_sync_service.dart';
-import 'package:spots/data/datasources/remote/google_places_datasource_new_impl.dart';
-import 'package:spots/google_places_config.dart';
+import 'package:avrai/core/services/google_places_cache_service.dart';
+import 'package:avrai/core/services/google_place_id_finder_service_new.dart';
+import 'package:avrai/core/services/google_places_sync_service.dart';
+import 'package:avrai/data/datasources/remote/google_places_datasource_new_impl.dart';
+import 'package:avrai/google_places_config.dart';
 
 // Admin Services (God-Mode Admin System)
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/business_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/business_service.dart';
 // Payment Processing - Agent 1: Payment Processing & Revenue
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/payment_event_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/product_tracking_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/legal_document_service.dart';
-import 'package:spots/core/services/sales_tax_service.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/services/geographic_expansion_service.dart';
-import 'package:spots/core/services/feature_flag_service.dart';
-import 'package:spots/core/ai/facts_index.dart';
-import 'package:spots/data/repositories/hybrid_community_repository.dart';
-import 'package:spots/data/repositories/local_community_repository.dart';
-import 'package:spots/data/repositories/supabase_community_repository.dart';
-import 'package:spots/domain/repositories/community_repository.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/payment_event_service.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/product_tracking_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/legal_document_service.dart';
+import 'package:avrai/core/services/sales_tax_service.dart';
+import 'package:avrai/core/services/personality_sync_service.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/services/geographic_expansion_service.dart';
+import 'package:avrai/core/services/feature_flag_service.dart';
+import 'package:avrai/core/ai/facts_index.dart';
+import 'package:avrai/data/repositories/hybrid_community_repository.dart';
+import 'package:avrai/data/repositories/local_community_repository.dart';
+import 'package:avrai/data/repositories/supabase_community_repository.dart';
+import 'package:avrai/domain/repositories/community_repository.dart';
 // Phase 12: Neural Network Implementation
-import 'package:spots/core/services/calling_score_data_collector.dart';
-import 'package:spots/core/services/calling_score_calculator.dart';
-import 'package:spots/core/services/calling_score_baseline_metrics.dart';
-import 'package:spots/core/services/calling_score_training_data_preparer.dart';
-import 'package:spots/core/services/calling_score_ab_testing_service.dart';
-import 'package:spots/core/ml/calling_score_neural_model.dart';
-import 'package:spots/core/services/behavior_assessment_service.dart';
-import 'package:spots/core/ml/outcome_prediction_model.dart';
-import 'package:spots/core/services/outcome_prediction_service.dart';
-import 'package:spots/core/services/model_version_manager.dart';
-import 'package:spots/core/services/online_learning_service.dart';
-import 'package:spots/core/services/model_retraining_service.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_key_manager.dart';
-import 'package:spots/core/crypto/signal/signal_session_manager.dart';
-import 'package:spots/core/crypto/signal/signal_protocol_service.dart';
-import 'package:spots/core/crypto/signal/signal_platform_bridge_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_rust_wrapper_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_store_callbacks.dart';
-import 'package:spots/core/services/signal_protocol_initialization_service.dart';
-import 'package:spots/core/services/hybrid_encryption_service.dart';
-import 'package:spots/core/services/signal_protocol_encryption_service.dart';
-import 'package:spots/core/services/secure_mapping_encryption_service.dart';
-import 'package:spots/core/services/agent_id_migration_service.dart';
-import 'package:spots/core/services/mapping_key_rotation_service.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_engine.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_global_repository.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_ingestion_service_v1.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_local_store.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_mesh_cache.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_update_emitter_v1.dart';
-import 'package:spots/core/services/locality_agents/locality_geofence_planner.dart';
-import 'package:spots/core/services/locality_agents/os_geofence_registrar.dart';
+import 'package:avrai/core/services/calling_score_data_collector.dart';
+import 'package:avrai/core/services/calling_score_calculator.dart';
+import 'package:avrai/core/services/calling_score_baseline_metrics.dart';
+import 'package:avrai/core/services/calling_score_training_data_preparer.dart';
+import 'package:avrai/core/services/calling_score_ab_testing_service.dart';
+import 'package:avrai/core/ml/calling_score_neural_model.dart';
+import 'package:avrai/core/services/behavior_assessment_service.dart';
+import 'package:avrai/core/ml/outcome_prediction_model.dart';
+import 'package:avrai/core/services/outcome_prediction_service.dart';
+import 'package:avrai/core/services/model_version_manager.dart';
+import 'package:avrai/core/services/online_learning_service.dart';
+import 'package:avrai/core/services/model_retraining_service.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_protocol_service.dart';
+import 'package:avrai/core/crypto/signal/signal_platform_bridge_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_rust_wrapper_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_store_callbacks.dart';
+import 'package:avrai/core/services/signal_protocol_initialization_service.dart';
+import 'package:avrai/core/services/hybrid_encryption_service.dart';
+import 'package:avrai/core/services/signal_protocol_encryption_service.dart';
+import 'package:avrai/core/services/secure_mapping_encryption_service.dart';
+import 'package:avrai/core/services/agent_id_migration_service.dart';
+import 'package:avrai/core/services/mapping_key_rotation_service.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_engine.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_global_repository.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_ingestion_service_v1.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_local_store.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_mesh_cache.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_update_emitter_v1.dart';
+import 'package:avrai/core/services/locality_agents/locality_geofence_planner.dart';
+import 'package:avrai/core/services/locality_agents/os_geofence_registrar.dart';
 
 final sl = GetIt.instance;
 
@@ -560,6 +563,10 @@ Future<void> init() async {
   await registerAdminServices(sl);
   logger.debug('✅ [DI] Admin services registered');
 
+  // 6. Predictive Outreach Services (depends on AI, Knot, Quantum services)
+  await registerPredictiveOutreachServices(sl);
+  logger.debug('✅ [DI] Predictive outreach services registered');
+
   // ============================================================================
   // INFRASTRUCTURE SERVICES (NOT in domain modules)
   // ============================================================================
@@ -811,7 +818,7 @@ Future<void> init() async {
   // ============================================================================
   // BACKEND INITIALIZATION
   // ============================================================================
-  // Backend (Single Integration Boundary): initialize and expose spots_network
+  // Backend (Single Integration Boundary): initialize and expose avra_network
   try {
     logger.info('🔌 [DI] Initializing Supabase backend...');
 
@@ -1124,6 +1131,16 @@ Future<void> init() async {
         createListUseCase: sl(),
         updateListUseCase: sl(),
         deleteListUseCase: sl(),
+      ));
+
+  // Phase 19.18: Quantum Group Matching System
+  // Section GM.4: Group Matching BLoC
+  sl.registerFactory(() => GroupMatchingBloc(
+        controller: sl<GroupMatchingController>(),
+        formationService: sl<GroupFormationService>(),
+        searchRepository: sl.isRegistered<HybridSearchRepository>()
+            ? sl<HybridSearchRepository>()
+            : null,
       ));
 
   // Hybrid Search Bloc (Phase 2)

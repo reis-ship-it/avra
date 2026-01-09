@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/location_obfuscation_service.dart';
-import 'package:spots/core/models/anonymous_user.dart';
+import 'package:avrai/core/services/location_obfuscation_service.dart';
+import 'package:avrai/core/models/anonymous_user.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Tests for LocationObfuscationService

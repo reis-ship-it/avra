@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/domain/usecases/lists/create_list_usecase.dart';
-import 'package:spots/domain/usecases/lists/delete_list_usecase.dart';
-import 'package:spots/domain/usecases/lists/get_lists_usecase.dart';
-import 'package:spots/domain/usecases/lists/update_list_usecase.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/domain/usecases/lists/create_list_usecase.dart';
+import 'package:avrai/domain/usecases/lists/delete_list_usecase.dart';
+import 'package:avrai/domain/usecases/lists/get_lists_usecase.dart';
+import 'package:avrai/domain/usecases/lists/update_list_usecase.dart';
 
 // Events
 abstract class ListsEvent {}

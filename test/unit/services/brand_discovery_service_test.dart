@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/brand_discovery_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/models/brand_discovery.dart';
+import 'package:avrai/core/services/brand_discovery_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/models/brand_discovery.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'brand_discovery_service_test.mocks.dart';

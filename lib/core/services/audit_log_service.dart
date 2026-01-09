@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Audit Log Service
 /// 

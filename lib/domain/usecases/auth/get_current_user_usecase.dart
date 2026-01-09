@@ -1,5 +1,5 @@
-import 'package:spots/core/models/user.dart' as app_user;
-import 'package:spots/domain/repositories/auth_repository.dart';
+import 'package:avrai/core/models/user.dart' as app_user;
+import 'package:avrai/domain/repositories/auth_repository.dart';
 
 class GetCurrentUserUseCase {
   final AuthRepository repository;

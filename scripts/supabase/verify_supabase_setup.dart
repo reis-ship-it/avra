@@ -1,4 +1,5 @@
 import 'dart:convert';
+// ignore_for_file: avoid_print - Script file
 import 'dart:io';
 import 'package:http/http.dart' as http;
 

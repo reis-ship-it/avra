@@ -32,7 +32,7 @@
 library;
 
 import 'package:get_storage/get_storage.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import '../mocks/mock_storage_service.dart';
 import 'dart:async';
 

@@ -1,5 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Secure SSN/EIN Encryption Utility
 /// 

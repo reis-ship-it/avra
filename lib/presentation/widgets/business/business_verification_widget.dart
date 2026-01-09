@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_verification.dart';
-import 'package:spots/core/services/business_verification_service.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_verification.dart';
+import 'package:avrai/core/services/business_verification_service.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Business Verification Widget
 /// Allows businesses to submit verification documents and track verification status

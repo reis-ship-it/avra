@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots/core/ai/quantum/location_quantum_state.dart';
-import 'package:spots/core/models/unified_models.dart';
+import 'package:avrai/core/ai/quantum/location_quantum_state.dart';
+import 'package:avrai/core/models/unified_models.dart';
 
 /// Location Compatibility Calculator
 ///

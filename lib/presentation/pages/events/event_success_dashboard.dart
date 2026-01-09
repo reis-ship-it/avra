@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/event_success_metrics.dart';
-import 'package:spots/core/models/event_success_level.dart';
-import 'package:spots/core/services/event_success_analysis_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/post_event_feedback_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_success_metrics.dart';
+import 'package:avrai/core/models/event_success_level.dart';
+import 'package:avrai/core/services/event_success_analysis_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/post_event_feedback_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Event Success Dashboard
 /// 

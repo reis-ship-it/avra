@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/business_expert_matching_service.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/business_expert_matching_service.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// Business Expert Matching Widget
 /// Displays expert matches for a business account

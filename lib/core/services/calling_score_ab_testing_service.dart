@@ -4,7 +4,7 @@
 
 import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 

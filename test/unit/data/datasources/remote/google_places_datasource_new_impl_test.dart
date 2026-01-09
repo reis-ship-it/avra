@@ -17,9 +17,9 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:spots/data/datasources/remote/google_places_datasource_new_impl.dart';
-import 'package:spots/core/services/google_places_cache_service.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/data/datasources/remote/google_places_datasource_new_impl.dart';
+import 'package:avrai/core/services/google_places_cache_service.dart';
+import 'package:avrai/core/models/spot.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 

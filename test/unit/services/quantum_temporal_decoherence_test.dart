@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
 
 /// Experiment 4: Quantum Temporal Decoherence Precision
 ///
@@ -38,6 +38,8 @@ void main() {
       // Calculate expected decay
       final timeDiff = currentTimestamp.serverTime
           .difference(initialTimestamp.serverTime);
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       final expectedDecay = math.exp(-decoherenceRate * timeDiff.inSeconds);
       
       // Verify decoherence is accurate (within 1%)

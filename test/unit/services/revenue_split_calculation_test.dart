@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/revenue_split.dart';
+import 'package:avrai/core/models/revenue_split.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Revenue Split Calculation Tests

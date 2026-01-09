@@ -5,8 +5,8 @@
 // Patent #29: Multi-Entity Quantum Entanglement Matching System
 
 import 'package:equatable/equatable.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
 
 /// Unified matching result from multi-entity quantum matching
 ///

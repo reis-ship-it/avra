@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:get_it/get_it.dart';
-import 'package:spots_network/spots_network.dart';
-import 'package:spots_core/spots_core.dart';
-import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
+import 'package:avrai_network/avra_network.dart';
+import 'package:avrai_core/avra_core.dart';
+import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
 
 /// Test page to verify Supabase integration
 class SupabaseTestPage extends StatefulWidget {
@@ -15,6 +15,7 @@ class SupabaseTestPage extends StatefulWidget {
 }
 
 class _SupabaseTestPageState extends State<SupabaseTestPage> {
+  // ignore: unused_field
   final AppLogger _logger =
       const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
   late final DataBackend _data;
@@ -27,10 +28,15 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
   List<Spot> _spots = [];
   List<SpotList> _lists = [];
   final List<Map<String, dynamic>> _messages = [];
+  // ignore: unused_field
   List<Map<String, dynamic>> _presence = [];
+  // ignore: unused_field
   StreamSubscription? _sub1;
+  // ignore: unused_field - Reserved for test subscriptions
   StreamSubscription? _sub2;
+  // ignore: unused_field - Reserved for test subscriptions
   StreamSubscription? _sub3;
+  // ignore: unused_field - Reserved for test DM subscriptions
   StreamSubscription<List<Map<String, dynamic>>>? _dmSub;
   Map<String, dynamic>? _lastProfileSummary;
   final TextEditingController _emailController = TextEditingController();

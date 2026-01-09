@@ -1,22 +1,22 @@
 import 'dart:async';
 
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/community_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
-import 'package:spots/core/services/cross_locality_connection_service.dart'
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/community_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/services/cross_locality_connection_service.dart'
     show
         CrossLocalityConnectionService,
         ConnectedLocality;
-import 'package:spots/core/services/community_event_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/community_event_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// Expertise Event Service
 /// OUR_GUTS.md: "Pins unlock new features, like event hosting"

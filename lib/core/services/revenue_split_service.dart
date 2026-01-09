@@ -1,8 +1,8 @@
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/product_tracking_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/product_tracking_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Revenue Split Service

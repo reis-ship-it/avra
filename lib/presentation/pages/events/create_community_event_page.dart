@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 
 /// Community Event Creation Form Page
 /// Agent 2: Frontend & UX Specialist (Phase 6, Week 28)
@@ -39,6 +39,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
   DateTime? _endTime;
   final _locationController = TextEditingController();
   int _maxAttendees = 20;
+  // ignore: unused_field
   final bool _isPublic = true; // Always true for community events
   
   // State
@@ -118,6 +119,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
         );
       },
     );
+    if (!mounted) return;
     
     if (picked != null) {
       final time = await showTimePicker(
@@ -135,6 +137,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
           );
         },
       );
+      if (!mounted) return;
       
       if (time != null) {
         setState(() {
@@ -183,6 +186,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
         );
       },
     );
+    if (!mounted) return;
     
     if (picked != null) {
       final time = await showTimePicker(
@@ -200,6 +204,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
           );
         },
       );
+      if (!mounted) return;
       
       if (time != null) {
         final selectedEnd = DateTime(
@@ -211,6 +216,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
         );
         
         if (selectedEnd.isBefore(_startTime!)) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('End time must be after start time'),

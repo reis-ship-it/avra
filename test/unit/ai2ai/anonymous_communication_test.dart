@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai2ai/anonymous_communication.dart';
+import 'package:avrai/core/ai2ai/anonymous_communication.dart';
 import 'dart:convert';
 
 void main() {

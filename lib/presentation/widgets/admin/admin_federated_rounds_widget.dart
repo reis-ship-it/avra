@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart';
-import 'package:spots/core/p2p/federated_learning.dart' as federated;
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart';
+import 'package:avrai/core/p2p/federated_learning.dart' as federated;
+import 'package:avrai/core/theme/colors.dart';
 
 /// Admin widget displaying all federated learning rounds
 /// Shows active and completed rounds with participant details

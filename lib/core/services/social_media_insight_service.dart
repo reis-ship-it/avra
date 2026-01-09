@@ -1,11 +1,11 @@
-import 'package:spots/core/models/social_media_insights.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/services/social_media_vibe_analyzer.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
+import 'package:avrai/core/models/social_media_insights.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/services/social_media_vibe_analyzer.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
 
 /// Social Media Insight Service
 ///

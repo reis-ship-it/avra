@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/spot.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 
@@ -7,6 +7,8 @@ import '../../helpers/test_helpers.dart';
 /// Tests location validation, geospatial logic, and category constraints
 void main() {
   group('Spot Model Tests', () {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late Spot testSpot;
     late DateTime testDate;
 
@@ -26,9 +28,14 @@ void main() {
     group('Location Validation and Geospatial Logic', () {
       test('should accept valid coordinate ranges and edge cases', () {
         // Test various valid coordinate scenarios
+      // ignore: unused_local_variable
         final validNorth = ModelFactories.createSpotAtLocation(89.9, 0);
         final validSouth = ModelFactories.createSpotAtLocation(-89.9, 0);
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final validEast = ModelFactories.createSpotAtLocation(0, 179.9);
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final validWest = ModelFactories.createSpotAtLocation(0, -179.9);
         final edgeCase = ModelFactories.createSpotAtLocation(90.0, 180.0);
         final precise =

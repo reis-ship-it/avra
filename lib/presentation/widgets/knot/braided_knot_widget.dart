@@ -5,8 +5,8 @@
 // Phase 2: Knot Weaving
 
 import 'package:flutter/material.dart';
-import 'package:spots_knot/models/knot/braided_knot.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai_knot/models/knot/braided_knot.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget for visualizing a braided knot
 /// 

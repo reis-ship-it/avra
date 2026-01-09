@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/event_template.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/services/event_template_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/pages/events/event_published_page.dart';
+import 'package:avrai/core/models/event_template.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/services/event_template_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/pages/events/event_published_page.dart';
 
 /// OUR_GUTS.md: "The key opens doors to events"
 /// Easy Event Hosting - Phase 2: Quick Event Builder
@@ -414,12 +414,14 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
+    if (!mounted) return;
     
     if (date != null) {
       final time = await showTimePicker(
         context: context,
         initialTime: const TimeOfDay(hour: 10, minute: 0),
       );
+      if (!mounted) return;
       
       if (time != null) {
         setState(() {

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/expertise_pin.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/expertise_pin.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/theme/colors.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for ExpertisePin model

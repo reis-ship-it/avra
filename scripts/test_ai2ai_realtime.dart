@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:async';
-import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/ai2ai/aipersonality_node.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/supabase_config.dart';
-import 'package:spots_network/spots_network.dart';
+import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/ai2ai/aipersonality_node.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/supabase_config.dart';
+import 'package:avrai_network/avra_network.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 /// Web-compatible debug logging helper

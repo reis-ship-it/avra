@@ -3,20 +3,24 @@
 // Tests for Phase 19 Section 19.7: Meaningful Connection Metrics System
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/quantum/meaningful_connection_metrics_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots_core/enums/user_enums.dart' as core_enums;
-import 'package:spots_core/models/user.dart' as core_user;
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
+import 'package:avrai/core/services/quantum/meaningful_connection_metrics_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai_core/enums/user_enums.dart' as core_enums;
+import 'package:avrai_core/models/user.dart' as core_user;
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
+import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
+import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
@@ -29,6 +33,10 @@ import 'meaningful_connection_metrics_service_test.mocks.dart';
   UserVibeAnalyzer,
   SupabaseService,
   AgentIdService,
+  KnotEvolutionStringService,
+  KnotWorldsheetService,
+  KnotFabricService,
+  KnotStorageService,
 ])
 void main() {
   group('MeaningfulConnectionMetricsService', () {
@@ -39,6 +47,10 @@ void main() {
     late MockUserVibeAnalyzer mockVibeAnalyzer;
     late MockSupabaseService mockSupabaseService;
     late MockAgentIdService mockAgentIdService;
+    late MockKnotEvolutionStringService mockStringService;
+    late MockKnotWorldsheetService mockWorldsheetService;
+    late MockKnotFabricService mockFabricService;
+    late MockKnotStorageService mockKnotStorage;
 
     setUp(() {
       mockAtomicClock = MockAtomicClockService();
@@ -47,6 +59,10 @@ void main() {
       mockVibeAnalyzer = MockUserVibeAnalyzer();
       mockSupabaseService = MockSupabaseService();
       mockAgentIdService = MockAgentIdService();
+      mockStringService = MockKnotEvolutionStringService();
+      mockWorldsheetService = MockKnotWorldsheetService();
+      mockFabricService = MockKnotFabricService();
+      mockKnotStorage = MockKnotStorageService();
 
       service = MeaningfulConnectionMetricsService(
         atomicClock: mockAtomicClock,
@@ -55,6 +71,10 @@ void main() {
         vibeAnalyzer: mockVibeAnalyzer,
         agentIdService: mockAgentIdService,
         supabaseService: mockSupabaseService,
+        stringService: mockStringService,
+        worldsheetService: mockWorldsheetService,
+        fabricService: mockFabricService,
+        knotStorage: mockKnotStorage,
       );
     });
 

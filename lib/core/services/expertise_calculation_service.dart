@@ -1,15 +1,15 @@
-import 'package:spots/core/models/expertise_requirements.dart';
-import 'package:spots/core/models/platform_phase.dart';
-import 'package:spots/core/models/saturation_metrics.dart';
-import 'package:spots/core/models/multi_path_expertise.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/geographic_expansion.dart';
-import 'package:spots/core/models/partnership_expertise_boost.dart';
-import 'package:spots/core/services/saturation_algorithm_service.dart';
-import 'package:spots/core/services/multi_path_expertise_service.dart';
-import 'package:spots/core/services/partnership_profile_service.dart';
-import 'package:spots/core/services/dynamic_threshold_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/expertise_requirements.dart';
+import 'package:avrai/core/models/platform_phase.dart';
+import 'package:avrai/core/models/saturation_metrics.dart';
+import 'package:avrai/core/models/multi_path_expertise.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/geographic_expansion.dart';
+import 'package:avrai/core/models/partnership_expertise_boost.dart';
+import 'package:avrai/core/services/saturation_algorithm_service.dart';
+import 'package:avrai/core/services/multi_path_expertise_service.dart';
+import 'package:avrai/core/services/partnership_profile_service.dart';
+import 'package:avrai/core/services/dynamic_threshold_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'dart:convert';
 import 'dart:io';
 

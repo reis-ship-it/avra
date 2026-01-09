@@ -7,8 +7,8 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/admin/knot_admin_service.dart';
-import 'package:spots_knot/models/personality_knot.dart';
+import 'package:avrai/core/services/admin/knot_admin_service.dart';
+import 'package:avrai_core/models/personality_knot.dart';
 
 /// Tab for knot debugging tools
 class KnotDebugTab extends StatefulWidget {
@@ -61,16 +61,20 @@ class _KnotDebugTabState extends State<KnotDebugTab> {
 
     try {
       final knot = await _knotAdminService.getUserKnot(agentId);
+      if (!mounted) return;
+      
       setState(() {
         _loadedKnot = knot;
       });
 
       if (knot == null) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Knot not found')),
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );

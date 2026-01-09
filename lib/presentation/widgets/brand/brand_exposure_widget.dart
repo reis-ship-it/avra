@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/pages/brand/brand_analytics_page.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/pages/brand/brand_analytics_page.dart';
 
 /// Brand Exposure Widget
 /// 

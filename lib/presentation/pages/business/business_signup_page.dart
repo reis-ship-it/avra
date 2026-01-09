@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/presentation/pages/business/business_onboarding_page.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/presentation/pages/business/business_onboarding_page.dart';
 import 'package:uuid/uuid.dart';
 
 /// Business Signup Page

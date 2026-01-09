@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/domain/usecases/auth/sign_out_usecase.dart';
-import 'package:spots/domain/repositories/auth_repository.dart';
+import 'package:avrai/domain/usecases/auth/sign_out_usecase.dart';
+import 'package:avrai/domain/repositories/auth_repository.dart';
 
 import 'sign_out_usecase_test.mocks.dart';
 

@@ -1,10 +1,10 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/age_compatibility_filter.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/age_compatibility_filter.dart';
 
 /// OUR_GUTS.md: "Anonymous vibe compilation that preserves privacy while enabling AI2AI personality matching"
 /// Comprehensive vibe analysis engine that creates privacy-preserving vibe signatures

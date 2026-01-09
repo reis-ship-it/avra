@@ -1,8 +1,8 @@
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 /// Advanced Search Cache Service for Phase 4 Performance Optimization
 /// OUR_GUTS.md: "Effortless, Seamless Discovery" - Fast, offline-capable search
@@ -19,6 +19,7 @@ class SearchCacheService {
   // Cache stores
   static final _searchResultsStore = StoreRef<String, Map<String, dynamic>>('search_results');
   static final _popularQueriesStore = StoreRef<String, Map<String, dynamic>>('popular_queries');
+  // ignore: unused_field
   static final _userPreferencesStore = StoreRef<String, Map<String, dynamic>>('user_preferences');
   static final _offlineCacheStore = StoreRef<String, Map<String, dynamic>>('offline_cache');
   
@@ -170,6 +171,7 @@ class SearchCacheService {
     try {
       _logger.debug('Warming location cache: $latitude,$longitude', tag: _logName);
       
+      // ignore: unused_local_variable - Cache key reserved for future cache invalidation
       final cacheKey = _generateCacheKey(
         query: 'nearby',
         latitude: latitude,

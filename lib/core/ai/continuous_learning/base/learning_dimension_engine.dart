@@ -1,4 +1,4 @@
-import 'package:spots/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
 
 /// Base interface for learning dimension engines
 ///

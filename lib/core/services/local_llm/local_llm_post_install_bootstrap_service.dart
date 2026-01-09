@@ -4,15 +4,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:sembast/sembast.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/local_llm_bootstrap_state.dart';
-import 'package:spots/core/models/local_llm_memory_profile.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/models/onboarding_suggestion_event.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/local_llm/model_pack_manager.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/onboarding_suggestion_event_store.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/local_llm_bootstrap_state.dart';
+import 'package:avrai/core/models/local_llm_memory_profile.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/models/onboarding_suggestion_event.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/local_llm/model_pack_manager.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/services/onboarding_suggestion_event_store.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 /// Builds a stable local “memory/system prompt” from onboarding signals once the
 /// local model pack is installed.

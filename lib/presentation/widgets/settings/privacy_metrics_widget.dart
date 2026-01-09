@@ -16,9 +16,9 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/monitoring/network_analytics.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/monitoring/network_analytics.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 import 'package:get_it/get_it.dart';
 
 /// Widget displaying user-specific privacy metrics

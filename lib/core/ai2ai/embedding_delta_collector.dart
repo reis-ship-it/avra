@@ -4,8 +4,8 @@
 
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 /// Embedding Delta
 /// 

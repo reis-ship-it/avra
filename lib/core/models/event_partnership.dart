@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/revenue_split.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/revenue_split.dart';
 
 /// Event Partnership Model
 /// 

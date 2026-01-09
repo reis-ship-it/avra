@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:spots/core/controllers/profile_update_controller.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/controllers/profile_update_controller.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Profile Update Controller Integration Tests
@@ -14,6 +14,8 @@ import '../../helpers/platform_channel_helper.dart';
 void main() {
   group('ProfileUpdateController Integration Tests', () {
     late ProfileUpdateController controller;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     final DateTime now = DateTime.now();
 
     setUpAll(() async {

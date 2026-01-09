@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ml/training/quantum_prediction_training_pipeline.dart';
-import 'package:spots/core/ml/training/quantum_prediction_training_models.dart';
-import 'package:spots/core/models/quantum_prediction_features.dart';
+import 'package:avrai/core/ml/training/quantum_prediction_training_pipeline.dart';
+import 'package:avrai/core/ml/training/quantum_prediction_training_models.dart';
+import 'package:avrai/core/models/quantum_prediction_features.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:spots/presentation/widgets/expertise/expertise_event_widget.dart';
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/presentation/widgets/expertise/expertise_event_widget.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for ExpertiseEventWidget

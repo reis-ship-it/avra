@@ -12,9 +12,9 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/ai/action_history_entry.dart';
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/ai/action_history_entry.dart';
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget that displays a single action history entry
 class ActionHistoryItemWidget extends StatelessWidget {

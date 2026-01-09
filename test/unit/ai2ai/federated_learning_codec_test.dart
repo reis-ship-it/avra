@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai2ai/federated_learning_codec.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai/core/ai2ai/federated_learning_codec.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 
 void main() {
   test('buildDeltaVectorFromDimensionInsights returns stable 12-dim vector', () {

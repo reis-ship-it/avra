@@ -1,11 +1,12 @@
 import 'dart:io';
+// ignore_for_file: avoid_print - Script file
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 /// Helper script to generate password hash for business credentials
 /// 
 /// Usage:
-///   dart run scripts/add_business_credential.dart <business_id> <username> <password>
+///   dart run scripts/add_business_credential.dart &lt;business_id&gt; &lt;username&gt; &lt;password&gt;
 /// 
 /// This will output the SQL INSERT statement to add the credential to Supabase.
 /// 

@@ -1,9 +1,9 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/ml/nlp_processor.dart';
-import 'package:spots/core/ml/predictive_analytics.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/collaboration_networks.dart';
-import 'package:spots/core/ml/pattern_recognition.dart';
+import 'package:avrai/core/ml/nlp_processor.dart';
+import 'package:avrai/core/ml/predictive_analytics.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/collaboration_networks.dart';
+import 'package:avrai/core/ml/pattern_recognition.dart';
 
 // Behavior Analysis Service
 class BehaviorAnalysisService {

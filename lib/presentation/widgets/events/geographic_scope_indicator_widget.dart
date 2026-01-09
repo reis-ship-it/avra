@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Geographic Scope Indicator Widget
 /// Agent 2: Phase 6, Week 24 - Geographic Scope UI
@@ -47,8 +47,6 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
         return 'All Nations';
       case ExpertiseLevel.universal:
         return 'Everywhere';
-      default:
-        return 'Limited Scope';
     }
   }
 
@@ -70,8 +68,6 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
         return Icons.language;
       case ExpertiseLevel.universal:
         return Icons.explore;
-      default:
-        return Icons.location_on;
     }
   }
 
@@ -93,8 +89,6 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
         return AppColors.grey600;
       case ExpertiseLevel.universal:
         return AppColors.warning;
-      default:
-        return AppColors.textSecondary;
     }
   }
 
@@ -124,8 +118,6 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
       case ExpertiseLevel.universal:
         return 'You can host events anywhere. '
             'Your expertise is universally recognized.';
-      default:
-        return 'Your hosting scope is limited by your expertise level.';
     }
   }
 

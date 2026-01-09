@@ -15,7 +15,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/settings/federated_learning_settings_section.dart';
+import 'package:avrai/presentation/widgets/settings/federated_learning_settings_section.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for FederatedLearningSettingsSection

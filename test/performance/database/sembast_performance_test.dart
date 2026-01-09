@@ -4,11 +4,11 @@
 library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_memory.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/data/datasources/local/spots_sembast_datasource.dart';
-import 'package:spots/data/datasources/local/lists_sembast_datasource.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/local/spots_sembast_datasource.dart';
+import 'package:avrai/data/datasources/local/lists_sembast_datasource.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +57,7 @@ void main() {
         final allSpots = await spotsDataSource.getAllSpots();
         expect(allSpots.length, equals(1000));
         
+      // ignore: avoid_print
         print('Bulk insertion of 1000 spots: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -75,7 +76,9 @@ void main() {
         // Assert
         expect(stopwatch.elapsedMilliseconds, lessThan(1500)); // Under 1.5 seconds (in-memory/env variance)
         expect(allSpots.length, greaterThanOrEqualTo(5000));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Retrieved 5000 spots: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -93,8 +96,11 @@ void main() {
         
         // Assert
         expect(stopwatch.elapsedMilliseconds, lessThan(500)); // Under 500ms
+      // ignore: avoid_print
         expect(coffeeSpots.isNotEmpty, true);
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Category search in 2000 spots: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -116,9 +122,13 @@ void main() {
         // Assert
         expect(stopwatch.elapsedMilliseconds, lessThan(3000)); // Under 3 seconds
         
+      // ignore: avoid_print
         final allSpots = await spotsDataSource.getAllSpots();
+      // ignore: avoid_print
         expect(allSpots.length, greaterThanOrEqualTo(50)); // Some operations might overlap
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Concurrent operations: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -138,10 +148,15 @@ void main() {
         
         stopwatch.stop();
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(2000)); // Under 2 seconds (in-memory/env variance)
+      // ignore: avoid_print
         expect(searchResults.isNotEmpty, true);
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Complex queries: ${stopwatch.elapsedMilliseconds}ms');
       });
     });
@@ -159,11 +174,17 @@ void main() {
         stopwatch.stop();
         
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(3000)); // Under 3 seconds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         final allLists = await listsDataSource.getLists();
+      // ignore: avoid_print
         expect(allLists.length, greaterThanOrEqualTo(500));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Bulk list operations: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -184,12 +205,19 @@ void main() {
           if (list.collaborators.isNotEmpty) permissionChecks++;
           if (list.followers.isNotEmpty) permissionChecks++;
         }
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(800)); // Under 800ms
+      // ignore: avoid_print
         expect(permissionChecks, greaterThanOrEqualTo(0));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Complex list operations: ${stopwatch.elapsedMilliseconds}ms');
       });
     });
@@ -215,13 +243,21 @@ void main() {
           }
         }
         stopwatch.stop();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(15000)); // Under 15 seconds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         final count = (await spotsDataSource.getAllSpots()).length;
+      // ignore: avoid_print
         expect(count, equals(10000));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Memory optimized bulk insert: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -252,14 +288,23 @@ void main() {
         expect(
           timings[1],
           lessThanOrEqualTo((baseline * 2) + 5),
+      // ignore: avoid_print
           reason: 'No more than ~2x baseline (+5ms jitter)',
+      // ignore: avoid_print
         );
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
           timings[2],
+      // ignore: avoid_print
           lessThanOrEqualTo((baseline * 3) + 10),
+      // ignore: avoid_print
           reason: 'No more than ~3x baseline (+10ms jitter)',
+      // ignore: avoid_print
         );
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Database growth timings: $timings ms');
       });
     });
@@ -288,15 +333,25 @@ void main() {
         
         // Search operation baseline
         stopwatch = Stopwatch()..start();
+      // ignore: avoid_print
         await spotsDataSource.searchSpots('test');
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
         metrics['search_spots'] = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert - Establish acceptable baseline ranges
+      // ignore: avoid_print
         expect(metrics['create_100_spots']!, lessThan(2000)); // Under 2 seconds
+      // ignore: avoid_print
         expect(metrics['read_all_spots']!, lessThan(500));    // Under 500ms
+      // ignore: avoid_print
         expect(metrics['search_spots']!, lessThan(300));      // Under 300ms
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Performance baselines: $metrics');
       });
     });

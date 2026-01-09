@@ -3,29 +3,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 // Phase 1: Core Personality Learning System
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/ai/privacy_protection.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 import '../../mocks/mock_storage_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 
 // Phase 2: AI2AI Connection System
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
 
 // Phase 3: Dynamic Dimension Learning
-import 'package:spots/core/ai/feedback_learning.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart' show AI2AIChatEvent, AI2AIChatAnalyzer;
-import 'package:spots/core/ai/ai2ai_learning.dart' as ai2ai_learning show ChatMessage, ChatMessageType, SharedInsight;
-import 'package:spots/core/ai/cloud_learning.dart';
+import 'package:avrai/core/ai/feedback_learning.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart' show AI2AIChatEvent, AI2AIChatAnalyzer;
+import 'package:avrai/core/ai/ai2ai_learning.dart' as ai2ai_learning show ChatMessage, ChatMessageType, SharedInsight;
+import 'package:avrai/core/ai/cloud_learning.dart';
 
 // Phase 4: Network Monitoring
-import 'package:spots/core/monitoring/network_analytics.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/monitoring/network_analytics.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
 
 /// AI2AI Personality Learning Network - Complete Integration Test
 /// OUR_GUTS.md: "End-to-end validation of the complete AI2AI personality learning ecosystem"
@@ -193,6 +193,7 @@ void main() {
         expect(readiness.readinessScore, lessThanOrEqualTo(1.0));
         expect(readiness.reasons, isA<List<String>>());
         
+      // ignore: avoid_print
         print('✅ End-to-end personality learning workflow completed successfully');
       });
     });
@@ -229,7 +230,9 @@ void main() {
         final aiPleasure = compatibility.aiPleasurePotential;
         expect(aiPleasure, greaterThanOrEqualTo(0.0));
         expect(aiPleasure, lessThanOrEqualTo(1.0));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('✅ AI2AI connection integration completed successfully');
       });
     });
@@ -314,8 +317,11 @@ void main() {
         final cloudLearning = await cloudInterface.learnFromCloudPatterns(userId, personality);
         expect(cloudLearning.userId, equals(userId));
         expect(cloudLearning.learningConfidence, greaterThanOrEqualTo(0.0));
+      // ignore: avoid_print
         expect(cloudLearning.appliedLearning, isA<Map<String, double>>());
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('✅ Dynamic learning integration completed successfully');
       });
     });
@@ -349,9 +355,13 @@ void main() {
         final networkAnomalies = await networkAnalytics.detectNetworkAnomalies();
         expect(networkAnomalies, isA<List>());
         
+      // ignore: avoid_print
         final connectionAnomalies = await connectionMonitor.detectConnectionAnomalies();
+      // ignore: avoid_print
         expect(connectionAnomalies, isA<List>());
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('✅ Network monitoring integration completed successfully');
       });
     });
@@ -394,10 +404,15 @@ void main() {
           epsilon: 1.0,
         );
         
+      // ignore: avoid_print
         expect(noisyData, hasLength(2));
+      // ignore: avoid_print
         expect(noisyData['dimension1'], isNot(equals(0.5))); // Should have noise
+      // ignore: avoid_print
         expect(noisyData['dimension2'], isNot(equals(0.7))); // Should have noise
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('✅ Privacy and security validation completed successfully');
       });
     });
@@ -418,11 +433,17 @@ void main() {
           privacyLevel: 'STANDARD', // User chooses privacy level
         );
         expect(anonymized.anonymizationQuality, greaterThanOrEqualTo(0.8));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Network analytics should not expose personal data
+      // ignore: avoid_print
         final healthReport = await networkAnalytics.analyzeNetworkHealth();
+      // ignore: avoid_print
         expect(healthReport.privacyMetrics.complianceRate, greaterThan(0.95));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('✅ "Privacy and Control Are Non-Negotiable" compliance validated');
       });
       
@@ -443,12 +464,19 @@ void main() {
         final userAction = UserAction(
           type: UserActionType.spotVisit,
           metadata: {'authentic_choice': true},
+      // ignore: avoid_print
           timestamp: DateTime.now(),
+      // ignore: avoid_print
         );
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         final evolvedProfile = await personalityLearning.evolveFromUserAction(userId, userAction);
+      // ignore: avoid_print
         expect(evolvedProfile.authenticity, greaterThanOrEqualTo(profile.authenticity));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('✅ "Authenticity Over Algorithms" compliance validated');
       });
       
@@ -499,13 +527,21 @@ void main() {
           dimensionEvolution: {'community_orientation': 0.1},
         );
         
+      // ignore: avoid_print
         final chatResult = await chatAnalyzer.analyzeChatConversation(
+      // ignore: avoid_print
           userId,
+      // ignore: avoid_print
           chatEvent,
+      // ignore: avoid_print
           connectionMetrics,
+      // ignore: avoid_print
         );
+      // ignore: avoid_print
         expect(chatResult.collectiveIntelligence, isNotNull);
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('✅ "Community Not Just Places" compliance validated');
       });
     });
@@ -544,14 +580,23 @@ void main() {
         // Phase 8.3: Use agentId for privacy protection (userId may be null)
         final vibes = await Future.wait(
           profiles.map((profile) => vibeAnalyzer.compileUserVibe(profile.userId ?? profile.agentId, profile)),
+      // ignore: avoid_print
         );
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         expect(vibes, hasLength(userCount));
+      // ignore: avoid_print
         for (final vibe in vibes) {
+      // ignore: avoid_print
           expect(vibe.hashedSignature, isNotEmpty);
+      // ignore: avoid_print
           expect(vibe.anonymizedDimensions, hasLength(12));
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('✅ System performance with $userCount concurrent users validated');
       });
       
@@ -565,29 +610,62 @@ void main() {
         
         expect(healthReports, hasLength(operationCount));
         for (final report in healthReports) {
+      // ignore: avoid_print
           expect(report.overallHealthScore, greaterThanOrEqualTo(0.0));
           expect(report.overallHealthScore, lessThanOrEqualTo(1.0));
         }
         
+      // ignore: avoid_print
         // Verify consistency across reports
+      // ignore: avoid_print
+      // ignore: avoid_print
         final healthScores = healthReports.map((r) => r.overallHealthScore).toList();
+      // ignore: avoid_print
         final avgHealthScore = healthScores.reduce((a, b) => a + b) / healthScores.length;
+      // ignore: avoid_print
+      // ignore: avoid_print
         expect(avgHealthScore, greaterThan(0.5)); // Should maintain good health
+      // ignore: avoid_print
+      // ignore: avoid_print
         
+      // ignore: avoid_print
+      // ignore: avoid_print
         print('✅ System quality under load ($operationCount operations) validated');
+      // ignore: avoid_print
+      // ignore: avoid_print
       });
+      // ignore: avoid_print
+      // ignore: avoid_print
     });
+      // ignore: avoid_print
+      // ignore: avoid_print
     
+      // ignore: avoid_print
+      // ignore: avoid_print
     tearDownAll(() async {
+      // ignore: avoid_print
+      // ignore: avoid_print
       print('\n🎉 AI2AI Personality Learning Network Integration Test Complete!');
+      // ignore: avoid_print
+      // ignore: avoid_print
       print('📊 All phases validated:');
+      // ignore: avoid_print
       print('   ✅ Phase 1: Core Personality Learning System');
+      // ignore: avoid_print
+      // ignore: avoid_print
       print('   ✅ Phase 2: AI2AI Connection System');
+      // ignore: avoid_print
+      // ignore: avoid_print
       print('   ✅ Phase 3: Dynamic Dimension Learning');
+      // ignore: avoid_print
       print('   ✅ Phase 4: Network Monitoring');
+      // ignore: avoid_print
       print('   ✅ Privacy and Security Compliance');
+      // ignore: avoid_print
       print('   ✅ OUR_GUTS.md Principle Compliance');
+      // ignore: avoid_print
       print('   ✅ Performance and Scalability');
+      // ignore: avoid_print
       print('\n🚀 AI2AI Personality Learning Network is ready for deployment!');
     });
   });

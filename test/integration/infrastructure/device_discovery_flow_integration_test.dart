@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_network/network/device_discovery.dart';
-import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots/core/models/user_vibe.dart';
+import 'package:avrai_network/network/device_discovery.dart';
+import 'package:avrai/core/ai/privacy_protection.dart';
+import 'package:avrai/core/models/user_vibe.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Device Discovery Flow Integration Tests

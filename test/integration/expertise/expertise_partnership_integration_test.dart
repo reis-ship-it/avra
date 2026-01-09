@@ -1,18 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/expertise_calculation_service.dart';
-import 'package:spots/core/services/saturation_algorithm_service.dart';
-import 'package:spots/core/services/multi_path_expertise_service.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/business_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/expertise_calculation_service.dart';
+import 'package:avrai/core/services/saturation_algorithm_service.dart';
+import 'package:avrai/core/services/multi_path_expertise_service.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../helpers/test_helpers.dart';
 
@@ -37,11 +37,16 @@ class MockBusinessService extends Mock implements BusinessService {}
 void main() {
   group('Expertise-Partnership Integration Tests', () {
     late PartnershipService partnershipService;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late ExpertiseCalculationService expertiseService;
     late MockExpertiseEventService mockEventService;
     late MockBusinessService mockBusinessService;
+      // ignore: unused_local_variable
     late SaturationAlgorithmService saturationService;
     late MultiPathExpertiseService multiPathService;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late DateTime testDate;
     
     setUp(() {

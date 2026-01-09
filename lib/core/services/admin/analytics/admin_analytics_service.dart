@@ -1,12 +1,12 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/services/admin/permissions/admin_access_control.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/monitoring/network_analytics.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart';
-import 'package:spots/core/p2p/federated_learning.dart' as federated;
-import 'package:spots/core/models/collaborative_activity_metrics.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart' as admin_models
+import 'package:avrai/core/services/admin/permissions/admin_access_control.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/monitoring/network_analytics.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/p2p/federated_learning.dart' as federated;
+import 'package:avrai/core/models/collaborative_activity_metrics.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart' as admin_models
     show
         AggregatePrivacyMetrics,
         GodModeDashboardData,

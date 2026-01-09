@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/verification_session.dart';
+import 'package:avrai/core/models/verification_session.dart';
 
 /// Verification Result Model
 /// 

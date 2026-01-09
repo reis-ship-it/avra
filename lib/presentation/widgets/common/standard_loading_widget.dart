@@ -10,8 +10,8 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Standardized loading widget for consistent loading states across the app
 class StandardLoadingWidget extends StatelessWidget {

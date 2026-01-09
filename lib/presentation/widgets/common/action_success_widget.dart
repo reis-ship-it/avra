@@ -15,8 +15,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/ai/action_models.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/ai/action_models.dart';
 
 /// Widget that displays success feedback after action execution
 class ActionSuccessWidget extends StatefulWidget {

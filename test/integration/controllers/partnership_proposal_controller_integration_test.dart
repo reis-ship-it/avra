@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:spots/core/controllers/partnership_proposal_controller.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/controllers/partnership_proposal_controller.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Partnership Proposal Controller Integration Tests

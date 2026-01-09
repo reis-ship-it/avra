@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
 import 'package:google_maps_flutter/google_maps_flutter.dart' show BitmapDescriptor;
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/presentation/widgets/common/standard_error_widget.dart';
-import 'package:spots/presentation/widgets/common/standard_loading_widget.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/presentation/widgets/common/standard_error_widget.dart';
+import 'package:avrai/presentation/widgets/common/standard_loading_widget.dart';
 
 /// Border Visualization Widget
 /// 
@@ -71,6 +71,7 @@ class _BorderVisualizationWidgetState
   List<BoundaryPolyline> _hardBorders = [];
   List<BoundaryPolyline> _softBorders = [];
   List<SoftBorderSpot> _softBorderSpots = [];
+  // ignore: unused_field
   Map<String, bool> _refinedBorders = {};
 
   @override

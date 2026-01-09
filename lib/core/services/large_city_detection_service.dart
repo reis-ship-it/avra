@@ -1,4 +1,4 @@
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Large City Detection Service
 /// 
@@ -16,7 +16,9 @@ import 'package:spots/core/services/logger.dart';
 /// 2. Population size
 /// 3. Well-documented neighborhoods backed by geography and population data
 class LargeCityDetectionService {
+  // ignore: unused_field
   static const String _logName = 'LargeCityDetectionService';
+  // ignore: unused_field - Reserved for future logging
   final AppLogger _logger = const AppLogger(
     defaultTag: 'SPOTS',
     minimumLevel: LogLevel.debug,

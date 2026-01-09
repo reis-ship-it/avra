@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
-import 'package:spots/core/ml/model_version_registry.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
-import 'package:spots/core/services/local_llm/model_pack_manager.dart';
+import 'package:avrai/core/ml/model_version_registry.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/local_llm/model_pack_manager.dart';
 
 /// Guards model rollouts using user-facing quality signals ("agent happiness").
 ///

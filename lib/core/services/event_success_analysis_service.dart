@@ -1,12 +1,12 @@
-import 'package:spots/core/models/event_success_metrics.dart';
-import 'package:spots/core/models/event_success_level.dart';
-import 'package:spots/core/models/event_feedback.dart' hide PartnerRating;
-import 'package:spots/core/models/partner_rating.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/post_event_feedback_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/event_success_metrics.dart';
+import 'package:avrai/core/models/event_success_level.dart';
+import 'package:avrai/core/models/event_feedback.dart' hide PartnerRating;
+import 'package:avrai/core/models/partner_rating.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/post_event_feedback_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Event Success Analysis Service
@@ -41,10 +41,13 @@ import 'package:uuid/uuid.dart';
 class EventSuccessAnalysisService {
   static const String _logName = 'EventSuccessAnalysisService';
   final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
+  // ignore: unused_field
   final Uuid _uuid = const Uuid();
   
   final ExpertiseEventService _eventService;
+  // ignore: unused_field
   final PostEventFeedbackService _feedbackService;
+  // ignore: unused_field - Reserved for future payment analytics
   final PaymentService? _paymentService;
   
   // In-memory storage for success metrics (in production, use database)

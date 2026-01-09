@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
 import '../../helpers/test_helpers.dart';
 
 void main() {

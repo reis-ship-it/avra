@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ml/feedback_processor.dart';
-import 'package:spots/core/models/user.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/ml/feedback_processor.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/core/models/spot.dart';
 
 void main() {
   group('FeedbackProcessor', () {

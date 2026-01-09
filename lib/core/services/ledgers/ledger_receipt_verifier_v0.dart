@@ -4,9 +4,9 @@ import 'dart:typed_data';
 import 'package:cryptography/cryptography.dart';
 import 'package:crypto/crypto.dart' show sha256;
 
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_op_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipt_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_op_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipt_v0.dart';
 
 /// Verifies v0 ledger receipts.
 ///

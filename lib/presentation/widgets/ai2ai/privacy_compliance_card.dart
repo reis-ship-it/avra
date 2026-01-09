@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/monitoring/network_analytics.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/monitoring/network_analytics.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying privacy compliance metrics
 class PrivacyComplianceCard extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/collaborative_activity_metrics.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/collaborative_activity_metrics.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying collaborative activity analytics
 /// Displays privacy-safe aggregate metrics on AI2AI collaborative patterns

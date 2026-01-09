@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/services/payout_service.dart';
-import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/widgets/business/business_stats_card.dart';
-import 'package:spots/presentation/widgets/partnerships/revenue_split_display.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/services/payout_service.dart';
+import 'package:avrai/core/services/business_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/widgets/business/business_stats_card.dart';
+import 'package:avrai/presentation/widgets/partnerships/revenue_split_display.dart';
 import 'package:get_it/get_it.dart';
 
 /// Earnings Dashboard Page
@@ -34,6 +34,7 @@ class EarningsDashboardPage extends StatefulWidget {
 
 class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
   final _payoutService = GetIt.instance<PayoutService>();
+  // ignore: unused_field
   final _businessService = GetIt.instance<BusinessService>();
   
   bool _isLoading = true;

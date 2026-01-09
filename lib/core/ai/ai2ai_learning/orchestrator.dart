@@ -1,16 +1,16 @@
 import 'dart:developer' as developer;
 import 'dart:math';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/connection_metrics.dart' hide SharedInsight;
-import 'package:spots/core/ai/ai2ai_learning.dart';
-import 'package:spots/core/ai/ai2ai_learning/extractors/conversation_insights_extractor.dart';
-import 'package:spots/core/ai/ai2ai_learning/detectors/emerging_patterns_detector.dart';
-import 'package:spots/core/ai/ai2ai_learning/builders/consensus_knowledge_builder.dart';
-import 'package:spots/core/ai/ai2ai_learning/analyzers/community_trends_analyzer.dart';
-import 'package:spots/core/ai/ai2ai_learning/analyzers/learning_effectiveness_analyzer.dart';
-import 'package:spots/core/ai/ai2ai_learning/recommendations/learning_recommendations_generator.dart';
-import 'package:spots/core/ai/ai2ai_learning/utils/ai2ai_learning_utils.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/models/connection_metrics.dart' hide SharedInsight;
+import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/ai/ai2ai_learning/extractors/conversation_insights_extractor.dart';
+import 'package:avrai/core/ai/ai2ai_learning/detectors/emerging_patterns_detector.dart';
+import 'package:avrai/core/ai/ai2ai_learning/builders/consensus_knowledge_builder.dart';
+import 'package:avrai/core/ai/ai2ai_learning/analyzers/community_trends_analyzer.dart';
+import 'package:avrai/core/ai/ai2ai_learning/analyzers/learning_effectiveness_analyzer.dart';
+import 'package:avrai/core/ai/ai2ai_learning/recommendations/learning_recommendations_generator.dart';
+import 'package:avrai/core/ai/ai2ai_learning/utils/ai2ai_learning_utils.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 /// Orchestrates the AI2AI learning system
 ///

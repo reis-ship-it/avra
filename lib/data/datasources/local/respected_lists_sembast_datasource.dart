@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:sembast/sembast.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 class RespectedListsSembastDataSource {
   final Database _database;

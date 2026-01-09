@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/business/business_account_form_widget.dart';
+import 'package:avrai/presentation/widgets/business/business_account_form_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for BusinessAccountFormWidget
@@ -14,6 +14,8 @@ void main() {
         (WidgetTester tester) async {
       // Test business logic: Business account form widget display and functionality
       final creator = WidgetTestHelpers.createTestUser();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       bool accountCreated = false;
       final widget = WidgetTestHelpers.createTestableWidget(
         child: BusinessAccountFormWidget(

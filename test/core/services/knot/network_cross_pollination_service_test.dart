@@ -6,12 +6,12 @@
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_knot/models/entity_knot.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_knot/services/knot/network_cross_pollination_service.dart';
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:avrai_knot/models/entity_knot.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_knot/services/knot/network_cross_pollination_service.dart';
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 
 /// Mock Rust API for testing
 class MockRustLibApi implements RustLibApi {

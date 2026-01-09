@@ -11,7 +11,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/social_media_vibe_analyzer.dart';
+import 'package:avrai/core/services/social_media_vibe_analyzer.dart';
 
 void main() {
   group('SocialMediaVibeAnalyzer Tests', () {

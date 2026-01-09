@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/lists/spot_list_card.dart';
-import 'package:spots/core/models/list.dart';
+import 'package:avrai/presentation/widgets/lists/spot_list_card.dart';
+import 'package:avrai/core/models/list.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../helpers/test_helpers.dart';
 

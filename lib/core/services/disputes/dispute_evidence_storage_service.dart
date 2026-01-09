@@ -4,10 +4,10 @@ import 'package:crypto/crypto.dart' show sha256;
 import 'package:supabase_flutter/supabase_flutter.dart' show FileOptions;
 import 'package:uuid/uuid.dart';
 
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// Stores dispute evidence (screenshots/photos) in Supabase Storage with retention lock.
 ///

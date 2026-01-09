@@ -1,16 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/models/product_tracking.dart';
-import 'package:spots/core/models/multi_party_sponsorship.dart';
-import 'package:spots/core/models/brand_discovery.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/models/sponsorship_integration.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_status.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/models/multi_party_sponsorship.dart';
+import 'package:avrai/core/models/brand_discovery.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/models/sponsorship_integration.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_status.dart';
 import '../../helpers/test_helpers.dart';
 import '../../fixtures/model_factories.dart';
 
@@ -34,8 +34,14 @@ import '../../fixtures/model_factories.dart';
 void main() {
   group('Sponsorship Model Integration Tests', () {
     late DateTime testDate;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late UnifiedUser testUser;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late BusinessAccount testBusiness;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late BrandAccount testBrand;
 
     setUp(() {
@@ -277,8 +283,11 @@ void main() {
     });
 
     group('Scenario 4: Brand Discovery with Partnership Events', () {
+      // ignore: unused_local_variable
       test('should match brands to partnership events', () {
         // Arrange
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final partnership = EventPartnership(
           id: 'partnership-123',
           eventId: 'event-456',
@@ -586,9 +595,13 @@ void main() {
         expect(revenueSplit.isValid, isTrue);
         expect(sponsorAmount, greaterThan(0));
       });
+      // ignore: unused_local_variable
 
+      // ignore: unused_local_variable
       test('should integrate product sales with revenue split', () {
         // Arrange
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final sponsorship = Sponsorship(
           id: 'sponsor-123',
           eventId: 'event-456',

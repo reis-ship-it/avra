@@ -1,7 +1,7 @@
-import 'package:spots/core/models/event_safety_guidelines.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/event_safety_guidelines.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:uuid/uuid.dart';

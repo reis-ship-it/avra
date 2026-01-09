@@ -8,8 +8,8 @@
 import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
-import 'package:spots/core/crypto/signal/signal_types.dart';
-import 'package:spots/core/crypto/signal/signal_library_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_library_manager.dart';
 
 // ============================================================================
 // FFI FUNCTION TYPEDEFS

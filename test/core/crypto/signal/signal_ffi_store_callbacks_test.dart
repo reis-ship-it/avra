@@ -6,13 +6,13 @@
 import 'package:ffi/ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_store_callbacks.dart';
-import 'package:spots/core/crypto/signal/signal_key_manager.dart';
-import 'package:spots/core/crypto/signal/signal_session_manager.dart';
-import 'package:spots/core/crypto/signal/signal_rust_wrapper_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_platform_bridge_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_store_callbacks.dart';
+import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_rust_wrapper_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_platform_bridge_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sembast/sembast_memory.dart';
 

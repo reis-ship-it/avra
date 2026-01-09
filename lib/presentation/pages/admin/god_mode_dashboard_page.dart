@@ -1,20 +1,20 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
-import 'package:spots/core/services/admin_auth_service.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/presentation/pages/admin/god_mode_login_page.dart';
-import 'package:spots/presentation/pages/admin/user_data_viewer_page.dart';
-import 'package:spots/presentation/pages/admin/user_progress_viewer_page.dart';
-import 'package:spots/presentation/pages/admin/user_predictions_viewer_page.dart';
-import 'package:spots/presentation/pages/admin/business_accounts_viewer_page.dart';
-import 'package:spots/presentation/pages/admin/communications_viewer_page.dart';
-import 'package:spots/presentation/pages/admin/clubs_communities_viewer_page.dart';
-import 'package:spots/presentation/pages/admin/ai_live_map_page.dart';
-import 'package:spots/presentation/pages/admin/knot_visualizer_page.dart';
-import 'package:spots/presentation/widgets/admin/admin_federated_rounds_widget.dart';
+import 'package:avrai/presentation/pages/admin/god_mode_login_page.dart';
+import 'package:avrai/presentation/pages/admin/user_data_viewer_page.dart';
+import 'package:avrai/presentation/pages/admin/user_progress_viewer_page.dart';
+import 'package:avrai/presentation/pages/admin/user_predictions_viewer_page.dart';
+import 'package:avrai/presentation/pages/admin/business_accounts_viewer_page.dart';
+import 'package:avrai/presentation/pages/admin/communications_viewer_page.dart';
+import 'package:avrai/presentation/pages/admin/clubs_communities_viewer_page.dart';
+import 'package:avrai/presentation/pages/admin/ai_live_map_page.dart';
+import 'package:avrai/presentation/pages/admin/knot_visualizer_page.dart';
+import 'package:avrai/presentation/widgets/admin/admin_federated_rounds_widget.dart';
 
 /// God-Mode Admin Dashboard
 /// Comprehensive real-time monitoring and data access

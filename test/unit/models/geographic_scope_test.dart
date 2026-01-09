@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/geographic_scope.dart';
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/models/geographic_scope.dart';
+import 'package:avrai/core/models/expertise_level.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for GeographicScope model

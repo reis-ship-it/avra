@@ -1,6 +1,6 @@
-import 'package:spots/core/models/multi_path_expertise.dart';
-import 'package:spots/core/models/visit.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/multi_path_expertise.dart';
+import 'package:avrai/core/models/visit.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Multi-Path Expertise Service
 /// 

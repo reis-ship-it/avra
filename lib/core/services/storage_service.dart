@@ -1,6 +1,6 @@
 import 'package:get_storage/get_storage.dart';
-import 'package:spots/core/services/interfaces/storage_service_interface.dart';
-import 'package:spots_core/services/key_value_store.dart';
+import 'package:avrai/core/services/interfaces/storage_service_interface.dart';
+import 'package:avrai_core/services/key_value_store.dart';
 
 /// Storage service that provides a compatible interface for get_storage
 /// This replaces SharedPreferences usage throughout the app

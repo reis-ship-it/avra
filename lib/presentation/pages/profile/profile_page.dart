@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/pages/settings/notifications_settings_page.dart';
-import 'package:spots/presentation/pages/settings/privacy_settings_page.dart';
-import 'package:spots/presentation/pages/settings/social_media_settings_page.dart';
-import 'package:spots/presentation/pages/settings/help_support_page.dart';
-import 'package:spots/presentation/pages/settings/about_page.dart';
-import 'package:spots/presentation/pages/tax/tax_profile_page.dart';
-import 'package:spots/presentation/pages/tax/tax_documents_page.dart';
-import 'package:spots/presentation/pages/legal/terms_of_service_page.dart';
-import 'package:spots/presentation/pages/legal/privacy_policy_page.dart';
-import 'package:spots/presentation/pages/verification/identity_verification_page.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/pages/settings/notifications_settings_page.dart';
+import 'package:avrai/presentation/pages/settings/privacy_settings_page.dart';
+import 'package:avrai/presentation/pages/settings/social_media_settings_page.dart';
+import 'package:avrai/presentation/pages/settings/help_support_page.dart';
+import 'package:avrai/presentation/pages/settings/about_page.dart';
+import 'package:avrai/presentation/pages/tax/tax_profile_page.dart';
+import 'package:avrai/presentation/pages/tax/tax_documents_page.dart';
+import 'package:avrai/presentation/pages/legal/terms_of_service_page.dart';
+import 'package:avrai/presentation/pages/legal/privacy_policy_page.dart';
+import 'package:avrai/presentation/pages/verification/identity_verification_page.dart';
 // Phase 1 Integration: Device Discovery & AI2AI
 import 'package:go_router/go_router.dart';
 // Phase 4.5: Partnership Profile Visibility
-import 'package:spots/presentation/widgets/profile/partnership_display_widget.dart';
-import 'package:spots/core/models/user_partnership.dart';
+import 'package:avrai/presentation/widgets/profile/partnership_display_widget.dart';
+import 'package:avrai/core/models/user_partnership.dart';
 // Admin: God Mode Access
-import 'package:spots/presentation/pages/admin/god_mode_login_page.dart';
-import 'package:spots/presentation/pages/profile/edit_profile_page.dart';
-import 'package:spots/core/models/user.dart' show UserRole;
+import 'package:avrai/presentation/pages/admin/god_mode_login_page.dart';
+import 'package:avrai/presentation/pages/profile/edit_profile_page.dart';
+import 'package:avrai/core/models/user.dart' show UserRole;
 // Phase 4: Dynamic Knots
 import 'package:get_it/get_it.dart';
 import 'dart:developer' as developer;
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots_knot/services/knot/dynamic_knot_service.dart';
-import 'package:spots/core/services/wearable_data_service.dart';
-import 'package:spots_knot/models/dynamic_knot.dart';
-import 'package:spots/presentation/widgets/knot/dynamic_knot_widget.dart';
-import 'package:spots/presentation/pages/knot/knot_meditation_page.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_knot/services/knot/dynamic_knot_service.dart';
+import 'package:avrai/core/services/wearable_data_service.dart';
+import 'package:avrai_knot/models/dynamic_knot.dart';
+import 'package:avrai/presentation/widgets/knot/dynamic_knot_widget.dart';
+import 'package:avrai/presentation/pages/knot/knot_meditation_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/quantum/quantum_feature_extractor.dart';
-import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/models/decoherence_pattern.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/services/decoherence_tracking_service.dart';
+import 'package:avrai/core/ai/quantum/quantum_feature_extractor.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/models/decoherence_pattern.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/services/decoherence_tracking_service.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {

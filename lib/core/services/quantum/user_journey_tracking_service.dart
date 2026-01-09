@@ -6,12 +6,12 @@
 
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// User journey state at a specific point in time
 class UserJourneyState {
@@ -470,19 +470,22 @@ class UserJourneyTrackingService {
     // 4. Engagement evolution
     final engagementChange = postEventState.engagementLevel - preEventState.engagementLevel;
 
-    // 5. Overall journey impact score
-    // Weighted combination of all metrics
+    // 5. Overall journey impact score using hybrid approach
+    // Core factors (geometric mean) + Modifiers (weighted average)
     final vibeEvolutionScore = _calculateVibeEvolutionScore(vibeEvolution);
     final interestExpansionScore = newInterests.length / math.max(postEventState.interests.length, 1);
     final connectionGrowthScore = newConnections > 0 ? 1.0 : 0.0;
     final engagementEvolutionScore = engagementChange.clamp(0.0, 1.0);
 
-    final journeyImpactScore = (
-      0.40 * vibeEvolutionScore +
-      0.30 * interestExpansionScore +
-      0.20 * connectionGrowthScore +
-      0.10 * engagementEvolutionScore
-    ).clamp(0.0, 1.0);
+    // Core factors: vibe evolution and interest expansion (critical for journey impact)
+    final coreFactors = [vibeEvolutionScore, interestExpansionScore];
+    final coreScore = _geometricMean(coreFactors);
+
+    // Modifiers: connection growth and engagement evolution (enhance good matches)
+    final modifierScore = 0.6 * connectionGrowthScore + 0.4 * engagementEvolutionScore;
+
+    // Hybrid combination: core * modifiers
+    final journeyImpactScore = (coreScore * modifierScore).clamp(0.0, 1.0);
 
     return UserJourneyEvolution(
       vibeEvolution: vibeEvolution,
@@ -542,6 +545,17 @@ class UserJourneyTrackingService {
 
     final magnitude = math.sqrt(sumSquared / vibeEvolution.length);
     return magnitude.clamp(0.0, 1.0);
+  }
+
+  /// Calculate geometric mean of values
+  double _geometricMean(List<double> values) {
+    if (values.isEmpty) return 0.0;
+    if (values.any((v) => v <= 0.0)) {
+      // If any value is zero or negative, return 0 (critical failure)
+      return 0.0;
+    }
+    final product = values.fold(1.0, (prod, v) => prod * v);
+    return math.pow(product, 1.0 / values.length).toDouble();
   }
 
   /// Get journey cache key

@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:spots/core/services/user_preference_learning_service.dart'
+import 'package:avrai/core/services/user_preference_learning_service.dart'
     hide UserPreferences;
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/user_preferences.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/user_preferences.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'user_preference_learning_service_test.mocks.dart';

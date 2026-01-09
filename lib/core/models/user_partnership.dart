@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/event_partnership.dart';
+import 'package:avrai/core/models/event_partnership.dart';
 
 /// Profile Partnership Type
 /// 

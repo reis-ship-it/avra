@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/business/business_account_form_widget.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/business/business_account_form_widget.dart';
 
 /// Business Account Creation Page
 /// Main page for businesses to create accounts

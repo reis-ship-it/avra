@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/expertise_service.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/expertise_pin.dart';
-import 'package:spots/core/models/expertise_progress.dart';
+import 'package:avrai/core/services/expertise_service.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_pin.dart';
+import 'package:avrai/core/models/expertise_progress.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/platform_channel_helper.dart';
 

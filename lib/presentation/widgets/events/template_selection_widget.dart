@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/models/event_template.dart';
-import 'package:spots/core/services/event_template_service.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/models/event_template.dart';
+import 'package:avrai/core/services/event_template_service.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Template Selection Widget
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.9)

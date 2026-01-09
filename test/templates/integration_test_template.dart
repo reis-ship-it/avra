@@ -27,10 +27,10 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 // TODO: Replace with actual component imports
-// import 'package:spots/core/path/component.dart';
-// import 'package:spots/core/path/service1.dart';
+// import 'package:avrai/core/path/component.dart';
+// import 'package:avrai/core/path/service1.dart';
 import '../mocks/mock_storage_service.dart';
 
 // TODO: Replace with actual component classes

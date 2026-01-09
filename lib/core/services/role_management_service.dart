@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/user_role.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat, StorageService;
+import 'package:avrai/core/models/user_role.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat, StorageService;
 
 /// OUR_GUTS.md: "Community, Not Just Places" - Role-based community management
 /// Concrete implementation of RoleManagementService for managing user roles in lists
@@ -11,6 +11,7 @@ class RoleManagementServiceImpl implements RoleManagementService {
   static const String _roleAssignmentsKey = 'user_role_assignments';
   
   final StorageService _storageService;
+  // ignore: unused_field
   final SharedPreferencesCompat _prefs;
   
   // In-memory cache for role assignments

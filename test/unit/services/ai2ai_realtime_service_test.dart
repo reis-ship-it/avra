@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
-import 'package:spots_network/spots_network.dart';
+import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
+import 'package:avrai_network/avra_network.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 class MockRealtimeBackend extends Mock implements RealtimeBackend {}
@@ -115,6 +115,7 @@ void main() {
         verify(() => mockBackend.sendMessage('anonymous-communication', any()))
             .called(1);
 
+        // ignore: deprecated_member_use - Using deprecated method for test compatibility
         await service.sendPrivateMessage('user-123', {'message': 'test'});
         verify(() => mockBackend.sendMessage('ai2ai-network', any())).called(1);
       });

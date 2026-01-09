@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/ai2ai/privacy_compliance_card.dart';
-import 'package:spots/core/monitoring/network_analytics.dart';
+import 'package:avrai/presentation/widgets/ai2ai/privacy_compliance_card.dart';
+import 'package:avrai/core/monitoring/network_analytics.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for PrivacyComplianceCard

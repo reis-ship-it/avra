@@ -3,19 +3,23 @@
 // Tests for Phase 19 Section 19.9: Quantum Outcome-Based Learning System
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/quantum/quantum_outcome_learning_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/event_success_analysis_service.dart';
-import 'package:spots/core/services/quantum/meaningful_connection_metrics_service.dart';
-import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots/core/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/event_success_metrics.dart';
-import 'package:spots/core/models/event_success_level.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/quantum/quantum_outcome_learning_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/event_success_analysis_service.dart';
+import 'package:avrai/core/services/quantum/meaningful_connection_metrics_service.dart';
+import 'package:avrai/core/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai/core/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_success_metrics.dart';
+import 'package:avrai/core/models/event_success_level.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
+import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
@@ -27,6 +31,10 @@ import 'quantum_outcome_learning_service_test.mocks.dart';
   MeaningfulConnectionMetricsService,
   QuantumEntanglementService,
   LocationTimingQuantumStateService,
+  KnotEvolutionStringService,
+  KnotWorldsheetService,
+  KnotStorageService,
+  AgentIdService,
 ])
 void main() {
   group('QuantumOutcomeLearningService', () {
@@ -36,6 +44,10 @@ void main() {
     late MockMeaningfulConnectionMetricsService mockMeaningfulMetricsService;
     late MockQuantumEntanglementService mockEntanglementService;
     late MockLocationTimingQuantumStateService mockLocationTimingService;
+    late MockKnotEvolutionStringService mockStringService;
+    late MockKnotWorldsheetService mockWorldsheetService;
+    late MockKnotStorageService mockKnotStorage;
+    late MockAgentIdService mockAgentIdService;
 
     setUp(() {
       mockAtomicClock = MockAtomicClockService();
@@ -43,6 +55,10 @@ void main() {
       mockMeaningfulMetricsService = MockMeaningfulConnectionMetricsService();
       mockEntanglementService = MockQuantumEntanglementService();
       mockLocationTimingService = MockLocationTimingQuantumStateService();
+      mockStringService = MockKnotEvolutionStringService();
+      mockWorldsheetService = MockKnotWorldsheetService();
+      mockKnotStorage = MockKnotStorageService();
+      mockAgentIdService = MockAgentIdService();
 
       service = QuantumOutcomeLearningService(
         atomicClock: mockAtomicClock,
@@ -50,6 +66,10 @@ void main() {
         meaningfulMetricsService: mockMeaningfulMetricsService,
         entanglementService: mockEntanglementService,
         locationTimingService: mockLocationTimingService,
+        stringService: mockStringService,
+        worldsheetService: mockWorldsheetService,
+        knotStorage: mockKnotStorage,
+        agentIdService: mockAgentIdService,
       );
     });
 

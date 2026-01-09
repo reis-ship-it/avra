@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/ledgers/ledger_audit_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_audit_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
 
 /// Minimal DM blob store used by the "payloadless realtime" chat transport.
 ///

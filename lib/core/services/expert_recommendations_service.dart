@@ -1,10 +1,10 @@
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/multi_path_expertise.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/expertise_matching_service.dart';
-import 'package:spots/core/services/golden_expert_ai_influence_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/multi_path_expertise.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/expertise_matching_service.dart';
+import 'package:avrai/core/services/golden_expert_ai_influence_service.dart';
 
 /// Expert Recommendations Service
 /// Provides recommendations based on expert preferences and validations

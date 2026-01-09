@@ -1,8 +1,8 @@
-import 'package:spots/core/models/user.dart' as local;
-import 'package:spots/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:spots_network/spots_network.dart';
-import 'package:spots_core/spots_core.dart' as core;
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/models/user.dart' as local;
+import 'package:avrai/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:avrai_network/avra_network.dart';
+import 'package:avrai_core/avra_core.dart' as core;
+import 'package:avrai/injection_container.dart' as di;
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthBackend? get _auth {

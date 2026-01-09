@@ -1,5 +1,5 @@
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_op_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_op_v0.dart';
 
 /// A single v0 ledger row (journal entry).
 ///

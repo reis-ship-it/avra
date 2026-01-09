@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/common/ai_thinking_indicator.dart';
-import 'package:spots/presentation/widgets/common/offline_indicator_widget.dart';
-import 'package:spots/presentation/widgets/common/action_success_widget.dart';
-import 'package:spots/presentation/widgets/common/streaming_response_widget.dart';
-import 'package:spots/presentation/widgets/common/enhanced_ai_chat_interface.dart';
-import 'package:spots/presentation/widgets/common/ai_command_processor.dart';
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/presentation/widgets/common/ai_thinking_indicator.dart';
+import 'package:avrai/presentation/widgets/common/offline_indicator_widget.dart';
+import 'package:avrai/presentation/widgets/common/action_success_widget.dart';
+import 'package:avrai/presentation/widgets/common/streaming_response_widget.dart';
+import 'package:avrai/presentation/widgets/common/enhanced_ai_chat_interface.dart';
+import 'package:avrai/presentation/widgets/common/ai_command_processor.dart';
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Phase 1 Integration Tests
 /// 

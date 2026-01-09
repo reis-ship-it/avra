@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/geohash_service.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_mesh_cache.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_models_v1.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/geohash_service.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_mesh_cache.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_models_v1.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {

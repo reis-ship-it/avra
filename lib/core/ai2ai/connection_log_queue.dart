@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 import 'dart:convert';
-import 'package:spots/core/models/connection_metrics.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
 
 /// OUR_GUTS.md: "Cloud is optional enhancement"
 /// Philosophy: Key works offline, cloud adds network wisdom

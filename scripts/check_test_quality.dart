@@ -1,4 +1,7 @@
 #!/usr/bin/env dart
+// ignore_for_file: avoid_print
+library;
+
 /// SPOTS Test Quality Checker
 /// 
 /// Analyzes test files for quality issues and anti-patterns

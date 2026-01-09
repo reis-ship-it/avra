@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:spots/data/datasources/remote/lists_remote_datasource_impl.dart';
-import 'package:spots_network/spots_network.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots_core/spots_core.dart' as spots_core;
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/data/datasources/remote/lists_remote_datasource_impl.dart';
+import 'package:avrai_network/avra_network.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai_core/avra_core.dart' as spots_core;
+import 'package:avrai/injection_container.dart' as di;
 
 import 'lists_remote_datasource_impl_test.mocks.dart';
 

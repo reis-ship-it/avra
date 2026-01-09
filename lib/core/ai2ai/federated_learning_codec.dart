@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 
 /// Helpers for representing AI2AI learning insights as federated-learning deltas.
 ///

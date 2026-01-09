@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_verification.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_verification.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Business Verification Service
 /// Handles business verification and proof of legitimacy

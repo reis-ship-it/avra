@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/neighborhood_boundary_service.dart';
-import 'package:spots/core/models/neighborhood_boundary.dart';
+import 'package:avrai/core/services/neighborhood_boundary_service.dart';
+import 'package:avrai/core/models/neighborhood_boundary.dart';
 import '../../helpers/test_helpers.dart';
 import '../../helpers/platform_channel_helper.dart';
 

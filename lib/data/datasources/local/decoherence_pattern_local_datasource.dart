@@ -1,4 +1,4 @@
-import 'package:spots/core/models/decoherence_pattern.dart';
+import 'package:avrai/core/models/decoherence_pattern.dart';
 
 /// Local Data Source Interface for Decoherence Patterns
 ///

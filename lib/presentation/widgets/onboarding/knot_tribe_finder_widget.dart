@@ -5,10 +5,10 @@
 // Phase 3: Onboarding Integration
 
 import 'package:flutter/material.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots_knot/models/knot/knot_community.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/knot/personality_knot_widget.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_knot/models/knot/knot_community.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/knot/personality_knot_widget.dart';
 
 /// Widget for finding and displaying knot tribes
 /// 

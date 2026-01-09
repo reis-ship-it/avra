@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/expertise_progress.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/expertise_progress.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Expertise Progress Widget
 /// Shows progress toward next expertise level

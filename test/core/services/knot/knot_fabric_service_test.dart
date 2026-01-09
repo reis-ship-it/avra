@@ -6,14 +6,14 @@
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_knot/services/knot/knot_fabric_service.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots_knot/models/knot/fabric_cluster.dart';
-import 'package:spots_knot/models/knot/bridge_strand.dart';
-import 'package:spots_knot/models/knot/fabric_evolution.dart';
-import 'package:spots_knot/models/knot/braided_knot.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_knot/models/knot/fabric_cluster.dart';
+import 'package:avrai_knot/models/knot/bridge_strand.dart';
+import 'package:avrai_knot/models/knot/fabric_evolution.dart';
+import 'package:avrai_knot/models/knot/braided_knot.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 
 // Mock Rust API for testing
 class MockRustLibApi implements RustLibApi {

@@ -4,19 +4,19 @@
 library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/core/theme/colors.dart';
 // Shim missing widgets with lightweight stand-ins
 import 'package:flutter/widgets.dart' as fw;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
-import 'package:spots/domain/repositories/spots_repository.dart';
-import 'package:spots/domain/usecases/spots/get_spots_usecase.dart';
-import 'package:spots/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
-import 'package:spots/domain/usecases/spots/create_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/update_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/delete_spot_usecase.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_usecase.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
+import 'package:avrai/domain/usecases/spots/create_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/update_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/delete_spot_usecase.dart';
 
 // Local stand-in widgets to satisfy performance tests
 class SpotListWidget extends fw.StatelessWidget {
@@ -110,6 +110,7 @@ void main() {
         
         expect(scrollStopwatch.elapsedMilliseconds, lessThan(500)); // Smooth scrolling
         
+      // ignore: avoid_print
         print('Large spot list rendering: ${stopwatch.elapsedMilliseconds}ms, '
               'Scrolling: ${scrollStopwatch.elapsedMilliseconds}ms');
       });
@@ -135,7 +136,9 @@ void main() {
         // Assert
         expect(stopwatch.elapsedMilliseconds, lessThan(1500)); // Under 1.5 seconds
         expect(find.byType(SearchResultsWidget), findsOneWidget);
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Large search results rendering: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -157,8 +160,11 @@ void main() {
         stopwatch.stop();
         
         // Assert
+      // ignore: avoid_print
         expect(stopwatch.elapsedMilliseconds, lessThan(3000)); // Under 3 seconds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Complex list cards rendering: ${stopwatch.elapsedMilliseconds}ms');
       });
     });
@@ -190,9 +196,13 @@ void main() {
         // Assert
         expect(updateStopwatch.elapsedMilliseconds, lessThan(2000)); // Under 2 seconds for 50 updates
         
+      // ignore: avoid_print
         final avgUpdateTime = updateStopwatch.elapsedMilliseconds / 50;
+      // ignore: avoid_print
         expect(avgUpdateTime, lessThan(40)); // Under 40ms per update
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Real-time updates (50): ${updateStopwatch.elapsedMilliseconds}ms '
               '(${avgUpdateTime.toStringAsFixed(1)}ms avg)');
       });
@@ -226,10 +236,15 @@ void main() {
         }
         
         searchUpdateStopwatch.stop();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(searchUpdateStopwatch.elapsedMilliseconds, lessThan(3000)); // Under 3 seconds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Search updates (5 queries): ${searchUpdateStopwatch.elapsedMilliseconds}ms');
       });
     });
@@ -266,11 +281,17 @@ void main() {
         for (int i = 0; i < 10; i++) {
           await tester.fling(find.byType(ListView), const Offset(0, -1000), 2000);
           await tester.pump();
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         scrollStopwatch.stop();
+      // ignore: avoid_print
         expect(scrollStopwatch.elapsedMilliseconds, lessThan(1000)); // Smooth scrolling
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Lazy loading performance (10k items): ${scrollStopwatch.elapsedMilliseconds}ms');
       });
 
@@ -300,12 +321,19 @@ void main() {
         // Update with same data - should not trigger unnecessary rebuilds
         await tester.pumpWidget(_createTestApp(
           child: createCountingWidget(initialSpots),
+      // ignore: avoid_print
         ));
+      // ignore: avoid_print
         await tester.pump();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(widgetBuildCount - initialBuildCount, lessThan(2)); // Minimal rebuilds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Widget lifecycle efficiency - Build count: $widgetBuildCount');
       });
     });
@@ -350,13 +378,21 @@ void main() {
           ),
         ));
         
+      // ignore: avoid_print
         // Pump through animation frames
+      // ignore: avoid_print
         await tester.pumpAndSettle();
+      // ignore: avoid_print
         animationStopwatch.stop();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(animationStopwatch.elapsedMilliseconds, lessThan(1000)); // Smooth animation
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Animation with large list: ${animationStopwatch.elapsedMilliseconds}ms');
       });
 
@@ -397,14 +433,23 @@ void main() {
               ),
             ),
           ),
+      // ignore: avoid_print
         ));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         await tester.pumpAndSettle();
+      // ignore: avoid_print
         concurrentAnimationStopwatch.stop();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(concurrentAnimationStopwatch.elapsedMilliseconds, lessThan(1500)); // All animations complete smoothly
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Concurrent animations (10): ${concurrentAnimationStopwatch.elapsedMilliseconds}ms');
       });
     });
@@ -437,15 +482,25 @@ void main() {
         
         for (int i = 0; i < 20; i++) {
           mockSpotsBloc.add(LoadSpots());
+      // ignore: avoid_print
           await tester.pump(); // Single frame
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         await tester.pumpAndSettle();
+      // ignore: avoid_print
         stateUpdateStopwatch.stop();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(stateUpdateStopwatch.elapsedMilliseconds, lessThan(1000)); // Efficient state updates
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('BLoC state updates (20): ${stateUpdateStopwatch.elapsedMilliseconds}ms');
       });
 
@@ -457,9 +512,7 @@ void main() {
           return StatefulBuilder(
             builder: (context, setState) {
               rebuildCount++;
-              return Container(
-                child: Text('Rebuild count: $rebuildCount'),
-              );
+              return Text('Rebuild count: $rebuildCount');
             },
           );
         }
@@ -470,16 +523,27 @@ void main() {
         ));
         
         final initialRebuildCount = rebuildCount;
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Trigger multiple pumps without changes
+      // ignore: avoid_print
         for (int i = 0; i < 10; i++) {
+      // ignore: avoid_print
           await tester.pump();
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         final finalRebuildCount = rebuildCount;
+      // ignore: avoid_print
         expect(finalRebuildCount - initialRebuildCount, lessThan(3)); // Minimal unnecessary rebuilds
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Rebuild optimization - Rebuilds: ${finalRebuildCount - initialRebuildCount}');
       });
     });
@@ -512,17 +576,29 @@ void main() {
         await tester.pump();
         await tester.scrollUntilVisible(
           find.text('Item 50'),
+      // ignore: avoid_print
           300.0,
+      // ignore: avoid_print
           scrollable: find.byType(Scrollable),
+      // ignore: avoid_print
         );
+      // ignore: avoid_print
         responseStopwatch.start();
+      // ignore: avoid_print
         await tester.tap(find.text('Item 50'));
+      // ignore: avoid_print
         await tester.pump();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(responseStopwatch.elapsedMilliseconds, lessThan(100)); // Under 100ms response
+      // ignore: avoid_print
         expect(tapCount, equals(1));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Touch response time: ${responseStopwatch.elapsedMilliseconds}ms');
       });
 
@@ -546,18 +622,31 @@ void main() {
         
         // Act - Rapid tapping
         final rapidTapStopwatch = Stopwatch()..start();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         for (int i = 0; i < 20; i++) {
+      // ignore: avoid_print
           await tester.tap(find.text('Tap me rapidly'));
+      // ignore: avoid_print
           await tester.pump(const Duration(milliseconds: 10));
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         rapidTapStopwatch.stop();
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(rapidTapStopwatch.elapsedMilliseconds, lessThan(1000)); // Handle rapid taps efficiently
+      // ignore: avoid_print
         expect(rapidTapCount, equals(20));
+      // ignore: avoid_print
         
+      // ignore: avoid_print
         print('Rapid taps (20): ${rapidTapStopwatch.elapsedMilliseconds}ms');
       });
     });

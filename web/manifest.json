@@ -1,7 +1,7 @@
 {
-    "name": "AVRA",
+    "name": "AVRAI",
     "version": "1.2.0",
-    "short_name": "AVRA",
+    "short_name": "AVRAI",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

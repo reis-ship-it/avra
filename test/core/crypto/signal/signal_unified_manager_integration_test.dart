@@ -4,10 +4,10 @@
 
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_platform_bridge_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_rust_wrapper_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_library_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_platform_bridge_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_rust_wrapper_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_library_manager.dart';
 
 void main() {
   group('Unified Library Manager Integration', () {
@@ -76,8 +76,14 @@ void main() {
       print('🧪 Testing library instance sharing...');
 
       try {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final ffiBindings = SignalFFIBindings();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final platformBridge = SignalPlatformBridgeBindings();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final rustWrapper = SignalRustWrapperBindings();
         
         // Initialize all bindings (this will load libraries through manager)

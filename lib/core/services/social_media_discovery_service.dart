@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// Social Media Discovery Service
 ///

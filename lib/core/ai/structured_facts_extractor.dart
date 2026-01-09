@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/ai/interaction_events.dart';
-import 'package:spots/core/ai/structured_facts.dart';
+import 'package:avrai/core/ai/interaction_events.dart';
+import 'package:avrai/core/ai/structured_facts.dart';
 
 /// Structured Facts Extractor
 /// 

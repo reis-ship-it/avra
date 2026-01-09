@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/business_business_chat_service_ai2ai.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_business_message.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/business_business_chat_service_ai2ai.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_business_message.dart';
 
 /// Business-Business Outreach Service
 ///

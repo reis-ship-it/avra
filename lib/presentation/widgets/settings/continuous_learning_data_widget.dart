@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
 import 'dart:async';
 
 /// Continuous Learning Data Collection Widget

@@ -1,7 +1,7 @@
-import 'package:spots/core/models/decoherence_pattern.dart';
-import 'package:spots/domain/repositories/decoherence_pattern_repository.dart';
-import 'package:spots/data/datasources/local/decoherence_pattern_local_datasource.dart';
-import 'package:spots/data/repositories/repository_patterns.dart';
+import 'package:avrai/core/models/decoherence_pattern.dart';
+import 'package:avrai/domain/repositories/decoherence_pattern_repository.dart';
+import 'package:avrai/data/datasources/local/decoherence_pattern_local_datasource.dart';
+import 'package:avrai/data/repositories/repository_patterns.dart';
 
 /// Decoherence Pattern Repository Implementation
 ///

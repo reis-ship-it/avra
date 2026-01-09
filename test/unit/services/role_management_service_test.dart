@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:spots/core/services/role_management_service.dart';
-import 'package:spots/core/models/user_role.dart';
+import 'package:avrai/core/services/role_management_service.dart';
+import 'package:avrai/core/models/user_role.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 import '../../mocks/mock_dependencies.mocks.dart';
 import '../../mocks/mock_storage_service.dart';

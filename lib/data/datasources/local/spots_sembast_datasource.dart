@@ -1,8 +1,8 @@
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/data/datasources/local/spots_local_datasource.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/local/spots_local_datasource.dart';
 
 class SpotsSembastDataSource implements SpotsLocalDataSource {
   final StoreRef<String, Map<String, dynamic>> _store;

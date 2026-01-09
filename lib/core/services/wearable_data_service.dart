@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'package:health/health.dart';
-import 'package:spots/core/models/mood_state.dart';
-import 'package:spots_knot/services/knot/dynamic_knot_service.dart';
+import 'package:avrai/core/models/mood_state.dart';
+import 'package:avrai_knot/services/knot/dynamic_knot_service.dart';
 
 /// Service for collecting physiological data from wearables
 /// Phase 4: Dynamic Knots with Wearables Integration

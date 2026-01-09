@@ -13,9 +13,9 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/routes/app_router.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/presentation/routes/app_router.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/models/user.dart';
 import '../../widget/mocks/mock_blocs.dart';
 
 void main() {

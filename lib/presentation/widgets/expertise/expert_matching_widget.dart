@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/expertise_matching_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/expertise/expertise_pin_widget.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/expertise_matching_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/expertise/expertise_pin_widget.dart';
 
 /// Expert Matching Widget
 /// Displays expert matches and connection suggestions

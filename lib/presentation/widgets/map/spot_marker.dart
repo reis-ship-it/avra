@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/models/spot.dart';
 
 class SpotMarker extends StatelessWidget {
   final Spot spot;

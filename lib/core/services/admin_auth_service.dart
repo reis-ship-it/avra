@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// Admin Authentication Service
 /// Handles god-mode admin login and session management
@@ -15,7 +15,9 @@ class AdminAuthService {
   final SharedPreferencesCompat _prefs;
   
   // Maximum login attempts before lockout
+  // ignore: unused_field
   static const int _maxLoginAttempts = 5;
+  // ignore: unused_field - Reserved for future lockout implementation
   static const Duration _lockoutDuration = Duration(minutes: 15);
   
   AdminAuthService(this._prefs);

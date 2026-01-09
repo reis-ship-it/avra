@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
 import 'package:get_it/get_it.dart';
 
 /// OUR_GUTS.md: "Make hosting incredibly easy"
@@ -50,9 +50,11 @@ class EventHostAgainButton extends StatelessWidget {
       final newEvent = await eventService.duplicateEvent(
         originalEvent: originalEvent,
       );
+      if (!context.mounted) return;
       
       // Close loading
       Navigator.pop(context);
+      if (!context.mounted) return;
       
       // Show success
       ScaffoldMessenger.of(context).showSnackBar(
@@ -64,6 +66,7 @@ class EventHostAgainButton extends StatelessWidget {
             label: 'View',
             textColor: AppColors.white,
             onPressed: () {
+              if (!context.mounted) return;
               // Navigate to event detail page
               // Navigator.push(...);
             },
@@ -73,10 +76,12 @@ class EventHostAgainButton extends StatelessWidget {
       
       onSuccess?.call();
     } catch (e) {
+      if (!context.mounted) return;
       // Close loading if still showing
       if (Navigator.canPop(context)) {
         Navigator.pop(context);
       }
+      if (!context.mounted) return;
       
       // Show error
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,4 +1,4 @@
-import 'package:spots/domain/repositories/auth_repository.dart';
+import 'package:avrai/domain/repositories/auth_repository.dart';
 
 class UpdatePasswordUseCase {
   final AuthRepository repository;

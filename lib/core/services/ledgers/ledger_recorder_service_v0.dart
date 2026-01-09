@@ -4,13 +4,13 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:uuid/uuid.dart';
 
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_event_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_op_v0.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_event_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_op_v0.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// Writes v0 ledger events to Supabase with an offline outbox fallback.
 ///

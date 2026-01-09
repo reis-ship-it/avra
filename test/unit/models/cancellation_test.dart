@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/cancellation.dart';
-import 'package:spots/core/models/cancellation_initiator.dart';
-import 'package:spots/core/models/refund_status.dart';
+import 'package:avrai/core/models/cancellation.dart';
+import 'package:avrai/core/models/cancellation_initiator.dart';
+import 'package:avrai/core/models/refund_status.dart';
 
 /// SPOTS Cancellation Model Unit Tests
 /// Date: December 1, 2025

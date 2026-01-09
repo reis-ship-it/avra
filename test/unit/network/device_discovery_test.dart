@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_async/fake_async.dart';
-import 'package:spots_network/network/device_discovery.dart';
+import 'package:avrai_network/network/device_discovery.dart';
 
 class _FakeDeviceDiscoveryPlatform implements DeviceDiscoveryPlatform {
   int scanCalls = 0;

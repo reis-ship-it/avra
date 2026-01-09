@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:spots/app.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/app.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import '../helpers/platform_channel_helper.dart';
 
 /// Basic Integration Tests
@@ -22,6 +22,7 @@ void main() {
         await di.init();
       } catch (e) {
         // DI may fail in test environment, that's okay for basic test
+      // ignore: avoid_print
         print('⚠️  DI initialization failed in test: $e');
       }
     });

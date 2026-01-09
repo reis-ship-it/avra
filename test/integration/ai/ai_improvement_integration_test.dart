@@ -17,12 +17,12 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/settings/ai_improvement_page.dart';
-import 'package:spots/presentation/widgets/settings/ai_improvement_section.dart';
-import 'package:spots/presentation/widgets/settings/ai_improvement_progress_widget.dart';
-import 'package:spots/presentation/widgets/settings/ai_improvement_timeline_widget.dart';
-import 'package:spots/presentation/widgets/settings/ai_improvement_impact_widget.dart';
-import 'package:spots/core/services/ai_improvement_tracking_service.dart';
+import 'package:avrai/presentation/pages/settings/ai_improvement_page.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_section.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_progress_widget.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_timeline_widget.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_impact_widget.dart';
+import 'package:avrai/core/services/ai_improvement_tracking_service.dart';
 import 'package:get_it/get_it.dart';
 import '../../widget/helpers/widget_test_helpers.dart';
 import '../../widget/mocks/mock_blocs.dart';

@@ -10,10 +10,10 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots_network/network/device_discovery.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai_network/network/device_discovery.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// Page for configuring device discovery settings
 class DiscoverySettingsPage extends StatefulWidget {

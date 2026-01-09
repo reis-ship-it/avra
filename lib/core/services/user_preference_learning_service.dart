@@ -1,8 +1,8 @@
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// User Preference Learning Service
 /// 
@@ -141,6 +141,7 @@ class UserPreferenceLearningService {
         tag: _logName,
       );
 
+      // ignore: unused_local_variable - Reserved for future preference-based filtering
       final preferences = await getUserPreferences(user: user);
       final attendedEvents = await _eventService.getEventsByAttendee(user);
 
@@ -215,6 +216,7 @@ class UserPreferenceLearningService {
     if (events.isEmpty) return 0.5; // Neutral if no data
 
     int localExpertEvents = 0;
+    // ignore: unused_local_variable - Reserved for future city-level expertise scoring
     int cityExpertEvents = 0;
     int totalEvents = 0;
 

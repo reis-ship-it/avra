@@ -4,10 +4,10 @@ import 'dart:math' as math;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:spots/weather_config.dart';
+import 'package:avrai/weather_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
 
 /// Collects learning data from all available sources
 ///

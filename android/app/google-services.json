@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "790357806819",
-    "project_id": "spots-app-adea5",
-    "storage_bucket": "spots-app-adea5.firebasestorage.app"
+    "project_number": "736615671406",
+    "project_id": "avrai1",
+    "storage_bucket": "avrai1.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:790357806819:android:c660dc01837241d253ffd6",
+        "mobilesdk_app_id": "1:736615671406:android:ec2f08a5538fa0210e287f",
         "android_client_info": {
-          "package_name": "com.spots.app"
+          "package_name": "com.avrai.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAyVtejIzdA94AwHSgyo2o18g-2wB5-qrs"
+          "current_key": "AIzaSyDNEJIv5Z5kuH9bK03OMZSNYoh7LFgv7HM"
         }
       ],
       "services": {

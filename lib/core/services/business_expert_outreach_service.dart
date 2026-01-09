@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/business_expert_chat_service_ai2ai.dart';
-import 'package:spots/core/models/business_expert_message.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/business_expert_chat_service_ai2ai.dart';
+import 'package:avrai/core/models/business_expert_message.dart';
 
 /// Business-Expert Outreach Service
 ///

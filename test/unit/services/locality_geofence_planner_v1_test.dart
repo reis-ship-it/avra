@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/locality_agents/locality_geofence_planner.dart';
-import 'package:spots/core/services/locality_agents/os_geofence_registrar.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/locality_agents/locality_geofence_planner.dart';
+import 'package:avrai/core/services/locality_agents/os_geofence_registrar.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 import '../../mocks/mock_storage_service.dart';
 

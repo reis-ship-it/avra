@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_knot/services/knot/dynamic_knot_service.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots/core/models/mood_state.dart';
-import 'package:spots_knot/models/dynamic_knot.dart';
+import 'package:avrai_knot/services/knot/dynamic_knot_service.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai/core/models/mood_state.dart';
+import 'package:avrai_knot/models/dynamic_knot.dart';
 
 void main() {
   group('DynamicKnotService Tests', () {

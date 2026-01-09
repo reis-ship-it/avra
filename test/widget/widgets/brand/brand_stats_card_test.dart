@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/brand/brand_stats_card.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/brand/brand_stats_card.dart';
+import 'package:avrai/core/theme/colors.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for BrandStatsCard

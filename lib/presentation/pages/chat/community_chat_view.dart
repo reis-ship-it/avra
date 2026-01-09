@@ -13,15 +13,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/services/community_chat_service.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/services/user_name_resolution_service.dart';
-import 'package:spots/core/models/community.dart';
-import 'package:spots/presentation/widgets/chat/unified_chat_message.dart';
-import 'package:spots/presentation/widgets/chat/message_search_bar.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/services/community_chat_service.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/services/user_name_resolution_service.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/presentation/widgets/chat/unified_chat_message.dart';
+import 'package:avrai/presentation/widgets/chat/message_search_bar.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CommunityChatView extends StatefulWidget {

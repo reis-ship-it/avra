@@ -9,7 +9,7 @@ library;
 
 import 'dart:developer' as developer;
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 class UserNameResolutionService {
   static const String _logName = 'UserNameResolutionService';
@@ -94,6 +94,7 @@ class UserNameResolutionService {
   }
   
   /// Get multiple user info at once
+  // ignore: library_private_types_in_public_api - Internal helper type for caching
   Future<Map<String, _UserInfo>> getUsersInfo(List<String> userIds) async {
     final results = <String, _UserInfo>{};
     

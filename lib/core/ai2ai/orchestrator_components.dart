@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/ai2ai/aipersonality_node.dart';
-import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
-import 'package:spots_network/spots_network.dart';
+import 'package:avrai/core/ai/privacy_protection.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/ai2ai/aipersonality_node.dart';
+import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
+import 'package:avrai_network/avra_network.dart';
 
 /// Supports discovery of nearby AI personalities and prioritization
 class DiscoveryManager {
@@ -214,7 +214,7 @@ class ConnectionManager {
 
   /// Generate learning insights from an offline AI2AI interaction.
   ///
-  /// This lives in the app layer (not `spots_network`) because it depends on the
+  /// This lives in the app layer (not `avra_network`) because it depends on the
   /// app's learning model types and thresholds.
   AI2AILearningInsight _generateOfflineAI2AILearningInsight(
     PersonalityProfile local,

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 
 /// Continuous Learning System Tests
 /// Tests the AI system that learns from everything continuously

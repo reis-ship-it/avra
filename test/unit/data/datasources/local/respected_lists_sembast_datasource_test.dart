@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast.dart';
-import 'package:spots/data/datasources/local/respected_lists_sembast_datasource.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/local/respected_lists_sembast_datasource.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 /// Respected Lists Sembast Data Source Tests
 /// Tests storage of user-respected lists

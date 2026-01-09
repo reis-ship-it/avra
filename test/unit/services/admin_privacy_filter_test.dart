@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/admin_privacy_filter.dart';
+import 'package:avrai/core/services/admin_privacy_filter.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Admin Privacy Filter Tests

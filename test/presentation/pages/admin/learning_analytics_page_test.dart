@@ -4,9 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/presentation/pages/admin/learning_analytics_page.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/presentation/pages/admin/learning_analytics_page.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 
 void main() {
   group('LearningAnalyticsPage', () {

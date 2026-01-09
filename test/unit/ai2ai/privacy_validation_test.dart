@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai2ai/anonymous_communication.dart' as anonymous_communication;
-import 'package:spots/core/ai2ai/trust_network.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
-import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai/core/ai2ai/anonymous_communication.dart' as anonymous_communication;
+import 'package:avrai/core/ai2ai/trust_network.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
+import 'package:avrai/core/ai/privacy_protection.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 
 /// Comprehensive Privacy Validation Tests for AI2AI System
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"

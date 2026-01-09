@@ -2,35 +2,35 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:go_router/go_router.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/services/device_capability_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_auto_install_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_provisioning_state_service.dart';
-import 'package:spots/core/services/on_device_ai_capability_gate.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/pages/onboarding/favorite_places_page.dart';
-import 'package:spots/presentation/pages/onboarding/friends_respect_page.dart';
-import 'package:spots/presentation/pages/onboarding/social_media_connection_page.dart';
-import 'package:spots/presentation/pages/onboarding/homebase_selection_page.dart';
-import 'package:spots/presentation/pages/onboarding/preference_survey_page.dart';
-import 'package:spots/presentation/pages/onboarding/baseline_lists_page.dart';
-import 'package:spots/presentation/pages/onboarding/onboarding_step.dart';
-import 'package:spots/presentation/pages/onboarding/legal_acceptance_dialog.dart';
-import 'package:spots/core/services/legal_document_service.dart';
+import 'package:avrai/core/services/device_capability_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_auto_install_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_provisioning_state_service.dart';
+import 'package:avrai/core/services/on_device_ai_capability_gate.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/pages/onboarding/favorite_places_page.dart';
+import 'package:avrai/presentation/pages/onboarding/friends_respect_page.dart';
+import 'package:avrai/presentation/pages/onboarding/social_media_connection_page.dart';
+import 'package:avrai/presentation/pages/onboarding/homebase_selection_page.dart';
+import 'package:avrai/presentation/pages/onboarding/preference_survey_page.dart';
+import 'package:avrai/presentation/pages/onboarding/baseline_lists_page.dart';
+import 'package:avrai/presentation/pages/onboarding/onboarding_step.dart';
+import 'package:avrai/presentation/pages/onboarding/legal_acceptance_dialog.dart';
+import 'package:avrai/core/services/legal_document_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/presentation/pages/onboarding/age_collection_page.dart';
-import 'package:spots/presentation/pages/onboarding/welcome_page.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/controllers/onboarding_flow_controller.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/services/ledgers/proof_run_service_v0.dart';
+import 'package:avrai/presentation/pages/onboarding/age_collection_page.dart';
+import 'package:avrai/presentation/pages/onboarding/welcome_page.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/controllers/onboarding_flow_controller.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/services/ledgers/proof_run_service_v0.dart';
 
 enum OnboardingStepType {
   welcome,
@@ -196,7 +196,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   final runId = existing ?? await proof.startRun(payload: const {
                     'started_from': 'onboarding',
                   });
-                  if (!mounted) return;
+                  if (!mounted || !context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -212,7 +212,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     error: e,
                     stackTrace: st,
                   );
-                  if (!mounted) return;
+                  if (!mounted || !context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Proof run start failed: $e'),
@@ -607,12 +607,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
       );
 
       // Use OnboardingFlowController to complete workflow
+      if (!mounted) return;
       final controller = di.sl<OnboardingFlowController>();
       final result = await controller.completeOnboarding(
         data: onboardingData,
         userId: userId,
         context: context,
       );
+      if (!mounted) return;
 
       // Handle controller result
       if (!result.isSuccess) {
@@ -725,7 +727,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             if (const bool.fromEnvironment('FLUTTER_TEST')) {
               // Helpful signal in integration test output.
               // ignore: avoid_print
-              print('TEST: OnboardingPage -> /ai-loading');
+              developer.log('TEST: OnboardingPage -> /ai-loading', name: 'onuoardingpage');
             }
 
             // Get user name from auth state
@@ -880,6 +882,7 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
           await legalService.hasAcceptedPrivacyPolicy(authState.user.id);
 
       if (!hasAcceptedTerms || !hasAcceptedPrivacy) {
+        if (!mounted) return;
         final accepted = await showDialog<bool>(
           context: context,
           barrierDismissible: false,
@@ -888,6 +891,7 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
             requirePrivacy: !hasAcceptedPrivacy,
           ),
         );
+        if (!mounted) return;
 
         if (accepted == true) {
           await _checkLegalStatus();

@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/user.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/core/models/spot.dart';
 
 /// OUR_GUTS.md: "Always Learning With You"
 /// Processes user feedback to continuously improve recommendations

@@ -1,6 +1,6 @@
-import 'package:spots/core/models/social_media_connection.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/social_media_connection.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

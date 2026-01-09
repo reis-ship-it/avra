@@ -1,7 +1,7 @@
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Sales Tax Calculation Result

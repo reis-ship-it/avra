@@ -17,12 +17,12 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:spots/core/p2p/federated_learning.dart';
-import 'package:spots/core/monitoring/network_analytics.dart' as analytics;
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
-import 'package:spots/presentation/widgets/settings/federated_learning_status_widget.dart';
-import 'package:spots/presentation/widgets/settings/federated_participation_history_widget.dart' as history_widget;
-import 'package:spots/presentation/widgets/settings/privacy_metrics_widget.dart';
+import 'package:avrai/core/p2p/federated_learning.dart';
+import 'package:avrai/core/monitoring/network_analytics.dart' as analytics;
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/presentation/widgets/settings/federated_learning_status_widget.dart';
+import 'package:avrai/presentation/widgets/settings/federated_participation_history_widget.dart' as history_widget;
+import 'package:avrai/presentation/widgets/settings/privacy_metrics_widget.dart';
 import '../../helpers/platform_channel_helper.dart';
 import '../../widget/helpers/widget_test_helpers.dart';
 import '../../mocks/mock_storage_service.dart';
@@ -233,6 +233,8 @@ void main() {
           type: LearningType.recommendation,
           parameters: {},
         );
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final round = await federatedLearningSystem.initializeLearningRound(
           'test_org',
           objective,
@@ -272,8 +274,11 @@ void main() {
         // Just verify the widget is present and rendered
       });
 
+      // ignore: unused_local_variable
       testWidgets('PrivacyMetricsWidget should display metrics', (WidgetTester tester) async {
         // Arrange
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final privacyMetrics = analytics.PrivacyMetrics.secure();
 
         // PrivacyMetricsWidget loads metrics internally via GetIt

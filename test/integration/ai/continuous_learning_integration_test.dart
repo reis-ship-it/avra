@@ -19,9 +19,9 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/presentation/pages/settings/continuous_learning_page.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/presentation/pages/settings/continuous_learning_page.dart';
 import '../../widget/helpers/widget_test_helpers.dart';
 import '../../widget/mocks/mock_blocs.dart';
 
@@ -268,10 +268,12 @@ void main() {
         // NOTE: This test is skipped due to Timer.periodic hanging issues
         // The page creates its own ContinuousLearningSystem instance, making it difficult to test
         // UI integration is covered in "UI Controls Integration" tests
+        // TODO: Implement when ContinuousLearningSystem is ready for integration tests
         return;
 
         // Test business logic: status widget shows real data from backend
         // Arrange
+        // ignore: dead_code - Reserved for future test implementation
         await learningSystem.initialize();
         await learningSystem.startContinuousLearning();
 
@@ -379,9 +381,12 @@ void main() {
         // NOTE: This test is skipped due to page initialization complexity in test environment
         // The page creates its own ContinuousLearningSystem instance which may conflict with test setup
         // UI integration is covered in other tests (UI Controls Integration group)
+        // TODO: Implement when ContinuousLearningSystem is ready for integration tests
         return;
+
         // Test business logic: complete user journey works end-to-end
         // Arrange
+        // ignore: dead_code - Reserved for future test implementation
         await learningSystem.initialize();
 
         // Inject the test's learningSystem instance so page uses same instance

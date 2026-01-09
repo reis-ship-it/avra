@@ -1,15 +1,17 @@
 import 'dart:math' as math;
 
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/post_event_feedback_service.dart';
-import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/post_event_feedback_service.dart';
+import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/quantum/quantum_matching_integration_service.dart';
+import 'package:avrai/core/services/feature_flag_service.dart';
 
 /// Event Matching Service
 ///
@@ -49,6 +51,11 @@ class EventMatchingService {
   final PostEventFeedbackService? _feedbackService;
   final SocialMediaConnectionService? _socialMediaConnectionService;
   final SupabaseService _supabaseService;
+  final QuantumMatchingIntegrationService? _quantumIntegrationService;
+  final FeatureFlagService? _featureFlags;
+
+  // Feature flag name for quantum event matching
+  static const String _quantumEventMatchingFlag = 'phase19_quantum_event_matching';
 
   EventMatchingService({
     ExpertiseEventService? eventService,
@@ -57,12 +64,16 @@ class EventMatchingService {
     PostEventFeedbackService? feedbackService,
     SocialMediaConnectionService? socialMediaConnectionService,
     SupabaseService? supabaseService,
+    QuantumMatchingIntegrationService? quantumIntegrationService,
+    FeatureFlagService? featureFlags,
   })  : _eventService = eventService ?? ExpertiseEventService(),
         _knotRecommendationEngine = knotRecommendationEngine,
         _personalityLearning = personalityLearning,
         _feedbackService = feedbackService,
         _socialMediaConnectionService = socialMediaConnectionService,
-        _supabaseService = supabaseService ?? SupabaseService();
+        _supabaseService = supabaseService ?? SupabaseService(),
+        _quantumIntegrationService = quantumIntegrationService,
+        _featureFlags = featureFlags;
 
   /// Calculate matching score for an expert hosting events
   ///
@@ -78,6 +89,11 @@ class EventMatchingService {
   /// **Philosophy:**
   /// This is NOT a competitive ranking. It's a matching signal to help users
   /// find likeminded people and events they'll enjoy.
+  ///
+  /// **Phase 19.15 Integration:**
+  /// - Uses quantum entanglement matching if enabled via feature flag
+  /// - Falls back to classical method if quantum matching is disabled or fails
+  /// - Maintains backward compatibility
   Future<double> calculateMatchingScore({
     required UnifiedUser expert,
     required UnifiedUser user,
@@ -90,59 +106,131 @@ class EventMatchingService {
         tag: _logName,
       );
 
-      // Get matching signals
-      final signals = await getMatchingSignals(
+      // Phase 19.15: Try quantum matching first (if enabled)
+      if (_quantumIntegrationService != null && _featureFlags != null) {
+        final isQuantumEnabled = await _featureFlags!.isEnabled(
+          _quantumEventMatchingFlag,
+          userId: user.id,
+          defaultValue: false,
+        );
+
+        if (isQuantumEnabled) {
+          try {
+            // Get expert's events for quantum matching context
+            final expertEvents = await _eventService.getEventsByHost(expert);
+            if (expertEvents.isNotEmpty) {
+              // Use the most recent or upcoming event for quantum matching
+              final eventForMatching = expertEvents.first;
+
+              final quantumResult = await _quantumIntegrationService!
+                  .calculateUserEventCompatibility(
+                user: user,
+                event: eventForMatching,
+              );
+
+              if (quantumResult != null) {
+                // Quantum matching successful - use it as base score
+                // Combine with classical signals for locality-specific weighting
+                final classicalScore = await _calculateClassicalMatchingScore(
+                  expert: expert,
+                  user: user,
+                  category: category,
+                  locality: locality,
+                );
+
+                // Hybrid approach: 60% quantum, 40% classical (maintains locality weighting)
+                final hybridScore = 0.6 * quantumResult.compatibility +
+                    0.4 * classicalScore;
+
+                _logger.info(
+                  'Quantum matching used: quantum=${quantumResult.compatibility.toStringAsFixed(3)}, classical=${classicalScore.toStringAsFixed(3)}, hybrid=${hybridScore.toStringAsFixed(3)}',
+                  tag: _logName,
+                );
+
+                return hybridScore.clamp(0.0, 1.0);
+              }
+            }
+          } catch (e) {
+            _logger.warn(
+              'Quantum matching failed, falling back to classical: $e',
+              tag: _logName,
+            );
+            // Fall through to classical method
+          }
+        }
+      }
+
+      // Classical method (backward compatibility)
+      return await _calculateClassicalMatchingScore(
         expert: expert,
         user: user,
         category: category,
         locality: locality,
       );
-
-      // If we couldn't compute any signals (e.g., event service failure),
-      // don't apply optional knot compatibility. Return 0.0 for a clear
-      // "no match signal available" result.
-      if (signals.localityWeight == 0.0) {
-        return 0.0;
-      }
-
-      // Calculate weighted score based on locality-specific weighting
-      double score = 0.0;
-
-      // Events hosted (28% weight, reduced from 30% to make room for knot compatibility)
-      score += signals.eventsHostedScore * 0.28;
-
-      // Event ratings (23% weight, reduced from 25%)
-      // Normalize 1-5 star rating to 0-1 score.
-      score += ((signals.averageRating / 5.0).clamp(0.0, 1.0)) * 0.23;
-
-      // Followers count (14% weight, reduced from 15%)
-      score += signals.followersScore * 0.14;
-
-      // External social following (5% weight - if available)
-      score += signals.externalSocialScore * 0.05;
-
-      // Community recognition (9% weight, reduced from 10%)
-      score += signals.communityRecognitionScore * 0.09;
-
-      // Event growth (9% weight, reduced from 10%)
-      score += signals.eventGrowthScore * 0.09;
-
-      // Active list respects (5% weight)
-      score += signals.activeListRespectsScore * 0.05;
-
-      // Knot compatibility (7% weight - optional enhancement)
-      final knotScore = await _calculateKnotCompatibilityScore(
-        expert: expert,
-        user: user,
-      );
-      score += knotScore * 0.07;
-
-      return score.clamp(0.0, 1.0);
     } catch (e) {
       _logger.error('Error calculating matching score',
           error: e, tag: _logName);
       return 0.0;
     }
+  }
+
+  /// Calculate classical matching score (original implementation)
+  ///
+  /// **Phase 19.15:** Extracted to separate method for backward compatibility
+  Future<double> _calculateClassicalMatchingScore({
+    required UnifiedUser expert,
+    required UnifiedUser user,
+    required String category,
+    required String locality,
+  }) async {
+    // Get matching signals
+    final signals = await getMatchingSignals(
+      expert: expert,
+      user: user,
+      category: category,
+      locality: locality,
+    );
+
+    // If we couldn't compute any signals (e.g., event service failure),
+    // don't apply optional knot compatibility. Return 0.0 for a clear
+    // "no match signal available" result.
+    if (signals.localityWeight == 0.0) {
+      return 0.0;
+    }
+
+    // Calculate weighted score based on locality-specific weighting
+    double score = 0.0;
+
+    // Events hosted (28% weight, reduced from 30% to make room for knot compatibility)
+    score += signals.eventsHostedScore * 0.28;
+
+    // Event ratings (23% weight, reduced from 25%)
+    // Normalize 1-5 star rating to 0-1 score.
+    score += ((signals.averageRating / 5.0).clamp(0.0, 1.0)) * 0.23;
+
+    // Followers count (14% weight, reduced from 15%)
+    score += signals.followersScore * 0.14;
+
+    // External social following (5% weight - if available)
+    score += signals.externalSocialScore * 0.05;
+
+    // Community recognition (9% weight, reduced from 10%)
+    score += signals.communityRecognitionScore * 0.09;
+
+    // Event growth (9% weight, reduced from 10%)
+    score += signals.eventGrowthScore * 0.09;
+
+    // Active list respects (5% weight)
+    score += signals.activeListRespectsScore * 0.05;
+
+    // Knot compatibility (7% weight - optional enhancement)
+    final knotScore = await _calculateKnotCompatibilityScore(
+      expert: expert,
+      user: user,
+    );
+    score += knotScore * 0.07;
+
+    return score.clamp(0.0, 1.0);
   }
 
   /// Calculate knot compatibility score for event matching

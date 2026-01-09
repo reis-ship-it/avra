@@ -4,8 +4,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as developer;
-import 'package:spots/core/ai/interaction_events.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/ai/interaction_events.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 /// Event queue for offline event storage and batch submission

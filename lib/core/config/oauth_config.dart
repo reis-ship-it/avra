@@ -119,9 +119,8 @@ class OAuthConfig {
   );
 
   // Redirect URI Configuration
-  static const String redirectUriScheme = 'spots';
-  static String getRedirectUri(String platform) =>
-      '$redirectUriScheme://oauth/$platform/callback';
+  static const String redirectUriScheme = 'avrai';
+  static String getRedirectUri(String platform) => '$redirectUriScheme://oauth';
 
   // OAuth Scopes
   static const List<String> googleScopes = [
@@ -232,9 +231,7 @@ class OAuthConfig {
 
   /// Check if Are.na OAuth is configured
   static bool get isArenaConfigured =>
-      useRealOAuth &&
-      arenaClientId.isNotEmpty &&
-      arenaClientSecret.isNotEmpty;
+      useRealOAuth && arenaClientId.isNotEmpty && arenaClientSecret.isNotEmpty;
 
   /// Check if LinkedIn OAuth is configured
   static bool get isLinkedInConfigured =>
@@ -340,4 +337,3 @@ class OAuthConfig {
     }
   }
 }
-

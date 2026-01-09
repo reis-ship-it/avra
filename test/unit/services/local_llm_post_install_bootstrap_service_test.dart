@@ -1,15 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/models/onboarding_suggestion_event.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
-import 'package:spots/core/services/local_llm/model_pack_manager.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/onboarding_suggestion_event_store.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/models/onboarding_suggestion_event.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
+import 'package:avrai/core/services/local_llm/model_pack_manager.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/services/onboarding_suggestion_event_store.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 import '../../helpers/platform_channel_helper.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
 
 class EditListPage extends StatefulWidget {
   final SpotList list;
@@ -373,9 +373,10 @@ class _EditListPageState extends State<EditListPage> {
                       child: OutlinedButton(
                         onPressed: () async {
                           final shouldDiscard = await _onWillPop();
-                          if (shouldDiscard && mounted) {
-                            Navigator.pop(context);
-                          }
+                          if (!mounted) return;
+                          if (!shouldDiscard) return;
+                          if (!context.mounted) return;
+                          Navigator.pop(context);
                         },
                         child: const Text('Cancel'),
                       ),

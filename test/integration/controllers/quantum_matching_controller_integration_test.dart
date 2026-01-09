@@ -4,14 +4,14 @@
 // Part of Phase 19 Section 19.5: Quantum Matching Controller
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/controllers/quantum_matching_controller.dart';
-import 'package:spots/core/models/matching_input.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/controllers/quantum_matching_controller.dart';
+import 'package:avrai/core/models/matching_input.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/injection_container.dart' as di;
 import '../../helpers/platform_channel_helper.dart';
 import '../../helpers/integration_test_helpers.dart';
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/legal/event_waiver.dart';
-import 'package:spots/core/services/legal_document_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/legal/event_waiver.dart';
+import 'package:avrai/core/services/legal_document_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 
 /// Event Waiver Page
 /// 

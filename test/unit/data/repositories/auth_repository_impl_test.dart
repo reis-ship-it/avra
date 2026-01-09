@@ -2,10 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/data/repositories/auth_repository_impl.dart';
-import 'package:spots/data/datasources/local/auth_local_datasource.dart';
-import 'package:spots/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/data/repositories/auth_repository_impl.dart';
+import 'package:avrai/data/datasources/local/auth_local_datasource.dart';
+import 'package:avrai/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:avrai/core/models/user.dart';
 
 import 'auth_repository_impl_test.mocks.dart';
 

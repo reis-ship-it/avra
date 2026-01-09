@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/event_feedback.dart';
-import 'package:spots/core/models/review_fraud_score.dart';
-import 'package:spots/core/models/fraud_recommendation.dart';
-import 'package:spots/core/services/review_fraud_detection_service.dart';
-import 'package:spots/core/services/post_event_feedback_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/models/event_feedback.dart';
+import 'package:avrai/core/models/review_fraud_score.dart';
+import 'package:avrai/core/models/fraud_recommendation.dart';
+import 'package:avrai/core/services/review_fraud_detection_service.dart';
+import 'package:avrai/core/services/post_event_feedback_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Review Fraud Review Page (Admin)
 /// 

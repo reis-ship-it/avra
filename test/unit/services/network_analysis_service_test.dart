@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/network_analysis_service.dart';
+import 'package:avrai/core/services/network_analysis_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// SPOTS Network Analysis Service Tests
@@ -17,6 +17,8 @@ import '../../helpers/platform_channel_helper.dart';
 
 void main() {
   group('NetworkAnalysisService', () {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late NetworkAnalysisService service;
 
     setUp(() {

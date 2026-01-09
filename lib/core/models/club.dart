@@ -1,6 +1,6 @@
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/models/club_hierarchy.dart';
-import 'package:spots/core/models/geographic_expansion.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/models/club_hierarchy.dart';
+import 'package:avrai/core/models/geographic_expansion.dart';
 
 /// Club Model
 /// 

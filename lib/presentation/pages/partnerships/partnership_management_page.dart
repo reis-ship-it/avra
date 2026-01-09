@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/widgets/partnerships/partnership_card.dart';
-import 'package:spots/presentation/widgets/partnerships/compatibility_badge.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/partnerships/partnership_card.dart';
+import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 import 'package:get_it/get_it.dart';
 
 /// Partnership Management Page
@@ -137,6 +137,7 @@ class _PartnershipManagementPageState extends State<PartnershipManagementPage> w
     }
   }
 
+  // ignore: unused_element - Reserved for future partnership filtering
   List<EventPartnership> _getPartnershipsByStatus(PartnershipStatus status) {
     return _allPartnerships.where((p) => p.status == status).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));

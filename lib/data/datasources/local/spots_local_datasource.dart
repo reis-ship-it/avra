@@ -1,4 +1,4 @@
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/spot.dart';
 abstract class SpotsLocalDataSource {
   Future<List<Spot>> getAllSpots();
   Future<Spot?> getSpotById(String id);

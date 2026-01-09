@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/spot.dart';
 
 /// Expertise Event Model
 /// OUR_GUTS.md: "Pins unlock new features, like event hosting"

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
-import 'package:spots/presentation/pages/spots/spot_details_page.dart';
-import 'package:spots/presentation/widgets/common/standard_error_widget.dart';
-import 'package:spots/presentation/widgets/common/standard_loading_widget.dart';
-import 'package:spots/presentation/widgets/common/source_indicator_widget.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/presentation/blocs/search/hybrid_search_bloc.dart';
+import 'package:avrai/presentation/pages/spots/spot_details_page.dart';
+import 'package:avrai/presentation/widgets/common/standard_error_widget.dart';
+import 'package:avrai/presentation/widgets/common/standard_loading_widget.dart';
+import 'package:avrai/presentation/widgets/common/source_indicator_widget.dart';
 
 class HybridSearchResults extends StatelessWidget {
   const HybridSearchResults({super.key});

@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:spots/core/services/event_recommendation_service.dart'
+import 'package:avrai/core/services/event_recommendation_service.dart'
     as recommendation_service;
-import 'package:spots/core/services/user_preference_learning_service.dart';
-import 'package:spots/core/services/event_matching_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/event_recommendation.dart';
+import 'package:avrai/core/services/user_preference_learning_service.dart';
+import 'package:avrai/core/services/event_matching_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/event_recommendation.dart';
 import '../../helpers/integration_test_helpers.dart';
 
 import 'event_recommendation_service_test.mocks.dart';

@@ -5,9 +5,9 @@
 // Optional Enhancement: Heatmaps
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots_knot/models/knot/knot_pattern_analysis.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai_knot/models/knot/knot_pattern_analysis.dart';
 
 /// Heatmap widget for pattern strength visualization
 class KnotPatternHeatmap extends StatelessWidget {
@@ -37,6 +37,7 @@ class KnotPatternHeatmap extends StatelessWidget {
 
     // Calculate grid dimensions
     const columns = 4;
+    // ignore: unused_local_variable - Reserved for future grid layout calculations
     final rows = (sortedPatterns.length / columns).ceil();
 
     return Column(

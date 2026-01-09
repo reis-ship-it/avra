@@ -1,6 +1,6 @@
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Expert Search Service
 /// Enables finding experts by category, location, and level

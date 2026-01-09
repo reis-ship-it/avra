@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/config/stripe_config.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/config/stripe_config.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// SPOTS StripeService Unit Tests

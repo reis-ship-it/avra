@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/security_validator.dart';
+import 'package:avrai/core/services/security_validator.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {

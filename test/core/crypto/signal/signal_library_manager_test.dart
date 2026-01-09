@@ -5,8 +5,8 @@
 import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/crypto/signal/signal_library_manager.dart';
-import 'package:spots/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_library_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
 
 void main() {
   group('SignalLibraryManager', () {

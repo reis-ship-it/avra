@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_ai/models/contextual_personality.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_core/models/contextual_personality.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
 
 /// OUR_GUTS.md: "Your doors stay yours"
 /// Phase 3: Admin UI for Contextual Personality Visualization

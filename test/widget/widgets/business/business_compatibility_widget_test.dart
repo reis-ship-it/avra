@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/business/business_compatibility_widget.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_patron_preferences.dart';
+import 'package:avrai/presentation/widgets/business/business_compatibility_widget.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_patron_preferences.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../helpers/test_helpers.dart';
 

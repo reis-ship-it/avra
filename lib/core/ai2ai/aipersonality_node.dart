@@ -1,4 +1,4 @@
-import 'package:spots/core/models/user_vibe.dart';
+import 'package:avrai/core/models/user_vibe.dart';
 
 class AIPersonalityNode {
   final String nodeId;

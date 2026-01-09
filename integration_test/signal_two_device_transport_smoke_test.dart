@@ -9,22 +9,22 @@ import 'package:sembast/sembast_memory.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:spots/core/crypto/aes256gcm_fixed_key_codec.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_store_callbacks.dart';
-import 'package:spots/core/crypto/signal/signal_key_manager.dart';
-import 'package:spots/core/crypto/signal/signal_platform_bridge_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_protocol_service.dart';
-import 'package:spots/core/crypto/signal/signal_rust_wrapper_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_session_manager.dart';
-import 'package:spots/core/crypto/signal/signal_types.dart';
-import 'package:spots/core/services/community_message_store.dart';
-import 'package:spots/core/services/dm_message_store.dart';
-import 'package:spots/core/services/ledgers/ledger_audit_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/supabase_config.dart';
+import 'package:avrai/core/crypto/aes256gcm_fixed_key_codec.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_store_callbacks.dart';
+import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_platform_bridge_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_protocol_service.dart';
+import 'package:avrai/core/crypto/signal/signal_rust_wrapper_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/services/community_message_store.dart';
+import 'package:avrai/core/services/dm_message_store.dart';
+import 'package:avrai/core/services/ledgers/ledger_audit_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/supabase_config.dart';
 
 import '../test/mocks/in_memory_flutter_secure_storage.dart';
 

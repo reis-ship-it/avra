@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/ai_learning_demo.dart';
+import 'package:avrai/core/ai/ai_learning_demo.dart';
 
 /// AI Learning Demo Tests
 /// Tests the demo/example file that shows how to use the AI learning system

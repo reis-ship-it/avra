@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/expertise_community_service.dart';
-import 'package:spots/core/models/expertise_community.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/services/expertise_community_service.dart';
+import 'package:avrai/core/models/expertise_community.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/platform_channel_helper.dart';
 

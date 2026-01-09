@@ -4,11 +4,11 @@
 // Patent #29: Multi-Entity Quantum Entanglement Matching System
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/quantum/entanglement_coefficient_optimizer.dart';
-import 'package:spots/core/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/quantum/entanglement_coefficient_optimizer.dart';
+import 'package:avrai/core/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
 
 void main() {
   group('EntanglementCoefficientOptimizer', () {
@@ -26,8 +26,6 @@ void main() {
       optimizer = EntanglementCoefficientOptimizer(
         atomicClock: atomicClock,
         entanglementService: entanglementService,
-        knotEngine: null,
-        knotCompatibilityService: null,
       );
     });
 
@@ -36,6 +34,8 @@ void main() {
 
       final tAtomic1 = await atomicClock.getAtomicTimestamp();
       final tAtomic2 = await atomicClock.getAtomicTimestamp();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       final tAtomic3 = await atomicClock.getAtomicTimestamp();
 
       final entity1 = QuantumEntityState(

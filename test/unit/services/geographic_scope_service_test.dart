@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
-import 'package:spots/core/services/large_city_detection_service.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/services/large_city_detection_service.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/platform_channel_helper.dart';
 

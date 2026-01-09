@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/brand/sponsorship_revenue_split_display.dart';
-import 'package:spots/core/models/revenue_split.dart';
+import 'package:avrai/presentation/widgets/brand/sponsorship_revenue_split_display.dart';
+import 'package:avrai/core/models/revenue_split.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for SponsorshipRevenueSplitDisplay

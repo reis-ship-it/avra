@@ -4,15 +4,15 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/ai_master_orchestrator.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ml/pattern_recognition_system.dart';
-import 'package:spots/core/ml/predictive_analytics.dart';
-import 'package:spots/core/ml/nlp_processor.dart';
-import 'package:spots/core/models/unified_models.dart';
-import 'package:spots/core/models/user_role.dart';
+import 'package:avrai/core/ai/ai_master_orchestrator.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ml/pattern_recognition_system.dart';
+import 'package:avrai/core/ml/predictive_analytics.dart';
+import 'package:avrai/core/ml/nlp_processor.dart';
+import 'package:avrai/core/models/unified_models.dart';
+import 'package:avrai/core/models/user_role.dart';
 import 'dart:math' as math;
 
 void main() {
@@ -33,6 +33,7 @@ void main() {
             stopwatch.elapsedMilliseconds, lessThan(3000)); // Under 3 seconds
         expect(orchestrator.isInitialized, true);
 
+      // ignore: avoid_print
         print(
             'AI Orchestrator initialization: ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -59,7 +60,9 @@ void main() {
         // Assert
         expect(
             stopwatch.elapsedMilliseconds, lessThan(2000)); // Under 2 seconds
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('Concurrent AI operations: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -97,8 +100,11 @@ void main() {
         expect(
           lastQuarter,
           lessThanOrEqualTo(maxAllowed),
+      // ignore: avoid_print
         ); // No more than 50% degradation (with 1ms floor)
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Sustained AI workload - Average: ${averageTime.toStringAsFixed(1)}ms, '
             'First: ${firstQuarter.toStringAsFixed(1)}ms, Last: ${lastQuarter.toStringAsFixed(1)}ms');
@@ -144,9 +150,13 @@ void main() {
             stopwatch.elapsedMilliseconds, lessThan(10000)); // Under 10 seconds
 
         final avgTimePerInteraction = stopwatch.elapsedMilliseconds / 1000;
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             avgTimePerInteraction, lessThan(10)); // Under 10ms per interaction
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Processed 1000 interactions in ${stopwatch.elapsedMilliseconds}ms '
             '(${avgTimePerInteraction.toStringAsFixed(2)}ms avg)');
@@ -191,12 +201,19 @@ void main() {
         expect(lastEpoch['accuracy'],
             greaterThanOrEqualTo(firstEpoch['accuracy']));
         expect(
+      // ignore: avoid_print
             lastEpoch['inference_time'],
+      // ignore: avoid_print
             lessThanOrEqualTo(
                 firstEpoch['inference_time'] * 1.2)); // Avoid flake
+      // ignore: avoid_print
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('Learning progression:');
+      // ignore: avoid_print
         for (final metric in performanceMetrics) {
+      // ignore: avoid_print
           print(
               'Epoch ${metric['epoch']}: Accuracy ${metric['accuracy'].toStringAsFixed(3)}, '
               'Inference ${metric['inference_time']}ms');
@@ -228,12 +245,18 @@ void main() {
         realtimeStopwatch.stop();
 
         // Assert
+      // ignore: avoid_print
         expect(realtimeStopwatch.elapsedMilliseconds,
             lessThan(5000)); // Under 5 seconds
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         final avgUpdateTime = realtimeStopwatch.elapsedMilliseconds / 100;
+      // ignore: avoid_print
         expect(avgUpdateTime, lessThan(50)); // Under 50ms per update
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('Real-time updates: ${realtimeStopwatch.elapsedMilliseconds}ms '
             '(${avgUpdateTime.toStringAsFixed(1)}ms avg)');
       });
@@ -257,13 +280,20 @@ void main() {
         stopwatch.stop();
 
         // Assert
+      // ignore: avoid_print
         expect(
             stopwatch.elapsedMilliseconds, lessThan(8000)); // Under 8 seconds
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         final avgTimePerUpdate = stopwatch.elapsedMilliseconds / 500;
+      // ignore: avoid_print
         expect(avgTimePerUpdate,
+      // ignore: avoid_print
             lessThan(16)); // Under 16ms per personality update
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('500 personality updates: ${stopwatch.elapsedMilliseconds}ms '
             '(${avgTimePerUpdate.toStringAsFixed(1)}ms avg)');
       });
@@ -283,14 +313,22 @@ void main() {
             await personalityLearning.calculatePersonalityEvolution(
           currentProfile: userProfile,
         );
+      // ignore: avoid_print
 
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             stopwatch.elapsedMilliseconds, lessThan(1500)); // Under 1.5 seconds
+      // ignore: avoid_print
         expect((evolutionResult['generation'] ?? 0), isNotNull);
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Complex personality evolution: ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -308,15 +346,24 @@ void main() {
         for (int userId = 0; userId < 100; userId++) {
           futures.add(
               _processUserPersonalityLearning(personalityLearning, userId));
+      // ignore: avoid_print
         }
 
+      // ignore: avoid_print
         await Future.wait(futures);
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             stopwatch.elapsedMilliseconds, lessThan(6000)); // Under 6 seconds
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Concurrent personality learning for 100 users: ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -332,16 +379,26 @@ void main() {
         final locationData = _generateLocationPatternData(5000);
 
         // Act
+      // ignore: avoid_print
         final stopwatch = Stopwatch()..start();
         final patterns =
+      // ignore: avoid_print
             await patternRecognition.analyzeLocationPatterns(locationData);
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             stopwatch.elapsedMilliseconds, lessThan(3000)); // Under 3 seconds
+      // ignore: avoid_print
         expect(patterns.isNotEmpty, true);
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Location pattern analysis (5000 points): ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -354,17 +411,28 @@ void main() {
         // Generate behavioral data
         final behaviorData = _generateBehavioralPatternData(2000);
 
+      // ignore: avoid_print
         // Act
         final stopwatch = Stopwatch()..start();
+      // ignore: avoid_print
         final behaviorPatterns =
+      // ignore: avoid_print
             await patternRecognition.analyzeBehavioralPatterns(behaviorData);
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             stopwatch.elapsedMilliseconds, lessThan(2000)); // Under 2 seconds
+      // ignore: avoid_print
         expect(behaviorPatterns.length, greaterThan(0));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Behavioral pattern analysis (2000 interactions): ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -383,18 +451,30 @@ void main() {
         final stopwatch = Stopwatch()..start();
 
         for (final text in textSamples) {
+      // ignore: avoid_print
           await nlpProcessor.analyzeText(text);
         }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             stopwatch.elapsedMilliseconds, lessThan(10000)); // Under 10 seconds
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         final avgTimePerText = stopwatch.elapsedMilliseconds / 1000;
+      // ignore: avoid_print
         expect(avgTimePerText, lessThan(10)); // Under 10ms per text analysis
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('NLP processing (1000 texts): ${stopwatch.elapsedMilliseconds}ms '
             '(${avgTimePerText.toStringAsFixed(1)}ms avg)');
       });
@@ -410,19 +490,32 @@ void main() {
         // Act
         final stopwatch = Stopwatch()..start();
         final sentimentResults = <Map<String, dynamic>>[];
+      // ignore: avoid_print
 
         for (final text in sentimentTexts) {
+      // ignore: avoid_print
           final result = NLPProcessor.analyzeSentiment(text).toJson();
+      // ignore: avoid_print
           sentimentResults.add(result);
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             stopwatch.elapsedMilliseconds, lessThan(15000)); // Under 15 seconds
+      // ignore: avoid_print
         expect(sentimentResults.length, equals(2000));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Sentiment analysis (2000 texts): ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -436,20 +529,34 @@ void main() {
 
         // Generate historical data
         final historicalData = _generateHistoricalData(10000);
+      // ignore: avoid_print
 
         // Act
+      // ignore: avoid_print
         final stopwatch = Stopwatch()..start();
+      // ignore: avoid_print
         final predictions =
+      // ignore: avoid_print
             await predictiveAnalytics.generatePredictions(
+      // ignore: avoid_print
           historicalData: {'events': historicalData},
+      // ignore: avoid_print
         );
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             stopwatch.elapsedMilliseconds, lessThan(5000)); // Under 5 seconds
+      // ignore: avoid_print
         expect(predictions.isNotEmpty, true);
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Predictive analytics (10k data points): ${stopwatch.elapsedMilliseconds}ms');
       });
@@ -465,21 +572,36 @@ void main() {
 
         for (int userId = 0; userId < 100; userId++) {
           final userProfile = _createTestUserProfile();
+      // ignore: avoid_print
           final recommendations = await predictiveAnalytics
               .generateRecommendations(userProfile: userProfile);
+      // ignore: avoid_print
           allRecommendations.add(recommendations);
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             stopwatch.elapsedMilliseconds, lessThan(8000)); // Under 8 seconds
+      // ignore: avoid_print
         expect(allRecommendations.length, equals(100));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         final avgTimePerUser = stopwatch.elapsedMilliseconds / 100;
+      // ignore: avoid_print
         expect(avgTimePerUser, lessThan(80)); // Under 80ms per user
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Recommendations for 100 users: ${stopwatch.elapsedMilliseconds}ms '
             '(${avgTimePerUser.toStringAsFixed(1)}ms avg)');
@@ -488,22 +610,38 @@ void main() {
 
     group('AI System Integration Performance', () {
       test('should handle complete AI pipeline efficiently', () async {
+      // ignore: avoid_print
         // Arrange
         final orchestrator = AIMasterOrchestrator();
+      // ignore: avoid_print
         await orchestrator.initialize();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Act - Run complete AI pipeline
+      // ignore: avoid_print
         final stopwatch = Stopwatch()..start();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         final userInteraction = _createComplexUserInteraction();
+      // ignore: avoid_print
         await orchestrator.processCompleteAIPipeline(userInteraction);
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             stopwatch.elapsedMilliseconds, lessThan(3000)); // Under 3 seconds
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('Complete AI pipeline: ${stopwatch.elapsedMilliseconds}ms');
       });
 
@@ -511,23 +649,40 @@ void main() {
         // Arrange
         final orchestrator = AIMasterOrchestrator();
         await orchestrator.initialize();
+      // ignore: avoid_print
 
         // Act - Multiple concurrent AI pipelines
+      // ignore: avoid_print
         final stopwatch = Stopwatch()..start();
+      // ignore: avoid_print
         final futures = <Future>[];
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         for (int i = 0; i < 20; i++) {
+      // ignore: avoid_print
           futures.add(orchestrator
+      // ignore: avoid_print
               .processCompleteAIPipeline(_createComplexUserInteraction()));
+      // ignore: avoid_print
         }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         await Future.wait(futures);
+      // ignore: avoid_print
         stopwatch.stop();
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Assert
+      // ignore: avoid_print
         expect(
+      // ignore: avoid_print
             stopwatch.elapsedMilliseconds, lessThan(10000)); // Under 10 seconds
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('20 concurrent AI pipelines: ${stopwatch.elapsedMilliseconds}ms');
       });
     });

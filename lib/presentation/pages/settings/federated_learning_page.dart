@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:spots/presentation/widgets/settings/federated_learning_settings_section.dart';
-import 'package:spots/presentation/widgets/settings/federated_learning_status_widget.dart';
-import 'package:spots/presentation/widgets/settings/privacy_metrics_widget.dart';
-import 'package:spots/presentation/widgets/settings/federated_participation_history_widget.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/settings/federated_learning_settings_section.dart';
+import 'package:avrai/presentation/widgets/settings/federated_learning_status_widget.dart';
+import 'package:avrai/presentation/widgets/settings/privacy_metrics_widget.dart';
+import 'package:avrai/presentation/widgets/settings/federated_participation_history_widget.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Federated Learning Page
 /// 

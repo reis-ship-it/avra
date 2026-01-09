@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/business_patron_preferences.dart';
-import 'package:spots/core/services/user_business_matching_service.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/business_patron_preferences.dart';
+import 'package:avrai/core/services/user_business_matching_service.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Business Compatibility Widget
 /// Shows users how well they match a specific business's patron preferences

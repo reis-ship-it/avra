@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/secure_mapping_encryption_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/secure_mapping_encryption_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 import 'dart:typed_data';
 
 /// Mock services
@@ -42,7 +42,11 @@ void main() {
     });
     
     test('Cache hit performance should be < 1ms', () async {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       const userId = 'test-user-123';
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       const agentId = 'agent_test_abc123';
       
       // First, populate cache
@@ -57,23 +61,33 @@ void main() {
       // In real implementation, this would be through getUserAgentId
       stopwatch.stop();
       
+      // ignore: avoid_print
       final elapsedMs = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
       print('Cache hit time: ${elapsedMs}ms');
       
       // Cache access should be very fast (< 1ms)
       expect(elapsedMs, lessThan(5),
         reason: 'Cache hit should be < 5ms, took ${elapsedMs}ms');
+      // ignore: unused_local_variable
     });
+      // ignore: unused_local_variable
     
+      // ignore: unused_local_variable
     test('Cache invalidation performance', () async {
+      // ignore: unused_local_variable - May be used in callback or assertion
       const userId = 'test-user-123';
       
       // Test cache clearing performance
       final stopwatch = Stopwatch()..start();
       service.clearCache();
       stopwatch.stop();
+      // ignore: avoid_print
       
+      // ignore: avoid_print
+      // ignore: avoid_print
       final elapsedMs = stopwatch.elapsedMilliseconds;
+      // ignore: avoid_print
       print('Cache clear time: ${elapsedMs}ms');
       
       // Cache clearing should be very fast

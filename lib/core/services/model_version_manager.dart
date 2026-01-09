@@ -3,10 +3,10 @@
 // Manages model version switching, A/B testing, and rollback
 
 import 'dart:developer' as developer;
-import 'package:spots/core/ml/model_version_registry.dart';
-import 'package:spots/core/ml/model_version_info.dart';
-import 'package:spots/core/services/model_safety_supervisor.dart';
-import 'package:spots/core/services/storage_service.dart'
+import 'package:avrai/core/ml/model_version_registry.dart';
+import 'package:avrai/core/ml/model_version_info.dart';
+import 'package:avrai/core/services/model_safety_supervisor.dart';
+import 'package:avrai/core/services/storage_service.dart'
     show SharedPreferencesCompat;
 
 /// Model Version Manager

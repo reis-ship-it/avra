@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/visit.dart';
+import 'package:avrai/core/models/visit.dart';
 
 /// SPOTS Visit Model Unit Tests
 /// Date: December 1, 2025

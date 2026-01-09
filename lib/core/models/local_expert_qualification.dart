@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/expertise_requirements.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_requirements.dart';
 
 /// Local Expert Qualification Model
 /// 

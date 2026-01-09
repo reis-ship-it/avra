@@ -2,13 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:spots/core/controllers/sponsorship_checkout_controller.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/product_tracking_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/controllers/sponsorship_checkout_controller.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/product_tracking_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/product_tracking.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/unified_user.dart';
 
 import 'sponsorship_checkout_controller_test.mocks.dart';
 
@@ -258,7 +259,22 @@ void main() {
           productName: 'Premium Coffee Beans',
           quantityProvided: 10,
           unitPrice: 30.0,
-        )).thenAnswer((_) async => Future.value());
+        )).thenAnswer((_) async => ProductTracking(
+          id: 'tracking_456',
+          sponsorshipId: 'sponsorship_456',
+          productName: 'Premium Coffee Beans',
+          quantityProvided: 10,
+          quantitySold: 0,
+          quantityGivenAway: 0,
+          quantityUsedInEvent: 0,
+          unitPrice: 30.0,
+          totalSales: 0.0,
+          platformFee: 0.0,
+          revenueDistribution: const {},
+          sales: const [],
+          createdAt: now,
+          updatedAt: now,
+        ));
 
         final result = await controller.processSponsorshipCheckout(
           event: testEvent,
@@ -297,7 +313,22 @@ void main() {
           productName: 'Product Name',
           quantityProvided: 1,
           unitPrice: 200.0,
-        )).thenAnswer((_) async => Future.value());
+        )).thenAnswer((_) async => ProductTracking(
+          id: 'tracking_456',
+          sponsorshipId: 'sponsorship_456',
+          productName: 'Premium Coffee Beans',
+          quantityProvided: 10,
+          quantitySold: 0,
+          quantityGivenAway: 0,
+          quantityUsedInEvent: 0,
+          unitPrice: 30.0,
+          totalSales: 0.0,
+          platformFee: 0.0,
+          revenueDistribution: const {},
+          sales: const [],
+          createdAt: now,
+          updatedAt: now,
+        ));
 
         final result = await controller.processSponsorshipCheckout(
           event: testEvent,

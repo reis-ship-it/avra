@@ -4,8 +4,8 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai2ai/room_coherence_engine.dart';
-import 'package:spots_network/network/spots_broadcast_frame_v1.dart';
+import 'package:avrai/core/ai2ai/room_coherence_engine.dart';
+import 'package:avrai_network/network/avra_broadcast_frame_v1.dart';
 
 void main() {
   test('ineligible when nodeCount < minNodesForCoherence', () {

@@ -5,10 +5,10 @@
 // Phase 5.5: Hierarchical Fabric Visualization System
 
 import 'package:flutter/material.dart';
-import 'package:spots_knot/models/knot/knot_fabric.dart';
-import 'package:spots_knot/models/knot/hierarchical_layout.dart';
-import 'package:spots_knot/services/knot/glue_visualization_service.dart';
-import 'package:spots_knot/models/entity_knot.dart';
+import 'package:avrai_knot/models/knot/knot_fabric.dart';
+import 'package:avrai_knot/models/knot/hierarchical_layout.dart';
+import 'package:avrai_knot/services/knot/glue_visualization_service.dart';
+import 'package:avrai_knot/models/entity_knot.dart';
 
 /// Custom painter for hierarchical fabric visualization
 class HierarchicalFabricPainter extends CustomPainter {

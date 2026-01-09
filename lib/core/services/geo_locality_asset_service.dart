@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/services.dart';
 
-import 'package:spots/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
 
 /// Offline-first locality geometry store backed by bundled GeoJSON assets.
 ///

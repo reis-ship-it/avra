@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'package:spots/core/models/unified_models.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/core/ai/comprehensive_data_collector.dart';
-import 'package:spots/core/ai/ai_self_improvement_system.dart';
-import 'package:spots/core/ai/advanced_communication.dart';
-import 'package:spots/core/ai/personality_learning.dart' as pl;
-import 'package:spots/core/ai/collaboration_networks.dart' as collab;
-import 'package:spots/core/ai/list_generator_service.dart';
-import 'package:spots/core/ml/pattern_recognition.dart' as pattern_recognition;
-import 'package:spots_ai/models/personality_profile.dart' show PersonalityProfile;
-import 'package:spots/core/models/user.dart' as user_model;
-import 'package:spots_ai/models/personality_profile.dart' show UserPersonality;
+import 'package:avrai/core/models/unified_models.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/ai/comprehensive_data_collector.dart';
+import 'package:avrai/core/ai/ai_self_improvement_system.dart';
+import 'package:avrai/core/ai/advanced_communication.dart';
+import 'package:avrai/core/ai/personality_learning.dart' as pl;
+import 'package:avrai/core/ai/collaboration_networks.dart' as collab;
+import 'package:avrai/core/ai/list_generator_service.dart';
+import 'package:avrai/core/ml/pattern_recognition.dart' as pattern_recognition;
+import 'package:avrai_core/models/personality_profile.dart' show PersonalityProfile;
+import 'package:avrai/core/models/user.dart' as user_model;
+import 'package:avrai_core/models/personality_profile.dart' show UserPersonality;
 
 /// Master AI Orchestrator for SPOTS
 /// Coordinates all AI systems to create a comprehensive learning AI that improves itself

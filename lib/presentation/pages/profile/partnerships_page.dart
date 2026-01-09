@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/models/user_partnership.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/widgets/profile/partnership_display_widget.dart';
-import 'package:spots/presentation/widgets/profile/partnership_visibility_toggle.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/models/user_partnership.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/widgets/profile/partnership_display_widget.dart';
+import 'package:avrai/presentation/widgets/profile/partnership_visibility_toggle.dart';
 
 /// Partnerships Detail Page
 /// 
@@ -59,6 +59,7 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
     }
   }
 
+  // ignore: unused_element - Reserved for future visibility updates
   Future<void> _updateVisibility(String partnershipId, bool isPublic) async {
     // TODO: Replace with actual service call once PartnershipProfileService is available
     // Example:

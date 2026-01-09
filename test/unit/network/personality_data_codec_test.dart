@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_network/network/personality_data_codec.dart' show PersonalityDataCodec;
-import 'package:spots/core/ai/privacy_protection.dart' show PrivacyProtection;
-import 'package:spots/core/models/user_vibe.dart';
+import 'package:avrai_network/network/personality_data_codec.dart' show PersonalityDataCodec;
+import 'package:avrai/core/ai/privacy_protection.dart' show PrivacyProtection;
+import 'package:avrai/core/models/user_vibe.dart';
 
 /// Personality Data Codec Tests
 /// Tests encoding/decoding of anonymized personality data for device discovery

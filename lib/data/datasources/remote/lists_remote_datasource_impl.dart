@@ -1,8 +1,8 @@
-import 'package:spots/core/models/list.dart';
-import 'package:spots/data/datasources/remote/lists_remote_datasource.dart';
-import 'package:spots_network/spots_network.dart';
-import 'package:spots_core/spots_core.dart' as spots_core;
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/data/datasources/remote/lists_remote_datasource.dart';
+import 'package:avrai_network/avra_network.dart';
+import 'package:avrai_core/avra_core.dart' as spots_core;
+import 'package:avrai/injection_container.dart' as di;
 
 class ListsRemoteDataSourceImpl implements ListsRemoteDataSource {
   DataBackend? get _data {
@@ -14,6 +14,7 @@ class ListsRemoteDataSourceImpl implements ListsRemoteDataSource {
     }
   }
 
+  // ignore: unused_field
   static const String _collection = 'spot_lists';
 
   @override

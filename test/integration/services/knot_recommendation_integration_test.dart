@@ -6,22 +6,22 @@
 // Optional Enhancement: Integration Tests
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/event_recommendation_service.dart';
-import 'package:spots/core/services/event_matching_service.dart';
-import 'package:spots/core/services/spot_vibe_matching_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/spot_vibe.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/services/user_preference_learning_service.dart';
-import 'package:spots/core/services/cross_locality_connection_service.dart';
+import 'package:avrai/core/services/event_recommendation_service.dart';
+import 'package:avrai/core/services/event_matching_service.dart';
+import 'package:avrai/core/services/spot_vibe_matching_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/spot_vibe.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/services/user_preference_learning_service.dart';
+import 'package:avrai/core/services/cross_locality_connection_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 import '../../helpers/test_helpers.dart';
 import '../../fixtures/model_factories.dart';
@@ -38,6 +38,8 @@ void main() {
     late EntityKnotService entityKnotService;
     late IntegratedKnotRecommendationEngine knotRecommendationEngine;
     late PersonalityLearning personalityLearning;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late StorageService storageService;
 
     late UnifiedUser testUser;

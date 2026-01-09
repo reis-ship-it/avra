@@ -2,17 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:crypto/crypto.dart';
-import 'package:spots/core/services/admin/permissions/admin_access_control.dart';
-import 'package:spots/core/services/admin_privacy_filter.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/club_service.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/services/admin_communication_service.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/club.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart' as admin_models
+import 'package:avrai/core/services/admin/permissions/admin_access_control.dart';
+import 'package:avrai/core/services/admin_privacy_filter.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/club_service.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/services/admin_communication_service.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/club.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart' as admin_models
     show
         BusinessAccountData,
         ClubCommunityData,

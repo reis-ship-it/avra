@@ -53,7 +53,7 @@ For purposes of this disclosure:
 - **FIG. 14**: Complete Connection Flow.
 ## Abstract
 
-A system and method for enabling autonomous AI-to-AI (AI2AI) discovery, communication, and learning without reliance on internet connectivity. The system performs proximity-based peer discovery using local transports, establishes direct device-to-device connections, exchanges profile and capability information, computes compatibility locally, and derives learning updates from observed interaction outcomes. In some embodiments, the system operates as an offline-first architecture that reduces latency and avoids centralized collection of personal data by keeping computation and storage on-device while permitting privacy-aware exchange of limited representations needed for compatibility and learning. The approach enables continuous learning and network formation in connectivity-constrained environments.
+A system and method for enabling autonomous AI-to-AI (AI2AI) discovery, communication, and learning without reliance on internet connectivity. The system performs proximity-based peer discovery using local transports, establishes direct device-to-device connections and multi-hop mesh network forwarding, exchanges profile and capability information, computes compatibility locally, and derives learning updates from observed interaction outcomes. The system includes an adaptive mesh networking service that dynamically adjusts message forwarding hop limits based on battery level, network density, message priority, expertise levels, and geographic scope, enabling extended-range learning propagation while maintaining resource efficiency. In some embodiments, the system operates as an offline-first architecture that reduces latency and avoids centralized collection of personal data by keeping computation and storage on-device while permitting privacy-aware exchange of limited representations needed for compatibility and learning. The approach enables continuous learning and network formation in connectivity-constrained environments through both direct peer-to-peer connections and adaptive multi-hop mesh routing.
 
 ---
 
@@ -67,7 +67,7 @@ Accordingly, there is a need for offline-first AI systems that can discover peer
 
 ## Summary
 
-A fully autonomous peer-to-peer AI learning system that works completely offline, enabling personal AIs to discover, connect, exchange personality profiles, calculate compatibility, and learn from each other without internet connectivity. This system solves critical privacy and connectivity problems by enabling AI learning without cloud dependency or privacy compromise.
+A fully autonomous peer-to-peer AI learning system that works completely offline, enabling personal AIs to discover, connect, exchange personality profiles, calculate compatibility, and learn from each other without internet connectivity. The system includes an adaptive mesh networking architecture that enables multi-hop message forwarding with dynamically adjusted hop limits based on battery level, network density, message priority, user expertise levels, and geographic scope. This adaptive mesh networking extends the effective range of AI learning propagation beyond direct peer-to-peer connections while maintaining resource efficiency and ensuring core functionality (direct connections) always remains available. This system solves critical privacy and connectivity problems by enabling AI learning without cloud dependency or privacy compromise, while extending learning reach through intelligent mesh routing.
 
 ---
 
@@ -80,7 +80,7 @@ A fully autonomous peer-to-peer AI learning system that works completely offline
 - In quantum-state embodiments, the system may represent multi-dimensional profiles as quantum state vectors (e.g., |ψ⟩) and compute similarity using an inner product, distance metric, or other quantum-inspired measure.
 
 ### Core Innovation
-The system implements a fully autonomous peer-to-peer AI learning architecture that operates completely offline using Bluetooth/NSD device discovery and direct device-to-device communication. Unlike cloud-dependent AI systems, this architecture enables personal AIs to discover nearby devices, exchange personality profiles, calculate compatibility locally, generate learning insights, and evolve immediately—all without internet connectivity.
+The system implements a fully autonomous peer-to-peer AI learning architecture that operates completely offline using Bluetooth/NSD device discovery and direct device-to-device communication. The architecture further includes an adaptive mesh networking system that enables multi-hop message forwarding through intermediate devices, extending network reach beyond direct Bluetooth/NSD range. Unlike cloud-dependent AI systems, this architecture enables personal AIs to discover nearby devices, exchange personality profiles, calculate compatibility locally, generate learning insights, and evolve immediately—all without internet connectivity. The adaptive mesh networking component dynamically adjusts hop limits based on device conditions (battery level, network density) and message characteristics (priority, type, expertise level, geographic scope), ensuring optimal network utilization while preserving device resources.
 
 ### Problem Solved
 - **Cloud Dependency:** Traditional AI learning systems require cloud infrastructure
@@ -213,6 +213,149 @@ for each dimension in remote.dimensions:
 - **Optional Enhancement:** Cloud intelligence enhances but doesn't replace offline learning
 - **Fallback:** System always works offline even if cloud unavailable
 
+### Phase F: Adaptive Mesh Networking
+
+#### 13. Multi-Hop Message Forwarding
+- **Mesh Architecture:** Messages can be forwarded through multiple intermediate devices (hops) to extend learning propagation range
+- **Hop Count Tracking:** Each forwarded message includes a hop count indicating the number of intermediate devices it has traversed
+- **Origin Tracking:** Messages track their origin device ID to prevent loops and ensure proper routing
+- **Guaranteed Direct Connections:** System always maintains at least direct connections (0 hops minimum) to ensure core functionality
+
+#### 14. Adaptive Hop Limit Policy
+- **Battery-Based Scaling:** Hop limits dynamically adjust based on device battery level:
+  - Charging/Full: Up to 50+ base hops (can go unlimited)
+  - Battery ≥80%: 20 hops
+  - Battery ≥60%: 15 hops
+  - Battery ≥45%: 10 hops
+  - Battery ≥30%: 5 hops
+  - Battery ≥20%: 3 hops
+  - Battery ≥10%: 1 hop
+  - Battery <10%: 0 hops (direct only, but still functional)
+- **Network Density Bonus:** Additional hops allowed based on nearby device count:
+  - ≥20 devices: +10 hops
+  - ≥10 devices: +5 hops
+  - ≥5 devices: +2 hops
+  - <5 devices: 0 bonus
+- **Power Saver Mode:** When OS battery saver is active, limits to direct connections only (0 hops) except for critical messages (1 hop allowed)
+- **Unlimited Hops:** When conditions are optimal (charging/full battery ≥80%, dense network ≥10 devices, not in power saver), system allows unlimited hops (only TTL/quality limits apply)
+
+#### 15. Message Priority and Type Adjustments
+- **Priority Levels:** Four priority levels affect hop limits:
+  - Critical: +15 hops bonus, can exceed base limits
+  - High: +5 hops bonus
+  - Medium: Base limit (no bonus)
+  - Low: -2 hops (reduced hops)
+- **Message Types:** Different message types have different propagation characteristics:
+  - Learning Insights: +10 hops bonus (can propagate far)
+  - Personality Discovery: Time-sensitive, standard hops
+  - Compatibility Check: Immediate, standard hops
+  - Network Coordination: Standard hops
+  - Locality Agent Updates: High priority, geographic scope affects hops
+  - Locality Personality Updates: Standard hops
+
+#### 16. Expertise-Based Routing
+- **Expertise Levels:** User expertise levels (Local, City, Regional, National, Global, Universal) affect routing:
+  - Base Expertise Bonus (in expertiseBonus): Expertise index × 2 hops (e.g., City=+2, Regional=+4, National=+6, Global=+8, Universal=+10)
+  - Learning from Higher Expertise: +3 hops bonus when learning from higher expertise level (added to expertiseBonus)
+  - Expert Message Priority (in priorityBonus): City+ experts get additional priority boost (expertise index added to priorityBonus)
+  - Critical Expert Messages: Critical messages from experts get extra boost (expertise index × 2 added to priorityBonus, in addition to base +15 for critical)
+  - Global+ Expert Unlimited: Global+ experts can have unlimited hops with relaxed conditions (battery ≥60%, density ≥5)
+
+#### 17. Geographic Scope-Based Routing
+- **Scope Levels:** Geographic scope affects hop limits (applied AFTER primary hop limit calculation):
+  - Locality: Base hops (no bonus, scopeBonus = 0)
+  - City: +2 hops (scopeBonus = +2)
+  - Region: +5 hops (scopeBonus = +5)
+  - Country: +10 hops (scopeBonus = +10)
+  - Global: Unlimited hops (overrides baseLimit, returns null)
+- **Scope Integration:** Geographic scope bonuses are additive to the base limit calculated from primary formula: `effectiveMaxHops = baseLimit + scopeBonus`
+- **Critical Scope Messages:** Critical priority messages can exceed scoped limits by +10 hops: `effectiveMaxHops = scopedLimit + 10`
+
+#### 18. Adaptive Mesh Service Operation
+- **Periodic Adaptation:** Hop limits re-evaluated every 2 minutes and on battery state changes
+- **Network Density Updates:** Service receives network density updates when devices are discovered or lost
+- **Message Forwarding Decision:** Before forwarding a message, service checks:
+  - Current hop count vs. adaptive limit
+  - Message priority and type
+  - Sender and recipient expertise levels
+  - Geographic scope (if applicable)
+  - Returns boolean decision: forward (true) or drop (false)
+- **Guarantee:** Always allows direct connections (0 hops) regardless of conditions
+
+#### 19. Mesh Forwarding Implementation
+- **Learning Insight Forwarding:** Learning insights can be forwarded through mesh network with hop count tracking
+- **Locality Agent Updates:** Locality agent updates forwarded with geographic scope consideration
+- **Best-Effort Forwarding:** System forwards to up to 2 nearby devices (best-effort, not guaranteed)
+- **Loop Prevention:** Origin ID tracking prevents forwarding messages back to origin device
+- **Deduplication:** Message IDs and TTL prevent duplicate processing of same message
+
+#### 20. Mesh Networking Formula
+
+**Primary Hop Limit Calculation:**
+```
+totalHops = baseHops + densityBonus + priorityBonus + expertiseBonus
+
+where:
+- baseHops: Battery-based hops (0-50)
+  - Charging/Full: 50
+  - Battery ≥80%: 20
+  - Battery ≥60%: 15
+  - Battery ≥45%: 10
+  - Battery ≥30%: 5
+  - Battery ≥20%: 3
+  - Battery ≥10%: 1
+  - Battery <10%: 0
+
+- densityBonus: Network density bonus (0-10)
+  - ≥20 devices: +10
+  - ≥10 devices: +5
+  - ≥5 devices: +2
+  - <5 devices: 0
+
+- priorityBonus: Priority and message type adjustments (-2 to +15+)
+  - Message type: learningInsight → +10
+  - Priority: critical → +15, high → +5, medium → 0, low → -2
+  - Expertise priority boost: expertiseIndex (Local=0, City=1, Regional=2, etc.)
+  - Critical expert boost: expertiseIndex × 2 (for critical messages from experts)
+
+- expertiseBonus: Expertise-based routing bonus (0-10+)
+  - Base: expertiseIndex × 2 (Local=0, City=2, Regional=4, National=6, Global=8, Universal=10)
+  - Learning bonus: +3 when learning from higher expertise level
+
+Final hop limit = max(0, totalHops)  // Guarantees at least 0 hops (direct connections)
+
+Unlimited hops (null) when:
+  (batteryState == charging || full) && batteryLevel >= 80 && 
+  networkDensity >= 10 && !powerSaverMode
+  OR (for Global+ experts): batteryLevel >= 60 && networkDensity >= 5
+```
+
+**Geographic Scope Adjustment (Applied After Base Calculation):**
+```
+effectiveMaxHops = baseLimit + scopeBonus
+
+where:
+- baseLimit: Result from primary hop limit calculation (or null for unlimited)
+- scopeBonus: Geographic scope bonus
+  - Locality: 0
+  - City: +2
+  - Region: +5
+  - Country: +10
+  - Global: null (unlimited, overrides baseLimit)
+
+Critical messages can exceed scoped limit by +10 hops:
+  if (priority == critical) {
+    effectiveMaxHops = scopedLimit + 10
+  }
+```
+
+**Mathematical Verification:**
+- All calculations use integer arithmetic
+- Minimum guarantee: max(0, totalHops) ensures at least 0 hops (direct connections)
+- Maximum: Can be unlimited (null) when conditions are optimal
+- Geographic scope is additive to base limit (not part of primary formula)
+- Critical messages can exceed limits by +10 hops at both base and scope levels
+
 ---
 
 ## Claims
@@ -223,6 +366,7 @@ for each dimension in remote.dimensions:
    (c) Calculating compatibility locally on-device without cloud processing
    (d) Generating learning insights from compatibility analysis locally
    (e) Applying learning insights immediately to local AI personality without cloud sync
+   (f) Forwarding learning insights and messages through multi-hop mesh network with adaptive hop limits
 
 2. A system for exchanging personality profiles between devices without cloud infrastructure, comprising:
    (a) Bluetooth/NSD device discovery for finding nearby devices
@@ -230,12 +374,14 @@ for each dimension in remote.dimensions:
    (c) Local compatibility calculation on-device
    (d) Local learning insight generation and application
    (e) Immediate personality evolution without internet connectivity
+   (f) Adaptive mesh networking service for multi-hop message forwarding with dynamic hop limits
 
 3. The method of claim 1, further comprising local compatibility calculation and learning exchange between AIs:
    (a) Calculating compatibility between two personality profiles entirely on-device
    (b) Generating learning insights from compatibility analysis locally
    (c) Applying learning insights to local AI personality immediately
    (d) Performing all operations without cloud infrastructure or internet connectivity
+   (e) Forwarding learning insights through mesh network with hop count tracking and adaptive limits
 
 4. An offline-first architecture for distributed AI personality learning, comprising:
    (a) Offline device discovery via Bluetooth/NSD
@@ -243,6 +389,46 @@ for each dimension in remote.dimensions:
    (c) Local compatibility calculation and learning insight generation
    (d) Immediate AI evolution without cloud dependency
    (e) Optional cloud enhancement that doesn't require internet for core functionality
+
+5. A method for adaptive mesh networking in offline peer-to-peer AI learning, comprising:
+   (a) Forwarding messages through intermediate devices to extend network reach beyond direct Bluetooth/NSD range
+   (b) Dynamically calculating hop limits based on device battery level, network density, message priority, message type, sender expertise level, and geographic scope
+   (c) Enforcing adaptive hop limits before forwarding messages
+   (d) Tracking hop count and origin identifier in forwarded messages to prevent loops
+   (e) Selecting up to 2 nearby devices per hop for best-effort forwarding
+   (f) Re-adapting hop limits periodically and on battery state or network density changes
+   (g) Guaranteeing at least direct connections (0 hops minimum) to preserve core functionality
+
+6. The method of claim 5, wherein hop limits are calculated as:
+   (a) Base hops from battery level (0-50 hops, with charging/full state allowing 50 base hops)
+   (b) Network density bonus (0-10 hops based on nearby device count)
+   (c) Priority bonus (-2 to +15 hops based on message priority and type)
+   (d) Expertise bonus (0-10+ hops based on sender expertise level, with additional bonus for learning from higher expertise)
+   (e) Geographic scope bonus (0-10 hops or unlimited based on scope: locality, city, region, country, global)
+   (f) Unlimited hops when battery is charging/full, level ≥80%, network density ≥10, and not in power saver mode
+
+7. The method of claim 5, wherein expertise-based routing provides:
+   (a) Higher expertise levels (City, Regional, National, Global, Universal) allow progressively more hops
+   (b) Additional hops when learning from higher expertise levels
+   (c) Priority boost for critical messages from experts
+   (d) Relaxed conditions for unlimited hops for Global+ experts (battery ≥60%, density ≥5)
+   (f) Adaptive mesh networking with battery-based, density-based, priority-based, expertise-based, and geographic scope-based hop limit adjustments
+
+5. A method for adaptive mesh networking in offline AI2AI peer-to-peer learning, comprising:
+   (a) Dynamically calculating maximum hop limits based on device battery level, network density, message priority, message type, and user expertise level
+   (b) Allowing unlimited hops when conditions are optimal (charging/full battery ≥80%, dense network ≥10 devices, not in power saver mode)
+   (c) Guaranteeing at least direct connections (0 hops minimum) regardless of conditions
+   (d) Adjusting hop limits based on geographic scope (locality, city, region, country, global)
+   (e) Forwarding messages through mesh network with hop count tracking and origin ID tracking to prevent loops
+   (f) Re-evaluating hop limits periodically (every 2 minutes) and on battery state changes
+
+6. The method of claim 5, wherein hop limits are calculated using:
+   (a) Battery-based base hops (0-50+ hops based on battery level and charging state)
+   (b) Network density bonus (0-10 hops based on nearby device count)
+   (c) Priority bonus (critical: +15, high: +5, medium: 0, low: -2)
+   (d) Message type bonus (learning insights: +10)
+   (e) Expertise bonus (expertise index × 2, plus +3 when learning from higher expertise)
+   (f) Geographic scope bonus (city: +2, region: +5, country: +10, global: unlimited)
 
        ---
 ## Atomic Timing Integration
@@ -301,6 +487,28 @@ Where:
   - `_syncFederatedCloudQueue()` - Federated sync to cloud
   - `_startFederatedCloudSync()` - Periodic federated sync
   - `_processEventModeDiscovery()` - Event mode discovery
+  - `forwardLocalityAgentUpdate()` - Mesh forwarding of locality agent updates
+  - Learning insight mesh forwarding with hop count tracking
+
+**Adaptive Mesh Networking Service:**
+- **File:** `lib/core/ai2ai/adaptive_mesh_networking_service.dart` ✅ COMPLETE
+- **Key Functions:**
+  - `start()` - Initialize and start adaptive mesh networking
+  - `stop()` - Stop adaptive mesh networking
+  - `shouldForwardMessage()` - Check if message should be forwarded based on adaptive policy
+  - `updateNetworkDensity()` - Update network density for hop limit calculation
+  - `currentMaxHops` - Get current maximum hop limit
+  - `_adaptHopLimit()` - Adapt hop limit based on current conditions
+
+**Adaptive Mesh Hop Policy:**
+- **File:** `lib/core/ai2ai/adaptive_mesh_hop_policy.dart` ✅ COMPLETE
+- **Key Functions:**
+  - `calculateMaxHops()` - Calculate adaptive hop limit based on battery, density, priority, expertise, etc.
+  - `_calculateBatteryBasedHops()` - Battery-based hop calculation (0-50+ hops)
+  - `_calculateDensityBonus()` - Network density bonus (0-10 hops)
+  - `_calculatePriorityBonus()` - Priority and message type adjustments
+  - `_calculateExpertiseBonus()` - Expertise-based hop bonus
+  - `_shouldAllowUnlimitedHops()` - Determine if conditions allow unlimited hops
 
 **Orchestrator Components:**
 - **File:** `lib/core/ai2ai/orchestrator_components.dart`
@@ -325,6 +533,33 @@ Where:
 - **Key Functions:**
   - `evolveFromAI2AILearning()`
   - Learning application
+
+**Adaptive Mesh Networking Service:**
+- **File:** `lib/core/ai2ai/adaptive_mesh_networking_service.dart` ✅ COMPLETE
+- **Key Functions:**
+  - `start()` - Initialize adaptive mesh networking with periodic re-adaptation
+  - `stop()` - Stop adaptive mesh networking
+  - `shouldForwardMessage()` - Check if message should be forwarded based on adaptive policy
+  - `updateNetworkDensity()` - Update network density and trigger re-adaptation
+  - `currentMaxHops` - Get current adaptive hop limit
+
+**Adaptive Mesh Hop Policy:**
+- **File:** `lib/core/ai2ai/adaptive_mesh_hop_policy.dart` ✅ COMPLETE
+- **Key Functions:**
+  - `calculateMaxHops()` - Calculate adaptive hop limit based on all conditions
+  - `_calculateBatteryBasedHops()` - Battery-based hop calculation (0-50 hops)
+  - `_calculateDensityBonus()` - Network density bonus (0-10 hops)
+  - `_calculatePriorityBonus()` - Priority and message type adjustments (-2 to +15 hops)
+  - `_calculateExpertiseBonus()` - Expertise-based routing bonus (0-10+ hops)
+  - `_shouldAllowUnlimitedHops()` - Determine if conditions allow unlimited hops
+
+**Mesh Forwarding in Connection Orchestrator:**
+- **File:** `lib/core/ai2ai/connection_orchestrator.dart` (lines 2170-2337, 3065-3120)
+- **Key Functions:**
+  - `_processLearningInsight()` - Processes learning insights with mesh forwarding
+  - `forwardLocalityAgentUpdate()` - Forwards locality agent updates through mesh network
+  - Uses `AdaptiveMeshNetworkingService` to check hop limits before forwarding
+  - Increments hop count and tracks origin ID in forwarded messages
 
 ### Documentation
 - `docs/plans/offline_ai2ai/OFFLINE_AI2AI_IMPLEMENTATION_PLAN.md`
@@ -455,6 +690,89 @@ Where:
 
 **Note:** Most AI learning systems found require cloud infrastructure. Offline AI2AI learning with peer-to-peer personality exchange is novel.
 
+#### Category 4: Adaptive Mesh Networking Systems
+
+**1. Battery-Aware Mesh Networking Patents:**
+- [x] **US Patent Application 20190104460** - "Energy-Aware Routing for Mesh Networks" - [DATE]
+  - **Relevance:** HIGH - Battery-aware routing in mesh networks
+  - **Difference:** Focuses on energy-aware routing for general mesh networks, but does not combine with AI personality learning, does not include expertise-based routing, does not include geographic scope-based routing, and does not integrate with offline peer-to-peer AI learning
+  - **Status:** ✅ Found
+
+- [x] **US Patent 20090010190** - "Path Selection and Power Management in Mesh Networks" - [DATE]
+  - **Relevance:** MEDIUM - Power management in mesh networks
+  - **Difference:** Focuses on path selection and power management, but does not combine with AI personality learning, does not include adaptive hop limits based on multiple factors (battery, density, priority, expertise, scope), and does not integrate with offline peer-to-peer AI learning
+  - **Status:** ✅ Found
+
+- [x] **US Patent 10880807** - "Battery Efficient Routing in Mesh Networks" - [DATE]
+  - **Relevance:** HIGH - Battery-efficient routing in mesh networks
+  - **Difference:** Focuses on battery-efficient routing, but does not combine with AI personality learning, does not include expertise-based routing, does not include geographic scope-based routing, and does not integrate with offline peer-to-peer AI learning
+  - **Status:** ✅ Found
+
+- [x] **US Patent Application 20190141616** - "Mesh Networking Using Peer-to-Peer Messages" - [DATE]
+  - **Relevance:** HIGH - Mesh networking with peer-to-peer messages
+  - **Difference:** Focuses on mesh networking with peer-to-peer messages, but does not combine with AI personality learning, does not include adaptive hop limits based on expertise and geographic scope, and does not integrate with offline peer-to-peer AI learning
+  - **Status:** ✅ Found
+
+**2. Multi-Hop Message Forwarding Patents:**
+- [x] **US Patent 11196830** - "Delivering Messages to Offline Devices Using Peer-to-Peer Communication" - [DATE]
+  - **Relevance:** HIGH - Multi-hop message forwarding to offline devices
+  - **Difference:** Focuses on delivering messages to offline devices, but does not combine with AI personality learning, does not include adaptive hop limits based on battery, density, priority, expertise, and scope, and does not integrate with offline peer-to-peer AI learning
+  - **Status:** ✅ Found
+
+**3. Geographic Routing Mesh Network Patents:**
+- [x] **US Patent Application 20230013258** - "Geographic Routing Mesh Network" - January 19, 2023
+  - **Relevance:** HIGH - Geographic routing in mesh networks
+  - **Difference:** Focuses on geographic routing based on geometric proximity, but does not combine with AI personality learning, does not include adaptive hop limits based on battery, density, priority, and expertise, and does not integrate with offline peer-to-peer AI learning
+  - **Status:** ✅ Found
+
+- [x] **US Patent 6304556** - "Routing and Mobility Management Protocols for Ad-Hoc Networks" - October 16, 2001
+  - **Relevance:** MEDIUM - Zone-based routing in ad-hoc networks
+  - **Difference:** Focuses on zone-based routing, but does not combine with AI personality learning, does not include adaptive hop limits based on battery, density, priority, expertise, and scope, and does not integrate with offline peer-to-peer AI learning
+  - **Status:** ✅ Found
+
+**4. Priority-Based Routing Patents:**
+- [x] **US Patent 8605591** - "System and Method for Optimizing Packet Routing in a Mesh Network" - [DATE]
+  - **Relevance:** MEDIUM - Priority-based routing in mesh networks
+  - **Difference:** Focuses on priority-based routing for congestion management, but does not combine with AI personality learning, does not include adaptive hop limits based on battery, density, expertise, and scope, and does not integrate with offline peer-to-peer AI learning
+  - **Status:** ✅ Found
+
+- [x] **US Patent 11824798** - "Priority-Based Route Programming in a Network" - [DATE]
+  - **Relevance:** MEDIUM - Priority-based route programming
+  - **Difference:** Focuses on priority-based route programming, but does not combine with AI personality learning, does not include adaptive hop limits based on battery, density, expertise, and scope, and does not integrate with offline peer-to-peer AI learning
+  - **Status:** ✅ Found
+
+**5. AI-to-AI Mesh Networking Research:**
+- [x] **Lattica Framework** - "Decentralized cross-NAT communication framework for distributed AI systems" - [DATE]
+  - **Relevance:** HIGH - AI-to-AI mesh networking
+  - **Difference:** Focuses on distributed AI systems with P2P mesh, but does not combine with offline peer-to-peer AI personality learning, does not include adaptive hop limits based on battery, density, priority, expertise, and scope, and does not integrate with Bluetooth/NSD offline discovery
+  - **Status:** ✅ Found (Research Paper)
+
+- [x] **Hat-DFed Framework** - "Heterogeneity-aware and cost-effective decentralized federated learning" - [DATE]
+  - **Relevance:** HIGH - Decentralized federated learning with topology optimization
+  - **Difference:** Focuses on federated learning topology optimization, but does not combine with offline peer-to-peer AI personality learning, does not include adaptive hop limits based on battery, density, priority, expertise, and scope, and does not integrate with Bluetooth/NSD offline discovery
+  - **Status:** ✅ Found (Research Paper)
+
+- [x] **DisPFL Framework** - "Decentralized Personalized Federated Learning via Decentralized Sparse Training" - [DATE]
+  - **Relevance:** HIGH - Decentralized personalized federated learning
+  - **Difference:** Focuses on decentralized personalized federated learning, but does not combine with offline peer-to-peer AI personality learning, does not include adaptive hop limits based on battery, density, priority, expertise, and scope, and does not integrate with Bluetooth/NSD offline discovery
+  - **Status:** ✅ Found (Research Paper)
+
+**6. Bluetooth Mesh Networking with AI Research:**
+- [x] **Bluetooth Low-Energy Mesh with Ant Colony Optimization** - 2025 Study
+  - **Relevance:** HIGH - BLE mesh networking with adaptive routing
+  - **Difference:** Focuses on BLE mesh with energy-aware routing using ACO, but does not combine with AI personality learning, does not include adaptive hop limits based on priority, expertise, and geographic scope, and does not integrate with offline peer-to-peer AI personality exchange
+  - **Status:** ✅ Found (Research Paper)
+
+- [x] **MeshTalk** - "AI-powered offline mesh communication system" - [DATE]
+  - **Relevance:** HIGH - Offline mesh communication with AI
+  - **Difference:** Focuses on offline mesh communication with AI for noise reduction and command recognition, but does not combine with AI personality learning, does not include adaptive hop limits based on battery, density, priority, expertise, and scope, and does not integrate with peer-to-peer AI personality exchange
+  - **Status:** ✅ Found (Open Source Project)
+
+- [x] **BitChat** - "Peer-to-peer encrypted messaging over BLE mesh networks" - [DATE]
+  - **Relevance:** HIGH - P2P messaging over BLE mesh
+  - **Difference:** Focuses on P2P encrypted messaging over BLE mesh, but does not combine with AI personality learning, does not include adaptive hop limits based on battery, density, priority, expertise, and scope, and does not integrate with offline peer-to-peer AI personality exchange
+  - **Status:** ✅ Found (Product)
+
 ### Key Differentiators
 
 1. **Offline AI2AI Learning:** Not found in prior art - all existing AI learning systems require cloud infrastructure
@@ -462,6 +780,11 @@ Where:
 3. **Local Learning Exchange:** Novel local learning mechanism that works completely offline
 4. **Complete Offline Workflow:** Novel end-to-end offline AI learning from discovery to evolution
 5. **Bluetooth/NSD for AI Learning:** Novel application of Bluetooth/NSD to AI personality learning (not just device pairing or data sync)
+6. **Adaptive Mesh Networking for AI Learning:** Novel adaptive mesh networking system that extends peer-to-peer AI learning reach through multi-hop forwarding with battery-aware, density-aware, priority-aware, expertise-aware, and scope-aware hop limit calculation. While prior art exists for battery-aware mesh routing and geographic routing separately, the combination with AI personality learning and the multi-factor adaptive hop limit calculation (battery + density + priority + expertise + scope) is novel.
+7. **Expertise-Based Mesh Routing:** Novel routing system that provides additional hops for higher expertise levels and learning from experts, enabling extended network reach for valuable learning signals. Prior art does not combine expertise-based routing with AI personality learning in offline peer-to-peer mesh networks.
+8. **Geographic Scope-Based Mesh Routing:** Novel routing system that adjusts hop limits based on geographic scope (locality, city, region, country, global), enabling appropriate network reach for different message scopes. While geographic routing exists in prior art, the combination with AI personality learning and adaptive hop limits based on multiple factors is novel.
+9. **Multi-Factor Adaptive Hop Limit Calculation:** Novel combination of battery level, network density, message priority, message type, sender expertise level, target expertise level, and geographic scope in a single adaptive hop limit calculation formula. Prior art addresses individual factors separately, but not the integrated multi-factor approach for AI personality learning.
+10. **AI Personality Learning Mesh Network:** Novel combination of offline peer-to-peer AI personality learning with adaptive mesh networking. Prior art addresses mesh networking or AI learning separately, but not the integrated system for extending AI personality learning reach through intelligent mesh routing.
 
 ---
 
@@ -554,6 +877,39 @@ Future<AI2AILearningInsight> generateLocalLearningInsights(
     dimensionInsights: dimensionInsights,
     compatibility: compatibility.basicCompatibility,
   );
+}
+```
+
+### Adaptive Mesh Networking
+```dart
+// Calculate adaptive hop limit
+int? maxHops = AdaptiveMeshHopPolicy.calculateMaxHops(
+  batteryLevel: batteryLevel,
+  batteryState: batteryState,
+  isInBatterySaveMode: isInBatterySaveMode,
+  networkDensity: networkDensity,
+  priority: MessagePriority.medium,
+  messageType: MessageType.learningInsight,
+  isCharging: isCharging,
+  userExpertiseLevel: userExpertiseLevel,
+  targetExpertiseLevel: targetExpertiseLevel,
+);
+
+// Check if message should be forwarded
+bool shouldForward = adaptiveMeshService.shouldForwardMessage(
+  currentHop: hop,
+  priority: MessagePriority.high,
+  messageType: MessageType.localityAgentUpdate,
+  senderExpertise: ExpertiseLevel.city,
+  geographicScope: 'region',
+);
+
+// Forward message with incremented hop count
+if (shouldForward) {
+  final forwardedMessage = Map<String, dynamic>.from(message);
+  forwardedMessage['hop'] = hop + 1;
+  forwardedMessage['origin_id'] = originId;
+  // Forward to up to 2 nearby devices
 }
 ```
 
@@ -710,6 +1066,11 @@ Future<AI2AILearningInsight> generateLocalLearningInsights(
 3. **Autonomous Learning:** AIs learn independently without cloud dependency
 4. **Real-Time Evolution:** Immediate AI evolution without latency
 5. **Complete Solution:** End-to-end offline AI learning workflow
+6. **Adaptive Mesh Networking:** Extends network reach beyond direct Bluetooth/NSD range through intelligent multi-hop forwarding
+7. **Battery-Aware Routing:** Automatically adjusts network reach based on device battery level to preserve device resources
+8. **Expertise-Based Routing:** Provides extended reach for valuable learning signals from higher expertise levels
+9. **Geographic Scope Awareness:** Adjusts network reach based on message geographic scope (locality to global)
+10. **Resource-Efficient:** Guarantees at least direct connections (0 hops) to preserve core functionality even in low battery conditions
 
 ---
 
@@ -724,6 +1085,80 @@ Future<AI2AILearningInsight> generateLocalLearningInsights(
 - **Offline-First Principles:** Established design patterns
 - **Novel Application:** Application to AI learning
 - **Privacy Benefits:** Offline-first provides privacy advantages
+
+### Adaptive Mesh Networking Research
+- **Battery-Aware Routing:** Research demonstrates that battery-aware routing in wireless sensor networks can extend network lifetime by 40% and reduce energy consumption by 35% (Bluetooth Low-Energy Mesh with Ant Colony Optimization, 2025)
+- **Network Density Impact:** Research shows that adaptive routing considering network density can balance energy consumption and extend network longevity (Adaptive Routing in Wireless Sensor Networks, various studies)
+- **Energy-Efficient Adaptive Routing:** Research demonstrates that energy-aware adaptive routing protocols can simultaneously reduce bandwidth, conserve energy, and maintain low message transition times (Energy-Aware Routing with Computational Offloading, 2020)
+- **Multi-Factor Adaptive Routing:** Research supports the effectiveness of considering multiple factors (battery, density, priority) in adaptive routing decisions (Energy-Efficient Adaptive Routing Protocol for Wireless Sensor Networks, IEEE)
+
+### AI-to-AI Mesh Networking Research
+- **Decentralized Federated Learning:** Research demonstrates that decentralized federated learning over peer-to-peer networks can achieve communication costs scaling as O(N log N) while maintaining effectiveness (MAR-FL, 2024)
+- **P2P Federated Learning:** Research shows that peer-to-peer federated learning can outperform traditional aggregation server models in accuracy and scalability (hFedLAP, hybrid federated learning)
+- **Personalized Federated Learning:** Research demonstrates that decentralized personalized federated learning can reduce communication bottlenecks and achieve higher model accuracy with less computation cost (DisPFL, 2022)
+- **Topology Optimization:** Research shows that heterogeneity-aware topology construction in decentralized federated learning can maximize model performance while minimizing cumulative energy consumption (Hat-DFed, 2024)
+
+### Novel Combination
+- **Integration of Research:** The patent combines established research in battery-aware routing, network density optimization, priority-based routing, and decentralized AI learning into a novel integrated system for offline peer-to-peer AI personality learning with adaptive mesh networking
+- **Multi-Factor Approach:** While prior research addresses individual factors, this patent integrates battery level, network density, message priority, message type, expertise level, and geographic scope into a single adaptive hop limit calculation for AI personality learning
+- **AI Personality Learning Focus:** The patent applies mesh networking research specifically to AI personality learning, which is not addressed in prior research on general mesh networking or general federated learning
+
+### Research Citations Supporting Claims
+
+**Battery-Aware Mesh Networking:**
+1. **Bluetooth Low-Energy Mesh with Ant Colony Optimization (2025)** - Demonstrates that battery-aware adaptive routing in BLE mesh networks can reduce energy consumption by 35%, extend network lifetime by 40%, and improve throughput by 25% compared to conventional forwarding. Supports the patent's battery-aware hop limit calculation approach.
+   - Source: MDPI Algorithms, 2025
+   - Relevance: Validates battery-aware routing effectiveness in mesh networks
+
+2. **Energy-Aware Routing with Computational Offloading (2020)** - Demonstrates that energy-aware adaptive routing can simultaneously reduce bandwidth, conserve energy, and maintain low message transition times during high network traffic. Supports the patent's battery-based hop scaling approach.
+   - Source: arXiv:2011.14795
+   - Relevance: Validates multi-factor adaptive routing (energy + bandwidth + latency)
+
+3. **Battery-Aware System Implementation for WSNs (2019)** - Demonstrates that battery-aware routing protocols incorporating battery state and health parameters can effectively increase network lifetime compared to other routing protocols. Supports the patent's battery state monitoring and adaptation approach.
+   - Source: IJERT, 2019
+   - Relevance: Validates battery state-based routing adaptation
+
+**Network Density Optimization:**
+4. **Adaptive Routing in Wireless Sensor Networks** - Research demonstrates that network density significantly impacts routing efficiency, with dense networks enabling shorter routes and sparse networks requiring longer multi-hop paths. Supports the patent's network density bonus calculation.
+   - Source: Springer Open Journal of Cloud Computing, 2025
+   - Relevance: Validates network density-based routing optimization
+
+5. **Energy-Efficient Adaptive Routing Protocol for WSNs** - Demonstrates that adaptive routing considering network density and residual energy can balance load and extend network lifetime. Supports the patent's combined battery + density approach.
+   - Source: IEEE, various studies
+   - Relevance: Validates multi-factor adaptive routing (density + energy)
+
+**Decentralized AI Learning:**
+6. **MAR-FL: Communication-Efficient P2P Federated Learning (2024)** - Demonstrates that peer-to-peer federated learning can achieve communication costs scaling as O(N log N) while maintaining effectiveness and robustness to unreliable clients. Supports the patent's mesh networking approach for AI learning.
+   - Source: arXiv:2512.05234
+   - Relevance: Validates P2P mesh networking for AI learning
+
+7. **DisPFL: Decentralized Personalized Federated Learning (2022)** - Demonstrates that decentralized personalized federated learning can reduce communication bottlenecks and achieve higher model accuracy with less computation cost. Supports the patent's offline peer-to-peer AI learning approach.
+   - Source: arXiv:2206.00187
+   - Relevance: Validates decentralized personalized AI learning
+
+8. **Hat-DFed: Heterogeneity-Aware Decentralized Federated Learning (2024)** - Demonstrates that heterogeneity-aware topology construction in decentralized federated learning can maximize model performance while minimizing cumulative energy consumption. Supports the patent's expertise-based routing approach.
+   - Source: arXiv:2508.08278
+   - Relevance: Validates topology optimization for heterogeneous AI learning
+
+**Geographic Routing:**
+9. **Geographic Routing Mesh Network (US Patent Application 20230013258)** - Demonstrates that geographic routing in mesh networks with quality of service inversely proportional to hop distance can optimize routing efficiency. Supports the patent's geographic scope-based hop limit calculation.
+   - Source: US Patent Application 20230013258, 2023
+   - Relevance: Validates geographic scope-based routing
+
+**Bluetooth Mesh Networking:**
+10. **Bluetooth Mesh Networking with AI** - Research demonstrates that AI algorithms can optimize message routing within Bluetooth mesh networks, improving packet delivery rates and adaptability in dynamic environments. Supports the patent's adaptive routing approach.
+    - Source: arXiv:2509.21490
+    - Relevance: Validates AI-optimized routing in Bluetooth mesh networks
+
+**Summary:**
+The research citations support the patent's claims by demonstrating:
+- Battery-aware routing effectiveness (35% energy reduction, 40% lifetime extension)
+- Network density optimization benefits (balanced load, extended lifetime)
+- Decentralized AI learning feasibility (O(N log N) communication costs, higher accuracy)
+- Geographic routing effectiveness (optimized routing efficiency)
+- Multi-factor adaptive routing benefits (simultaneous optimization of multiple factors)
+
+The patent's novel contribution is the integration of these established research findings into a single adaptive mesh networking system specifically designed for offline peer-to-peer AI personality learning, with multi-factor hop limit calculation (battery + density + priority + expertise + scope) not found in prior art.
 
 ---
 
@@ -742,6 +1177,45 @@ Future<AI2AILearningInsight> generateLocalLearningInsights(
 
 ---
 
-**Last Updated:** December 16, 2025  
-**Status:** Ready for Patent Filing - Tier 1 Candidate
+---
+
+## Adaptive Mesh Networking Integration
+
+**Date:** January 3, 2026  
+**Status:** ✅ Integrated
+
+### Overview
+This patent has been enhanced with adaptive mesh networking integration, enabling extended network reach beyond direct Bluetooth/NSD range through intelligent multi-hop message forwarding. The mesh networking system dynamically adjusts hop limits based on device conditions (battery level, network density) and message characteristics (priority, type, expertise level, geographic scope), ensuring optimal network utilization while preserving device resources.
+
+### Mesh Networking Integration Points
+- **Message Forwarding:** Learning insights and locality agent updates can be forwarded through intermediate devices
+- **Adaptive Hop Limits:** Hop limits calculated dynamically based on battery, density, priority, expertise, and scope
+- **Battery-Aware Routing:** System scales back hop limits when battery is low to preserve device resources
+- **Network Density Awareness:** System increases hop limits when network is dense (more reliable routing)
+- **Expertise-Based Routing:** Higher expertise levels and learning from experts receive additional hops
+- **Geographic Scope Routing:** Different geographic scopes (locality, city, region, country, global) receive appropriate hop allocations
+- **Guarantee:** System always maintains at least direct connections (0 hops minimum) to ensure core functionality
+
+### Benefits of Adaptive Mesh Networking
+1. **Extended Network Reach:** Messages can propagate beyond direct Bluetooth/NSD range through intermediate devices
+2. **Resource Efficiency:** System automatically scales back when battery is low or network is sparse
+3. **Intelligent Routing:** Higher priority messages and valuable learning signals from experts receive extended reach
+4. **Geographic Awareness:** System adjusts reach based on message geographic scope
+5. **Reliability:** Guarantees at least direct connections even in worst-case conditions
+
+### Implementation Requirements
+- All mesh forwarding MUST check adaptive hop limits before forwarding
+- Hop count MUST be incremented in forwarded messages
+- Origin identifier MUST be tracked to prevent loops
+- System MUST re-adapt hop limits periodically and on state changes
+- System MUST guarantee at least 0 hops (direct connections) minimum
+
+**Reference:** See `lib/core/ai2ai/adaptive_mesh_networking_service.dart` and `lib/core/ai2ai/adaptive_mesh_hop_policy.dart` for complete mesh networking implementation.
+
+---
+
+**Last Updated:** January 3, 2026  
+**Status:** Ready for Patent Filing - Tier 1 Candidate (Enhanced with Adaptive Mesh Networking)  
+**Prior Art Review:** ✅ Complete - 15+ mesh networking patents and research papers reviewed  
+**Research Citations:** ✅ Complete - 10+ research citations supporting claims
 

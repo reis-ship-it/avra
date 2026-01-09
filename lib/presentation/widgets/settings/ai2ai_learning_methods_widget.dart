@@ -12,8 +12,8 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/services/ai2ai_learning_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/services/ai2ai_learning_service.dart';
 
 /// Widget displaying AI2AI learning methods overview
 class AI2AILearningMethodsWidget extends StatefulWidget {

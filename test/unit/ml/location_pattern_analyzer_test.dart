@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ml/location_pattern_analyzer.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/core/ml/location_pattern_analyzer.dart';
+import 'package:avrai/core/models/user.dart';
 
 void main() {
   group('LocationPatternAnalyzer', () {

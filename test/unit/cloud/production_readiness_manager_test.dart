@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/cloud/production_readiness_manager.dart';
-import 'package:spots/core/cloud/microservices_manager.dart';
-import 'package:spots/core/cloud/realtime_sync_manager.dart';
-import 'package:spots/core/cloud/edge_computing_manager.dart';
-import 'package:spots/core/deployment/production_manager.dart';
+import 'package:avrai/core/cloud/production_readiness_manager.dart';
+import 'package:avrai/core/cloud/microservices_manager.dart';
+import 'package:avrai/core/cloud/realtime_sync_manager.dart';
+import 'package:avrai/core/cloud/edge_computing_manager.dart';
+import 'package:avrai/core/deployment/production_manager.dart';
 
 /// SPOTS Production Readiness Manager Tests
 /// Date: November 20, 2025

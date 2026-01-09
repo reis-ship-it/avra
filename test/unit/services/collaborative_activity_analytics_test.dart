@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart';
-import 'package:spots/core/services/admin_auth_service.dart';
-import 'package:spots/core/services/admin_communication_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/expertise_service.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/ml/predictive_analytics.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
+import 'package:avrai/core/services/admin_communication_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/expertise_service.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/ml/predictive_analytics.dart';
+import 'package:avrai/core/services/storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Tests for Collaborative Activity Analytics

@@ -6,11 +6,11 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/edge_function_service.dart';
-import 'package:spots/core/services/onboarding_aggregation_service.dart';
-import 'package:spots/core/services/onboarding_dimension_mapper.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/edge_function_service.dart';
+import 'package:avrai/core/services/onboarding_aggregation_service.dart';
+import 'package:avrai/core/services/onboarding_dimension_mapper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final class _CapturingEdgeFunctionService extends EdgeFunctionService {

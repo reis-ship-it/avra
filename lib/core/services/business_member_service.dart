@@ -1,6 +1,6 @@
-import 'package:spots/core/models/business_member.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/business_member.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Business Member Service

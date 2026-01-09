@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/tax_compliance_service.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/tax_compliance_service.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 
@@ -151,7 +151,7 @@ void main() {
           if (callCount == 1) {
             throw Exception('Transient error');
           }
-          return null;
+          return;
           // Second call succeeds
         });
         
@@ -303,7 +303,7 @@ void main() {
           if (initCallCount == 1) {
             throw Exception('Initialization failed');
           }
-          return null;
+          return;
         });
         
         final paymentService = PaymentService(

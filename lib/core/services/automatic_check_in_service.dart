@@ -1,8 +1,8 @@
-import 'package:spots/core/models/visit.dart';
-import 'package:spots/core/models/automatic_check_in.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_ingestion_service_v1.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/models/visit.dart';
+import 'package:avrai/core/models/automatic_check_in.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_ingestion_service_v1.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:convert';
 import 'dart:io';

@@ -1,8 +1,8 @@
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/spot.dart';
 
 /// Partnership Event Model
 ///

@@ -1,7 +1,7 @@
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Service for admin access to AI2AI communication logs
 /// Provides aggregated view of all AI-to-AI interactions

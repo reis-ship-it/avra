@@ -1,4 +1,7 @@
 #!/usr/bin/env dart
+// ignore_for_file: avoid_print
+library;
+
 /// Export training data from Supabase to JSON format
 /// Phase 12 Section 2: Neural Network Implementation
 ///

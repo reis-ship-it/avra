@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/expansion_expertise_gain_service.dart';
-import 'package:spots/core/services/geographic_expansion_service.dart';
-import 'package:spots/core/models/geographic_expansion.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/expansion_expertise_gain_service.dart';
+import 'package:avrai/core/services/geographic_expansion_service.dart';
+import 'package:avrai/core/models/geographic_expansion.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 

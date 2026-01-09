@@ -5,24 +5,24 @@
 library;
 
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/domain/usecases/auth/sign_in_usecase.dart';
-import 'package:spots/domain/usecases/auth/sign_up_usecase.dart';
-import 'package:spots/domain/usecases/auth/sign_out_usecase.dart';
-import 'package:spots/domain/usecases/auth/get_current_user_usecase.dart';
-import 'package:spots/domain/usecases/auth/update_password_usecase.dart';
-import 'package:spots/domain/usecases/spots/get_spots_usecase.dart';
-import 'package:spots/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
-import 'package:spots/domain/usecases/spots/create_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/update_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/delete_spot_usecase.dart';
-import 'package:spots/domain/usecases/lists/get_lists_usecase.dart';
-import 'package:spots/domain/usecases/lists/create_list_usecase.dart';
-import 'package:spots/domain/usecases/lists/update_list_usecase.dart';
-import 'package:spots/domain/usecases/lists/delete_list_usecase.dart';
-import 'package:spots/domain/usecases/search/hybrid_search_usecase.dart';
-import 'package:spots/core/services/search_cache_service.dart';
-import 'package:spots/core/services/ai_search_suggestions_service.dart';
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai/domain/usecases/auth/sign_in_usecase.dart';
+import 'package:avrai/domain/usecases/auth/sign_up_usecase.dart';
+import 'package:avrai/domain/usecases/auth/sign_out_usecase.dart';
+import 'package:avrai/domain/usecases/auth/get_current_user_usecase.dart';
+import 'package:avrai/domain/usecases/auth/update_password_usecase.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_usecase.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
+import 'package:avrai/domain/usecases/spots/create_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/update_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/delete_spot_usecase.dart';
+import 'package:avrai/domain/usecases/lists/get_lists_usecase.dart';
+import 'package:avrai/domain/usecases/lists/create_list_usecase.dart';
+import 'package:avrai/domain/usecases/lists/update_list_usecase.dart';
+import 'package:avrai/domain/usecases/lists/delete_list_usecase.dart';
+import 'package:avrai/domain/usecases/search/hybrid_search_usecase.dart';
+import 'package:avrai/core/services/search_cache_service.dart';
+import 'package:avrai/core/services/ai_search_suggestions_service.dart';
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
 import '../helpers/bloc_test_helpers.dart';
 
 // Auth Use Case Mocks
@@ -152,7 +152,7 @@ class MockBehaviorSetup {
         .thenAnswer((_) async => TestDataFactory.createTestUser());
 
     when(() => BlocMockFactory.signOutUseCase.call()).thenAnswer((_) async {
-      return null;
+      return;
     });
 
     when(() => BlocMockFactory.getCurrentUserUseCase.call())
@@ -187,7 +187,7 @@ class MockBehaviorSetup {
 
     when(() => BlocMockFactory.deleteSpotUseCase.call(any()))
         .thenAnswer((_) async {
-          return null;
+          return;
         });
   }
 
@@ -219,7 +219,7 @@ class MockBehaviorSetup {
 
     when(() => BlocMockFactory.deleteListUseCase.call(any()))
         .thenAnswer((_) async {
-          return null;
+          return;
         });
   }
 
@@ -280,7 +280,7 @@ class MockBehaviorSetup {
           includeExternal: any(named: 'includeExternal'),
           result: any(named: 'result'),
         )).thenAnswer((_) async {
-          return null;
+          return;
         });
 
     when(() => BlocMockFactory.aiSearchSuggestionsService.learnFromSearch(
@@ -319,7 +319,7 @@ class MockBehaviorSetup {
     when(() => BlocMockFactory.searchCacheService.prefetchPopularSearches(
           searchFunction: any(named: 'searchFunction'),
         )).thenAnswer((_) async {
-          return null;
+          return;
         });
 
     when(() => BlocMockFactory.searchCacheService.warmLocationCache(
@@ -327,13 +327,13 @@ class MockBehaviorSetup {
           longitude: any(named: 'longitude'),
           nearbySearchFunction: any(named: 'nearbySearchFunction'),
         )).thenAnswer((_) async {
-          return null;
+          return;
         });
 
     when(() => BlocMockFactory.searchCacheService.clearCache(
           preserveOffline: any(named: 'preserveOffline'),
         )).thenAnswer((_) async {
-          return null;
+          return;
         });
 
     when(() => BlocMockFactory.aiSearchSuggestionsService.clearLearningData())

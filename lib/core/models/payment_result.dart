@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_intent.dart';
-import 'package:spots/core/models/revenue_split.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_intent.dart';
+import 'package:avrai/core/models/revenue_split.dart';
 
 /// Payment Result Model
 /// 

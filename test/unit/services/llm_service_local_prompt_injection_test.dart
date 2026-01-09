@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/llm_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
+import 'package:avrai/core/services/llm_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final class _RecordingBackend implements LlmBackend {

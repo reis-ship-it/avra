@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/predictive_analysis_service.dart';
+import 'package:avrai/core/services/predictive_analysis_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Predictive Analysis Service Tests

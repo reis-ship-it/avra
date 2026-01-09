@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/dynamic_threshold_service.dart';
-import 'package:spots/core/services/locality_value_analysis_service.dart';
-import 'package:spots/core/models/expertise_requirements.dart';
+import 'package:avrai/core/services/dynamic_threshold_service.dart';
+import 'package:avrai/core/services/locality_value_analysis_service.dart';
+import 'package:avrai/core/models/expertise_requirements.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Dynamic Threshold Service Tests

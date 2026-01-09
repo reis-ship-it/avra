@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/common/universal_ai_search.dart';
+import 'package:avrai/presentation/widgets/common/universal_ai_search.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for UniversalAISearch

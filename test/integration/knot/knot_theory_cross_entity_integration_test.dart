@@ -8,13 +8,13 @@
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots_knot/models/entity_knot.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart';
-import 'package:spots_knot/services/knot/network_cross_pollination_service.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:avrai_knot/models/entity_knot.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai_knot/services/knot/cross_entity_compatibility_service.dart';
+import 'package:avrai_knot/services/knot/network_cross_pollination_service.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 import '../../helpers/integration_test_helpers.dart';

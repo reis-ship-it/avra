@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ml/user_matching.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/core/ml/user_matching.dart';
+import 'package:avrai/core/models/user.dart';
 
 void main() {
   group('UserMatchingEngine', () {

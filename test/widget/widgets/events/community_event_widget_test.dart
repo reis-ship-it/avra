@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/events/community_event_widget.dart';
+import 'package:avrai/presentation/widgets/events/community_event_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../fixtures/model_factories.dart';
 import '../../../helpers/integration_test_helpers.dart';
@@ -45,6 +45,8 @@ void main() {
         maxAttendees: 10,
         attendeeIds: [],
       );
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       bool registerCalled = false;
       final widget2 = WidgetTestHelpers.createTestableWidget(
         child: CommunityEventWidget(

@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/models/unified_user.dart';
 
 /// Multidimensional behavior assessment for age-appropriate learning
 /// Based on research: behaviors exist on a spectrum, not binary good/bad

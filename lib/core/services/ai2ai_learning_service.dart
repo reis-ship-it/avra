@@ -1,12 +1,12 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
-import 'package:spots/core/ai/ai2ai_learning.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_core/services/logger.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_core/services/logger.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// AI2AI Learning Service
 /// 

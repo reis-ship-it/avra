@@ -5,15 +5,15 @@
 // Phase 9: Admin Knot Visualizer
 
 import 'dart:developer' as developer;
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots_knot/models/knot/knot_distribution_data.dart';
-import 'package:spots_knot/models/knot/knot_pattern_analysis.dart';
-import 'package:spots_knot/models/knot/knot_personality_correlations.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots_knot/services/knot/knot_data_api_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots/core/services/admin_auth_service.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_knot/models/knot/knot_distribution_data.dart';
+import 'package:avrai_knot/models/knot/knot_pattern_analysis.dart';
+import 'package:avrai_knot/models/knot/knot_personality_correlations.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_knot/services/knot/knot_data_api_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
 
 /// Admin service for knot visualization and analysis
 /// 

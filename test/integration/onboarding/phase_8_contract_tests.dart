@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/services/onboarding_place_list_generator.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/services/onboarding_place_list_generator.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 
 /// Phase 8 Contract Tests
 ///
@@ -26,6 +26,7 @@ void main() {
     try {
       await di.init();
     } catch (e) {
+      // ignore: avoid_print
       print('⚠️  DI initialization failed: $e');
     }
   });

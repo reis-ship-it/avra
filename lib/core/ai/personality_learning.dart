@@ -2,18 +2,18 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/multi_path_expertise.dart';
-import 'package:spots/core/models/outcome_result.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/golden_expert_ai_influence_service.dart';
-import 'package:spots/core/services/onboarding_dimension_mapper.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/social_media_vibe_analyzer.dart';
-import 'package:spots/core/ai/quantum/quantum_vibe_engine.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/multi_path_expertise.dart';
+import 'package:avrai/core/models/outcome_result.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/golden_expert_ai_influence_service.dart';
+import 'package:avrai/core/services/onboarding_dimension_mapper.dart';
+import 'package:avrai/core/services/personality_sync_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/social_media_vibe_analyzer.dart';
+import 'package:avrai/core/ai/quantum/quantum_vibe_engine.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // Lightweight preferences abstraction to allow in-memory prefs during tests

@@ -10,26 +10,33 @@
 
 import 'dart:developer' as developer;
 import 'dart:async';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots_quantum/models/quantum_entity_type.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_core/models/user.dart';
-import 'package:spots_core/enums/user_enums.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots_quantum/services/quantum/location_timing_quantum_state_service.dart';
-import 'package:spots_knot/services/knot/cross_entity_compatibility_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots/core/services/quantum/meaningful_experience_calculator.dart';
-import 'package:spots/core/services/quantum/user_journey_tracking_service.dart';
-import 'package:spots_core/models/unified_location_data.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/user.dart';
+import 'package:avrai_core/enums/user_enums.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai_quantum/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai_knot/services/knot/cross_entity_compatibility_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
+import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
+import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai/core/services/quantum/meaningful_experience_calculator.dart';
+import 'package:avrai/core/services/quantum/user_journey_tracking_service.dart';
+import 'package:avrai_core/models/unified_location_data.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
+import 'package:avrai/core/ai2ai/anonymous_communication.dart';
+import 'package:avrai/core/services/hybrid_encryption_service.dart';
 import 'dart:math' as math;
 
 /// Real-time user calling service
@@ -68,6 +75,12 @@ class RealTimeUserCallingService {
   final PersonalityKnotService _personalityKnotService;
   final MeaningfulExperienceCalculator _meaningfulExperienceCalculator;
   final UserJourneyTrackingService _journeyTrackingService;
+  final KnotEvolutionStringService _stringService;
+  final KnotWorldsheetService _worldsheetService;
+  final KnotFabricService _fabricService;
+  final KnotStorageService _knotStorage;
+  final AnonymousCommunicationProtocol? _ai2aiProtocol;
+  final HybridEncryptionService? _encryptionService;
 
   // Performance optimization: Cache for quantum states and compatibility
   final Map<String, CachedQuantumState> _quantumStateCache = {};
@@ -100,6 +113,12 @@ class RealTimeUserCallingService {
     required PersonalityKnotService personalityKnotService,
     required MeaningfulExperienceCalculator meaningfulExperienceCalculator,
     required UserJourneyTrackingService journeyTrackingService,
+    required KnotEvolutionStringService stringService,
+    required KnotWorldsheetService worldsheetService,
+    required KnotFabricService fabricService,
+    required KnotStorageService knotStorage,
+    AnonymousCommunicationProtocol? ai2aiProtocol,
+    HybridEncryptionService? encryptionService,
   })  : _atomicClock = atomicClock,
         _entanglementService = entanglementService,
         _locationTimingService = locationTimingService,
@@ -111,7 +130,13 @@ class RealTimeUserCallingService {
         _preferencesProfileService = preferencesProfileService,
         _personalityKnotService = personalityKnotService,
         _meaningfulExperienceCalculator = meaningfulExperienceCalculator,
-        _journeyTrackingService = journeyTrackingService;
+        _journeyTrackingService = journeyTrackingService,
+        _stringService = stringService,
+        _worldsheetService = worldsheetService,
+        _fabricService = fabricService,
+        _knotStorage = knotStorage,
+        _ai2aiProtocol = ai2aiProtocol,
+        _encryptionService = encryptionService;
 
   /// Call users to event immediately upon event creation
   ///
@@ -331,65 +356,123 @@ class RealTimeUserCallingService {
 
   /// Calculate user compatibility with entangled state
   ///
-  /// **Formula:**
+  /// **Hybrid Formula (Geometric Mean for Core + Weighted Average for Modifiers):**
   /// ```
-  /// user_entangled_compatibility = 0.5 * F(ρ_user, ρ_entangled) +
-  ///                               0.3 * F(ρ_user_location, ρ_event_location) +
-  ///                               0.2 * F(ρ_user_timing, ρ_event_timing) +
-  ///                               0.15 * C_knot_bonus
+  /// core_compatibility = (quantum * knot * string_evolution)^(1/3)  // Geometric mean
+  /// modifiers = 0.4 * location + 0.35 * timing + 0.25 * worldsheet  // Weighted average
+  /// final_compatibility = core_compatibility * (0.7 + 0.3 * modifiers)
   /// ```
+  ///
+  /// **Why Hybrid:**
+  /// - Core factors (quantum, knot, string) must ALL be reasonable (multiplicative)
+  /// - Modifiers (location, timing, worldsheet) can enhance but not break (additive)
+  /// - Mathematically aligned with quantum operations (multiplicative for entanglement)
   Future<double> _calculateUserCompatibility({
     required QuantumEntityState userState,
     required EntangledQuantumState entangledState,
     required List<QuantumEntityState> eventEntities,
   }) async {
-    // 1. Quantum entanglement compatibility (50% weight)
+    // Get event start time from event entities
+    final eventStartTime = _extractEventStartTime(eventEntities);
+
+    // ===== CORE FACTORS (Geometric Mean) =====
+    // These must ALL be reasonable - if any is 0, overall compatibility is 0
+
+    // 1. Quantum entanglement compatibility
     final quantumFidelity = await _entanglementService.calculateFidelity(
       await _entanglementService.createEntangledState(
         entityStates: [userState],
       ),
       entangledState,
     );
-    final quantumCompatibility = 0.5 * quantumFidelity;
+    final quantumCompatibility = quantumFidelity.clamp(0.0, 1.0);
 
-    // 2. Location compatibility (30% weight)
-    double locationCompatibility = 0.0;
+    // 2. Knot compatibility bonus
+    double knotCompatibility = 0.5; // Default: neutral if not available
+    if (_knotCompatibilityService != null) {
+      try {
+        final knotBonus = await _calculateKnotCompatibilityBonus(
+          userState: userState,
+          eventEntities: eventEntities,
+        );
+        knotCompatibility = knotBonus.clamp(0.0, 1.0);
+      } catch (e) {
+        developer.log(
+          'Error calculating knot compatibility: $e, using neutral 0.5',
+          name: _logName,
+        );
+      }
+    }
+
+    // 3. String evolution compatibility
+    double stringEvolutionCompatibility = 0.5; // Default: neutral if not available
+    if (eventStartTime != null) {
+      try {
+        final agentId = await _agentIdService.getUserAgentId(userState.entityId);
+        final futureKnot = await _stringService.predictFutureKnot(
+          agentId,
+          eventStartTime,
+        );
+
+        if (futureKnot != null) {
+          final currentKnot = await _knotStorage.loadKnot(agentId);
+          if (currentKnot != null) {
+            final evolutionScore = _calculateKnotEvolutionScore(
+              currentKnot: currentKnot,
+              futureKnot: futureKnot,
+            );
+            stringEvolutionCompatibility = evolutionScore.clamp(0.0, 1.0);
+          }
+        }
+      } catch (e) {
+        developer.log(
+          'Error calculating string evolution compatibility: $e, using neutral 0.5',
+          name: _logName,
+        );
+      }
+    }
+
+    // Calculate core compatibility using geometric mean
+    // If any core factor is 0, overall is 0 (critical failure)
+    final coreCompatibility = _geometricMean([
+      quantumCompatibility,
+      knotCompatibility,
+      stringEvolutionCompatibility,
+    ]);
+
+    // ===== MODIFIERS (Weighted Average) =====
+    // These can enhance but not break - additive contribution
+
+    // 1. Location compatibility
+    double locationCompatibility = 0.5; // Default: neutral
     if (userState.location != null) {
-      // Find event location from event entities
       final eventLocation = _findEventLocation(eventEntities);
       if (eventLocation != null) {
         locationCompatibility = LocationCompatibilityCalculator.calculateLocationCompatibility(
           userState.location!,
           eventLocation,
-        );
+        ).clamp(0.0, 1.0);
       }
     }
-    final locationContribution = 0.3 * locationCompatibility;
 
-    // 3. Timing compatibility with flexibility factor (20% weight)
-    double timingCompatibility = 0.0;
-    double timingFlexibilityFactor = 1.0;
-    
+    // 2. Timing compatibility with flexibility factor
+    double timingCompatibility = 0.5; // Default: neutral
     if (userState.timing != null) {
-      // Find event timing from event entities
       final eventTiming = _findEventTiming(eventEntities);
       if (eventTiming != null) {
-        timingCompatibility = TimingCompatibilityCalculator.calculateTimingCompatibility(
+        final baseTiming = TimingCompatibilityCalculator.calculateTimingCompatibility(
           userState.timing!,
           eventTiming,
-        );
+        ).clamp(0.0, 1.0);
 
-        // Calculate timing flexibility factor (best-effort; failures fall back to 1.0).
+        double timingFlexibilityFactor = 1.0;
         try {
-          // Calculate meaningful experience score.
           final meaningfulScore =
               await _meaningfulExperienceCalculator.calculateMeaningfulExperienceScore(
             userState: userState,
             entangledState: entangledState,
             eventEntities: eventEntities,
           );
-
-          // Calculate timing flexibility factor.
           timingFlexibilityFactor =
               await _meaningfulExperienceCalculator.calculateTimingFlexibilityFactor(
             userState: userState,
@@ -401,37 +484,294 @@ class RealTimeUserCallingService {
             'Error calculating timing flexibility factor: $e, using default 1.0',
             name: _logName,
           );
-          // Use default 1.0 (no flexibility adjustment) on error.
-          timingFlexibilityFactor = 1.0;
+        }
+        timingCompatibility = (baseTiming * timingFlexibilityFactor).clamp(0.0, 1.0);
         }
       }
-    }
-    final timingContribution = 0.2 * timingFlexibilityFactor * timingCompatibility;
 
-    // 4. Knot compatibility bonus (15% weight, optional)
-    double knotBonus = 0.0;
-    if (_knotCompatibilityService != null) {
+    // 3. Group evolution compatibility (worldsheet)
+    double worldsheetCompatibility = 0.5; // Default: neutral
+    if (eventStartTime != null) {
       try {
-        knotBonus = await _calculateKnotCompatibilityBonus(
-          userState: userState,
+        final eventId = _extractEventId(eventEntities);
+        if (eventId != null) {
+          final groupEvolution = await _calculateGroupEvolutionCompatibility(
+            eventId: eventId,
+            userId: userState.entityId,
+            eventTime: eventStartTime,
           eventEntities: eventEntities,
         );
+          worldsheetCompatibility = groupEvolution.clamp(0.0, 1.0);
+        }
       } catch (e) {
         developer.log(
-          'Error calculating knot compatibility: $e, using 0.0',
+          'Error calculating group evolution compatibility: $e, using neutral 0.5',
           name: _logName,
         );
       }
     }
-    final knotContribution = 0.15 * knotBonus;
 
-    // Combined compatibility
-    final totalCompatibility = quantumCompatibility +
-        locationContribution +
-        timingContribution +
-        knotContribution;
+    // Calculate modifiers using weighted average
+    // Weights: 40% location, 35% timing, 25% worldsheet
+    final modifiers = (0.40 * locationCompatibility +
+            0.35 * timingCompatibility +
+            0.25 * worldsheetCompatibility)
+        .clamp(0.0, 1.0);
 
-    return totalCompatibility.clamp(0.0, 1.0);
+    // ===== FINAL COMBINATION =====
+    // core * (base + modifier_boost)
+    // Base of 0.7 means core compatibility is 70% of final score
+    // Modifiers can boost up to 30% (0.7 + 0.3 = 1.0)
+    final finalCompatibility = coreCompatibility * (0.7 + 0.3 * modifiers);
+
+    return finalCompatibility.clamp(0.0, 1.0);
+  }
+
+  /// Calculate geometric mean of values
+  ///
+  /// **Formula:** (x₁ * x₂ * ... * xₙ)^(1/n)
+  ///
+  /// **Properties:**
+  /// - If any value is 0, result is 0 (critical failure)
+  /// - More sensitive to low values than arithmetic mean
+  /// - Appropriate for multiplicative relationships
+  double _geometricMean(List<double> values) {
+    if (values.isEmpty) return 0.0;
+    
+    // Filter out zeros (if any core factor is 0, compatibility is 0)
+    final nonZeroValues = values.where((v) => v > 0.0).toList();
+    if (nonZeroValues.length < values.length) {
+      return 0.0; // At least one core factor is 0
+    }
+
+    // Calculate product
+    double product = 1.0;
+    for (final value in nonZeroValues) {
+      product *= value.clamp(0.0, 1.0);
+    }
+
+    // Calculate geometric mean: (product)^(1/n)
+    final n = nonZeroValues.length.toDouble();
+    return math.pow(product, 1.0 / n).toDouble();
+  }
+
+  /// Calculate compatibility based on group evolution (worldsheet)
+  ///
+  /// **Process:**
+  /// 1. Create worldsheet for event group
+  /// 2. Get fabric at event time
+  /// 3. Calculate how well user's knot fits in fabric
+  /// 4. Return compatibility score
+  Future<double> _calculateGroupEvolutionCompatibility({
+    required String eventId,
+    required String userId,
+    required DateTime eventTime,
+    required List<QuantumEntityState> eventEntities,
+  }) async {
+    try {
+      // Get attendee IDs from event entities
+      final attendeeIds = <String>[];
+      for (final entity in eventEntities) {
+        if (entity.entityType == QuantumEntityType.user) {
+          attendeeIds.add(entity.entityId);
+        }
+      }
+
+      // Add current user if not already in list
+      if (!attendeeIds.contains(userId)) {
+        attendeeIds.add(userId);
+      }
+
+      if (attendeeIds.length < 2) {
+        return 0.5; // Need at least 2 users for fabric
+      }
+
+      // Convert user IDs to agent IDs
+      final agentIds = <String>[];
+      for (final userId in attendeeIds) {
+        final agentId = await _agentIdService.getUserAgentId(userId);
+        agentIds.add(agentId);
+      }
+
+      // Create worldsheet for event group
+      final worldsheet = await _worldsheetService.createWorldsheet(
+        groupId: eventId,
+        userIds: agentIds,
+        startTime: eventTime.subtract(const Duration(days: 30)),
+        endTime: eventTime.add(const Duration(days: 30)),
+      );
+
+      if (worldsheet == null) {
+        return 0.5; // Neutral if no worldsheet available
+      }
+
+      // Get fabric at event time
+      final fabricAtEventTime = worldsheet.getFabricAtTime(eventTime);
+      if (fabricAtEventTime == null) {
+        return 0.5;
+      }
+
+      // Get user's predicted future knot at event time
+      final userAgentId = await _agentIdService.getUserAgentId(userId);
+      final userFutureKnot = await _stringService.predictFutureKnot(
+        userAgentId,
+        eventTime,
+      );
+
+      if (userFutureKnot == null) {
+        return 0.5;
+      }
+
+      // Calculate fabric stability with user's future knot
+      final fabricStability = await _fabricService.measureFabricStability(
+        fabricAtEventTime,
+      );
+
+      // Calculate knot compatibility with fabric
+      // Get all knots from fabric
+      final fabricKnots = fabricAtEventTime.userKnots;
+      if (fabricKnots.isEmpty) {
+        return 0.5;
+      }
+
+      // Calculate average compatibility with fabric knots
+      var totalCompatibility = 0.0;
+      var count = 0;
+      for (final fabricKnot in fabricKnots) {
+        final compatibility = _calculateTopologicalCompatibility(
+          knotA: userFutureKnot,
+          knotB: fabricKnot,
+        );
+        totalCompatibility += compatibility;
+        count++;
+      }
+
+      final knotCompatibility = count > 0 ? totalCompatibility / count : 0.5;
+
+      // Combined: 60% fabric stability + 40% knot compatibility
+      return (0.6 * fabricStability + 0.4 * knotCompatibility).clamp(0.0, 1.0);
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error calculating group evolution compatibility: $e',
+        error: e,
+        stackTrace: stackTrace,
+        name: _logName,
+      );
+      return 0.5; // Neutral on error
+    }
+  }
+
+  /// Calculate topological compatibility between two knots
+  double _calculateTopologicalCompatibility({
+    required PersonalityKnot knotA,
+    required PersonalityKnot knotB,
+  }) {
+    try {
+      // Use knot invariants for compatibility
+      final crossingDiff = (knotA.invariants.crossingNumber - 
+                           knotB.invariants.crossingNumber).abs();
+      final writheDiff = (knotA.invariants.writhe - 
+                         knotB.invariants.writhe).abs();
+
+      final maxCrossings = math.max(
+        knotA.invariants.crossingNumber,
+        knotB.invariants.crossingNumber,
+      );
+      final crossingSimilarity = maxCrossings > 0
+          ? 1.0 - (crossingDiff / maxCrossings).clamp(0.0, 1.0)
+          : 0.5;
+
+      final writheSimilarity = writheDiff < 0.1 
+          ? 1.0 
+          : (1.0 - writheDiff.clamp(0.0, 1.0));
+
+      // Combined: 60% crossing similarity + 40% writhe similarity
+      return (0.6 * crossingSimilarity + 0.4 * writheSimilarity).clamp(0.0, 1.0);
+    } catch (e) {
+      developer.log(
+        'Error calculating topological compatibility: $e',
+        name: _logName,
+      );
+      return 0.5;
+    }
+  }
+
+  /// Extract event ID from event entities
+  String? _extractEventId(List<QuantumEntityState> eventEntities) {
+    for (final entity in eventEntities) {
+      if (entity.entityType == QuantumEntityType.event) {
+        return entity.entityId;
+      }
+    }
+    return null;
+  }
+
+  /// Extract event start time from event entities
+  DateTime? _extractEventStartTime(List<QuantumEntityState> eventEntities) {
+    for (final entity in eventEntities) {
+      if (entity.entityType == QuantumEntityType.event) {
+        // Try to extract start time from entity characteristics
+        final characteristics = entity.entityCharacteristics;
+        if (characteristics.containsKey('startTime')) {
+          final startTime = characteristics['startTime'];
+          if (startTime is DateTime) {
+            return startTime;
+          } else if (startTime is String) {
+            try {
+              return DateTime.parse(startTime);
+            } catch (e) {
+              // Continue to next entity
+            }
+          }
+        }
+        // Fallback: use timing quantum state if available
+        if (entity.timing != null) {
+          // Extract from timing state (simplified - would need actual implementation)
+          // For now, return null and let caller handle
+        }
+      }
+    }
+    return null;
+  }
+
+  /// Calculate knot evolution score between current and future knot
+  ///
+  /// **Formula:**
+  /// evolution_score = f(crossing_diff, writhe_diff, complexity_change)
+  ///
+  /// Higher evolution = more meaningful match (user is growing/changing)
+  double _calculateKnotEvolutionScore({
+    required PersonalityKnot currentKnot,
+    required PersonalityKnot futureKnot,
+  }) {
+    try {
+      // Calculate differences in knot invariants
+      final crossingDiff = (futureKnot.invariants.crossingNumber - 
+                           currentKnot.invariants.crossingNumber).abs();
+      final writheDiff = (futureKnot.invariants.writhe - 
+                         currentKnot.invariants.writhe).abs();
+
+      // Evolution score: normalized difference
+      // Higher difference = more evolution = more meaningful
+      final maxCrossings = math.max(
+        currentKnot.invariants.crossingNumber,
+        futureKnot.invariants.crossingNumber,
+      );
+      final crossingEvolution = maxCrossings > 0 
+          ? (crossingDiff / maxCrossings).clamp(0.0, 1.0)
+          : 0.0;
+
+      final writheEvolution = writheDiff.clamp(0.0, 1.0);
+
+      // Combined: 60% crossing evolution + 40% writhe evolution
+      return (0.6 * crossingEvolution + 0.4 * writheEvolution).clamp(0.0, 1.0);
+    } catch (e) {
+      developer.log(
+        'Error calculating knot evolution score: $e',
+        name: _logName,
+      );
+      return 0.0;
+    }
   }
 
   /// Get user quantum state (with caching)
@@ -1067,6 +1407,13 @@ class RealTimeUserCallingService {
   /// Send event call notification to user
   ///
   /// Sends push notification when user is called to an event
+  /// Send event call notification via AI2AI mesh with Signal Protocol encryption
+  ///
+  /// **Enhanced with AI2AI Mesh + Signal Protocol:**
+  /// 1. Creates anonymous notification payload (privacy-preserving)
+  /// 2. Encrypts using Signal Protocol (via HybridEncryptionService)
+  /// 3. Routes through AI2AI mesh (via AnonymousCommunicationProtocol)
+  /// 4. Falls back to database storage if AI2AI services unavailable
   Future<void> _sendEventCallNotification({
     required String userId,
     required String eventId,
@@ -1079,45 +1426,97 @@ class RealTimeUserCallingService {
         name: _logName,
       );
 
-      // TODO: Implement actual push notification
-      // For now, log the notification
-      // In production, would use Firebase Cloud Messaging or similar
-      // Example:
-      // await firebaseMessaging.sendNotification(
-      //   userId: userId,
-      //   title: isUpdate ? 'Event Match Updated' : 'New Event Match',
-      //   body: 'You have a ${(compatibility * 100).round()}% match with an event!',
-      //   data: {'eventId': eventId, 'compatibility': compatibility.toString()},
-      // );
-
-      // Store notification in database for in-app notifications
-      if (_supabaseService.isAvailable) {
+      // 1. Try AI2AI mesh + Signal Protocol (if available)
+      final ai2aiProtocol = _ai2aiProtocol;
+      final encryptionService = _encryptionService;
+      if (ai2aiProtocol != null && encryptionService != null) {
         try {
-          final client = _supabaseService.client;
-          await client.from('notifications').insert({
-            'user_id': userId,
+          // Get agent ID for recipient (user)
+          final recipientAgentId = await _agentIdService.getUserAgentId(userId);
+
+          // Create anonymous notification payload (no user data, just event info)
+          final notificationPayload = {
             'type': isUpdate ? 'event_call_updated' : 'event_call',
-            'title': isUpdate ? 'Event Match Updated' : 'New Event Match',
-            'body': 'You have a ${(compatibility * 100).round()}% match with an event!',
-            'data': {
-              'eventId': eventId,
-              'compatibility': compatibility,
-            },
-            'created_at': DateTime.now().toIso8601String(),
-          });
-        } catch (e) {
+            'eventId': eventId, // Event ID is public, no privacy concern
+            'compatibility': compatibility, // Compatibility score (0.0-1.0)
+            'timestamp': DateTime.now().toIso8601String(),
+          };
+
+          // Route through AI2AI mesh with Signal Protocol encryption
+          // sendEncryptedMessage handles encryption internally via MessageEncryptionService
+          // Parameters are positional: targetAgentId, messageType, anonymousPayload
+          await ai2aiProtocol.sendEncryptedMessage(
+            recipientAgentId, // targetAgentId (positional)
+            MessageType.recommendationShare, // messageType (positional) - Use recommendationShare for event recommendations
+            notificationPayload, // anonymousPayload (positional)
+          );
+
           developer.log(
-            'Error storing notification in database: $e',
+            '✅ Notification sent via AI2AI mesh + Signal Protocol to user $userId',
             name: _logName,
           );
+
+          // Still store in database for in-app notifications (fallback)
+          await _storeNotificationInDatabase(
+            userId: userId,
+            eventId: eventId,
+            compatibility: compatibility,
+            isUpdate: isUpdate,
+          );
+
+          return; // Successfully sent via AI2AI mesh
+        } catch (e) {
+          developer.log(
+            'Error sending notification via AI2AI mesh: $e, falling back to database',
+            name: _logName,
+          );
+          // Fall through to database storage
         }
       }
+
+      // 2. Fallback: Store notification in database for in-app notifications
+      await _storeNotificationInDatabase(
+        userId: userId,
+        eventId: eventId,
+        compatibility: compatibility,
+        isUpdate: isUpdate,
+      );
     } catch (e) {
       developer.log(
         'Error sending event call notification: $e',
         name: _logName,
       );
       // Don't rethrow - notification failure shouldn't block calling
+    }
+  }
+
+  /// Store notification in database (helper method)
+  Future<void> _storeNotificationInDatabase({
+    required String userId,
+    required String eventId,
+    required double compatibility,
+    required bool isUpdate,
+  }) async {
+    if (_supabaseService.isAvailable) {
+      try {
+        final client = _supabaseService.client;
+        await client.from('notifications').insert({
+          'user_id': userId,
+          'type': isUpdate ? 'event_call_updated' : 'event_call',
+          'title': isUpdate ? 'Event Match Updated' : 'New Event Match',
+          'body': 'You have a ${(compatibility * 100).round()}% match with an event!',
+          'data': {
+            'eventId': eventId,
+            'compatibility': compatibility,
+          },
+          'created_at': DateTime.now().toIso8601String(),
+        });
+      } catch (e) {
+        developer.log(
+          'Error storing notification in database: $e',
+          name: _logName,
+        );
+      }
     }
   }
 }

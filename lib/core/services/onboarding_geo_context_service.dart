@@ -1,6 +1,6 @@
-import 'package:spots/core/services/geo_hierarchy_service.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// Best-effort onboarding geo context resolver (v1)
 ///

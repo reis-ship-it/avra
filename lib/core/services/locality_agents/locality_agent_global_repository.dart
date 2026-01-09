@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 
-import 'package:spots/core/services/locality_agents/locality_agent_models_v1.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_models_v1.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// Reads cached + remote global priors for LocalityAgents (v1).
 ///

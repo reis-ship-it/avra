@@ -5,8 +5,8 @@
 
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/crypto/signal/signal_ffi_bindings.dart';
-import 'package:spots/core/crypto/signal/signal_types.dart';
+import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
 
 void main() {
   group('SignalFFIBindings - Prekey Bundle', () {

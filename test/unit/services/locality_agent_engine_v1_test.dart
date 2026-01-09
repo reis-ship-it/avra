@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/visit.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_engine.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_global_repository.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_local_store.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_models_v1.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/models/visit.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_engine.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_global_repository.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_local_store.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_models_v1.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 import '../../mocks/mock_storage_service.dart';
 

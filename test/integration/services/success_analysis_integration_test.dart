@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/event_success_metrics.dart';
-import 'package:spots/core/models/event_success_level.dart';
-import 'package:spots/core/models/event_feedback.dart' hide PartnerRating;
-import 'package:spots/core/models/partner_rating.dart';
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_success_metrics.dart';
+import 'package:avrai/core/models/event_success_level.dart';
+import 'package:avrai/core/models/event_feedback.dart' hide PartnerRating;
+import 'package:avrai/core/models/partner_rating.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 import '../../fixtures/model_factories.dart';
 
 /// Integration tests for success analysis flow

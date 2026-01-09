@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/onboarding/homebase_selection_page.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/presentation/pages/onboarding/homebase_selection_page.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Widget tests for HomebaseSelectionPage
 /// Tests homebase selection page UI, callbacks, and state management

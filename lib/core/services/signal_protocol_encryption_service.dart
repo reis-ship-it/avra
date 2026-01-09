@@ -5,11 +5,11 @@
 import 'dart:developer' as developer;
 import 'dart:typed_data';
 import 'dart:convert';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/crypto/signal/signal_protocol_service.dart';
-import 'package:spots/core/crypto/signal/signal_types.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/crypto/signal/signal_protocol_service.dart';
+import 'package:avrai/core/crypto/signal/signal_types.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
 
 /// Signal Protocol Encryption Service
 /// 

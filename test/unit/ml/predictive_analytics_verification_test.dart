@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ml/predictive_analytics.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/core/ml/predictive_analytics.dart';
+import 'package:avrai/core/models/user.dart';
 
 /// Predictive Analytics Verification Test
 /// OUR_GUTS.md: "Authenticity Over Algorithms" - Privacy-preserving predictive modeling

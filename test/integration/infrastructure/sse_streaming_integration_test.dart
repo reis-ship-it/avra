@@ -19,7 +19,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
-import 'package:spots/core/services/llm_service.dart';
+import 'package:avrai/core/services/llm_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'sse_streaming_integration_test.mocks.dart';

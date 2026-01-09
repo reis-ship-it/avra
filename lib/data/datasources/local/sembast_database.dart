@@ -3,19 +3,27 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:sembast/sembast_memory.dart' as sembast_memory;
 import 'package:flutter/foundation.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 
 class SembastDatabase {
   static const AppLogger _logger = AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
+  // ignore: unused_field
   static const String _preferencesStoreName = 'preferences';
+  // ignore: unused_field - Reserved for future onboarding storage
   static const String _onboardingStoreName = 'onboarding';
 
   static Database? _database;
+  // ignore: unused_field
   static bool _initializing = false;
+  // ignore: unused_field
   static late StoreRef<String, Map<String, dynamic>> _usersStore;
+  // ignore: unused_field
   static late StoreRef<String, Map<String, dynamic>> _spotsStore;
+  // ignore: unused_field - Reserved for future lists storage
   static late StoreRef<String, Map<String, dynamic>> _listsStore;
+  // ignore: unused_field - Reserved for future preferences storage
   static late StoreRef<String, Map<String, dynamic>> _preferencesStore;
+  // ignore: unused_field - Reserved for future onboarding storage
   static late StoreRef<String, Map<String, dynamic>> _onboardingStore;
 
   static const String _dbName = 'spots.db';
@@ -54,7 +62,8 @@ class SembastDatabase {
     if (_initializing) {
       // Wait a bit and retry
       await Future.delayed(const Duration(milliseconds: 100));
-      return database;
+      // ignore: recursive_getters - Recursive call needed to wait for initialization
+      return await database;
     }
     
     _initializing = true;

@@ -1,12 +1,12 @@
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/services/sales_tax_service.dart';
-import 'package:spots/core/services/payment_event_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_intent.dart';
-import 'package:spots/core/models/revenue_split.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/services/sales_tax_service.dart';
+import 'package:avrai/core/services/payment_event_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_intent.dart';
+import 'package:avrai/core/models/revenue_split.dart';
 import 'dart:developer' as developer;
 
 /// Payment Processing Controller

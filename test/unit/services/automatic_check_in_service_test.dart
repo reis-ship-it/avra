@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/automatic_check_in_service.dart';
+import 'package:avrai/core/services/automatic_check_in_service.dart';
 import '../../helpers/test_helpers.dart';
 import '../../helpers/platform_channel_helper.dart';
 
@@ -7,6 +7,8 @@ import '../../helpers/platform_channel_helper.dart';
 void main() {
   group('AutomaticCheckInService Tests', () {
     late AutomaticCheckInService service;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late DateTime testDate;
 
     setUp(() {

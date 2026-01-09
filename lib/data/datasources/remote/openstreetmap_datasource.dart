@@ -1,4 +1,4 @@
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/spot.dart';
 
 /// OpenStreetMap Data Source Interface  
 /// OUR_GUTS.md: "Community, Not Just Places" - Community-driven data that supplements local knowledge

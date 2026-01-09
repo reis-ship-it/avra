@@ -2,16 +2,16 @@ import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
 
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/services/enhanced_connectivity_service.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/ai/personality_learning.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/services/enhanced_connectivity_service.dart';
+import 'package:avrai/core/services/personality_sync_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
 
 // Import for SharedPreferencesCompat (matches injection_container.dart)
-import 'package:spots/core/services/storage_service.dart'
+import 'package:avrai/core/services/storage_service.dart'
     show SharedPreferencesCompat;
 
 /// Sync Controller

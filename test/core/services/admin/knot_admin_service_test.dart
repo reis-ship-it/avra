@@ -5,18 +5,18 @@
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/admin/knot_admin_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots_knot/services/knot/knot_data_api_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots/core/services/admin_auth_service.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots_knot/models/knot/knot_pattern_analysis.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots_knot/services/knot/knot_privacy_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:avrai/core/services/admin/knot_admin_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_knot/services/knot/knot_data_api_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_knot/models/knot/knot_pattern_analysis.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai_knot/services/knot/knot_privacy_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
 import '../../../helpers/platform_channel_helper.dart';
 
 /// Mock Rust API for testing
@@ -152,12 +152,10 @@ class MockAdminAuthService implements AdminAuthService {
     throw UnimplementedError('Mock authenticate not fully implemented');
   }
   
-  @override
   Future<void> signOut() async {
     _isAuthenticated = false;
   }
   
-  @override
   String? getCurrentAdminId() => _isAuthenticated ? 'test_admin' : null;
   
   @override
@@ -210,6 +208,7 @@ void main() {
         // Use in-memory database for tests
         SembastDatabase.useInMemoryForTests();
       } catch (e) {
+      // ignore: avoid_print
         print('Error in setUpAll: $e');
         rethrow;
       }

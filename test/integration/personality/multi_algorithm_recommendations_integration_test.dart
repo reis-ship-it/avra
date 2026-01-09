@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ml/real_time_recommendations.dart';
-import 'package:spots/core/ml/user_matching.dart';
-import 'package:spots/core/ml/social_context_analyzer.dart';
-import 'package:spots/core/ml/feedback_processor.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/core/ml/real_time_recommendations.dart';
+import 'package:avrai/core/ml/user_matching.dart';
+import 'package:avrai/core/ml/social_context_analyzer.dart';
+import 'package:avrai/core/ml/feedback_processor.dart';
+import 'package:avrai/core/models/user.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Integration test for Multi-Algorithm Recommendation System

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/payout_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
+import 'package:avrai/core/services/payout_service.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
 
 import 'payout_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';
@@ -191,6 +191,8 @@ void main() {
           eventId: 'event-124',
           scheduledDate: scheduledDate,
         );
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final payout2 = await service.schedulePayout(
           partyId: 'user-124',
           amount: 75.00,

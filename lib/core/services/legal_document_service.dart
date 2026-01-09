@@ -4,17 +4,17 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart' show sha256;
 import 'package:uuid/uuid.dart';
 
-import 'package:spots/core/legal/event_waiver.dart';
-import 'package:spots/core/legal/privacy_policy.dart';
-import 'package:spots/core/legal/terms_of_service.dart';
-import 'package:spots/core/models/user_agreement.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipts_service_v0.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/legal/event_waiver.dart';
+import 'package:avrai/core/legal/privacy_policy.dart';
+import 'package:avrai/core/legal/terms_of_service.dart';
+import 'package:avrai/core/models/user_agreement.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipts_service_v0.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
 
 /// Legal Document Service
 /// 

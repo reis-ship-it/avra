@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ml/preference_learning.dart';
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/core/ml/preference_learning.dart';
+import 'package:avrai/core/models/user.dart';
 
 /// Preference Learning Engine Tests
 /// Tests user preference learning functionality

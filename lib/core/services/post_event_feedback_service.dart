@@ -1,8 +1,8 @@
-import 'package:spots/core/models/event_feedback.dart' hide PartnerRating;
-import 'package:spots/core/models/partner_rating.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/event_feedback.dart' hide PartnerRating;
+import 'package:avrai/core/models/partner_rating.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Post-Event Feedback Service

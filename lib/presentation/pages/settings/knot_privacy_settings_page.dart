@@ -5,7 +5,7 @@
 // Phase 7: Audio & Privacy
 
 import 'package:flutter/material.dart';
-import 'package:spots_knot/services/knot/knot_privacy_service.dart';
+import 'package:avrai_knot/services/knot/knot_privacy_service.dart';
 
 /// Settings page for knot privacy controls
 class KnotPrivacySettingsPage extends StatefulWidget {

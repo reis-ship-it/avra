@@ -3,8 +3,8 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:spots/core/services/google_place_id_finder_service.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/services/google_place_id_finder_service.dart';
+import 'package:avrai/core/models/spot.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'google_place_id_finder_service_test.mocks.dart';

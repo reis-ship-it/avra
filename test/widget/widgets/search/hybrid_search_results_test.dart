@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/search/hybrid_search_results.dart';
-import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
+import 'package:avrai/presentation/widgets/search/hybrid_search_results.dart';
+import 'package:avrai/presentation/blocs/search/hybrid_search_bloc.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
 

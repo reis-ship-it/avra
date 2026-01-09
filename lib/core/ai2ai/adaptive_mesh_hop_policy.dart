@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:battery_plus/battery_plus.dart';
-import 'package:spots/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_level.dart';
 
 /// Message priority levels for adaptive mesh routing
 enum MessagePriority {

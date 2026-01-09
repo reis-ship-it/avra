@@ -6,10 +6,10 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/legal/terms_of_service.dart';
-import 'package:spots/core/models/user_agreement.dart';
-import 'package:spots/core/services/legal_document_service.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/legal/terms_of_service.dart';
+import 'package:avrai/core/models/user_agreement.dart';
+import 'package:avrai/core/services/legal_document_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 import '../../mocks/mock_storage_service.dart';
 

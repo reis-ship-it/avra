@@ -1,14 +1,14 @@
-import 'package:spots/core/models/user_partnership.dart';
-import 'package:spots/core/models/partnership_expertise_boost.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/sponsorship.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/user_partnership.dart';
+import 'package:avrai/core/models/partnership_expertise_boost.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/sponsorship.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/business_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Partnership Profile Service
 /// 
@@ -289,6 +289,7 @@ class PartnershipProfileService {
         // feedbackBoost += 0.02; // If partnership had positive feedback
 
         // Category alignment
+        // ignore: unused_local_variable - Reserved for future alignment calculation
         double alignmentMultiplier = 1.0;
         if (partnership.category == category) {
           alignmentMultiplier = 1.0; // Same category: 100%

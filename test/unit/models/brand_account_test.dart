@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/brand_account.dart';
+import 'package:avrai/core/models/brand_account.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for BrandAccount model

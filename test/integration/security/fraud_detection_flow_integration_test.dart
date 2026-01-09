@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/fraud_score.dart';
-import 'package:spots/core/models/fraud_signal.dart';
-import 'package:spots/core/models/fraud_recommendation.dart';
+import 'package:avrai/core/models/fraud_score.dart';
+import 'package:avrai/core/models/fraud_signal.dart';
+import 'package:avrai/core/models/fraud_recommendation.dart';
 
 /// Integration tests for fraud detection flow
 /// 

@@ -7,9 +7,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:developer' as developer;
-import 'package:spots_knot/services/knot/knot_audio_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
+import 'package:avrai_knot/services/knot/knot_audio_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 
 /// Widget that optionally plays knot-based audio during loading
 ///

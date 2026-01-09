@@ -1,5 +1,5 @@
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/user_vibe.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/models/user_vibe.dart';
 
 /// Spot Vibe Profile
 /// 

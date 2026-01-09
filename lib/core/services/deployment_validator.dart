@@ -1,8 +1,8 @@
-import 'package:spots/core/services/performance_monitor.dart';
-import 'package:spots/core/services/security_validator.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/ai/privacy_protection.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/services/performance_monitor.dart';
+import 'package:avrai/core/services/security_validator.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/ai/privacy_protection.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable" - Deployment validation
 /// Service for validating deployment readiness before production release
@@ -246,10 +246,12 @@ class DeploymentValidator {
       // This would check that PrivacyProtection is properly implemented
       try {
         // Test anonymization quality
+        // ignore: unused_local_variable - Reserved for future validation
         final testData = {'test': 'data'};
         // Create a minimal test profile for validation
         // Phase 8.3: Use agentId for privacy protection
         final testProfile = PersonalityProfile.initial('agent_test_user', userId: 'test_user');
+        // ignore: unused_local_variable - Reserved for future validation
         final anonymized = await PrivacyProtection.anonymizePersonalityProfile(
           testProfile,
           privacyLevel: 'MAXIMUM_ANONYMIZATION',

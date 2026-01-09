@@ -1,16 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/payment_status.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/payment_status.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'payment_service_partnership_test.mocks.dart';

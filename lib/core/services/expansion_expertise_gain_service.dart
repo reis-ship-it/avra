@@ -1,8 +1,8 @@
-import 'package:spots/core/models/geographic_expansion.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/geographic_expansion_service.dart';
+import 'package:avrai/core/models/geographic_expansion.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/geographic_expansion_service.dart';
 
 /// Expansion Expertise Gain Service
 /// 

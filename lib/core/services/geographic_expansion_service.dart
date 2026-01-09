@@ -1,7 +1,7 @@
-import 'package:spots/core/models/geographic_expansion.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/models/geographic_expansion.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
 
 /// Geographic Expansion Service
 /// 
@@ -24,6 +24,7 @@ class GeographicExpansionService {
     minimumLevel: LogLevel.debug,
   );
 
+  // ignore: unused_field
   final GeographicScopeService _geographicScopeService;
 
   // In-memory storage (in production, use database)

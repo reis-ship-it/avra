@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/controllers/list_creation_controller.dart';
-import 'package:spots/data/repositories/lists_repository_impl.dart';
-import 'package:spots/domain/repositories/lists_repository.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/presentation/pages/lists/create_list_page.dart';
+import 'package:avrai/core/controllers/list_creation_controller.dart';
+import 'package:avrai/data/repositories/lists_repository_impl.dart';
+import 'package:avrai/domain/repositories/lists_repository.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/presentation/pages/lists/create_list_page.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
 import '../../../helpers/getit_test_harness.dart';

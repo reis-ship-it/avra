@@ -1,18 +1,18 @@
 import 'dart:math' as math;
 import 'dart:developer' as developer;
 
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/spot_vibe.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_knot/models/entity_knot.dart';
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/spot_vibe.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_knot/models/entity_knot.dart';
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
 
 /// A structured compatibility breakdown for any "vibe score".
 ///

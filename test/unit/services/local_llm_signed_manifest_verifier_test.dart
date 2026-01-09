@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/local_llm/signed_manifest.dart';
-import 'package:spots/core/services/local_llm/signed_manifest_verifier.dart';
+import 'package:avrai/core/services/local_llm/signed_manifest.dart';
+import 'package:avrai/core/services/local_llm/signed_manifest_verifier.dart';
 
 // #region agent debug log helpers
 void _agentLog({

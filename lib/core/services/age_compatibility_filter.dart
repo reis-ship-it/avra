@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/spot.dart' as app_spot;
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/behavior_assessment_service.dart';
-import 'package:spots_core/models/spot.dart' as spots_core;
+import 'package:avrai/core/models/spot.dart' as app_spot;
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/behavior_assessment_service.dart';
+import 'package:avrai_core/models/spot.dart' as spots_core;
 
 /// Age-based compatibility filter for AI2AI system
 /// Ensures age-appropriate connections and recommendations

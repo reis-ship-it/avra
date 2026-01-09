@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying personality evolution timeline
 class EvolutionTimelineWidget extends StatelessWidget {

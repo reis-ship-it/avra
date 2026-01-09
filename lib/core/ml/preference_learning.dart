@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/core/models/user.dart';
 
 /// OUR_GUTS.md: "Personalized, Not Prescriptive"
 /// Learns user preferences from behavior without being prescriptive

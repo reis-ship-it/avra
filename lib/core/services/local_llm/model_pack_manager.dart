@@ -12,8 +12,8 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
-import 'package:spots/core/services/model_safety_supervisor.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/model_safety_supervisor.dart';
 
 import 'model_pack_manifest.dart';
 import 'signed_manifest.dart';

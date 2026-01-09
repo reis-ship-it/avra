@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/refund_service.dart';
-import 'package:spots/core/services/stripe_service.dart';
-import 'package:spots/core/services/payment_service.dart';
-import 'package:spots/core/models/payment.dart';
-import 'package:spots/core/models/refund_distribution.dart';
-import 'package:spots/core/models/payment_status.dart';
+import 'package:avrai/core/services/refund_service.dart';
+import 'package:avrai/core/services/stripe_service.dart';
+import 'package:avrai/core/services/payment_service.dart';
+import 'package:avrai/core/models/payment.dart';
+import 'package:avrai/core/models/refund_distribution.dart';
+import 'package:avrai/core/models/payment_status.dart';
 
 import 'refund_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';

@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart'
-    if (dart.library.html) 'package:spots/presentation/pages/onboarding/web_geocoding_nominatim.dart';
+    if (dart.library.html) 'package:avrai/presentation/pages/onboarding/web_geocoding_nominatim.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/services/geo_hierarchy_service.dart';
-import 'package:spots/core/services/geo_city_pack_service.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/core/services/geo_city_pack_service.dart';
 
 class HomebaseSelectionPage extends StatefulWidget {
   final String? selectedHomebase;

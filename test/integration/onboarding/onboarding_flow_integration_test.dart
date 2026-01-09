@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/app.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
-import 'package:spots/presentation/pages/onboarding/homebase_selection_page.dart';
-import 'package:spots/presentation/pages/onboarding/favorite_places_page.dart';
-import 'package:spots/presentation/pages/onboarding/preference_survey_page.dart';
-import 'package:spots/presentation/pages/onboarding/baseline_lists_page.dart';
-import 'package:spots/presentation/pages/onboarding/friends_respect_page.dart';
-import 'package:spots/presentation/pages/onboarding/age_collection_page.dart';
+import 'package:avrai/app.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:avrai/presentation/pages/onboarding/homebase_selection_page.dart';
+import 'package:avrai/presentation/pages/onboarding/favorite_places_page.dart';
+import 'package:avrai/presentation/pages/onboarding/preference_survey_page.dart';
+import 'package:avrai/presentation/pages/onboarding/baseline_lists_page.dart';
+import 'package:avrai/presentation/pages/onboarding/friends_respect_page.dart';
+import 'package:avrai/presentation/pages/onboarding/age_collection_page.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// SPOTS Onboarding Flow Integration Test
@@ -44,6 +44,7 @@ void main() {
       await di.init();
     } catch (e) {
       // DI may fail in test environment, that's okay
+      // ignore: avoid_print
       print('⚠️  DI initialization failed in test: $e');
     }
   });
@@ -63,7 +64,9 @@ void main() {
       // Check if onboarding is available (router may skip it in integration tests)
       final onboardingPage = find.byType(OnboardingPage);
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         // Onboarding skipped by router in integration tests - skip this test
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }
@@ -79,8 +82,11 @@ void main() {
 
       // Check if onboarding is available (router may skip it in integration tests)
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         // Onboarding skipped by router in integration tests - skip this test
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }
@@ -108,9 +114,13 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       // Check if onboarding is available (router may skip it in integration tests)
+      // ignore: avoid_print
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         // Onboarding skipped by router in integration tests - skip this test
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }
@@ -145,10 +155,15 @@ void main() {
       // Avoid pumpAndSettle: onboarding screens can schedule continuous animations.
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
       // If onboarding is not shown (router may skip it in tests), skip.
+      // ignore: avoid_print
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }
@@ -162,11 +177,17 @@ void main() {
       await tester.pumpWidget(const SpotsApp());
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
       // Check if onboarding is available (router may skip it in integration tests)
+      // ignore: avoid_print
       final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
       if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
         // Onboarding skipped by router in integration tests - skip this test
+      // ignore: avoid_print
         print('⚠️ Onboarding skipped by router in integration tests - test skipped');
         return;
       }
@@ -241,12 +262,19 @@ Future<void> _testAgeCollection(WidgetTester tester) async {
   // Wait for widgets to load
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 100));
+      // ignore: avoid_print
   
+      // ignore: avoid_print
   // Verify OnboardingPage is present (age step is embedded within it)
+      // ignore: avoid_print
   // If OnboardingPage is not found, the app may have skipped onboarding or be in a different state
+      // ignore: avoid_print
   final onboardingPage = find.byType(OnboardingPage);
+      // ignore: avoid_print
   if (onboardingPage.evaluate().isEmpty) {
+      // ignore: avoid_print
     // Onboarding may have been skipped or app is in different state
+      // ignore: avoid_print
     print('⚠️ OnboardingPage not found - onboarding may be skipped or app in different state');
     return; // Skip this step if onboarding isn't active
   }

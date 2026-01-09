@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/collaboration_networks.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/ai/collaboration_networks.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 /// Collaboration Networks Tests
 /// Tests AI agent collaboration and trust network building

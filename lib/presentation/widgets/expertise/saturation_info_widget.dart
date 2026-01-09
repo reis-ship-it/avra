@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/saturation_metrics.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/saturation_metrics.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Saturation Info Widget
 /// 

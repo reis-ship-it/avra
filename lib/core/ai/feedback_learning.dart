@@ -1,16 +1,16 @@
 import 'dart:developer' as developer;
 import 'dart:math';
 import 'dart:convert';
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots/core/ai/personality_learning.dart'
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai/core/ai/personality_learning.dart'
     show PersonalityLearning, AI2AILearningInsight, AI2AIInsightType;
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/quantum_satisfaction_enhancer.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/ai/quantum/quantum_temporal_state.dart';
-import 'package:spots/core/ai/quantum/location_quantum_state.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots/core/models/unified_models.dart' as unified_models;
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/quantum_satisfaction_enhancer.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
+import 'package:avrai/core/ai/quantum/location_quantum_state.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai/core/models/unified_models.dart' as unified_models;
 
 /// OUR_GUTS.md: "Dynamic dimension discovery through user feedback analysis that evolves personality understanding"
 /// Advanced feedback learning system that extracts implicit personality dimensions from user interactions

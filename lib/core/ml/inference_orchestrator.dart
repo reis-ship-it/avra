@@ -2,9 +2,9 @@
 // Layered inference path: ONNX for dimension scoring, Gemini for complex reasoning
 
 import 'dart:developer' as developer;
-import 'package:spots/core/services/llm_service.dart';
-import 'package:spots/core/services/config_service.dart';
-import 'package:spots/core/ml/onnx_dimension_scorer.dart';
+import 'package:avrai/core/services/llm_service.dart';
+import 'package:avrai/core/services/config_service.dart';
+import 'package:avrai/core/ml/onnx_dimension_scorer.dart';
 
 /// Orchestrates inference based on strategy
 /// Device-first: ONNX for dimension math, Gemini for reasoning

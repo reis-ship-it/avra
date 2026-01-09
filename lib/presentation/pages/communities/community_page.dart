@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots_knot/models/knot/community_metrics.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/pages/events/create_community_event_page.dart';
-import 'package:spots/presentation/widgets/clubs/expertise_coverage_widget.dart';
-import 'package:spots/presentation/widgets/clubs/expansion_timeline_widget.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai_knot/models/knot/community_metrics.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/pages/events/create_community_event_page.dart';
+import 'package:avrai/presentation/widgets/clubs/expertise_coverage_widget.dart';
+import 'package:avrai/presentation/widgets/clubs/expansion_timeline_widget.dart';
 
 /// Community Page
 /// Agent 2: Frontend & UX Specialist (Phase 6)

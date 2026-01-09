@@ -5,7 +5,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/widgets/common/streaming_response_widget.dart';
+import 'package:avrai/presentation/widgets/common/streaming_response_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 import 'dart:async';
 

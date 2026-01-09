@@ -9,13 +9,13 @@ library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/services/personality_sync_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/injection_container.dart' as di;
 import '../../helpers/bloc_test_helpers.dart';
 import '../../mocks/bloc_mock_dependencies.dart';
 import '../../mocks/mock_storage_service.dart';
@@ -77,11 +77,11 @@ void main() {
       registerFallbackValue(testProfile);
       mockOrchestrator = MockVibeConnectionOrchestrator();
       when(() => mockOrchestrator.shutdown()).thenAnswer((_) async {
-        return null;
+        return;
       });
       when(() => mockOrchestrator.initializeOrchestration(any(), any()))
           .thenAnswer((_) async {
-            return null;
+            return;
           });
       if (di.sl.isRegistered<VibeConnectionOrchestrator>()) {
         di.sl.unregister<VibeConnectionOrchestrator>();
@@ -352,7 +352,7 @@ void main() {
         'emits [AuthLoading, Unauthenticated] when sign out succeeds',
         build: () {
           when(() => mockSignOutUseCase()).thenAnswer((_) async {
-            return null;
+            return;
           });
           return authBloc;
         },
@@ -390,7 +390,7 @@ void main() {
         ),
         build: () {
           when(() => mockSignOutUseCase()).thenAnswer((_) async {
-            return null;
+            return;
           });
           return authBloc;
         },
@@ -494,7 +494,7 @@ void main() {
           when(() => mockSignInUseCase(any(), any()))
               .thenAnswer((_) async => TestDataFactory.createTestUser());
           when(() => mockSignOutUseCase()).thenAnswer((_) async {
-            return null;
+            return;
           });
           when(() => mockGetCurrentUserUseCase())
               .thenAnswer((_) async => TestDataFactory.createTestUser());
@@ -560,7 +560,7 @@ void main() {
           when(() => mockSignInUseCase(any(), any()))
               .thenAnswer((_) async => TestDataFactory.createTestUser());
           when(() => mockSignOutUseCase()).thenAnswer((_) async {
-            return null;
+            return;
           });
           return authBloc;
         },

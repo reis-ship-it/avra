@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/anonymous_user.dart';
-import 'package:spots/core/services/user_anonymization_service.dart';
-import 'package:spots/core/services/location_obfuscation_service.dart';
-import 'package:spots/core/services/field_encryption_service.dart';
-import 'package:spots/core/ai2ai/anonymous_communication.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/anonymous_user.dart';
+import 'package:avrai/core/services/user_anonymization_service.dart';
+import 'package:avrai/core/services/location_obfuscation_service.dart';
+import 'package:avrai/core/services/field_encryption_service.dart';
+import 'package:avrai/core/ai2ai/anonymous_communication.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 /// Data Leakage Tests
 /// 

@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:math';
-import 'package:spots/core/ml/pattern_recognition.dart'
+import 'package:avrai/core/ml/pattern_recognition.dart'
     show
         PatternRecognitionSystem,
         CommunityTrend,
@@ -8,9 +8,9 @@ import 'package:spots/core/ml/pattern_recognition.dart'
         PrivacyLevel,
         AuthenticityScore,
         UserActionData;
-import 'package:spots/core/ml/nlp_processor.dart';
-import 'package:spots/core/models/user.dart' as user_model;
-import 'package:spots/core/services/supabase_service.dart';
+import 'package:avrai/core/ml/nlp_processor.dart';
+import 'package:avrai/core/models/user.dart' as user_model;
+import 'package:avrai/core/services/supabase_service.dart';
 // Removed stale analysis_services import; not used in current implementation
 
 /// Community Trend Detection Service

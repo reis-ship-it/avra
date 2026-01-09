@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/controllers/social_media_data_collection_controller.dart';
-import 'package:spots/core/models/social_media_connection.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/controllers/social_media_data_collection_controller.dart';
+import 'package:avrai/core/models/social_media_connection.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 

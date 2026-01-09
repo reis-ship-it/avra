@@ -1,10 +1,10 @@
-import 'package:spots/core/controllers/base/workflow_controller.dart';
-import 'package:spots/core/controllers/base/controller_result.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/legal_document_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/controllers/base/workflow_controller.dart';
+import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/legal_document_service.dart';
+import 'package:avrai/core/services/logger.dart';
 import 'package:get_it/get_it.dart';
 
 /// Onboarding Flow Controller

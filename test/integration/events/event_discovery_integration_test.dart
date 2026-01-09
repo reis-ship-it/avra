@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../fixtures/integration_test_fixtures.dart';
 
@@ -23,6 +23,8 @@ import '../../fixtures/integration_test_fixtures.dart';
 void main() {
   group('Event Discovery Integration Tests', () {
     late ExpertiseEventService eventService;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late List<ExpertiseEvent> testEvents;
 
     setUp(() {

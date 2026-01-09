@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
 import '../../helpers/integration_test_helpers.dart';
 import '../../fixtures/integration_test_fixtures.dart';
 import '../../fixtures/model_factories.dart';
@@ -23,6 +23,8 @@ import '../../fixtures/model_factories.dart';
 /// - Scenario 8: Event with Spots
 void main() {
   group('Event Hosting Integration Tests', () {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late ExpertiseEventService eventService;
 
     setUp(() {
@@ -92,8 +94,11 @@ void main() {
 
       test('should publish event successfully', () async {
         // Arrange
+      // ignore: unused_local_variable
         final scenario = IntegrationTestFixtures.eventHostingScenario();
         final host = scenario['host'] as UnifiedUser;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final category = scenario['category'] as String;
 
         // Create event

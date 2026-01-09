@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/settings/about_page.dart';
+import 'package:avrai/presentation/pages/settings/about_page.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for AboutPage

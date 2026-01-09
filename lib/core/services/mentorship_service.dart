@@ -1,6 +1,6 @@
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/expertise_matching_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/expertise_matching_service.dart';
 
 /// Mentorship Service
 /// Manages mentorship relationships between experts

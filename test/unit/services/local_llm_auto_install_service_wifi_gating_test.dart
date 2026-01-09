@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/local_llm/local_llm_auto_install_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_provisioning_state_service.dart';
-import 'package:spots/core/services/local_llm/model_pack_manager.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_auto_install_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_provisioning_state_service.dart';
+import 'package:avrai/core/services/local_llm/model_pack_manager.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 import '../../mocks/mock_storage_service.dart';
 

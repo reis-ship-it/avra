@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots/core/models/anonymous_user.dart';
+import 'package:avrai/core/models/anonymous_user.dart';
 
 /// Location Obfuscation Service
 /// 

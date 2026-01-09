@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/ai2ai/connection_log_queue.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/ai2ai/connection_log_queue.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// OUR_GUTS.md: "Cloud adds network wisdom"
 /// Philosophy: Key works offline, cloud enhances with collective learning

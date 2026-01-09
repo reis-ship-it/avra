@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
-import 'package:spots/presentation/widgets/search/hybrid_search_results.dart';
-import 'package:spots/core/ai/event_logger.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/blocs/search/hybrid_search_bloc.dart';
+import 'package:avrai/presentation/widgets/search/hybrid_search_results.dart';
+import 'package:avrai/core/ai/event_logger.dart';
+import 'package:avrai/injection_container.dart' as di;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class HybridSearchPage extends StatefulWidget {
   const HybridSearchPage({super.key});
@@ -244,6 +245,15 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
                   onPressed: _searchNearby,
                   icon: const Icon(Icons.near_me),
                   tooltip: 'Search nearby spots',
+                  // Use default icon theme; keep it neutral
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () {
+                    context.go('/group/formation');
+                  },
+                  icon: const Icon(Icons.group),
+                  tooltip: 'Find with Friends',
                   // Use default icon theme; keep it neutral
                 ),
               ],

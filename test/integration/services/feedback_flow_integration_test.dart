@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/event_feedback.dart' hide PartnerRating;
-import 'package:spots/core/models/partner_rating.dart';
-import 'package:spots/core/models/expertise_event.dart' show ExpertiseEvent, EventPartnership, ExpertiseEventType;
-import 'package:spots/core/models/event_partnership.dart';
+import 'package:avrai/core/models/event_feedback.dart' hide PartnerRating;
+import 'package:avrai/core/models/partner_rating.dart';
+import 'package:avrai/core/models/expertise_event.dart' show ExpertiseEvent, ExpertiseEventType;
+import 'package:avrai/core/models/event_partnership.dart';
 import '../../fixtures/model_factories.dart';
 
 /// Integration tests for feedback flow
@@ -21,6 +21,8 @@ void main() {
         displayName: 'Test Host',
       );
 
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
       final testBusinessUser = ModelFactories.createTestUser(
         id: 'business-user-123',
         displayName: 'Business Owner',

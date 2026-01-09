@@ -1,9 +1,12 @@
-import 'package:spots/core/models/brand_discovery.dart';
-import 'package:spots/core/models/brand_account.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/sponsorship_service.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/brand_discovery.dart';
+import 'package:avrai/core/models/brand_account.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/matching_result.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/sponsorship_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/quantum/quantum_matching_integration_service.dart';
+import 'package:avrai/core/services/feature_flag_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// Brand Discovery Service
@@ -30,6 +33,11 @@ class BrandDiscoveryService {
 
   final ExpertiseEventService _eventService;
   final SponsorshipService _sponsorshipService;
+  final QuantumMatchingIntegrationService? _quantumIntegrationService;
+  final FeatureFlagService? _featureFlags;
+
+  // Feature flag name for quantum brand discovery matching
+  static const String _quantumBrandDiscoveryFlag = 'phase19_quantum_brand_discovery';
 
   // In-memory storage for brand discoveries (in production, use database)
   final Map<String, BrandDiscovery> _discoveries = {};
@@ -40,8 +48,12 @@ class BrandDiscoveryService {
   BrandDiscoveryService({
     required ExpertiseEventService eventService,
     required SponsorshipService sponsorshipService,
+    QuantumMatchingIntegrationService? quantumIntegrationService,
+    FeatureFlagService? featureFlags,
   })  : _eventService = eventService,
-        _sponsorshipService = sponsorshipService;
+        _sponsorshipService = sponsorshipService,
+        _quantumIntegrationService = quantumIntegrationService,
+        _featureFlags = featureFlags;
 
   /// Find brands for an event
   ///
@@ -241,9 +253,9 @@ class BrandDiscoveryService {
   /// Calculate compatibility between brand and event
   ///
   /// **Flow:**
-  /// 1. Get brand account data
-  /// 2. Get event data
-  /// 3. Calculate compatibility score (0.0 to 1.0)
+  /// 1. Try quantum matching (if enabled)
+  /// 2. Fall back to classical SponsorshipService compatibility
+  /// 3. Add knot compatibility bonus (if enabled)
   ///
   /// **Parameters:**
   /// - `brandId`: Brand ID
@@ -252,8 +264,13 @@ class BrandDiscoveryService {
   /// **Returns:**
   /// Compatibility score (0.0 to 1.0)
   ///
+  /// **Phase 19.15 Integration:**
+  /// - Uses quantum entanglement matching if enabled via feature flag
+  /// - Falls back to classical SponsorshipService compatibility if quantum matching is disabled or fails
+  /// - Maintains backward compatibility (70%+ threshold)
+  ///
   /// **Note:**
-  /// This reuses the SponsorshipService compatibility calculation for consistency
+  /// Classical method reuses the SponsorshipService compatibility calculation for consistency
   Future<double> calculateBrandEventCompatibility({
     required String brandId,
     required String eventId,
@@ -263,7 +280,70 @@ class BrandDiscoveryService {
           'Calculating brand-event compatibility: brand=$brandId, event=$eventId',
           tag: _logName);
 
-      // Reuse SponsorshipService compatibility calculation
+      // Phase 19.15: Try quantum matching first (if enabled)
+      if (_quantumIntegrationService != null && _featureFlags != null) {
+        final isQuantumEnabled = await _featureFlags!.isEnabled(
+          _quantumBrandDiscoveryFlag,
+          userId: null, // Brand matching doesn't have user context
+          defaultValue: false,
+        );
+
+        if (isQuantumEnabled) {
+          try {
+            // Get brand and event objects for quantum matching
+            final brand = await _getBrandById(brandId);
+            final event = await _eventService.getEventById(eventId);
+
+            if (brand != null && event != null) {
+              // Use event host as user context for quantum matching
+              final user = event.host;
+
+              final quantumResult = await _quantumIntegrationService!
+                  .calculateMultiEntityCompatibility(
+                user: user,
+                event: event,
+                brand: brand,
+              );
+
+              if (quantumResult != null) {
+                // Quantum matching successful - use it as base score
+                // Combine with classical method for hybrid approach
+                final classicalCompatibility =
+                    await _sponsorshipService.calculateCompatibility(
+                  eventId: eventId,
+                  brandId: brandId,
+                );
+
+                // Hybrid approach: 70% quantum, 30% classical (quantum is primary)
+                final hybridScore = 0.7 * quantumResult.compatibility +
+                    0.3 * classicalCompatibility;
+
+                // Add knot compatibility bonus if enabled
+                final knotBonus = await _calculateKnotCompatibilityBonus(
+                  quantumResult: quantumResult,
+                );
+                final finalScore =
+                    (hybridScore + knotBonus * 0.15).clamp(0.0, 1.0);
+
+                _logger.info(
+                  'Quantum matching used: quantum=${quantumResult.compatibility.toStringAsFixed(3)}, classical=${classicalCompatibility.toStringAsFixed(3)}, hybrid=${finalScore.toStringAsFixed(3)}',
+                  tag: _logName,
+                );
+
+                return finalScore;
+              }
+            }
+          } catch (e) {
+            _logger.warn(
+              'Quantum matching failed, falling back to classical: $e',
+              tag: _logName,
+            );
+            // Fall through to classical method
+          }
+        }
+      }
+
+      // Classical method (backward compatibility)
       return await _sponsorshipService.calculateCompatibility(
         eventId: eventId,
         brandId: brandId,
@@ -273,6 +353,29 @@ class BrandDiscoveryService {
           error: e, tag: _logName);
       return 0.0;
     }
+  }
+
+  /// Calculate knot compatibility bonus (if enabled)
+  ///
+  /// **Phase 19.15:** Adds knot compatibility bonus when quantum matching is used
+  Future<double> _calculateKnotCompatibilityBonus({
+    required MatchingResult quantumResult,
+  }) async {
+    if (_quantumIntegrationService == null || _featureFlags == null) {
+      return 0.0;
+    }
+
+    try {
+      final isKnotEnabled = await _quantumIntegrationService!
+          .isKnotIntegrationEnabled();
+      if (isKnotEnabled && quantumResult.knotCompatibility != null) {
+        return quantumResult.knotCompatibility!;
+      }
+    } catch (e) {
+      _logger.warn('Error calculating knot bonus: $e', tag: _logName);
+    }
+
+    return 0.0;
   }
 
   /// Get sponsorship suggestions for an event

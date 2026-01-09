@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/user_business_matching_service.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/user_business_matching_service.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// User Business Matching Widget
 /// Shows users businesses that match their profile based on business patron preferences

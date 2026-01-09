@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/services/geo_hierarchy_service.dart';
-import 'package:spots/core/services/geographic_scope_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/common/standard_error_widget.dart';
-import 'package:spots/presentation/widgets/common/standard_loading_widget.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/core/services/geographic_scope_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/common/standard_error_widget.dart';
+import 'package:avrai/presentation/widgets/common/standard_loading_widget.dart';
 
 /// Locality Selection Widget
 /// Agent 2: Phase 6, Week 24 - Geographic Scope UI

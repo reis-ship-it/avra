@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/onboarding_aggregation_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/onboarding_aggregation_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';
 import 'package:get_it/get_it.dart';
 

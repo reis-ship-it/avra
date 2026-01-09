@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/expertise_event.dart';
+import 'package:avrai/core/models/expertise_event.dart';
 
 /// User Preferences Model
 /// 

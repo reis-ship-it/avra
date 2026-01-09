@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/business_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/ledgers/ledger_domain_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/business_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// Partnership Service

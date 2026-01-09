@@ -10,6 +10,7 @@
 /// - deployment_readiness_validator.dart
 /// 
 /// To use: Import and call `TestPerformanceBenchmarks.analyzeTestPerformance()`
+// ignore_for_file: constant_identifier_names - Test constants use UPPER_CASE convention
 library;
 
 import 'dart:io';

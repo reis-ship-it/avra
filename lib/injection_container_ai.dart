@@ -1,118 +1,120 @@
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/storage_service.dart'
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/storage_service.dart'
     show StorageService, SharedPreferencesCompat;
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/post_event_feedback_service.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/ai2ai_learning_service.dart';
-import 'package:spots/core/ai/vibe_analysis_engine.dart';
-import 'package:spots/core/services/quantum_satisfaction_enhancer.dart';
-import 'package:spots/core/ai/feedback_learning.dart' show UserFeedbackAnalyzer;
-import 'package:spots/core/ml/nlp_processor.dart';
-import 'package:spots/core/services/personality_sync_service.dart';
-import 'package:spots/core/services/usage_pattern_tracker.dart';
-import 'package:spots/core/ai2ai/connection_log_queue.dart';
-import 'package:spots/core/ai2ai/cloud_intelligence_sync.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/core/crypto/signal/signal_key_manager.dart';
-import 'package:spots_ai/services/ai2ai_broadcast_service.dart';
-import 'package:spots_ai/services/contextual_personality_service.dart';
-import 'package:spots_knot/services/knot/knot_evolution_coordinator_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/post_event_feedback_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/ai2ai_learning_service.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
+import 'package:avrai/core/services/quantum_satisfaction_enhancer.dart';
+import 'package:avrai/core/ai/feedback_learning.dart' show UserFeedbackAnalyzer;
+import 'package:avrai/core/ml/nlp_processor.dart';
+import 'package:avrai/core/services/personality_sync_service.dart';
+import 'package:avrai/core/services/usage_pattern_tracker.dart';
+import 'package:avrai/core/ai2ai/connection_log_queue.dart';
+import 'package:avrai/core/ai2ai/cloud_intelligence_sync.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
+import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
+import 'package:avrai_ai/services/contextual_personality_service.dart';
+import 'package:avrai_knot/services/knot/knot_evolution_coordinator_service.dart';
 import 'dart:developer' as developer;
-import 'package:spots/core/services/enhanced_connectivity_service.dart';
-import 'package:spots/core/p2p/federated_learning.dart';
-import 'package:spots/core/ai/continuous_learning/data_collector.dart';
-import 'package:spots/core/ai/continuous_learning/data_processor.dart';
-import 'package:spots/core/ai/continuous_learning/orchestrator.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/core/ai/event_queue.dart';
-import 'package:spots/core/ai/event_logger.dart';
-import 'package:spots/core/ai/structured_facts_extractor.dart';
-import 'package:spots/core/p2p/node_manager.dart';
-import 'package:spots/core/services/config_service.dart';
-import 'package:spots/core/ml/onnx_dimension_scorer.dart';
-import 'package:spots/core/ml/inference_orchestrator.dart';
-import 'package:spots/core/ai/decision_coordinator.dart';
-import 'package:spots/core/ai2ai/embedding_delta_collector.dart';
-import 'package:spots/core/ai2ai/federated_learning_hooks.dart';
-import 'package:spots/core/services/user_name_resolution_service.dart';
-import 'package:spots/core/services/personality_agent_chat_service.dart';
-import 'package:spots/core/services/friend_chat_service.dart';
-import 'package:spots/core/services/community_chat_service.dart';
-import 'package:spots/core/services/dm_message_store.dart';
-import 'package:spots/core/services/community_message_store.dart';
-import 'package:spots/core/services/community_sender_key_service.dart';
-import 'package:spots/core/ai2ai/anonymous_communication.dart' as ai2ai;
-import 'package:spots/core/services/business_expert_chat_service_ai2ai.dart';
-import 'package:spots/core/services/business_business_chat_service_ai2ai.dart';
-import 'package:spots/core/services/business_expert_outreach_service.dart';
-import 'package:spots/core/services/business_business_outreach_service.dart';
-import 'package:spots/core/services/business_member_service.dart';
-import 'package:spots/core/services/business_shared_agent_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/services/geographic_expansion_service.dart';
-import 'package:spots/core/services/feature_flag_service.dart';
-import 'package:spots/data/repositories/hybrid_community_repository.dart';
-import 'package:spots/data/repositories/local_community_repository.dart';
-import 'package:spots/data/repositories/supabase_community_repository.dart';
-import 'package:spots/domain/repositories/community_repository.dart';
-import 'package:spots/core/services/message_encryption_service.dart';
-import 'package:spots/core/services/user_anonymization_service.dart';
-import 'package:spots/core/services/event_recommendation_service.dart'
+import 'package:avrai/core/services/enhanced_connectivity_service.dart';
+import 'package:avrai/core/p2p/federated_learning.dart';
+import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
+import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
+import 'package:avrai/core/ai/continuous_learning/orchestrator.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/ai/event_queue.dart';
+import 'package:avrai/core/ai/event_logger.dart';
+import 'package:avrai/core/ai/structured_facts_extractor.dart';
+import 'package:avrai/core/p2p/node_manager.dart';
+import 'package:avrai/core/services/config_service.dart';
+import 'package:avrai/core/ml/onnx_dimension_scorer.dart';
+import 'package:avrai/core/ml/inference_orchestrator.dart';
+import 'package:avrai/core/ai/decision_coordinator.dart';
+import 'package:avrai/core/ai2ai/embedding_delta_collector.dart';
+import 'package:avrai/core/ai2ai/federated_learning_hooks.dart';
+import 'package:avrai/core/services/user_name_resolution_service.dart';
+import 'package:avrai/core/services/personality_agent_chat_service.dart';
+import 'package:avrai/core/services/friend_chat_service.dart';
+import 'package:avrai/core/services/community_chat_service.dart';
+import 'package:avrai/core/services/dm_message_store.dart';
+import 'package:avrai/core/services/community_message_store.dart';
+import 'package:avrai/core/services/community_sender_key_service.dart';
+import 'package:avrai/core/ai2ai/anonymous_communication.dart' as ai2ai;
+import 'package:avrai/core/services/business_expert_chat_service_ai2ai.dart';
+import 'package:avrai/core/services/business_business_chat_service_ai2ai.dart';
+import 'package:avrai/core/services/business_expert_outreach_service.dart';
+import 'package:avrai/core/services/business_business_outreach_service.dart';
+import 'package:avrai/core/services/business_member_service.dart';
+import 'package:avrai/core/services/business_shared_agent_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/services/geographic_expansion_service.dart';
+import 'package:avrai/core/services/feature_flag_service.dart';
+import 'package:avrai/data/repositories/hybrid_community_repository.dart';
+import 'package:avrai/data/repositories/local_community_repository.dart';
+import 'package:avrai/data/repositories/supabase_community_repository.dart';
+import 'package:avrai/domain/repositories/community_repository.dart';
+import 'package:avrai/core/services/user_anonymization_service.dart';
+import 'package:avrai/core/services/event_recommendation_service.dart'
     as event_rec_service;
-import 'package:spots/core/services/event_matching_service.dart';
-import 'package:spots/core/services/spot_vibe_matching_service.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
-import 'package:spots/core/services/oauth_deep_link_handler.dart';
-import 'package:spots/core/services/social_media_connection_service.dart';
-import 'package:spots/core/services/social_media/base/social_media_common_utils.dart';
-import 'package:spots/core/services/social_media/social_media_service_factory.dart';
-import 'package:spots/core/services/social_media/platforms/google_platform_service.dart';
-import 'package:spots/core/services/social_media/platforms/instagram_platform_service.dart';
-import 'package:spots/core/services/social_media/platforms/facebook_platform_service.dart';
-import 'package:spots/core/services/social_media/platforms/twitter_platform_service.dart';
-import 'package:spots/core/services/social_media/platforms/linkedin_platform_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/social_media_insight_service.dart';
-import 'package:spots/core/services/social_media_sharing_service.dart';
-import 'package:spots/core/services/social_media_discovery_service.dart';
-import 'package:spots/core/services/public_profile_analysis_service.dart';
-import 'package:spots/core/services/social_media_vibe_analyzer.dart';
-import 'package:spots/core/services/preferences_profile_service.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/onboarding_suggestion_event_store.dart';
-import 'package:spots/core/services/onboarding_place_list_generator.dart';
-import 'package:spots/core/services/onboarding_recommendation_service.dart';
-import 'package:spots/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
-import 'package:spots/data/datasources/remote/google_places_datasource.dart';
-import 'package:spots/core/services/llm_service.dart';
-import 'package:spots/core/services/legal_document_service.dart';
-import 'package:spots/core/services/ledgers/ledger_recorder_service_v0.dart';
-import 'package:spots/core/services/ledgers/ledger_receipts_service_v0.dart';
-import 'package:spots/core/services/ai_improvement_tracking_service.dart';
-import 'package:spots/core/services/action_history_service.dart';
-import 'package:spots/core/services/location_obfuscation_service.dart';
-import 'package:spots/core/services/field_encryption_service.dart';
-import 'package:spots/core/services/audit_log_service.dart';
-import 'package:spots/core/controllers/quantum_matching_controller.dart';
-import 'package:spots_knot/services/knot/integrated_knot_recommendation_engine.dart';
-import 'package:spots_knot/services/knot/entity_knot_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots_knot/services/knot/knot_fabric_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
-import 'package:spots_network/spots_network.dart';
+import 'package:avrai/core/services/event_matching_service.dart';
+import 'package:avrai/core/services/spot_vibe_matching_service.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/services/oauth_deep_link_handler.dart';
+import 'package:avrai/core/services/social_media_connection_service.dart';
+import 'package:avrai/core/services/social_media/base/social_media_common_utils.dart';
+import 'package:avrai/core/services/social_media/social_media_service_factory.dart';
+import 'package:avrai/core/services/social_media/platforms/google_platform_service.dart';
+import 'package:avrai/core/services/social_media/platforms/instagram_platform_service.dart';
+import 'package:avrai/core/services/social_media/platforms/facebook_platform_service.dart';
+import 'package:avrai/core/services/social_media/platforms/twitter_platform_service.dart';
+import 'package:avrai/core/services/social_media/platforms/linkedin_platform_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/social_media_insight_service.dart';
+import 'package:avrai/core/services/social_media_sharing_service.dart';
+import 'package:avrai/core/services/social_media_discovery_service.dart';
+import 'package:avrai/core/services/public_profile_analysis_service.dart';
+import 'package:avrai/core/services/social_media_vibe_analyzer.dart';
+import 'package:avrai/core/services/preferences_profile_service.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/services/onboarding_suggestion_event_store.dart';
+import 'package:avrai/core/services/onboarding_place_list_generator.dart';
+import 'package:avrai/core/services/onboarding_recommendation_service.dart';
+import 'package:avrai/core/services/local_llm/local_llm_post_install_bootstrap_service.dart';
+import 'package:avrai/data/datasources/remote/google_places_datasource.dart';
+import 'package:avrai/core/services/llm_service.dart';
+import 'package:avrai/core/services/legal_document_service.dart';
+import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
+import 'package:avrai/core/services/ledgers/ledger_receipts_service_v0.dart';
+import 'package:avrai/core/services/ai_improvement_tracking_service.dart';
+import 'package:avrai/core/services/action_history_service.dart';
+import 'package:avrai/core/services/location_obfuscation_service.dart';
+import 'package:avrai/core/services/field_encryption_service.dart';
+import 'package:avrai/core/services/audit_log_service.dart';
+import 'package:avrai/core/controllers/quantum_matching_controller.dart';
+import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
+import 'package:avrai_knot/services/knot/entity_knot_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai_network/avra_network.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
-import 'package:spots/supabase_config.dart';
-import 'package:spots/google_places_config.dart';
+import 'package:avrai/supabase_config.dart';
+import 'package:avrai/google_places_config.dart';
+import 'package:avrai/core/services/group_formation_service.dart';
+import 'package:avrai_knot/services/knot/cross_entity_compatibility_service.dart';
+import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
 
 /// AI/Network Services Registration Module
 ///
@@ -714,6 +716,30 @@ Future<void> registerAIServices(GetIt sl) async {
   sl.registerLazySingleton(() => OnboardingRecommendationService(
         agentIdService: sl<AgentIdService>(),
       ));
+
+  // Phase 19.18: Quantum Group Matching System
+  // Section GM.2: Group Formation Service
+  sl.registerLazySingleton<GroupFormationService>(
+    () => GroupFormationService(
+      deviceDiscovery: sl<DeviceDiscoveryService>(),
+      atomicClock: sl<AtomicClockService>(),
+      agentIdService: sl<AgentIdService>(),
+      knotStorage: sl<KnotStorageService>(),
+      knotCompatibilityService: sl.isRegistered<CrossEntityCompatibilityService>()
+          ? sl<CrossEntityCompatibilityService>()
+          : null,
+      personalityLearning: sl<PersonalityLearning>(),
+      socialDiscovery: sl.isRegistered<SocialMediaDiscoveryService>()
+          ? sl<SocialMediaDiscoveryService>()
+          : null,
+      orchestrator: sl.isRegistered<VibeConnectionOrchestrator>()
+          ? sl<VibeConnectionOrchestrator>()
+          : null,
+      meshService: sl.isRegistered<AdaptiveMeshNetworkingService>()
+          ? sl<AdaptiveMeshNetworkingService>()
+          : null,
+    ),
+  );
 
   logger.debug('✅ [DI-AI] AI/network services registered');
 }

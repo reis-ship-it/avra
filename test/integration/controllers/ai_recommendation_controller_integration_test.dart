@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:spots/core/controllers/ai_recommendation_controller.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/controllers/event_creation_controller.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/controllers/ai_recommendation_controller.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/controllers/event_creation_controller.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import '../../helpers/platform_channel_helper.dart';
 import '../../helpers/integration_test_helpers.dart';
 

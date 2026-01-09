@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying visual network graph of AI2AI connections
 class ConnectionVisualizationWidget extends StatelessWidget {
@@ -167,6 +167,7 @@ class NetworkGraphPainter extends CustomPainter {
     final angleStep = (2 * 3.14159) / nodeCount;
 
     for (int i = 0; i < nodeCount; i++) {
+      // ignore: unused_local_variable - Reserved for future circular layout implementation
       final angle = angleStep * i;
       final nodeX = center.dx + radius * (1 + 0.3 * (i % 3)) * (i.isEven ? 1 : -1) * (i < 6 ? 1 : -1);
       final nodeY = center.dy + radius * (1 + 0.3 * (i % 3)) * (i < 3 || i > 9 ? 1 : -1);

@@ -1,14 +1,17 @@
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_expert_preferences.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/expertise_level.dart';
-import 'package:spots/core/models/expertise_community.dart';
-import 'package:spots/core/services/expertise_matching_service.dart';
-import 'package:spots/core/services/expertise_community_service.dart';
-import 'package:spots/core/services/llm_service.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_expert_preferences.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/expertise_level.dart';
+import 'package:avrai/core/models/expertise_community.dart';
+import 'package:avrai/core/models/matching_result.dart';
+import 'package:avrai/core/services/expertise_matching_service.dart';
+import 'package:avrai/core/services/expertise_community_service.dart';
+import 'package:avrai/core/services/llm_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/vibe_compatibility_service.dart';
+import 'package:avrai/core/services/quantum/quantum_matching_integration_service.dart';
+import 'package:avrai/core/services/feature_flag_service.dart';
 
 /// Business Expert Matching Service
 /// 
@@ -40,6 +43,12 @@ class BusinessExpertMatchingService {
   final LLMService? _llmService;
   final PartnershipService? _partnershipService;
   final VibeCompatibilityService? _vibeCompatibilityService;
+  final QuantumMatchingIntegrationService? _quantumIntegrationService;
+  final FeatureFlagService? _featureFlags;
+
+  // Feature flag name for quantum business-expert matching
+  static const String _quantumBusinessExpertMatchingFlag =
+      'phase19_quantum_business_expert_matching';
 
   BusinessExpertMatchingService({
     ExpertiseMatchingService? expertiseMatchingService,
@@ -47,11 +56,16 @@ class BusinessExpertMatchingService {
     LLMService? llmService,
     PartnershipService? partnershipService,
     VibeCompatibilityService? vibeCompatibilityService,
-  }) : _expertiseMatchingService = expertiseMatchingService ?? ExpertiseMatchingService(),
-       _communityService = communityService ?? ExpertiseCommunityService(),
-       _llmService = llmService,
-       _partnershipService = partnershipService,
-       _vibeCompatibilityService = vibeCompatibilityService;
+    QuantumMatchingIntegrationService? quantumIntegrationService,
+    FeatureFlagService? featureFlags,
+  })  : _expertiseMatchingService =
+            expertiseMatchingService ?? ExpertiseMatchingService(),
+        _communityService = communityService ?? ExpertiseCommunityService(),
+        _llmService = llmService,
+        _partnershipService = partnershipService,
+        _vibeCompatibilityService = vibeCompatibilityService,
+        _quantumIntegrationService = quantumIntegrationService,
+        _featureFlags = featureFlags;
 
   /// Find experts for a business account
   /// Uses community membership, expertise matching, and AI suggestions
@@ -518,8 +532,10 @@ class BusinessExpertMatchingService {
   /// 
   /// **This is the PRIMARY factor in matching (50% weight)**
   /// 
-  /// Uses PartnershipService.calculateVibeCompatibility() to determine
-  /// personality fit between expert and business.
+  /// **Phase 19.15 Integration:**
+  /// - Uses quantum entanglement matching if enabled via feature flag
+  /// - Falls back to classical vibe-based matching if quantum matching is disabled or fails
+  /// - Maintains vibe-first philosophy
   /// 
   /// **Returns:** Vibe compatibility score (0.0 to 1.0)
   /// - 0.7+ is considered high compatibility (but not required)
@@ -529,30 +545,120 @@ class BusinessExpertMatchingService {
     BusinessAccount business,
   ) async {
     try {
-      // Prefer direct vibe service when we already have BusinessAccount.
-      // This avoids unnecessary lookups and ensures "truthful vibe" everywhere.
-      if (_vibeCompatibilityService != null) {
-        final score = await _vibeCompatibilityService!.calculateUserBusinessVibe(
+      // Phase 19.15: Try quantum matching first (if enabled)
+      if (_quantumIntegrationService != null && _featureFlags != null) {
+        final isQuantumEnabled = await _featureFlags!.isEnabled(
+          _quantumBusinessExpertMatchingFlag,
           userId: expert.id,
-          business: business,
+          defaultValue: false,
         );
-        return score.combined.clamp(0.0, 1.0);
+
+        if (isQuantumEnabled) {
+          try {
+            final quantumResult = await _quantumIntegrationService!
+                .calculateUserBusinessCompatibility(
+              user: expert,
+              business: business,
+            );
+
+            if (quantumResult != null) {
+              // Quantum matching successful - use it as base score
+              // Combine with classical method for hybrid approach
+              final classicalCompatibility = await _calculateClassicalVibeCompatibility(
+                expert: expert,
+                business: business,
+              );
+
+              // Hybrid approach: 70% quantum, 30% classical (quantum is primary)
+              final hybridScore = 0.7 * quantumResult.compatibility +
+                  0.3 * classicalCompatibility;
+
+              // Add knot compatibility bonus if enabled
+              final knotBonus = await _calculateKnotCompatibilityBonus(
+                quantumResult: quantumResult,
+              );
+              final finalScore =
+                  (hybridScore + knotBonus * 0.15).clamp(0.0, 1.0);
+
+              _logger.info(
+                'Quantum matching used: quantum=${quantumResult.compatibility.toStringAsFixed(3)}, classical=${classicalCompatibility.toStringAsFixed(3)}, hybrid=${finalScore.toStringAsFixed(3)}',
+                tag: _logName,
+              );
+
+              return finalScore;
+            }
+          } catch (e) {
+            _logger.warn(
+              'Quantum matching failed, falling back to classical: $e',
+              tag: _logName,
+            );
+            // Fall through to classical method
+          }
+        }
       }
 
-      if (_partnershipService != null) {
-        // Use PartnershipService to calculate vibe compatibility
-        return await _partnershipService!.calculateVibeCompatibility(
-          userId: expert.id,
-          businessId: business.id,
-        );
-      }
-      
-      // Truthful fallback: if we can't compute it, don't invent confidence.
-      return 0.5;
+      // Classical method (backward compatibility)
+      return await _calculateClassicalVibeCompatibility(
+        expert: expert,
+        business: business,
+      );
     } catch (e) {
-      _logger.warning('Error calculating vibe compatibility, using fallback', tag: _logName);
+      _logger.warning('Error calculating vibe compatibility, using fallback',
+          tag: _logName);
       return 0.5;
     }
+  }
+
+  /// Calculate classical vibe compatibility (original implementation)
+  ///
+  /// **Phase 19.15:** Extracted to separate method for backward compatibility
+  Future<double> _calculateClassicalVibeCompatibility({
+    required UnifiedUser expert,
+    required BusinessAccount business,
+  }) async {
+    // Prefer direct vibe service when we already have BusinessAccount.
+    // This avoids unnecessary lookups and ensures "truthful vibe" everywhere.
+    if (_vibeCompatibilityService != null) {
+      final score = await _vibeCompatibilityService!.calculateUserBusinessVibe(
+        userId: expert.id,
+        business: business,
+      );
+      return score.combined.clamp(0.0, 1.0);
+    }
+
+    if (_partnershipService != null) {
+      // Use PartnershipService to calculate vibe compatibility
+      return await _partnershipService!.calculateVibeCompatibility(
+        userId: expert.id,
+        businessId: business.id,
+      );
+    }
+
+    // Truthful fallback: if we can't compute it, don't invent confidence.
+    return 0.5;
+  }
+
+  /// Calculate knot compatibility bonus (if enabled)
+  ///
+  /// **Phase 19.15:** Adds knot compatibility bonus when quantum matching is used
+  Future<double> _calculateKnotCompatibilityBonus({
+    required MatchingResult quantumResult,
+  }) async {
+    if (_quantumIntegrationService == null || _featureFlags == null) {
+      return 0.0;
+    }
+
+    try {
+      final isKnotEnabled = await _quantumIntegrationService!
+          .isKnotIntegrationEnabled();
+      if (isKnotEnabled && quantumResult.knotCompatibility != null) {
+        return quantumResult.knotCompatibility!;
+      }
+    } catch (e) {
+      _logger.warn('Error calculating knot bonus: $e', tag: _logName);
+    }
+
+    return 0.0;
   }
   
   /// Calculate expertise match score (30% weight)

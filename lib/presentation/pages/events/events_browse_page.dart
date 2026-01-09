@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/widgets/expertise/expertise_event_widget.dart';
-import 'package:spots/presentation/widgets/events/community_event_widget.dart';
-import 'package:spots/presentation/pages/events/event_details_page.dart';
-import 'package:spots/presentation/widgets/events/event_scope_tab_widget.dart';
-import 'package:spots/core/services/event_matching_service.dart';
-import 'package:spots/core/services/cross_locality_connection_service.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/club_service.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots/core/models/user.dart' as user_model;
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/expertise/expertise_event_widget.dart';
+import 'package:avrai/presentation/widgets/events/community_event_widget.dart';
+import 'package:avrai/presentation/pages/events/event_details_page.dart';
+import 'package:avrai/presentation/widgets/events/event_scope_tab_widget.dart';
+import 'package:avrai/core/services/event_matching_service.dart';
+import 'package:avrai/core/services/cross_locality_connection_service.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/club_service.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai/core/models/user.dart' as user_model;
 import 'package:go_router/go_router.dart';
 
 /// Event Discovery UI - Browse/Search Page

@@ -17,7 +17,7 @@ library;
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Widget that displays streaming text with typing animation
 class StreamingResponseWidget extends StatefulWidget {

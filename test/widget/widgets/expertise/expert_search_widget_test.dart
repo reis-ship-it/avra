@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/presentation/widgets/expertise/expert_search_widget.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/presentation/widgets/expertise/expert_search_widget.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for ExpertSearchWidget
@@ -38,11 +38,12 @@ void main() {
       expect(categoryField.controller?.text, equals('Coffee'));
       expect(locationField.controller?.text, equals('Brooklyn'));
 
+      // ignore: unused_local_variable - Used in callback below
       UnifiedUser? selectedExpert;
       final widget3 = WidgetTestHelpers.createTestableWidget(
         child: ExpertSearchWidget(
           onExpertSelected: (expert) {
-            selectedExpert = expert;
+            selectedExpert = expert; // Variable is used here
           },
         ),
       );

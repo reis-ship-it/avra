@@ -7,8 +7,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots_network/network/device_discovery.dart';
-import 'package:spots/presentation/pages/network/device_discovery_page.dart';
+import 'package:avrai_network/network/device_discovery.dart';
+import 'package:avrai/presentation/pages/network/device_discovery_page.dart';
 
 void main() {
   setUpAll(() {});

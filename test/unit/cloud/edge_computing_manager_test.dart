@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/cloud/edge_computing_manager.dart';
+import 'package:avrai/core/cloud/edge_computing_manager.dart';
 
 /// SPOTS Edge Computing Manager Tests
 /// Date: November 20, 2025

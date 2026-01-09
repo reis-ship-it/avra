@@ -6,9 +6,9 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 import 'package:flutter/widgets.dart'
     show AppLifecycleState, WidgetsBinding, WidgetsBindingObserver;
-import 'package:spots/core/services/storage_service.dart'
+import 'package:avrai/core/services/storage_service.dart'
     show SharedPreferencesCompat;
-import 'package:spots_network/spots_network.dart';
+import 'package:avrai_network/avra_network.dart';
 
 /// Battery-adaptive scheduler for BLE discovery scanning.
 ///

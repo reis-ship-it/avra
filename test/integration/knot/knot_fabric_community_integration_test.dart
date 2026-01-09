@@ -11,20 +11,20 @@
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/community_service.dart';
-import 'package:spots_knot/services/knot/knot_fabric_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots/core/services/geographic_expansion_service.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots_knot/models/knot/fabric_evolution.dart';
-import 'package:spots/core/models/community.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
-import 'package:spots_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/services/community_service.dart';
+import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai/core/services/geographic_expansion_service.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_knot/models/knot/fabric_evolution.dart';
+import 'package:avrai/core/models/community.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
+import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/frb_generated.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import '../../helpers/platform_channel_helper.dart';
 import '../../helpers/test_helpers.dart';
 
@@ -148,6 +148,8 @@ void main() {
     late CommunityService communityService;
     late KnotFabricService knotFabricService;
     late KnotStorageService knotStorageService;
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
     late PersonalityKnotService personalityKnotService;
     late GeographicExpansionService geographicExpansionService;
 
@@ -182,7 +184,9 @@ void main() {
           knotStorageService: knotStorageService,
         );
       } catch (e) {
+      // ignore: avoid_print
         // If initialization fails, log and rethrow
+      // ignore: avoid_print
         print('Error in setUpAll: $e');
         rethrow;
       }
@@ -206,9 +210,12 @@ void main() {
         // Store knots
         for (final knot in memberKnots) {
           await knotStorageService.saveKnot(knot.agentId, knot);
+      // ignore: unused_local_variable
         }
 
+      // ignore: unused_local_variable - May be used in callback or assertion
         // Create a test community
+      // ignore: unused_local_variable - May be used in callback or assertion
         final community = await _createTestCommunity(memberKnots.map((k) => k.agentId).toList());
 
         // Act: Generate fabric from community

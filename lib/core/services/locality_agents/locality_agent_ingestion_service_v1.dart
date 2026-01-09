@@ -2,17 +2,17 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/visit.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/geohash_service.dart';
-import 'package:spots/core/services/geo_hierarchy_service.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_engine.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_models_v1.dart';
-import 'package:spots/core/services/locality_agents/locality_agent_update_emitter_v1.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/ai2ai/connection_orchestrator.dart';
-import 'package:spots/data/datasources/local/spots_local_datasource.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/visit.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/geohash_service.dart';
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_engine.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_models_v1.dart';
+import 'package:avrai/core/services/locality_agents/locality_agent_update_emitter_v1.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/data/datasources/local/spots_local_datasource.dart';
 
 /// Ingests visits/check-ins into LocalityAgents (v1).
 ///

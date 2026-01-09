@@ -57,8 +57,11 @@ void main() {
         await regressionDetector.saveBaseline(
             'database_operations', benchmarkResults);
 
+      // ignore: avoid_print
         print('Database benchmarks established:');
+      // ignore: avoid_print
         benchmarkResults.forEach((key, value) {
+      // ignore: avoid_print
           print('  $key: ${_formatBenchmarkResults(value)}');
         });
       });
@@ -83,11 +86,15 @@ void main() {
 
         expect(regressions.isEmpty, true,
             reason:
+      // ignore: avoid_print
                 'Performance regressions detected: ${regressions.join(', ')}');
 
+      // ignore: avoid_print
         print(
             'Database regression check: ${regressions.isEmpty ? 'PASSED' : 'FAILED'}');
+      // ignore: avoid_print
         if (regressions.isNotEmpty) {
+      // ignore: avoid_print
           print('Regressions found: $regressions');
         }
       });
@@ -131,12 +138,19 @@ void main() {
           // Memory usage should be reasonable
           expect(results['memory_mb']!, lessThan(200)); // Under 200MB
         }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Save AI baseline
+      // ignore: avoid_print
         await regressionDetector.saveBaseline('ai_operations', aiBenchmarks);
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('AI/ML benchmarks established:');
+      // ignore: avoid_print
         aiBenchmarks.forEach((key, value) {
+      // ignore: avoid_print
           print('  $key: ${_formatBenchmarkResults(value)}');
         });
       });
@@ -155,12 +169,17 @@ void main() {
           baseline: baseline!['personality_update_complex']!,
           current: currentResults,
           regressionThreshold: 0.25, // 25% threshold for AI operations
+      // ignore: avoid_print
         );
 
+      // ignore: avoid_print
         expect(regressions.isEmpty, true,
             reason:
+      // ignore: avoid_print
                 'AI performance regressions detected: ${regressions.join(', ')}');
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'AI regression check: ${regressions.isEmpty ? 'PASSED' : 'FAILED'}');
       });
@@ -189,16 +208,26 @@ void main() {
         // Assert
         for (final entry in searchBenchmarks.entries) {
           final results = entry.value;
+      // ignore: avoid_print
 
+      // ignore: avoid_print
           // Search should be fast and responsive
+      // ignore: avoid_print
           // Thresholds relaxed for environment variance (CI vs local, system load, first run)
+      // ignore: avoid_print
           // Note: Performance can vary significantly based on system load and first-run overhead
+      // ignore: avoid_print
           final searchAvg = results['search_avg_ms']!;
+      // ignore: avoid_print
           if (searchAvg > 550) {
             // Log warning but don't fail - performance optimization needed but not critical
+      // ignore: avoid_print
             print(
+      // ignore: avoid_print
                 'WARNING: Search performance below target: ${searchAvg}ms (target: <550ms)');
+      // ignore: avoid_print
             print('  This may be due to system load or first-run overhead.');
+      // ignore: avoid_print
             print(
                 '  Consider optimizing search operations if consistently above threshold.');
           }
@@ -212,27 +241,46 @@ void main() {
           expect(results['cache_hit_avg_ms']!,
               lessThan(100)); // Cache hits under 100ms (relaxed)
           expect(results['cache_miss_avg_ms']!,
+      // ignore: avoid_print
               lessThan(1200)); // Cache misses under 1.2s (relaxed)
+      // ignore: avoid_print
 
+      // ignore: avoid_print
           // Memory usage should be controlled
           expect(results['memory_mb']!, lessThan(200)); // Under 200MB (relaxed)
+      // ignore: avoid_print
         }
 
         await regressionDetector.saveBaseline(
+      // ignore: avoid_print
+      // ignore: avoid_print
             'search_operations', searchBenchmarks);
+      // ignore: avoid_print
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('Search benchmarks established:');
+      // ignore: avoid_print
+      // ignore: avoid_print
         searchBenchmarks.forEach((key, value) {
+      // ignore: avoid_print
           print('  $key: ${_formatBenchmarkResults(value)}');
+      // ignore: avoid_print
         });
       }, timeout: const Timeout(Duration(minutes: 2)));
 
+      // ignore: avoid_print
       test('should detect search performance regressions', () async {
+      // ignore: avoid_print
         // Arrange
+      // ignore: avoid_print
         final baseline =
+      // ignore: avoid_print
             await regressionDetector.loadBaseline('search_operations');
         // Skip regression check if baseline wasn't established (e.g., first run or baseline test failed)
+      // ignore: avoid_print
         if (baseline == null) {
+      // ignore: avoid_print
           print('Skipping regression check - baseline not established');
           return;
         }
@@ -241,18 +289,27 @@ void main() {
         // Act
         final currentResults = await benchmarkSuite.benchmarkSearchOperations(
             {'type': 'hybrid_search', 'data_size': 10000});
+      // ignore: avoid_print
 
         // Assert
+      // ignore: avoid_print
         final regressions = regressionDetector.detectRegressions(
           baseline: baseline['hybrid_search_10000']!,
           current: currentResults,
+      // ignore: avoid_print
           regressionThreshold: 0.15, // 15% threshold for search operations
+      // ignore: avoid_print
         );
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         expect(regressions.isEmpty, true,
             reason:
+      // ignore: avoid_print
                 'Search performance regressions detected: ${regressions.join(', ')}');
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print(
             'Search regression check: ${regressions.isEmpty ? 'PASSED' : 'FAILED'}');
       });
@@ -282,21 +339,35 @@ void main() {
           final results = entry.value;
 
           // UI should render quickly
+      // ignore: avoid_print
           expect(results['render_avg_ms']!, lessThan(2200)); // Relaxed for CI
+      // ignore: avoid_print
           expect(results['render_p95_ms']!, lessThan(3000)); // Relaxed
+      // ignore: avoid_print
 
+      // ignore: avoid_print
           // Scrolling should be smooth
           expect(results['scroll_avg_ms']!, lessThan(150));
+      // ignore: avoid_print
           expect(results['scroll_p95_ms']!, lessThan(300));
+      // ignore: avoid_print
 
           // Memory should be managed efficiently
+      // ignore: avoid_print
+      // ignore: avoid_print
           expect(results['memory_mb']!, lessThan(100)); // Under 100MB for UI
         }
+      // ignore: avoid_print
 
         await regressionDetector.saveBaseline('ui_operations', uiBenchmarks);
+      // ignore: avoid_print
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('UI benchmarks established:');
+      // ignore: avoid_print
         uiBenchmarks.forEach((key, value) {
+      // ignore: avoid_print
           print('  $key: ${_formatBenchmarkResults(value)}');
         });
       });
@@ -312,31 +383,62 @@ void main() {
         final suiteDuration = DateTime.now().difference(suiteStartTime);
 
         // Assert - Overall performance expectations
+      // ignore: avoid_print
         expect(suiteDuration.inMinutes,
+      // ignore: avoid_print
             lessThan(10)); // Complete suite under 10 minutes
+      // ignore: avoid_print
         expect(suiteResults['overall_score'],
+      // ignore: avoid_print
             greaterThan(0.8)); // Overall score > 80%
+      // ignore: avoid_print
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Individual category scores
         expect(suiteResults['database_score'], greaterThan(0.8));
+      // ignore: avoid_print
         expect(suiteResults['ai_score'], greaterThan(0.7));
+      // ignore: avoid_print
+      // ignore: avoid_print
         expect(suiteResults['search_score'], greaterThan(0.8));
+      // ignore: avoid_print
+      // ignore: avoid_print
         expect(suiteResults['ui_score'], greaterThan(0.75));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         // Performance consistency
+      // ignore: avoid_print
+      // ignore: avoid_print
         expect(suiteResults['performance_variance'],
+      // ignore: avoid_print
             lessThan(0.2)); // Low variance
+      // ignore: avoid_print
+      // ignore: avoid_print
+      // ignore: avoid_print
 
+      // ignore: avoid_print
+      // ignore: avoid_print
         print('Comprehensive benchmark suite results:');
+      // ignore: avoid_print
         print('  Duration: ${suiteDuration.inSeconds} seconds');
+      // ignore: avoid_print
+      // ignore: avoid_print
         print(
             '  Overall Score: ${((suiteResults['overall_score'] ?? 0.0) * 100).toStringAsFixed(1)}%');
+      // ignore: avoid_print
+      // ignore: avoid_print
         print(
             '  Database: ${((suiteResults['database_score'] ?? 0.0) * 100).toStringAsFixed(1)}%');
+      // ignore: avoid_print
         print(
             '  AI/ML: ${((suiteResults['ai_score'] ?? 0.0) * 100).toStringAsFixed(1)}%');
+      // ignore: avoid_print
         print(
+      // ignore: avoid_print
             '  Search: ${((suiteResults['search_score'] ?? 0.0) * 100).toStringAsFixed(1)}%');
+      // ignore: avoid_print
         print(
             '  UI: ${((suiteResults['ui_score'] ?? 0.0) * 100).toStringAsFixed(1)}%');
       });
@@ -352,30 +454,53 @@ void main() {
         final reportFile = File(reportPath);
         await reportFile.create(recursive: true);
         await reportFile.writeAsString(jsonEncode(report));
+      // ignore: avoid_print
 
         // Assert - Report should contain all necessary information
+      // ignore: avoid_print
         expect(report['timestamp'], isNotNull);
         expect(report['benchmarks'], isNotNull);
+      // ignore: avoid_print
         expect(report['baselines'], isNotNull);
         expect(report['regressions'], isNotNull);
+      // ignore: avoid_print
         expect(report['recommendations'], isNotNull);
+      // ignore: avoid_print
 
         // Performance gate checks for CI/CD
+      // ignore: avoid_print
         final overallScore = report['overall_performance_score'] as double;
+      // ignore: avoid_print
         expect(overallScore, greaterThan(0.75),
             reason:
+      // ignore: avoid_print
+      // ignore: avoid_print
                 'Overall performance score too low for deployment: $overallScore');
+      // ignore: avoid_print
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         final criticalRegressions = (report['regressions'] as List)
+      // ignore: avoid_print
             .where((r) => r['severity'] == 'critical')
+      // ignore: avoid_print
             .length;
+      // ignore: avoid_print
         expect(criticalRegressions, equals(0),
+      // ignore: avoid_print
             reason:
+      // ignore: avoid_print
                 'Critical performance regressions found: $criticalRegressions');
+      // ignore: avoid_print
+      // ignore: avoid_print
 
+      // ignore: avoid_print
         print('Performance report generated: $reportPath');
+      // ignore: avoid_print
         print(
+      // ignore: avoid_print
             'Overall Performance Score: ${(overallScore * 100).toStringAsFixed(1)}%');
+      // ignore: avoid_print
         print('Critical Regressions: $criticalRegressions');
       });
     });

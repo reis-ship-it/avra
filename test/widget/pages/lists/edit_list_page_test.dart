@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/presentation/pages/lists/edit_list_page.dart';
-import 'package:spots/core/models/list.dart';
+import 'package:avrai/presentation/pages/lists/edit_list_page.dart';
+import 'package:avrai/core/models/list.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../mocks/mock_blocs.dart';
 import '../../../helpers/test_helpers.dart';

@@ -20,7 +20,7 @@ final class OnboardingDimensionMapper {
   /// - `age` (int)
   /// - `homebase` (String)
   /// - `favoritePlaces` (List)
-  /// - `preferences` (Map<String, dynamic>)
+  /// - `preferences` (Map&lt;String, dynamic&gt;)
   /// - `respectedFriends` (List)
   Map<String, double> mapOnboardingToDimensions(
     Map<String, dynamic> onboardingData,

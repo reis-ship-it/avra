@@ -4,12 +4,12 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:geolocator/geolocator.dart';
-import 'package:spots/core/ai/interaction_events.dart';
-import 'package:spots/core/ai/event_queue.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/ai/continuous_learning_system.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/ai/interaction_events.dart';
+import 'package:avrai/core/ai/event_queue.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// Event logger service for tracking user interactions
 /// 

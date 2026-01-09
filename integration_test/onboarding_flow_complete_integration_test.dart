@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:spots/app.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/firebase_options.dart';
-import 'package:spots/data/datasources/local/auth_local_datasource.dart';
-import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
-import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
-import 'package:spots/presentation/pages/onboarding/age_collection_page.dart';
-import 'package:spots/presentation/pages/onboarding/homebase_selection_page.dart';
-import 'package:spots/presentation/pages/onboarding/favorite_places_page.dart';
-import 'package:spots/presentation/pages/onboarding/preference_survey_page.dart';
-import 'package:spots/presentation/pages/onboarding/baseline_lists_page.dart';
-import 'package:spots/presentation/pages/onboarding/friends_respect_page.dart';
-import 'package:spots/presentation/pages/home/home_page.dart';
-import 'package:spots/presentation/pages/onboarding/onboarding_step.dart'
+import 'package:avrai/app.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/firebase_options.dart';
+import 'package:avrai/data/datasources/local/auth_local_datasource.dart';
+import 'package:avrai/data/datasources/local/onboarding_completion_service.dart';
+import 'package:avrai/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:avrai/presentation/pages/onboarding/age_collection_page.dart';
+import 'package:avrai/presentation/pages/onboarding/homebase_selection_page.dart';
+import 'package:avrai/presentation/pages/onboarding/favorite_places_page.dart';
+import 'package:avrai/presentation/pages/onboarding/preference_survey_page.dart';
+import 'package:avrai/presentation/pages/onboarding/baseline_lists_page.dart';
+import 'package:avrai/presentation/pages/onboarding/friends_respect_page.dart';
+import 'package:avrai/presentation/pages/home/home_page.dart';
+import 'package:avrai/presentation/pages/onboarding/onboarding_step.dart'
     show PermissionsPage;
-import 'package:spots/presentation/pages/onboarding/welcome_page.dart';
-import 'package:spots/presentation/pages/onboarding/legal_acceptance_dialog.dart';
-import 'package:spots/presentation/pages/legal/terms_of_service_page.dart';
-import 'package:spots/presentation/pages/legal/privacy_policy_page.dart';
-import 'package:spots/presentation/pages/onboarding/ai_loading_page.dart';
+import 'package:avrai/presentation/pages/onboarding/welcome_page.dart';
+import 'package:avrai/presentation/pages/onboarding/legal_acceptance_dialog.dart';
+import 'package:avrai/presentation/pages/legal/terms_of_service_page.dart';
+import 'package:avrai/presentation/pages/legal/privacy_policy_page.dart';
+import 'package:avrai/presentation/pages/onboarding/ai_loading_page.dart';
 
 const String _testEmail = 'demo@spots.com';
 const String _testPassword = 'password123';
@@ -62,6 +62,7 @@ void main() {
       );
     } catch (e) {
       // Firebase initialization may fail in test environment, continue anyway
+      // ignore: avoid_print
       print(
           '⚠️ Firebase initialization failed (expected in some test environments): $e');
     }
@@ -206,45 +207,75 @@ Future<void> _ensureOnOnboardingPage(WidgetTester tester) async {
 }
 
 /// Test complete onboarding flow through all steps
+      // ignore: avoid_print
 Future<void> _testCompleteOnboardingFlow(WidgetTester tester) async {
+      // ignore: avoid_print
   print('🚀 Starting complete onboarding flow test...');
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   // Step 1: Welcome Screen
+      // ignore: avoid_print
   print('📋 Step 1: Welcome Screen');
+      // ignore: avoid_print
   await _testWelcomeStep(tester);
 
   // Step 2: Permissions
+      // ignore: avoid_print
   print('📋 Step 2: Permissions');
   await _testPermissionsStep(tester);
 
+      // ignore: avoid_print
+      // ignore: avoid_print
   // Step 3: Age Collection
+      // ignore: avoid_print
   print('📋 Step 3: Age Collection');
   await _testAgeCollection(tester);
+      // ignore: avoid_print
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   // Step 4: Homebase Selection
+      // ignore: avoid_print
   print('📋 Step 4: Homebase Selection');
+      // ignore: avoid_print
   await _testHomebaseSelection(tester);
 
   // Step 5: Favorite Places
+      // ignore: avoid_print
   print('📋 Step 5: Favorite Places');
+      // ignore: avoid_print
   await _testFavoritePlaces(tester);
 
+      // ignore: avoid_print
+      // ignore: avoid_print
   // Step 6: Preferences Survey
+      // ignore: avoid_print
   print('📋 Step 6: Preferences Survey');
   await _testPreferencesSurvey(tester);
+      // ignore: avoid_print
 
   // Step 7: Baseline Lists
+      // ignore: avoid_print
+      // ignore: avoid_print
   print('📋 Step 7: Baseline Lists');
   await _testBaselineLists(tester);
+      // ignore: avoid_print
 
   // Step 8: Friends & Respect
+      // ignore: avoid_print
   print('📋 Step 8: Friends & Respect');
+      // ignore: avoid_print
   await _testFriendsRespect(tester);
 
+      // ignore: avoid_print
   // Complete onboarding
+      // ignore: avoid_print
   print('✅ Completing onboarding...');
   await _completeOnboarding(tester);
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   print('🎉 Onboarding flow completed successfully!');
 }
 
@@ -493,18 +524,24 @@ Future<void> _testBaselineLists(WidgetTester tester) async {
 
   // Proceed to next step (swipe is more reliable than tapping Next in tests).
   await _swipeToNextStep(tester, expectAfter: find.byType(FriendsRespectPage));
+      // ignore: avoid_print
 }
 
 /// Test friends and respect step
 Future<void> _testFriendsRespect(WidgetTester tester) async {
+      // ignore: avoid_print
   await _pumpUntilFound(tester, find.byType(FriendsRespectPage));
 
   expect(find.byType(FriendsRespectPage), findsOneWidget);
+      // ignore: avoid_print
 
   // This step is optional. Avoid interacting with list tiles here because it can open
   // bottom-sheets/overlays that obscure the "Complete Setup" CTA in tests.
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   // Ready to complete onboarding
+      // ignore: avoid_print
   print('✅ Friends step completed (optional step)');
 }
 

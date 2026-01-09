@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/models/event_template.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/models/spot.dart';
+import 'package:avrai/core/models/event_template.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/models/spot.dart';
 
 /// OUR_GUTS.md: "The key opens doors to events"
 /// Easy Event Hosting - Phase 1: Event Template Service

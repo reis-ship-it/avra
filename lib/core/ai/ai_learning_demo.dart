@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
-// import 'package:spots/core/ai/ai_master_orchestrator.dart';
-// import 'package:spots/core/ai/continuous_learning_system.dart';
-// import 'package:spots/core/ai/comprehensive_data_collector.dart';
-// import 'package:spots/core/ai/ai_self_improvement_system.dart';
+// import 'package:avrai/core/ai/ai_master_orchestrator.dart';
+// import 'package:avrai/core/ai/continuous_learning_system.dart';
+// import 'package:avrai/core/ai/comprehensive_data_collector.dart';
+// import 'package:avrai/core/ai/ai_self_improvement_system.dart';
 
 // Stub classes for missing services
 class AIMasterOrchestrator {

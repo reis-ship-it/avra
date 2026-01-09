@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'dart:typed_data';
 import 'dart:convert';
-import 'package:spots/core/services/message_encryption_service.dart';
+import 'package:avrai/core/services/message_encryption_service.dart';
 
 /// Business-Expert Message Model
 /// 

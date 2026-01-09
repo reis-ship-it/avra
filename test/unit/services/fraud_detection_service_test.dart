@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/fraud_detection_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/fraud_score.dart';
-import 'package:spots/core/models/fraud_recommendation.dart';
+import 'package:avrai/core/services/fraud_detection_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/fraud_score.dart';
+import 'package:avrai/core/models/fraud_recommendation.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'fraud_detection_service_test.mocks.dart';

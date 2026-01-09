@@ -1,12 +1,12 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/constants/vibe_constants.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/connection_metrics.dart';
-import 'package:spots/core/models/collaborative_activity_metrics.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/services/storage_service.dart'
+import 'package:avrai/core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/connection_metrics.dart';
+import 'package:avrai/core/models/collaborative_activity_metrics.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/services/storage_service.dart'
     show SharedPreferencesCompat;
-import 'package:spots/core/ai/ai2ai_learning/orchestrator.dart';
+import 'package:avrai/core/ai/ai2ai_learning/orchestrator.dart';
 
 class ExpectedOutcome {
   final String id;

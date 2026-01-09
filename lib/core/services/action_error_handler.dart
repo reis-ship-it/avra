@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:spots/core/ai/action_models.dart';
+import 'package:avrai/core/ai/action_models.dart';
 
 /// Error handling utilities for action execution
 /// Phase 7 Week 33: Action Execution UI & Integration

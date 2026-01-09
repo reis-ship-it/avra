@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/privacy_protection.dart' show PrivacyProtection, AnonymizedPersonalityData, AnonymizedVibeData;
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/models/user_vibe.dart';
+import 'package:avrai/core/ai/privacy_protection.dart' show PrivacyProtection, AnonymizedPersonalityData, AnonymizedVibeData;
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/models/user_vibe.dart';
 
 /// Privacy Protection Tests
 /// Tests the comprehensive privacy protection system

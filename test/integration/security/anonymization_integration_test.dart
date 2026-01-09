@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots/core/services/user_anonymization_service.dart';
-import 'package:spots/core/services/location_obfuscation_service.dart';
-import 'package:spots/core/services/audit_log_service.dart';
-import 'package:spots/core/ai2ai/anonymous_communication.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai/core/services/user_anonymization_service.dart';
+import 'package:avrai/core/services/location_obfuscation_service.dart';
+import 'package:avrai/core/services/audit_log_service.dart';
+import 'package:avrai/core/ai2ai/anonymous_communication.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 /// Integration tests for anonymization services in AI2AI context

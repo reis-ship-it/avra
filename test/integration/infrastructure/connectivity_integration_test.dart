@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:spots/core/services/enhanced_connectivity_service.dart';
-import 'package:spots/data/repositories/spots_repository_impl.dart';
+import 'package:avrai/core/services/enhanced_connectivity_service.dart';
+import 'package:avrai/data/repositories/spots_repository_impl.dart';
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 import '../../mocks/mock_dependencies.mocks.dart';

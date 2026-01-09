@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:developer' as developer;
 import 'package:crypto/crypto.dart';
-import 'package:spots_ai/models/personality_profile.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 
 /// Privacy-preserving AI collaboration networks for SPOTS discovery platform
 /// Enables AI agents to find each other, build trust, and collaborate without exposing user data

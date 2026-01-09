@@ -4,92 +4,99 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spots/presentation/pages/auth/auth_wrapper.dart';
-import 'package:spots/presentation/pages/auth/login_page.dart';
-import 'package:spots/presentation/pages/auth/signup_page.dart';
-import 'package:spots/presentation/pages/home/home_page.dart';
-import 'package:spots/presentation/pages/spots/spots_page.dart';
-import 'package:spots/presentation/pages/lists/lists_page.dart';
-import 'package:spots/presentation/pages/map/map_page.dart';
-import 'package:spots/presentation/pages/profile/profile_page.dart';
-import 'package:spots/presentation/pages/profile/ai_personality_status_page.dart';
-import 'package:spots/presentation/pages/chat/unified_chat_page.dart';
-import 'package:spots/presentation/pages/chat/friend_chat_view.dart';
-import 'package:spots/presentation/pages/chat/community_chat_view.dart';
-import 'package:spots/presentation/pages/expertise/expertise_dashboard_page.dart';
-import 'package:spots/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:avrai/presentation/pages/auth/auth_wrapper.dart';
+import 'package:avrai/presentation/pages/auth/login_page.dart';
+import 'package:avrai/presentation/pages/auth/signup_page.dart';
+import 'package:avrai/presentation/pages/home/home_page.dart';
+import 'package:avrai/presentation/pages/spots/spots_page.dart';
+import 'package:avrai/presentation/pages/lists/lists_page.dart';
+import 'package:avrai/presentation/pages/map/map_page.dart';
+import 'package:avrai/presentation/pages/profile/profile_page.dart';
+import 'package:avrai/presentation/pages/profile/ai_personality_status_page.dart';
+import 'package:avrai/presentation/pages/chat/unified_chat_page.dart';
+import 'package:avrai/presentation/pages/chat/friend_chat_view.dart';
+import 'package:avrai/presentation/pages/chat/community_chat_view.dart';
+import 'package:avrai/presentation/pages/expertise/expertise_dashboard_page.dart';
+import 'package:avrai/presentation/pages/onboarding/onboarding_page.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:spots/presentation/pages/onboarding/ai_loading_page.dart';
-import 'package:spots/presentation/pages/onboarding/knot_discovery_page.dart';
-import 'package:spots/presentation/pages/supabase_test_page.dart';
-import 'package:spots/presentation/pages/search/hybrid_search_page.dart';
-import 'package:spots/presentation/pages/admin/ai2ai_admin_dashboard.dart';
-import 'package:spots/presentation/pages/admin/fraud_review_page.dart';
-import 'package:spots/presentation/pages/admin/review_fraud_review_page.dart';
-import 'package:spots/presentation/pages/admin/user_detail_page.dart';
-import 'package:spots/presentation/pages/admin/connection_communication_detail_page.dart';
-import 'package:spots/presentation/pages/admin/club_detail_page.dart';
-import 'package:spots/presentation/pages/business/business_signup_page.dart';
-import 'package:spots/presentation/pages/business/business_login_page.dart';
-import 'package:spots/presentation/pages/business/business_dashboard_page.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
-import 'package:spots/presentation/blocs/search/hybrid_search_bloc.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/data/datasources/local/onboarding_completion_service.dart';
+import 'package:avrai/presentation/pages/onboarding/ai_loading_page.dart';
+import 'package:avrai/presentation/pages/onboarding/knot_discovery_page.dart';
+import 'package:avrai/presentation/pages/supabase_test_page.dart';
+import 'package:avrai/presentation/pages/search/hybrid_search_page.dart';
+import 'package:avrai/presentation/pages/admin/ai2ai_admin_dashboard.dart';
+// Phase 19.18: Quantum Group Matching System
+import 'package:avrai/presentation/pages/group/group_formation_page.dart';
+import 'package:avrai/presentation/pages/group/group_results_page.dart';
+import 'package:avrai/presentation/blocs/group_matching_bloc.dart';
+import 'package:avrai/presentation/pages/admin/fraud_review_page.dart';
+import 'package:avrai/presentation/pages/admin/review_fraud_review_page.dart';
+import 'package:avrai/presentation/pages/admin/user_detail_page.dart';
+import 'package:avrai/presentation/pages/admin/connection_communication_detail_page.dart';
+import 'package:avrai/presentation/pages/admin/club_detail_page.dart';
+import 'package:avrai/presentation/pages/business/business_signup_page.dart';
+import 'package:avrai/presentation/pages/business/business_login_page.dart';
+import 'package:avrai/presentation/pages/business/business_dashboard_page.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/presentation/blocs/search/hybrid_search_bloc.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/data/datasources/local/onboarding_completion_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 // Phase 1 Integration: Device Discovery & AI2AI Connections
-import 'package:spots/presentation/pages/network/device_discovery_page.dart';
-import 'package:spots/presentation/pages/network/ai2ai_connections_page.dart';
-import 'package:spots/presentation/pages/settings/discovery_settings_page.dart';
+import 'package:avrai/presentation/pages/network/device_discovery_page.dart';
+import 'package:avrai/presentation/pages/network/ai2ai_connections_page.dart';
+import 'package:avrai/presentation/pages/settings/discovery_settings_page.dart';
 // Phase 2.1: Federated Learning
-import 'package:spots/presentation/pages/settings/federated_learning_page.dart';
-import 'package:spots/presentation/pages/settings/on_device_ai_settings_page.dart';
+import 'package:avrai/presentation/pages/settings/federated_learning_page.dart';
+import 'package:avrai/presentation/pages/settings/on_device_ai_settings_page.dart';
 // Phase 7, Week 37: AI Self-Improvement Visibility
-import 'package:spots/presentation/pages/settings/ai_improvement_page.dart';
+import 'package:avrai/presentation/pages/settings/ai_improvement_page.dart';
 // Phase 7, Week 38: AI2AI Learning Methods UI
-import 'package:spots/presentation/pages/settings/ai2ai_learning_methods_page.dart';
+import 'package:avrai/presentation/pages/settings/ai2ai_learning_methods_page.dart';
 // Phase 7, Section 39: Continuous Learning UI
-import 'package:spots/presentation/pages/settings/continuous_learning_page.dart';
+import 'package:avrai/presentation/pages/settings/continuous_learning_page.dart';
 // Phase 4.5: Partnerships Page
-import 'package:spots/presentation/pages/profile/partnerships_page.dart';
-import 'package:spots/presentation/pages/debug/geo_area_evolution_debug_page.dart';
-import 'package:spots/presentation/pages/debug/proof_run_page.dart';
-import 'package:spots/presentation/pages/receipts/receipt_detail_page.dart';
-import 'package:spots/presentation/pages/receipts/receipts_page.dart';
+import 'package:avrai/presentation/pages/profile/partnerships_page.dart';
+import 'package:avrai/presentation/pages/debug/geo_area_evolution_debug_page.dart';
+import 'package:avrai/presentation/pages/debug/proof_run_page.dart';
+import 'package:avrai/presentation/pages/receipts/receipt_detail_page.dart';
+import 'package:avrai/presentation/pages/receipts/receipts_page.dart';
 // Phase 10: Social Media Integration - Friend Discovery
-import 'package:spots/presentation/pages/social/friend_discovery_page.dart';
+import 'package:avrai/presentation/pages/social/friend_discovery_page.dart';
 // Phase 10: Social Media Integration - Public Handles
-import 'package:spots/presentation/pages/settings/public_handles_page.dart';
-import 'package:spots/presentation/pages/admin/learning_analytics_page.dart';
+import 'package:avrai/presentation/pages/settings/public_handles_page.dart';
+import 'package:avrai/presentation/pages/admin/learning_analytics_page.dart';
 // Phase 6, Week 29: Communities & Clubs
-import 'package:spots/presentation/pages/communities/community_page.dart';
-import 'package:spots/presentation/pages/communities/communities_discover_page.dart';
-import 'package:spots/presentation/pages/clubs/club_page.dart';
+import 'package:avrai/presentation/pages/communities/community_page.dart';
+import 'package:avrai/presentation/pages/communities/communities_discover_page.dart';
+import 'package:avrai/presentation/pages/clubs/club_page.dart';
 // Detail Pages
-import 'package:spots/presentation/pages/lists/list_details_page.dart';
-import 'package:spots/presentation/pages/spots/spot_details_page.dart';
-import 'package:spots/presentation/pages/spots/create_spot_page.dart';
-import 'package:spots/presentation/pages/spots/edit_spot_page.dart';
-import 'package:spots/presentation/pages/lists/create_list_page.dart';
-import 'package:spots/presentation/pages/lists/edit_list_page.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/domain/repositories/lists_repository.dart';
-import 'package:spots/domain/repositories/spots_repository.dart';
-import 'package:spots/data/repositories/spots_repository_impl.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/core/models/user.dart';
+import 'package:avrai/presentation/pages/lists/list_details_page.dart';
+import 'package:avrai/presentation/pages/spots/spot_details_page.dart';
+import 'package:avrai/presentation/pages/spots/create_spot_page.dart';
+import 'package:avrai/presentation/pages/spots/edit_spot_page.dart';
+import 'package:avrai/presentation/pages/lists/create_list_page.dart';
+import 'package:avrai/presentation/pages/lists/edit_list_page.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/domain/repositories/lists_repository.dart';
+import 'package:avrai/domain/repositories/spots_repository.dart';
+import 'package:avrai/data/repositories/spots_repository_impl.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/models/user.dart';
 // Phase 15: Reservations
-import 'package:spots/presentation/pages/reservations/my_reservations_page.dart';
-import 'package:spots/presentation/pages/reservations/create_reservation_page.dart';
-import 'package:spots/presentation/pages/reservations/reservation_detail_page.dart';
-import 'package:spots/core/models/reservation.dart';
+import 'package:avrai/presentation/pages/reservations/my_reservations_page.dart';
+import 'package:avrai/presentation/pages/reservations/create_reservation_page.dart';
+import 'package:avrai/presentation/pages/reservations/reservation_detail_page.dart';
+import 'package:avrai/core/models/reservation.dart';
 
 class AppRouter {
   // Route path helpers for legacy Navigator.pushNamed usages
   static const String home = '/home';
   static const String signup = '/signup';
+  // Phase 19.18: Quantum Group Matching System
+  static const String groupFormation = '/group/formation';
+  static const String groupResults = '/group/results';
 
   static GoRouter build({required AuthBloc authBloc}) {
     const bool goToSupabaseTest = bool.fromEnvironment('GO_TO_SUPABASE_TEST');
@@ -770,6 +777,31 @@ class AppRouter {
               builder: (context, state) => BlocProvider(
                 create: (context) => di.sl<HybridSearchBloc>(),
                 child: const HybridSearchPage(),
+              ),
+            ),
+            // Phase 19.18: Quantum Group Matching System
+            GoRoute(
+              path: 'group/formation',
+              builder: (context, state) => BlocProvider(
+                create: (context) => di.sl<GroupMatchingBloc>(),
+                child: const GroupFormationPage(),
+              ),
+            ),
+            GoRoute(
+              path: 'group/results/:sessionId',
+              builder: (context, state) {
+                final sessionId = state.pathParameters['sessionId'];
+                return BlocProvider(
+                  create: (context) => di.sl<GroupMatchingBloc>(),
+                  child: GroupResultsPage(sessionId: sessionId),
+                );
+              },
+            ),
+            GoRoute(
+              path: 'group/results',
+              builder: (context, state) => BlocProvider(
+                create: (context) => di.sl<GroupMatchingBloc>(),
+                child: const GroupResultsPage(),
               ),
             ),
           ],

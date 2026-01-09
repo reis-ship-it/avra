@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/action_parser.dart';
-import 'package:spots/core/ai/action_models.dart';
+import 'package:avrai/core/ai/action_parser.dart';
+import 'package:avrai/core/ai/action_models.dart';
 import 'package:geolocator/geolocator.dart';
 
 void main() {

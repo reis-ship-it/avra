@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/core/models/user.dart';
-import 'package:spots/data/repositories/auth_repository_impl.dart';
-import 'package:spots/data/repositories/spots_repository_impl.dart';
-import 'package:spots/data/repositories/lists_repository_impl.dart';
-import 'package:spots/data/datasources/local/auth_sembast_datasource.dart';
-import 'package:spots/data/datasources/local/spots_sembast_datasource.dart';
-import 'package:spots/data/datasources/local/lists_sembast_datasource.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/data/datasources/remote/spots_remote_datasource.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/core/models/user.dart';
+import 'package:avrai/data/repositories/auth_repository_impl.dart';
+import 'package:avrai/data/repositories/spots_repository_impl.dart';
+import 'package:avrai/data/repositories/lists_repository_impl.dart';
+import 'package:avrai/data/datasources/local/auth_sembast_datasource.dart';
+import 'package:avrai/data/datasources/local/spots_sembast_datasource.dart';
+import 'package:avrai/data/datasources/local/lists_sembast_datasource.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/datasources/remote/spots_remote_datasource.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -108,6 +108,7 @@ void main() {
       expect(totalTime, lessThan(30000),
           reason: 'Complete sync cycle should finish within 30 seconds');
 
+      // ignore: avoid_print
       print('✅ Offline/Online sync test completed in ${totalTime}ms');
     });
 
@@ -160,7 +161,9 @@ Future<void> _testOfflineModeSyncOnly(
   expect(listsRepository.localDataSource, isNotNull,
       reason:
           'Lists repository should have local data source for offline mode');
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   print('✅ Offline mode configured in ${offlineSwitchTime}ms');
 }
 
@@ -259,8 +262,11 @@ Future<void> _testOnlineTransition(
 
   final transitionTime = stopwatch.elapsedMilliseconds - transitionStart;
   expect(transitionTime, lessThan(1000),
+      // ignore: avoid_print
       reason: 'Online transition should be quick');
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   print('✅ Online transition completed in ${transitionTime}ms');
 }
 
@@ -300,9 +306,13 @@ Future<void> _testDataSynchronization(
   expect(syncedLists.length, greaterThanOrEqualTo(offlineData.lists.length));
 
   final syncDuration = DateTime.now().difference(syncStartTime);
+      // ignore: avoid_print
   expect(syncDuration.inSeconds, lessThan(10),
+      // ignore: avoid_print
       reason: 'Sync should complete within 10 seconds');
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   print('✅ Data synchronization completed in ${syncDuration.inSeconds}s');
 }
 
@@ -341,13 +351,21 @@ Future<void> _testConflictResolution(
   expect(foundSpot.name, equals('Conflict Spot - Offline Version'));
   // Tags may not be preserved in all repository implementations
   // The important thing is that the spot was created and retrieved correctly
+      // ignore: avoid_print
   if (foundSpot.tags.isNotEmpty) {
     expect(foundSpot.tags, contains('offline'));
+      // ignore: avoid_print
+      // ignore: avoid_print
   } else {
+      // ignore: avoid_print
+      // ignore: avoid_print
     // If tags aren't preserved, that's OK - the spot itself was created correctly
+      // ignore: avoid_print
     print('⚠️ Tags not preserved, but spot creation verified');
   }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   print('✅ Conflict resolution: offline version preserved');
 }
 
@@ -378,12 +396,18 @@ Future<void> _validateDataConsistency(
     expect(spot.createdBy, isNotEmpty);
   }
 
+      // ignore: avoid_print
   for (final list in lists) {
+      // ignore: avoid_print
     if (list.curatorId != null) {
+      // ignore: avoid_print
       expect(list.curatorId, isNotEmpty);
     }
+      // ignore: avoid_print
   }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   print('✅ Data consistency validated: all references intact');
 }
 
@@ -432,13 +456,20 @@ Future<void> _testNetworkInstability(
       final errorStr = e.toString();
       expect(
         errorStr.contains('offline') || errorStr.contains('connectivity'),
+      // ignore: avoid_print
         isTrue,
+      // ignore: avoid_print
       );
+      // ignore: avoid_print
     }
 
+      // ignore: avoid_print
     await Future.delayed(const Duration(milliseconds: 200));
+      // ignore: avoid_print
   }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   print('✅ Network instability handled gracefully');
 }
 
@@ -475,14 +506,22 @@ Future<void> _testLargeDatasetSync(
     await spotsRepo.createSpot(spot);
   }
 
+      // ignore: avoid_print
   // Test sync performance
+      // ignore: avoid_print
   final syncedSpots = await spotsRepo.getSpots();
+      // ignore: avoid_print
   expect(syncedSpots.length, greaterThanOrEqualTo(50));
 
+      // ignore: avoid_print
   final syncDuration = DateTime.now().difference(syncStartTime);
+      // ignore: avoid_print
   expect(syncDuration.inSeconds, lessThan(15),
+      // ignore: avoid_print
       reason: 'Large dataset sync should complete within 15 seconds');
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   print(
       '✅ Large dataset sync completed: ${largeSpotSet.length} spots in ${syncDuration.inSeconds}s');
 }
@@ -514,15 +553,24 @@ Future<void> _testBackgroundSync(
 
   await spotsRepo.createSpot(backgroundSpot);
 
+      // ignore: avoid_print
   // Verify spot was created locally
+      // ignore: avoid_print
   final syncedSpots = await spotsRepo.getSpots();
+      // ignore: avoid_print
   final foundSpot = syncedSpots.firstWhere(
     (spot) => spot.id == backgroundSpot.id,
+      // ignore: avoid_print
     orElse: () => throw Exception('Background spot not found after creation'),
+      // ignore: avoid_print
   );
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   expect(foundSpot.name, equals(backgroundSpot.name));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   print('✅ Background data creation completed successfully');
 }
 
@@ -543,16 +591,26 @@ Future<void> _testCacheManagement(
       category: 'food_and_drink',
       rating: 4.0,
       createdBy: 'offline_test_user',
+      // ignore: avoid_print
       createdAt: now,
+      // ignore: avoid_print
       updatedAt: now,
+      // ignore: avoid_print
       tags: ['cache'],
     ));
+      // ignore: avoid_print
   }
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   // Verify all spots are accessible
+      // ignore: avoid_print
   final allSpots = await spotsRepo.getSpots();
+      // ignore: avoid_print
   expect(allSpots.length, greaterThanOrEqualTo(20));
+      // ignore: avoid_print
 
+      // ignore: avoid_print
   print('✅ Cache management: data accessible and stored correctly');
 }
 

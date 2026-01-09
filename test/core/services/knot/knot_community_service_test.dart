@@ -6,13 +6,13 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots_knot/models/knot/knot_community.dart';
-import 'package:spots_knot/models/personality_knot.dart';
-import 'package:spots_ai/models/personality_profile.dart';
-import 'package:spots_knot/services/knot/knot_community_service.dart';
-import 'package:spots_knot/services/knot/personality_knot_service.dart';
-import 'package:spots_knot/services/knot/knot_storage_service.dart';
-import 'package:spots/core/services/community_service.dart';
+import 'package:avrai_knot/models/knot/knot_community.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_knot/services/knot/knot_community_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai/core/services/community_service.dart';
 
 class MockPersonalityKnotService extends Mock implements PersonalityKnotService {}
 class MockKnotStorageService extends Mock implements KnotStorageService {}

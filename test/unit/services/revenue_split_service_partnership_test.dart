@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/revenue_split_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/models/revenue_split.dart';
-import 'package:spots/core/models/event_partnership.dart';
+import 'package:avrai/core/services/revenue_split_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/models/revenue_split.dart';
+import 'package:avrai/core/models/event_partnership.dart';
 
 import 'revenue_split_service_partnership_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';

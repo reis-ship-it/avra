@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/cancellation_initiator.dart';
-import 'package:spots/core/models/refund_status.dart';
+import 'package:avrai/core/models/cancellation_initiator.dart';
+import 'package:avrai/core/models/refund_status.dart';
 
 /// Cancellation Model
 /// 

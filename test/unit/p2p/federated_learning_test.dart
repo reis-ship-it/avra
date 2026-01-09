@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/p2p/federated_learning.dart';
+import 'package:avrai/core/p2p/federated_learning.dart';
 import '../../mocks/mock_storage_service.dart';
 
 void main() {

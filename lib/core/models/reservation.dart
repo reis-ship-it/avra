@@ -8,8 +8,8 @@
 // Includes quantum state for matching and compatibility calculations.
 
 import 'package:equatable/equatable.dart';
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
 
 /// Reservation Type
 enum ReservationType {

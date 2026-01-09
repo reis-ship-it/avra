@@ -5,7 +5,7 @@
 // Phase 5: Knot Fabric for Community Representation
 
 import 'package:flutter/material.dart';
-import 'package:spots_knot/models/knot/fabric_cluster.dart';
+import 'package:avrai_knot/models/knot/fabric_cluster.dart';
 
 /// Widget for visualizing fabric clusters
 class FabricClusterVisualization extends StatelessWidget {

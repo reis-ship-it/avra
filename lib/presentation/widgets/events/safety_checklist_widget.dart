@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/event_safety_guidelines.dart';
-import 'package:spots/core/services/event_safety_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_safety_guidelines.dart';
+import 'package:avrai/core/services/event_safety_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
 
 /// Safety Checklist Widget
 /// 
@@ -680,7 +680,6 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
       case SafetyRequirement.crowdControl:
         return 'Crowd control measures must be implemented';
     }
-    return null;
   }
 
   IconData _getRequirementIcon(SafetyRequirement requirement) {

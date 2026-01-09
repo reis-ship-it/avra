@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/models/large_city.dart';
+import 'package:avrai/core/models/large_city.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Comprehensive tests for LargeCity model

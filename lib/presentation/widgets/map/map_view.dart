@@ -5,27 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
-import 'package:spots/core/theme/map_themes.dart';
-import 'package:spots/core/theme/map_theme_manager.dart';
+import 'package:avrai/core/theme/map_themes.dart';
+import 'package:avrai/core/theme/map_theme_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spots/presentation/blocs/spots/spots_bloc.dart';
-import 'package:spots/presentation/blocs/lists/lists_bloc.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/core/models/list.dart';
-import 'package:spots/presentation/pages/spots/spot_details_page.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/core/models/list.dart';
+import 'package:avrai/presentation/pages/spots/spot_details_page.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:spots/presentation/widgets/common/offline_indicator.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/presentation/widgets/boundaries/border_visualization_widget.dart';
-import 'package:spots/presentation/widgets/chat/chat_button_with_badge.dart';
-import 'package:spots/core/services/geo_city_pack_service.dart';
-import 'package:spots/core/services/geo_hierarchy_service.dart';
-import 'package:spots/presentation/widgets/map/geo_synco_summary_card.dart';
-import 'package:spots/core/services/neighborhood_boundary_service.dart';
-import 'package:spots/core/models/neighborhood_boundary.dart';
-import 'package:spots/core/services/geohash_service.dart';
+import 'package:avrai/presentation/widgets/common/offline_indicator.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/widgets/boundaries/border_visualization_widget.dart';
+import 'package:avrai/presentation/widgets/chat/chat_button_with_badge.dart';
+import 'package:avrai/core/services/geo_city_pack_service.dart';
+import 'package:avrai/core/services/geo_hierarchy_service.dart';
+import 'package:avrai/presentation/widgets/map/geo_synco_summary_card.dart';
+import 'package:avrai/core/services/neighborhood_boundary_service.dart';
+import 'package:avrai/core/models/neighborhood_boundary.dart';
+import 'package:avrai/core/services/geohash_service.dart';
 import 'dart:developer' as developer;
 
 class MapView extends StatefulWidget {
@@ -1035,9 +1035,12 @@ class _MapViewState extends State<MapView> {
                   return GestureDetector(
                     onTap: () async {
                       await MapThemeManager.setTheme(theme);
+                      if (!mounted) return;
+                      if (!mounted || !context.mounted) return;
                       setState(() {
                         _currentTheme = theme;
                       });
+                      if (!mounted || !context.mounted) return;
                       Navigator.pop(context);
                     },
                     child: Card(

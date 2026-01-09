@@ -1,5 +1,5 @@
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// Expertise Recognition Service
 /// OUR_GUTS.md: Recognition, not competition

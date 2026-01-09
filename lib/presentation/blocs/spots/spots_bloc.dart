@@ -1,11 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/spot.dart';
-import 'package:spots/domain/usecases/spots/get_spots_usecase.dart';
-import 'package:spots/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
-import 'package:spots/domain/usecases/spots/create_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/update_spot_usecase.dart';
-import 'package:spots/domain/usecases/spots/delete_spot_usecase.dart';
+import 'package:avrai/core/models/spot.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_usecase.dart';
+import 'package:avrai/domain/usecases/spots/get_spots_from_respected_lists_usecase.dart';
+import 'package:avrai/domain/usecases/spots/create_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/update_spot_usecase.dart';
+import 'package:avrai/domain/usecases/spots/delete_spot_usecase.dart';
 
 // Events
 abstract class SpotsEvent extends Equatable {
@@ -145,7 +145,7 @@ class SpotsBloc extends Bloc<SpotsEvent, SpotsState> {
         final allSpots = [...currentState.spots, ...currentState.respectedSpots];
         final filteredSpots = allSpots.where((spot) {
           return spot.name.toLowerCase().contains(query) ||
-              (spot.description.toLowerCase().contains(query) ?? false) ||
+              spot.description.toLowerCase().contains(query) ||
               spot.category.toLowerCase().contains(query) ||
               (spot.address?.toLowerCase().contains(query) ?? false);
         }).toList();

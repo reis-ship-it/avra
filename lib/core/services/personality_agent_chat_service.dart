@@ -1,16 +1,16 @@
 import 'dart:developer' as developer;
 import 'package:geolocator/geolocator.dart';
-import 'package:spots_ai/models/personality_chat_message.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots_network/network/message_encryption_service.dart';
-import 'package:spots/core/services/language_pattern_learning_service.dart';
-import 'package:spots/core/services/llm_service.dart';
-import 'package:spots/core/ai/personality_learning.dart' as pl;
-import 'package:spots/core/ai/facts_index.dart';
+import 'package:avrai_ai/models/personality_chat_message.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai_network/network/message_encryption_service.dart';
+import 'package:avrai/core/services/language_pattern_learning_service.dart';
+import 'package:avrai/core/services/llm_service.dart';
+import 'package:avrai/core/ai/personality_learning.dart' as pl;
+import 'package:avrai/core/ai/facts_index.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/injection_container.dart' as di;
-import 'package:spots/data/repositories/hybrid_search_repository.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 

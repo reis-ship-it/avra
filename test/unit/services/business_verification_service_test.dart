@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/business_verification_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_verification.dart';
+import 'package:avrai/core/services/business_verification_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_verification.dart';
 
 import 'business_verification_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';

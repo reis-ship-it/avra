@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/platform_phase.dart';
-import 'package:spots/core/models/saturation_metrics.dart';
+import 'package:avrai/core/models/platform_phase.dart';
+import 'package:avrai/core/models/saturation_metrics.dart';
 
 /// Expertise Requirements Model
 /// 

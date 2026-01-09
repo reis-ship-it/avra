@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_io.dart';
-import 'package:spots/data/datasources/local/respected_lists_sembast_datasource.dart';
+import 'package:avrai/data/datasources/local/respected_lists_sembast_datasource.dart';
 
 void main() {
   group('RespectedListsSembastDataSource', () {

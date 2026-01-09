@@ -1,5 +1,5 @@
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart';
 import 'package:permission_handler/permission_handler.dart';
 

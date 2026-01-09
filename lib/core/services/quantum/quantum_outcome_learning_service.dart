@@ -6,15 +6,21 @@
 
 import 'dart:developer' as developer;
 import 'dart:math' as math;
-import 'package:spots_core/models/atomic_timestamp.dart';
-import 'package:spots_quantum/models/quantum_entity_state.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/event_success_metrics.dart';
-import 'package:spots_core/services/atomic_clock_service.dart';
-import 'package:spots/core/services/event_success_analysis_service.dart';
-import 'package:spots/core/services/quantum/meaningful_connection_metrics_service.dart';
-import 'package:spots_quantum/services/quantum/quantum_entanglement_service.dart';
-import 'package:spots_quantum/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_success_metrics.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai/core/services/event_success_analysis_service.dart';
+import 'package:avrai/core/services/quantum/meaningful_connection_metrics_service.dart';
+import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
+import 'package:avrai_quantum/services/quantum/location_timing_quantum_state_service.dart';
+import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
+import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
+import 'package:avrai_knot/services/knot/knot_storage_service.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
 
 /// Quantum success score and learning data
 class QuantumLearningData {
@@ -170,6 +176,12 @@ class QuantumOutcomeLearningService {
   final QuantumEntanglementService _entanglementService;
   // ignore: unused_field
   final LocationTimingQuantumStateService _locationTimingService;
+  final KnotEvolutionStringService _stringService;
+  // ignore: unused_field
+  final KnotWorldsheetService _worldsheetService;
+  // ignore: unused_field
+  final KnotStorageService _knotStorage;
+  final AgentIdService _agentIdService;
 
   // In-memory storage for ideal states (can be persisted to database)
   final Map<String, QuantumIdealState> _idealStates = {};
@@ -180,11 +192,19 @@ class QuantumOutcomeLearningService {
     MeaningfulConnectionMetricsService? meaningfulMetricsService,
     required QuantumEntanglementService entanglementService,
     required LocationTimingQuantumStateService locationTimingService,
+    required KnotEvolutionStringService stringService,
+    required KnotWorldsheetService worldsheetService,
+    required KnotStorageService knotStorage,
+    required AgentIdService agentIdService,
   })  : _atomicClock = atomicClock,
         _successAnalysisService = successAnalysisService,
         _meaningfulMetricsService = meaningfulMetricsService,
         _entanglementService = entanglementService,
-        _locationTimingService = locationTimingService;
+        _locationTimingService = locationTimingService,
+        _stringService = stringService,
+        _worldsheetService = worldsheetService,
+        _knotStorage = knotStorage,
+        _agentIdService = agentIdService;
 
   /// Learn from event outcome
   ///
@@ -522,12 +542,19 @@ class QuantumOutcomeLearningService {
     return combined;
   }
 
-  /// Detect preference drift with atomic time
+  /// Detect preference drift using knot evolution strings
   ///
-  /// **Formula:**
+  /// **Enhanced Formula:**
   /// ```
   /// drift_detection = |⟨ψ_ideal_current(t_atomic_current)|ψ_ideal_old(t_atomic_old)⟩|²
+  /// + knot_evolution_drift (from string evolution)
   /// ```
+  ///
+  /// **Process:**
+  /// 1. Get current knot from string
+  /// 2. Get old knot from string at old time
+  /// 3. Calculate knot evolution (drift)
+  /// 4. Combine with quantum drift detection
   Future<PreferenceDriftResult> detectPreferenceDrift({
     required String idealStateKey,
   }) async {
@@ -547,13 +574,85 @@ class QuantumOutcomeLearningService {
 
       // idealState is guaranteed to be non-null here
 
-      // Calculate drift detection using fidelity
-      // For simplicity, use a time-based drift calculation
+      // 1. Calculate quantum drift detection using fidelity (time-based)
       final timeDiff = tAtomic.serverTime.difference(idealState.lastUpdated.serverTime);
       final timeDiffDays = timeDiff.inDays.toDouble();
+      final quantumDriftScore = math.exp(-0.01 * timeDiffDays).clamp(0.0, 1.0);
 
-      // Drift increases with time since last update
-      final driftScore = math.exp(-0.01 * timeDiffDays).clamp(0.0, 1.0);
+      // 2. Calculate knot evolution drift (from string evolution)
+      // Get user IDs from ideal state (extract from entity states)
+      double knotDriftScore = 1.0; // Default: no drift
+      try {
+        final userIds = idealState.idealState
+            .where((state) => state.entityType == QuantumEntityType.user)
+            .map((state) => state.entityId)
+            .toSet();
+
+        if (userIds.isNotEmpty) {
+          // Calculate average knot drift across all users
+          double totalKnotDrift = 0.0;
+          int validUsers = 0;
+
+          for (final userId in userIds) {
+            try {
+              final agentId = await _agentIdService.getUserAgentId(userId);
+              
+              // Get knot evolution string
+              final string = await _stringService.createStringFromHistory(agentId);
+              if (string == null) {
+                continue;
+              }
+
+              // Get current knot
+              final currentKnot = string.getKnotAtTime(tAtomic.serverTime);
+              if (currentKnot == null) {
+                continue;
+              }
+
+              // Get old knot at last update time
+              final oldKnot = string.getKnotAtTime(idealState.lastUpdated.serverTime);
+              if (oldKnot == null) {
+                continue;
+              }
+
+              // Calculate knot evolution (drift)
+              final knotEvolution = _calculateKnotEvolution(
+                currentKnot: currentKnot,
+                oldKnot: oldKnot,
+              );
+
+              // Higher evolution = more drift
+              // Convert evolution (0-1) to drift score (1-0, inverted)
+              final userKnotDrift = 1.0 - knotEvolution;
+              totalKnotDrift += userKnotDrift;
+              validUsers++;
+            } catch (e) {
+              developer.log(
+                'Error calculating knot drift for user $userId: $e',
+                name: _logName,
+              );
+              continue;
+            }
+          }
+
+          if (validUsers > 0) {
+            knotDriftScore = (totalKnotDrift / validUsers).clamp(0.0, 1.0);
+          }
+        }
+      } catch (e) {
+        developer.log(
+          'Error calculating knot drift: $e, using quantum drift only',
+          name: _logName,
+        );
+      }
+
+      // 3. Combine quantum and knot drift using geometric mean
+      // Both factors must be considered - if either shows significant drift, overall drift is high
+      final coreDriftFactors = [
+        quantumDriftScore.clamp(0.0, 1.0),
+        knotDriftScore.clamp(0.0, 1.0),
+      ];
+      final driftScore = _geometricMean(coreDriftFactors);
 
       final significantDrift = driftScore < _driftThreshold;
 
@@ -598,5 +697,72 @@ class QuantumOutcomeLearningService {
     // Use event type and category as key
     // In production, might use more sophisticated clustering
     return '${event.eventType.name}:${event.category}';
+  }
+
+  /// Calculate knot evolution between two knots
+  ///
+  /// **Formula:**
+  /// evolution = f(crossing_diff, writhe_diff, complexity_change)
+  ///
+  /// Higher evolution = more change = more drift
+  double _calculateKnotEvolution({
+    required PersonalityKnot currentKnot,
+    required PersonalityKnot oldKnot,
+  }) {
+    try {
+      // Calculate differences in knot invariants
+      final crossingDiff = (currentKnot.invariants.crossingNumber - 
+                           oldKnot.invariants.crossingNumber).abs();
+      final writheDiff = (currentKnot.invariants.writhe - 
+                         oldKnot.invariants.writhe).abs();
+
+      // Evolution score: normalized difference
+      final maxCrossings = math.max(
+        currentKnot.invariants.crossingNumber,
+        oldKnot.invariants.crossingNumber,
+      );
+      final crossingEvolution = maxCrossings > 0 
+          ? (crossingDiff / maxCrossings).clamp(0.0, 1.0)
+          : 0.0;
+
+      final writheEvolution = writheDiff.clamp(0.0, 1.0);
+
+      // Combined: 60% crossing evolution + 40% writhe evolution
+      return (0.6 * crossingEvolution + 0.4 * writheEvolution).clamp(0.0, 1.0);
+    } catch (e) {
+      developer.log(
+        'Error calculating knot evolution: $e',
+        name: _logName,
+      );
+      return 0.0;
+    }
+  }
+
+  /// Calculate geometric mean of values
+  ///
+  /// **Formula:** (x₁ * x₂ * ... * xₙ)^(1/n)
+  ///
+  /// **Properties:**
+  /// - If any value is 0, result is 0 (critical failure)
+  /// - More sensitive to low values than arithmetic mean
+  /// - Appropriate for multiplicative relationships
+  double _geometricMean(List<double> values) {
+    if (values.isEmpty) return 0.0;
+    
+    // Filter out zeros (if any core factor is 0, score is 0)
+    final nonZeroValues = values.where((v) => v > 0.0).toList();
+    if (nonZeroValues.length < values.length) {
+      return 0.0; // At least one core factor is 0
+    }
+
+    // Calculate product
+    double product = 1.0;
+    for (final value in nonZeroValues) {
+      product *= value.clamp(0.0, 1.0);
+    }
+
+    // Calculate geometric mean: (product)^(1/n)
+    final n = nonZeroValues.length.toDouble();
+    return math.pow(product, 1.0 / n).toDouble();
   }
 }

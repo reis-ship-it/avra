@@ -1,15 +1,15 @@
 import 'package:get_it/get_it.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/services/admin_auth_service.dart';
-import 'package:spots/core/services/business_auth_service.dart';
-import 'package:spots/core/services/admin_god_mode_service.dart';
-import 'package:spots/core/services/admin_communication_service.dart';
-import 'package:spots/core/services/business_account_service.dart';
-import 'package:spots/core/ml/predictive_analytics.dart';
-import 'package:spots/core/monitoring/connection_monitor.dart';
-import 'package:spots/core/services/expertise_service.dart';
-import 'package:spots/core/services/supabase_service.dart';
-import 'package:spots/core/services/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/services/admin_auth_service.dart';
+import 'package:avrai/core/services/business_auth_service.dart';
+import 'package:avrai/core/services/admin_god_mode_service.dart';
+import 'package:avrai/core/services/admin_communication_service.dart';
+import 'package:avrai/core/services/business_account_service.dart';
+import 'package:avrai/core/ml/predictive_analytics.dart';
+import 'package:avrai/core/monitoring/connection_monitor.dart';
+import 'package:avrai/core/services/expertise_service.dart';
+import 'package:avrai/core/services/supabase_service.dart';
+import 'package:avrai/core/services/storage_service.dart' show SharedPreferencesCompat;
 
 /// Admin Services Registration Module
 /// 

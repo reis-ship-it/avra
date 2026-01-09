@@ -12,10 +12,10 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import '../../helpers/test_helpers.dart';
 
 // Mock classes

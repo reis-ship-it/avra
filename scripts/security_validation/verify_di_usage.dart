@@ -1,9 +1,12 @@
 #!/usr/bin/env dart
+// ignore_for_file: avoid_print
+library;
+
 /// Security Validation Script
 /// 
 /// Verifies all services use DI for AgentIdService:
 /// - No direct instantiations
-/// - All use di.sl<AgentIdService>() or sl<AgentIdService>()
+/// - All use di.sl&lt;AgentIdService&gt;() or sl&lt;AgentIdService&gt;()
 /// 
 /// Usage: dart scripts/security_validation/verify_di_usage.dart
 

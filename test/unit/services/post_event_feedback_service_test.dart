@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:spots/core/services/post_event_feedback_service.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/event_feedback.dart';
-import 'package:spots/core/models/event_partnership.dart';
-import 'package:spots/core/models/unified_user.dart';
+import 'package:avrai/core/services/post_event_feedback_service.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/event_feedback.dart';
+import 'package:avrai/core/models/event_partnership.dart';
+import 'package:avrai/core/models/unified_user.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'post_event_feedback_service_test.mocks.dart';

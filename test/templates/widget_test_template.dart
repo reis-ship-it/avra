@@ -33,7 +33,7 @@ library;
 import 'package:flutter/material.dart'; // Required for ElevatedButton, TextField, CircularProgressIndicator
 import 'package:flutter_test/flutter_test.dart';
 // TODO: Replace with actual widget import
-// import 'package:spots/presentation/widgets/[widget_path]/[widget_name].dart';
+// import 'package:avrai/presentation/widgets/[widget_path]/[widget_name].dart';
 import '../widget/helpers/widget_test_helpers.dart';
 import '../widget/mocks/mock_blocs.dart';
 

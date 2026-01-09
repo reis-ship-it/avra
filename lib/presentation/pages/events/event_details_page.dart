@@ -3,23 +3,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:spots/core/models/expertise_event.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/expertise_event_service.dart';
-import 'package:spots/core/controllers/event_attendance_controller.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/theme/app_theme.dart';
-import 'package:spots/presentation/blocs/auth/auth_bloc.dart';
-import 'package:spots/presentation/pages/payment/checkout_page.dart';
-import 'package:spots/presentation/pages/partnerships/partnership_proposal_page.dart';
-import 'package:spots/presentation/pages/partnerships/partnership_management_page.dart';
-import 'package:spots/presentation/pages/events/cancellation_flow_page.dart';
-import 'package:spots/presentation/pages/events/event_success_dashboard.dart';
-import 'package:spots/presentation/pages/disputes/dispute_submission_page.dart';
-import 'package:spots/presentation/widgets/events/safety_checklist_widget.dart';
-import 'package:spots/core/services/partnership_service.dart';
-import 'package:spots/core/services/fraud_detection_service.dart';
-import 'package:spots/presentation/widgets/common/page_transitions.dart';
+import 'package:avrai/core/models/expertise_event.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/expertise_event_service.dart';
+import 'package:avrai/core/controllers/event_attendance_controller.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/pages/payment/checkout_page.dart';
+import 'package:avrai/presentation/pages/partnerships/partnership_proposal_page.dart';
+import 'package:avrai/presentation/pages/partnerships/partnership_management_page.dart';
+import 'package:avrai/presentation/pages/events/cancellation_flow_page.dart';
+import 'package:avrai/presentation/pages/events/event_success_dashboard.dart';
+import 'package:avrai/presentation/pages/disputes/dispute_submission_page.dart';
+import 'package:avrai/presentation/widgets/events/safety_checklist_widget.dart';
+import 'package:avrai/core/services/partnership_service.dart';
+import 'package:avrai/core/services/fraud_detection_service.dart';
+import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 
 /// Event Details Page
 /// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
@@ -58,6 +58,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   ExpertiseEvent? _currentEvent;
   bool _hasPartnerships = false;
   bool _hasFraudFlag = false;
+  // ignore: unused_field
   double? _fraudRiskScore;
 
   @override
@@ -276,7 +277,10 @@ ${event.getEventTypeDisplayName()} - ${event.category}
 Join me on SPOTS!
 SPOTS - know you belong.''';
 
-    Share.share(shareText, subject: 'Check out this event: ${event.title}');
+    SharePlus.instance.share(ShareParams(
+      text: shareText,
+      subject: 'Check out this event: ${event.title}',
+    ));
   }
 
   Future<void> _addToCalendar() async {

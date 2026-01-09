@@ -11,11 +11,11 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/ai/ai2ai_learning.dart';
-import 'package:spots/core/ai/personality_learning.dart';
-import 'package:spots/core/models/connection_metrics.dart' as cm;
+import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/models/connection_metrics.dart' as cm;
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
-import 'package:spots/core/services/storage_service.dart' as storage;
+import 'package:avrai/core/services/storage_service.dart' as storage;
 import '../../fixtures/model_factories.dart';
 import '../../helpers/test_helpers.dart';
 import '../../helpers/platform_channel_helper.dart';

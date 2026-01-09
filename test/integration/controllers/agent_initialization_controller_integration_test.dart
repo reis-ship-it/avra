@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/controllers/agent_initialization_controller.dart';
-import 'package:spots/core/models/onboarding_data.dart';
-import 'package:spots/core/services/agent_id_service.dart';
-import 'package:spots/core/services/onboarding_data_service.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
-import 'package:spots/injection_container.dart' as di;
+import 'package:avrai/core/controllers/agent_initialization_controller.dart';
+import 'package:avrai/core/models/onboarding_data.dart';
+import 'package:avrai/core/services/agent_id_service.dart';
+import 'package:avrai/core/services/onboarding_data_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
+import 'package:avrai/injection_container.dart' as di;
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {
@@ -68,6 +68,8 @@ void main() {
     tearDown(() async {
       // Clean up test data
       try {
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable - May be used in callback or assertion
         final storageService = di.sl<StorageService>();
         // Clear test data if needed
       } catch (e) {

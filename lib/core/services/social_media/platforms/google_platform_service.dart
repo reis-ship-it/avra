@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'package:spots/core/models/social_media_connection.dart';
-import 'package:spots/core/services/social_media/base/social_media_platform_service.dart';
-import 'package:spots/core/services/social_media/base/social_media_common_utils.dart';
-import 'package:spots/core/services/social_media/google_sign_in_bootstrap.dart';
-import 'package:spots/core/services/storage_service.dart';
-import 'package:spots/core/services/logger.dart';
-import 'package:spots/core/config/oauth_config.dart';
+import 'package:avrai/core/models/social_media_connection.dart';
+import 'package:avrai/core/services/social_media/base/social_media_platform_service.dart';
+import 'package:avrai/core/services/social_media/base/social_media_common_utils.dart';
+import 'package:avrai/core/services/social_media/google_sign_in_bootstrap.dart';
+import 'package:avrai/core/services/storage_service.dart';
+import 'package:avrai/core/services/logger.dart';
+import 'package:avrai/core/config/oauth_config.dart';
 
 /// Google platform-specific social media connection service
 ///

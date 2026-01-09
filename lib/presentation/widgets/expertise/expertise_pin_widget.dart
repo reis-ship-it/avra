@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/expertise_pin.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/expertise_pin.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Expertise Pin Widget
 /// Displays a visual pin representing user expertise

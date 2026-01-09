@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:spots/presentation/widgets/common/ai_chat_bar.dart';
-import 'package:spots/presentation/widgets/common/ai_command_processor.dart';
-import 'package:spots/presentation/widgets/common/ai_thinking_indicator.dart';
-import 'package:spots/presentation/widgets/common/streaming_response_widget.dart';
-import 'package:spots/presentation/widgets/common/action_success_widget.dart';
-import 'package:spots/core/theme/colors.dart';
-import 'package:spots/core/ai/action_models.dart';
-import 'package:spots/core/services/action_history_service.dart';
+import 'package:avrai/presentation/widgets/common/ai_chat_bar.dart';
+import 'package:avrai/presentation/widgets/common/ai_command_processor.dart';
+import 'package:avrai/presentation/widgets/common/ai_thinking_indicator.dart';
+import 'package:avrai/presentation/widgets/common/streaming_response_widget.dart';
+import 'package:avrai/presentation/widgets/common/action_success_widget.dart';
+import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/services/action_history_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Phase 1 Integration: Enhanced AI chat interface with all new Phase 1.3 widgets
@@ -91,6 +91,7 @@ class _EnhancedAIChatInterfaceState extends State<EnhancedAIChatInterface> {
       if (widget.showThinkingStages) {
         await _progressThroughStages();
       }
+      if (!mounted) return;
       
       // Process with AI Command Processor
       final response = await AICommandProcessor.processCommand(
@@ -213,6 +214,7 @@ class _EnhancedAIChatInterfaceState extends State<EnhancedAIChatInterface> {
       } catch (e) {
         // Service not registered, skip
       }
+      if (!mounted) return;
       
       await showDialog(
         context: context,
@@ -224,22 +226,19 @@ class _EnhancedAIChatInterfaceState extends State<EnhancedAIChatInterface> {
             try {
               final historyService = GetIt.instance<ActionHistoryService>();
               final undoResult = await historyService.undoLastAction();
-              
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(undoResult.success 
-                        ? 'Action undone successfully!' 
-                        : undoResult.message),
-                  ),
-                );
-              }
+              if (!mounted || !context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(undoResult.success 
+                      ? 'Action undone successfully!' 
+                      : undoResult.message),
+                ),
+              );
             } catch (e) {
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Undo failed: $e')),
-                );
-              }
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Undo failed: $e')),
+              );
             }
           },
           onViewResult: () {

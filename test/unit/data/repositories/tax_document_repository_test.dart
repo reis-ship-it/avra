@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/data/repositories/tax_document_repository.dart';
-import 'package:spots/core/models/tax_document.dart';
-import 'package:spots/data/datasources/local/sembast_database.dart';
+import 'package:avrai/data/repositories/tax_document_repository.dart';
+import 'package:avrai/core/models/tax_document.dart';
+import 'package:avrai/data/datasources/local/sembast_database.dart';
 import 'package:sembast/sembast.dart' as sembast;
 
 /// SPOTS TaxDocumentRepository Unit Tests

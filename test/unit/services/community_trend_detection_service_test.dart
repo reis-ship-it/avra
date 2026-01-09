@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spots/core/services/community_trend_detection_service.dart';
-import 'package:spots/core/ml/pattern_recognition.dart';
-import 'package:spots/core/ml/nlp_processor.dart';
-import 'package:spots/core/models/user.dart' as user_model;
+import 'package:avrai/core/services/community_trend_detection_service.dart';
+import 'package:avrai/core/ml/pattern_recognition.dart';
+import 'package:avrai/core/ml/nlp_processor.dart';
+import 'package:avrai/core/models/user.dart' as user_model;
 import '../../helpers/platform_channel_helper.dart';
 
 /// Community Trend Detection Service Tests

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/models/business_expert_preferences.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/models/business_expert_preferences.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// Business Expert Preferences Widget
 /// Allows businesses to set detailed preferences for expert matching

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:spots/core/models/business_expert_preferences.dart';
+import 'package:avrai/core/models/business_expert_preferences.dart';
 
 /// Business Patron Preferences Model
 /// Defines preferences for the types of patrons/customers a business wants to attract

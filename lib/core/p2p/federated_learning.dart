@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 import 'package:get_storage/get_storage.dart';
-import 'package:spots/core/services/storage_service.dart';
+import 'package:avrai/core/services/storage_service.dart';
 
 /// OUR_GUTS.md: "Privacy-preserving federated learning with community insights"
 /// Federated learning system for collaborative AI training without data exposure

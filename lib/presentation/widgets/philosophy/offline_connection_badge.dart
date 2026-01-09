@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spots/core/theme/colors.dart';
+import 'package:avrai/core/theme/colors.dart';
 
 /// OUR_GUTS.md: "The key works offline"
 /// Shows when AI2AI connections happen offline

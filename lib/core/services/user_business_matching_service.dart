@@ -1,7 +1,7 @@
-import 'package:spots/core/models/business_account.dart';
-import 'package:spots/core/models/business_patron_preferences.dart';
-import 'package:spots/core/models/unified_user.dart';
-import 'package:spots/core/services/logger.dart';
+import 'package:avrai/core/models/business_account.dart';
+import 'package:avrai/core/models/business_patron_preferences.dart';
+import 'package:avrai/core/models/unified_user.dart';
+import 'package:avrai/core/services/logger.dart';
 
 /// User Business Matching Service
 /// Matches users with businesses based on business patron preferences
