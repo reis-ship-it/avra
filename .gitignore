@@ -47,6 +47,7 @@ android/app/src/main/assets/models/
 *.iml
 .cursor/debug.log
 .cursor/*.log
+.codeql-databases/
 
 # Misc
 .DS_Store
